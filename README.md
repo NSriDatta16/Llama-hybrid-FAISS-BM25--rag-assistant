@@ -1,4 +1,4 @@
-# 🧠 Llama-Hybrid-RAG-Assistant  
+# Llama-Hybrid-RAG-Assistant  
 ### *An AI Retrieval-Augmented Generation Assistant built with Llama 3, FAISS, BM25, and persistent memory.*
 
 ---
