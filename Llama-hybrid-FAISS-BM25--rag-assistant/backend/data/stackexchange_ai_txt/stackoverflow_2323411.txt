@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2323411
-[parent_id]: 2065268
-[tags]: 
-I had the same question since I'm considering the impact of leaving verbose tracing on in production for the first several months on a multi-tiered system. The test I've performed indicates it's not too bad a performance hit. Here's the sequence of calls I'm making: UI Client (local pc) -> WCF service 1 (hosted locally) -> WCF service 2 (hosted locally) -> webservice hosted by business partner (offsite) The UI client, as well as WCF Service 1 and WCF Service 2 are all tracing using System.Diagnostics.XmlWriterTraceListener. Set to "ALL", the process averages 530ms . Set to "OFF", the process averages 400ms . That's a pretty big jump, but the actual processing happening is trivial, so this is almost ALL serialization & communications overhead. I suspect as the tasks become more processor-intensive, the logging overhead will decrease as a percentage. If you're making a high volume of calls, and need performance, that overhead might be unacceptable. But in my case, the calls will be infrequent, so the small additional overhead will be worth the diagnostic potential.

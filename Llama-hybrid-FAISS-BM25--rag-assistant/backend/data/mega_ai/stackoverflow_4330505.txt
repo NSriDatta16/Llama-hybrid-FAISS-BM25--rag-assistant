@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4330505
-[parent_id]: 4313032
-[tags]: 
-Shouldn't you be wrapping your new rw1 in a new RuleTransformer ? Otherwise I think it's only going to apply the rule to the foo node and not its children. Maybe that alone would solve the problem. In case it doesn't here's some other code that seems to do what you want (using my approach to changing attributes ): class ReplaceIDsBelowFooRule(id: String) extends RewriteRule { override def transform(n : Node) : Seq[Node] = n match { case elem: Elem if elem.label == "foo" => elem.copy(child=this.replaceDescendantIDs(elem.child)) case other => other } def replaceDescendantIDs(nodes: Seq[Node]): Seq[Node] = { for (node elem.copy( child=this.replaceDescendantIDs(elem.child), attributes= for (attr attr.goodcopy(value=this.id) case other => other } ) case other => other } } } And applied to your xml: scala> new RuleTransformer(new ReplaceIDsBelowFooRule("XXX"))(xml) res1: scala.xml.Node = ... ...

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3723027
-[parent_id]: 3722991
-[tags]: 
-You need to read the javadocs for the ConcurrentHashMap.values() method, paying special attention to this description of how the iterator for the values() collection works: "The view's iterator is a "weakly consistent" iterator that will never throw ConcurrentModificationException, and guarantees to traverse elements as they existed upon construction of the iterator, and may (but is not guaranteed to) reflect any modifications subsequent to construction." The iterator does not give you a consistent snapshot of the state of the values collection, but it is thread-safe , and the expected range of behaviours is clearly specified . If you want a Map implementation that gives you a consistent snapshot of the values (or keys, or entries) in the map AND allows you to iterate concurrently with modifications, you will probably need to create a custom Map wrapper class (that copies the collections atomically) ... or a full-blown custom Map implementation. Both are likely to be a lot slower than a ConcurrentHashMap for your use-case.

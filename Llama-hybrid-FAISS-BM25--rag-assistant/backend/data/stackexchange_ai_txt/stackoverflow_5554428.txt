@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5554428
-[parent_id]: 5553510
-[tags]: 
-Create a transfer table with all the records related to those persons: select c.name as city_name, c.id as city_id, a.street, a.zip, et.type, et.type_id, p.id as people_id, p.name, e.id as employee_id, e.people_id as employee_people_id, e.type_id as employee_type_id into transfer from People p inner join Addresses a on p.zip = a.zip inner join Cities c on a.city_id = c.id inner join Employees e on p.id = e.people_id inner join Employee_Type et on et.id = e.type_id where p.id in (@people_id_1, @people_id_2) Then at the destiny insert into the respective tables with attention to the correct order to avoid foreign key errors: insert into Cities (name, id) select distinct city_name, city_id from transfer insert into Addresses (street, zip) select distinct street, zip from transfer insert into People (id, name) select distinct people_id, name from transfer insert into Employee_Type (type, id) select distinct type, type_id from transfer insert into Employees (id, people_id, type_id) select distinct employee_id, employee_people_id, employee_type_id from transfer

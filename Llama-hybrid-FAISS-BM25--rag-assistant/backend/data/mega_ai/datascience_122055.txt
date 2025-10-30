@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 122055
-[parent_id]: 121999
-[tags]: 
-If I understand properly you have to sets of input features $F_1$ and $F_2$ : the first is image-like, and the second is sparse being probably represented as a vector. I assume $F_1$ to have shape $(A,B,C)$ and $F_2$ to be $(D,)$ . If so, you can try various network designs: Stack $F_2$ to $F_1$ : use a dense layer to expand $F_2$ to match the shape of $F_1$ , then concatenate along last (channel) axis, and go for a CNN. In this way you combine the two feature sets at the the input level. f2 = dense(units=A * B * D)(f2) f2 = reshape((A, B, D))(f2) f = concatenate(axis=-1)([f1, f2]) # f is now (A, B, C + D) # ... Combine in the middle: Alternatively, you can apply a CNN on $F_1$ and flattening the output feature maps to a vector, which is then combine with the second features as follows: f1 = CNN(f1) f1 = flatten(f1) # reshaped to (K,) f2 = dense(units=K)(f2) # expand to (K,) # combine: f = f1 + f2 # or f = f1 * f2 # or even f = concatenate()([f1, f2]) # final layer To get a more broad understanding on how some features can influence another read this article.

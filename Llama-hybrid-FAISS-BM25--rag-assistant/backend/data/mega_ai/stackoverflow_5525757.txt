@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5525757
-[parent_id]: 
-[tags]: 
-Rails: Make this rake task aware that it is in the test environment
-
-I have the following rake task defined in my lib/tasks folder: namespace :db do namespace :test do task :prepare => :environment do Rake::Task["db:seed"].invoke end end end Now, what this does is seed the test DB when I run rake db:test:prepare . I do this because I have some basic records that must exist in order for the app to function, so they're not optional and can't really be mocked. Separately, I have a model that uses S3 for asset storage in development and production, but I don't want it to use S3 for testing. I have set up a method in the model that changes the storage path from S3 to local if Rails.env.test? However, this isn't working. I was wondering if the rake task was aware of what environment it was being called from, and it turns out it is NOT. I put this at the top of my seeds.rb file: puts "Environment Check: Rails Environment = #{Rails.env}" Sure enough, when the task runs this prints: Environment Check: Rails Environment = development So, how can I redo this rake task so that when it's seeding the test DB it knows that it's seeding the test DB??

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2367547
-[parent_id]: 2367485
-[tags]: 
-Assuming you have some sort of ID column, the most effective way is probably to use UNPIVOT so you can use the normal row-based AVG operator (which ignores NULL values): DECLARE @Tbl TABLE ( ID int, B1 int, B2 int, B3 int ) INSERT @Tbl (ID, B1, B2, B3) VALUES (1, 10, 20, 30) INSERT @Tbl (ID, B1, B2, B3) VALUES (2, 10, NULL, 30) INSERT @Tbl (ID, B1, B2, B3) VALUES (3, 10, NULL, NULL) SELECT ID, AVG(Value) AS Average FROM @Tbl UNPIVOT (Value FOR B IN (B1, B2, B3)) AS u GROUP BY ID If you don't have the ID column, you can generate a surrogate ID using ROW_NUMBER : ;WITH CTE AS ( SELECT B1, B2, B3, ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS ID FROM @Tbl ) SELECT ID, AVG(Value) FROM CTE UNPIVOT (Value FOR B IN (B1, B2, B3)) AS u GROUP BY ID

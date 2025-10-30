@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 837851
-[parent_id]: 836549
-[tags]: 
-In an ideal world, you don't. You use char* for C-style strings (which are NUL-terminated and you can measure the length of), and unsigned char* only for byte data (which comes with its length in another parameter or whatever, and which you probably get into an STL container ASAP, such as vector or basic_string ). The root problem is that you can't make portable assumptions about whether the storage representations of char and unsigned char are the same. They usually are, but they're allowed not to be. So there are no string-like library functions which operate on unsigned char*, only on char*, and it is not in general safe to cast unsigned char* to signed char* and treat the result as a string. Since char might be signed, this means no casting unsigned char* to char*. However, 0 is always the same value representation in unsigned char and char. So in a non-ideal world, if you've got a C-style string from somewhere but it has arrived as an unsigned char*, then you (a) cast it to char* and get on with it, but also (b) find out who did this to you, and ask them please to stop.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5316688
-[parent_id]: 
-[tags]: 
-ruby output format
-
-I have the following code, which works fine. The problem is that I get the following output: Device ID: SEP1C17D3415659 IP address: 10.2.3.101 I would like to get: SEP1C17D3415659 10.2.3.101 Thanks for your help require 'net/telnet' require '/apps/dateformat' @tdate = Formatdate.new.mydate hosts = %w"SW3" hosts.each do |hostname| tn = Net::Telnet::new("Host" => "#{hostname}", "Timeout" => 10000, "Prompt" => /[$%#>] \z/n) tn.cmd('String' =>'user' , 'Match'=>/Password:/) { |c| puts c } tn.cmd('String' =>'password', 'Match'=>/#/) { |c| puts c } tn.cmd('String' =>'terminal length 0', 'Match'=>/#/) { |c| puts c } File.open("/agents/#{hostname}-#{@tdate}-agents.txt",'w') do |o| run=tn.cmd('String' =>'sh cd ne de | inc Device ID: | IP address:', 'Match'=>/#/) { |c| puts c } run.each_line do |re| mac = re.match /Device ID: ([\S]+)/ #ip = re.match /([\S]+) address/ ip = re.match /IP address: ([\S]+)/ o.puts mac o.puts ip end end end

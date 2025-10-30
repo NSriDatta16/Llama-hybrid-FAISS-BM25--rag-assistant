@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 574157
-[parent_id]: 566798
-[tags]: 
-If by scalable, you mean really large numbers of connections, you should also consider a number of other aspects beyond use of the thread-pool. 1) If you are using .NET3.5, consider SocketAsyncEventArgs rather than the BeginXXX/EndXXX. The approach is described in MSDN Magazine . These allow for more efficient dispatch and processing of the underlying async i/o. 2) Consider your memory usage very carefully . Byte[] buffers allocated for asynchronous i/o are pinned, forcing the GC to work around them during the compaction phase which in turn may result in fragmentation and OutOfMemoryExceptions under load. Also, you have consider the lower-level native issues of async i/o such as available memory in the non-paged pool. Some of the available techniques are using a single shared zero-byte buffer for all pending receives, and using pooled buffers (from memory that does not compacted - either LOH or native heap) for I/O that will actually transfer data.

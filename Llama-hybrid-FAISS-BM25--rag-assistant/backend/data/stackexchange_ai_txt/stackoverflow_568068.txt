@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 568068
-[parent_id]: 567991
-[tags]: 
-Is it possible you're having issues because of filesystem I/O ? The EXPLAIN shows that there have to be 1544 rows fetched from the ItemsKeyword table. If you have to go to disk for each of those you'll add about 10-15 second total to the run time (assuming a high-ish seek time because you're on a VM). Normally the tables are cached in RAM or the data is stored close enough on the disk that reads can be combined. However, you're running on a VM with 256MB of ram, so you may no memory spare it can cache into and if your table file is fragmented enough you might be able to get the query performance degraded this much. You could probably get some idea of what's happening with I/O during the query by running something like pidstat -d 1 or iostat 1 in another shell on the server. EDIT: From looking at the query adding an index on ( ItemsKeyword . item_id , ItemsKeyword . keyword_id ) should fix it if my theory is right about it being a problem with the seeks for the ItemsKeyword table.

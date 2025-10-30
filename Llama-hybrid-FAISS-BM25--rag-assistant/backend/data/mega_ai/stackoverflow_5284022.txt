@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5284022
-[parent_id]: 5283586
-[tags]: 
-If both Get operations are in the same transaction, they will share the same IDbConnection . Otherwise you end up with implicit transactions and NHibernate will open and close an IDbConnection for each query. In general, you should try do something like: using (var tx = session.BeginTransaction()) { var customer = session.Get (123); var order = session.Get (456); // do stuff tx.Commit(); } Use of implicit transactions is discouraged : When we don't define our own transactions, it falls back into implicit transaction mode, where every statement to the database runs in its own transaction, resulting in a large performance cost (database time to build and tear down transactions), and reduced consistency. Even if we are only reading data, we should use a transaction, because using transactions ensures that we get consistent results from the database. NHibernate assumes that all access to the database is done under a transaction, and strongly discourages any use of the session without a transaction.

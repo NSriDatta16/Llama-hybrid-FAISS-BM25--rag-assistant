@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 488722
-[parent_id]: 
-[tags]: 
-StackingClassifier + RandomSearchCV: How is it dividing the folds under the hood?
-
-I'm able to (based on the example from the accepted answer here ) set up a StackedClassifier and add RandomSearchCV to perform a quick hyperparameter search. The models/pipelines are set up like in the link above: base_features = ColumnTransformer([('pass', 'passthrough', ['mean radius', 'mean texture'])]) model = StackingClassifier(estimators=[ ('tree', Pipeline([('select', base_features), ('tree', DecisionTreeClassifier(random_state=42))])), ('knn', Pipeline([('select', base_features), ('knn', KNeighborsClassifier())])), ]) model.fit(X, y) followed by RandomizedSearchCV to tune hyperparameters: try_param_grid = { "knn__knn__n_neighbors" : [1,3,5], "tree__tree__min_samples_split" : [2,4,6] } rcv = RandomizedSearchCV(model, param_distributions=try_param_grid, verbose=8) rcv.fit(X, y) All of this works fine, which is awesome! But what I'm trying to understand is under the hood how does the interaction between the "two" cross-validations work? i.e. The stacking classifier uses cross-validation with 5 folds to train the final_estimator. RandomizedSearchCV is also using cross validation. When used together, is there a nested cross validation setup? Is something else going on?

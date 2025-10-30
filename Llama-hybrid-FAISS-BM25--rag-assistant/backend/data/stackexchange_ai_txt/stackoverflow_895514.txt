@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 895514
-[parent_id]: 895396
-[tags]: 
-The trick is that you're worried about an overflow. In that case, it all comes down to order of execution. The basic formula is like this: Given: A = current avg C = count of items V = next value in the sequence The next average (A 1 ) is: (C * A) + V A 1 = ——————————— C + 1 The danger is over the course of evaulating the sequence, while A should stay relatively manageable C will become very large. Eventually C * A will overflow the integer or double types. One thing we can try is to re-write it like this, to reduce the chance of an overflow: A 1 = C/(C+1) * A/(C+1) + V/(C+1) In this way, we never multiply C * A and only deal with smaller numbers. But the concern now is the result of the division operations. If C is very large, C/C+1 (for example) may not be meaningful when constrained to normal floating point representations. The best I can suggest is to use the largest type possible for C here.

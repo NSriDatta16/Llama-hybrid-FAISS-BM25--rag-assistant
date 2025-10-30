@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1032693
-[parent_id]: 1032624
-[tags]: 
-If you're caching business objects, and given the 3 tiers you describe you're using, the business layer is the obvious place. A simple setup would be (for a single business object): MyCache is a static class One static method: MyCache.Retrieve(id), returns an object The class uses a static Dictionary for storage, and a static ReaderWriterLock The Retrieve method then performs the following: Is the id in your cache (a Dictionary of id/object)? No Grab the object from the database AquireWriterLock from the ReaderWriterLock (why ReaderWriter? because you're not writing frequently but you are reading often) Add the object to the cache Yes Retrieve the object from the dictionary That's my prefered solution, you can add timeouts, clearing and so on if you need. Or use memcached or the Microsoft Enterprise Library Caching Block but they're usually overkill.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5074873
-[parent_id]: 5074329
-[tags]: 
-If you're looking to search from within your django models then something like: from django.utils import simplejson def autocompleteModel(request): search_qs = ModelName.objects.filter(name__startswith=request.REQUEST['search']) results = [] for r in search_qs: results.append(r.name) resp = request.REQUEST['callback'] + '(' + simplejson.dumps(result) + ');' return HttpResponse(resp, content_type='application/json') For the jQuery autocomplete and call: function searchOpen() { var search = $('#txtSearch').val() var data = { search: search }; $.ajax({ url: '/search.json', data: data, dataType: 'jsonp', jsonp: 'callback', jsonpCallback: 'searchResult' }); } function searchResult(data) { $( "#txtSearch" ).autocomplete ({ source: data }); } Finally to connect it all on your input form would have something like: Note, this is using Jquery UI as well in addition to stock jQuery.

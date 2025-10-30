@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1212565
-[parent_id]: 1212505
-[tags]: 
-Yoy may try to invoke pessimistic locking Dim cnn As ADODB.Connection Dim rst As ADODB.Recordset Set cnn = New ADODB.Connection cnn.ConnectionString = " Provider=sqloledb;" & _ "Data Source=(local);Initial Catalog=pubs;uid=sa;pwd=" cnn.Open Set rst = New ADODB.Recordset rst.ActiveConnection = cnn rst.CursorType = adOpenKeyset rst.LockType = adLockPessimistic 'Invoke Pessimistic Locking rst.CursorLocation = adUseServer rst.Open "Select * from Table Where ID ='" _ & strID & "'", _ Options:=adCmdText rst!Name = "New name" 'Lock occurs here '... when it is locked, you may do other operations rst.Update 'Lock Released Here You will have to implement error handling, because when 2nd client wants to edit and cannot lock the record during timeout, error will be raised. However pessimistic locking is not the best scenario, I would think about optimistic locking and either First Wins or Last Wins strategy Here is an online book Alison Balter's mastering Microsoft Access 2000 development , it should help you.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4984756
-[parent_id]: 4978566
-[tags]: 
-Here you go agent.c #include #include "jvmti.h" jvmtiEnv *globalJVMTIInterface; JNIEXPORT jlong JNICALL Java_util_Util_getObjectSize (JNIEnv *jni_env , jclass class , jobject object) { jlong objectSize; (*globalJVMTIInterface)->GetObjectSize(globalJVMTIInterface, object, &objectSize); return objectSize; } JNIEXPORT jint JNICALL Agent_OnLoad(JavaVM * jvm, char *options, void *reserved) { jint returnCode = (*jvm)->GetEnv(jvm, (void **) &globalJVMTIInterface, JVMTI_VERSION_1_0); if (returnCode != JNI_OK) { fprintf(stderr, "The version of JVMTI requested (1.0) is not supported by this JVM.\n"); return JVMTI_ERROR_UNSUPPORTED_VERSION; } return JVMTI_ERROR_NONE; } and ./util/Util.java package util; public class Util { public static final native long getObjectSize(Object obj); } and Test.java public class Test { public static void main(String[] args) { System.out.println(util.Util.getObjectSize(new String())); } } gcc -I/opt/ibm-jdk-bin-1.6.0.9/include -shared -fPIC -o libagent.so agent.c java -agentpath:./libagent.so Test

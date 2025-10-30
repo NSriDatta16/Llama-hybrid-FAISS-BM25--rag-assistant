@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1400605
-[parent_id]: 
-[tags]: 
-Optimal sleep time in multiple producer / single consumer model
-
-I'm writing an application that has a multiple producer, single consumer model (multiple threads send messages to a single file writer thread). Each producer thread contains two queues, one to write into, and one for a consumer to read out of. Every loop of the consumer thread, it iterates through each producer and lock that producer's mutex, swaps the queues, unlocks, and writes out from the queue that the producer is no longer using. In the consumer thread's loop, it sleeps for a designated amount of time after it processes all producer threads. One thing I immediately noticed was that the average time for a producer to write something into the queue and return increased dramatically (by 5x) when I moved from 1 producer thread to 2. As more threads are added, this average time decreases until it bottoms out - there isn't much difference between the time taken with 10 producers vs 15 producers. This is presumably because with more producers to process, there is less contention for the producer thread's mutex. Unfortunately, having Has anybody else encountered this, and if so what was your solution? I have tried scaling the sleep time with the number of threads, but it seems somewhat machine specific and pretty trial-and-error.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3652293
-[parent_id]: 3651952
-[tags]: 
-One approach would be to write a little method to build a case insensitive glob for a given filename: def ci_glob(filename) glob = '' filename.each_char do |c| glob += c.downcase != c.upcase ? "[#{c.downcase}#{c.upcase}]" : c end glob end irb(main):024:0> ci_glob('foo.txt') => "[fF][oO][oO].[tT][xX][tT]" and then you can do: filename = Dir.glob(ci_glob('foo.txt')).first Alternatively, you can write the directory search you suggested quite concisely. e.g. filename = Dir.glob('*').find { |f| f.downcase == 'foo.txt' } Prior to Ruby 3.1 it was possible to use the FNM_CASEFOLD option to make glob case insensitive e.g. filename = Dir.glob('foo.txt', File::FNM_CASEFOLD).first if filename # use filename here else # no matching file end The documentation suggested FNM_CASEFOLD couldn't be used with glob but it did actually work in older Ruby versions. However, as mentioned by lildude in the comments , the behaviour has now been brought inline with the documentation and so this approach shouldn't be used.

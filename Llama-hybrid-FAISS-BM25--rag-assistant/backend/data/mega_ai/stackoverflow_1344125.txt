@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1344125
-[parent_id]: 1344025
-[tags]: 
-Pursuant to BCS' answer: BCS is describing the case of a stateless object. Such an object is intrinsically thread safe because it has no variables of it's own that can be clobbered by calls from different theads. The logger described does have a file handle (sorry, not C# user, maybe it's called IDiskFileResource or some such MS-ism) which it must serialize use of. So, separate the storage of messages from the logic that writes them to the log file. The logic should only operate on one message at a time. One way to do it is: if the logger object were to keep a queue of message objects, and the logger object merely has the logic to pop a message off the queue, then extract the useful stuff from a message object, then write that to the log, then look for another message in the queue - then you can make that thread safe by having the queue's add/remove/queue_size/etc operations thread safe. It would require the logger class, a message class and a thread safe queue (which is probably a third class, an instance of which is a member variable of the logger class).

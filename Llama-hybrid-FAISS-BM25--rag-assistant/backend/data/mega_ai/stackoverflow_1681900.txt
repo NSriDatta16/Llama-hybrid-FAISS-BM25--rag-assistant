@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1681900
-[parent_id]: 
-[tags]: 
-OpenMP: Causes for heap corruption, anyone?
-
-EDIT: I can run the same program twice, simultaneously without any problem - how can I duplicate this with OpenMP or with some other method? This is the basic framework of the problem. //Defined elsewhere class SomeClass { public: void Function() { // Allocate some memory float *Data; Data = new float[1024]; // Declare a struct which will be used by functions defined in the DLL SomeStruct Obj; Obj = MemAllocFunctionInDLL(Obj); // Call it FunctionDefinedInDLL(Data,Obj); // Clean up MemDeallocFunctionInDLL(Obj); delete [] Data; } } void Bar() { #pragma omp parallel for for(int j = 0;j I've verified that when some memory is attempted to be deallocated through MemDeallocFunctionInDLL() , the _CrtIsValidHeapPointer() assertion fails. Is this because both threads are writing to the same memory? So to fix this, I thought I'd make SomeClass private (this is totally alien to me, so any help is appreciated). void Bar() { SomeClass X; #pragma omp parallel for default(shared) private(X) for(int j = 0;j And now it fails when it tries to allocate memory in the beginning for Data . Note: I can make changes to the DLL if required Note: It runs perfectly without #pragma omp parallel for EDIT: Now Bar looks like this: void Bar() { int j #pragma omp parallel for default(none) private(j) for(j = 0;j Still no luck.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2947368
-[parent_id]: 2947352
-[tags]: 
-you could of course wrap your iterator in another iterator, something like this: public class SafeIterator implements Iterator { private Iterator inner; public SafeIterator(Iterator inner){this.inner=inner;} public boolean hasNext(){return inner.hasNext();} public E next(){ try{ return inner.next(); }catch(Exception e){return null;} //you'll also want to do some logging here } } EDIT: the trouble here is that a) you are breaking the iterator contract. hasNext() suggests that a value is coming next while this version might or might not provide a value (it might be null), so the client always has to do null checks: for(MyType m : myIterator){ if(m!=null){ // do stuff here } } which of course takes most of the elegance away from the iterator pattern, but more importantly b) you are dropping exceptions. We are violating Josh Bloch (Effective Java) item #65: "Don't ignore exceptions". We're solving the wrong problem by ignoring bad values. The parser should either learn to deal with bad values (perhaps by skipping ahead to the next good value), or there shouldn't be any bad values.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2023001
-[parent_id]: 
-[tags]: 
-How can I read from a Perl filehandle that is an array element?
-
-I quickly jotted off a Perl script that would average a few files with just columns of numbers. It involves reading from an array of filehandles. Here is the script: #!/usr/local/bin/perl use strict; use warnings; use Symbol; die "Usage: $0 file1 [file2 ...]\n" unless scalar(@ARGV); my @fhs; foreach(@ARGV){ my $fh = gensym; open $fh, $_ or die "Unable to open \"$_\""; push(@fhs, $fh); } while (scalar(@fhs)){ my ($result, $n, $a, $i) = (0,0,0,0); while ($i ){ $result += $a; $n++; $i++; } else{ $fhs[$i]->close; splice(@fhs,$i,1); } } if ($n){ print $result/$n . "\n"; } } This doesn't work. If I debug the script, after I initialize @fhs it looks like this: DB x @fhs 0 GLOB(0x10443d80) -> *Symbol::GEN0 FileHandle({*Symbol::GEN0}) => fileno(6) 1 GLOB(0x10443e60) -> *Symbol::GEN1 FileHandle({*Symbol::GEN1}) => fileno(7) So far, so good. But it fails at the part where I try to read from the file: DB x $fhs[$i] 0 GLOB(0x10443d80) -> *Symbol::GEN0 FileHandle({*Symbol::GEN0}) => fileno(6) DB x $a 0 'GLOB(0x10443d80)' $a is filled with this string rather than something read from the glob. What have I done wrong?

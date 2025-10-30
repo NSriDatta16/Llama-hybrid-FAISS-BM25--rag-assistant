@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3685231
-[parent_id]: 3685219
-[tags]: 
-stripslashes($_POST['interest']); stripslashes doesn't work on arrays! Do it like this: $checkboxes = $_POST['interest']; //process the checkboxes foreach ($checkboxes as $value) { $selectedChkbx .= stripslashes($value) . ", "; } Answer to your comment: $array = array('zero', array('one', array('two', 'three', 'four'), 'five'), 'six', 'seven', array('eight')); echo r_implode(", ", stripslashes_deep($array)); # code from http://ch.php.net/manual/en/function.stripslashes.php function stripslashes_deep($value) { $value = is_array($value) ? array_map('stripslashes_deep', $value) : stripslashes($value); return $value; } # code from http://php.net/manual/en/function.implode.php function r_implode( $glue, $pieces ) { foreach( $pieces as $r_pieces ) { if( is_array( $r_pieces ) ) { $retVal[] = r_implode( $glue, $r_pieces ); } else { $retVal[] = $r_pieces; } } return implode( $glue, $retVal ); } This gives you: zero, one, two, three, four, five, six, seven, eight Edit Replaced personal recursive function with a more elegant one ;)

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4868138
-[parent_id]: 4867912
-[tags]: 
-You should try to use std::string as the contained type. While that will fragment the memory a bit, it will make the code simpler, and less error prone. As it is, it will not be able to handle words that take more than 10 characters (or 9 plus the nul terminator if you want to make the words compatible with C strings), and you have to work a way of manually copying contents from the std::string that you read with getline to the array, and that will make the code a little awkward: while ( getline( fin, str ) ) { char buffer[10]; strncpy( buffer, str.c_str(), 10 ); // manually copy dict1->insert( k, buffer ); dict2->insert( k, buffer ); ++k; } If the container held strings instead of the fixed size character arrays, the code would be slightly simpler: while ( getline( fin, str ) ) { dict1->insert( k, str ); dict2->insert( k, str ); ++k; } and much more flexible as it will be able to process this answer regardless of the length of the longest words (compatible:10, regardless:10).

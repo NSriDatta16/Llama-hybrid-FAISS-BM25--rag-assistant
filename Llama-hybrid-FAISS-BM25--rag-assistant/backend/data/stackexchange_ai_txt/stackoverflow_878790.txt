@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 878790
-[parent_id]: 878439
-[tags]: 
-All the PyImport_Import call does is return a reference to the module -- it doesn't make such a reference available to other parts of the program. So, if you want PyRun_SimpleString to see your new imported module, you need to add it manually. PyRun_SimpleString works automatically in the __main__ module namespace. Without paying a lot of attention to error checking (be wary of NULL returns!), this is a general outline: PyObject *main = PyImport_AddModule("__main__"); PyObject *obj = PyString_FromString("Pootle"); PyObject *pootle = PyImport_Import(obj); PyObject_SetAttrString(main, "Pootle", pootle); Py_DECREF(obj); Py_XDECREF(pootle);

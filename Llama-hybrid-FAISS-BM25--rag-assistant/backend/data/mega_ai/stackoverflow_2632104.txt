@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2632104
-[parent_id]: 
-[tags]: 
-How do I elegantly print the %z (timezone) format in Perl on Windows?
-
-An offshoot of How do I elegantly print the date in RFC822 format in Perl? , but Windows specific. On windows: C:\> perl -MPOSIX print strftime('%z', localtime()),"\n"; Yields: Central Daylight Time I was expecting: -0500 As anyone would on a Linux system. How can I get the "-0500" on Windows? UPDATE: Is this really terrible to do in its place? (Assuming I'm not allowed to install DateTime or package it in any way) C:\> perl -MPOSIX sub tzoffset { my $t = time(); my $utc = mktime(gmtime($t)); my $local = mktime(localtime($t)); return ($local - $utc); } sub zformat { my ($tzoffset) = @_; my $z = ''; if ($tzoffset The problem I've noticed is that this returns -0600 vs -0500 (which I'd expect), but my guess is that is due to DST calculations or something? I'm mainly looking for a decent approximation, but I can't figure out why mktime() is playing with DST? UPDATE: Found out that tzoffset() can be much more "stable" in terms of DST if you just manually force DST off. sub tzoffset { my $t = time(); my $utc = mktime(gmtime($t)); my @tmlocal = localtime($t); $tmlocal[8] = 0; # force dst off, timezone specific my $local = mktime(@tmlocal); return ($local - $utc); } This way, no matter if you're DST or not, it'll always return -0500 which is what you want from %z .

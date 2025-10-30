@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4052818
-[parent_id]: 4050568
-[tags]: 
-This kind of depends on what the trigger is for the import. If it's going to be scheduled every 10 minutes or something I would use either option 1 or create an SSIS package that will do the same thing as option 1. JNK is correct that it would be better to use a permanent table, it will avoid allocated issues and it will allow you to pick up the process from the middle if needed. In SSIS your workflow would look like this: truncate staging table create data flow task to import data from source to staging table, handle errors if needed call stored procedure to merge data Once the package is created you can schedule it through the SQL Agent. Make sure to create the package with the DontSaveSensitiveData option set on the package properties so you don't get strange encryption errors.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2942841
-[parent_id]: 
-[tags]: 
-How is a SendMessage from a different thread executed?
-
-When we send a message, " if the specified window was created by the calling thread, the window procedure is called immediately as a subroutine ". But " if the specified window was created by a different thread, the system switches to that thread and calls the appropriate window procedure. Messages sent between threads are processed only when the receiving thread executes message retrieval code. " (taken from MSDN documentation for SendMessage ). Now, I don't understand how (or, more appropriately, when ) the target windows procedure is called. Of course the target thread will not be preempted (the program counter is not changed). I presume that the call will happen during some wait function (like GetMessage or PeekMessage ), it is true? That process is documented in detail somewhere? Update: the rationale behind it is explained by the QS_SENDMESSAGE flag of GetQueueStatus() and MsgWaitForMultipleObjects() : QS_SENDMESSAGE A message sent by another thread or application is in the queue. This, along with additional remarks in MSDN documentation, means that a message sent by another thread is actually posted to the queue. Then, as soon as GetMessage or PeekMessage are called, it will be processed before any other posted message by being sent directly to the window procedure.

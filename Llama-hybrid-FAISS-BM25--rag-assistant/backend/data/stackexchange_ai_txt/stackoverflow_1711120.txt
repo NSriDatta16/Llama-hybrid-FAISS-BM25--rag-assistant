@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1711120
-[parent_id]: 1710875
-[tags]: 
-This way other objects won't have access to this object (e.g. ActionFilter). I do it like this: public interface IUserDataStorage { T Access { get; set; } } public class HttpUserDataStorage : IUserDataStorage where T : class { public T Access { get { return HttpContext.Current.Session[typeof(T).FullName] as T; } set { HttpContext.Current.Session[typeof(T).FullName] = value; } } } Then, I can either inject IUserDataStorage into controller's constructor, or use ServiceLocator.Current.GetInstance(typeof(IUserDataStorage )) inside ActionFilter. public class MyController: Controller { // automatically passed by IoC container public MyController(IUserDataStorage objectData) { } } Of course for cases when all controllers need this (e.g. ICurrentUser) you may want to use property injection instead.

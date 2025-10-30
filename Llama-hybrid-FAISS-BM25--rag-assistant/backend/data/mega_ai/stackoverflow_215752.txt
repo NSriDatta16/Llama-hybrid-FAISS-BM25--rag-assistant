@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 215752
-[parent_id]: 
-[tags]: 
-Python embedded in CPP: how to get data back to CPP
-
-While working on a C++ project, I was looking for a third party library for something that is not my core business. I found a really good library, doing exactly what's needed, but it is written in Python. I decided to experiment with embedding Python code in C++, using the Boost.Python library. The C++ code looks something like this: #include #include #include using namespace boost::python; int main(int, char **) { Py_Initialize(); try { object module((handle<>(borrowed(PyImport_AddModule("__main__"))))); object name_space = module.attr("__dict__"); object ignored = exec("from myModule import MyFunc\n" "MyFunc(\"some_arg\")\n", name_space); std::string res = extract (name_space["result"]); } catch (error_already_set) { PyErr_Print(); } Py_Finalize(); return 0; } A (very) simplified version of the Python code looks like this: import thirdparty def MyFunc(some_arg): result = thirdparty.go() print result Now the problem is this: 'MyFunc' executes fine, i can see the print of 'result'. What i cannot do is read 'result' back from the C++ code. The extract command never finds 'result' in any namespace. I tried defining 'result' as a global, i even tried returning a tuple, but i cannot get it to work.

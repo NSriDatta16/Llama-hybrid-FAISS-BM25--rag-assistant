@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 638654
-[parent_id]: 638634
-[tags]: 
-The most efficient way for the sake of retrieval is to add a column like is_latest which you need to populate in advance, then select * from table where file_id=1 and is_latest=true when you want to grab the latest version of file 1. Obviously this will make updating this table more complicated, however. Another way to do it would be to store the latest versions of the files in one table, and historical versions in another table. If you predominantly want to select all files that are the latest version, select * from table where is_latest=true could likely amount to a full table scan even if if is_latest is indexed. If the latest rows were all in one table the database can read them all out in sequential IO and not have to either 1) do a lot of seeks through the table to find just the records it needs or 2) scan the whole table discarding large amounts of data along the way for the old records. Assuming you don't want to change the existing table design, what you want to do is called selecting the groupwise maximum, see this article for several different ways to do it in mysql.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2804999
-[parent_id]: 2804964
-[tags]: 
-I have come up with the idea of using a pipe file descriptor that the parent could write and then read/flush in combination with select, but this doesn't really qualify as a very elegant design. In more detail: The parent would create a pipe, the subprocesses would inherit it, the parent process would write to the pipe, thereby waking up any subprocess select() :ing on the file descriptor, but the parent would then immediately read from the read end of the pipe and empty it - the only effect being that those child processes that were select() :ing on the pipe have woken up. As I said, this feels odd and ugly, but I haven't found anything really better yet. Edit: It turns out that this doesn't work - some child processes are woken up and some aren't. I've resorted to using a Condition from the multiprocessing module.

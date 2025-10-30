@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4140892
-[parent_id]: 
-[tags]: 
-Working with AsyncEnumerator
-
-I have been working with the AsyncEnumerator class to help clean up my async code. The problem is the code after the yield return never fires. The UI calls an object which calls the HttpWorker object when a button is clicked. No matter how much the button is clicked the code never goes past the yield return. public void ReadFromUrl(string Url) { AsyncEnumerator asyncEnum = new AsyncEnumerator(); asyncEnum.BeginExecute(GetData(asyncEnum,Url), asyncEnum.EndExecute); } private IEnumerator GetData(AsyncEnumerator AsyncEnum, String Url) { url = Url; request = (HttpWebRequest)WebRequest.Create(url); request.CookieContainer = new CookieContainer(); request.AllowAutoRedirect = true; request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6"; request.BeginGetResponse(AsyncEnum.End(), null); AsyncEnum.SyncContext = null; yield return 1; response = (HttpWebResponse)request.EndGetResponse(AsyncEnum.DequeueAsyncResult()); if (response.StatusCode == HttpStatusCode.OK) { // Create the stream, encoder and reader. Stream responseStream = response.GetResponseStream(); Encoding streamEncoder = Encoding.UTF8; StreamReader responseReader = new StreamReader(responseStream, streamEncoder); responseAsString = responseReader.ReadToEnd(); } else { throw new Exception(String.Format("Response Not Valid {0}", response.StatusCode)); } }

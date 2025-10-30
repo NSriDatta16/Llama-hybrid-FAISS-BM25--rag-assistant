@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4821491
-[parent_id]: 
-[tags]: 
-OpenMP: how to flush pointer target?
-
-I’ve just noticed that the following code doesn’t compile in OpenMP (under GCC 4.5.1): struct job { unsigned busy_children; }; job* j = allocateJob(…); // … #pragma omp flush(j->busy_children) The compiler complains about the -> in the argument list to flush, and according to the OpenMP specification it’s right: flush expects as arguments a list of “id-expression”s, which basically means only (qualified) IDs are allowed, no expressions. Furthermore, the spec says this about flush and pointers: If a pointer is present in the list, the pointer itself is flushed, not the memory block to which the pointer refers. Of course. However, since OpenMP also doesn’t allow me to dereference the pointers I basically cannot flush a pointee (pointer target). – So what about references? The spec doesn’t mention them but I’m not confident that the following is conformant, and will actually flush the pointee. unsigned& busy_children = j->busy_children; #pragma omp flush(busy_children) Is this guaranteed to work? If not, how can I flush a pointee?

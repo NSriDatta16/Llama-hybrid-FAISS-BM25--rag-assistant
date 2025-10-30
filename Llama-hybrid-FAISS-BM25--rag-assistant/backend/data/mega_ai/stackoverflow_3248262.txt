@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3248262
-[parent_id]: 3247962
-[tags]: 
-Here's another alternative approach you can look at. It's not as elegant as what you're trying to do using define_method but it's maybe worth looking at. Add a new method lazy_attr_reader to Class class Class def lazy_attr_reader(*vars) options = vars.last.is_a?(::Hash) ? vars.pop : {} # get the name of the method that will populate the attribute from options # default to 'get_things' init_method = options[:via] || 'get_things' vars.each do |var| class_eval("def #{var}; #{init_method} if !defined? @#{var}; @#{var}; end") end end end Then use it like this: class Test lazy_attr_reader :name, :via => "name_loader" def name_loader @name = "Bob" end end In action: irb(main):145:0> t = Test.new => # irb(main):146:0> t.name => "Bob"

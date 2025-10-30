@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2815665
-[parent_id]: 
-[tags]: 
-Cleaning up temp folder after long-running subprocess exits
-
-I have a Python script (running inside another application) which generates a bunch of temporary images. I then use subprocess to launch an application to view these. When the image-viewing process exists, I want to remove the temporary images. I can't do this from Python, as the Python process may have exited before the subprocess completes. I.e I cannot do the following: p = subprocess.Popen(["imgviewer", "/example/image1.jpg", "/example/image1.jpg"]) p.communicate() os.unlink("/example/image1.jpg") os.unlink("/example/image2.jpg") ..as this blocks the main thread, nor could I check for the pid exiting in a thread etc The only solution I can think of means I have to use shell=True , which I would rather avoid: import pipes import subprocess cmd = ['imgviewer'] cmd.append("/example/image2.jpg") for x in cleanup: cmd.extend(["&&", "rm", pipes.quote(x)]) cmdstr = " ".join(cmd) subprocess.Popen(cmdstr, shell = True) This works, but is hardly elegant.. Basically, I have a background subprocess, and want to remove the temp files when it exits, even if the Python process no longer exists.

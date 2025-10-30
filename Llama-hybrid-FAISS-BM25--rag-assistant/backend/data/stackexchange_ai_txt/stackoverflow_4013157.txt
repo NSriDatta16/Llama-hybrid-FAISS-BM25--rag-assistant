@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4013157
-[parent_id]: 
-[tags]: 
-QThread interaction with GUI
-
-I am developing image aquisition software. I want to run display function in a separate thread (to ensure live view for easy image capture). For now I am subclassing QObject, creating DisplayObject and using QThread::moveToThread function. Problem is that DisplayObject has to interact with GUI (images need to be displayed in QGraphicsView objects). What is the best (and the most elegant) way to do this? My current solution: class DisplayObject : public QObject { Q_OBJECT public: inline void addDetectorSystem(cci::PGR* system); inline void connectGui(ImageAquisition* gui); public slots: void display(); private: cci::PGR* camSystem; ImageAquisition* guiClass; }; DisplayObject is initialized as below: DisplayObject Displayer; Displayer.addDetectorSystem(PGRSystem); Displayer.connectGui(this); QThread thread; Displayer.moveToThread(&thread); connect(this, SIGNAL(display()), &Displayer, SLOT(display())); thread.start(); I forgot to admit, that it doesn't work...

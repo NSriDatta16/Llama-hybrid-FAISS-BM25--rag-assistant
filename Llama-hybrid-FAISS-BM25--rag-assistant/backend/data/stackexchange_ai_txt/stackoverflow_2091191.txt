@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2091191
-[parent_id]: 2090974
-[tags]: 
-The simple solution is to turn off building of your MyKernel.cu file. Properties -> General -> Excluded from build The better solution imo is to split your kernel into a cu and a cuh file, and include that, for example: //kernel.cu #include "kernel.cuh" #include __global__ void increment_by_one_kernel(int* vals) { vals[threadIdx.x] += 1; } void increment_by_one(int* a) { int* a_d; cudaMalloc(&a_d, 1); cudaMemcpy(a_d, a, 1, cudaMemcpyHostToDevice); increment_by_one_kernel >>(a_d); cudaMemcpy(a, a_d, 1, cudaMemcpyDeviceToHost); cudaFree(a_d); } //kernel.cuh #pragma once void increment_by_one(int* a); //main.cpp #include "kernel.cuh" int main() { int a[] = {1}; increment_by_one(a); return 0; }

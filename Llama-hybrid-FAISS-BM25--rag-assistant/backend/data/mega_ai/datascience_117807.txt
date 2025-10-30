@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 117807
-[parent_id]: 
-[tags]: 
-Bad performance with CNN for basic image classification task
-
-how are you doing? I'm playing around with CNN in FastAI. My model with 2 millions parameters only has around 80% accuracy. I also tried with Data normalization, Batch normalization, Label smoothing, Mixup but the results are still capped at 80-81% (they did converged faster with those techniques). I assumed bigger model would make better predictions so I increase the parameters (from 2 millions to 182 millions). However, the result is still at 82% after 40 epochs imagenette = DataBlock(blocks = (ImageBlock, CategoryBlock), get_items = get_image_files, get_y = parent_label, splitter = GrandparentSplitter(train_name='train', valid_name='val'), item_tfms = Resize(460), batch_tfms = aug_transforms(size=244) ) dls = imagenette.dataloaders(path) def conv_manual(ni, nf, ks=3, act=True): conv = nn.Conv2d(ni, nf, stride=2, kernel_size=ks, padding = ks//2) if act: conv = nn.Sequential( conv, nn.ReLU(), #nn.AvgPool2d(2,stride=2, padding=1), BatchNorm(nf) ) return conv test_cnn = sequential( conv_manual(3,8, ks=5), #122x122 conv_manual(8,64), #61x61 conv_manual(64,100), #31x31 conv_manual(100,250), #16x16 conv_manual(250,800), #8x8 conv_manual(800,3000), #4x4 conv_manual(3000, 6000), #2x2 conv_manual(6000,10, act=False), #1x1 Flatten(), ) test_model.fit_one_cycle(10, 0.00015) I hope you could give me some thoughts about it Thank you

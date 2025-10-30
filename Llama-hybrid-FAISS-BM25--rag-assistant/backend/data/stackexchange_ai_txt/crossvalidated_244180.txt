@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 244180
-[parent_id]: 8025
-[tags]: 
-When evaluating a classifier at high thresholds, the precision might (often actually) not be 1 when recall is 0. It's usually N/A! I think there is something wrong about how people plot the P/R curve. Avoiding N/A samples is a bias in the sense that you avoid singularity samples. I computed the average precision wrt to the average recall ignoring N/A samples and I never got a classifier starting at 1 for 0 recall for a shallow neural net in object detection. This was also true for curves computed with the tp,fp,fn numbers. It's quite easy to verify by paper and pencil with a single image. For example: I have a classifier that outputs for a single image: preds=[.7 .6 .5 .1 .05] truth=[n y n n y ] By computing the confusion matrices with the various thresholds we have: tp=[2 1 1 1 0 0],fn=[0 1 1 1 2 2],fp=[3 3 2 1 1 0]. the recall rec=[1 .5 .5 .5 0 0], and the precision=[.4 .25 1/3 .5 0 NaN]. I don't see how it would make sense to replace a NaN or the precision(@recall==0) with 1. 1 should be an upper bound, not a value we replace precision(@recall==0) with.

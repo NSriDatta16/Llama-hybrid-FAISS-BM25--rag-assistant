@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3447676
-[parent_id]: 3305500
-[tags]: 
-I haven't found a really satisfactory way of doing this, but one of these might work for you. I like the first technique better, but I'm annoyed that I haven't found a more elegant way of doing it. Make sure the node always exists first DECLARE @messageID int; SET @messageID=24; DECLARE @myDoc xml; SET @myDoc = ' msg msg '; SELECT @myDoc; SET @myDoc.modify(' insert if (count(//message[@messageId=sql:variable("@messageID")]) = 0) then new msg else() as last into (/usersettings)[1] '); SELECT @myDoc; --now do the rest, safe that the node exists Switching DECLARE @myDoc xml; SET @myDoc = ' msg msg '; SELECT @myDoc; DECLARE @messageID int; SET @messageID=23; IF @myDoc.exist('//message[@messageId=sql:variable("@messageID")]') = 1 BEGIN SET @myDoc.modify('replace value of (//message[@messageId=sql:variable("@messageID")]/text())[1] with "test"') END ELSE BEGIN SET @myDoc.modify('insert new msg into (/usersettings)[1]') END SELECT @myDoc;

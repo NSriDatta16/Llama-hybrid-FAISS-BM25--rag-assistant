@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1855543
-[parent_id]: 1855511
-[tags]: 
-friendly urls are nice, but you should always add the objects id as well, or store a unique string in the database. Check the urls here on stackoverflow, for example. EDIT I seriously doubt that google is ok with short numbers but dislikes long numbers. Here is a solution using numbers only where you must: Add another column holding the 'id' value of each test-video and create a unique index on that and titleurl: ALTER TABLE video ADD COLUMN titleurl_id UNSIGNED TINYINT NOT NULL; CREATE UNIQUE INDEX uidx_url ON video (titleurl, titleurl_id); When creating a video, you need to add that value: $amount = query("SELECT COUNT(*) FROM video WHERE titleurl='test'"); query("INSERT INTO video(titleurl, titleurl_id) VALUES ('test', $amount + 1)"); You will need to pay attention to the result of your insert query, you might run into race conditions if you do it this way (that's why ids are more convenient in the url). Creating a URL: $urlpart = query(" SELECT IF( titleurl_id = 0, titleurl, CONCAT_WS('-', titleurl, titleurl_id) ) AS url FROM video");

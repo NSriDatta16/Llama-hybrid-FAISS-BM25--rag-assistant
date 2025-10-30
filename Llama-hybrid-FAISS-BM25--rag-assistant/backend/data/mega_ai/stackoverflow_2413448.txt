@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2413448
-[parent_id]: 1319891
-[tags]: 
-Here's a clojure version: Because of the lazy-seq, it's perfectly general and won't blow stack (defn partialsums [start lst] (lazy-seq (if-let [lst (seq lst)] (cons start (partialsums (+ start (first lst)) (rest lst))) (list start)))) (defn sliding-window-moving-average [window lst] (map #(/ % window) (let [start (apply + (take window lst)) diffseq (map - (drop window lst) lst)] (partialsums start diffseq)))) ;; To help see what it's doing: (sliding-window-moving-average 5 '(1 2 3 4 5 6 7 8 9 10 11)) start = (+ 1 2 3 4 5) = 15 diffseq = - (6 7 8 9 10 11) (1 2 3 4 5 6 7 8 9 10 11) = (5 5 5 5 5 5) (partialsums 15 '(5 5 5 5 5 5) ) = (15 20 25 30 35 40 45) (map #(/ % 5) (20 25 30 35 40 45)) = (3 4 5 6 7 8 9) ;; Example (take 20 (sliding-window-moving-average 5 (iterate inc 0)))

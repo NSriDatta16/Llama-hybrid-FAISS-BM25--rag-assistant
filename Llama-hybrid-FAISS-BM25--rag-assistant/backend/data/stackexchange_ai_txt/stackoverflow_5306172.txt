@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5306172
-[parent_id]: 5302153
-[tags]: 
-I don't think the code is safe. After _structPtr = (MyStruct*)ptr which is within the fixed scope, you then go on to put data into _structPtr on the assumption that _struct2 won't move. Whilst you are correct that it won't be GCed, that doesn't mean that the GC won't move it during memory compaction. The .NET Compact Framework still garbage collects, and I assume it compacts memory rather than leaving it fragmented. If, for instance, a transient (non static) object allocated on the heap prior to _struct2 is removed by the GC then the memory in use by that struct may be shifted into the free space used by that transient object. At that point _structPtr is pointing to unused memory. Would modifying Test3() to take a ref MyStruct data help? Also, checkout [StructLayout(LayoutKind.Explicit)] and [FieldOffset(...)] which will allow you to have a single struct with multiple ways of accessing the same data within it. In your case either as 4 bytes or 1 int or (possibly) 1 array of 4 bytes.

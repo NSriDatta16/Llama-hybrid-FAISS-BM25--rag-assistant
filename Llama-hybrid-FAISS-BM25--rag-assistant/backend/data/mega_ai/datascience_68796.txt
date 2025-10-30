@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 68796
-[parent_id]: 
-[tags]: 
-preprocessing time sequence
-
-I have a long list of event (400 unique events, sequence ~10M long). I want to train an RNN to predict next event. The preprocessing steps i took are: (1) turning to OneHotEncoding using pandas: vector = pd.get_dummies(sr) This part takes about 15 seconds. (2) Using a sliding window of 10, i create samples and labels as follows; i iterate the vector from (1), i take Xt as the label and Xt:t-10 as the data. Code: X = np.zeros((len(samples), window_size, voc_len), dtype=np.bool) y = np.zeros((len(samples), voc_len), dtype=np.bool) if IN_COLAB: loading_bar = tqdm.tqdm_notebook(enumerate(samples),desc='Build dataset',total=len(samples)) else: loading_bar = tqdm.tqdm(enumerate(samples),desc='Build dataset',total=len(samples)) for numpy_index, pandas_idx in loading_bar: x_idx = (pandas_idx, pandas_idx + window_size) y_idx = pandas_idx + window_size Xt = vector.iloc[x_idx[0]:x_idx[1]] yt = vector.iloc[y_idx] X[numpy_index] = Xt y[numpy_index] = yt display(yt) The problem is that the seconds part is VERY slow (25 minutes). Is there a better way to do this? a built in function of some sort? Thx

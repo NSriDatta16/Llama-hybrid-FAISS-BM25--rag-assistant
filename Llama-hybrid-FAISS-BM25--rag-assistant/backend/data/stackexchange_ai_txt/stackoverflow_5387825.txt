@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5387825
-[parent_id]: 
-[tags]: 
-Are there real life cases when C4930 Visual C++ warning doesn't indicate an error?
-
-Visual C++ can emit C4930 "unused function prototype" warning in the following case: void SomeUsefulFunction() { SomeResourceLock lock(); //C4930 - unused function prototype //code requiring the above lock } in the above code the intention was to construct a stack-allocated RAII object: void SomeUsefulFunction() { SomeResourceLock lock; //okay //code requiring the above lock } but since the parentheses were typed variable definition turned into a function prototype and so no RAII object is constructed and there's no "lock" object and code behavior is changed. Also the warning is only triggered when an unused prototype is inside a function, not at class level. It seems pretty useless to have a function prototype inside a function and not call the prototyped function. Now I'm tempted to use pragma warning to make Visual C++ treat that particular warning as error. Are there any real life cases when C4930 doesn't accompany an error?

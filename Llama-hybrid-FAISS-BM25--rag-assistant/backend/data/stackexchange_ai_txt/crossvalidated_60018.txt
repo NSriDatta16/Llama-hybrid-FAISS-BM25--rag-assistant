@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 60018
-[parent_id]: 60015
-[tags]: 
-This is a very vague problem description, but I'm willing to bet the reason why the conditional probability and the logistic regression model give such different predictions is because you haven't coded pred as a factor. Instead, continuous values of pred impose a grouped linear structure on the linear predictor $\eta = \mbox{logit}(\mbox{Pr}(\mbox{Class}|\mbox{Cred}))$. I don't see any evidence that pred is coded as a factor in your data, hence if it takes on numeric values (1, 2, ..., 6), R will treat these as continuous values and base logistic regression predictions under the assumption of a continuous odds ratio comparing subsequent levels of pred . As a result, your fitted probabilities must conform to the S-shaped logistic function when plotting predicted probabilities against levels of pred . If you want to get the exact same values as your conditional probability, change your model syntax to: fit And you'll see that the predicted probabilities predict(fit, newdata=data.frame('factor(pred)'=factor(1:6))) Will match the conditional ones perfectly.

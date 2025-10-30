@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3514110
-[parent_id]: 3514030
-[tags]: 
-I would consider using a DateTime object instead of string so that you can derive the date/time representation on-the-fly, and not have to maintain two lists. For instance, your original parsing method could be changed to the following. List dates = new List (); foreach (DataRow rowMonth in myDS.Tables[0].Rows) { DateTime rowDate = DateTime.Parse(rowMonth[0]); dates.Add(rowDate); } Then to produce the two required lists, you can use linq as follows. // Converting to lists to demonstrate, though may not be required in your app. List years = dates.Select(d => d.Year).ToList(); List months = dates.Select(d => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(d.Month)).ToList(); Note this isn't exactly what you wanted as there are some small caveats. DateTime.Parse may need to be tailored with a format string if the date in the row isn't a well-known date format. GetMonthName() returns the full month name; you can hack a solution to take the first three characters of the string, but there is probably a more elegant solution.

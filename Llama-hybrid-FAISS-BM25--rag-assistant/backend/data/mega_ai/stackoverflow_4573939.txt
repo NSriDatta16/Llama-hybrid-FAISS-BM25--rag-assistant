@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4573939
-[parent_id]: 4573682
-[tags]: 
-You need much less "&"s. Assuming pcap_t *handle = pcap_open_live(...); using &handle will be of type pcap_t ** , but your thread function casts it back (the cast by the way is also pointless/redundant) to pcap_t * , which leads to undefined behavior when using it, and is usually going to go wrong. Better: static void *pcap_looper(void *arg) { pcap_t *handle = arg; /* etc. */ return NULL; } int main(void) { pcap_t *handle; pthread_t tid; int ret; handle = pcap_open_live(...); ret = pthread_create(&tid, NULL, pcap_looper, handle); ... pthread_join(tid, NULL); return EXIT_SUCCESS; }

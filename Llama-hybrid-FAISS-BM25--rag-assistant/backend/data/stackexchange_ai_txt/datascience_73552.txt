@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 73552
-[parent_id]: 
-[tags]: 
-Sequentially Training Certain Layers/Sub-Networks in Keras Functional API
-
-Suppose we have a stacked neural network architecture with a layer that is to be shared between two "sub-networks". Example: from keras.layers import Input, Dense from keras.models import Model main_input = Input(shape=(5, )) ## Model A: main_input -> A_output layer_A1 = Dense(10, name='A1')(main_input) layer_A2 = Dense(10, name='A2')(layer_A1) layer_A3 = Dense(10, name='A3')(layer_A2) A_output = Dense(1, name='A_output')(layer_A3) ## Model B: main_input -> layer_A2 -> B_output layer_B1 = Dense(10, name='B1')(layer_A2) B_output = Dense(1, name='B_output')(layer_B1) model = Model(inputs=main_input, outputs=[A_output, B_output], ) model.compile(optimizer='adam', loss={ 'A_output':'mean_squared_error', 'B_output':'mean_squared_error' }, ) The goal is to train model A first so that model B can learn from the pre-trained weights of Layer A2. However calling fit in the current architecture will train both simultaneously and sum up the losses. How can I change the architecture so that model A is trained first without creating separate models? Ultimately, I'll need to call model.predict(new_sample) where new_sample is of shape (5,) in the example.

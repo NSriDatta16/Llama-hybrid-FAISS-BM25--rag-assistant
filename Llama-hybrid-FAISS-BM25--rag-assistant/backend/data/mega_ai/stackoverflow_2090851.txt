@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2090851
-[parent_id]: 
-[tags]: 
-Rails + Ruby 1.9 "invalid byte squence in US-ASCII"
-
-After upgrading to ruby 1.9 we began to notice pages failing to render from the rails template renderer when a user used a non-ASCII character. Specifically "é". I was able to resolve this issue on one of our staging servers, but I have not been able to reproduce the fix on our production server. The fix that seemed to work the first time: Converted the database from latin1 to utf8 using the convert_charset tool available here: http://www.mysqlperformanceblog.com/2009/03/17/converting-character-sets/ . (including setting default_character_set=utf8 in my.cnf and running SET GLOBAL character_set_server=utf8 Switched to the sam-mysql-ruby adapter (instead of the standard mysql adapter: http://gemcutter.org/gems/sam-mysql-ruby ) Restarted rails The error is: "invalid byte sequence in US-ASCII" Oddly, after following the steps above the error has not changed on our production server. Setting encoding: utf8 in database.yml does not change the error either. The error raised on the following line of code: This blog seems to suggest a fix, but it mentions that this should not be a problem in 1.9: http://www.igvita.com/2007/04/11/secure-utf-8-input-in-rails/ (and it's over 2 years old). I imagine this problem might soon affect a lot of people as more rails developers people switch to 1.9.

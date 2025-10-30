@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4836655
-[parent_id]: 4836591
-[tags]: 
-.NET has a compating garbage collector, so you probably won't run into fragmentation problems on the normal .NET heap. You can however get memory fragmentation if you're using lots of unmanaged memory (e.g. through GDI+, COM, etc.). Also, the large object heap isn't compacted, so that can get fragmented, too. IIRC an object is put into the LOH if it's bigger than 80kb. So if you have many collections that contain more than 20k objects, you might get fragmentation problems. But instead of guessing where the problem might be, it might be better to narrow the problem down some more: When do you get the OutOfMemoryExceptions? How much memory is the application using at that time? Using a tool like WinDbg or memory profilers you should be able to find out how much of that memory is on the LOH. That said, it's always a good idea to set the capacity of List and other data structures in advance if you know it. Otherwise, the List will double it's capacity everytime you add an item and hit the capacity limit which means lots of unnecessary allocation and copy operations.

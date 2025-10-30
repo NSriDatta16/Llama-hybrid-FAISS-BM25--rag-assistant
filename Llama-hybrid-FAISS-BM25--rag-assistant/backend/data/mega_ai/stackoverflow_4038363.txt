@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4038363
-[parent_id]: 221611
-[tags]: 
-Taking the resources in this post along with information taken left and right from different sources, I came with this elegant solution, create the following abstract class import java.util.Date; import javax.persistence.Column; import javax.persistence.MappedSuperclass; import javax.persistence.PrePersist; import javax.persistence.PreUpdate; import javax.persistence.Temporal; import javax.persistence.TemporalType; @MappedSuperclass public abstract class AbstractTimestampEntity { @Temporal(TemporalType.TIMESTAMP) @Column(name = "created", nullable = false) private Date created; @Temporal(TemporalType.TIMESTAMP) @Column(name = "updated", nullable = false) private Date updated; @PrePersist protected void onCreate() { updated = created = new Date(); } @PreUpdate protected void onUpdate() { updated = new Date(); } } and have all your entities extend it, for instance: @Entity @Table(name = "campaign") public class Campaign extends AbstractTimestampEntity implements Serializable { ... }

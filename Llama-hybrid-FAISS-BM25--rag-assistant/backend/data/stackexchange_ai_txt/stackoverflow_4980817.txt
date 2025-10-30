@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4980817
-[parent_id]: 
-[tags]: 
-State Machine Pattern in Haskell : infinite type error
-
-I was trying to implement a state machine in Haskell. A simplified version is the following: In any state, you can feed the machine an integer and you get back an integer. In state A, the machine doubles its inputs. In state B, the machine just gives you back your input. Whenever you see a zero in either state, change to the other state. Otherwise, the state does not change. Here's the my approach: just have each state be a function which returns both its output and the function corresponding to the other state. module Main where a x | x == 0 = (0,b) a x = (2*x, a) b x | x == 0 = (0,a) b x = (x, b) evalstate s [] = [] evalstate s (x:xs) = (v:evalstate s' xs) where (v,s') = s x main :: IO () main = putStrLn $ show $ evalstate a [1,1,2,3,4,0,2,3,3] Unfortunately, the types for a and b are infinite and GHC complains: Occurs check: cannot construct the infinite type: t = t1 -> (t2, t) What is the way to express this pattern in Haskell? I could of course do something like: s 'a' x | x == 0 = (0,'b') using character codes for the state, but the function pattern seems more elegant.

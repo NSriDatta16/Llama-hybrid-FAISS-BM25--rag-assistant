@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 640534
-[parent_id]: 640389
-[tags]: 
-I took a look at the source, and although the variable set when -i is provided is stored in Py_InteractiveFlag, it doesn't look like it gets exposed to python. However, if you don't mind getting your hands a bit dirty with some low-level ctypes inspecting, I think you can get at the value by: import ctypes, os def interactive_inspect_mode(): flagPtr = ctypes.cast(ctypes.pythonapi.Py_InteractiveFlag, ctypes.POINTER(ctypes.c_int)) return flagPtr.contents.value > 0 or bool(os.environ.get("PYTHONINSPECT",False)) [Edit] fix typo and also check PYTHONINSPECT (which doesn't set the variable), as pointed out in comments.

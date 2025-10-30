@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4128582
-[parent_id]: 
-[tags]: 
-Why does update not work with an inner join?
-
-Here's a simplified version of my table. CREATE TABLE TBLAGENT(AGENTID NUMBER, NUMBERSENT NUMBER, AGENTNAME VARCHAR2(100)); INSERT INTO TBLAGENT VALUES(100,NULL,'KNIGHT'); INSERT INTO TBLAGENT VALUES(200,NULL,'SUPES'); INSERT INTO TBLAGENT VALUES(300,NULL,'SPIDEY'); CREATE TABLE TBLSERVICES(AGENTID NUMBER, SERVICES NUMBER); INSERT INTO TBLSERVICES VALUES(100,44); INSERT INTO TBLSERVICES VALUES(200,13); INSERT INTO TBLSERVICES VALUES(300,24); INSERT INTO TBLSERVICES VALUES(100,34); INSERT INTO TBLSERVICES VALUES(200,13); INSERT INTO TBLSERVICES VALUES(300,24); SELECT TA.AGENTID, SUM(SERVICES), TA.AGENTNAME, TA.NUMBERSENT FROM TBLAGENT TA, TBLSERVICES TS WHERE TA.AGENTID = TS.AGENTID GROUP BY TA.AGENTID, TA.AGENTNAME, TA.NUMBERSENT The requirement is to update the NUMBERSENT column in the tblAgent table with the SUM(Services) from tblServices table. I came up with this update statement. /*Works*/ UPDATE tblagent t SET t.numbersent = (SELECT SUM(services) FROM tblservices x WHERE t.agentid = x.agentid GROUP BY x.agentid) When I change the syntax of this statement to INNER JOIN syntax, it fails. /*Throws an error*/ UPDATE tblagent t SET t.numbersent = (SELECT SUM(services) FROM tblservices x INNER JOIN tblAgent t ON t.agentid = x.agentid GROUP BY x.agentid) This throws up an error ORA-01427: single-row subquery returns more than one row Why would the second statement throw an error?

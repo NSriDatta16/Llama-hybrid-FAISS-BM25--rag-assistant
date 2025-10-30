@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 162739
-[parent_id]: 161009
-[tags]: 
-I would keep a running average of the ratio of the classes, then plot them as bands in a band plot. %let no2avg = 50; %let noObs = 3E4; data myRand (keep= i class); do i = 1 to &noObs.; uni = 5 * ranuni(0) - 2.5; if uni GT sin (i/320) + 1 then class = 3; else if uni GT sin (i/450) - 1 then class = 2; else class = 1; output; end; run; data myRunning; set myRand; array classes{0:%eval(&no2avg.-1)} _temporary_; array sum{3} _temporary_ (0,0,0); sum(class) = sum(class) + 1; if _N_ GT &no2avg. then do; old = classes{mod(_N_, &no2avg.)}; sum(old) = sum(old) - 1; class_1 = sum{1} / &no2avg.; class_2 = sum{2} / &no2avg. + class_1; end; else do; class_1 = sum{1} / _N_; class_2 = sum{2} / _N_ + class_1; end; output; classes{mod(_N_, &no2avg.)}=class; run; proc sgplot data=myRunning ; band x=i lower=0 upper=class_1 / fillattrs=graphdata1 name='class 1' ; band x=i lower=class_1 upper=class_2 / fillattrs=graphdata2 name='class 2' ; band x=i lower=class_2 upper=1 / fillattrs=graphdata3 name='class 3' ; run;

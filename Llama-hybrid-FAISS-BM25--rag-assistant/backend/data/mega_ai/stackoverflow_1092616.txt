@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1092616
-[parent_id]: 1059452
-[tags]: 
-This is a total shot in the dark, but you can have tasks blow up like this at startup if they are trying to allocate too much local memory on the stack. Your main program can safely use the system stack, but tasks have to have their stack allocated at startup from dynamic memory, so typcially your runtime has a default stack size for tasks. If your task tries to allocate a large array, it can easily blow past that limit. I've had it happen to me before. There are multiple ways to fix this. One way is to move all your task-local data into package global areas. Another is to dynamically allocate it all. If you can figure out how much memory would be enough, you have a couple more options. You can make the task a task type, and then use a for My_Task_Type_Name'Storage_Size use Some_Huge_Number; statement. You can also use a "pragma Storage_Size(My_Task_Type_Name)", but I think the "for" statement is preferred. Lastly, with Gnat you can also change the default task stack size with the -d flag to gnatbind.

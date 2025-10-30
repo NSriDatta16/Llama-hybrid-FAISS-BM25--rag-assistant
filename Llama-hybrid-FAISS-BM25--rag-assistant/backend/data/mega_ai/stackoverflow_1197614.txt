@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1197614
-[parent_id]: 1197442
-[tags]: 
-With careful use of dateadd and datediff, this can be accomplished. My solution rounds the times down. The first piece calculates the number of minutes between the row's date and the epoch (0) and does a mod 15 on it, giving the difference between the row's date and the closest 15 minute interval: select -1 * datediff(minute, 0, mydate) % 15 from mytable Next, we need to deal with just the minutes, so we use this date-part stripping technique I learned from SQL Server Magazine February 2007 (Datetime Calculations by Itzik Ben-Gan): select dateadd(minute, datediff(minute, 0, mydate), 0) from mytable Then, we add the difference to the row's date column and group and count and voila! select dateadd(minute, -1 * datediff(minute, 0, mydate) % 15, dateadd(minute, datediff(minute, 0, mydate), 0)), count(ID) from mytable group by dateadd(minute, -1 * datediff(minute, 0, mydate) % 15, dateadd(minute, datediff(minute, 0, mydate), 0))

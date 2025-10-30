@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3921483
-[parent_id]: 3921302
-[tags]: 
-Before everything I would organize them differently. Is not the plan_types that should have a plan.id. This is not logical. You hava a table with plan_types which has an plan.id and a plan.name and the relation is in the plan table through the plan.type_id. This dependencies are solved this way: class Payment_Plan extends Zend_Db_Table_Abstract { protected $_name = 'plan'; protected $_referenceMap = array( 'Plan' => array( 'columns' => 'plan_id', 'refTableClass' => 'Plan', 'refColumns' => 'id' ) } class Plan_Type extends Zend_Db_Table_Abstract { protected $_name = 'plan_types'; protected $_dependentTables = array('Plan_Type'); } Later you can have in the PlanRow Class a function : public function type() { return $this->findParentRow('Plan_Type'); } and for getting all the plans of type x in the Plan_type row class public function entries() { return $row->findDependentRowset('Plan'); }

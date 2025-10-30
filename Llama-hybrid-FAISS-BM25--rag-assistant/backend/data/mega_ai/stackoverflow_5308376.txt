@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5308376
-[parent_id]: 5308208
-[tags]: 
-You could use the BeginExecuteNonQuery or other asynchronous methods or you could create a SQL job that will run your SP(s) and then just call the regular synchronous ExecuteNonQuery to fire off the job. It will return immediately, since starting a job is quick. Then the job runs and you can "forget" about it. Here's some fire and forget code for the SQL agent job approach. string sql = "EXEC dbo.sp_start_job 'THE NAME OF YOUR JOB'"; And then just execute that on the database. It should return immediately. It will return a 0 if it was successful, and a 1 if unsuccessful. See here . You can't pass a parameter to the job. So if you need to, you could create a table that would hold the parameters you want to pass. Then you would need to update the table with the parameters you want your SP to use before you call the sp_start_job SP. Then you would also need your SP to look in that table and see what parameters to use. It's pretty easy. That's about it. Fire and forget.

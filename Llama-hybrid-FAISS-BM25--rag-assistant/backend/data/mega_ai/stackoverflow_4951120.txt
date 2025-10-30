@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4951120
-[parent_id]: 4930031
-[tags]: 
-Honestly, I find it easier to just use "private" read-write properties and not fuss with the ivars at all: MyClass.h @interface MyClass : NSObject @property (nonatomic, copy, readonly) NSArray * someArray; // Public @end MyClass.m @interface MyClass () // Class extension @property (nonatomic, copy, readwrite) NSArray * someArray; // "Private" @end @implementation MyClass @synthesize someArray = someArray_; - (id)init { self = [super init]; if (self != nil) { self.someArray = ...; // Array initialization } return self; } - (void)dealloc { [someArray_ release]; [super dealloc]; } @end No ivars needed! The modern runtime will automatically synthesize them. Your property is read-only from the outside (i.e., other classes), but internally, you've redeclared the property as read-write, so you can leverage the convenience of synthesized property accessors. (Of course, I still declare an explicit ivar synthesis—in this example, someArray_ — for use in -dealloc as there are good reasons not to use properties in -dealloc and possibly in -init .)

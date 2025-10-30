@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 340054
-[parent_id]: 
-[tags]: 
-Scaling control time series with CausalImpact
-
-I'm doing Causal Impact analytics with this python package . Since my control time series have a much larger scale (100-10000 times larger) than my modeled variable, at some point I tried to scale the control variables. This had a huge effect on my result and sometimes even changed a statistically significant positive result into a negative one. Should the time series be normalized before using this package? Or is there something else that I'm doing wrong? Here is a contained example where changing the scale radically changes the error estimates: import numpy as np import pandas as pd from statsmodels.tsa.arima_process import arma_generate_sample from causal_impact.causal_impact import CausalImpact np.random.seed(1) x1 = arma_generate_sample(ar=[0.999], ma=[0.9], nsample=100) + 100 y = 1.2 * x1 + np.random.randn(100) intervention = 70 y[intervention:] = y[intervention:] + 10 data = pd.DataFrame(np.array([y, x1]).T, columns=["y","x1"]) ci = CausalImpact(data, intervention) ci.run() ci.plot() data.x1 = data.x1*10000 ci = CausalImpact(data, intervention) ci.run() ci.plot()

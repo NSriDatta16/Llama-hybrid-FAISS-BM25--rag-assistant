@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2237209
-[parent_id]: 2237159
-[tags]: 
-Try this: SELECT AVG(DATEDIFF(s, M2.Date_Posted, M1.Date_Posted)) as AverageSeconds FROM Messages M1 INNER JOIN Messages M2 ON M1.Id = M2.Id+1 Sorry this is MS-SQL solution not mySQL - apologies only just realised that is what you were after. This may be of use to someone else. In response to comment below - in SQL Server 2005 or 2008 - the following would be a better solution because it makes no assumption about sequential or in-fact integer Primary Keys as it uses Row_Number to generate a unique, sequential key: SELECT AVG(DATEDIFF(s, M2.Date_Posted, M1.Date_Posted)) as AverageSeconds FROM (SELECT ROW_NUMBER() OVER(ORDER BY Date_Posted ASC) as Id, Date_Posted FROM Messages) M1 INNER JOIN (SELECT ROW_NUMBER() OVER(ORDER BY Date_Posted ASC) as Id, Date_Posted FROM Messages) M2 ON M1.Id = M2.Id+1

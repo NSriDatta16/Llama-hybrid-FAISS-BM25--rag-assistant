@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2704704
-[parent_id]: 
-[tags]: 
-Moving inserted container element if possible
-
-I'm trying to achieve the following optimization in my container library: when inserting an lvalue-referenced element, copy it to internal storage; but when inserting rvalue-referenced element, move it if supported. The optimization is supposed to be useful e.g. if contained element type is something like std::vector , where moving if possible would give substantial speedup. However, so far I was unable to devise any working scheme for this. My container is quite complicated, so I can't just duplicate insert() code several times: it is large. I want to keep all "real" code in some inner helper, say do_insert() (may be templated) and various insert() -like functions would just call that with different arguments. My best bet code for this (a prototype, of course, without doing anything real): #include #include struct element { element () { }; element (element&&) { std::cerr void do_insert (Arg arg) { element x (arg); } }; int main () { { // Shouldn't move. container c; element x; c.insert (x); } { // Should move. container c; c.insert (element ()); } } However, this doesn't work at least with GCC 4.4 and 4.5: it never prints "moving" on stderr. Or is what I want impossible to achieve and that's why emplace() -like functions exist in the first place?

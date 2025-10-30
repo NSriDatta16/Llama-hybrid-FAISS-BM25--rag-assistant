@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 117976
-[parent_id]: 117974
-[tags]: 
-MAE is an odd loss function for GBMs: the gradient is constant ( $\pm1$ ), and the hessian all zeros, so the usual tree-training target of $-G/H$ (possibly with additional terms for regularization) doesn't work. Monotone constraints are implemented by rejecting splits that would produce node values (a.k.a. "weights" or "scores", the average target value among observations at that node) that would violate the specified directionality; see this blog post for details. In LightGBM, MAE is handled by overriding the leaf scores at the end (see this comment on their github). But that means those adjusted scores are not available during tree construction, and so the monotone constraint requirements cannot be checked. They could probably add this alternative score calculation throughout; I'm not sure offhand if it would preserve monotonicity, but it even if so, it would be some effort for the PR, and increased training time.

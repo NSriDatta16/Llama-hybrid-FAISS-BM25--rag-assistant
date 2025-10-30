@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1884584
-[parent_id]: 
-[tags]: 
-Registering multiple Perl sub references for a C library in XS
-
-Both perlcall (in the "Strategies for storing Callback Context Information" section) and Extending and Embedding Perl (in the "Callback" section) lists 3 different ways to handle calling Perl sub routines from XS/C: Immediately: XS calls Deferred: saving the sub ref as an SV* for later Multiple: save n sub refs for later The example and details listed for #3 above use a hash in XS to associate the sub ref with a particular C function, but they predefine a fixed number of C functions which is not adequate. I'm working on an XS interface to a C library that uses callbacks/function pointers with optional arguments e.g.: blah(custom_type *o, void (*func) (void *data, int more_data), const void * data); The C blah in this library will end up calling the function passed to it along with the data passed in. If possible, I'd like to do a 1-to-1 mapping of the C API to the Perl one. e.g. blah($o, \&func, $data); Currently, I have #2 above, but another call to blah() would overwrite the saved SV *. How would I implement #3 above?

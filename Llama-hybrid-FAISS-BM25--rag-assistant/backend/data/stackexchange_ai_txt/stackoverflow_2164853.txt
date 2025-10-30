@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2164853
-[parent_id]: 2164827
-[tags]: 
-__attribute__((visibility("default"))) And there is no equivalent of __declspec(dllimport) to my knowledge. #if defined(_MSC_VER) // Microsoft #define EXPORT __declspec(dllexport) #define IMPORT __declspec(dllimport) #elif defined(__GNUC__) // GCC #define EXPORT __attribute__((visibility("default"))) #define IMPORT #else // do nothing and hope for the best? #define EXPORT #define IMPORT #pragma warning Unknown dynamic link import/export semantics. #endif Typical usage is to define a symbol like MY_LIB_PUBLIC conditionally define it as either EXPORT or IMPORT , based on if the library is currently being compiled or not: #if MY_LIB_COMPILING # define MY_LIB_PUBLIC EXPORT #else # define MY_LIB_PUBLIC IMPORT #endif To use this, you mark your functions and classes like this: MY_LIB_PUBLIC void foo(); class MY_LIB_PUBLIC some_type { // ... };

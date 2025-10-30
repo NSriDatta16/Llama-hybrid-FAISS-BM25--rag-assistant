@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2811926
-[parent_id]: 2810774
-[tags]: 
-How to copy files from local machine to server using SSH file transfer protocol? Use scp . I want to do it in a cron job. The main issue with using scp in a cron job is this: where do you get your credentials? Putting your password in the clear is not a good idea. A better idea is to have an ssh-agent process running on your machine. To find an appropriate ssh-agent you can run this script: #!/bin/sh for i in $SSH_AUTH_SOCK /tmp/ssh*/agent* do if [ -r "$i" -a -w "$i" ]; then case `SSH_AUTH_SOCK="$i" ssh-add -l` in *:*:*) echo "$i"; exit 0 ;; esac fi done exit 1 If the script succeeds, you get a value you can put into the SSH_AUTH_SOCK environment variable before running scp . When you bring up the client, you should present your credentials by launching ssh-agent and running ssh-add .

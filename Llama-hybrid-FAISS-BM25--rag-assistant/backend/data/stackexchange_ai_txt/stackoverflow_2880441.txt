@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2880441
-[parent_id]: 2880248
-[tags]: 
-I think that there are no guarantees that the layout of the string as referenced by &output[0] is contiguous and that you can write to it. Use std::vector instead as a buffer which is guaranteed to have contiguous storage since C++03. using namespace std; string formatStdString(const string &format, ...) { va_list va; vector output(1); // ensure some storage is allocated size_t needed; size_t used; va_start(va, format); needed = vsnprintf(&output[0], 0, format.c_str(), va); output.resize(needed); // don't need null terminator va_end(va); // Here we should ensure that needed != 0 va_start(va, format); used = vsnprintf(&output[0], output.size(), format.c_str(), va); // use size() // assert(used == needed); va_end(va); return string(output.begin(), output.end()); } NOTE: You'll have to set an initial size to the vector as the statement &output[0] can otherwise attempt to reference a non-existing item (as the internal buffer might not have been allocated yet).

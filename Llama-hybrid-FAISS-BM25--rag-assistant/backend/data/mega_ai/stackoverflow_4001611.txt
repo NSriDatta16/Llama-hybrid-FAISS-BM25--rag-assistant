@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4001611
-[parent_id]: 
-[tags]: 
-Yield and freeing Memory
-
-I have WCF web service that I use to send images from my Windows Mobile client app to my server. When I try to send the images I can't load all of them from my database at the same time or I will get an out of memory exception. So I am thinking I will call my web service with batches of 10 or so. What I want to know is, if I set up an IEnumerable and yield the images from the database 1 at a time, will the memory be freed after each batch is sent? I know relying on the Garbage Collector for speedy cleanup is usually a bad idea. So I am hesitant do do this (and hence the reason I am asking). The only other option I can see is to make a call to the database to get the data in sets of 10 (seems inelegant, but I may have to do that). Let me summarize with an example. Say I have the following code. When will the item returned by the yield (MyYieldingEnumerable) have its memory free (or at least available for garbage collection)? public void SendImages() { List itemsToSend = new List (); int count = 0; foreach (ImageItem curImageItem in MyYieldingEnumerable()) { itemsToSend.Add(curImageItem); count++; if (count >= 10) { myService.SendItems(itemsToSend); // #1 When the last reference to it is removed // | // v itemsToSend = new List (); count = 0; } } // Will they be in memory in 10 item batches or will they all end up in memory at the same time?

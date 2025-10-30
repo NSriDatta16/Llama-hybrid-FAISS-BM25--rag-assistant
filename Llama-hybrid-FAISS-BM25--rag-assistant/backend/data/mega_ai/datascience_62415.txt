@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 62415
-[parent_id]: 
-[tags]: 
-How can I increase my accuracy avoiding overfitting? CNN-Keras-VGG16
-
-As I asked in this question: Why are my predictions bad, if my accuracy in train is roughly 100% (Keras CNN) , my problem was Overfitting, so, I reduce the number of layers, and now I have this model: vgg16_model = VGG16(weights="imagenet", include_top=True) # (2) remove the top layer base_model = Model(input=vgg16_model.input, output=vgg16_model.get_layer("block5_pool").output) # (3) attach a new top layer base_out = base_model.output base_out = Reshape((25088,))(base_out) # output layer: (None, 5) top_preds = Dense(1, activation="sigmoid")(base_out) # (4) freeze weights until the last but one convolution layer (block4_pool) for layer in base_model.layers[0:14]: layer.trainable = False # (5) create new hybrid model model = Model(input=base_model.input, output=top_preds) # (6) compile and train the model sgd = SGD(lr=1e-4, momentum=0.9) model.compile(optimizer=sgd, loss="binary_crossentropy", metrics=["accuracy"]) But, when I predict some images, the class 0 accuracy is roughly 96%, but the accuracy of class 1 is roughly 58%. So how can I increase the accuracy without overfitting. I've trained my model with 700 images each class and to test I have 50 images each class.

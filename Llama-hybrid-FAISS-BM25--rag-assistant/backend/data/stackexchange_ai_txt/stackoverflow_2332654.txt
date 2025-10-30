@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2332654
-[parent_id]: 2331904
-[tags]: 
-As Mitch Wheat suggests is his comment, probably the best way to improve the performance of this query is to use a numbers table in place of the recursive CTE used to generate the list of dates. If you can't or won't use a numbers table, the performance of the date range CTE can be improved for large ranges using a method suggested by Itzik Ben-Gan: DECLARE @t TABLE(startdate DATETIME , enddate DATETIME) INSERT INTO @t SELECT '8/01/2009','08/31/2009' UNION ALL SELECT '2/01/1900','02/28/1900' UNION ALL SELECT '10/01/1959','10/31/1959' DECLARE @n INT SET @n = DATEDIFF(dd,'19000201','20090831') + 1 ;WITH base AS ( SELECT 1 AS n UNION ALL SELECT n+1 FROM base WHERE n Whilst the execution plan shows this version to be slightly less efficient than the original (=~ 1%), measuring with SET STATISTICS TIME on my system shows both the elapsed and CPU time for this version to be less than half that of yours.

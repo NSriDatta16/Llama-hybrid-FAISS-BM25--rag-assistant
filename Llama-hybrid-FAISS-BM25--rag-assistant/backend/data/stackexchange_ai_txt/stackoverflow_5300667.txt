@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5300667
-[parent_id]: 
-[tags]: 
-localStorage doesn't persist when the app is quit from memory (Phonegap)
-
-I seem to have an issue with localStorage and Phonegap. From what I understand mobile safari should keep localstorage regardless if that app is in memory or not. For some reason when I clear my app from memory and restart it, the localstorage cache is gone (I can confirm that it is actually setting the data though). Any ideas? EDIT: Figured it out. It's not an issue with localStorage at all. Store does persist when the app is quit. The problem was due to the Phonegap network callback happening after jQuery's document ready. This is what I did to fix it: function onDeviceReady() { navigator.network.isReachable("google.com", reachableCallback, {}); } // Check network status function reachableCallback(reachability) { // There is no consistency on the format of reachability var networkState = reachability.code || reachability; var states = {}; states[NetworkStatus.NOT_REACHABLE] = 'No network connection'; states[NetworkStatus.REACHABLE_VIA_CARRIER_DATA_NETWORK] = 'Carrier data connection'; states[NetworkStatus.REACHABLE_VIA_WIFI_NETWORK] = 'WiFi connection'; if (networkState != 0) online = true; } ////////// Checking navigator.onLine before document ready is key /////////// var online = navigator.onLine || false; $(document).ready(function() { $(document).bind('deviceready', function(){ onDeviceReady() }) })

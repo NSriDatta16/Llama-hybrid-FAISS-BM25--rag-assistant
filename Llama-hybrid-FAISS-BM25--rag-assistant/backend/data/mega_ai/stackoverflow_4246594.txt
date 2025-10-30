@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4246594
-[parent_id]: 4246281
-[tags]: 
-I fail to see why a stream would throw. Don't you have a dump of the failed process? Or perhaps attach a debugger to it to see what the allocator is trying to allocate? But if you did overload the operator , then perhaps your code does have a bug. Just my 2 (euro) cts... 1. Fragmentation ? The memory could be fragmented. At one moment, you try to allocate SIZE bytes, but the allocator finds no contiguous chunk of SIZE bytes in memory, and then throw a bad_alloc. Note: This answer was written before I read this possibility was ruled out. 2. signed vs. unsigned ? Another possibility would be the use of a signed value for the size to be allocated: char * p = new char[i] ; If the value of i is negative (e.g. -1), the cast into the unsigned integral size_t will make it go beyond what is available to the memory allocator. As the use of signed integral is quite common in user code, if only to be used as a negative value for an invalid value (e.g. -1 for a failed search), this is a possibility.

@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 148285
-[parent_id]: 148275
-[tags]: 
-I think you could use the rle function to detect particular sequences x = c(+1,+1,-1,-1,+1) (t = rle(x)) rle computes the lengths and values of runs of equal values in a vector: > (t = rle(x)) Run Length Encoding lengths: int [1:4] 2 2 1 2 values : num [1:4] 1 -1 1 -1 Hence, you can organize such an output in the following way: sequence = data.frame(lenght = t$lengths, value = t$values) sequence and then add a column to your original data frame with elements equal to 1 if in the sequence there are subsequent -1, and 0 otherwise. newColumn = 0 # here a scalar coz I have only one sequence! if (sequence$length[sequence$value == -1] > 1) { newColumn = 1 } newColumn Now you can apply a logistic regression (or whatever) to see the effect of subsequent -1s on the active state. I hope this can help.

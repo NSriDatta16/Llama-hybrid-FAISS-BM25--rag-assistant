@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1417131
-[parent_id]: 1414264
-[tags]: 
-I ended up using an alternate solution that worked quite well. It uses this new class... public class PartBuilder { private List Parts; /// /// Gets a dot delimited string representing the parts /// public string Value { get { return string.Join(".", this.Parts.ToArray()); } } /// /// Creates a new PartBuilder /// private PartBuilder() { this.Parts = new List (); } /// /// Creates a new PartBuilder /// public static PartBuilder Create() { return new PartBuilder(); } /// /// Gets a property name from an expression /// public PartBuilder AddPart (Expression > expression) { PropertyInfo prop = (PropertyInfo)((MemberExpression)(expression.Body)).Member; this.Parts.Add(prop.Name); return this; } } Now that I have this new class, I can do this... string typeHierarchy = PartBuilder.Create() .AddPart((Parent p) => p.Children) .AddPart((Child pp) => pp.GrandChildren) .Value; The variable "typeHierarchy" now has the value of "Children.GrandChildren". It's not as elegant as I would have hoped, but it's type safe and easy to use.

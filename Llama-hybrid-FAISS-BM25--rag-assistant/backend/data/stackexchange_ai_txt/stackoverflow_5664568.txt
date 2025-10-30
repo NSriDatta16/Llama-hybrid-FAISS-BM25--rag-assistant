@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5664568
-[parent_id]: 
-[tags]: 
-Form.ShowDialog in another thread
-
-In main thread I created a worker thread that creates a new form and calls form.showDialog . After calling form.Close the application dies. Why is this happening? //called from someone worker thread. not from main thread void s_notificationAgent_AgentError(object sender, EventArgs e) { try { ConnectingForm form = new ConnectionForm(); form.ShowDialog();//if i close form clicking on button. app dies( } catch(Exception ex) { } } UPD: because I do not have the right to respond to this question i answered question in 'edit':) after googling i found that.. the cause is that you're accessing the Application object on a thread other than the thread it was created on. The solution is to invoke a method onto the thread that created the Application object (or the owner). it helped me:) //called from someone worker thread. not from main thread void s_notificationAgent_AgentError(object sender, EventArgs e) { //through the synchContext calling methods from GUI thread winContext.Send(_=> {form = new Form1();},null); winContext.Send(_=> form.ShowDialog(),null); }

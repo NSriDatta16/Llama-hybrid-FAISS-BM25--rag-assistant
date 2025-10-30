@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5171283
-[parent_id]: 
-[tags]: 
-multiple destroy()s locking up backend in backbone.js
-
-In the example Todos app for backbone.js, this takes place: clearCompleted: function() { _.each(Todos.done(), function(todo){ todo.clear(); }); return false; }, This deletes multiple models by sending out multiple http DELETE requests to whatever service is backing the app. In the example's case that is no problem b/c they are using a local storage solution. But when I try a similar process with a database on the backend (sqlite/datamapper/sinatra) the fact that it sends off multiple delete http requests simultaneously causes the db to lock and send back an error. Is this something any of you have run into? I can think of two ways around it: Have a destroyBatch() that sends an array of id's into a DELETE call, and have sinatra sniff out the multiple ids and handle the deletes all at once server-side. Have a destroyAsync() on the client-side that pushes the ids into a queue and calls destroy() on the models one-by-one in an async chain reaction until they are all gone ( but you would see them being deleted one by one on the screen with a pause in between each). Do either of those solutions seem reasonable, or am I a frail goose flapping wildly? -j

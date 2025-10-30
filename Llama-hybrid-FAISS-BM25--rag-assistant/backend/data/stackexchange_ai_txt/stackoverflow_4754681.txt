@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4754681
-[parent_id]: 
-[tags]: 
-Can someone describe how the logic flows in this recursive Async Azure Storage call?
-
-Can someone help me understand how this code is executed, and where the "result" is, and at what point can I start doing stuff with the complete result. protected void QuerySongsExecuteSegmentedAsync(CloudTableClient cloudTableClient) { TableServiceContext tableServiceContext = cloudTableClient.GetDataServiceContext(); tableServiceContext.ResolveType = (unused) => typeof(Song); CloudTableQuery cloudTableQuery = (from entity in tableServiceContext.CreateQuery ("Songs").Take(10) select entity ).AsTableServiceQuery (); IAsyncResult iAsyncResult = cloudTableQuery.BeginExecuteSegmented(BeginExecuteSegmentedIsDone, cloudTableQuery); } static void BeginExecuteSegmentedIsDone(IAsyncResult result) { CloudTableQuery cloudTableQuery = result.AsyncState as CloudTableQuery ; ResultSegment resultSegment = cloudTableQuery.EndExecuteSegmented(result); List listSongs = resultSegment.Results.ToList (); if (resultSegment.HasMoreResults) { IAsyncResult iAsyncResult = cloudTableQuery.BeginExecuteSegmented( resultSegment.ContinuationToken, BeginExecuteSegmentedIsDone, cloudTableQuery); } }

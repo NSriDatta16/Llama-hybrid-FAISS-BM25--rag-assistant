@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1145451
-[parent_id]: 1145328
-[tags]: 
-1) shouldn't your call to Response.Cookies.Remove(FormsAuthentication.FormsCookieName); be Response.Cookies.Remove(whatever-the-user-name-is);? 2) try sending an expired cookie back to the browser. FormsAuthentication.SignOut(); // replace with username if this is the wrong cookie name Response.Cookies.Remove(FormsAuthentication.FormsCookieName); Session.Clear(); Response.Cache.SetCacheability(HttpCacheability.NoCache); Response.Cache.SetExpires(DateTime.Now.AddSeconds(-1)); Response.Cache.SetNoStore(); Response.AppendHeader("Pragma", "no-cache"); // send an expired cookie back to the browser var ticketExpiration = DateTime.Now.AddDays(-7); var ticket = new FormsAuthenticationTicket( 1, // replace with username if this is the wrong cookie name FormsAuthentication.FormsCookieName, DateTime.Now, ticketExpiration, false, String.Empty); var cookie = new System.Web.HttpCookie("user") { Expires = ticketExpiration, Value = FormsAuthentication.Encrypt(ticket), HttpOnly = true }; Response.Cookies.Add(cookie); return View("SignIn");

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4003117
-[parent_id]: 
-[tags]: 
-Problem with Extension Methods and Generic Constraints
-
-I have a base interface and several inherited interfaces. There are extension methods for the base interface that modify the object and return a new instance of the base class ( IChildA.Touch() => IBase , IBase.Touch() => IBase ). For one inheritance path ( IChildB and descendants) i want to implement extension methods that return an object of the same type as the calling object ( IGrandChildB.Touch() => IGrandChild ). For this i would like to specify a single generic extension method that is constrained to IChildB descendants. This works so far, but now the compiler cannot resolve the call from IChildA . It tries to use the extension method for the IChildB path and fails instead of using the extension method for the IBase interface. Is there an elegant way to fix this? public interface IBase {} public interface IChildA : IBase {} public interface IChildB : IBase {} public static class BaseExtensions { public static IBase Touch(this IBase self) { return self; } public static T Touch (this T self) where T : IChildB { return self; } } public static class TestClass { public static void Test() { IChildA a = null; IBase firstTry = a.Touch(); //Cannot resolve to BaseExtensions.DoSomething(this IBase obj) IBase secondTry = ((IBase)a).Touch(); //Resolves to BaseExtensions.DoSomething(this IBase obj) IChildB b = null; IChildB touchedB = b.Touch(); } }

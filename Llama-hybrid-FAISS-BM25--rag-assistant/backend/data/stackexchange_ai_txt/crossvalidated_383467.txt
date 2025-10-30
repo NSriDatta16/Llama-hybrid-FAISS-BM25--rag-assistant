@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 383467
-[parent_id]: 381520
-[tags]: 
-Since you have some example points from the PDF rather than a closed-form representation, and you're looking for a highest-density interval rather than a highest-density set, it's easiest to do this by brute force. Consider all $a$ and $b$ among the $x$ -coordinates you have, check that $[a, b]$ has at least the desired coverage, and return the interval of greatest density. Here's a simple-minded implementation that (a) is slow for large numbers of points and (b) treats the density of each $x_n$ as if it was the density between $x_{n-1}$ and $x$ . hdi = function(x, x.density, coverage) {best = 0 for (ai in 1 : (length(x) - 1)) {for (bi in (ai + 1) : length(x)) {mass = sum(diff(x[ai : bi]) * x.density[(ai + 1) : bi]) if (mass >= coverage && mass / (x[bi] - x[ai]) > best) {best = mass / (x[bi] - x[ai]) ai.best = ai bi.best = bi}}} c(x[ai.best], x[bi.best])} An example: library(ggplot2) x = seq(0, 1, len = 1000) x.density = dbeta(x, shape1 = 10, shape2 = 2) interval = hdi(x, x.density, .8) qplot(x, x.density) + geom_vline(aes(xintercept = interval))

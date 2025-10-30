@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2342853
-[parent_id]: 2327423
-[tags]: 
-In the end, when using Spring this is not that simple. I managed to do it extending the AnnotationSessionFactoryBean like this: public class SchemaValidatingAnnotationSessionFactoryBean extends AnnotationSessionFactoryBean { public void validateDatabaseSchema() throws DataAccessException { logger.info("Validating database schema for Hibernate SessionFactory"); HibernateTemplate hibernateTemplate = new HibernateTemplate( getSessionFactory()); hibernateTemplate.setFlushMode(HibernateTemplate.FLUSH_NEVER); hibernateTemplate.execute(new HibernateCallback() { public Object doInHibernate(Session session) throws HibernateException, SQLException { Connection con = session.connection(); Dialect dialect = Dialect.getDialect(getConfiguration() .getProperties()); DatabaseMetadata metadata = new DatabaseMetadata(con, dialect); Configuration configuration = getConfiguration(); configuration.validateSchema(dialect, metadata); return null; } }); } }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 615462
-[parent_id]: 612119
-[tags]: 
-I finally made it work.... I'm pretty sure there's something funny going on with the "Save" button but this code will wrestle it into submission: // I replace the dialog's WindowProc with this static WNDPROC oldProc = NULL; static BOOL CALLBACK buttonSetter(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) { // Set the button text on every window redraw.... if (msg == WM_ERASEBKGND) { SetDlgItemTextW(hwnd,IDOK,L"OK"); } return oldProc(hwnd, msg, wParam, lParam); }; // This is the callback for the GetWriteName hook static UINT_PTR CALLBACK GWNcallback(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) { HWND dlg = GetParent(hwnd); if (msg == WM_INITDIALOG) { oldProc = (WNDPROC)GetWindowLongPtr(dlg, GWL_WNDPROC); if (oldProc !=0) { SetWindowLongPtr(dlg, GWL_WNDPROC, (LONG)buttonSetter); } } // We need extra redraws to make our text appear... InvalidateRect(dlg,0,1); }

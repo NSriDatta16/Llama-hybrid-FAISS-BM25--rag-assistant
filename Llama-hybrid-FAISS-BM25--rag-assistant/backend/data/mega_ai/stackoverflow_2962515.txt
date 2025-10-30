@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2962515
-[parent_id]: 
-[tags]: 
-Fluent NHibernate SchemaExport to SQLite not pluralizing Table Names
-
-I am using SQLite as my db during development, and I want to postpone actually creating a final database until my domains are fully mapped. So I have this in my Global.asax.cs file: private void InitializeNHibernateSession() { Configuration cfg = NHibernateSession.Init( webSessionStorage, new [] { Server.MapPath("~/bin/MyNamespace.Data.dll") }, new AutoPersistenceModelGenerator().Generate(), Server.MapPath("~/NHibernate.config")); if (ConfigurationManager.AppSettings["DbGen"] == "true") { var export = new SchemaExport(cfg); export.Execute(true, true, false, NHibernateSession.Current.Connection, File.CreateText(@"DDL.sql")); } } The AutoPersistenceModelGenerator hooks up the various conventions, including a TableNameConvention like so: public void Apply(FluentNHibernate.Conventions.Instances.IClassInstance instance) { instance.Table(Inflector.Net.Inflector.Pluralize(instance.EntityType.Name)); } This is working nicely execpt that the sqlite db generated does not have pluralized table names. Any idea what I'm missing? Thanks.

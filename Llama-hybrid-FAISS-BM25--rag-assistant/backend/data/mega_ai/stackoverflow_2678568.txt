@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2678568
-[parent_id]: 2678525
-[tags]: 
-Hint: ptr is pointing to garbage before gets_e_uart1() is called. You need to pass a pointer to your pointer to gets_e_uart1() EDIT: Except ... if you're trying to have ptr in main() point to the buffer_ in your function ... you've got another problem. buffer_ is on the stack and is out of scope as soon as the function returns. You would need to malloc() that memory in your function. char getstring_e_uart1(char **stringPtr_, const int SIZE_) { char *buffer_ = (char*) malloc(SIZE_ * sizeof(char)); *stringPtr_ = buffer_; (Editing again because I wasn't paying attention to your main loop, sorry) Then you're going to have to free it after calling puts_uart1(ptr) which means you mallocing and freeing constantly in that loop. It seems you have a fixed size for that buffer, why not just create it in main() and pass it into both functions?

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1435329
-[parent_id]: 
-[tags]: 
-Is adding nowiki-tags to this parser feasible?
-
-Update: for the record, here's the implementation I ended up using . Here's a trimmed down version of a parser I'm working on. There's still some code, but it should be quite easy to grasp the basic concepts of this parser. class Markup def initialize(markup) @markup = markup end def to_html @html ||= @markup.split(/(\r\n){2,}|\n{2,}/).map {|p| Paragraph.new(p).to_html }.join("\n") end class Paragraph def initialize(paragraph) @p = paragraph end def to_html @p.gsub!(/'{3}([^']+)'{3}/, " \\1 ") @p.gsub!(/'{2}([^']+)'{2}/, " \\1 ") @p.gsub!(/`([^`]+)`/, " \\1 ") case @p when /^=/ level = (@p.count("=") / 2) + 1 # Starting on h2 @p.gsub!(/^[= ]+|[= ]+$/, "") " " + @p + " " when /^(\*|\#)/ # I'm parsing lists here. Quite a lot of code, and not relevant, so # I'm leaving it out. else @p.gsub!("\n", "\n ") " " + @p + " " end end end end p Markup.new("Here is `code` and ''emphasis'' and '''bold'''! Baz").to_html # => " Here is code and emphasis and bold ! \n Baz " So, as you can see, I'm breaking the text into paragraphs, and each paragraph is either a header, a list or a regular paragraph. Is it feasible to add support for nowiki tags (where everything between is not being parsed) for a parser like this? Feel free to answer "no", and suggest alternative methods of creating a parser :) As a sidenote, you can see the actual parser code on Github. markup.rb and paragraph.rb

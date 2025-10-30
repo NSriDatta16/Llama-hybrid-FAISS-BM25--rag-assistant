@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4773040
-[parent_id]: 4772677
-[tags]: 
-It can't be done in one pass; Make determines which targets must be rebuilt before it actually executes any rule, and in this case the full list of targets doesn't exist until one of the rules is executed. This should do it: FOO_FILES := $(shell cat foo.files) foo.tar: foo.files $(MAKE) foo-tarball .PHONY: foo-tarball foo-tarball: $(FOO_FILES) tar -cf foo $^ EDIT: As the OP points out, this will not work as written; I left out a prerequisite: foo.tar: foo.files $(FOO_FILES) ... Note that this will recurse even if foo.files has not changed, which is not strictly necessary; it is possible to correct this, but not elegantly. (For comparison, the selected solution, which I admit is cleaner than mine, recurses even if the target has nothing to do with foo.tar .)

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5502426
-[parent_id]: 1471066
-[tags]: 
-Based on this stackoverflow anwser I have just set out to do the same thing. First create an extension method for the controller class. public static string RenderViewToString(this Controller controller, string viewName, object model) { using (var writer = new StringWriter()) { var viewResult = ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName); controller.ViewData.Model = model; var viewCxt = new ViewContext(controller.ControllerContext, viewResult.View, controller.ViewData, controller.TempData, writer); viewCxt.View.Render(viewCxt, writer); return writer.ToString(); } } Then return the json in the controllers action method. return Json(new { Html = this.RenderViewToString("MyView", model), SomeExtraData = data }); Your ajax requests will now receive json with the html contained in it. Still experimenting with this approach over returning plain Html fragments. Hope that helps. EDIT Updated to work with razor

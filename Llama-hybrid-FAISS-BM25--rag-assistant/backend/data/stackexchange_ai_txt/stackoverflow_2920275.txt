@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2920275
-[parent_id]: 
-[tags]: 
-Hiding instantiated templates in shared library created with g++
-
-I have a file that contains the following: #include class A {}; void doSomething() { std::map m; } When compiled into a shared library with g++, the library contains dynamic symbols for all the methods of std::map . Since A is private to this file, there is no possibility that std::map will be instantiated in any other shared library with the same parameters, so I'd like to make the template instantiation hidden (for some of the reasons described in this document ). I thought I should be able to do this by adding an explicit instantiation of the template class and marking it as hidden, like so: #include class A {}; template class __attribute__((visibility ("hidden"))) std::map ; void doSomething() { std::map m; } However, this has no effect: the symbols are still all exported. I also tried surrounding the entire file with: #pragma GCC visibility push(hidden) ... #pragma GCC visibility pop but this also has no effect on the visibility of the methods of std::map (although it does hide doSomething ). Similarly, compiling with -fvisibility=hidden has no effect on the visibility of the methods of std::map . The document I linked to above describes the use of export maps to restrict visibility, but that seems very tedious. Is there a way to do what I want in g++ (other than using export maps)? If so, what is it? If not, is there a good reason why these symbols must always be exported, or is this just a omission in g++?

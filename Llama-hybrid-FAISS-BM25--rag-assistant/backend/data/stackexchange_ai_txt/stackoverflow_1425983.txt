@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1425983
-[parent_id]: 
-[tags]: 
-NHibernate one-to-many relationship lazy loading when already loaded
-
-I have a tree where every node is a Resource class: public abstract class Resource { public virtual Guid Id { get; set; } public virtual Resource Parent { get; set; } public virtual IList ChildResources { get; set; } } as you can see this class is abstract and there are many different derived classes from Resource (3 at the moment, more to come). In my database i have a table for Resource, and a table for each class which derives from Resource. These are mapped together with . I've read this: http://ayende.com/Blog/archive/2009/08/28/nhibernate-tips-amp-tricks-efficiently-selecting-a-tree.aspx and i have the same code as Ayende to load my tree: var resource = UnitOfWork.Current.Session .CreateQuery("from Resource r join fetch r.ChildResources") .SetResultTransformer(new DistinctRootEntityResultTransformer()) .SetReadOnly(true) .List (); which is all working fine (all Resources are returned with a single select) However, I'm seeing extra selects occurring as I enumerate a Resource's ChildResources list. Is that because of this?: http://ayende.com/Blog/archive/2009/09/03/answer-the-lazy-loaded-inheritance-many-to-one-association-orm.aspx Either way, how do I prevent this from happening? Here's the part of the mappings for the relationships (class names trimmed for clarity): Thanks UPDATE Slight oversight, its only issuing extra selects when enumerating the child collections of the leaf nodes in the tree...

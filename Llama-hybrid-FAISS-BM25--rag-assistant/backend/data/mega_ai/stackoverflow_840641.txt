@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 840641
-[parent_id]: 835624
-[tags]: 
-Just for completeness; using the method described by Jeremy Lew, in the blog above allows for the following: Calling: msiexec /i ITP.Platform.2.msi ENVIRONMENT=QA CONFIGFILE=EnvironmentConfig.xml With this in the .wxs file: With a custom action: /// /// CustomAction keys should be Environment,BrandId,ConfigPath,itpBasePath /// /// /// [CustomAction] public static ActionResult ConfigureItpBrandSettings(Session session) { string[] arguments = GetCustomActionDataArguments(session); string environmentName = arguments[0]; string brandId = arguments[1]; string configPath = arguments[2]; string itpBasePath = arguments[3]; //Do stuff return ActionResult.Success; } private static string[] GetCustomActionDataArguments(Session session) { string[] keys = new string[session.CustomActionData.Keys.Count]; session.CustomActionData.Keys.CopyTo(keys,0); return keys[0].Split(','); } works. Parsing the CustomActionData arguments is pretty ugly, but it does work. Hopefully someone knows a more elegant way to do this.

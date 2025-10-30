@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 621183
-[parent_id]: 
-[tags]: 
-Poor classification even after oversampling minority class
-
-I want to predict mortality so minority class (dead=1) is important for me but my XGBoost model performing poorly for this class. In other words, the model performed the opposite of what I wanted. the code: df=pd.read_csv(data) X=df.drop('label',axis=1) y=df.label X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=27) oversample = RandomOverSampler(sampling_strategy='minority') X_train,y_train=oversample.fit_resample(X_train, y_train) xgb=XGBClassifier() param_grid = { "max_depth": [6,10,4,8], "n_estimators": [50,200,100,500,1000,2000], "learning_rate": [0.1,0.2,0.3,0.4], "booster" :['gbtree'] } kfold = KFold(n_splits=10, shuffle=True, random_state=0) grid_search = GridSearchCV(estimator=xgb, param_grid=param_grid, scoring='recall', refit=True, n_jobs=-1, cv=kfold, verbose=0) grid_result = grid_search.fit(X_train, y_train) print(f'The best score is {grid_result.best_score_:.4f}') print(f'The best hyperparameters are {grid_result.best_params_}') grid_predict = grid_search.predict(X_test)# Get predicted probabilities plot_confusion_matrix(grid_search,X_test,y_test) Results: optimum recall value is 0.86 and as far as I know, this belongs to the majority class (alive=0). and for more details: How can I improve ML metrics (e.g. recall) for minority class (dead=1)?

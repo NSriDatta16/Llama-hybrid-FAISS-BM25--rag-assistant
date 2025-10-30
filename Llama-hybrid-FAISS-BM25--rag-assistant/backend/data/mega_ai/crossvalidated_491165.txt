@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 491165
-[parent_id]: 
-[tags]: 
-Estimating the number of apples in an apple tree using MCMC
-
-I'm trying to estimate the number of apples in an apple tree by repeatedly kicking the tree and counting how many apples fall down. This process, I believe, is called removal sampling . The only assumption I'm making is that there is a constant probability $p$ that an apple falls down when I kick the tree. Given that, e.g., [100, 10, 1, 0] apples fall down, I'm prone to believe that $p \sim 0.9$ and that $N$ , the total number of apples, is 111. I'm trying to estimate $N$ using MCMC, but I seem to struggle to get it right. First, I've picked $N$ to be a uniform discrete prior in $[0, 1000]$ and $p$ is chosen to be a flat uniform over $[0, 1]$ . But, suppose that I remove, e.g., [19, 17, 13, 1, 1] , I used $$ \begin{align} N &= \text{DiscreteUniform}(0, 1000)\\ p &= \text{Uniform}(0, 1)\\ q_1 &= \text{Binomial}(N, p, \text{observed}=19)\\ q_2 &= \text{Binomial}(N - q_1, p, \text{observed}=17)\\ q_3 &= \text{Binomial}(N - (q_1 + q_2), p, \text{observed}=13)\\ q_4 &= \text{Binomial}(N - (\sum_j^{3} q_j), p, \text{observed}=1)\\ q_5 &= \text{Binomial}(N - (\sum_j^{4} q_j), p, \text{observed}=1) \end{align} $$ With this model, I end up with an estimate on $N \sim 54.5$ . A different model I tried consistently get $N \leq 53$ . My question is the following: Are my $q_i$ correctly modeled, or are they possibly the reason my model is over-estimating? Do you see any obvious mistakes?

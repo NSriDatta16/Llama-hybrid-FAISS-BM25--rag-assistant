@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1758074
-[parent_id]: 1757448
-[tags]: 
-It is a horrible function signature, there's no way to guess how the string was allocated. Nor can you deallocate the memory for the string. If you declare the return type as "string" in the declaration then the P/Invoke marshaller will call CoTaskMemFree() on the pointer. That is very unlikely to be appropriate. It will silently fail in XP but crash your program in Vista and Win7. You can't even reliably call the function in an unmanaged program. The odds that you'd use the correct version of free() are pretty slim. All you can do is declare it as IntPtr and marshal the return value yourself with Marshal.PtrToStringAnsi(). Be sure to write a test program that does so a million times while you observe it in Taskmgr.exe. If the VM size for the program grows without bound, you have a memory leak you cannot plug.

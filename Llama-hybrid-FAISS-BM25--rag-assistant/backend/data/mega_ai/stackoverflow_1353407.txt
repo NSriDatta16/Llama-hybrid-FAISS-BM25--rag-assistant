@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1353407
-[parent_id]: 
-[tags]: 
-Last named parameter not function or array?
-
-This question is about vararg functions, and the last named parameter of them, before the ellipsis: void f(Type paramN, ...) { va_list ap; va_start(ap, paramN); va_end(ap); } I was reading in the C Standard, and found the following restriction for the va_start macro: The parameter parmN is the identiﬁer of the rightmost parameter in the variable parameter list in the function deﬁnition (the one just before the , ...). If the parameter parmN is declared with the register storage class, with a function or array type, or with a type that is not compatible with the type that results after application of the default argument promotions, the behavior is undeﬁned. I wonder why the behavior is undefined for the following code void f(int paramN[], ...) { va_list ap; va_start(ap, paramN); va_end(ap); } and not undefined for the following void f(int *paramN, ...) { va_list ap; va_start(ap, paramN); va_end(ap); } The macros are intended to be implementable by pure C code. But pure C code cannot find out whether or not paramN was declared as an array or as a pointer. In both cases, the type of the parameter is adjusted to be a pointer. The same is true for function type parameters. I wonder: What is the rationale of this restriction? Do some compilers have problems with implementing this when these parameter adjustments are in place internally? (The same undefined behavior is stated for C++ - so my question is about C++ aswell).

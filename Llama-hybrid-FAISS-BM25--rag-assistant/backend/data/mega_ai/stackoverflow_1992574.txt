@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1992574
-[parent_id]: 1992312
-[tags]: 
-It means you have done a query that does nothing more than count the number of rows in a table, and that table is a MyISAM table. MyISAM tables are stored with a separate row count, so to do this query MySQL doesn't need to look at any of the table row data at all. Instead it immediately returns the pre-calculated row count. Hence the table access is ‘optimized away’ and the query is lightning-fast. The same won't happen on other storage engines in MySQL such as InnoDB. But really, you want to be using InnoDB and not MyISAM in most cases for a variety of other reasons. (And even without the row count optimisation this kind of query is very, very fast.) select count(comment_count) from wp_posts; Is that what you really meant to do? That's the same as just SELECT COUNT(*)... (assuming comment_count can't be NULL , which it can't be or you wouldn't have got the optimisation). If you want a total of the comment_count ​s you should be using SUM(comment_count) , and you won't get the ‘optimized away’ behaviour.

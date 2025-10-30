@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4366504
-[parent_id]: 
-[tags]: 
-sleeping awaiting command blocks other transactions
-
-I have a big web application on asp.net 2.0. Usere open object editor there and makes some changes. They can not open the same object at one time. After they press "save" btn all changes process to save on server via postback. I am using transaction for save. There are a lot of procedures, checks and others to be done before saving operation is OK. using (SqlConnection con = .........) { SqlTransaction trans = null; try { con.Open(); trans=con.BeginTransaction(IsolationLevel.ReadUncommitted); ........operations......... trans.Commit(); } catch (Exception e) { try { if (trans != null) trans.Rollback(); } catch { } throw new MyException("SQL Exception: " + e.Message, e); } finally { if (con != null && con.State == ConnectionState.Open) con.Close(); } } For me this code is quite safe. But periodicaly happens: one process from this web application on saving operation on mssql became "sleeping/awaiting". and others processes called by other users became locked by this process and organiza a queue. One of them threw timeout excetion.....but others are waiting. So, my question is: does my code have some bad operation that allows command to became sleeping/awaiting? May be there are some tricks?

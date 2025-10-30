@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1713386
-[parent_id]: 1713284
-[tags]: 
-You are correct, the children are wiped out before you get to before_destroy. Its not elegant but could you do something like this? : (btw, sorry i haven't tested this. it is more a thought than anything else). in EffortLog, have a before_destroy :ready_to_die? ready_to_die? would check if it has a zero effort value. If yes, destroy itself. If No, raise an exception (my example is EffortLogError). note: if you wanted to manually destroy something, you would need to zero it out yourself first. then on your Project have a method with a more descriptive name: def carefully_destroy Begin Project.transaction do self.destroy end rescue EffortLogError self.errors.add_to_base("A Project with effort can't be deleted") #do some sort of redirect to the right spot. end end

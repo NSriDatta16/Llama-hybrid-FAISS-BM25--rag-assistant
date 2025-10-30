@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3042931
-[parent_id]: 3041798
-[tags]: 
-Your last paragraph mentions threads twice, which raises the possibility that there are one or more background threads. But since you didn't mention what threads exist in the application, how they are created, how they interact, etc, I'll assume for the moment there is only one thread. If the UI thread is the only thread, the problem is obvious: Your UI thread is busy running the task in progress, and doesn't take time to render the updated UI. If that's the problem, this will probably fix it: viewModel.ActivationInProgress = activateInProgress; Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() => {})); The BeginInvoke forces all Dispatcher operations above input priority to complete before the current thread continues.

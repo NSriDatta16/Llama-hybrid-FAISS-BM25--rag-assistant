@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2674563
-[parent_id]: 
-[tags]: 
-Ruby 1.9 GarbageCollector, GC.disable/enable
-
-I'm developing a Rails 2.3, Ruby 1.9.1 webapplication that does quite a bunch of calculation before each request. For every request it has to calculate a graph with 300 nodes and ~1000 edges. The graph and all its nodes, edges and other objects are initialized for every request (~2000 objects) - actually they are cloned from an uncalculated cached graph using Marshal.load(Marshal.dump()). Performance is quite an issue here. Right now the whole request takes in average 150ms. I then saw that during a request, parts of the calculation randomly take longer. Assuming, that this might be the GarbageCollector kicking in, I wrapped the request in GC.disable and GC.enable, so that the request waits with garbagecollecting until calculating and rendering have finished. def query GC.disable calculate respond_to do |format| format.html {render} end GC.enable end The average request now takes about 100ms (50 ms less). But I'm unsure if this is a good/stable solution, I assume there must be drawbacks doing that. Does anybody has experience with a similar problem or sees problems with the above code?

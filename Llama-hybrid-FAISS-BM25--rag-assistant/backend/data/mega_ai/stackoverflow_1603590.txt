@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1603590
-[parent_id]: 1603472
-[tags]: 
-Marc S is right in that the 64 byte primary key is going to be duplicated into every NC index so you are going to pay an I/O cost, which will impact on the amount of data that is held in memory (since you are wasting space on a NC index page). So on that basis the question is not 'should I convert my varchars' but 'should I consider converting my clustered index to something entirely different./ In terms of the varchar vs the bigint there is a good reason to convert if you can afford the time; that is outside of the 2 byte difference in storage per field, when you compare values that are of two different types, SQL will be forced to convert one of them. This would occur on every single comparison, whether that is for an index join, or a predicate within a where clause. Depending on what you are selecting the data by, which dimension tables are joined to the fact table, you could be picking up conversion overhead costs on each query, for it to join, since it is having to convert one side of it.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4131807
-[parent_id]: 4131687
-[tags]: 
-You can could spawn a new thread (preferably via a java.util.Executor or a Spring TaskExecutor ) to perform the subsidiary task. Spring's transaction synchronization works using non-inheritable ThreadLocal variables, so a new thread will not participate in the current transaction. Alternatively, and perhaps more elegantly, you can specify an explicit transaction isolation level around the subsidiary task, something like: @Transactional(propagation=Propagation.NOT_SUPPORTED) public void doTheThing() { /.../ } This will suspend the existing transaction for the duration of that method, although you'd still need to be careful with runtime exceptions not bubbling up into your main transaction boundary. Regards your second question, locking and synchronisation in a cluster is a very complex topic, and not one I can really answer with the information you've given. I suggest opening a new question for this, and elaborate your requirements.

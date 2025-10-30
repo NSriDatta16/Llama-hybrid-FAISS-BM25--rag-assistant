@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 422529
-[parent_id]: 417798
-[tags]: 
-After searching internet on this topic I've found a handful of solutions. All of them are hand parsing of file data so I gave up trying to make standard cmdlets to do the job. There are fancy solutions as this which support writing scenario. There are simpler ones and as far as I need no writing support I've chose following very elegant code snippet: Function Parse-IniFile ($file) { $ini = @{} # Create a default section if none exist in the file. Like a java prop file. $section = "NO_SECTION" $ini[$section] = @{} switch -regex -file $file { "^\[(.+)\]$" { $section = $matches[1].Trim() $ini[$section] = @{} } "^\s*([^#].+?)\s*=\s*(.*)" { $name,$value = $matches[1..2] # skip comments that start with semicolon: if (!($name.StartsWith(";"))) { $ini[$section][$name] = $value.Trim() } } } $ini } This one is Jacques Barathon 's. Update Thanks to Aasmund Eldhuset and @msorens for enhancements: whitespace trimming and comment support. Update 2 Skip any name=value pairs where name starts with a semicolon ; which are comment lines . Replaced $ini [$section] = @{} with $ini[$section] = @{} .

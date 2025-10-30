@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1975554
-[parent_id]: 1952561
-[tags]: 
-In the first example, MySQL used the metadata fk_blob index because it was a covering index--every column you used in the query was present in the index. (This is what "using index" means.) That query still did a full scan, but it scanned every row via the secondary index instead of the primary. As soon as you used start, you lost the covering index and MySQL calculated it was faster to use blobstore as the driving index. (InnoDB's primary index is integrated with the row storage.) If you want MySQL to continue to use a metadata index as the driving index, make sure there's a single index on it that will be useful for the query. An index on (start, fkBlob) would be best for the second query, but that may not be useful for other queries. The next best index is to replace (fkBlob) with (fkBlob, start). You'll have to balance having too many indexes (which are expensive to maintain) vs having efficient query plans. Test, test, test--and never blindly believe explain on your dev database.

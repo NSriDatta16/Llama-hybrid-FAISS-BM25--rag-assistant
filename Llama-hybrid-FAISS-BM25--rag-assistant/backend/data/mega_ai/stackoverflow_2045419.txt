@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2045419
-[parent_id]: 2045288
-[tags]: 
-Not exactly elegant, but it can do it in a single query. Though this will probably render any indexes rather useless, so as mentioned the multiple sub-query method is likely to be faster. create table Foo (data1 tinyint, data2 tinyint, data3 tinyint, seq int not null) go insert into Foo (data1, data2, data3, seq) values (NULL, 4, 8, 1), (1, NULL, 0, 2), (5, 7, NULL, 3) go with unpivoted as ( select seq, value, col from (select seq, data1, data2, data3 from Foo) a unpivot (value FOR col IN (data1, data2, data3)) b ), firstSeq as ( select min(seq) as seq, col from unpivoted group by col ), data as ( select b.col, b.value from firstSeq a inner join unpivoted b on a.seq = b.seq and a.col = b.col ) select * from data pivot (min(value) for col in (data1, data2, data3)) d go drop table Foo go

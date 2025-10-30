@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4673573
-[parent_id]: 4668410
-[tags]: 
-Here's a way I've used in the past. Please note that you have to add a reference to the Microsoft Scripting Runtime so you can use the Dictionary object - if you don't want to add that reference you can do this with Collections but they're slower and there's no elegant way to check .Exists (you have to trap the error). Dim OldVals As New Dictionary Private Sub Worksheet_Change(ByVal Target As Range) Dim cell As Range For Each cell In Target If OldVals.Exists(cell.Address) Then Debug.Print "New value of " & cell.Address & " is " & cell.Value & "; old value was " & OldVals(cell.Address) Else Debug.Print "No old value for " + cell.Address End If OldVals(cell.Address) = cell.Value Next End Sub Like any similar method, this has its problems - first off, it won't know the "old" value until the value has actually been changed. To fix this you'd need to trap the Open event on the workbook and go through Sheet.UsedRange populating OldVals. Also, it will lose all its data if you reset the VBA project by stopping the debugger or some such.

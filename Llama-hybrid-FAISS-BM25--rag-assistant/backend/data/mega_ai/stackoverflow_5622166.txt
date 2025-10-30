@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5622166
-[parent_id]: 
-[tags]: 
-How can I retrieve a List of entities from a many to many relationship?
-
-I'm trying to retrieve a List from my database. Basically, the schema is: GradeParalelo ---- GradeStudent ---- Student Where the GradeStudent table holds primary keys for GradeParalelo and Student. NOTE: The GradeStudent table has an extra column to hold an integer. This is not just an association table. Here's what I've tried so far: ColegioDBV2Entities db = new ColegioDBV2Entities(); public List FindAllStudentsFromGradeParalelo(int gradeParaleloId) { return (db.Students .Include("GradeStudents") .Include("GradeStudents.GradeParalelo") .Where (s => s.StudentId == gradeParaleloId)).ToList(); } But it's retrieving a single student for every gradeParalelo I choose. Understandably, because I'm comparing a StudentId with a GradeParaleloId. This is not what I want. Can anyone suggest a way to retrieve this collection? Image that I want to retrieve all students that are in the GradeStudent table with GradeParalelo ID 6. Basically this, in a more elegant form: public List FindAllStudentsFromGradeParalelo(int gradeParaleloId) { List students = new List (); using(GradeStudentRepository repo = new GradeStudentRepository()) { var items = repo.FindAllGradeStudents().Where(g => g.GradeParaleloId == gradeParaleloId); StudentRepository studentRepo = new StudentRepository(); foreach (var o in items) { students.Add(studentRepo.FindStudent(o.StudentId)); } } return students; }

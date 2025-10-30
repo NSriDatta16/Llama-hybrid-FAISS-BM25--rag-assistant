@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 870181
-[parent_id]: 870097
-[tags]: 
-Try the mysql reference manual for diagnosing and resolving. It sounds like you are making a cache. A probable reason could be that a lot of clients concurrently hit the table trying to create the 'first version' (i.e hit the 'if empty insert'). Maybe you could add a pseudo-random delay or coordinate the creators so that you don't get lots of concurrent create calls to the db? EDIT: Have you seen this page? Seems like you need to set a my.cnf setting to disable per-table locks with innodb. What I mainly was suggesting though, was that your test might not be representable since it may contain a much higher percentage writers than in a realistic situation. If you start 100 threads with an empty table they would all instantly block on create (even for the same value perhaps). This is much worse than in an average situation where you have a better spread over the keys, fewer misses and a much higher percentage of reads. If this is expected behaviour (i.e you would have this behaviour live), I would suggest adding a backoff strategy in the create statements.

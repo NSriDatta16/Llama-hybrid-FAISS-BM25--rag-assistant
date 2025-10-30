@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 291757
-[parent_id]: 
-[tags]: 
-Explained variance threshold for eigenfaces
-
-I was working through creating a simple face recognition system by first creating eigenfaces. At the very end of the wikipedia article , it mentions that the first three principal components are due to lighting variation and should be disregarded. My question is, if we drop the first three components, what is the correct way to rescale the variance explained by the remaining components? So for example, if I want use n components that explain $95\%$ of variance, and I was considering the first 3 components then I can do this: import numpy as np from sklearn.decomposition import PCA from sklearn.datasets import fetch_lfw_people #Note that this next line can take many minutes the first time you run it as it needs to download ~200MB lfw_people = fetch_lfw_people(min_faces_per_person=30, resize=0.4) pca = PCA().fit(lfw_people.data) explained_variance = np.cumsum(pca.explained_variance_ratio_) n = sum(explained_variance This results in an n of 150 . Now if I disregard the first three components I get explained_variance[150] - explained_variance[2] an explained variance of only $53\%$. So my question is, it is reasonable to just rescale the $\%$ variance explained to be the percentage of the remaining components (i.e. excluding the first three) so something like: explained_variance = np.cumsum(pca.explained_variance_[3:]/sum(pca.explained_variance_[3:])) Or is it not that simple?

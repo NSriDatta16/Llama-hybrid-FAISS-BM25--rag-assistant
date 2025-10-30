@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1942426
-[parent_id]: 1939864
-[tags]: 
-Edit : after OP's update, this answer is no longer relevant, I'll leave it hanging here though. Daniel Wallin posted the correct answer not really an answer, but I'd lose the formatting with a comment I cannot reproduce this one. Here's the exact code I use: // initialization lua_State* lua = lua_open(); luaL_openlibs(lua); luabind::open(lua); // declare class luaL_loadstring(lua, "class 'TestClass'\ function TestClass:__init() print('init') end\ function TestClass:__finalize() print('finalize') end"); lua_pcall(lua, 0, LUA_MULTRET, 0); // instantiate { luabind::object obj = luabind::call_function (lua, "TestClass"); } // collect printf("Before GC collect\n"); lua_gc(lua, LUA_GCCOLLECT, 0); printf("After GC collect\n"); lua_close(lua); And the result I get is: init Before GC collect finalize After GC collect I'm using lua 5.1.4, luabind 0.81 with VC8 (aka VS2005) SP1

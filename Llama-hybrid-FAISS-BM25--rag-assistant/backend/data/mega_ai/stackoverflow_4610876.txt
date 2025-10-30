@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4610876
-[parent_id]: 4610791
-[tags]: 
-I think the problem is a little more difficult than it looks at first. You're seeing the error because you've closed your connection to the database in your "connection" function. Your probably better off creating a DatabaseManagement Class, to manage a single connection. Something like: import sqlite3 class DatabaseManager(object): def __init__(self, db): self.conn = sqlite3.connect(db) self.conn.execute('pragma foreign_keys = on') self.conn.commit() self.cur = self.conn.cursor() def query(self, arg): self.cur.execute(arg) self.conn.commit() return self.cur def __del__(self): self.conn.close() Then you should be able to do something like: dbmgr = DatabaseManager("testdb.db") for row in dbmgr.query("select * from users"): print row This will keep the connection open for the duration of the object's existence. You still may find this is a deeper problem, but play around and see what works for you.

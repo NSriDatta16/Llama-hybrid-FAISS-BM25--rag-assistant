@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5069816
-[parent_id]: 
-[tags]: 
-NHibernate HasMany with OrderBy override option in Criteria
-
-var criteria = MakeCriteriaForFindAllStudents(exportCriteria) .AddOrder (x => x.LastName, Order.Asc) .AddOrder (x => x.FirstName, Order.Asc); criteria.SetFetchMode("Addresses", FetchMode.Join) .SetFetchMode("CR", FetchMode.Join) .SetFetchMode("SEC", FetchMode.Join) .SetFetchMode("Dep", FetchMode.Join) .SetFetchMode("WR", FetchMode.Join) .SetResultTransformer(new DistinctRootEntityResultTransformer()); var results = criteria .GetExecutableCriteria(Session) .Future (); The AddOrder seems not to work in certain conditions. The Student fluent mapping has the following relation to WR. HasMany(x => x.WR) .Table("WR") .KeyColumn("StudentId") .LazyLoad() .AsSet() .Inverse() .Cascade.None() .OrderBy("CreatedDate desc") .BatchSize(10); So when SetFetchMode on WR is called, the OrderBy part of the mapping supercedes the AddOrder specified in the code. sample of the sql code.. ORDER BY wr6_.CreatedDate desc, this_.LNametxt asc, this_.FNameTxt asc; How to override the mapping defined and ensure that WR CreatedDate is removed from OrderBy is removed from Criteria ?

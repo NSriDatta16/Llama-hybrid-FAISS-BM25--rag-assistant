@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4720500
-[parent_id]: 4720420
-[tags]: 
-Assuming you are not planning on using @Stock later in the procedure you can do: Select Case When Z.Stock > 5 Then 'Stock is good: Current Stock' + Cast( Z.Stock as varchar(10)) Else 'Order some more - we are below minimum stock' End From ( Select P.Stock From dbo.Products As P Where P.ProductId = 1 Union All Select Value From ( Select 0 As Value ) As Z Where Not Exists ( Select 1 From dbo.Products As P1 Where P1.ProductId = 1 ) ) As Z If you wanted to reuse @Stock later in your procedure then you must do it multiple statements. You cannot combine an assignment with a statement that returns data in the same statement in T-SQL. One need only try to see the error: Declare @Foo int Select @Foo = 42, object_id From sys.objects Msg 141, Level 15, State 1, Line 3 A SELECT statement that assigns a value to a variable must not be combined with data-retrieval operations.

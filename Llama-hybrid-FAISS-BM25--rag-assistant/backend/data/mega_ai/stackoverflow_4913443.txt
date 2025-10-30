@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4913443
-[parent_id]: 4912886
-[tags]: 
-From the extra information you've provided, I'd say just serve the data as a regular Django template, which you call as needed one at a time. You should only need to ping the server once per next , not 5 times per next. Serve it up as regular HTML, and use jQuery to load that fragment directly where it needs to go. Don't bother with JSON for this, it's more work for very little (if any) gain. Example: #urls url(r'^record/(?P \d+)/$', 'site.views.record', name='record') #views site/views.py def record(request, record_id): obj = Record.objects.get(id=record_id) return render_to_response('site/record_partial.html', { 'obj': obj }, context_instance=RequestContext(request)) #templates site/record_partial.html {{ obj.field1 }} {{ obj.field2 }} {{ obj.field3 }} {{ obj.field4 }} {{ obj.field5 }} # Page next >> var next = $('#next').click(function() { var page = $(next).data('page'); $('#fields').load('/site/record/' + page + '/', function() { $(next).data('page', page+1); // incr page number }); })

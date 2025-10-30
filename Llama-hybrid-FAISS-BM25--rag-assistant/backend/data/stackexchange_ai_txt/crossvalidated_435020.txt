@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 435020
-[parent_id]: 
-[tags]: 
-Remarkable behavior of logistic regression solvers
-
-I wonder what causes some strange behavior of LogisticRegression's solvers in the following model: For some reason, all of them except liblinear predict only 0s. Their loglosses are equivalent, except for liblinear. from sklearn import preprocessing from sklearn.model_selection import train_test_split !wget -O ChurnData.csv https://s3-api.us-geo.objectstorage.softlayer.net/cf-courses-data/CognitiveClass/ML0101ENv3/labs/ChurnData.csv churn_df = pd.read_csv("ChurnData.csv") X = np.asarray(churn_df[['tenure', 'age', 'address', 'income', 'ed', 'employ', 'equip']]) y = np.asarray(churn_df['churn']) X = preprocessing.StandardScaler().fit(X).transform(X) X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.3, random_state=5) churn_df = churn_df[['tenure', 'age', 'address', 'income', 'ed', 'employ', 'equip', 'callcard', 'wireless','churn']] churn_df['churn'] = churn_df['churn'].astype('int') # Test out the differences between various solvers. from sklearn.linear_model import LogisticRegression LR = LogisticRegression(C=0.0001, solver='newton-cg').fit(X_train,y_train) Yhat_ps = LR.predict_proba(X_test) Yhat = LR.predict(X_test) LR2 = LogisticRegression(C=0.0001, solver='saga').fit(X_train,y_train) Yhat_ps2 = LR2.predict_proba(X_test) Yhat2 = LR2.predict(X_test) print(Yhat_ps - Yhat_ps2)

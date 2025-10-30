@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 56021
-[parent_id]: 
-[tags]: 
-How do you know when you are using a multi gpu?
-
-I have 2 gpus on my local machines, but i'm not sure that the model I am training is using both of them (the speed has not changed much). My code: def get_model(): base_model = ResNet50(weights='imagenet', input_shape=(image_size,image_size,3), include_top=False) #base_model.trainable = False model = models.Sequential() model.add(base_model) model.add(layers.GlobalAveragePooling2D()) model.add(layers.Dense(1024, activation='relu')) model.add(layers.Dropout(0.5)) model.add(layers.Dense(196, activation='softmax')) model.summary() model = multi_gpu_model(model,gpus=2) #optimizer = optimizers.SGD(lr=1e-4, decay=1e-6, momentum=0.9, nesterov=True) optimizer = optimizers.RMSprop(lr=0.0001) model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['acc']) return model I just added the multi_gpu_model setting, but am not sure that this is enough. I checked nvidia-smi every 0.5 seconds, but seems like only one gpu is working. How do I make sure that it uses the full 2 gpus?

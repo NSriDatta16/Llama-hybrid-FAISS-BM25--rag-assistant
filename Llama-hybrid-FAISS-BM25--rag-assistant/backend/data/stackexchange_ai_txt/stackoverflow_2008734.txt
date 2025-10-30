@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2008734
-[parent_id]: 
-[tags]: 
-Why are my compiled linq queries slow the first time?
-
-We've recently started using complied queries in order to improve performance on our Linq to SQL setup. There are several queries that always take multiple seconds to run the first time take under a second in subsequent runs. This appears to be because the compilation doesn't actually take place until the call is made the first time. Is there an easy way to force this compilation to happen during the compilation of the program or at the very least during startup? EDIT: So from the comments I'm seeing it looks like linq queries are definitely not compiled until the call is made. Righ now I'm writing my queries like this: static readonly Func > getByPLUComp = CompiledQuery.Compile >((db, PLU) => from i in db.Items where i.IntPLU == PLU && i.Terminated == null select i); I have a bunch of these static readonly Funcs floating around. Is there an easy way I can have my program run around and initialize them on startup so the cost is incurred there rather than during regular use? EDIT 2: One last try before I give up on this question. To fix this problem I've just added calls to the compiled queries during the initialization of my program. For example: public void Initialize() { DataContext db = new DataContext(); getByPLUComp(db, 0); } Is there a more elegant way to force compilation without just running the query and throwing away the results?

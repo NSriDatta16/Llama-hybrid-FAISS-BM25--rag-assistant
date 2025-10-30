@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1085273
-[parent_id]: 1085216
-[tags]: 
-How about def debug_only if $DEBUG yield end end ... debug_only { puts "Some tracing code." } Passing -d on the command line will make $DEBUG true. % ruby -e 'p $DEBUG' false % ruby -de 'p $DEBUG' true In that case, one possibility is to separate the tracing code from what you're tracing. For eacample: release.rb: class A def stuff(a, b) # do stuff ... end end debug.rb: require 'release' class A alias release_stuff stuff def stuff(a, b) puts "calling stuff with (#{a.inspect}, #{b.inspect})" rv = release_stuff(a,b) puts "Done calling stuff." rv end end This has problems in that the granularity is a method, then again it may encourage you to write smaller methods. You can of course make it less verbose with some "metaprogramming". You can also use instance_method,bind and define_method to make the copy of the old method anonymous. And then you use it something like ruby -d -rdebug program.rb

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4327333
-[parent_id]: 4327115
-[tags]: 
-Repeated sorting sounds expensive to me. I would implement the cache as a hash table on the address. To keep things simple, I would start by not even counting hits but rather evicting old entries immediately on seeing a hash collision: const int CACHE_SIZE=32; // power of two struct CacheEntry { int16_t address; int16_t value }; CacheEntry cache[CACHE_SIZE]; // adjust shifts for different CACHE_SIZE inline int cacheIndex(int adr) { return (((adr>>10)+(adr>>5)+adr)&(CACHE_SIZE-1)); } int16_t cachedRead( int16_t address ) { int idx = cacheIndex( address ); CacheEntry * pCache = cache+idx; if( address != pCache->address ) { pCache->value = readEeprom( address ); pCache->address = address; } return pCache->value } If this proves not effective enough, I would start by fiddling around with the hash function.

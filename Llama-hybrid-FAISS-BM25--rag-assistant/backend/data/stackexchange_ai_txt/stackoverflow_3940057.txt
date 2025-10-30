@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3940057
-[parent_id]: 
-[tags]: 
-Resetting all global internal state of the net-snmp library from the Python bindings
-
-I'm trying to create automated integration tests for this hardware+software test subject which runs a SNMP agent as it's command interface. Our test setup looks like this: We're using Fitnesse as a test runner and PyFit to be able to write the tests in Python. We then use netsnmp with Python bindings to send SNMP commands. This works pretty well. However, when I try to run a suite the SNMP agent (the test subject) is restarted (and usually at a different simulated time) which makes the internals of netsnmp get all sorts of interesting errors. Turns out there is a lot of global state stored inside the netsnmp library like community and context names and problematically EngineTime and EngineBootCnt, which is used to prevent replay attacks in SNMP v3. This causes the agent to reject my snmp commands. My problems is how do I reinitialise the netsnmp library (from the Python bindings) in a way that the internal global state are reset? The netsnmp.Session object in the Python bindings do take the parameter EngineTime and EngineBoots and setting them to 0 should reset them, but actually it doesn't seem to do that. I also do not know if there is other global state in there which needs to be reset. I'm at a point where I think I need to rewrite the tests to use the pure python snmp library pysnmp, but I was hoping to avoid it.

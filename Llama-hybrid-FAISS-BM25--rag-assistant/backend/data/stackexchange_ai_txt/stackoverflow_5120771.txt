@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5120771
-[parent_id]: 5120490
-[tags]: 
-I think I figured it out. Alan Storm previously helped me with a similar problem I was having sorting products in an arbitrary way. Magento get a product collection in an arbitrary order Using the same idea I came up with the following code to make this work: $products = Mage::getModel('catalog/category')->load($category_id) ->getProductCollection() ->addAttributeToSelect('name') ->addAttributeToSelect('price') ->addAttributeToSelect('small_image') ->addAttributeToFilter('status', 1) ->addAttributeToFilter('visibility', 4) ->addAttributeToFilter('special_price', array('neq' => "")) ->addAttributeToFilter('discontinued', array('neq' => 1)) ->setPageSize($results_per_page) ->setCurPage($current_page) ; $products->getSelect()->order('(`e`.special_price / `e`.`price`)', 'DESC'); Credit should go to Alan Storm on this one.

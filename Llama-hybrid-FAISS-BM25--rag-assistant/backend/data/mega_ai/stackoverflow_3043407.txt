@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3043407
-[parent_id]: 3043389
-[tags]: 
-I think the problem is that the error is happening later, after your f_openFRHandler function has completed. Note that the function where LocalStorageManager.addImage is being called is being set as the onload handler on the reader, not being called immediately. It gets called later, asynchronously, when the data is loaded. You'll need to put your try..catch inside the anonymous function being created and assigned to that event, e.g.: this.FileChanged = function(input) { // FileUploadManager.addFileInput(input); console.debug(input); var files = input.files; for (var i = 0; i Your (excellent) test case makes the call synchronously, which is why the error is caught when you try it. This is a closer model to what's actually happening: try{ (function(){ setTimeout(function(){ // Use setTimeout to model asynchronicity throw 'foo' }, 100); })() } catch(e){ console.debug(e) }

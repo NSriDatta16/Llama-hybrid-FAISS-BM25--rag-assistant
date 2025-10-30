@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5291135
-[parent_id]: 5283466
-[tags]: 
-If you are going to use a UDF it will only recalculate correctly when you change the data if the parameters include all the range of data you want to handle. Here is a moving average UDF that handles entire columns and contains some error handling. You can call it using by entering the formula =MovingAverage(A:A,3) into a cell. Function MovingAverage(theRange As Range, LastN As Long) As Variant Dim vArr As Variant Dim j As Long Dim nFound As Long Dim dSum As Double On Error GoTo Fail MovingAverage = CVErr(xlErrNA) ' ' handle entire column reference ' vArr = Intersect(Application.Caller.Parent.UsedRange, theRange).Value2 If IsArray(vArr) And LastN > 0 Then For j = UBound(vArr) To 1 Step -1 ' skip empty/uncalculated If Not IsEmpty(vArr(j, 1)) Then ' look for valid numbers If IsNumeric(vArr(j, 1)) Then If Len(Trim(CStr(vArr(j, 1)))) > 0 Then nFound = nFound + 1 If nFound = LastN Then MovingAverage = dSum / LastN End If Exit Function Fail: MovingAverage = CVErr(xlErrNA) End Function

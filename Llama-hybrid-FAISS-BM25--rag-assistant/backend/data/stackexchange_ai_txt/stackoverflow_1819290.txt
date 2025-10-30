@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1819290
-[parent_id]: 1819131
-[tags]: 
-The problem is that the defintions you give for the static member variables are templates too. template std::string B ::mB; template typename B ::InitHelper B ::mInit; During compilation, this defines actually nothing, since T is not known. It is something like a class declaration or a template definition, the compiler does not generate code or reserve storage when it sees it. The definition happens implicitly later, when you use the template class. Because in the segfaulting case you don't use B ::mInit, it is never created. A solution would be explictly defining the needed member (without initializing it): Put somewhere source file a template<> typename B ::InitHelper B ::mInit; This works basically the same way as explictly defining a template class.

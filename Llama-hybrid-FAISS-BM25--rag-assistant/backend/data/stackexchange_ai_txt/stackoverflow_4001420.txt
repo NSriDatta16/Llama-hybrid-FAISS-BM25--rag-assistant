@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4001420
-[parent_id]: 4001284
-[tags]: 
-Not sure what the exact reason is but the UIAlertView is somehow causing the gesture to fire again. A workaround is to execute the showing outside the gesture handler using performSelector: -(void) handleTapGesture:(UIGestureRecognizer *) sender { CGPoint tapPoint = [sender locationInView:imageView]; int tapX = (int) tapPoint.x; int tapY = (int) tapPoint.y; NSLog(@"TAPPED X:%d Y:%d", tapX, tapY); [self performSelector:@selector(showMessage) withObject:nil afterDelay:0.0]; } - (void)showMessage { UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hello" message:@"How are you?" delegate:nil cancelButtonTitle:@"I'm awesome." otherButtonTitles:nil]; [alert show]; [alert release]; } Edit: The gesture recognizer goes through different states in the gesture (Began, Changed, etc) and it calls the handler method each time the state changes. So a better and probably correct solution is to check the state property of the gesture recognizer at the top of the handler: -(void) handleTapGesture:(UIGestureRecognizer *) sender { if (sender.state != UIGestureRecognizerStateEnded) //

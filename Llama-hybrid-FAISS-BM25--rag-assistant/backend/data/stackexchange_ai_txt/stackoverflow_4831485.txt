@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4831485
-[parent_id]: 
-[tags]: 
-Implementing review before save -- Controller or Model?
-
-Is there a way to do a "save" to an existing record instead of using update_attributes? Half of the values I'm saving are calculated from user inputs and so are not present in the params hash. Also, there can be multiple user review cycles, which means that :id drops out of the params hash (I'm saving it in the sessions hash). To me it seems conceptually simpler to "save" on the final version of @post. I ended up saving the final version of @post in an attributes hash, then going back to the database to get the original record, then doing update_attributes. Hopefully that 2nd retrieval of the record is cached? Actually now it's easy to generate a list of changes in a given edit, so maybe I'll stay with this if it works, but it seems awkward. What is the "Rails Way?" I'm new around here and want to fit in. @post = Post.new(params[:post]) finalattrhash = @post.attributes @post = nil @post = post.find(session[:postid]) respond_to do |format| if @post.update_attributes(finalattrhash) session[:postid] = nil format.html { redirect_to(@post, :notice => 'post was successfully updated.') } else ... end end

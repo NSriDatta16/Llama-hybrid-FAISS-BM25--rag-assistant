@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5460965
-[parent_id]: 5458775
-[tags]: 
-There are good news and bad news. You can create a criteria that will return a list of ModelTypes. However, they will not be session managed. The reason is, that a distinct query can only return a projection and projections are always unmanaged. The query below will generate a similar query to the above as it does an inner join between the two entities and returns a distinct set based on those 2 columns. The result transformer should be set to generate some type that can be set via properties. You can probably return a list of ModelTypes, but just know that they won't be managed by the session. Session.CreateCriteria () .CreateAlias("Type", "t") .Add(Restrictions.Eq("Qualifier", myQualifier) .SetProjection(Projections.Distinct( Projections.ProjectionList() .Add(Projections.Alias(Projections.Property("t.Id"), "Id")) .Add(Projections.Alias(Projections.Property("t.TypeName"), "TypeName")))) .SetResultTransformer(Transformers.AliasToBean ())

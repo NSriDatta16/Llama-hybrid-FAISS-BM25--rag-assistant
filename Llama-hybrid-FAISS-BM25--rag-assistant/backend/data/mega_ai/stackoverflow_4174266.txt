@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4174266
-[parent_id]: 4174187
-[tags]: 
-The problem is that the a in undefined :: a is not the same a as the ones in readT 's signature. There is a language extension available in GHC that enables that, called "ScopedTypeVariables". A more portable fix would be to introduce a little extra code to explicitly tie the types together, for example: readT :: (MValue a, Read a) => String -> Maybe (T a) readT s = result where result = case words s of (tp:frm:rest) -> if tp /= typename ((const :: a -> Maybe (T a) -> a) undefined result) then Nothing else case frm of "pair" -> TP readPair rest "triple" -> TT readTriple rest _ -> Nothing _ -> Nothing This is a very quick and dirty modification of your code, and I'm the changes could be made more elegantly, but that should work.

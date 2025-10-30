@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4703957
-[parent_id]: 
-[tags]: 
-ATA Trusted commands in Linux
-
-Colleagues, I'm implementing support for ATA trusted commands 0x5C, TRUSTED RECEIVE, 0x5D, TRUSTED RECEIVE DMA, 0x5E, TRUSTED SEND 0x5F, TRUSTED SEND DMA, for Linux (two hosts, Fedora 12 and 14) to support self-encrypting drives. I took a code from this page http://www.jukie.net/bart/blog/ata-via-scsi as the base code. For trusted receive (on this layer it is identical to IDENTIFY, 0xEC): sg_io.interface_id = 'S'; sg_io.cmdp = cdb; sg_io.cmd_len = sizeof(cdb); sg_io.dxferp = data_in_buffer; sg_io.dxfer_len = data_in_length; // multiple of 512 sg_io.dxfer_direction = SG_DXFER_FROM_DEV; sg_io.sbp = sense; sg_io.mx_sb_len = sizeof(sense); sg_io.timeout = 5000; // 5 seconds cdb[0] = 0x85; // pass-through ATA16 command (no translation) cdb[1] = (4 > 8; cdb[8] = lba_low; cdb[9] = lba_mid >> 8; cdb[10] = lba_mid; cdb[11] = lba_high >> 8; cdb[12] = lba_high; cdb[14] = 0x5C; // TRUSTED RECEIVE rc = ioctl (fd, SG_IO, &sg_io); It works perfectly for Identify and all other commands, but not for trusted commands. When I connect protocol analyzer, I see that these commands are not sent to SATA bus. The adaptor is capable to send them, because they are coming OK under Windows (not my code, but I think using ATA_PASS_THROUGH). And yes, I'm running this code as root. Please help to resolve this mystery :)

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 618712
-[parent_id]: 
-[tags]: 
-Implementing loss function for training GAN
-
-I am trying to understand the implementation of the following loss function in training Discriminator part. Loss function maximize log(D(x)) + log(1 - D(G(z))) Code ############################ # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z))) ########################### # train with real model_D.zero_grad() real_cpu = data[0].to(device) batch_size = real_cpu.size(0) label = torch.full((batch_size,), real_label, device=device) output = model_D(real_cpu) errD_real = loss_function(output, label) errD_real.backward() D_x = output.mean().item() # train with fake noise = torch.randn(batch_size, latent_vector_size, 1, 1, device=device) fake = model_G(noise) label.fill_(fake_label) output = model_D(fake.detach()) errD_fake = loss_function(output, label) errD_fake.backward() D_G_z1 = output.mean().item() errD = errD_real + errD_fake train_loss_D += errD.item() optimizerD.step() These two lines output = model_D(real_cpu) errD_real = loss_function(output, label) implement log(D(x)) . But I can't understand for the following lines implement this log(1 - D(G(z)) . I just see log D(G(z)) and where is 1 and substraction? noise = torch.randn(batch_size, latent_vector_size, 1, 1, device=device) fake = model_G(noise) label.fill_(fake_label) output = model_D(fake.detach()) errD_fake = loss_function(output, label)

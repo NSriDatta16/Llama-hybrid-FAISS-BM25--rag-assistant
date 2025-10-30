@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 75568
-[parent_id]: 
-[tags]: 
-Clusters: how to improve results for text classification
-
-I am trying to classify texts using kmeans, TfidfVectorizer, PCA. However, it seems that many texts are not correctly classified as you can see: I have texts in cluster2 that should be in Cluster 0 or 1. My question is on how to improve the results, if increasing the number of clusters or adding more constraints (like specific words to look at for clustering texts). Help and suggestions will be greatly appreciated. Code: def preprocessing(line): line = re.sub(r"[^a-zA-Z]", " ", line.lower()) words = word_tokenize(line) words_lemmed = [WordNetLemmatizer().lemmatize(w) for w in words if w not in stop_words] return words_lemmed vect =TfidfVectorizer(tokenizer=preprocessing) vectorized_text=vect.fit_transform(df['Text']) kmeans =KMeans(n_clusters=n).fit(vectorized_text) cl=kmeans.predict(vectorized_text) df['Predicted']=pd.Series(cl, index=df.index) df.groupby("Predicted").count() kmeans_labels =KMeans(n_clusters=n).fit(vectorized_text).labels_ pipeline = Pipeline([('tfidf', TfidfVectorizer())]) X = pipeline.fit_transform(df['Text']).todense() pca = PCA(n_components=n).fit(X) data2D = pca.transform(X) kmeans.fit(X) centers2D = pca.transform(kmeans.cluster_centers_) labels=kmeans.labels_ cluster_name = ["Cluster"+str(i) for i in set(labels)]

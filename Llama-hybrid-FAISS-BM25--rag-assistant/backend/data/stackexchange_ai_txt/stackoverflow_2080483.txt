@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2080483
-[parent_id]: 2079898
-[tags]: 
-Nothing particular happens when you add an app to INSTALLED_APPS, but the main thing that affects you is that its views are checked when you call reverse() . The way reverse works is to import all the views in the project, and see which ones match the URL name you have given. However, it is quite fragile, and if any of the views cause an error for some reason, or can't be imported, the reverse call will fail. The fact that it is only failing once you include app2 indicates that there is an issue with the views in app2 somewhere. Try importing them individually from the shell and see what errors you get. Edited after update Thanks for the extra detail. I have seen this before in my own code. It is probably because the admin files are being imported before the urlconf is processed, so this reverse gives an error. Try moving the admin.autodiscover() line down to the very bottom of urls.py, so that it is the last line in that file.

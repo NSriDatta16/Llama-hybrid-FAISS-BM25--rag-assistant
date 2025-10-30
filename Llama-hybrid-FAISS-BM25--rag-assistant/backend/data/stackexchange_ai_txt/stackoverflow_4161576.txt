@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4161576
-[parent_id]: 4097044
-[tags]: 
-This isn't a simple problem to implement, but it is straightforward. For any given page you need to scan the page using the CGPDF scanner API. You need to register callbacks for PDF operators that affect text in the page - not just TJ/Tj, but also those that set font, affect the text drawing matrix, etc. You need to build a state machine that updates with each encountered tag+parameters. You need to examine text accounting for the current font's encoding. When you find text that you want to highlight, you'll need to examine the current text drawing matrix you've been updating to determine the drawing coordinates. Read the PDF specification (version 1.7 is downloadable from Adobe) to understand which operators you need to pay attention to. Font encoding is perhaps the most difficult part since there are a handful of ways encoding can be specified, and some of them are proprietary to the font. Mostly you can cheat and fall back on a subset of ANSI encoding - but this WILL break on certain PDFs having strange fonts. Essentially you are processing the page as if you were to render it.

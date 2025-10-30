@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3575838
-[parent_id]: 
-[tags]: 
-php DBAL for MySQLi/MSSQL row fetching
-
-I'm trying to write a simple, thin and efficient database abstraction layer on top of the PHP MySQLi (procedural) and MSSQL libraries, to be used like this... while ($a = db::go('db_name')->query('select * from foo')->row()) { print_r($a); } I have the class written, but am struggling somewhat with how best to loop through the results. The class will only need to handle select queries, and will have to handle some large result sets. Here's a snippet of the ->row() method... public function row() { return $this->{'get'.ucwords($this->details['type']).'Row'}(); } private function getMysqliRow() { return @mysqli_fetch_assoc($this->result); } private function getMssqlRow() { return @mssql_fetch_assoc($this->result); } At the moment, the call is resulting in an infinite loop, and retrieving the same row each time because the internal pointer in the result set isn't incremented in the same way as a while ($a = mssql_data_seek($result)) call would, which makes complete sense (a result set isn't global, you should be able to handle more than one result set at a time!). So, does anyone know of an elegant and efficient way around this? Or is the only solution to use the data seek functions ( mysqli_data_seek() and mssql_data_seek() ) and hold a pointer to the current position in the result set? If so, how efficient is this (I will be handling large result sets > 250000)? And how would the while loop handle reaching the end of the result set?

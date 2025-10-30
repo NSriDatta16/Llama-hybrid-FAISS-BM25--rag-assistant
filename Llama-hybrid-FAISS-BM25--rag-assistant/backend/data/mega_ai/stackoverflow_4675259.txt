@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4675259
-[parent_id]: 4673401
-[tags]: 
-As others have stated, this is really a job for an HTML::Parser. Also, you should 'use strict;' and remove use LWP::Simple as you're not using the library. You could change your regex to the following: $content =~ m{http://www\.gamereplays\.org/community/style_medals/([\w\_]+)$id2\.gif}s; But you won't get style_medals/comp_graphics_10.gif - which may be what you want. I think something like the following would work better. My apologies for the style changes but I can't resist modifying for PBP. #!/usr/bin/perl use LWP::UserAgent; use Carp; use strict; my $ua = LWP::UserAgent->new(); # Fetch pages from 1 to 55. Are we sure we won't have page 56? # Perhaps consider running until a 404 is found. for (my $id = 1; $id get( 'http://www.gamereplays.org/community/index.php?ac\ t=medals&CODE=showmedal&MDSID='.$id ); # Check for failure and abort if (!defined $response || !$response->is_success) { croak 'Request failed! '.$response->status_line(); } my $content = $response->content(); # Run this loop each time we find the url CONTENT_LOOP: while ($content =~ s{

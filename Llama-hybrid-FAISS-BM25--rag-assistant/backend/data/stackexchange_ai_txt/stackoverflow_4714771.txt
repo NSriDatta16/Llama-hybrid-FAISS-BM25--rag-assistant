@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4714771
-[parent_id]: 4714363
-[tags]: 
-Transforming the collections in place seems like an awful hack to me. I'd suggest using Google Guava instead. It's Lists.transform(List,Function) returns a view that is backed by the original List and a mapping function, so you're not actually changing anything. Here's what your code would look like: class TotalServiceImpl implements TotalService{ private static final Function PRICING_DTO_TRANSFORMER = new PricingDtoTransformer(); private static class PricingDtoTransformer implements Function { public PricingDtoTransformer(){ } @Override public Double apply(final PricingDto pricingDto){ return pricingDto.getTax() + pricingDto.getPrice() + pricingDto.getTips(); } } public List getListDouble(final List pricingDtos){ final List totalList = Lists.transform(pricingDtos, PRICING_DTO_TRANSFORMER); for(final Double d : totalList){ // print them. } return totalList; } } Commons-Collections might also have a similar mechanism, but I couldn't find it at first glance.

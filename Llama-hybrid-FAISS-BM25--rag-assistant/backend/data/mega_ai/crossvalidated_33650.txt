@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 33650
-[parent_id]: 
-[tags]: 
-Time Series: correcting the standard errors in a huge panel time series data set
-
-I have stock returns at every 5 minute interval of each trading day for over 2 years for 40 stocks. I want to run a Fama-Macbeth regression by time interval (5min intervals) and then correct the standard errors correlation using Newey-West in SAS. This is my code: ods listing close; ods output parameterestimates=pe; proc reg data=dset; by time_interval; model depvar = indvars; run; quit; ods listing; proc means data=pe mean std t probt; var estimate; class variable; run; proc sort data=pe; by variable; run; %let lags=1000; ods output parameterestimates=nw; ods listing close; proc model data=pe; by variable; instruments / intonly; estimate=a; fit estimate / gmm kernel=(bart,%eval(&lags+1),0); run; quit; ods listing; As you might have I guessed, this is very computationally intensive. I can't get any results. Should I run instead the Fama-Macbeth regression by stock rather than time interval? Would I get the same thing? Is it because I am using ods listings?

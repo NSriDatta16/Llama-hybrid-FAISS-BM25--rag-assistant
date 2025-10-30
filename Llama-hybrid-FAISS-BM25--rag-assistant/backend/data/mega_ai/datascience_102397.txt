@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 102397
-[parent_id]: 102368
-[tags]: 
-Once I assume you are using text data as your input matrix X . The first point is that you have to include your preprocessing step as you would do when not using a calibrated classifier, so as you already know you can use a Pipeline like so: calibrated_svc = CalibratedClassifierCV(linear_svc, method='sigmoid', cv=3) model = Pipeline([('tfidf', TfidfVectorizer()), ('clf', calibrated_svc)]).fit(X, y) Another option if your are interested in using probabilities in your SVM you can set the parameter probability = True inside your SVM but using the class SVC with a linear kernel is equvilalent to LinearSVC like: model = Pipeline([('tfidf', TfidfVectorizer()), ('clf',SVC(probability = True, kernel = 'linear') )]).fit(X, y) This will run a Logistic regression on the top of the binary predictions of the SVM. Both options are feasible if you are only interested in using probabilities per se but if you are also interested on the calibration of your probabilities, the first option is better

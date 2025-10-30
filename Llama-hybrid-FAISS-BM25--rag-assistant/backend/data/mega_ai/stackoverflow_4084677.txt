@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4084677
-[parent_id]: 4084499
-[tags]: 
-I would suggest putting a sleep statement in your loop... not only is that tight loop probably hogging CPU resources, but you also pay for storage transactions. Every ten thousand times you check the queue, it costs a penny. That's a small cost, but it could add up over time to be significant. I've also often used code like this: while(true) { var msg = q1.GetMessage(); if (msg != null) { ... } msg = q2.GetMessage(); if (msg != null) { ... } } In other words, poll the queues serially instead of parallelly (that should totally be a word). That way you're only actually doing one thing at a time (useful if your tasks are CPU-instensive), but you're still checking all the queues in each loop.

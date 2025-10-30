@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4483460
-[parent_id]: 4482849
-[tags]: 
-Does anyone know a JDBC extension library that solves this problem elegantly? No, someone has to invent it yet. Or should I write a simple wrapper class (or adapter) for all of these types myself? I'd definitely go for this. Start with a common wrapper interface. public interface DataProvider { public BigInteger getBigInteger(int columnIndex); // ... } Let all concrete wrappers implement it. public class ResultSetDataProvider implements DataProvider { private ResultSet resultSet; public ResultSetDataProvider(ResultSet resultSet) { this.resultSet = resultSet; } public BigInteger getBigInteger(int columnIndex) { BigDecimal bigDecimal = resultSet.getBigDecimal(columnIndex); return bigDecimal != null ? bigDecimal.toBigInteger() : null; } // ... } And use it instead. try { // Acquire ResultSet. DataProvider dataProvider = new ResultSetDataProvider(resultSet); // Process DataProvider. } finally { // Close ResultSet. } Or would you just accept that fact and keep duplicating internal library code? No, I wouldn't. Keep your code DRY .

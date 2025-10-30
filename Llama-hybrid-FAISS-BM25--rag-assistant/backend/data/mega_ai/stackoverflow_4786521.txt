@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4786521
-[parent_id]: 
-[tags]: 
-Check if thread is a boost thread
-
-For purposes of thread local cleanup I need to create an assertion that checks if the current thread was created via boost::thread. How can I can check if this was the case? That is, how can I check if the current thread is handled by boost::thread? I simply need this to do a cleanup of thread local storage when the thread exits. Boost's thread_local_ptr appears to only work if the thread itself is a boost thread. Note that I'm not doing the check at cleanup time, but sometime during the life of the thread. Some function calls one of our API/callbacks (indirectly) causing me to allocate thread-local storage. Only boost threads are allowed to do this, so I need to detect at that moment if the thread is not a boost thread. Refer to Destruction of static class members in Thread local storage for the problem of not having a generic cleanup handler. I answered that and realized pthread_clenaup_push won't actually work: it isn't called on a clean exit form the thread. While I don't have answer to detect a boost thread the chosen answer does solve the root of my problem. Boost thread_specific_ptr's will call their cleanup in any pthread. It must have been something else causing it not to work for me, as an isolated test shows that it does work.

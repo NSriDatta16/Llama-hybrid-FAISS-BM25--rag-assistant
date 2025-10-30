@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4152271
-[parent_id]: 4151316
-[tags]: 
-My query looks like this "delete from Organization where some_key_id = ?" (am not deleting this based on primary key id) A bulk delete (you should mention that in your question) doesn't cascade to anything. Quoting the JPA 1.0 specification: 4.10 Bulk Update and Delete Operations ... A delete operation only applies to entities of the specified class and its subclasses. It does not cascade to related entities . This is a very annoying limitation and there are many RFEs to improve things ( HHH-695 , HHH-1917 , HHH-3337 , HHH-5529 , etc). For now, possible solutions include: clean up the child table yourself use cascading foreign keys in the schema. Now the weird part... My understanding of @OnDelete(action = OnDeleteAction.CASCADE) is that this annotation is supposed to be used to ensure that the foreign key is created with the appropriate ON DELETE CASCADE clause (solution #2). In other words, I'd expect things to work. Did Hibernate generate the Organization table? Can you check the DDL? Do you see the expected ON DELETE CASCADE ? If not, add it.

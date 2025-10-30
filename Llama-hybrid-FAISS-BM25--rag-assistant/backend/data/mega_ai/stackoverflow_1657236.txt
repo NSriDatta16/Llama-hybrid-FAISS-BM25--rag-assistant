@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1657236
-[parent_id]: 1642184
-[tags]: 
-I took Heinzi's solution and came up with the final solution that I needed. I can now take a list of files, extract all URL's and titles, and place the results in one output buffer. (defun extract-urls (fname) "Extract HTML href url's,titles to buffer 'new-urls.csv' in | separated format." (setq in-buf (set-buffer (find-file fname))); Save for clean up (beginning-of-buffer); Need to do this in case the buffer is already open (setq u1 '()) (while (re-search-forward "^.* ]+>\\([^ " nil t) (when (match-string 0) ; Got a match (setq url (match-string 1) ) ; URL (setq title (match-string 2) ) ; Title (setq u1 (cons (concat url "|" title "\n") u1)) ; Build the list of URLs ) ) (kill-buffer in-buf) ; Don't leave a mess of buffers (progn (with-current-buffer (get-buffer-create "new-urls.csv"); Send results to new buffer (mapcar 'insert u1)) (switch-to-buffer "new-urls.csv"); Finally, show the new buffer ) ) ;; Create a list of files to process ;; (mapcar 'extract-urls '( "/tmp/foo.html" "/tmp/bar.html" ))

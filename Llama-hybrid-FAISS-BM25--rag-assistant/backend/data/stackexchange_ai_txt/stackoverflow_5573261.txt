@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5573261
-[parent_id]: 5572519
-[tags]: 
-I'm surprised the undo for that isn't grouped automatically. However, you can do manual undo grouping; you'll have to set up the inverse actions yourself. Hopefully this will point you in the right direction: - (BOOL)shouldChangeTextInRanges:(NSArray *)affectedRanges replacementStrings:(NSArray *)replacementStrings { NSUndoManager * undoMan = [self undoManager]; [undoMan beginUndoGrouping]; NSEnumerator stringEnumerator = [replacementStrings objectEnumerator]; for( NSRange thisRange in affectedRanges ){ NSString * thisString = [stringEnumerator nextObject]; NSTextStorage * textStore = [self textStorage]; [[undoMan prepareWithInvocationTarget:textStore] replaceCharactersInRange:thisRange withString:[textStore attributedSubstringFromRange:thisRange]]; [textStore replaceCharactersInRange:thisRange withString:thisString]; } [undoMan endUndoGrouping]; [undoMan setActionName:@"Replace All"]; return NO; // because we just did it by hand }

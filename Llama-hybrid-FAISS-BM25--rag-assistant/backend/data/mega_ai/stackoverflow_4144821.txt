@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4144821
-[parent_id]: 
-[tags]: 
-Problem with return type
-
-I have a classes: struct Policy_1 { void signalFailure() { throw std::exception(); } }; struct Policy_2 { void* signalFailure() { return nullptr; } }; template struct My { template T* fnc(int value) { if (!value) { return Policy::signalFailure();//Here is the problem } else { return new int(value); } } }; The problem is that depending on Policy class signalFailure either throws or returns nullptr but I'm getting error from compiler (even though Policy is set that it does throw) that it cannot convert void to (T*) - depending what I've substitute for tea; Now, I do understand where the problem lies - compiler does syntax check and discovers that from this Policy, signalFailure returns void so it can't parse it even though signalFailure in practice throws. I have two options as I see it: a) either declare void* as a result type of signalFailure b) declare void as a result type in fnc and move the result type to a args list of this fnc or c) do some (and here is the real Q to you) macro or metaprogramming inside my fnc which would be determined at compile time (either return Policy::etc or just Policy::etc) and that I think would be the best option. Of course if someone of you has better and more elegant idea how to do it, is more than welcome to show it.

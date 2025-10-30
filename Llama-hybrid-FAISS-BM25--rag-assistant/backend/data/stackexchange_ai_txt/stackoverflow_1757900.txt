@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1757900
-[parent_id]: 1757148
-[tags]: 
-When you put a breakpoint on your transaction.Commit() line do you see it getting hit? Final answer: SQLite's locking does not work like you're assuming see http://www.sqlite.org/lockingv3.html . Given that, I think you're having a transaction scoping issue which can be easily resolved by reorganizing your code as such: string selectSql = "select * From X Where Y;"; using(var conn = OpenNewConnection()){ StringBuilder updateBuilder = new StringBuilder(); using(var cmd = new SQLiteCommand(selectSql, conn)) using(var ranges = cmd.ExecuteReader()) { while(MemberVariable > 0 && ranges.Read()) { updateBuilder.Append("Update X Set Z = 'foo' Where Y;"); } } using(var trans = conn.BeginTransaction()) using(var updateCmd = new SQLiteCommand(updateBuilder.ToString(), conn, trans) { cmd.ExecuteNonQuery(); trans.Commit(); } }

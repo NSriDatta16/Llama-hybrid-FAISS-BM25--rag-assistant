@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4999710
-[parent_id]: 
-[tags]: 
-Downloading XML results with LWP::UserAgent in PERL
-
-I'm hoping for some assistance with a Perl issue. I need to download an XML file that is the result of a query, parse the results, grab the next link from the XML file, download & repeat. I have been able to download and parse the first result set fine. I grab the next URL, but it seems that returned result never changes. I.e.: the second time through the loop, $res->content is the same as the first time. Therefore, the value of $url never changes after the first download. I'm suspecting it is a scope problem, but I just cannot seem to get a handle on this. use LWP::UserAgent; use HTTP::Cookies; use Data::Dumper; use XML::LibXML; use strict; my $url = "http://quod.lib.umich.edu/cgi/f/findaid/findaid-idx?c=bhlead&cc=bhlead&type=simple&rgn=Entire+Finding+Aid&q1=civil+war&Submit=Search;debug=xml"; while ($url ne ""){ my $ua = LWP::UserAgent->new(); $ua->agent('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)'); $ua->timeout(30); $ua->default_header('pragma' => "no-cache", 'max-age' => '0'); print "Download URL:\n$url\n\n"; my $res = $ua->get($url); if ($res->is_error) { print STDERR __LINE__, " Error: ", $res->status_line, " ", $res; exit; } my $parser = XML::LibXML->new(); my $doc = $parser->load_xml(string=>$res->content); #grab the url of the next result set $url = $doc->findvalue('//ResultsLinks/SliceNavigationLinks/NextHitsLink'); print "NEXT URL:\n$url\n\n"; }

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3813688
-[parent_id]: 
-[tags]: 
-How to mock chained function calls in python?
-
-I'm using the mock library written by Michael Foord to help with my testing on a django application. I'd like to test that I'm setting up my query properly, but I don't think I need to actually hit the database, so I'm trying to mock out the query. I can mock out the first part of the query just fine, but I am not getting the results I'd like when I chain additional things on. The function: @staticmethod def get_policies(policy_holder, current_user): if current_user.agency: return Policy.objects.filter(policy_holder=policy_holder, version__agency=current_user.agency).distinct() else: return Policy.objects.filter(policy_holder=policy_holder) and my test: The first assertion passes, the second one fails. def should_get_policies_for_agent__user(self): with mock.patch.object(policy_models.Policy, "objects") as query_mock: user_mock = mock.Mock() user_mock.agency = "1234" policy_models.Policy.get_policies("policy_holder", user_mock) self.assertEqual(query_mock.method_calls, [("filter", (), { 'policy_holder': "policy_holder", 'version__agency': user_mock.agency, })]) self.assertTrue(query_mock.distinct.called) I'm pretty sure the issue is that the initial query_mock is returning a new mock after the .filter() is called, but I don't know how to capture that new mock and make sure .distinct() was called on it. Is there a better way to be testing what I am trying to get at? I'm trying to make sure that the proper query is being called.

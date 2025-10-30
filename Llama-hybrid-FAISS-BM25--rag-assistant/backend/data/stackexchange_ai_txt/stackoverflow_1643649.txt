@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1643649
-[parent_id]: 1642996
-[tags]: 
-It's not the most elegant approach, but this might be worth a try. It creates a Sql Command as a string, and at the end executes it. DECLARE @Values VARCHAR(8000) -- Flatten all values lists into one string SET @Values = REPLACE(REPLACE((SELECT [Value] FROM [dbo.MyTable] FOR XML PATH('')), ' ', ''), ' ', ';') SET @Values = SUBSTRING(@Values, 0, LEN(@Values)) DECLARE @SeparatorIndex INT SET @SeparatorIndex = (SELECT TOP 1 PATINDEX('%[;]%', @Values)) DECLARE @InsertClause VARCHAR(50) SET @InsertClause = 'INSERT INTO [dbo.MyTable] VALUES (' DECLARE @SQL VARCHAR(500) SET @SQL = @InsertClause + SUBSTRING(@Values, 0, @SeparatorIndex) + '); ' SET @Values = RIGHT(@Values, LEN(@Values) - (@SeparatorIndex - 1)) SET @SQL = REPLACE(@SQL + (SELECT (REPLACE(@Values, ';', '); ' + @InsertClause))) + ')', '; )', '') EXEC (@SQL) The command ends up (in Sql Server 2005) as: INSERT INTO [dbo.MyTable] VALUES (1); INSERT INTO [dbo.MyTable] VALUES (2); INSERT INTO [dbo.MyTable] VALUES (3); INSERT INTO [dbo.MyTable] VALUES (4); INSERT INTO [dbo.MyTable] VALUES (5) ...'

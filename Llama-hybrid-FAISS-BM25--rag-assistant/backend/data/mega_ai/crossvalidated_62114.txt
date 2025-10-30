@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 62114
-[parent_id]: 43634
-[tags]: 
-lmer(X21~X25+meanX25+(X25|X1),data=datai) There are two implicit intercepts provided in lmer unless you override it, so this is equivalent to: lmer (X21 ~ 1 + X25 + meanX25 + (1 + X25 | X1), data=datai) Where the "fixed" X25 represents the overall mean across locations, and the "random" 1 represents the average difference (intercept) of each location from the overall mean. (I'm assuming X1 is the location.) So I'm a bit confused as to why you'd also include a manually-calculated mean for each group ( meanX25 ), instead of simply: lmer (X21 ~ 1 + X25 + (1 + X25 | X1), data=datai) where you can take the overall (fixed effect) intercept and add it to each location's difference (random effect) to come up with each location's average. It's already in there, by virtue of a mixed-effects approach -- as I understand it. If it does make sense to include meanX25 , you should explicitly remove the intercept from the random part: lmer (X21 ~ X25 + meanX25 + (0 + X25 | X1), data=datai)

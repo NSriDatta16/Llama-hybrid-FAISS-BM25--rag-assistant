@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3926681
-[parent_id]: 
-[tags]: 
-Counting the number of recursions
-
-I have some code that approximates a solution recusively, what it actually does is not important, but it works towards r' == rt by varying mg (m guess, starting with 4.0 because I "know" that ought to be in the ballpark). solve_m f ar st qt = solve_m' f ar st qt 4.0 where solve_m' f ar st qt mg | rd > precis = f' (mg - sf) | rd What I would like to be able to do is count the number of cycles, I know the right way to do this is with the State monad, but what is the most elegant way to fit the put/get into a function like this? Make f' a do block? Or is it simply to add a counter solve_m' and return (counter, mg)? Thanks! Edit: This seems to be basically what I want, and no Monads necessary: solve_m f ar st qt = (last (series), length(series)) where series = takeWhile termPred (iterate solve_m' 4.0) termPred m' = (abs (rt - (f st ar m'))) > precis rt = st + qt solve_m' mg | rt > r' = (mg - sf) | rt Still looks a little messy (repeated code) but I'll tidy it up... This is getting me acceptable results in 1/10000th of the iterations of the code it will replace!

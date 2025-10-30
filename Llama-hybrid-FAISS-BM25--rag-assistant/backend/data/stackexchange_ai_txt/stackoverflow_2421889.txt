@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2421889
-[parent_id]: 2421827
-[tags]: 
-When you get one result, are you confident that it's correct? If so, you could do something like: function pos = ChoosePosition(posGood, posA, posB) %# posGood is the known good answer, posA and posB are candidates if norm(posA - posGood) > norm(posB - posGood) pos = posB; else pos = posA; If you want to automate everything, you could collect up all the measurements into an Nx2 matrix and do the following: function [dist, idx] = RankPositions(pos) %# pos should be an Nx2 matrix of x,y candidate positions dist = pos - repmat(mean(pos), length(pos), 1); %# this is for octave, matlab might handle pos - mean(pos) dist = norm(dist, 'rows'); [dist, idx] = sort(dist); %# one liner: %# [dist, idx] = sort(norm(pos - repmat(mean(pos), length(pos), 1)), 'rows')); This will give you a ranked assortment of the distance of each point from the average of all the points. Then, since you know you have (for instance) 10 images but got 14 (or whatever) results, you can just take the 10 lowest distances as the true positions: realpos = pos(idx(1:10));

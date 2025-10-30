@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2956193
-[parent_id]: 2956154
-[tags]: 
-Without knowing the full structure, I will assume a structure to build a query, step by step Get the IDs of the houses belonging to the owners select id from House where owner in ('peter', 'paul') Get the boxes in those houses select boxid from boxes where homeid in (select id from House where owner in ('peter', 'paul')) Get the things in those boxes select * from things where boxid in (select boxid from boxes where homeid in (select id from House where owner in ('peter', 'paul'))) This should get you what you want, but is very inefficient. In the above method, The final query in step 3 gets the ids in each step, and stores them in temporary storage while it consumes them. This is a very slow operation in most DBMS. The better alternative is a join. Combine all the tables and select the desired data. select * from things join boxes on things.boxid =boxes.boxid join houses on boxes.houseid=house.id join owners on houses.owner=owner.ownerid where owner.name in ('peter',''paul)

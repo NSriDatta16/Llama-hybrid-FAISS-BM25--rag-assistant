@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4803827
-[parent_id]: 4803495
-[tags]: 
-You're actually doing it the right way. However, since Magento uses EAV, it needs to apply tricks to help performance. One of these tricks is the timing used to build the eventual SQL string. Usually it's lazily loaded at the last minute and it's not until you actually indicate you want to access a collection's data, that you can see the full SQL used to produce the collection. For example running your code, but prompting magento to actually construct and load the collection, produces the expected output. $attributes = Mage::getResourceModel('eav/entity_attribute_collection') ->setOrder('attribute_id'); $attributes->count(); // forces the collection to load echo $attributes->getSelect()->assemble(); This results in the SQL: SELECT `main_table`.* FROM `eav_attribute` AS `main_table` ORDER BY attribute_id DESC So you were on the right path, just Magento was doing its level best to confuse you. It's very good at that.

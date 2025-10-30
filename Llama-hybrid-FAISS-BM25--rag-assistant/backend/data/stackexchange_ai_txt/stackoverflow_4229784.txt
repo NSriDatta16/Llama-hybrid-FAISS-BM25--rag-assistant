@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4229784
-[parent_id]: 4229632
-[tags]: 
-The problem is that you're trying to use C structures to parse data from over the network. If your machine is big endian and your compiler happens to order bitfields the way you want them ordered, this might work okay (until you get to the pointer fields...), but it's very fragile. You should be parsing packets as an array of unsigned char . Now, look at this: struct QUESTION{ char* qname; struct REQ_DATA field; }; This is a structure that's 8 or 16 bytes (depending on your platform), nothing like the variable-length field in the actual DNS packet. And there's certainly no way you're going to get a valid pointer (which would be local to your own machine and process's address space) out of the data off the network.

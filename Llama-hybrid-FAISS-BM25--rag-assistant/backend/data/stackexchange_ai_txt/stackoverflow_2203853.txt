@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2203853
-[parent_id]: 2203159
-[tags]: 
-Let's try and rewrite this simple C call as C++: std::string get_working_path() { char temp [ PATH_MAX ]; if ( getcwd(temp, PATH_MAX) != 0) return std::string ( temp ); int error = errno; switch ( error ) { // EINVAL can't happen - size argument > 0 // PATH_MAX includes the terminating nul, // so ERANGE should not be returned case EACCES: throw std::runtime_error("Access denied"); case ENOMEM: // I'm not sure whether this can happen or not throw std::runtime_error("Insufficient storage"); default: { std::ostringstream str; str The thing is, when wrapping a library function in another function you have to assume that all the functionality should be exposed, because a library does not know what will be calling it. So you have to handle the error cases rather than just swallowing them or hoping they won't happen. It's usually better to let the client code just call the library function, and deal with the error at that point - the client code probably doesn't care why the error occurred, and so only has to handle the pass/fail case, rather than all the error codes.

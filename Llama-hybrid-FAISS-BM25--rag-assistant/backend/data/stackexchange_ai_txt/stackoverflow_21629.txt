@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 21629
-[parent_id]: 21558
-[tags]: 
-I'd like to add to OJ's kind clarifications. Virtual inheritance doesn't come without a price. Like with all things virtual, you get a performance hit. There is a way around this performance hit that is possibly less elegant. Instead of breaking the diamond by deriving virtually, you can add another layer to the diamond, to get something like this: B / \ D11 D12 | | D21 D22 \ / DD None of the classes inherit virtually, all inherit publicly. Classes D21 and D22 will then hide virtual function f() which is ambiguous for DD, perhaps by declaring the function private. They'd each define a wrapper function, f1() and f2() respectively, each calling class-local (private) f(), thus resolving conflicts. Class DD calls f1() if it wants D11::f() and f2() if it wants D12::f(). If you define the wrappers inline you'll probably get about zero overhead. Of course, if you can change D11 and D12 then you can do the same trick inside these classes, but often that is not the case.

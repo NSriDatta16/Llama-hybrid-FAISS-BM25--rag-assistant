@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5313878
-[parent_id]: 5313601
-[tags]: 
-Keeping the id of the HTML you're inserting into the DOM isn't going to preserve the droppable widget that was attached to the div you're replacing. You'll need to restructure your code so that the droppable widget is re-initialized on the new content: $('.draggable').draggable({ revert: true }); function createDroppable() { $('#layoutHeader').droppable({ drop: function (event, ui) { $.ajax({ type: "POST", url: '/SiteSetup/GetMarkup/' + $(ui.draggable).attr("id"), success: function (data) { $('.draggable').draggable('destroy'); $('#layoutHeader').replaceWith(data); /* Re-initialize the droppable widget: */ createDroppable(); $('.draggable').draggable({ revert: true }); } }); } }); } createDroppable(); Alternatively, you could wrap #layoutHeader with another div that acts as the droppable . That way, replacing #layoutHeader shouldn't remove the droppable functionality.

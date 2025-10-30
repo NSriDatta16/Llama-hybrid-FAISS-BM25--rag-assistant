@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4296300
-[parent_id]: 4296276
-[tags]: 
-Abstract classes can't be instantiated, but you're asking the compiler to do just that by embedding an instance of I1 into every instance of M1 . You can work around that by slightly changing your design and embedding a pointer (or a smart pointer, if you can use those) to an instance of I1 instead: class M1 : public G1 { protected: I1 *sc; public: M1(I1 *sc_) { sc = sc_; } void foo() { int dir = 4; sc->a(dir); } }; EDIT: After reading your code, I think that the simplest and cleanest way to solve your problem is to pass the current room to the Execute() method of your command, e.g. something like: class ICommand { public: virtual ~ICommand() { } virtual void Execute(Room *room) = 0; }; class MoveCommand : public GameCommand { public: MoveCommand() { } void Execute(Room *room) { // Do something with `room`... } }; void Game::HandleInput() { // Read command from user and generate a command object from it. ICommand *pCommand = ParseCommand(Input::ReadCommand()); if (pCommand) { pCommand->Execute(GetCurrentRoom()); // Pass current room to command. delete pCommand; } }

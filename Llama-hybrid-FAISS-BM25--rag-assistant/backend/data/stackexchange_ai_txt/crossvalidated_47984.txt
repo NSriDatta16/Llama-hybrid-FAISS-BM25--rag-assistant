@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 47984
-[parent_id]: 47965
-[tags]: 
-This is best and most transparently done in bayesian modelling. Bayesian inference works using MCMC (Markov Chain Monte Carlo) simulations, and that's exactly what you need. Example model code in bugs (not tested!): dataset[1] ~ dbern(P1) # you must somehow solve the first element for (i in 2:n) { # markov chain - define how each value depends on the previous one dataset[i] ~ dbern(p.presence[dataset[i - 1]]) } dbern(p) stands for Bernoulli distribution with probability p . The array p.presence can be defined as (using P* variables as you defined them): p.presence[0] = P01 / P0 # probability of presence, given absence in previous step p.presence[1] = P11 / P1 # probability of presence, given presence in previous step This way you can pass p.presence as input data (as in your example), but you could also let bugs to estimate it from the data!! (this is much more common and reasonable). You can of course get posterior distributions and MCMC simulation samples for the missing values (NA) in the dataset , and compute various other statistics on it.

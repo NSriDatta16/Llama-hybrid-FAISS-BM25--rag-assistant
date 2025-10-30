@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4072923
-[parent_id]: 4035922
-[tags]: 
-I don't know of any DBIC pretty print modules but it is easy to implement from any of the myriad of text, html or other types of tabular output modules on CPAN. Below is my quick working example using Text::Table use 5.012; use warnings; use List::MoreUtils 'zip'; use Text::Table; # my database with Album schema from DBIx::Class::Manual::Intro use MySchema; my $db = MySchema->connect( "DBI:SQLite:myschema_db" ); my $album = $db->resultset( 'Album' ); # get column names for the Album table my @cols = $album->result_source->columns; # create header with these column names my $table = Text::Table->new( header( @cols ) ); # add each Album row to table output while (my $cd = $album->next) { $table->add( map { $cd->get_column( $_ ) } @cols ); } print $table; # => tabular text output # adds | separator between header labels sub header { my @sep = (\' | ') x @_; zip @_, @sep; } This outputs the following with my test data: albumid | artist | title | rank | 1 | Lou Reed | Transformer | | 2 | Lou Reed | Berlin | | 3 | David Bowie | Ziggy Stardust | | 4 | Japan | Tin Drum | | /I3az/

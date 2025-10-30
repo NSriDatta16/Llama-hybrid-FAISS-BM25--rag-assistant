@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 311674
-[parent_id]: 
-[tags]: 
-How can I put (parts of) a large object graph in Rails.cache?
-
-I have a class in which looking up an instance is expensive, so instances are cached: class Foo def self.find(id) Rails.cache.fetch("Foo.#{id}") do // some expensive lookup, like an HTTParty request, or a long SQL query ... end end end That works fine until Foo s have related Foo s: class Foo def children @child_foo_ids.map { |id| Foo.find(id) } end end I'd like to use ||= caching to save repeated trips: class Foo def children @children ||= @child_foo_ids.map { |id| Foo.find(id) } end end But Rails.cache freezes the found Foo s, so I can't set the instance variable after I create and cache the object. (i.e. this method raises a TypeError .) One solution would be to pre-fetch the parent when I first do the expensive find, but that could end up loading a gigantic object graph when I only want one or two instances.

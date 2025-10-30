@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3475595
-[parent_id]: 3475371
-[tags]: 
-Your problem is that differing compiler/linker settings between the .exe and .dll are effectively causing the .dll and .exe to be using different implementations of the standard library: You must use the same preprocessor flags* to build both the .exe and the .dll, otherwise each binary will compile with subtly different implementations. You must link both both the .exe and the .dll to the dynamic runtime. Binaries linked statically to the runtime get their own heap - and you end up allocating on one heap and trying to free on another. To fix this, go to Project > Properties > Configuration Properties > C/C++ > Code Generation and change the runtime library option to Multi-threaded Debug DLL (/MDd) . You must do this for both the .exe project and the .dll project. As of Visual Studio 2010, some of these kind of errors will be detected at link time using #pragma detect_mismatch . * For all preprocessor flags that have any effect of the standard library implementation

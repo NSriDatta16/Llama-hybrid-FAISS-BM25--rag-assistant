@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1828907
-[parent_id]: 1828653
-[tags]: 
-I think you have some general scalability issues with your design. As you add games and users the way you're counting up their wins/loses will become significantly more work for your database from an I/O perspective. I would suggest creating a table called player_record which is simply the players ID, WINS, LOSSES. Then create a stored procedure that is called when a game finishes. ( say spGameFinished(game_id, winner,..); ) That stored procedure would be responsible for doing any tasks needed for a game that has completed, and one of those tasks is to update that player_record table based on whom is stated to be the winner. I'm assuming when the game starts you put the game in with the 2 player ids, but if you don't then the stored procedure would have to take those in as well at the completion of the game. Once this is in place, the queries needed for gathering win/loss information is trivial. This also allows you to manage the storage requirements of the games separate from the players records. (i.e. you can drop games that are really old without affecting a users record)

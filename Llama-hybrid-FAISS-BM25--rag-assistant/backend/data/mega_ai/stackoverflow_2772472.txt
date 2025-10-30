@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2772472
-[parent_id]: 2772078
-[tags]: 
-I encourage you to download Reflector , you'll find a quick answer to a question like this. The timer's interval is changed by TimerBase.ChangeTimer(). It takes several measures to ensure the interval update is safe and accurate. The code runs in a finally block so that even a ThreadAbortException cannot mess it up. It acquires a lock (m_lock member) to ensure access is serialized across threads. The ChangeTimerNative() call calls into the CLR to update the native timer. That method is implemented by TimerNative::CorChangeTimer(), it invokes the ChangeTimerQueueTimer() Windows API function. That function is documented to be safe even when called from inside the Elapsed callback function. Long story short, yes: it has the behavior you are looking for. Beware however the inevitable race condition, the timer might already have elapsed and the threadpool thread that makes the callback may have already been scheduled to run but didn't get a chance to run yet. Getting the callback immediately after changing the timer is not impossible.

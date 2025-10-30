@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 511966
-[parent_id]: 511820
-[tags]: 
-Here are a few things I suggest: Change the column from a "bigint" to an "int unsigned". Do you really ever expect to have more than 4.2 billion records in this table? If not, then you're wasting space (and time) the the extra-wide field. MySQL indexes are more efficient on smaller data types. Run the " OPTIMIZE TABLE " command, and see whether your query is any faster afterward. You might also consider partitioning your table according to the ID field, especially if older records (with lower ID values) become less relevant over time. A partitioned table can often execute aggregate queries faster than one huge, unpartitioned table. EDIT: Looking more closely at this table, it looks like a logging-style table, where rows are inserted but never modified. If that's true, then you might not need all the transactional safety provided by the InnoDB storage engine, and you might be able to get away with switching to MyISAM , which is considerably more efficient on aggregate queries.

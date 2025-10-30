@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5510531
-[parent_id]: 5214249
-[tags]: 
-Well, I managed to solve this by overriding QListView::dataChanged, which checks if there is more than one item with the same data for Qt::DisplayRole in the model after dropping and deletes one of them if there is. It basically looks like that: void MyListView::dataChanged(QModelIndex topLeft, QModelIndex bottomRight) { // there can be only one item dragged at once in my use case if(topLeft == bottomRight) { QStandardItemModel* m = static_cast (model()); // if theres already another item with the same DisplayRole... if(m->findItems(topLeft.data().toString()).count() > 1) { // ... we get rid of it. model()->removeRow(topLeft.row()); } } else { // let QListView decide QListView::dataChanged(topLeft, bottomRight); } } It's by far not perfect (e.g. if you can drop more than one item at once) but it works for that simple use case.

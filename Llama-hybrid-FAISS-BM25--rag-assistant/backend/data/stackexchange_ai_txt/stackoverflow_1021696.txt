@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1021696
-[parent_id]: 1014113
-[tags]: 
-If you implementing OpenMP to your program, then it is better to use #pragma omp single or #pragma omp master from parallel section to save to file. These pragmas allow only one thread to execute something. So, you code may look as following: #pragma omp parallel { // Calculating the first part Calculate(); // Using barrier to wait all threads #pragma omp barrier #pragma omp master SaveFirstPartOfResults(); // Calculate the second part Calculate2(); #pragma omp barrier #pragma omp master SaveSecondPart(); Calculate3(); // ... and so on } Here team of threads will do calculation, but only single thread will save results to disk. It looks like software pipeline. I suggest you to consider tbb::pipeline pattern from Intel Threading Building Blocks library. I may refer you to the tutorial on software pipelines at http://cache-www.intel.com/cd/00/00/30/11/301132_301132.pdf#page=25 . Please read paragraph 4.2. They solved the problem: one thread to read from drive, second one to process read strings, third one to save to drive.

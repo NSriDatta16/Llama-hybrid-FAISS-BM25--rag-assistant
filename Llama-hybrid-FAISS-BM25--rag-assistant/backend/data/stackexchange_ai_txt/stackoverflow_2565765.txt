@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2565765
-[parent_id]: 2199957
-[tags]: 
-I've ended up with another approach. Model binding is not an appropriate mechanism for my purpose. Action Filter is the way to go! Names are not the same as in the question, but treat Site as Storehouse. public class ProvideCurrentSiteFilter: IActionFilter { readonly ISiteContext siteContext; public ProvideCurrentSiteFilter(ISiteContext siteContext) { this.siteContext = siteContext; } void IActionFilter.OnActionExecuted(ActionExecutedContext filterContext) { } void IActionFilter.OnActionExecuting(ActionExecutingContext filterContext) { filterContext.ActionParameters["currentSite"] = siteContext.CurrentSite; } } ISiteContext realization analyzes HttpContext.Current and pulls an object from Site Repository. Using HttpContext.Current is not too elegant, agree. However, everything goes through IoC, so testability doesn't suffer. There is an action filter attribute named ProvideCurrentSiteAttribute which uses ProvideCurrentSiteFilter . So, my action method looks like that: [ProvideCurrentSite] public ActionResult Menu(Site currentSite) { }

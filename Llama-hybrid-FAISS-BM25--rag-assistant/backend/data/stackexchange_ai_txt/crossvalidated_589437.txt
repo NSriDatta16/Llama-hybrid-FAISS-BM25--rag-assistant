@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 589437
-[parent_id]: 
-[tags]: 
-Understanding MASE and sktime implementation
-
-Sorry, but after reading the Hyndman's paper here I don't understand a couple of key points. The term "in-sample" The implementation in Python using sktime Regarding the first point, I assume that "in-sample" means the "testing" set. On the other hand, I have a time series for which I computed the residuals ie $e_{i}=y(t)-\hat{y}(t)$ (where $\hat{y}(t)$ stands for the prediction or forecast). I store the TEST set real values and the residuals on a Panda's DataFrame called "pred", like this: pred = pd.DataFrame({"Date":[599529600000,599616000000,599702400000,599788800000,599875200000],"Temp":[14.45,14.3,17.4,18.5,16.8],"AR_predicted":[14.2805985725,14.4314555264,14.4887198437,14.4663198212,14.4440888856],"AR_residuals":[0.1694014275,-0.1314555264,2.9112801563,4.0336801788,2.3559111144]}) Then, when I compute the MASE manually using the code below: pred['1difference'] = np.abs(pred['Temp'] - pred['Temp'].shift(1)) quotient = pred['1difference'].mean() pred['q'] = np.abs(pred['AR_residuals'])/quotient MASE = pred['q'].mean() print("The MASE of the final model is: {:.2f}".format(MASE)) prints: 1.69 However, if I use the MeanAbsoluteScaledError from sktime Python library as follows: mean_absolute_scaled_error(y_true=pred['Temp'], y_pred=pred['AR_predicted'], y_train=y_train) prints: 1.52 Where it comes this difference and why I need to place y_train=y_train if I only want the MASE of the TEST set? Thank you very much.

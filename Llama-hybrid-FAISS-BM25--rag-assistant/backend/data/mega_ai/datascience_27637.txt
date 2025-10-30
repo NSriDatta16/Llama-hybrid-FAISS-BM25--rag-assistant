@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 27637
-[parent_id]: 
-[tags]: 
-Configuring Incremental XGBoost model
-
-I have a large dataset which can't be loaded in memory, hence I decided to use incremental learning using Xgboost. What I have done currently is: Tuned num_boosting_rounds using a chunk of data Set early stopping rounds to a value (60) When my training code runs, it runs for a 1000 rounds on the first two chunks optimizing the loss function. It then stops at 60 rounds for each subsequent chunk as the best value for loss function was observed in the 1000th round in the 2nd Chunk. Is this the correct way to configure the Incremental model? Would this result in my model being sub-par owing to early stop for a majority of training chunks. for idx,df in enumerate(df_pointer): num_round = 1000 early_stopping_rounds = 60 param = {'max_depth':5, 'eta':0.02, 'silent':1, 'objective':'binary:logistic', 'eval_metric':'logloss', 'max_delta_step':4, 'scale_pos_weight': 4} dtrain, deval = getDMatrixSplit(df) watchlist = [(deval,'eval')] bst = xgb.train(param, dtrain, num_round, watchlist, early_stopping_rounds=early_stopping_rounds, xgb_model=xgb_model) xgb_model = self.model_path +'/xgb_%s_%s.model'%(ml_algo, idx) bst.save_model(xgb_model)

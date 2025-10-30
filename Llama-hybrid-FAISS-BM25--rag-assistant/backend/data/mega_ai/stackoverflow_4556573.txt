@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4556573
-[parent_id]: 4556393
-[tags]: 
-It is definitely impossible using write-once immutability . Let me explain why. You can set fields' values only at constructor. So if you want a to refer to b you have to pass reference to b to a 's constructor. But b will be already frozen. So the only option is to instantiate b in a 's constructor. But this is impossible, because you can't pass reference to a , because this is invalid inside constructor. From this point popsicle immutability is the simplest and most elegant solution. Another way is to create static method Foo.CreatePair that will instantiate two objects, set cross reference and return frozen object. public sealed class Foo { private readonly object something; private Foo other; // might be null public Foo(object something, Foo other) { this.something = something; this.other = other; } public object Something { get { return something; } } public Foo Other { get { return other; } private set { other = value; } } public static CreatePair(object sa, object sb) { Foo a = new Foo(sa, null); Foo b = new Foo(sb, a); a.Other = b; return a; } }

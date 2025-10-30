@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 194826
-[parent_id]: 193633
-[tags]: 
-If you want to model a sinusoid, I think that a stateful LSTM (RNN) might be a more natural choice. You can find an excellent example of modelling a sinusoid with an exponential amplitude decay in the keras example. However, I tried out your Keras code, and I think your problem is that you're not letting it train long enough. Look at your loss at epoch 250, its VERY high!! Epoch 250/250 360/360 [==============================] - 0s - loss: 0.5291 - val_loss: 0.7775 If I changed the number of nodes in your hidden layer to 10 and let it run for 15000 epochs instead of 250, I found that the loss was considerably lower and the plot more what you expect. Epoch 15000/15000 360/360 [==============================] - 0s - loss: 0.2434 - val_loss: 0.2638 The updated code looks like: # Multilayer Perceptron model = Sequential() # Feedforward model.add(Dense(10, input_dim=1)) model.add(Activation('tanh')) model.add(Dense(1)) model.compile('sgd', 'mse') hist = model.fit(xtr, ttr, validation_split=0.1, nb_epoch=15000)

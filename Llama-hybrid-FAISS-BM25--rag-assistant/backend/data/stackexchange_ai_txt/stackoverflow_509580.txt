@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 509580
-[parent_id]: 
-[tags]: 
-Multi-line PL/SQL command with .NET OracleCommand
-
-I'm using System.Data.OracleClient.OracleCommand to create a table and fill it out with some data. The query I am using runs OK in PS/SQL Developer, however when I'm trying to execute it from within .NET application I'm getting this error: ORA-06550: line 1, column 20: PLS-00103: Encountered the symbol "" when expecting one of the following: begin function package pragma procedure subtype type use form current cursor Column 20 is exactly where first line ends. As soon as I remove line end characters (\r\n) from the command it all starts working. I wonder is there some hidden configuration parameter to enable multi-line queries for Oracle? Here is some code: var text = @"declare cnt number; begin select count(*) into cnt from all_tables where table_name = 'TABLE_A'; if cnt = 1 then begin execute immediate 'truncate table TABLE_A'; execute immediate 'drop table TABLE_A'; end; end if; execute immediate 'create table TABLE_A as (SELECT DISTINCT v.ID, g.ext_id FROM VIEW_A v JOIN TABLE_B B ON v.id = B.Id WHERE YEAR1 = ''2008'')'; end;"); var createTempTable = new OracleCommand(text, conn); createTempTable.CommandType = CommandType.Text; conn.Open(); try { createTempTable.ExecuteNonQuery(); } catch(Exception ex) { throw; } finally { conn.Close(); } Thanks for your help

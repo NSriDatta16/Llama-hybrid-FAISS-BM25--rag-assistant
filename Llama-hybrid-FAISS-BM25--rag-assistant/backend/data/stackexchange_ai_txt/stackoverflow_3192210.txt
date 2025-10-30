@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3192210
-[parent_id]: 3187650
-[tags]: 
-Replace setResultTransformer(CriteriaSpecification.ROOT_ENTITY) with setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY) That will do! EDIT: after reading OP's comment In this how do i bring propertyConcern==null property on top in the order? Actually, Oracle does have a concept of NULLS FIRST/LAST (Topic Name : Sorting) But, I GUESS Criteria API does not have support for this facility (the reason might be that only Oracle (or few RDBMS) support this facility, not sure though). Ok, whatever the reason why Criterai API does not support this, you can do following trick to make it work.... (assuming that your DB supports Nulls First/Last) Order o = new Order(${propertyName}, true) { @Override public String toSqlString(Criteria criteria, org.hibernate.criterion.CriteriaQuery criteriaQuery) throws HibernateException { return super.toSqlString(criteria, criteriaQuery) + " NULLS FIRST"; /* or LAST*/ } }; where ${propertyName} means the name of property you're gonna sort then criteria.addOrder(o);

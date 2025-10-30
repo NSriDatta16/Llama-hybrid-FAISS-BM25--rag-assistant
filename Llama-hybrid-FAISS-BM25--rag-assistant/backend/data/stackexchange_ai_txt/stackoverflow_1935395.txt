@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1935395
-[parent_id]: 1935164
-[tags]: 
-Where are you seeing that? The usual LINQ-to-SQL generated properties look like the following: private string _Property1; [Column(Storage="_Property1", CanBeNull=false)] public string Property1 { get { return this._Property1; } set { if ((this._Property1 != value)) { this.OnProperty1Changing(value); this.SendPropertyChanging(); this._Property1 = value; this.SendPropertyChanged("Property1"); this.OnProperty1Changed(); } } } And now it's very clear that the device is to avoid sending property changing/changed notifications when the property is not actually changing. Now, it turns out that OnProperty1Changing and OnProperty1Changed are partial methods so that if you don't declare a body for them elsewhere the calls to those methods will not be compiled into the final assembly (so if, say, you were looking in Reflector you would not see these calls). But SendPropertyChanging and SendPropertyChanged are protected methods that can't be compiled out. So, did you perhaps change a setting that prevents the property changing/changed notifications from being emitted by the code generator?

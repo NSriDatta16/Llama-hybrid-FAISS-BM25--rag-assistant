@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4421678
-[parent_id]: 4420373
-[tags]: 
-What type of column are you saving your data to? If the attachment could be of any type, you need a bytea column to ensure that the data is simply passed through as a blob (binary "large" object). As mentioned in other answers, that error indicates that some data sent to PostgreSQL that was tagged as being text in UTF-8 encoding was invalid. I'd recommend you store email attachments as binary along with their MIME content-type header. The Content-Type header should include the character encoding needed to convert the binary content to text for attachments where that makes sense: e.g. "text/plain; charset=iso-8859-1". If you want the decoded text available in the database, you can have the application decode it and store the textual content, maybe having an extra column for the decoded version. That's useful if you want to use PostgreSQL's full-text indexing on email attachments, for example. However, if you just want to store them in the database for later retrieval as-is, just store them as binary and leave worrying about text encoding to the application.

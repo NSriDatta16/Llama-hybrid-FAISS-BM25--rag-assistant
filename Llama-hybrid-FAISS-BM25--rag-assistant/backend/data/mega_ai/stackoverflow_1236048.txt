@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1236048
-[parent_id]: 1232830
-[tags]: 
-My first answer wasn't really what you were looking for. Now that I understand the problem better, give this a try. I only implemented the key parts. This will be a little bit more memory intensive, but since I'm pretty sure the ArrayList stores the references, not the objects themselves, the memory difference shouldn't be too huge in comparison with the actual object storage. class TransactionEventStore { private ArrayList byOrder, byId; private void insertByOrder(TransactionEvent e) { this.byOrder.add(e); } private void insertById(TransactionEvent e) { for(int i = this.byId.length() - 1; i > 0; i--) if(e.getId() > this.byId.get(i).getId()) { this.byId.add(i,e); break; } } public void insert(TransactionEvent e) { this.insertByOrder(e); this.insertById(e); } } Now when you need to lookup by insertion order, look at this.byOrder and when you need to lookup by id, look at this.byId .

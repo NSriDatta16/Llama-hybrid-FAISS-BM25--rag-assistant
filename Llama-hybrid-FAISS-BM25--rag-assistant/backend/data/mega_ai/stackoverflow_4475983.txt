@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4475983
-[parent_id]: 
-[tags]: 
-ActiveDirectoryMembershipProvider and SqlRoleProvider: Maintenance?
-
-In a new project, I'm planning to use ActiveDirectoryMembershipProvider and SqlRoleProvider to provide authentication and authorization, respectively. One thing that isn't clear to me is how maintenance is handled -- when users that have logged in and been assigned roles are removed from Active Directory, how do you remove orphaned records in the mapping table used by SqlRoleProvider? I believe this is the aspnet_UsersInRoles table. One could query Active Directory periodically for disabled users, then iterating through that list calling Roles.RemoveUserFromRoles(UserId, Roles.GetRolesForUser(UserId)) where UserId is also in aspnet_UsersInRoles. Hugely slow, I would imagine, for a large organization. Or, alternatively, for each distint UserId in UsersInRoles, query ActiveDirectory and ensure the userAccountControl attribute's bitmask doesn't indicate the account is disabled. Also very inefficient, for a large number of application users. An even more ugly but much more efficient approach would be to store last login date and periodically purge role associations for users that haven't logged in for, say, six months. This might cause headaches. I'd love to hear suggestions.

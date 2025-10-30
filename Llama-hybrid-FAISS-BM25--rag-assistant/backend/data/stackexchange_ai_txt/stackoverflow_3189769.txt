@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3189769
-[parent_id]: 3186079
-[tags]: 
-You need a user-defined function. From the looks of it, each PRTTICKITEM can have more than one PUMPCATEGORY ? (The question needs to better explain the desired results.) In that case, your UDF would look something like this: CREATE FUNCTION GetPumpCategoriesByItem (@ItemID int) RETURNS varchar (8000) AS BEGIN DECLARE @CategoryList varchar (8000) SET @CategoryList = NULL -- MUST be null to avoid leading comma. SELECT @CategoryList = COALESCE (@CategoryList + ', ', '') + SCD.PUMPCATEGORYNAME FROM SUBCATEGORYDESCRIPTION SCD WHERE SCD.PUMPCATEGORY = @ItemID ORDER BY SCD.PUMPCATEGORYNAME RETURN @CategoryList END . To use it would be something like this: SELECT PITM.ITEM, dbo.GetPumpCategoriesByItem (PITM.ITEM), ... ... FROM ... ... INNER JOIN PRTTICKITEM PITM ON ... ... ... ...

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 610593
-[parent_id]: 
-[tags]: 
-SQL: Batching statements with bound variables
-
-I'm looking to reduce the round-trips in my application to improve performance. I want to use PreparedStatement s for their multitude of benefits. This is an example of what I've come up with.. generalized with details elided.. Class.forName( "..Driver" ); Connection connection = DriverManager.getConnection( .. ); PreparedStatement statement = connection.prepareStatement( "UPDATE Table SET XmlData = ? WHERE SomeGUID = ?; INSERT INTO SomeTable ( Col1,Col2 ) VALUES ( ?, ? )" ); try{ statement.setString( 1, " " ); statement.setString( 2, "32ABD5-438B0-.." ); statement.setString( 3, "ABC" ); statement.setString( 4, "XYZ" ); statement.execute(); connection.commit(); } catch { connection.rollback(); } finally { statement.close(); connection.close(); } (Again, this is not the actual code, just a simplified example) In general, I'm trying to execute multiple insert/update statements in a single statement to reduce round-trip traffic. Is this an effective way to do it or is there a more accepted approach? I could have thousands of statements for a single transaction. I will likely segment the statement into reasonably-sized blocks to prevent timeouts on a single statement's execution. I will be supporting multiple DB vendors, but will be using ANSI SQL so there shouldn't be an issue. If needed I can leverage the intelligence my DAL. So, this is a non-issue. Any tips/suggestions?

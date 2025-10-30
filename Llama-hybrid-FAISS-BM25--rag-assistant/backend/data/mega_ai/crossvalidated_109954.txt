@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 109954
-[parent_id]: 109537
-[tags]: 
-This is just a partial answer, but since the question didn't get any attention until now, I figured it's better than nothing. As noted in the question, the log-likelihood difference stems from the difference in the calculated residuals. It turns out that calling residuals(fit.nlrob) ends up running a different code than fit.nlrob\$m$resid(): The class of fit.nlrob\$m is "nlsModel". nlsModel$resid() uses weights for calculating the residulas: (from nlsModel): .swts However, residuals(fit.nlrob) calls residuals.nls (can be verified by using trace()), which ignores weights: (from stats:::residuals.nls): val So, in answer to the questions above: Apparently the difference in log-likelihood is just a technical side-effect. It seems to me that it can be calculated both using weights or without weights; but for the log-likelihoods to be comparable, they should probably be calculated on the same basis. Consequently, you should probably use your own version of logLik (or any other method) to make sure the calculation is done on the same basis.

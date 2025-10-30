@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 90705
-[parent_id]: 90517
-[tags]: 
-Yegor, you can store the hash when a user account is created/updated, then whenever a login is initiated, you hash the data posted to the server and compare against what was stored in the database for that one username. (Off the top of my head in loose php - treat as pseudo code): $usernameFromPostDbsafe = LimitToAlphaNumUnderscore($usernameFromPost); $result = Query("SELECT hash FROM userTable WHERE username='$usernameFromPostDbsafe' LIMIT 1;"); $hashFromDb = $result['hash']; if( (sha1($usernameFromPost.$passwordFromPost.SALT)) == $hashFromDb ){ //Auth Success }else{ //Auth Failure } After a successful authentication, you could store the hash in $_SESSION or in a database table of cached authenticated username/hashes. Then send the hash back to the browser (in a cookie for instance) so subsequent page loads send the hash back to the server to be compared against the hash held in your chosen session storage.

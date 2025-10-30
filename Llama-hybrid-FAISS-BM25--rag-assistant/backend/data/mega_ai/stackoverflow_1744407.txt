@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1744407
-[parent_id]: 
-[tags]: 
-Cache Line Alignment (Need clarification on article)
-
-I've recently encountered what I think is a false-sharing problem in my application, and I've looked up Sutter's article on how to align my data to cache lines. He suggests the following C++ code: // C++ (using C++0x alignment syntax) template struct cache_line_storage { [[ align(CACHE_LINE_SIZE) ]] T data; char pad[ CACHE_LINE_SIZE > sizeof(T) ? CACHE_LINE_SIZE - sizeof(T) : 1 ]; }; I can see how this would work when CACHE_LINE_SIZE > sizeof(T) is true -- the struct cache_line_storage just ends up taking up one full cache line of memory. However, when the sizeof(T) is larger than a single cache line, I would think that we should pad the data by CACHE_LINE_SIZE - T % CACHE_LINE_SIZE bytes, so that the resulting struct has a size that is an integral multiple of the cache line size. What is wrong with my understanding? Why does padding with 1 byte suffice?

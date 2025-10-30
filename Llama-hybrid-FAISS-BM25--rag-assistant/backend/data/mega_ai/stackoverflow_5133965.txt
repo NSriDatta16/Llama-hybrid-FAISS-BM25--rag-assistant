@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5133965
-[parent_id]: 5133511
-[tags]: 
-The output of your php-script pl.php is faulty. There is a HTTP-header Content-Type: text/html set without a declared charset. Without a declared charset, the client has to assume that it is ISO-8859-1 regarding to the HTTP-specifications. The sent body is ±ê³ó¿¡Ê£¯¬ if interpreted as ISO-8859-1. The bytes sended by the php-script are representing ąęłóżĄĘŁŻŹ if it were declared as Content-Type: text/html; charset=ISO-8859-2 You can check this with the simple code fragment, which will transform the faulty ISO-8859-1 encoding to ISO-8859-2: final String test="±ê³ó¿¡Ê£¯¬"; String corrupt=new String(test.getBytes("ISO-8859-1"),"ISO-8859-2"); System.out.println(corrupt); The output will be ąęłóżĄĘŁŻŹ , which are some polish characters. As a quick fix, set the charset in your php-script to output Content-Type: text/html; charset=ISO-8859-2 as HTTP-Header. But you should think about to switch to UTF-8 encoded output anyway.

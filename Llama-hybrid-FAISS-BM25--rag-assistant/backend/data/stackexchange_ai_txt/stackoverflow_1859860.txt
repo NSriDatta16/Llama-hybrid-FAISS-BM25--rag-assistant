@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1859860
-[parent_id]: 1796562
-[tags]: 
-I found a workaround for this. The side effect is that the class used for image resize will fill all images with white (even transparent ones), but this doesn't realy affect Magento since it doesn't use transparent fill anyway. So to solve the issue do this: Go to lib\Varien\Image\Adapter\Gd2.php in your magento folder Find this line $this->_fillBackgroundColor($newImage); and replace it with this line $this->_fillBackgroundColor($newImage,$frameWidth,$frameWidth); Find this line private function _fillBackgroundColor(&$imageResourceTo) and replace it with this private function _fillBackgroundColor(&$imageResourceTo,$w,$h) Find this code if (!imagefill($imageResourceTo, 0, 0, $color)) { throw new Exception("Failed to fill image background with color {$r} {$g} {$b}."); } and replace it with this imagefilledrectangle($imageResourceTo,0,0,$w,$h,$color); That is it. The problem comes from the PHP function imagefill in Gd2 not working on some setings. This is a workaround using imagefilledrectangle , and worked for me. Hope it solves your problem too.

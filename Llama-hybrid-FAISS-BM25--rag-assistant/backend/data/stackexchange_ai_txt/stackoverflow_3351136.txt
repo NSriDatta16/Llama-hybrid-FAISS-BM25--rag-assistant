@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3351136
-[parent_id]: 3324801
-[tags]: 
-In the end, I did find 2 solutions: pack all the meaning data in a tuple, so that $$ point to this tuple, then extract the data by projection: data Token = Token (AlexPosn,Foo) Bar %token FOO { Token $$ some_bar } rule : FOO { Ast (fst $1) (snd $1) } do not use $$ at all: if you don't use $$, happy will give you the full token during the parsing, so it is up to you to extract what you really need from this token: data Token = Token AlexPosn Foo Bar %token FOO = { Token _ _ some_bar } rule : FOO { Ast (get_pos $1) (get_foo $1) } get_pos :: Token -> AlexPosn get_foo :: Token -> Foo ... I think the first one is the most elegant. The second one can be quite heavy in term of lines of code if you are carrying a lot of information: you will have to build "projections" by hand (pattern matching and so on), and doing so in a safe way can be tricky if your token type is quite big.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 155312
-[parent_id]: 154724
-[tags]: 
-This blog post demonstrates the use of both classes: Java: synchronizing on an ID . The usage goes something like this: private static IdMutexProvider MUTEX_PROVIDER = new IdMutexProvider(); public void performTask(String resourceId) { IdMutexProvider.Mutex mutext = MUTEX_PROVIDER.getMutex(resourceId); synchronized (mutext) { // look up the resource and do something with it } } IdMutextProvider provides id-based objects to synchronize on. The requirements are: must return a reference to the same object for concurrent use of equivalent IDs must return a different object for different IDs no release mechanism (objects are not returned to the provider) must not leak (unused objects are eligible for garbage collection) This is achieved using an internal storage map of type: WeakHashMap > The object is both key and value. When nothing external to the map has a hard reference to the object, it can be garbage collected. Values in the map are stored with hard references, so the value must be wrapped in a WeakReference to prevent a memory leak. This last point is covered in the javadoc .

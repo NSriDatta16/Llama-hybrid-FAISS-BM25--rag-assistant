@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2205631
-[parent_id]: 2205587
-[tags]: 
-The problem you're facing is that a pointer is returned - not really a string or an array. There is no way for the marshaller to convert the pointer to an array or string, because the length is unknown. The solution might be to do the pointer handling in c#. You should also figure out if you're responsible for freeing the pointer, or that the library will do that for you. [StructLayout(LayoutKind.Sequential)] public struct PARAMETER_DATA { public IntPtr data; // tried also SizeParamIndex = 1 instead of SizeConst [MarshalAs(UnmanagedType.I4)] public int size; } [DllImport("thedll.dll", SetLastError = true, ExactSpelling = true)] private extern static uint GetParameters(ref PARAMETER_DATA outputData); public static uint GetParameters(out String result) { PARAMETER_DATA outputData = new PARAMETER_DATA(); result= Marshal.PtrToStringAnsi(outputData.data, outputData.size ); Marshal.FreeHGlobal(outputData.data); // not sure about this }

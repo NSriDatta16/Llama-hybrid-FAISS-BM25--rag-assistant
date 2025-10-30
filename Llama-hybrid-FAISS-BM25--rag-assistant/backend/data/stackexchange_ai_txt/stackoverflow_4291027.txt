@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4291027
-[parent_id]: 
-[tags]: 
-How do I start a service based on a ServiceInfo object?
-
-In my app, I query for the list of services that have a specific Category in their intent-filters. This goes just fine, I get back a List containing ResolveInfo objects. In these ResolveInfos I found the "serviceInfo" field, that's supposed to describe the details of a found service. Now how do I construct an Intent from the serviceInfo, that can start the found service? My code now is like this: PackageManager pm = getApplicationContext().getPackageManager(); Intent i = new Intent(); i.setAction(" "); i.addCategory(" "); List l = pm.queryIntentServices(i, 0); gatherAgentNum = l.size(); if(gatherAgentNum > 0){ for(ResolveInfo info : l){ Intent i2 = new Intent(this, info.serviceInfo.getClass()); i2.putExtra(BaseAgent.KEY_RESULT_RECEIVER, new GatherResult(mHandler)); startService(i2); } } This's obviously wrong, the "info.serviceInfo.getClass()" just returns the serviceInfo object's class. Could anyone help me with this? Thank you Edit: The solution (at least the one I used): PackageManager pm = getApplicationContext().getPackageManager(); Intent i = new Intent(); i.setAction(" "); i.addCategory(" "); List l = pm.queryIntentServices(i, 0); if(l.size() > 0){ for(ResolveInfo info : l){ ServiceInfo servInfo = info.serviceInfo; ComponentName name = new ComponentName(servInfo.applicationInfo.packageName, servInfo.name); Intent i2 = new Intent(); i2.setComponent(name); startService(i2); } }

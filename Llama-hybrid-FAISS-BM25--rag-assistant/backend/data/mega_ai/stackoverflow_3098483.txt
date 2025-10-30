@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3098483
-[parent_id]: 3048026
-[tags]: 
-Joining to a derived table, CurrentHandler in your example, won't work in HQL the last time I checked. Try mapping a stored procedure that lets you write whatever SQL you like. Here's what a mapped stored procedure looks like: exec spGoGetMyDogs @PersonID=:personID Then you can pass your PersonID parameter in and have NH map the results back to your objects with a transformer like so: public IEnumerable LetTheDogsOut(int personID) { return nhSession.GetNamedQuery("spGoGetMyDogs") .SetInt32("personID", personID) .SetResultTransformer(Transformers.AliasToBean(typeof(Canine))) .List (); }

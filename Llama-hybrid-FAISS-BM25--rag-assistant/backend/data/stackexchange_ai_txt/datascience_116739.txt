@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 116739
-[parent_id]: 
-[tags]: 
-How to improve neural network for face classification?
-
-I generated 700 1024x1024 images of female faces using an API . I labelled them either as attractive or unattractive. The neural net should learn which face I find attractive and which not. But the accuracy is worse than a random guess. To crop the background I used a cascade classifier from the opencv library. def crop_background(img): np_img = np.array(img, dtype='uint8') face_cascade = cv2.CascadeClassifier(); face_cascade.load(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'); faces = face_cascade.detectMultiScale(np_img) if (len(faces) == 0): return img (x, y, w, h) = faces[0] face = np_img[x:x+w, y:y+h, :] return PILImage.create(face) I use fastai to build a model quick. dls = ImageDataLoaders.from_folder( path, get_image_files(path), valid_pct=0.2, seed=42, item_tfms=[Transform(crop_background), Resize(224)], bs=4) I used a pretrained resnet34 as the architecture. learn = vision_learner(dls, resnet34, metrics=error_rate) learn.fine_tune(2) I expected the accuracy to be around 90%. But the accuracy is around 50% not better than random guessing. I thought about generating more data or running for more epochs or using a different architecture.

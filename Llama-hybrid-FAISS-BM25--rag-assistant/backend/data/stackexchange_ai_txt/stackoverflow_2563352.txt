@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2563352
-[parent_id]: 1672239
-[tags]: 
-Apart from using lsusb, you can try dbus. Here is a sample python code that should list all scsi_host parents in the hardware hierarchy. import dbus bus = dbus.SystemBus() hal = bus.get_object ('org.freedesktop.Hal', u'/org/freedesktop/Hal/Manager') hal_manager = dbus.Interface(hal, u'org.freedesktop.Hal.Manager') volume_udi_list = hal_manager.FindDeviceByCapability('scsi_host') for udi in volume_udi_list: # inspect all scsi_host devices dev = bus.get_object ( u'org.freedesktop.Hal', udi) volume = dbus.Interface(dev, u'org.freedesktop.Hal.Device') # get their parent parent = volume.GetProperty('info.parent') dev = bus.get_object ( u'org.freedesktop.Hal', parent) volume = dbus.Interface(dev, u'org.freedesktop.Hal.Device') # Here we can find vendor id for usb-storage devices props = volume.GetAllProperties() print "\n".join(("%s: %s" % (k, props[k]) for k in props))

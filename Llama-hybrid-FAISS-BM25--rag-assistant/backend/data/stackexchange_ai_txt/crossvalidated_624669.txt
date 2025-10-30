@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 624669
-[parent_id]: 
-[tags]: 
-Random shuffle vs random access
-
-It appears to me that in Machine Learning randomly shuffling data is more common than drawing a random minibatch in every step, e.g. for MNIST in julia minibatch_indices = rand(1:60000, batch_size) x_train[minibatch_indices], y_train[minibatch_indices] I am trying to understand why. Quality Randomly shuffling the data, means that you sample without replacement. Generating random minibatches is equivalent to sampling from the empirical distribution (bootstrapping). Shuffling on the other hand is more reminicent of the older Jackknive technique which fell out of fashion compared to bootstrap (e.g. bootstrap-vs-jackknive ). So from a "quality" point of view, bootstrap is probably better(?) Cost Since the shuffle needs to randomly access the data as well (and move it around), I can't imagine that it would be much faster. Since bootstrap only requires random access (but no write operations). Scaling What I could imagine is, that random-shuffles allows you to split up the data at the end to distribute over different shards so that every shard can just do a pass over the data. Bootstrapping on the other hand would require access to the entire dataset for all shards. So if you end up with really big networks this becomes a consideration. Although this would still allow for bootstrapping with regards to the local data. Have I missed some important considerations? Does anyone know why shuffling is more common than bootstrap? (Is it even more common?)

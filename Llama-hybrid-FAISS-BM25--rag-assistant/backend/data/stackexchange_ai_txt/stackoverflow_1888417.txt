@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1888417
-[parent_id]: 1888351
-[tags]: 
-Google turns up a bunch of responses to this. I started reading the first one , and while its conclusions (reduce the heap) are reasonable, it doesn't really talk about root causes. So ... This is coming from native code, and indicates that the code is unable to allocate memory from the C heap. There are a couple of reasons this could be happening, one of which is that the virtual memory space is truly used op, the other is that the C heap is fragmented. If the HP has pmap , that's the first place to start (or find its equivalent and start there). If you see allocation blocks filling the virtual memory space in an unbroken block, then the solution is simple: reduce your heap. However, if you see allocation blocks scattered throughout the virtual memory space, you're going to need some deeper digging. Sometimes this happens because you have Java objects that aren't reclaiming native resources. Sometimes it happens because of a quirk in the operating system (I've seen Solaris get confused with thread stacks).

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4087018
-[parent_id]: 4078093
-[tags]: 
-The response headers enforce the cache control. The solution was not to set response headers for controller actions that require caching. Instead of using OutputCache , I'm now using a custom cache attribute that also sets an ISCACHED key in the request items dictionary. The code snippet from my question was changed to this: protected void Application_EndRequest() { if (HttpContext.Current.Items["ISCACHED"] == null) { var cache = HttpContext.Current.Response.Cache; cache.SetCacheability(HttpCacheability.NoCache); cache.SetNoStore(); cache.SetExpires(DateTime.Now.AddDays(-1)); } } I had to move this from BeginRequest to EndRequest , to allow actions to set the ISCACHED request item first. If it is set, a controller already handled caching for this request, otherwise caching is disabled.

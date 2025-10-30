@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5173164
-[parent_id]: 5172911
-[tags]: 
-One thing you could do is this - although it is not terribly efficient and so I wouldn't want to do use it for large data sets. Create a row-level function to try and lock the row. If it fails, then the row is already locked CREATE OR REPLACE FUNCTION is_row_locked (v_rowid ROWID, table_name VARCHAR2) RETURN varchar2 IS x NUMBER; PRAGMA AUTONOMOUS_TRANSACTION; BEGIN EXECUTE IMMEDIATE 'Begin Select 1 into :x from ' || table_name || ' where rowid =:v_rowid for update nowait; Exception When Others Then :x:=null; End;' USING OUT x, v_rowid; -- now release the lock if we got it. ROLLBACK; IF x = 1 THEN RETURN 'N'; ELSIF x IS NULL THEN RETURN 'Y'; END IF; END; / And then you could Select field1, field2, is_row_locked(rowid, 'MYTABLE') from mytable; It will work, but it isn't pretty nor efficient. Indeed, it has exactly one redeeming quality - it will work even if you don't have select privs on the various v$ tables required in the linked document. If you have the privs, though, definitely go the other route.

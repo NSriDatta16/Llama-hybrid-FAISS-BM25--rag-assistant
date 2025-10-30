@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2633271
-[parent_id]: 2632769
-[tags]: 
-The general answer to your question is no there is no direct method to detect which interrupt is currently being called. However each interrupt has its own interrupt flag so you can check each flag in the interrupt. You should and the flag with the enable to make sure you are handling the interrupt that actually was called. Also with the timers on the MSP430 there is vector TAIV which can tell you what to handle in the A1 handler. Case 0 of the TAIV is that there was no interrupt for A1 handler so for that case you can assume it is the A0 handler. I would do something like the following. #pragma vector=TIMERA0_VECTOR #pragma vector=TIMERA1_VECTOR __interrupt void Timer_A (void) { switch (TAIV) // Efficient switch-implementation { case TAIV_NONE: // TACCR0 TIMERA0_VECTOR break; case TAIV_TACCR1: // TACCR1 TIMERA1_VECTOR break; case TAIV_TACCR2: // TACCR2 TIMERA1_VECTOR break; case TBIV_TBIFG: // Timer_A3 overflow TIMERA1_VECTOR break; default; break; } ServiceWatchdogTimer(); }

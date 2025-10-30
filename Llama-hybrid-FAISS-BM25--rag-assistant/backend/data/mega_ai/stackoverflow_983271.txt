@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 983271
-[parent_id]: 982963
-[tags]: 
-They are both the same, and here's how you can find out, by looking at what the compiler does (even without optimisation set to high): Look at what the compiler (gcc 4.0) does to your simple examples: 1.c: main(){ int var; while(int i gcc -S 1.c 1.s: _main: pushl %ebp movl %esp, %ebp subl $24, %esp movl $0, -16(%ebp) jmp L2 L3: movl $4, -12(%ebp) L2: cmpl $99, -16(%ebp) jle L3 leave ret 2.c main() { while(int i gcc -S 2.c 2.s: _main: pushl %ebp movl %esp, %ebp subl $24, %esp movl $0, -16(%ebp) jmp L2 L3: movl $4, -12(%ebp) L2: cmpl $99, -16(%ebp) jle L3 leave ret From these, you can see two things: firstly, the code is the same in both. Secondly, the storage for var is allocated outside the loop: subl $24, %esp And finally the only thing in the loop is the assignment and condition check: L3: movl $4, -12(%ebp) L2: cmpl $99, -16(%ebp) jle L3 Which is about as efficient as you can be without removing the loop entirely.

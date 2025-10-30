@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4928768
-[parent_id]: 4928534
-[tags]: 
-I had to do something similar to this a few months back when I wanted to rename a large group of iterations. First, make sure that the user you are authenticating with has at least "Editor" role assigned in all projects from which you want to delete iterations. Also, if you have any projects in your workspace which you do not have read permissions, you will have to first supply a project(s) element for the query to start from. (You might not even know about them, someone else in your organization could have created them). The following gets a reference to the projects and then loops through the iterations with the specified regex: require 'rubygems' require 'rally_rest_api' rally = RallyRestAPI.new(:username => "myuser", :password => "mypass") # Assumes all projects contain "FooBar" in name projects = rally.find(:project) { contains :name, "FooBar"} projects.each do |project| project.iterations.each do |iteration| if iteration.name =~ /ET-VT-100/ iteration.delete end end end

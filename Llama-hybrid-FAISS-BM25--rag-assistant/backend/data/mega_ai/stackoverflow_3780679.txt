@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3780679
-[parent_id]: 3780137
-[tags]: 
-You can't do that directly in NHibernate. The best way to achieve this is to get the result set as you are currently doing and then populate the reduced object with the CompanyIds. Something like: var temp = session.CreateCriteria () .Add(Restrictions.Eq("SiteId", 616)) .SetProjection(Projections.Distinct(Projections.ProjectionList() .Add(Projections.Property("Id"), "Id") .Add(Projections.Property("CompanyId"), "CompanyId") .Add(Projections.Property("Description"), "Description") .SetResultTransformer(Transformers.AliasToBean ()) .List (); var groups = temp.GroupBy(x => x.Id); var result = new List (groups.Count()); foreach (var member in groups) { var first = member.First(); var companyIds = member.Select(x => x.CompanyId); foreach (var companyId in companyIds) { first.CompanyIds.Add(companyId); } result.Add(first); } return result; There's probably a LINQier way to do this but this is how I solved a similar problem.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5331876
-[parent_id]: 5303296
-[tags]: 
-I think I found an answer in another post ( here ). Rather than trying to interpolate the "missing slices" between the defined contours, treating the contour points as a point cloud and finding the convex hull might be a more efficient way of doing it. This method created the binary 3D volume that I was after. Here is the code I used, hope it might be helpful to those who need to work with DICOM-RT files: function mask = DicomRT2BinaryVol(file) points = abs(getContourPoints(file)); %%NOTE: The getContourPoints function simply reads the file using %%'dicominfo' method and organizes the contour points into an n-by-3 %%matrix, each column being the X,Y,Z coordinates. DT = DelaunayTri(points); [X,Y,Z] = meshgrid(1:50,1:50,1:50); simplexIndex = pointLocation(DT, X(:), Y(:), Z(:)); mask = ~isnan(simplexIndex); mask = reshape(mask,size(X)); end This method is a slightly modified version of the method posted by @gnovice in the link above.

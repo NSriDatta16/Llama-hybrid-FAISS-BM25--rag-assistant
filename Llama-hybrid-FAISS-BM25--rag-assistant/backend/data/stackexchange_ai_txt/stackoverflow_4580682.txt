@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4580682
-[parent_id]: 
-[tags]: 
-Gstreamer: RTP jitter buffer not working properly with packet loss?
-
-For a VoIP speech quality monitoring application I need to compare an incoming RTP audio stream to a reference signal. For the signal comparison itself I use pre-existing, special-purpose tools. For the other parts (except packet capture) the Gstreamer library seemed to be a good choice. I use the following pipeline to simulate a bare-bones VoIP client: filesrc location=foobar.pcap ! pcapparse ! "application/x-rtp, payload=0, clock-rate=8000" ! gstrtpjitterbuffer ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! wavenc ! filesink location=foobar.wav The pcap file contains a single RTP media stream. I crafted a capture file that's missing 50 of the original 400 UDP datagrams. For the given audio sample (8s long for my example): [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX] with a certain amount of consecutive packet loss I'd expect an audio signal like this to be output (' - ' denotes silence): [XXXXXXXXXXXXXXXXXXXXXXXX-----XXXXXXXXXXX] however what is actually saved in the audio file is this (1s shorter for my example): [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX] It seems that the jitter buffer, a crucial part for this application, is not working properly. Could this be an incompatibility with / a shortcoming of the pcapparse element? Am I missing a key part in the pipeline to ensure time synchronization? What else could be causing this?

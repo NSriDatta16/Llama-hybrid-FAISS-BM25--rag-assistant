@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4314887
-[parent_id]: 4314273
-[tags]: 
-First, I'm not sure I understand how a question can be other than unique, so I'd look at trying to remove that. I don't know the logic of your data, so that might not be applicable, but it's an extra step that you might be able to avoid. Here's how I would approach it: scope :answered, joins(:answers).order('answers.created_at desc') scope :recent, take(10) scope :dogs, where(:question_type => "dogs") scope :cats, where(:question_type => "cats") scope :mermaids, where(:question_type => "mermaids") @dogs_recently_answered = Question.answered.dogs.recent @cats_recently_answered = Question.answered.dogs.recent @mermaids_recently_answered = Question.answered.dogs.recent This shifts the TOP portion of the query to the database where it belongs rather than fetching all of the rows and then discarding all but 10. Depending on your uniquing criteria, you might also use a scope like scope :unique, select('DISTINCT column_name') and then you can use Question.cats.unique.recent and get it all in one fast query that leverages the relational algebra that database systems are designed for.

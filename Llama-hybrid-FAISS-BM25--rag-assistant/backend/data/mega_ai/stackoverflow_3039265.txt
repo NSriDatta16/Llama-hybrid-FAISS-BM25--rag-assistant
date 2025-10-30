@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3039265
-[parent_id]: 3039044
-[tags]: 
-You're not paying attention to the XML namespace(s) in the XML document (and neither are the other answers provided): You need to take that into account! XPathDocument Doc = new XPathDocument(@"D:\amazon.xml"); XPathNavigator nav = Doc.CreateNavigator(); // add a XML namespace manager - pick any prefix you want XmlNamespaceManager mngr = new XmlNamespaceManager(nav.NameTable); mngr.AddNamespace("az", "http://webservices.amazon.com/AWSECommerceService/2009-03-31"); // use that XML namespace prefix to select var ListPrice = nav.Select("/az:ItemLookupResponse/az:Items/az:Item/az:ItemAttributes/az:ListPrice", mngr); UPDATE: if you want to explore the child nodes below your ListPrice node, you can do something like this: var curr = ListPrice.Current; if(ListPrice.MoveNext()) { var lpc = ListPrice.Current; if(lpc.MoveToFirstChild()) { var node = lpc.Name + "/" + lpc.Value; while(lpc.MoveToNext()) { node = lpc.Name + "/" + lpc.Value; } } } to iterate through all child nodes under and get their name and value.

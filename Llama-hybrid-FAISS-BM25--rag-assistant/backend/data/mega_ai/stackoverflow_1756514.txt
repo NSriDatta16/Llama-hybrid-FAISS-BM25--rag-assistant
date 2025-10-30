@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1756514
-[parent_id]: 
-[tags]: 
-How to configure nservicebus msmqtransport with code
-
-I'm just geting started with NServiceBus and can't figure out what I'm missing when configuring the MsmqTransport in code. If I configure the publisher like this; IBus bus = Configure.With() .CastleWindsorBuilder() .XmlSerializer() .MsmqSubscriptionStorage() .MsmqTransport() .IsTransactional(true) .PurgeOnStartup(false) .UnicastBus() .ImpersonateSender(false) .CreateBus() .Start(); bus.Publish(new Message(DateTime.Now)); and the app.config like so Then all works fine - it will create the queues and I can happily message away, however if I delete the queues and then try again with code like so; var config = Configure.With() .CastleWindsorBuilder() .XmlSerializer() .UnicastBus() .ImpersonateSender(false) .MsmqSubscriptionStorage(); config .Configurer .ConfigureComponent (NServiceBus.ObjectBuilder.ComponentCallModelEnum.None) .ConfigureProperty(x => x.InputQueue, "testapps_messagebus") .ConfigureProperty(x => x.NumberOfWorkerThreads, 1) .ConfigureProperty(x => x.ErrorQueue, "testapps_errors") .ConfigureProperty(x => x.MaxRetries, 5); IBus bus = config .CreateBus() .Start(); bus.Publish(new Message(DateTime.Now)); The messages seem to get lost as they do not appear in any queues nor get handled - I'm guessing I'm missing something but I can't see where.

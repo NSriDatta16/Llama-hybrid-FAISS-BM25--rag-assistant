@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4991993
-[parent_id]: 176964
-[tags]: 
-I know this thread is a little bit old but I've just bumped into a similar problem (select the newest article from each category) and this is the solution I came up with : WITH [TopCategoryArticles] AS ( SELECT [ArticleID], ROW_NUMBER() OVER ( PARTITION BY [ArticleCategoryID] ORDER BY [ArticleDate] DESC ) AS [Order] FROM [dbo].[Articles] ) SELECT [Articles].* FROM [TopCategoryArticles] LEFT JOIN [dbo].[Articles] ON [TopCategoryArticles].[ArticleID] = [Articles].[ArticleID] WHERE [TopCategoryArticles].[Order] = 1 This is very similar to Darrel's solution but overcomes the RANK problem that might return more rows than intended.

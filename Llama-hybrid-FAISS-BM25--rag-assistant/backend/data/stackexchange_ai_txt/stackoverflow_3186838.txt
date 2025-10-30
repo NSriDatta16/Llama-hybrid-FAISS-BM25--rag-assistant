@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3186838
-[parent_id]: 3186125
-[tags]: 
-The problem is related to the how you are loading the data. The actual Load operation is asynchronous, as is all Silverlight network calls. You are callingt ctx.Load(query) and then immediately setting the paragraph to the entities. You need to use a callback when Load is completed. Something like this, AdventureWorksDomainContext ctx = new AdventureWorksDomainContext(); EntityQuery query = from p in ctx.GetProductsQuery() select p; LoadOperation loadOp = ctx.Load(query,() => { var paragraph = new Paragraph(); foreach (var product in loadOp.Entities) { paragraph.Inlines.Add(new Run { Text = product.Name }); } richTextBox1.Blocks.Add(paragraph); }); Since you aren't using the entities directly in a binding and are just iterating them, you need to make sure you wait until they are loaded. I can't remember the actual signature of the Load method, so you may need to modify my lambda to make it work.

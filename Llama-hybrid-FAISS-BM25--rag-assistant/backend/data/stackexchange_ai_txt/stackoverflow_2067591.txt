@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2067591
-[parent_id]: 1920912
-[tags]: 
-It is a diagnostic message intended to bring a possible deadlock to attention. In this particular case there is a transmit queue that is protected by a spinlock. In addition to this lock, the transmit queue also maintains an "owner" field which contains a CPUID which is set when this spinlock is held. As you probably know, a spinlock will always spin on a CPU if the lock requested has already been taken. So at this location the code checks if the cpu is the same one that locked the spinlock. If its not on the same CPU it performs the operations that might need the lock to be taken. On the otherhand if its the same CPU, something is not right i.e. we should actually be spinning waiting for the lock. Probably we got here due to an incorrect interrupt handler/bottom half. Since this indicates a potential deadlock a diagnostic message is printed :).

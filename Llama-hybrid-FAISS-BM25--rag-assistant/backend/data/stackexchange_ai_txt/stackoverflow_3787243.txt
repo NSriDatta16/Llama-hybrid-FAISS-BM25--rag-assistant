@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3787243
-[parent_id]: 3787153
-[tags]: 
-First of all, add something to your system to allow you to manually invoke garbage collection for the purpose of investigation. The CLR will not necessarily return memory to the O/S unless it is in short supply. You should use this mechanism to manually invoke garbage collection when you have the system in a quiescent state so that you can see if the memory drops back down. (You should invoke GC.Collect(2) twice to ensure objects with finalizers are actually collected and not just finalized.) If the memory goes down to the quiescent level after a full GC then you do not have a problem: simply that .NET is not being proactive at deallocating memory. If the memory does not go down, then you have some kind of a leak. As your messages are large, it means their text representations are likely ending up on the Large Object Heap (LOH). This particular heap is not compacted which means that it is easier to leak this memory than with the other heaps. One thing to watch out for is string interning: if you are manually interning strings this can cause LOH fragmentation.

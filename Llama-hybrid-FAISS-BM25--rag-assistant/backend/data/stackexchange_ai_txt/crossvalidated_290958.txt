@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 290958
-[parent_id]: 
-[tags]: 
-Logistic regression and scaling of features
-
-I was under the belief that scaling of features should not affect the result of logistic regression. However, in the example below, when I scale the second feature by uncommenting the commented line, the AUC changes substantially (from 0.970 to 0.520): from sklearn.datasets import load_breast_cancer from sklearn.linear_model import LogisticRegression from sklearn.model_selection import train_test_split from sklearn import metrics cancer = load_breast_cancer() X = cancer.data[:,0:2] # Only use two of the features #X[:,1] = X[:,1]*10000 # Scaling y = cancer.target X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42) log_reg = LogisticRegression() log_reg.fit(X_train, y_train) fpr, tpr, _ = metrics.roc_curve(y_test, log_reg.predict_proba(X_test)[:,1]) auc = metrics.auc(fpr, tpr) auc I believe this has to do with regularization (which is a topic I haven't studied in detail). If so, is there a best practice to normalize the features when doing logistic regression with regularization? Also, is there a way to turn off regularization when doing logistic regression in scikit-learn

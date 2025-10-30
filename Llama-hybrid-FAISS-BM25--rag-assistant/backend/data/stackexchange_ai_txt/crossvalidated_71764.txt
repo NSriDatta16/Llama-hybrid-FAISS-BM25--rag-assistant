@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 71764
-[parent_id]: 
-[tags]: 
-Intuition behind cross-correlation function interpretation vs. correlation of lagged time series
-
-Can someone please explain the difference behind WHY the cross correlation function ccf() chooses to keep the same denominator for all lags and chooses to ignore the reduction in observations? Here's an example of the two methods not matching: x = c(1,2,3,4,5,6,7,8,9,10) y = c(3,3,3,5,5,5,5,7,7,11) round(cor(x,y),3) [1] 0.896 # Think "Lag -1" # x[-10] = 1,2,3,4,5,6,7,8,9 # y[-1] = 3,3,5,5,5,5,7,7,11 round(cor(x[-10],y[-1]),3) [1] 0.894 # Think "Lag -2" # x[-10:-9] = 1,2,3,4,5,6,7,8 # y[-1:-2] = 3,5,5,5,5,7,7,11 round(cor(x[-10:-9],y[-1:-2]),3) [1] 0.878 print(ccf(x,y,lag.max=3)) Autocorrelations of series ‘X’, by lag -3 -2 -1 0 1 2 3 0.197 0.466 0.699 0.896 0.436 0.221 -0.018 Notice how the Lag-0 cases matches the output of ccf(), but the negative "manual" lags do not. This is because (to my understanding) the cross correlation function will construct the "covariance" (numerator) by comparing the lagged items to the "full" 10-item mean(x) and mean(y); in addition, I believe the denominator will keep the "full" series as well. At the end of the day, I can prove why the above Lag -1 of 0.894 does NOT match the ccf() -1 of 0.699 but I'm struggling to understand WHY the ccf() functions chooses to do what it does? I'm guessing it has something to do with adjusting for some sort of bias...?

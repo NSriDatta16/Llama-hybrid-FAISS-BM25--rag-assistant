@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4768675
-[parent_id]: 4767430
-[tags]: 
-require 'nokogiri' doc = Nokogiri::XML Foo lorem ipsum etc Bar dum dum dum poopfiddles ENDXML a = doc.xpath( '//h2[text()="Foo"]/following::p[not(preceding::h2[text()="Bar"])]' ) puts a.map{ |n| n.to_s } #=> lorem #=> ipsum #=> etc I suspected that it might be more efficient to just walk the DOM using next_sibling until you hit the end: node = doc.at_xpath('//h2[text()="Foo bar"]').next_sibling stop = doc.at_xpath('//h2[text()="Bar baz"]') a = [] while node && node!=stop a lorem #=> ipsum #=> etc However, this is NOT faster. In a few simple tests, I found that xpath-only (the first solution) is about 2x as fast as this looping test, even when there are a very large number of paragraphs after the stop node. When there are many nodes to capture (and few after the stop) it performs even better, in the 6x-10x range.

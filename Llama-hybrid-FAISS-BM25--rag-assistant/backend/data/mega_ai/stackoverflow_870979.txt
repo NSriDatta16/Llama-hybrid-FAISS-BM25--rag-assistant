@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 870979
-[parent_id]: 
-[tags]: 
-Redirect Django feed to FeedBurner
-
-I have an Atom feed set up according to http://docs.djangoproject.com/en/dev/ref/contrib/syndication/ which means I have something like (r'^feeds/(?P .*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': feeds}) in my urls.py and something like class MyFeed(Feed): ... in my feeds.py . I'd like to redirect traffic from this feed to the FeedBurner. I have to do this in Django as there is no mod_rewrite on my server. I guess I should change urls.py entry to (r'^feeds/(?P .*)/$', 'feeds.redirect', {'feed_dict': feeds}) and supplement feeds.py with from django.http import HttpResponseRedirect from django.core.urlresolvers import reverse def redirect(request, **kwargs): if request.META['HTTP_USER_AGENT'] == 'FeedBurner': view = 'django.contrib.syndication.views.feed' return HttpResponseRedirect(reverse(view, kwargs=kwargs)) else: return HttpResponseRedirect('http://feeds2.feedburner.com/MyFeed') but it doesn't seem to work as I get the following error (you have to change == to != to see this): NoReverseMatch at /feeds/myfeed/ Reverse for ' ' with arguments '()' and keyword arguments '{'url': u'myfeed', 'feed_dict': {'myfeed': }}' not found. How can this be solved?

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5225914
-[parent_id]: 
-[tags]: 
-Optimization: Preallocate a chunk of heap memory prior to use by multiple objects - GAINS?
-
-Are there large gains in PERFORMANCE to be made by allocating heap memory in advance and filling it incrementally? Consider the VERY simplified example below: byte * heapSpace = malloc (1 000 000); int currentWriteSpot = 0; struct A { int x; byte * extraSpace; int extraSpaceLength; }; //a1 needs 10 bytes of extra storage space: A a1; a1.x = 2; a1.extraSpace = heapSpace + currentWriteSpot; a1.extraSpaceLength = 10; currentWriteSpot += 10; //a2 needs 120 bytes of extra storage space: A a2; a2.x = 24; a2.extraSpace = heapSpace + currentWriteSpot; a2.extraSpaceLength = 120; currentWriteSpot += 120; // ... many more elements added for ( ... ) { //loop contiguously over the allocated elements, manipulating contents stored at "extraSpace" } free (heapSpace); VS: ... a1.extraSpace = malloc ( 10 ); a2.extraSpace = malloc ( 120 ); a3... a4... ... //do stuff free (a1.extraSpace); free (a2.extraSpace); free ... free ... free ... Or is this likely to simply add complexity without significant gains in performance? Thanks folks!

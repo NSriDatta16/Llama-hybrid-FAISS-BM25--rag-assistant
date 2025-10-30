@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2391375
-[parent_id]: 2374863
-[tags]: 
-You've hit on two (or maybe three) of the big shortcomings of Make. It's good at using files there to make files here , but not the other way around, and it gets confused if a rule makes something other than the exact target (and it's automatic variables should work in prerequisites, but they don't). Fortunately we can get around these problems. Make can't find the prerequisites when you use Michael Kohne's solution because it's looking for class1.o, not $(BUILDDIR)class1.o. (And if you simply tell it to look in $(BUILDDIR) using VPATH, you may run into other problems.) The simplest, crudest solution (which I recommend if you're not too experienced) is brute force: NAMES = class1 class2 OBJECTS = $(patsubst %,$(BUILDDIR)%.o,$(NAMES)) program: $(OBJECTS) configure g++ $(OBJECTS) -o $@ $(OBJECTS):$(BUILDDIR)%.o:%.cc g++ -c $^ -o $@ There are more elegant solutions using more advanced techniques, but this should do for now.

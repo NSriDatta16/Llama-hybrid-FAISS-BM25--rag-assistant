@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 522383
-[parent_id]: 521596
-[tags]: 
-Based on the current table layout you want some indexes like this. CREATE INDEX IX_YourTable_1 ON dbo.YourTable (EntryDate, Id) INCLUDE (SLug) WITH (FILLFACTOR=90) CREATE INDEX IX_YourTable_2 ON dbo.YourTable (EntryDate, Slug) INCLUDE (Id) WITH (FILLFACTOR=80) Add any other columns you are returning to the INCLUDE line. Change your second query to something like this. Select Id, Slug, ..., EntryDate From TableName Where Slug = @slug AND EntryDate BETWEEN CAST(CAST(@EntryYear AS VARCHAR(4) + CAST(@EntryMonth AS VARCHAR(2)) + '01' AS DATE) AND DATEADD(mm, 1, CAST(CAST(@EntryYear AS VARCHAR(4) + CAST(@EntryMonth AS VARCHAR(2)) + '01' AS DATE)) The way your second query is currently written the index will never be used. If you can change the Slug column to a related table it will increase your performance and decrease your storage requirements.

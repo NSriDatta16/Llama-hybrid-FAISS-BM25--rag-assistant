@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4749325
-[parent_id]: 
-[tags]: 
-Parsing binary message stream in C/C++
-
-I'm writing a decoder for a binary protocol (Javad GRIL protocol). It consists of about a hundred messages, with data in the following format: struct MsgData { uint8_t num; float x, y, z; uint8_t elevation; ... }; The fields are ANSI-encoded binary numbers which follow each other with no gaps. The simplest way to parse such messages is to cast an input array of bytes to the appropriate type. The problem is that the data in stream are packed, i.e. unaligned. On x86 this can be solved by using #pragma pack(1) . However, that won't work on some other platforms or will incur performance overhead due to further work with misaligned data. Another way is to write a specific parse function for each message type, but as I've mentioned, the protocol includes hundreds of messages. Yet another alternative is to use something like the Perl unpack() function and store the message format somewhere. Say, we can #define MsgDataFormat "CfffC" and then call unpack(pMsgBody, MsgDataFormat) . This is much shorter but still error-prone and redundant. Moreover, the format can be more complicated because messages can contain arrays, so the parser will be slow and complex. Is there any common and effective solution? I've read this post and Googled around but didn't find a better way to do it. Maybe C++ has a solution?

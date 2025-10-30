@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5072005
-[parent_id]: 
-[tags]: 
-How do I compare xml output in a Cucumber step using a multiline string example?
-
-Chargify has this Cucumber scenario in their docs . Scenario: Retrieve a customer via my reference id (as an integer or simple string) Given I have a customer with these attributes | reference | first_name | last_name | email | | 7890 | Joe | Blow | joe@example.com | When I send a GET request to https://[@subdomain].chargify.com/customers/lookup.xml?reference=7890 Then the response status should be "200 OK" And the response should be the xml: """ `auto generated` Joe Blow joe@example.com `your value` 7890 `auto generated` `auto generated` """ I'm trying to follow their approach in testing an API we're developing here, instead of checking for the tags one by one, like I we were doing before coming across this example. So far no luck matching the response's output with the step's multiline string, due to formatting issues. Haven't found a way with Nokogiri nor with simple stripped string comparison. Is there an elegant (and efficient) way to do this? Update Here's the cucumber step using Mark's solution: Then /^I should see the following output$/ do |xml_output| response = Hash.from_xml(page.body) expected = Hash.from_xml(xml_output) expected.diff(response).should == {} end

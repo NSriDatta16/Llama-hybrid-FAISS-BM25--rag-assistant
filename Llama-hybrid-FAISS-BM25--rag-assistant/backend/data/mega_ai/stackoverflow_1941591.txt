@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1941591
-[parent_id]: 1941048
-[tags]: 
-I've done a similar setup to this. Setting up a mailbox to receive the output from another system is certainly not the most fail proof setup, but sometimes there are no other options. Zend_Mail makes this a breeze. My whole script for checking the mail inbox was just a few lines: $mail = new Zend_Mail_Storage_Imap(array( 'host' => $config->reports->email->incoming, 'user' => $config->reports->email->address, 'password' => $config->reports->email->password )); foreach ($mail as $message) { $message->getContent(); // Do something with the message content if ($message->isMultipart()) { $part = $message->getPart(2); // Deal with attachment, // if your output is an // attachment if ($part->contentTransferEncoding=='base64') { $raw = base64_decode($part->getContent()); // Do something with the attachment data } } } Since you're parsing HTML, passing this off to a DOM parser would be the next logical step.

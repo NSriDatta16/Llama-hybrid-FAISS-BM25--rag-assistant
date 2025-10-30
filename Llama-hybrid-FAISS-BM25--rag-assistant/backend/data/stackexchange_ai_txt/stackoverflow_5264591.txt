@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5264591
-[parent_id]: 5264052
-[tags]: 
-I'll expand on my comment. In general, I think you should reconsider your approach. All database access code should open a connection, execute a query then close the connection where you rely on connection pooling to mitigate the expense of opening lots of database connections. If it is the case that we are talking about a single SQL command whose rows on which it operates should not change, that is a problem that should be handled by the transaction isolation level. For that you might investigate the Snapshot isolation level in SQL Server 2005+. If we are talking about a series of queries that are part of a long running transaction, that is more complicated and can be handled via storage of a transaction state which other connections read in order to determine whether they can proceed. Going down this road, you need to provide users with tools where they can cancel a long running transaction that might no longer be applicable.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3093071
-[parent_id]: 3090138
-[tags]: 
-Given that the overhead for any row in PostgreSQL is 23 bytes (HeapTupleHeaderData), if you really care about small amounts of space this much you've probably picked the wrong way to store your data. Regardless, since all the more complicated types have their own overhead (bytea adds four bytes of overhead for example, bit strings 5 to 8), the only way to accomplish what you're looking for is to use a bigint (8 bytes), numerically shifting each value and OR-ing together the result. You can do this using the bit string operations to make the code easier--compute as bit string, then cast to bigint before storing--or just manually multiply/add if you want speed to be better. For example, here's how you store two bytes together into a two byte structure and then get them back again: int2 = 256 * byte1 + byte2 byte1 = int2 / 256 byte2 = int2 % 256 You can extend the same idea into storing 7 of them that way. Retrieval overhead is still going to be terrible, but you will have actually saved some space in the process. But not very much relative to just the row header.

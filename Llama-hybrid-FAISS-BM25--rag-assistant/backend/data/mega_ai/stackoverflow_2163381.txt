@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2163381
-[parent_id]: 2156077
-[tags]: 
-This did not seem to work. Any tips? The cachingAllowed attribute actually configures the server-side caching, not the client-side caching as you seem to expect. Client-side caching is to be done with appropriate response headers. To entirely disable client-side caching on the particular resources, you need to create a Filter which listens on the desired url-pattern and has at least the following lines inside the doFilter() method: response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1. response.setHeader("Pragma", "no-cache"); // HTTP 1.0. response.setDateHeader("Expires", 0); // Proxies. The response is here by the way the HttpServletResponse which is been casted back from the 2nd ServletResponse argument of the doFilter() method. Don't forget to clear the client-side cache (thus, inside the webbrowser config) before testing this all :)

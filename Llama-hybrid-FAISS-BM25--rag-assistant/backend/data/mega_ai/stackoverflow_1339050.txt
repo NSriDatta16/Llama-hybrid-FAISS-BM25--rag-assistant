@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1339050
-[parent_id]: 
-[tags]: 
-Share Python Interpreter in Apache Prefork / WSGI
-
-I am attempting to run a Python application within Apache (prefork) with WSGI in such a way that a single Python interpreter will be used. This is necessary since the application uses thread synchronization to prevent race conditions from occurring. Since Apache prefork spawns multiple processes, the code winds up not being shared between the interpreters and thus the thread synchronization is irrelevant (i.e. each thread only sees it own locks which have no bearing on the other processes). Here is the setup: Apache 2.0 (prefork) WSGI Python 2.5 Here is the relevant Apache configuration: WSGIApplicationGroup %{GLOBAL} WSGIScriptAlias / /var/convergedsecurity/apache/osvm.wsgi Alias /admin_media/ /var/www/html/admin_media/ Order deny,allow Allow from all Alias /media/ /var/www/html/media/ Order deny,allow Allow from all Here is what I tried so far (none of which worked): Adding WSGIApplicationGroup %{GLOBAL} Specifying WSGIDaemonProcess and WSGIProcessGroup within the virtual host: WSGIDaemonProcess osvm threads=50 WSGIProcessGroup osvm Is there no way to force Apache prefork to use a single Python interpreter with WSGI? The documents seem to imply you can with the WSGIDaemonProcess and WSGIApplicationGroup options but Apache still creates a separate Python interpreter for each process.

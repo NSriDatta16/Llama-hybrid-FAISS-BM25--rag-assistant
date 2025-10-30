@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4222730
-[parent_id]: 1574108
-[tags]: 
-I chased my issue down to prawnto's compile_support.rb file. # added to make ie happy with ssl pdf's (per naisayer) def ssl_request? @controller.request.env['SERVER_PROTOCOL'].downcase == "https" end We were seeing that apache's SERVER_PROTCOL env variable was always set to HTTP/1.1 even when using https. When ssl_required? is false and it's a request from ie prawnto will set Pragma="no-cache". This is what was causing our issues. If your app only uses https you can change this function to always return true. If this isn't enough you can write an apache directive along the lines of: SetEnv SERVER_PROTOCOL "https" I put this right in my ssl.conf file and everything now works as expected.

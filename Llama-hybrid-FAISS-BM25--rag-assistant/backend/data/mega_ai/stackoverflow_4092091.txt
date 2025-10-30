@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4092091
-[parent_id]: 4052259
-[tags]: 
-Not sure if any of my ramblings help but I'll press the "Post" button anyway. The answer depends on the implementation of backoff() . Since the goal here is to avoid synchronization, there won't be any local storage -- maybe some in a ThreadLocal . If the backoff algorithm uses a randomizer it will need to be reentrant as well. So most likely you are able to share it between pop and push -- now do you want to. Since push and pop are both trying to alter the top reference, it would be good if the backoff gave successive threads vastly different numbers. Is there more contention around push or pop? Do we need to be more aggressively backing off with one or the other method? If this is a generic stack then you won't know. In terms of how the backoff can be "restructured", I'm also not sure. Could you use a successful push or pop as a opportunity to throttle back on the backoff times? How about the difference between random backoff waits versus prime numbers in a sequence assigned by ThreadLocal ?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5459123
-[parent_id]: 5453993
-[tags]: 
-MySQL buffers the inline view before doing any operations on it. 0.0006 seconds you see for the first query is most probably the response time (the first row fetched), not the overall time (the last row fetched). If id is a PRIMARY KEY on your order table, you don't need a GROUP BY on it. If you have lots of items per order (more than about 20 items per order in average or so), you can try creating the following indexes: order_item (order_id, checked) order_item (order_id, last_update) and splitting your correlated subquery in two: SELECT * FROM order o WHERE o.canceled = 0 AND ( o.return_date > '2011-03-14' OR ( SELECT MIN(checked) FROM order_item oi WHERE order_id = o.id ) = 0 OR ( SELECT MAX(last_update) FROM order_item oi WHERE oi.order_id = o.id ) > '2011-03-14' ) Again, this will only help if you have lots of orders per items, otherwise a single scan on all orders will be more efficient.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3853219
-[parent_id]: 3845332
-[tags]: 
-I am facing the same problem, and while debugging i found, getTypeForFactoryBean function in AbstractBeanFactory is not working as properly. This function returning NULL for a protoType bean. /** * Determine the bean type for the given FactoryBean definition, as far as possible. * Only called if there is no singleton instance registered for the target bean already. * The default implementation creates the FactoryBean via getBean * to call its getObjectType method. Subclasses are encouraged to optimize / protected Class getTypeForFactoryBean(String beanName, RootBeanDefinition mbd) { if (!mbd.isSingleton()) { return null; } try { FactoryBean factoryBean = (FactoryBean) getBean(FACTORY_BEAN_PREFIX + beanName); return getTypeForFactoryBean(factoryBean); } catch (BeanCreationException ex) { // Can only happen when getting a FactoryBean. logger.debug("Ignoring bean creation exception on FactoryBean type check", ex); return null; } } Ideally above function should call getObjectType on ProxyFactoryInstance, but due to first check for singleton above function is returning NULL.

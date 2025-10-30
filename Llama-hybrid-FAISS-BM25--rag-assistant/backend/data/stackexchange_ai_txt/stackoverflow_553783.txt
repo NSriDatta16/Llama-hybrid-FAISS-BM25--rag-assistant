@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 553783
-[parent_id]: 553737
-[tags]: 
-Interrupt() only works if the thread is blocked... so you need to have another mechanism to stop processing. If you have a loop that is processing the data, the best way is to have a variable that will kill processing if it is set. Here's how I would do it... Thread dataThread; bool continueProcessing = true; String currentNetworkMember = ""; public NotifyMemberRemoved(String member) { if (currentNetworkMember == member) { continueProcessing = false; // Incase the thread is blocked... dataThread.Interrupt(); } } public void ProcessingLoop() { while (true) { currentNetworkMember = GetMemberToProcess(); continueProcessing = true; while (continueProcessing) { try { // Process data... ReadDataChunk(); ProcessDataChunk(); } catch (InterruptedException e) { // Whatever interrupted us must have set continueProcessing to false... } } UpdateGUI(); } }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1037210
-[parent_id]: 1031312
-[tags]: 
-If you have InnoDB, count(*) and any other aggregate function will do a table scan. I see a few solutions here: Use triggers and store aggregates in a separate table. Pros: integrity. Cons: slow updates Use processing queues. Pros: fast updates. Cons: old state can persist until the queue is processed so the user may feel a lack of integrity. Fully separate the storage access layer and store aggregates in a separate table. The storage layer will be aware of the data structure and can apply deltas instead of doing full counts. For example if you provide an "addObject" functionality within that you will know when an object has been added and thus the aggregate would be affected. Then you do only an update table set count = count + 1 . Pros: fast updates, integrity (you may want to use a lock though in case several clients can alter the same record). Cons: you couple a bit of business logic and storage.

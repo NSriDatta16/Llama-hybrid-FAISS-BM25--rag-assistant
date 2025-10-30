@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 961924
-[parent_id]: 961846
-[tags]: 
-That code should return the same result. The only problem I can think of is that the type of data inside "$header[$i]" is a string and not an integer. This causes PHP to parse the ASCII code of $header[$i] instead of the value it is supposed to represent: Intended result: $xorKey = 16909060; $data = 1337; $data = ((16 * ($xorKey ^ (~$data & 0xFF))) | (($xorKey ^ (~$data & 0xFF)) >> 4)) & 0xFF; echo $data; // int 60 Whereas using a string results in the following: $xorKey = 16909060; $data = '1337'; // HERE BE DRAGONS $data = ((16 * ($xorKey ^ (~$data & 0xFF))) | (($xorKey ^ (~$data & 0xFF)) >> 4)) & 0xFF; echo $data; // int 112 To remedy this: $xorKey = 16909060; $data = '1337'; $data = intval($data); // Parse this string as an integer. $data = ((16 * ($xorKey ^ (~$data & 0xFF))) | (($xorKey ^ (~$data & 0xFF)) >> 4)) & 0xFF; echo $data; // int 60

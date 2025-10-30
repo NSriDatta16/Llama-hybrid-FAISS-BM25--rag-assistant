@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5719396
-[parent_id]: 5719037
-[tags]: 
-Here's your problem: i2c_smbus_read_byte_data() calls i2c_smbus_xfer() , which calls i2c_lock_adapter() , which calls rt_mutex_lock() . rt_mutex_lock() can sleep. Functions that can sleep may only be called from a process context. Therefore it's illegal for you to call i2c_smbus_read_byte_data() from an interrupt handler. If you're in an interrupt handler or tasklet or holding a spinlock, you must not sleep (or call functions that may sleep) or you may deadlock the system. That's what the message "BUG: scheduling while atomic" is trying to tell you. If you need to use that function you'll need to reorganize your code so you can call it from a process context. You might consider having your interrupt handler wake up a task or submit a work_struct to a workqueue, which then does the necessary work.

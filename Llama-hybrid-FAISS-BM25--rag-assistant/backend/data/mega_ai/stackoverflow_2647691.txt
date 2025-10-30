@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2647691
-[parent_id]: 2647633
-[tags]: 
-First, you should really consider turning magic_quotes off... To quote the manual : Warning This feature has been DEPRECATED as of PHP 5.3.0. Relying on this feature is highly discouraged. That being said, use json_encode() to build your JSON array (instead of building your own), and finish off with a single call to mysql_real_escape_string() while querying as such: $data = array(); $data['content'] = " This string has it's downsides "; $data['date'] = 1271352514; $json = json_encode($data); mysql_query("INSERT INTO data VALUES ('" . mysql_real_escape_string($json) . "');"); Also, the PHP group recommends you use mysqli instead of mysql . Its Object Oriented API and support for parametrized queries greatly improve both development speed, code maintenance and security. Here is the above code written using mysqli : $data = array(); $data['content'] = " This string has it's downsides "; $data['date'] = 1271352514; $json = json_encode($data); $sqlInsert = $mysqli->prepare("INSERT INTO data VALUES (?);") $sqlInsert->bind_param("s", $json); $sqlInsert->execute();

@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 51286
-[parent_id]: 
-[tags]: 
-AttributeError: type object 'Lambda' has no attribute 'shape'
-
-I'm working on a sequence2sequence model with attention mechanism, thus I'm using an encoder-decoder architecture. The decoder part code is : # Now create the Decoder layers. decoder_inputs = Input(shape=(len_target,)) decoder_emb = Embedding(input_dim=vocab_out_size, output_dim=embedding_dim) decoder_lstm = LSTM(units=units, return_sequences=True, return_state=True) decoder_lstm_out, _, _ = decoder_lstm(decoder_emb(decoder_inputs), initial_state=encoder_states) x2 = reduce_dim(decoder_lstm_out) attn_layer = AttentionLayer(name='attention_layer') attn_out, attn_states = attn_layer([z, x2]) decoder_concat_input = Concatenate(axis=-1, name='concat_layer')([x2, attn_out]) lm= Lambda(decoder_concat_input) decoder_d2 = Dense(vocab_out_size, activation="softmax") decoder_out = decoder_d2(lm) model = tf.keras.Model([encoder_inputs, decoder_inputs], decoder_out) The reduce_dim function() is: def reduce_dim(decoder_lstm_out): x = decoder_lstm_out x = tf.placeholder(tf.float32, shape=[None, 12, 12, 256]) dim = tf.reduce_prod(tf.shape(x)[0:1]) x2 = tf.reshape(x, [dim,12,256]) return x2 An error is raised : AttributeError: 'Lambda' object has no attribute 'shape' At the line: decoder_out = decoder_d2(lm) If anyone can help me please?

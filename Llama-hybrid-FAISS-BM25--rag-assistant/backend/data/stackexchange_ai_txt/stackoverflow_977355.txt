@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 977355
-[parent_id]: 
-[tags]: 
-Complicated (?) pinvoke situation - avoid function overloading
-
-Summary: I have a bunch of C functions I have to call from C#. My current working solution is based on function overloading and I'm wondering if there is a more elegant solution. The C stuff: somewhere in a header file typedef struct _unknown_stuff * handle; // a opaque pointer an example of the function func( uint num_entries, handle * objects, uint * n) { ... } in C the function should be used similar to this: // warning: i bet that the syntax is not correct but you should get the idea... uint n; func(0, null, &n); handle * objects = malloc(n * sizeof(handle)); func(n, objects, null); The C# stuff: right now I'm doing the following in C#: public struct handle { public IntPtr Pointer; } // version to get number of objects [DllImport(dll, ...] private static extern void func( uint must_be_zero, object must_be_null, out uint n); // version to get the actual data [DllImport(dll, ...] private static extern void func( uint num_entries, [Out] handle[] objects, int must_be_zero); and then: handle[] objects; uint n = 42; func(0, null, out n); objects = new handle[n]; func(n, objects, 0); The Question Since I'm a C# noob, I was wondering if this is the best way to do this. Especially I would like to know if there is a way around overloading the function.

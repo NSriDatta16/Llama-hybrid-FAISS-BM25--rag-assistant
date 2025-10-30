@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1420473
-[parent_id]: 1418453
-[tags]: 
-No, you can't do that with EF (unless you use ADO.NET directly of course). That said, you can simplify the retrieval code by adding some methods to the partial class of your entity context. This is how I do it: public partial class MyEntities { public T GetById (object id) where T : class { EntityKey key = CreateKey (id); // see http://msdn.microsoft.com/en-us/library/system.data.objects.objectcontext.getobjectbykey.aspx return (T)GetObjectByKey(key); } public static EntityKey CreateKey (object id) { var type = typeof(T); return new EntityKey("MyEntities." + type.Name, "Id", id); } } Now, your above code should be public void Update(User user) { var userToUpdate = db.GetById (user.UserID); db.ApplyPropertyChanges(userToUpdate.EntityKey.EntitySetName, user); db.SaveChanges(); }

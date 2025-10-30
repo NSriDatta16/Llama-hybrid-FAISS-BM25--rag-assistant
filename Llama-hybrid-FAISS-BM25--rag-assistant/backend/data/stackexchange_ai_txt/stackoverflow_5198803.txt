@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5198803
-[parent_id]: 
-[tags]: 
-What is generic name of this technique CouchDB uses to index aggregated data
-
-CouchDB employs a cool pattern that can be used in a multitude of other scenarios. I'm talking about the persisted B-tree index of map/reduce results. The idea is to precalculate the aggregated data and store it at different levels of the B-tree index. The index can then be used to efficiently query the aggregate without having to reaggregate all the data all the time. Then, if any leaf-level value changes, only the ascending path through the tree has to get recalculated. For example, if the data is price over time, the index could store the SUM and the COUNT of items at day, month, and year levels. Then, if anybody wants to query average price year-to-date all you had to do is sum up all the SUMs and COUNTs for all the full months since year start, plus all the days available for the last month, then divide total SUM by total COUNT. If a past price has to change, the change has to propagate through the index, but only corresponding day's and month's and year's values have to be updated, and even then the values for other days and other months within the year can be reused for the calculation. What is generic name of this approach? Is anything similar exists in any of the popular RDBMSes? Any experience with using this in practice?

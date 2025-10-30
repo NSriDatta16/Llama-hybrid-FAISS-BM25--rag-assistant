@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 109313
-[parent_id]: 
-[tags]: 
-Why does neural network need loss as scalar?
-
-I have a loss function that's a weighted cross entropy loss for binary classification def BinaryCrossEntropy_weighted( y_true, y_pred, class_weight ): y_true= y_true.astype(np.float) y_pred = K.clip(y_pred, K.epsilon(), 1 - K.epsilon()) first_term = class_weight[1] * (y_true) * K.log(y_pred + K.epsilon()) second_term = class_weight[0] * (1.0 -y_true) * K.log(1.0 - y_pred + K.epsilon()) loss = -K.mean(first_term + second_term, axis=0) return loss And when I run this loss=BinaryCrossEntropy_weighted( np.array(y),np.array(predict), class_weight ) I got output If one can observe carefully, can see that the loss is a vector(of dim(1,) ) not a scalar and I was directly passing this loss to my gradient tape and optimizer, grads1 = tape.gradient(loss, Final_model.trainable_weights) optimizer1.apply_gradients(zip(grads1, Final_model.trainable_weights)) Result of this was my loss not decreasing over multiple epoch, meaning my model weight was not being updated ,meaning gradient was not able to pass down/not able to calculated, Now am I correct ? If I am correct, Now the big question is why tensorflow doesn't allow/accept the loss as a vector ? and in general does NN allow loss value as vector ?

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1974586
-[parent_id]: 
-[tags]: 
-making functions inline avoids closure?
-
-I am reading a blogpost at: http://flyingfrogblog.blogspot.com/2009/07/ocaml-vs-f-burrows-wheeler.html a simple implementation for Burrow Wheeler compressing algorithm: # compare two strings str[i..end,0..i-1] and str[j..end,0..j-1] let cmp (str: _ array) i j = let rec cmp i j = if i=str.Length then 1 else if j=str.Length then -1 else let c = compare str.[i] str.[j] in if c<>0 then c else cmp (i+1) (j+1) cmp i j # sort n strings let bwt (str: byte array) = let n = str.Length let a = Array.init n (fun i -> i) Array.sortInPlaceWith (cmp str) a Array.init n (fun i -> str.[(a.[i] + n - 1) % n]) This implementation seems quite efficient, but actually slow because the sorting Array.sortInPlaceWith (cmp str) a uses a closure function (cmp str) , and calls it too many times (O(n log n) on average)! By making both sorting algorithm inline and the comparison function inline, the speed is fast. My question is that does inline function mean that the seeming-closure call is not a closure anymore? Another thing I am thinking is function pointers in C. When we use qsort: void qsort ( void * base, size_t num, size_t size, int ( * comparator ) ( const void *, const void * ) ); we need to pass in the pointer of a comparison function. It seems that in C's case, the speed does not suck much. Thanks!

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3721656
-[parent_id]: 3721590
-[tags]: 
-You probably want to create an .ashx hanlder (assuming you are using asp) and to a Server.Transfer() or Server.Redirect() to that URL. Alternatively, you could change the GridView to display a hyperlink to the handler URL as well. Right click in Solution Explorer > New Item > ASP.Net Hanlder. Code for handler: public class DownloadFile : IHttpHandler { // add IRequiresSessionState if needed public bool IsReusable { get { return true; } } public void ProcessRequest(HttpContext context) { var fileID = context.Request.QueryString["fileID"]; // assuming fileID is a string var file = db.Storage.Single(f => f.ID.Equals(fileID)); // set the content type context.Response.OutputStream.Write(file.Contents, 0, file.Contents.Length); } } You probably want to add some error checking as well. Your URL would be something like this: /DownloadFile.ashx?fileID=somefileid

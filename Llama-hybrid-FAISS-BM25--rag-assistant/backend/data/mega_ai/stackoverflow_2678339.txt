@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2678339
-[parent_id]: 
-[tags]: 
-memcached: which is faster, doing an add (and checking result), or doing a get (and set when returning false)
-
-The title of this question isn't so clear, but the code and question is straightforward. Let's say I want to show my users an ad once per day. To accomplish this, every time they visit a page on my site, I check to see if a certain memcache key has any data stored on it. If so, don't show an ad. If not, store the value '1' in that key with an expiration of 86400. I can do this 2 ways: //version a $key='OPD_'.date('Ymd').'_'.$type.'_'.$user; if($memcache->get($key)===false){ $memcache->set($key,'1',false,$expire); //show ad } //version b $key='OPD_'.date('Ymd').'_'.$type.'_'.$user; if($memcache->add($key,'1',false,$expire)){ //show ad } Now, it might seem obvious that b is better, it always makes 1 memcache call. However, what is the overhead of "add" vs. "get"? These aren't the real comparisons... and I just made up these numbers, but let's say 1 add ~= 1 set ~= 5 get in terms of effort, and the average user views 5 pages a day: a: (5 get * 1 effort) + (1 set * 5 effort) = 10 units of effort b: (5 add * 5 effort) = 25 units of effort Would it make sense to always do the add call? Is this an unnecessary micro-optimization?

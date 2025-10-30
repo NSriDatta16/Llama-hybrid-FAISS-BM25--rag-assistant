@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3332210
-[parent_id]: 3332102
-[tags]: 
-I want the average five execution times for host 1, and the average five execution times for host 2, etc. Oh... In that case, use: SELECT x.host, AVG(x.execution_time) FROM (SELECT j.pk, j.host, j.execution_time, CASE WHEN @host != j.host THEN @rownum := 1 ELSE @rownum := @rownum + 1 END AS rank, @host := j.host FROM JOBS j JOIN (SELECT @rownum := 0; @host := '') r ORDER BY j.host, j.execution_time DESC) x WHERE x.rank MySQL doesn't have any ranking/analytical/windowing functionality, but does support variables so you can get the same functionality at ROW_NUMBER() OVER (PARTITION BY host ORDER BY execution_time DESC) . Previously: SELECT AVG(j.execution_time) AS avg_last_five_jobs FROM JOBS j JOIN (SELECT t.pk FROM JOBS t ORDER BY t.pk DESC LIMIT 5) x ON x.pk = j.pk

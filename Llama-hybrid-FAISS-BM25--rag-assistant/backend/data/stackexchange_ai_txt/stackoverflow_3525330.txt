@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3525330
-[parent_id]: 3525280
-[tags]: 
-For storing a large dictionary of string : number key-value pairs, I'd suggest a JSON-native storage solution such as MongoDB . It has a wonderful API for Python, Pymongo . MongoDB itself is lightweight and incredibly fast, and json objects will natively be dictionaries in Python. This means that you can use your string key as the object ID, allowing for compressed storage and quick lookup. As an example of how easy the code would be, see the following: d = {'string1' : 1, 'string2' : 2, 'string3' : 3} from pymongo import Connection conn = Connection() db = conn['example-database'] collection = db['example-collection'] for string, num in d.items(): collection.save({'_id' : string, 'value' : num}) # testing newD = {} for obj in collection.find(): newD[obj['_id']] = obj['value'] print newD # output is: {u'string2': 2, u'string3': 3, u'string1': 1} You'd just have to convert back from unicode, which is trivial.

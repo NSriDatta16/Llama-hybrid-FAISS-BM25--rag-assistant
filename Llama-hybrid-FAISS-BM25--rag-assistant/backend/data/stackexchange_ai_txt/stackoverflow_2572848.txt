@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2572848
-[parent_id]: 2572743
-[tags]: 
-Do you really need a batch script? Perhaps everything you want to do can be done directly from Perl or invoked directly by Perl via its system command. If a batch script is essential, what's wrong with creating a temporary file for the script and then executing it with system ? See File::Temp , which will even delete the temporary file automatically after you are done. If the virtual-batch-file strategy is unavoidable, you might be able to leverage the /C and maybe /S options of cmd . Something like this: use strict; use warnings; my @batch_commands = ( 'dir', q{echo "Make sure quoting isn't busted"}, 'ipconfig', ); # Use & or &&, depending on your needs. Run `cmd /?` for details. my $virtual_bat_file = join " &\n", @batch_commands; system "cmd /C $virtual_bat_file"; But this feels very wrong. There has to be a better way to accomplish whatever the larger goal of your application is. By the way, when you run cmd /? to learn about /C , /S , and & vs. && , you'll quickly appreciate how terrible it is in the Land of Batch . Stay away if at all possible.

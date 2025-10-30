@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2582536
-[parent_id]: 802218
-[tags]: 
-I realize this question has almost had it's first birthday, and it may not be valid anymore, but I'll give a shot at answering it anyway. OpenLayers.Control.DragPan makes a call to the map when you are done panning. If you check the OpenLayers.Map pan function, you will see this comment inside: // only call setCenter if not dragging or there has been a change The following logic in the function reflects this comment. So yes, every time you are done panning you need to do something like: dragpan.handler.up = function(evt) { dx = dragpan.handler.last.x - evt.x; dy = dragpan.handler.last.y - evt.y; var centerPx = map.getViewPortPxFromLonLat(map.getCenter()); var newCenterPx = centerPx.add(dx, dy); var newCenterLonLat = map.getLonLatFromViewPortPx(newCenterPx); map.setCenter(map.getCenter() + dragpan.handler.xy); } ...and things should magically work for you.

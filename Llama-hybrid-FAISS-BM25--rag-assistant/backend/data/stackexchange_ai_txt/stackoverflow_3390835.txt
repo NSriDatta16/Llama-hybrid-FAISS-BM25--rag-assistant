@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3390835
-[parent_id]: 3390403
-[tags]: 
-You've got a superfluous array in there (you could see that with $client->__lastRequest() , so change: $result = $client->__soapCall('MemberAuth', array($post_data)); To: $result = $client->__soapCall('MemberAuth', $post_data); After that, I get either an 'could not connect to host' (if I follow the port of the WSDL, https://aptaweb.apta.org/AM/APTAAPPS/ComponentAuthWebService/aptamemberauthorize.cfc ), or a redirect (302) to the website with a bunch of cookies set if I choose yours ( https://www.apta.org/AM/APTAAPPS/ComponentAuthWebService/MemberAuth ). Use a stream_context with $context = stream_context_create(array('http'=>array('max_redirects'=>1))); and $client->__getLastRequestHeaders(); to see the redirect in action. Curiously enough, Bob's solution of https://www.apta.org/AM/APTAAPPS/ComponentAuthWebService/aptamemberauthorize.cfc works, but is in no way indicated by the wsdl itself as far as I can tell.

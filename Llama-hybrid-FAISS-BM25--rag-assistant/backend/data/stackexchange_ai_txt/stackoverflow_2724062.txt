@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2724062
-[parent_id]: 2723974
-[tags]: 
-How do I set the first two bytes of the block as NULL or have it point somewhere? This doesn't make any sense unless you're running on a 16-bit machine. Based on the way that you're calling malloc() , you're planning to have the first N bytes be a pointer to something else (where N may be 2, 4, or 8 depending on whether you're running on a 16-, 32-, or 64-bit architecture). Is this what you really want to do? If it is, then you can create use a pointer-to-a-pointer approach (recognizing that you can't actually use a void* to change anything, but I don't want to confuse matters by introducing a real type): void** ptr = block; However, it would be far more elegant to define your block with a struct (this may contain syntax errors; I haven't run it through a compiler): typedef struct { void* ptr; /* replace void* with whatever your pointer type really is */ char[1] data; } MY_STRUCT; MY_STRUCT* block = malloc(sizeof(MY_STRUCT) + additional); block->ptr = /* something */

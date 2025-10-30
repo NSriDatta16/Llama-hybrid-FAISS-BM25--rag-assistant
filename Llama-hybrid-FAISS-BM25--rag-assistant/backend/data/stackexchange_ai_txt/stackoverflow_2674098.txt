@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2674098
-[parent_id]: 
-[tags]: 
-How to avoid saving a blank model which attributes can be blank
-
-I have two models with a HABTM association, let´s say book and author. class Book has_and_belongs_to_many :authors end class Author has_and_belongs_to_many :books end The author has a set of attributes (e.g. first-name,last-name,age) that can all be blank (see validation). validates_length_of :first_name, :maximum => 255, :allow_blank => true, :allow_nil => false In the books_controller, I do the following to append all authors to a book in one step: @book = Book.new(params[:book]) @book.authors.build(params[:book][:authors].values) My question: What would be the easiest way to avoid the saving of authors which fields are all blank to prevent too much "noise" in the database? At the moment, I do the following: validate :must_have_some_data def must_have_some_data empty = true hash = self.attributes hash.delete("created_at") hash.delete("updated_at") hash.each_value do |value| empty = false if value.present? end if (empty) errors.add_to_base("Fields do not contain any data.") end end Maybe there is an more elegant, Rails-like way to do that. Thanks.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4714939
-[parent_id]: 2778193
-[tags]: 
-Following Michael Dorgan's suggestion, I'm copying my comment into an answer: Found the real cause of the problem. Hopefully this will help someone else encountering this bug. You probably have some static data somewhere that is not being properly initialized. We did, and the solution was in boost-log for our code base. https://sourceforge.net/projects/boost-log/forums/forum/710022/topic/3706109 . The real problem is the delay loaded library (plus statics), not the potentially multiple versions of C++ from different libraries. For more info: http://parashift.com/c++-faq-lite/ctors.html#faq-10.13 Since encountering this problem and its solution, I've learned that it's important to understand how statics are shared or not shared between your statically and dynamically linked libraries. On Windows this requires explicitly exporting the symbols for the shared statics (including things like singletons meant to be accessed across different libraries). The behavior is subtly different between each of the major platforms.

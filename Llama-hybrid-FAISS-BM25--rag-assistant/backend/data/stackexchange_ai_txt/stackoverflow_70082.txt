@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 70082
-[parent_id]: 65683
-[tags]: 
-I'm using Zend_Test to completely test all controllers. It's quite simple to set up, as you only have to set up your bootstrap file (the bootstrap file itself should NOT dispatch the front controller!). My base test-case class looks like this: abstract class Controller_TestCase extends Zend_Test_PHPUnit_ControllerTestCase { protected function setUp() { $this->bootstrap=array($this, 'appBootstrap'); Zend_Auth::getInstance()->setStorage(new Zend_Auth_Storage_NonPersistent()); parent::setUp(); } protected function tearDown() { Zend_Auth::getInstance()->clearIdentity(); } protected function appBootstrap() { Application::setup(); } } where Application::setup(); does all the setup up tasks which also set up the real application. A simple test then would look like this: class Controller_IndexControllerTest extends Controller_TestCase { public function testShowist() { $this->dispatch('/'); $this->assertController('index'); $this->assertAction('list'); $this->assertQueryContentContains('ul li a', 'Test String'); } } That's all...

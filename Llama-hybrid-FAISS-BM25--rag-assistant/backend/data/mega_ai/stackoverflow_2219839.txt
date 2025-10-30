@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2219839
-[parent_id]: 2219829
-[tags]: 
-Turning off optimization fixes the problem, but it is unnecessary. A safer alternative is to make it illegal for the compiler to optimize out the store by using the volatile type qualifier. // Assuming pageptr is unsigned char * already... unsigned char *pageptr = ...; ((unsigned char volatile *)pageptr)[0] = pageptr[0]; The volatile type qualifier instructs the compiler to be strict about memory stores and loads. One purpose of volatile is to let the compiler know that the memory access has side effects, and therefore must be preserved. In this case, the store has the side effect of causing a page fault, and you want the compiler to preserve the page fault. This way, the surrounding code can still be optimized, and your code is portable to other compilers which don't understand GCC's #pragma or __attribute__ syntax.

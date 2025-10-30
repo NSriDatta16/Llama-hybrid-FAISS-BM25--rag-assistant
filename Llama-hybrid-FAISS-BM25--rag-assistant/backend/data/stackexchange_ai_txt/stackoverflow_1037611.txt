@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1037611
-[parent_id]: 1037543
-[tags]: 
-You could use a named scope to simplify getting the groups of responses: named_scope :job_group, lambda{|job_code| {:conditions => ["job_code = ?", job_code]}} Put that in your response model, aand use it like this: job.responses.job_group('some job code') and you'll get an array of responses. If you're looking to get the mean of the values of one of the attributes on the responses, you can use map: r = job.responses.job_group('some job code') r.map(&:total) => [1, 5, 3, 8] Alternatively , you might find it quicker to write custom SQL in order to get the mean / average / sum of groups of attributes. Going through rails for this sort of work may cause significant lag. ActiveRecord::Base.connection.execute("Custom SQL here")

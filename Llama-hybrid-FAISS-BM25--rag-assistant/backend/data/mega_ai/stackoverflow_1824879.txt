@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1824879
-[parent_id]: 1824860
-[tags]: 
-You can try something like this SELECT * FROM TABLE WHERE (TotalSMSLeads != 0 OR TotalFaxLeads != 0) Provide the example query and we can assist you further. OK, from what you commented i would try something like this SELECT C.ClientID , C.ClientName , C.OrganizationName, C.FirstName , S.SMSOverageRate , '' as Cost , Count(*) as TotalLeads , Sum(CASE DeliveryViaFax WHEN 'Y' THEN 1 ELSE 0 END) AS FaxCount , Sum(CASE DeliveryViaSMSEmail WHEN 'Y' THEN 1 ELSE 0 END) AS SMSCount FROM CMN_LeadSaleDetails S INNER JOIN CMN_LeadClients C ON C.ClientID = S.BuyerID WHERE C.SellerTenantId = @TenantId AND S.SellerJournalID = CASE @JournalId WHEN 0 THEN S.SellerJournalID ELSE @JournalId END GROUP BY C.ClientID , C.ClientName , C.OrganizationName, C.FirstName , S.SMSOverageRate HAVING ( Sum(CASE DeliveryViaFax WHEN 'Y' THEN 1 ELSE 0 END) != 0 OR Sum(CASE DeliveryViaSMSEmail WHEN 'Y' THEN 1 ELSE 0 END) != 0)

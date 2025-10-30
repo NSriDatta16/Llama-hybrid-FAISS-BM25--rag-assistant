@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 361577
-[parent_id]: 350318
-[tags]: 
-Have you considered creating a surrogate identity column (type bigint) and using that as the clustered index? Then create your primary key as a non-clustered unique index. With a table of this size, it's quite possible that index and page fragmentation are a big performance problem. The surrogate clustered index will ensure that all inserts are at the end of the table, which can almost completely eliminate page fragmentation (unless rows get deleted). Less page fragmentation == more pages per IO, which is a very good thing. This will also allow you to periodically defrag the unique index that you are querying on, which will make it much more effective. Do this often, or at least monitor index fragmentation on this table regularly. These performance improvements can be quite dramatic -- if your current PK is highly fragmented, an index seek can involve a great deal more IO than it should. Once you've implemented this, consider (aka, try it and measure ;-) adding a nonclustered index on column k7.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5405450
-[parent_id]: 5403708
-[tags]: 
-I think it depends on why you are wanting to "test" for broken links. Scenario 1) Ensuring URLs entered by users are correct might use a method like this: def active_link?(url) uri = URI.parse(url) response = nil Net::HTTP.start(uri.host, uri.port) { |http| response = http.head(uri.path.size > 0 ? uri.path : "/") } return response.code == "200" end You can then use that in your Rspec tests: active_link?('http://example.com').should be Scenario 2) You just want to make sure all the links on your site work: If this is the case, you might try using the Unix 'wget' command: wget --spider -r -l 1 --header='User-Agent: Mozilla/5.0' http://example.com 2>&1 | grep -B 2 '404' With Scenario 2, it will dump out all 404s to your terminal screen. It's a relatively simple matter to put that into a rake command; Jason Seifer has a great blog post on that (http://jasonseifer.com/2010/04/06/rake-tutorial)

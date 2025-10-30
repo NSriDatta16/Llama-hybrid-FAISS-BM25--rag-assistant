@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 94036
-[parent_id]: 
-[tags]: 
-BERT Self-Attention layer
-
-I am trying to use the first individual BertSelfAttention layer for the BERT-base model, but the model I am loading from torch.hub seems to be different then the one used in hugginface transformers.models.bert.modeling_bert : import torch, transformers tokenizer = transformers.BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True) torch_model = torch.hub.load('huggingface/pytorch-transformers', 'model', 'bert-base-uncased') inputs = tokenizer.encode_plus("Hello", "World", return_tensors='pt') output_embedding = torch_model.embeddings(inputs['input_ids'], inputs['token_type_ids']) output_self_attention = torch_model.encoder.layer[0].attention.self(output_embedding)[0] # compare output with using the huggingface model directly bert_self_attn = transformers.models.bert.modeling_bert.BertSelfAttention(torch_model.config) # transfer all parameters bert_self_attn.load_state_dict(torch_model.encoder.layer[0].attention.self.state_dict()) # output_self_attention2 = bert_self_attn(output_embedding)[0] output_self_attention != output_self_attention2 # tensors are not equal? Why is output_self_attention2 different from output_self_attention ? I thought they would give the same output given the same input.

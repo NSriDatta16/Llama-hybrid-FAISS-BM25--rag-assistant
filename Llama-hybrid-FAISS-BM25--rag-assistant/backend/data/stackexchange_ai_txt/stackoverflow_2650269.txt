@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2650269
-[parent_id]: 
-[tags]: 
-How do I get certain code to execute before every single controller action in ASP.NET MVC 2?
-
-I want to check some things about the state of the session, the user agent, etc, and possibly take action and return a special view BEFORE a controller method gets a chance to execute. For example: Most common: User requests Home/Index System checks to make sure x != 0. x does not equal zero, so the Home/Index controller executes like normal. But, sometimes: User requests Home/Index System checks to make sure x != 0. x DOES equal zero. The user must be notified and the requested controller action cannot be allowed to execute. I think this involves the use of ActionFilters. But I have read about them and I don't understand if I can preempt the controller method and return a view before it executes. I am sure I could execute code before the controller method runs, but how do I keep it from running in some instances and return a custom view, or direct to a different controller method? Update: I implemented RM's solution. This is what I did: public class MyAttribute : ActionFilterAttribute { public override void OnActionExecuting(ActionExecutingContext filterContext) { if (myValue == wrongValue) { filterContext.Result = new ViewResult{ViewName = "Notice"}; } base.OnActionExecuting(filterContext); } } Now, when myValue is wrong, those users get the Notice view and the requested controller is never executed. To make this work I applied it to a ControllerBase that all my Controllers inherit from.

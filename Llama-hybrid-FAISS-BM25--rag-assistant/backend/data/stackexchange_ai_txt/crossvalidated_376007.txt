@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 376007
-[parent_id]: 375998
-[tags]: 
-It is still difficult to follow exactly what happens without the datafile.xlsx, but I could track down the error (it is in the C-code of the e1071 library) the parameter 'p' in the C-code refers to the parameter 'epsilon' in the R-code. So in tuning your parameters your second pass contains ranges = list(epsilon = seq(tune_svmagev1 $best.model$ epsilon-.15, tune_svmagev1 $best.model$ epsilon+.15, 0.01) which may result in a negative value for epsilon . Maybe you could better do something like a multiplication rather than subtraction and addition. E.g ranges = list(epsilon = seq(tune_svmagev1 $best.model$ epsilon*0.5, tune_svmagev1 $best.model$ epsilon*1.5, length.out = 31) Note that when solving vague errors in R, and google/stackexchange do not give the answer, you can try and look it up in the source-code. For the code see " https://github.com/cran/e1071/ " The relevant lines are R/svm.R if (cret $error != empty_string) stop(paste(cret$ error, "!", sep="")) src/Rsvm.c par.p = *epsilon; ... s = svm_check_parameter(&prob, &par); src/svm.cpp if(svm_type == EPSILON_SVR) if(param->p

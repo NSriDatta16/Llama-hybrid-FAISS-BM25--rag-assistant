@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4576591
-[parent_id]: 
-[tags]: 
-Land of Lisp example redundency?
-
-I've read a lot of good things about Land of Lisp so I thought that I might go through it to see what there was to see. (defun tweak-text (lst caps lit) (when lst (let ((item (car lst)) (rest (cdr lst))) (cond ; If item = space, then call recursively starting with ret ; Then, prepend the space on to the result. ((eq item #\space) (cons item (tweak-text rest caps lit))) ; if the item is an exclamation point. Make sure that the ; next non-space is capitalized. ((member item '(#\! #\? #\.)) (cons item (tweak-text rest t lit))) ; if item = " then toggle whether we are in literal mode ((eq item #\") (tweak-text rest caps (not lit))) ; if literal mode, just add the item as is and continue (lit (cons item (tweak-text rest nil lit))) ; if either caps or literal mode = true capitalize it? ((or caps lit) (cons (char-upcase item) (tweak-text rest nil lit))) ; otherwise lower-case it. (t (cons (char-downcase item) (tweak-text rest nil nil))))))) (the comments are mine) (FYI -- the method signature is (list-of-symbols bool-whether-to-caps bool-whether-to-treat-literally) but the author shortened these to (lst caps lit) .) But anyway, here's the question: This has (cond... (lit ...) ((or caps lit) ...)) in it. My understanding is that this would translate to if(lit){ ... } else if(caps || lit){...} in a C style syntax. Isn't the or statement redundant then? Is there ever a condition where the (or caps lit) condition will be called if caps is nil ?

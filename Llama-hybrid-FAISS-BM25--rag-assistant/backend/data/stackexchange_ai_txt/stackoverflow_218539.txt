@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 218539
-[parent_id]: 218451
-[tags]: 
-One approach could be to set up a Memcache instance, shared between each of your virtual servers. You could ape flock() by putting an entry of the filename in to cache when you start the local file operations, and wiping it when finished. Each server can access this pool before a file operation, and see if this "lock" is present, e.g. // Check for lock, using $filename as key $lock = $memcache->get($filename); if(!$lock) { // Set lock in memcache for $filename $memcache->set($filename, 1); // Do file operations... // Blow away "lock" $memcache->delete($filename); } Not the most elegant of solutions, but should enable you to control the locks from all servers in your setup with relative ease.

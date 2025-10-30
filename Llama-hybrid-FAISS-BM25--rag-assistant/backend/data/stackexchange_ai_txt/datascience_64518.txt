@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 64518
-[parent_id]: 36291
-[tags]: 
-For future use: I encountered a similar problem. In my case neural network failed to predict accurately in skewed part of the data. I created bins (10 in my case) and gave weights to data. After than I used important sampling in batch gradient descent. This can be easily done using keras generators. Below is the generator function. def generator(features, labels, batch_size, w): n = features.shape[0] w = w/w.sum() while True: ind = np.random.choice(n,batch_size,p=w) batch_features = features[ind] batch_labels = labels[ind] yield batch_features, batch_labels This generator samples skewed data more often than random sampling and makes sure the model is not biased towards majority data cloud. w is weights. Here is the brute force code to calculate weights. I am sure there are libraries to calculate this. data['bins'] = pd.cut(data['response'], [0,1,2,3,4,5,6,7,8,9,10], labels=[1,2,3,4,5,6,7,8,9,10]) weights = data['bins'].value_counts() weights = 1/weights weights = weights/sum(weights) weights = weights.to_dict() for i in data.index: data.loc[i,'weights'] = weights[data.loc[i,'bins']]

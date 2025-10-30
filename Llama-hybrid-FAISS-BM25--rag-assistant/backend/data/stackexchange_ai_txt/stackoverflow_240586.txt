@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 240586
-[parent_id]: 2647
-[tags]: 
-You can leverage a Number table to do the string parsing. Create a physical numbers table: create table dbo.Numbers (N int primary key); insert into dbo.Numbers select top 1000 row_number() over(order by number) from master..spt_values go Create test table with 1000000 rows create table #yak (i int identity(1,1) primary key, array varchar(50)) insert into #yak(array) select 'a,b,c' from dbo.Numbers n cross join dbo.Numbers nn go Create the function create function [dbo].[ufn_ParseArray] ( @Input nvarchar(4000), @Delimiter char(1) = ',', @BaseIdent int ) returns table as return ( select row_number() over (order by n asc) + (@BaseIdent - 1) [i], substring(@Input, n, charindex(@Delimiter, @Input + @Delimiter, n) - n) s from dbo.Numbers where n Usage (outputs 3mil rows in 40s on my laptop) select * from #yak cross apply dbo.ufn_ParseArray(array, ',', 1) cleanup drop table dbo.Numbers; drop function [dbo].[ufn_ParseArray] Performance here is not amazing, but calling a function over a million row table is not the best idea. If performing a string split over many rows I would avoid the function.

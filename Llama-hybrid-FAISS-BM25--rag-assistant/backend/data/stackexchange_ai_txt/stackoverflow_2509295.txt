@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2509295
-[parent_id]: 
-[tags]: 
-How can I inject multiple repositories in a NServicebus message handler?
-
-I use the following: public interface IRepository { void Add(T entity); } public class Repository { private readonly ISession session; public Repository(ISession session) { this.session = session; } public void Add(T entity) { session.Save(entity); } } public class SomeHandler : IHandleMessages { private readonly IRepository aRepository; private readonly IRepository bRepository; public SomeHandler(IRepository aRepository, IRepository bRepository) { this.aRepository = aRepository; this.bRepository = bRepository; } public void Handle(SomeMessage message) { aRepository.Add(new A(message.Property); bRepository.Add(new B(message.Property); } } public class MessageEndPoint : IConfigureThisEndpoint, AsA_Server, IWantCustomInitialization { public void Init() { ObjectFactory.Configure(config => { config.For () .CacheBy(InstanceScope.ThreadLocal) .TheDefault.Is.ConstructedBy(ctx => ctx.GetInstance ().OpenSession()); config.ForRequestedType(typeof(IRepository<>)) .TheDefaultIsConcreteType(typeof(Repository<>)); } } My problem with the threadlocal storage is, is that the same session is used during the whole application thread. I discovered this when I saw the first level cache wasn't cleared. What I want is using a new session instance, before each call to IHandleMessages<>.Handle. How can I do this with structuremap? Do I have to create a message module?

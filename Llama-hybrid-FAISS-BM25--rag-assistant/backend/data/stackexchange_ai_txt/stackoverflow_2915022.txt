@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2915022
-[parent_id]: 2914959
-[tags]: 
-Your first and second cases both try to initialise the rwlock for a pointer that points nowhere (well, technically, to a random or NULL location). In the first case, you allocate space for your wrapper structure but not the pthread_rwlock_t* within it. Hence it would point to a random location. This would work with an actual pthread_rwlock_t rather than a pointer to one: struct rwlock_flag { int flag; // Flag pthread_rwlock_t rwlock; // Reader/writer lock for flag }; struct rwlock_flag * running; running = (struct rwlock_flag *) malloc (sizeof(struct rwlock_flag)); rslt = pthread_rwlock_init(&(running->rwlock), NULL); In the second, similarly, there's no backing storage for rwlock_dg2 so it either points to a random location (if allocated within a function) or NULL (if declared at file level). You need: pthread_rwlock_t * rwlock_dg2 = malloc (sizeof (pthread_rwlock_t)); pthread_rwlock_init(rwlock_dg2,NULL); Your third case, which works, does so because the pointer &rwlock_dg actually points to a real pthread_rwlock_t (which is of course rwlock_dg ).

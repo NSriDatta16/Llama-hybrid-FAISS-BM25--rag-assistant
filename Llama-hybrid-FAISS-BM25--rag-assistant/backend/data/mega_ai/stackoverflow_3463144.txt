@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3463144
-[parent_id]: 
-[tags]: 
-Can an ICriteria return an IDictionary instead of a List ?
-
-Currently I can get this SetResultTransformer method to return a List of some arbitrary kind of DTO as follows: var result = _session.CreateCriteria () .Add(Restrictions.In(groupCompanyInfo, (int[])groups.Select(xx => xx.Id).ToArray())) .SetProjection(Projections.ProjectionList() .Add(Projections.GroupProperty(groupCompanyInfo), "CompanyInfoGroupID") .Add(Projections.RowCount(), "TotalNumberOfCompanies")) .SetResultTransformer(Transformers.AliasToBean ()) .List (); where SomeDTO is defined as: public class SomeDTO { public int GroupId { get; set; } public int CountOfCompaniesInGroup { get; set; } } I think it's a little bit of an overkill having to create a type specifically to take the data out of this query though. Ideally, I could use a IDictionary , because built into the framework. As it stands though, it seems I can return a List. I thought I could throw a sneaky KeyValuePair into the SetResultsTransformer , like this: var result = _session.CreateCriteria () .Add(Restrictions.In(groupCompanyInfo, (int[])groups.Select(xx => xx.Id).ToArray())) .SetProjection(Projections.ProjectionList() .Add(Projections.GroupProperty(groupCompanyInfo)) .Add(Projections.RowCount())) // note, I removed the aliases .SetResultTransformer(Transformers.AliasToBean >()) .List >(); but result is just an empty KeyValuePair. Is there any way for me to do this, or do I need the DTO?

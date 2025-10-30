@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3528622
-[parent_id]: 3526702
-[tags]: 
-I've fiddled with memory alignment too. The first thing to understand is that each object has its own memory alignment requirements, which is (at most) the size of the object itself. Fortunately it's often smaller. There are facilities of two types to help writing correct memory allocators (C++0x, they can be found in std::tr1 in most STL): std::alignment_of gives the alignment as a compile-time value std::aligned_storage gives an aligned storage according to its parameters Working with the two of them, you'll get what you need. However your design is slightly off-base, not by much mind, because your header won't have the same alignment requirement (in general) than the objects stored. template struct Block { // Header bits typedef std::aligned_storage ::value >::type buffer_type; buffer_type mBuffer; }; Two notes: Block itself might have a different alignment, but it doesn't matter You could use sizeof for the alignment, it's guaranteed to work, even if a bit wasteful Finally, you can also succeed without all these, and some pointer arithmetic, but since it's offered....

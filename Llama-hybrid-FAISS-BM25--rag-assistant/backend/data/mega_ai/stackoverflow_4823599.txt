@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4823599
-[parent_id]: 4823548
-[tags]: 
-All newly allocated pages are zeroed before they are made accessible to user-mode, because otherwise sensitive information could be leaked from kernel-mode or other processes. This applies to things like NtAllocateVirtualMemory / VirtualAlloc and NtCreateSection / CreateFileMapping . I imagine the same concept extends to files, because any decent file system wouldn't want to leak information in this way. EDIT: However, take that last paragraph with a grain of salt - both the documentation for CreateFileMapping and SetEndOfFile claim that the extended portion of the file is not defined. I'll do some more investigation. EDIT 2: OK, the Win32 MSDN documentation is definitely wrong . The documentation for ZwSetInformationFile states: If you set FileInformationClass to FileEndOfFileInformation, and the EndOfFile member of FILE_END_OF_FILE_INFORMATION specifies an offset beyond the current end-of-file mark, ZwSetInformationFile extends the file and pads the extension with zeros. So there you go. The extended portion is guaranteed to be zero.

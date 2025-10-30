@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4925142
-[parent_id]: 4924126
-[tags]: 
-I'm assuming the game server is threaded. If this is the case, you may be able to pragmatically force CPU affinity on the application. If you had a way to tell if the game had users or not, ie if UDP packets are coming in on the assigned port, you could say "hey, no one is connected". You could then have your program force all working threads onto the same core. So, if you had an 8 core cpu and all the threads were on one core, then at most it would use 12.5% cpu. Once you see packets coming in on the assigned port, you could assign the affinity back to all cores. You could take this a step further and say "Are there any "idle" games. If there are any idle games, which are all on.. lets say.. core 7, then run an infinite loop of the HLT instruction at a higher priority than the game, but force the thread to sleep so it doesn't completely starve the game. This would cause the CPU to use less power, but would be a lot more work and have a higher chance of problems. I would stick to forcing affinity only, and just let all the idle games share some given core.

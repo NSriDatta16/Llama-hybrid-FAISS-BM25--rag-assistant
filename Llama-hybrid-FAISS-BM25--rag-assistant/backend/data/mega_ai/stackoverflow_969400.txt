@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 969400
-[parent_id]: 968825
-[tags]: 
-There is an alternative approach, which does not have I18n problems (allowing ',' or '.' but not both): Decimal.TryParse . Just try converting, ignoring the value. bool IsDecimalFormat(string input) { Decimal dummy; return Decimal.TryParse(input, out dummy); } This is significantly faster than using a regular expression, see below. (The overload of Decimal.TryParse can be used for finer control.) Performance test results: Decimal.TryParse: 0.10277ms, Regex: 0.49143ms Code ( PerformanceHelper.Run is a helper than runs the delegate for passed iteration count and returns the average TimeSpan .): using System; using System.Text.RegularExpressions; using DotNetUtils.Diagnostics; class Program { static private readonly string[] TestData = new string[] { "10.0", "10,0", "0.1", ".1", "Snafu", new string('x', 10000), new string('2', 10000), new string('0', 10000) }; static void Main(string[] args) { Action parser = () => { int n = TestData.Length; int count = 0; for (int i = 0; i { int n = TestData.Length; int count = 0; for (int i = 0; i

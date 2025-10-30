@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 135276
-[parent_id]: 135246
-[tags]: 
-The 'struct' module should be able to do this, although alignment of structs in the middle of the data is always an issue. It's not very hard to get it right, however: find out (once) what boundary the structs-in-structs align to, then pad (manually, with the 'x' specifier) to that boundary. You can doublecheck your padding by comparing struct.calcsize() with your actual data. It's certainly easier than writing a C extension for it. In order to keep using Py_BuildValue() like that, you have two options. You can determine the size of time_t at compiletime (in terms of fundamental types, so 'an int' or 'a long' or 'an ssize_t') and then use the right format character to Py_BuildValue -- 'i' for an int, 'l' for a long, 'n' for an ssize_t. Or you can use PyInt_FromSsize_t() manually, in which case the compiler does the upcasting for you, and then use the 'O' format characters to pass the result to Py_BuildValue.

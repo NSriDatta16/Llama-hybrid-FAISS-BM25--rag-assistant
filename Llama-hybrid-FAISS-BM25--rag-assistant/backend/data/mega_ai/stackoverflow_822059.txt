@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 822059
-[parent_id]: 
-[tags]: 
-SFINAE with invalid function-type or array-type parameters?
-
-Please consider this code: template char (&f(T[1]))[1]; template char (&f(...))[2]; int main() { char c[sizeof(f (0)) == 2]; } I expected it doing SFINAE and chosing the second overload, since substitution of T into T[1] yields void [1]() Which is an invalid type, of course. Adjustment of parameter types (array->pointer) is done after substituting template parameters into function parameters and checking for valid resulting types like 14.8.2 [temp.deduct] describes. But both comeau and GCC fail to compile the above. Both with different diagnostics. Comeau says: "ComeauTest.c", line 2: error: array of functions is not allowed char (&f(T[1]))[1]; GCC says (version 4.3.3 ): error: ISO C++ forbids zero-size array c Meaning, GCC does not fail to substitute, but it chooses the first overload of f , returning a sizeof of 1, instead of failing to substitute it up front like Comeau. What compiler is right and is my code valid at all? Please refer to or quote the proper Standard section in your answer. Thanks! Update : The Standard itself contains such an example in the list at 14.8.2/2 . I don't know, why I overlooked it first: template int f(T[5]); int I = f (0); int j = f (0); // invalid array While the example is only informative, it shows the intention of all those mysterious paragraphs and seems to show the code above should work and reject the first overload.

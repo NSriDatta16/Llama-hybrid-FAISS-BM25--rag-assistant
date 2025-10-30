@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3154676
-[parent_id]: 3154297
-[tags]: 
-fread() is a C library function, not a system call. fread() , fwrite() , fgets() and friends are all buffered I/O by default (see setbuf ) which means that the library allocates a buffer which decreases the frequency with which read() and write() system calls need to be made. This means that if you're reading sequentially from the file, the library will only issue a system call every, say, 100 reads (subject to the buffer size and how much data you read at a time). When the read() and write() system calls are made, however, they will definitely be slower than calling times() , simply due to the volume of data that needs to be exchanged between your program and the kernel. If the data is cached in the OS's buffers (e.g. it was written by another process on the same machine moments ago) then it will still be pretty fast. If the data is not cached, then you will have to wait for I/O (be it to the disk or over the network), which is very slow in comparison. If the data is coming fresh over NFS, then I'd be pretty confident that calling times() will be faster than fread() on average.

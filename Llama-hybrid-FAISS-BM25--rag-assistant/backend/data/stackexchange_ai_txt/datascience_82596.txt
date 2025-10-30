@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 82596
-[parent_id]: 
-[tags]: 
-PyTorch: Train without dataloader (loop trough dataframe instead)
-
-I was wondering if it is bad practice to instead of using built in tools such as dataloader just loop trough each row in a pandas df. Lets say I am doing text classification and my training loop looks like: net.train() for i in range(0, 5): epoch_loss = 0.0 print('epoch:', i) for idx, row in train_df.iterrows(): #is this bad? if idx % 1000 == 0: print(idx) total_loss = 0 net.zero_grad() text_1, text_2 = row['sentence1'], row['sentence2'] encoded1 = tokenizer.encode_plus(text_1, return_tensors="pt").to(device) encoded2 = tokenizer.encode_plus(text_2, return_tensors="pt").to(device) cosine_dist = net( encoded1['input_ids'], encoded1['token_type_ids'], encoded1['attention_mask'], encoded2['input_ids'], encoded2['token_type_ids'], encoded2['attention_mask'], ) gold_label = torch.tensor([row['score'] / 5.0]).to(device) raw_loss = loss(cosine_dist, gold_label) raw_loss.backward() optimizer.step() epoch_loss += raw_loss.item() print(epoch_loss) Will this just take longer time, since it does a backprop for each training sample? If using batch training, with e.g batch_size=32, will that only backprop once for 32 samples, meaning it should be faster, but optimizing the average loss in the batch? Any feedback is appreciated! :)

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5763927
-[parent_id]: 5763870
-[tags]: 
-errno should be reserved to the C standard library, a program should treat it as a read only value. Writing new code I strongly discourage using a errno-style global variable for error code checking. Say you have functions a , b reporting their status through ab_error then you must write things like this: a(); if( ab_error == AB_NOERROR ) { b(); if( ab_error == NO_ERROR ) { /* ... */ } } You see, that you rather quickly pile up nesting levels. If however your functions returned a error code you can write it this way: int error_a; int error_b; if( (error_a = a()) == A_NOERROR && (error_b = b()) == B_NOERROR ){ /* ... */ } else { /* test the error variables */ } you can even chain multiple error conditions like this: int error_a; int error_b; int error_c; if( (error_a = a()) == A_NOERROR && ( (error_b = b()) == B_NOERROR || (error_c = c()) == C_NOERROR ) ){ /* ... */ } else { /* test the error variables */ } Which is a lot more readable than if you'd scatter the whole thing over several nested if statements.

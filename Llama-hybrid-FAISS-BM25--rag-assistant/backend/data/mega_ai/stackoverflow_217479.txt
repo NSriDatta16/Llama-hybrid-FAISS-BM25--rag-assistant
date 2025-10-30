@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 217479
-[parent_id]: 217464
-[tags]: 
-Here is a very interesting approach about importing tabulated data using Linq. It's simple and elegant, you only need an Enumerable method that yields the lines from the file: public static IEnumerable ReadLinesFromFile(string filename) { using (StreamReader reader = new StreamReader(filename)) { while (true) { string s = reader.ReadLine(); if (s == null) break; yield return s; } } } and then you do the query: var jointDisplacements = from line in ReadLinesFromFile(@"c:\import.txt") let item = line.Split(new char[] { '\t' }) select new { Joint = Convert.ToInt32(item[0]), X-dsp = Convert.ToDouble(item[1]), Y-dsp = Convert.ToDouble(item[2]), Z-dsp = Convert.ToDouble(item[3]), X-rot = Convert.ToDouble(item[4]), Y-rot = Convert.ToDouble(item[5]), Z-rot = Convert.ToDouble(item[6]) }; You have now a list of anonymous objects that have the values from your file, represented as properties of each object. If your file includes the column headers, you should skip the first line...

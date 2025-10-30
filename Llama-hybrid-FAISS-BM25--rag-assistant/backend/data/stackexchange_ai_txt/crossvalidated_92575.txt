@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 92575
-[parent_id]: 
-[tags]: 
-glm inflated error...why?
-
-I'm pretty new to stats, so this may be dumb. I've been running a bunch of models on randomly generated data to try and develop my understanding of type 1 error. I've noticed that using glm(family=binomial) I get more type 1 errors than I should when giving a binomial input (a two-column matrix of success and failure). In the code below, the first loop generates a thousand logistic regression models for random data, but I get type 1 errors (p The second loop runs the a similar thing as a Bernoulli test (just single vector of zeros and ones in the y). Here I get what I want to see, about 50 type 1 errors per 1000 models. Can anyone explain this to me? I see that if I change the possible values for the random numbers in my success/failure y-matrix (the variable I call range here) I can lower the type 1 errors, but I don't understand why. This gives me about triple the number of type 1 errors that I expect. #Binomial glm fit.p=c() for(i in 1:1000){ range=0:10 y=matrix(sample(range,2000,replace=T),ncol=2,nrow=1000) x=rnorm(1000,100,50) fit=glm(y~x,family=binomial(link='logit')) fit.p[i]=anova(fit,test='Chisq')[2,5] } print(length(which(fit.p This works fine. About 50 errors per 1000 #Bernoulli glm fit2.p=c() for(i in 1:1000){ y=sample(0:1,1000,replace=T) x=rnorm(1000,100,50) fit2=glm(y~x,family=binomial(link='logit')) fit2.p[i]=anova(fit2,test='Chisq')[2,5] } print(length(which(fit2.p

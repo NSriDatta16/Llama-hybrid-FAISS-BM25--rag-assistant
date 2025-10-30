@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4868382
-[parent_id]: 4868227
-[tags]: 
-In my opinion, include guards should be include guards and nothing more. If you want conditional compilation, I would define something else. If you were throwing around #if defined(FOO_H) in your code, I think people would find this strange since _H usually indicates an include guard. One thing I can think of though is checking if the file has already been included (duh!) so that you don't have to include the file yourself. I'm not sure if this would speed up compilation or not, in comparison to forward declarations or #pragma once In main.cpp: #include "bar.h" // comment this line to see the difference #include "foo.h" int main() { return 0; } In bar.h: #ifndef BAR_H #define BAR_H class BarClass { }; #endif In foo.h: #ifndef FOO_H #define FOO_H #if !defined(BAR_H) #error bar h was not included // forgot how to do compiler warnings... #include "bar.h" // we should include the file #else #error bar h was included // same thing, should be changed to warning #endif // do something with BarClass #endif FOO_H

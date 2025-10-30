@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2224617
-[parent_id]: 2218040
-[tags]: 
-The problem is that SetMaxResults is not applied to the number of root entities returned from the query, it is translated into a T-SQL TOP (in the case of SqlServer), which is applied to the result from a join query. Since there is one row in the result set for each child of a root entity the TOP will not have the desired effect. To achieve a limit on the number of root entities you could use a join query with a subquery that contains the SetMaxResults limit. // Select the ids of the first ten posts var subquery = DetachedCriteria.For () .SetMaxResults(10) .SetProjection(Projections.Property("Id")); // Do a join query with posts and tags, for the posts who's ids are // in the result of the subquery var posts = session.CreateCriteria () .SetFetchMode("Tags", FetchMode.Join) .Add(Subqueries.PropertyIn("Id", subquery)) .SetResultTransformer(Transformers.DistinctRootEntity) .List ();

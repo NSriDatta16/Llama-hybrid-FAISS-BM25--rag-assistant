@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1460332
-[parent_id]: 
-[tags]: 
-Retrieving a Type's leaf interfaces
-
-The System.Type class provides a GetInterfaces () method that "gets all the interfaces implemented or inherited by the current Type". The problem is that "The GetInterfaces method does not return interfaces in a particular order, such as alphabetical or declaration order. Your code must not depend on the order in which interfaces are returned, because that order varies". In my case, however, I need to isolate and expose (via WCF) only the leaf interfaces of the interface hierarchy, that is interfaces that are not inherited by other interfaces in that hierarchy. For example, consider the following hierarchy interface IA { } interface IB : IA { } interface IC : IB { } interface ID : IB { } interface IE : IA { } class Foo : IC, IE {} Foo's leaf interfaces are IC and IE, whereas GetInterfaces() will return all 5 interfaces (IA..IE). A FindInterfaces () method is also provided, allowing you to filter the aforementioned interfaces using a predicate of your choice. My current implementation is given below. It is O(n^2) where n is the number of interfaces the type implements. I was wondering if there was a more elgant and/or efficient way of doing it. private Type[] GetLeafInterfaces(Type type) { return type.FindInterfaces((candidateIfc, allIfcs) => { foreach (Type ifc in (Type[])allIfcs) { if (candidateIfc != ifc && candidateIfc.IsAssignableFrom(ifc)) return false; } return true; } ,type.GetInterfaces()); } Thanks in advance

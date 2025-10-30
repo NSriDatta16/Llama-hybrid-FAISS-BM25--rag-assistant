@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2986767
-[parent_id]: 
-[tags]: 
-Is url.openStream harmful?
-
-I was using the java.net.URL.openStream() method to retrieve content from the server. I recently ran into an issue where the HTTP Response code indicated an error, but instead of throwing an exception, the stream still was read anyway. This caused the error to appear much later in the execution and proved to be a red herring. As far as I can see, when you have opened a stream using this method, there is no way to check the HTTP response code. The only way I could find to handle this properly was to obtain a connection before opening the stream: HttpURLConnection conn=(HttpURLConnection) url.openConnection() #Code updated with scotth's suggestion if(!String.valueOf(conn.getResponseCode()).startsWith('2')) throw new IOException("Incorrect response code "+conn.getResponseCode()+" Message: " +getResponseMessage()); rawIn=conn.getInputStream() InputStream in=conn.getInputStream() So do you agree? Are there any good circumstances for using openStream safely, or should its use be discouraged. It is worth noting that Sun uses the method in their tutorial code for reading directly from a URL . Then again, the code throws Exception so it isn't exactly a bastion of good coding practices.

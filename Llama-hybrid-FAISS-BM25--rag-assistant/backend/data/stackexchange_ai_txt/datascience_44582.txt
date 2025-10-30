@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 44582
-[parent_id]: 
-[tags]: 
-Why is logistic regression not sigmoidal?
-
-The blue dots are the raw data and the line is my logistic regression. The line is quite straight and not sigmoidal as I would have expected. I suspect there is something wrong in my gradient descent equation but I don't understand the maths well enough to find the mistake. This is the code I used to generate the logistic regression: import numpy as np import pandas as pd import matplotlib import matplotlib.pyplot as plt from scipy import stats def logit(z): return (1/(1+np.exp(-z))) def cost(data, weights): x_val = data[:,0:2] y_val = data[:,2] m = len(x_val) scores = np.dot(x_val, weights) cost = np.sum(y_val*scores - np.log(1 + np.exp(scores))) return cost def gradient_descent(data, weights, learning_rate): x_val = data[:,0:2] y_val = data[:,2] m = len(x_val) scores = np.dot(x_val, weights) weights -= (learning_rate/m)*np.dot(np.transpose(x_val),(logit(scores)-y_val)) return weights dataset = pd.read_csv("/Users/An/Desktop/data/glass.csv") dataset.sort_values('Al', inplace=True) # sort by ascending "Al" values dataset.head() dataset['binary'] = dataset.Type.map({1:0, 2:0, 3:0, 5:1, 6:1, 7:1}) ones = np.ones(len(dataset)) data = np.stack((ones,dataset["Al"], dataset["binary"]), axis=-1) weights = np.random.rand(2) def log_reg(data, weights): for i in range(9000): weights = gradient_descent(data, weights, 0.000001) loss = cost(data, weights) return weights w = log_reg(data, weights)

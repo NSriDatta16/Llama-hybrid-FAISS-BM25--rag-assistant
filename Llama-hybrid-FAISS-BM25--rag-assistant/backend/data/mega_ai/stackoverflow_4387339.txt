@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4387339
-[parent_id]: 4387306
-[tags]: 
-You are correct that variables cannot be passed to OPENDATASOURCE . Instead You must use a literal instead. As much as we discourage using dynamic SQL, there are some cases that it is unavoidable. Try something like this: declare @dbname varchar(50) declare @servername varchar(50) declare srv cursor for select servername from test.dbo.servers declare @str varchar(200) declare @sql nvarchar(MAX) truncate table test.dbo.temp open srv fetch next from srv into @servername while @@fetch_status = 0 begin SET @sql = N' declare db cursor for select name from opendatasource(''SQLNCLI'', ''Data Source='+@servername+';Integrated Security=SSPI'').master.dbo.sysdatabases open db fetch next from db into @dbname while @@fetch_status = 0 begin insert test.dbo.temp (dbname, servername) values (@dbname, @servername) fetch next from db into @dbname end close db deallocate db ' EXEC sp_executesql @sql, N'@dbname varchar(50), @servername varchar(50)', @dbname, @servername fetch next from srv into @servername end close srv deallocate srv

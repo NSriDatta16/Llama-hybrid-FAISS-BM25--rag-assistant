@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2147889
-[parent_id]: 
-[tags]: 
-c# verify certificate in CRL list
-
-How can I programmatically check if a certain certificate is revoked from its CA CRL list? I'm doing this: X509Chain ch = new X509Chain(); ch.ChainPolicy.RevocationMode = X509RevocationMode.Online; ch.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain; ch.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(1000); ch.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag; ch.ChainPolicy.VerificationTime = DateTime.Now; ch.Build(certificate); foreach (X509ChainStatus s in ch.ChainStatus) { string str = s.Status.ToString(); Console.WriteLine("str: " + str); } X509Store store = new X509Store(StoreName.Disallowed, StoreLocation.LocalMachine); store.Open(OpenFlags.ReadWrite); bool isRevoked = store.Certificates.Contains(certificate); store.Close(); return !isRevoked && certificate.Verify(); And I get "str: RevokedStatusUnknown". Only if I wait many hours after I revoke the certificate -> the status is returned as Revoked, despite the fact that I publish the CRL immediately after revoking the certificate. Why it does not access the CRL instantaneously?

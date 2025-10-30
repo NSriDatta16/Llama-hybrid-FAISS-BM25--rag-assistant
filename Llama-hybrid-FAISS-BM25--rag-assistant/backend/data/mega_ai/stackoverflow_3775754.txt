@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3775754
-[parent_id]: 2024895
-[tags]: 
-My guess is OP's situation is a void* is being used as general storage for an int, where the void* is larger than the int. So eg: int i = 123; void *v = (void*)i; // 64bit void* being (ab)used to store 32bit value [..] int i2 = (int)v; // we want our 32bits of the 64bit void* back Compiler doesn't like that last line. I'm not going to weigh in on whether it's right or wrong to abuse a void* this way. If you really want to fool the compiler, the following technique seems to work, even with -Wall: int i2 = *((int*)&v); Here it takes the address of v, converts the address to a pointer of the datatype you want, then follows the pointer.

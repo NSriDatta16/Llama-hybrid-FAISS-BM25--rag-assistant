@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2228544
-[parent_id]: 
-[tags]: 
-higher level functions in R - is there an official compose operator or curry function?
-
-I can create a compose operator in R: `%c%` = function(x,y)function(...)x(y(...)) To be used like this: > numericNull = is.null %c% numeric > numericNull(myVec) [2] TRUE FALSE but I would like to know if there is an official set of functions to do this kind of thing and other operations such as currying in R. Largely this is to reduce the number of brackets, function keywords etc in my code. My curry function: > curry=function(...){ z1=z0=substitute(...);z1[1]=call("list"); function(...){do.call(as.character(z0[[1]]), as.list(c(eval(z1),list(...))))}} > p = curry(paste(collapse="")) > p(letters[1:10]) [1] "abcdefghij" This is especially nice for e.g. aggregate: > df = data.frame(l=sample(1:3,10,rep=TRUE), t=letters[1:10]) > aggregate(df$t,df["l"],curry(paste(collapse="")) %c% toupper) l x 1 1 ADG 2 2 BCH 3 3 EFIJ Which I find much more elegant and editable than: > aggregate(df$t, df["l"], function(x)paste(collapse="",toupper(x))) l x 1 1 ADG 2 2 BCH 3 3 EFIJ Basically I want to know - has this already been done for R?

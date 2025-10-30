@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4483309
-[parent_id]: 
-[tags]: 
-Move packaged_task into lambda
-
-I want to move and call a boost::packaged_task inside a lambda. However, I can't figure out an elegant solution. e.g. This won't compile. template auto begin_invoke(Func&& func) -> boost::unique_future // noexcept { typedef boost::packaged_task task_type; auto task = task_type(std::forward (func)); auto future = task.get_future(); execution_queue_.try_push([=] { try{task();} catch(boost::task_already_started&){} }); return std::move(future); } int _tmain(int argc, _TCHAR* argv[]) { executor ex; ex.begin_invoke([]{std::cout ' would lose some const-volatile qualifiers in order to call 'void boost::packaged_task ::operator ()(void)' // with // [ // R=void // ] return 0; } My rather ugly solution: struct task_adaptor_t { // copy-constructor acts as move constructor task_adaptor_t(const task_adaptor_t& other) : task(std::move(other.task)){} task_adaptor_t(task_type&& task) : task(std::move(task)){} void operator()() const { task(); } mutable task_type task; } task_adaptor(std::move(task)); execution_queue_.try_push([=] { try{task_adaptor();} catch(boost::task_already_started&){} }); What is the "proper" way to move a packaged_task into a lambda which calls it?

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2414610
-[parent_id]: 
-[tags]: 
-Viewing Magento model data changes on before/after save event?
-
-It should be simple: Hook a MODEL_save_after event (or MODEL_save_before if that’s more appropriate). Check getData() vs g etOrigData() to see what changes the user has made. In the customer_address model, edited through the backend, both save events are triggered twice. The first time customer_address_save_before is triggered, followed by customer_address_save_after . In both cases getOrigData() and getData() are identical, except getData() has a new updated_at value, and has a store_id set (is this a bug?). So, the model doesn’t have the submitted data from the user yet. The events are both before entering user data or validation, so this is of no use. customer_address_save_before is triggered, followed by customer_address_save_after a second time. This time (in both cases), getOrigData() is empty, and getData() now has all the submitted data from the user. So I can’t compare these events either! It appears this is after validation, saving, the lot! Why the save process appears to occur twice? Magento v1.3.2.4.

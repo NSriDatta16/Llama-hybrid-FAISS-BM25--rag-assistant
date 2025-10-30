@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2239932
-[parent_id]: 
-[tags]: 
-Decouple the screens without magic strings
-
-My WPF project will be organised like this : Screens Group1 Screen1 View.xaml ViewModel.cs Group2 Screen2 View.xaml ViewModel.cs To show the Screen1 from the Screen2 I'll use something like this: ScreenManager.Show("Group1.Screen1") This looks (using reflection) in the Screens.Group1.Screen1 namespace for a View and a ViewModel and instantiates them. How can I eliminate the magic string without coupling Screen1 and Screen2 (I don't want the classes in Screen2 to use the Screen1 namespace). Also I would like some kind of screen discovery (autocompletion/intellisense) Or maybe some way (automate test) to verify that all calls to ScreenManager.Show are valid. Update : I came up with this: public class ScreenNames { public Group1Screens Group1; public class Group1Screens { public ScreenName Screen1; } } public sealed class ScreenName { private ScreenName() { } } public class ScreenManager : IScreenManager { public void Show(Expression > x) {} } Usage: screenManager.Show(x=>x.Group1.Screen1); Not ideal but I suppose violating DRY is still better than magic strings. And I can automatically test (with reflection) that all calls are valid.

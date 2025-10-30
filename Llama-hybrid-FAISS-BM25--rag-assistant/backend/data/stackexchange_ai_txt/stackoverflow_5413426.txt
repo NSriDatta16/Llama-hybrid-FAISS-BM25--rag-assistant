@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5413426
-[parent_id]: 
-[tags]: 
-Adding an interface to a transformed class if annotation is present
-
-I'm writing a bytecode transformer using the ClassAdapter of the asm framework. If a custom annotation is present on the class I want to add some methods and make the class implement an interface. Adding the methods is working fine, but I'm wondering what the best way is to make the class implement an interface. Since visitAnnotation is only called after visit , I need to somehow delay calling the super visit method and buffer all needed information until then. Has anyone implemented something similar? Should I use the tree api of asm for this although the package documentation recommends avoiding it if possible? Here is the general structure of the transformation: public class MyClassAdapter extends ClassAdapter { private String classname; private boolean instrument; public PropertyChangeSupportAdapter(ClassVisitor cv) { super(cv); } @Override public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) { super.visit(version, access, name, signature, superName, interfaces); this.classname = name; } @Override public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) { if (desc.equals("Lmypackage/MyAnnotation;")) { instrument = true; System.out.println("Instrumenting " + classname); } return super.visitAnnotation(desc, visible); } @Override public void visitEnd() { if (instrument) { // add methods } } }

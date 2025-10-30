@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3171102
-[parent_id]: 
-[tags]: 
-WPF Images not rendering from in-memory sources
-
-I have a data class in my application which maintains a collection of byte arrays representing JPEG images. It's defined as: private ArrayList FrameList = new ArrayList(); I'm having some troubles with my Image object rendering a blank page (and taking its sweet time to do it as well). When I insert a blank image with a 2K in-memory byte array ( byte x[] = { lots of hex values }; ): FrameList.Insert(currFrame, x); and then import a JPEG file over it later on with: byte[] bytes = File.ReadAllBytes(fspec); FrameList[currFrame] = bytes; the array is read correctly into memory and stored in the ArrayList (confirmed with the debugger). However,I then have a function to get the image: public BitmapImage getCurrPicture() { MemoryStream strm; BitmapImage bmp = new BitmapImage(); strm = new MemoryStream((byte[])FrameList[currFrame-1]); bmp.CacheOption = BitmapCacheOption.None; bmp.BeginInit(); bmp.StreamSource = strm; bmp.EndInit(); strm.Close(); return bmp; } which is called: imgPicB.Source = data.getCurrPicture(); and it doesn't always render. imgPicB is defined in my XAML as: Funny thing is, if I use the exact same JPEG setting the source with setting the source to the file URI directly, it renders fine. Is there some problem with using in-memory JPEG images in WPF? Is there some extra smarts performed when loading from a file (say auto-detection of the image type)?

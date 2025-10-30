@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3936167
-[parent_id]: 3936060
-[tags]: 
-No, Part 2 is not OK. The specific part of the standard is 6.7.3.1/4. This section is pretty dense, and takes a few re-reads, but P is a restrict pointer, and X is some object it is used to access, and which is modified. So in your example P is fooPtr and X is foo . Then: Every other lvalue used to access the value of X shall also have its address based on P. "based on" is defined in the previous paragraph, and to summarize, the lvalue foo does not have its address based on the restrict pointer P. So the rule is broken when you access the object foo through its own name. Part 3 is not OK for exactly the same reason, the lvalue *fooPtr2 isn't based on P either, but is also used to access X. I say "not OK" - to be precise, the combination of 1+2 provokes undefined behavior, as does the combination of 1+3. As long as you don't actually access the object through the restrict pointer, none of the definition of restrict "kicks in". If you wanted to you could remove Part 1, retain the unused restrict pointer, and then 2 and 3 would be OK.

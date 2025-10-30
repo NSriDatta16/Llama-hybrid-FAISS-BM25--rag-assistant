@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4739481
-[parent_id]: 
-[tags]: 
-Controlling readiness of file descriptors
-
-I have a case where I have an incoming stream of complex messages which need some processing before they are passed in a simplified format to the actual handler. I'd like to use a FIFO file descriptor, with one thread filling it from one end and another thread reading from the other. Now the kind of behavior I would like to have: the reading thread is waiting with select() , and I would like to guarantee that upon wakeup, there is a full package that can be read with a call to read() , i.e. I want to avoid having to reassemble packages because of fragmentation due to buffer sizes (the packages are guaranteed to be below the kernel-to-userspace buffer passing limit). I want to know if there's a way of configuring the FIFO in such a way that I can manually define when the file descriptor is ready, i.e. when the producer has successfully written a full package, I'd like to have a way to signal to the reading end (via the file descriptor) that reading is ready. Is there a way to achieve this via ioctl() or is there some abstraction besides a FIFO that offers this behavior (in the Linux world)? (I know about pthread and condition variables, but I'd like the coupling between producer and consumer to be restricted to the shared file descriptor.)

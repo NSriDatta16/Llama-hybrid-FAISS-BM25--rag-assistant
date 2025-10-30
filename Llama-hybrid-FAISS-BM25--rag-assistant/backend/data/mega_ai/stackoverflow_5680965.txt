@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5680965
-[parent_id]: 5680530
-[tags]: 
-You have to build a string with the preprocessor that represents your build settings, and use that string with #pragma detect_mismatch . E.g. #if defined(_DEBUG) #define FOO_DEBUG_PART "_debug" #else #define FOO_DEBUG_PART "_release" #endif #if defined(_MT) #define FOO_CRT_PART1 "_MT" #else #define FOO_CRT_PART1 "_st" #endif #if defined(_DLL) #define FOO_CRT_PART2 "_DLL" #else #define FOO_CRT_PART2 "_LIB" #endif // ... #define FOO_BUILD_SETTINGS FOO_DEBUG_PART FOO_CRT_PART1 FOO_CRT_PART2 /* ... */ #pragma detect_mismatch("foo_build_settings", FOO_BUILD_SETTINGS) The IMO better solution though is to use #pragma comment(lib) to link to your libraries, and then build a similar string and use it as part of the file name of the lib: // build FOO_BUILD_SETTINGS like above #pragma comment(lib, "mylib" FOO_BUILD_SETTINGS) That way you cannot use the wrong library (unless you either change the code or the lib is created with the wrong file name ... or renamed afterwards). And of course, if you're as paranoid as I am, you can always do both :)

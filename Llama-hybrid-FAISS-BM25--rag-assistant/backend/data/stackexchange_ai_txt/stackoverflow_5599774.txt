@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5599774
-[parent_id]: 
-[tags]: 
-recursively calling method (for object reuse purpose)
-
-I have a rather large class which contains plenty of fields (10+), a huge array (100kb) and some unmanaged resources. Let me explain by example class ResourceIntensiveClass { private object unmaganedResource; //let it be the expensive resource private byte[] buffer = new byte[1024 * 100]; //let it be the huge managed memory private Action OnComplete; private void DoWork(object state) { //do long running task OnComplete(this); //notify callee that task completed so it can reuse same object for another task } public void Start(object dataRequiredForCurrentTask) { ThreadPool.QueueUserWorkItem(DoWork); //initiate long running work } } The problem is that the start method never returns after the 10000th iteration causing a stack overflow. I could execute the OnComplete delegate in another thread giving a chance for the Start method to return, but it requires using extra cpu time and resources as you know. So what is the best option for me?

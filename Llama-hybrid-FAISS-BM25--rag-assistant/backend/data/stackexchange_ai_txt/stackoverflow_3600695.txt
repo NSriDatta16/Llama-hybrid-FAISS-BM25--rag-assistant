@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3600695
-[parent_id]: 
-[tags]: 
-array of pin_ptr
-
-I need to marshal an array of String^ to call a unmanaged function that expects an array of BSTRs. On MSDN I found the article How to: Marshal COM Strings Using C++ Interop with this code sample: // MarshalBSTR1.cpp // compile with: /clr #define WINVER 0x0502 #define _AFXDLL #include #include using namespace std; using namespace System; using namespace System::Runtime::InteropServices; #pragma unmanaged void NativeTakesAString(BSTR bstr) { printf_s("%S", bstr); } #pragma managed int main() { String^ s = "test string"; IntPtr ip = Marshal::StringToBSTR(s); BSTR bs = static_cast (ip.ToPointer()); pin_ptr b = &bs; NativeTakesAString( bs ); Marshal::FreeBSTR(ip); } So I created a new BSTRs' array and called the Marshal::StringToBSTR() for every String of the array. Then I created a managed pin_ptr array. array >^ gcDummyParameters = gcnew array >(asParameters->Length); but I receved the error: Error 2 error C2691: 'cli::pin_ptr ' : a managed array cannot have this element type I tried also with a native array: pin_ptr dummyParameters[100000]; but even in this case I got an error: Error 1 error C2728: 'cli::pin_ptr ' : a native array cannot contain this managed type What else can I do?

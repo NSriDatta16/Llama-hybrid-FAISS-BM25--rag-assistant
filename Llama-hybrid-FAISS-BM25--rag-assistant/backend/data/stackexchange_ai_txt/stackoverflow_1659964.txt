@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1659964
-[parent_id]: 1257282
-[tags]: 
-Instead of pmap, I used agents with send-off in conjunction with the above solution. I think this is better when there is blocking I/O. I believe pmap has limited concurrency too. Here's what I have so far. I wonder how this will scale with thousands of URLs. (use '(clojure.contrib duck-streams java-utils str-utils)) (import '(java.net URL URLConnection HttpURLConnection UnknownHostException)) (defn check-url [url] (str (re-sub #"^(?i)http:/+" "" url) ":" (try (let [c (cast HttpURLConnection (.openConnection (URL. url)))] (if (= 200 (.getResponseCode c)) 1 0)) (catch UnknownHostException _ 0)))) (def urls (read-lines "urls.txt")) (def agents (for [url urls] (agent url))) (doseq [agent agents] (send-off agent check-url)) (apply await agents) (def x '()) (doseq [url (filter deref agents)] (def x (cons @url x))) (prn x) (shutdown-agents)

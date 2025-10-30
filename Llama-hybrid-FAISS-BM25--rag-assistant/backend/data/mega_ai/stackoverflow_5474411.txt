@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5474411
-[parent_id]: 5474344
-[tags]: 
-Before I analyze a single line of your code, your intermediary storage for Log Messages is in the wrong place. I strongly recommend using MSMQ or some other queueing mechanism to store your messages while awaiting your LogManager for processing. You are calling Flush in a separate thread and passing a reference to your list of log entries, then clearing the list in the current thread. You've effectively destroyed the list of entries the new thread was supposed to log. You need to pass a copy of the LogEntries list into the Flush thread before you clear your LogEntries field. Perhaps something like: {Flush(LogEntries.ToList())} The LINQ expression ToList() will create a copy of the list for your Flush method. As an aside, I would change your Flush method to take an IEnumerable so that you can pass other collections, not just lists, into the method.

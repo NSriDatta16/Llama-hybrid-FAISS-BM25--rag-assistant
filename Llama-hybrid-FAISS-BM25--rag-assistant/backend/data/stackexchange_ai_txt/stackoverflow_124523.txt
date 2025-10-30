@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 124523
-[parent_id]: 123672
-[tags]: 
-I used a select query to format the data and BCP to extract the data out into a file. In my case I encapsulated it all in a stored procedure and scheduled it using the SQL Agent to drop files at certain times. The basic coding is similar to: use tempdb go create view vw_bcpMasterSysobjects as select name = '"' + name + '"' , crdate = '"' + convert(varchar(8), crdate, 112) + '"' , crtime = '"' + convert(varchar(8), crdate, 108) + '"' from master..sysobjects go declare @sql varchar(8000) select @sql = 'bcp "select * from tempdb..vw_bcpMasterSysobjects order by crdate desc, crtime desc" queryout c:\bcp\sysobjects.txt -c -t, -T -S' + @@servername exec master..xp_cmdshell @sql Please have a look at the excellent post creating-csv-files-using-bcp-and-stored-procedures .

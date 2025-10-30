@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2911751
-[parent_id]: 2911683
-[tags]: 
-488k is a lot of rows, which means a lot of data. The more items you stick in an array, the more memory has to be allocated and the longer it takes to lookup elements. As you're executing the same code almost half a million times, it'd be worth optimising the array accesses: ... { $myclist =& $clist[$row['upload_id']][$row['dialcode_id']][$row['carrier_id']]; $myclist['std'] = $row['..']; $myclist['ecn'] = $row['..']; ... $dest =& $dialcode_destination[$row['upload_id']][$row['carrier_id']][$row['dialcode_id']]; $dest['..'] = $row['..']; $dest['..'] = $row['..']; } That way you're only doing the array lookups once instead of repeatedly, and will probably significantly reduce the runtime. Sticking that many things in an array is not going to be fast regardless, though. In the long run, your best bet is to leave the data in the database and only grab bits as and when you need them (or have the database do the heavy lifting for you, if you're trying to sum/average/whatever).

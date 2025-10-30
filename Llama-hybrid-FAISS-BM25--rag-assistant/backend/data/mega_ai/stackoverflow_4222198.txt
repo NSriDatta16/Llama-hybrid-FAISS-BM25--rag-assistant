@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4222198
-[parent_id]: 4188525
-[tags]: 
-The model binder cannot create the AppCategory object from the form collection in your Create action because the form only has an ID for that object (the other properties of AppCategory are not there). The quickest solution would be setting the Category property of your App object manually, like this : [HttpPost] public ActionResult Create(App d) { int categoryId = 0; if (!int.TryParse(Request.Form["Category"] ?? String.Empty, out categoryId) { // the posted category ID is not valid ModelState.AddModelError("Category", "Please select a valid app category.") } else { // I'm assuming there's a method to get an AppCategory by ID. AppCategory c = context.GetAppCategory(categoryID); if (c == null) { // couldn't find the AppCategory with the given ID. ModelState.AddModelError("Category", "The selected app category does not exist.") } else { // set the category of the new App. d.Category = c; } } if (ModelState.IsValid) { context.Apps.Add(d); context.SaveChanges(); return RedirectToAction("Index"); } return View(); }

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3112647
-[parent_id]: 
-[tags]: 
-Comparing uncompressed local files to compressed files stored on Amazon S3?
-
-We put hundreds of image files on Amazon S3 that our users need to synchronize to their local directories. In order to save storage space and bandwidth, we zip the files stored on S3. On the user's end they have a python script that runs every 5 min to get a current list of files, and download new/updated files. My question is what's the best way determine what is new or changed to download? Currently we add an additional header that we put with the compressed file which contains the MD5 value of the uncompressed file... We start with a file like this: image_file_1.tif 17MB MD5 = xxxx1234 We compress it (with 7zip) and put it to S3 (with Python/Boto): image_file_1.tif.z 9MB MD5 = yyy3456 x-amz-meta-uncompressedmd5 = xxxx1234 The problems is we can't get a large list of files from S3 that include the x-amz-meta-uncompressedmd5 header without an additional API for EACH one (SLOW for hundreds/thousands of files). Our most practical solution is have users get a full list of files (without the extra headers), download the files that do not exist locally. If it does exist locally, then do and additional API call to get the full headers to compare local MD5 checksum against x-amz-meta-uncompressedmd5. I'm thinking there must be a better way.

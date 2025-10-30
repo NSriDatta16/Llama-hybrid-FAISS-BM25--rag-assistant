@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2966357
-[parent_id]: 2965962
-[tags]: 
-None of these methods are "event driven", you'd use them in the DataReceived event. Which is called when the serial port has at least one byte of data available to read. Not sure what "static sized" means. If the device sends a fixed number of bytes then you'd use the Read() method to read them. Pay attention to the return value, you'll get only as many bytes as are available. Store them in a byte[] and append to that in the next DR event until you've got them all. If the device sends characters rather than bytes then you can usually take advantage of the NewLine property. Set it to the character or string that terminates the response. A linefeed ("\n") is by far the most typical choice. Read the response with ReadLine(). No buffering is required in that case. You'll get the ObjectDisposed exception when you close a form but don't ensure that the device stops sending data. Be sure to use only BeginInvoke in the DataReceived event, not Invoke. And don't call BeginInvoke if the form's IsDisposed property is true.

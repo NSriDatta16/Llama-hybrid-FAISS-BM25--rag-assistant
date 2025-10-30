@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5183241
-[parent_id]: 5182658
-[tags]: 
-you go label.clone().inject but row.adopt(label) and not row.adopt(label.clone()) - either way. .clone() does not cloneEvents for you - you need to do that manually. var myclone = label.clone(); myclone.cloneEvents(label); row.adopt(label); this is how it will work as for why that is, events are stored in the Element storage - which is unique per element. mootools assigns a uid to each element, eg, label = 1, label.clone() -> 2, label.clone() -> 3 etc. this goes to Storage[1] = { events: ... } and so forth. cloning an element makes for a new element.uid so events don't work unless you implicitly use .cloneEvents() you are sometimes not doing .clone() which works because it takes the ORIGINAL element along with its storage and events. suggestion consider looking into event delegation . you could do formElement.addEvent("click:relay(label.myLabel)", function(e, el) { alert("hi from "+ el.uid); }); this means no matter how many new elements you add, as long as they are of type label and class myLabel and children of formElement , the click will always work as the event bubbles to the parent.

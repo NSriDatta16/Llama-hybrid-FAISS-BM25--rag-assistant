@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1337619
-[parent_id]: 1337535
-[tags]: 
-Do you want a primary key, for business reasons, or a clustred key, for storage concerns? See stackoverflow.com/questions/1151625/int-vs-unique-identifier-for-id-field-in-database for a more elaborate post on the topic of PK vs. clustered key. You really have to elaborate why can't you use IDENTITY. Generating the IDs manually, and specially on the server with an extra rountrip and an update just to generate each ID for the insert it won't scale. You'd be lucky to reach lower 100s per second. The problem is not just the rountrip and update time, but primarily from the interaction of ID generation update with insert batching: the insert batching transaction will serialize ID generation. The woraround is to separate the ID generation on separate session so it can autocommit, but then the insert batching is pointless because the ID genartion is not batched: it has to wait for log flush after each ID genrated in order to commit. Compared to this uuid will be running circles around your manual ID generation. But uuid are horrible choice for clustred key because of fragmentation.

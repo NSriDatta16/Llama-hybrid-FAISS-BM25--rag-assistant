@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4707053
-[parent_id]: 
-[tags]: 
-PHP user class (login/logout/signup)
-
-Started experimenting with building classes, and I've began by converting my user registration/login into a single class. Wanted to stop and ask for feedback before getting too far. class UserService { private $_email; private $_password; public function login($email, $password) { $this->_email = mysql_real_escape_string($email); $this->_password = mysql_real_escape_string($password); $user_id = $this->_checkCredentials(); if($user_id){ $_SESSION['user_id'] = $user_id; return $user_id; } return false; } protected function _checkCredentials() { $query = "SELECT * FROM users WHERE email = '$this->_email'"; $result = mysql_query($query); if(!empty($result)){ $user = mysql_fetch_assoc($result); $submitted_pass = sha1($user['salt'] . $this->_password); if($submitted_pass == $user['password']){ return $user['id']; } } return false; } } One of the questions I do have related to my class is: should I be building it as this: $User = new UserService(); $User->login($_POST['email'], $_POST['password']); Where the login method calls the _checkCredentials method automatically. Or should it be built like: $User = new UserService(); $UserId = $User->checkCredentials($_POST['email'], $_POST['password']); $User->login($UserId); Other than that I've love some tips on how to restructure this and please point out anything I'm doing wrong! thanks guys

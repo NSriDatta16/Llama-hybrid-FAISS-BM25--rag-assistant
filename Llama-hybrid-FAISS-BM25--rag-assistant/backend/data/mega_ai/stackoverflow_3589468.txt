@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3589468
-[parent_id]: 3588033
-[tags]: 
-As Franci said, Run is a DispatcherObject, so it is only updatable on the thread that created it. The code should run if it calls Dispatch.Invoke or Dispatcher.BeginInvoke like this: private void button1_Click(object sender, RoutedEventArgs e) { var button = sender as Button; string abc = "ABC"; var p = new Paragraph(); var bgw = new BackgroundWorker(); String def = null; Run r = null; bgw.DoWork += (s1, e2) => { def = "DEF"; button.Dispatcher.BeginInvoke(new Action(delegate{r = new Run("blah");})); }; bgw.RunWorkerCompleted += (s2, e2) => { abc = abc + def; Console.WriteLine(abc); var l = new List { def }; p.Inlines.Add(r); // Calling thread can now access this object because // it was created on the same thread that is updating it. }; bgw.RunWorkerAsync(); }

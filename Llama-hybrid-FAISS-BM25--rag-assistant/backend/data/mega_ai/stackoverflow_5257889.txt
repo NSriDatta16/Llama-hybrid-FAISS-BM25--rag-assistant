@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5257889
-[parent_id]: 3011032
-[tags]: 
-I fixed this problem with a boolean that keeps track of code triggered region/center changes. Not the most elegant solution, but it works like a charm. It is a shame UIMapView does not derive from UIScrollView. init: regionChangeFromCode = FALSE; button action: -(IBAction) butCenterPressed:(id)sender { butCenter.selected = !butCenter.selected; if(butCenter.selected) [self setCenter]; } set center: -(void) setCenter { regionChangeFromCode = TRUE; //before setCenterCoordinate, otherwise this is FALSE in regionWillChangeAnimated [theMap setCenterCoordinate:[self calcCenter]]; //this could also be [theMap setRegion]. Works the same } and the map delegate: - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated { if(!regionChangeFromCode) //so a user did it { if(butCenter.selected) butCenter.selected = FALSE; } regionChangeFromCode = FALSE; } In addition to this I have an update loop that updates the location and calls setCenter. When the button is selected the map center follows, and otherwise the center is left alone.

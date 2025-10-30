@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5616781
-[parent_id]: 5561531
-[tags]: 
-I highly suspect the reason for the slowdown is because you are instantiating a new CCParticleSystemQuad every time the touch moves. Why not just instantiate it once in the init or ccTouchesBegan method but only set the position and emissionRate in ccTouchesMoved: - (id)init { ... swipeEffect = [CCParticleSystemQuad particleWithFile:@"comet.plist"]; swipeEffect.emissionRate = 0; [self addChild:swipeEffect]; ... } - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { swipeEffect.emissionRate = 10; } - (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event { UITouch *touch = [touches anyObject]; CGPoint location = [touch locationInView:[touch view]]; location = [[CCDirector sharedDirector] convertToGL:location]; swipeEffect.position = location; } - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event { swipeEffect.emissionRate = 0; }

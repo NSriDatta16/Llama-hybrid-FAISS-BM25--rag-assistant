@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3059968
-[parent_id]: 364017
-[tags]: 
-RE: "Is there a faster way that generating insert statements for each line of data?" First: Cut it down to 2 SQL statements by making use of Sqlite3's Virtual table API e.g. create virtual table vtYourDataset using yourModule; -- Bulk insert insert into yourTargetTable (x, y, z) select x, y, z from vtYourDataset; The idea here is that you implement a C interface that reads your source data set and present it to SQlite as a virtual table and then you do a SQL copy from the source to the target table in one go. It sounds harder than it really is and I've measured huge speed improvements this way. Second: Make use of the other advise provided here i.e. the pragma settings and making use of a transaction. Third: Perhaps see if you can do away with some of the indexes on the target table. That way sqlite will have less indexes to update for each row inserted

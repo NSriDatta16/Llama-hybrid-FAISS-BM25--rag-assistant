@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1153702
-[parent_id]: 
-[tags]: 
-'System.OutOfMemoryException' was thrown when there is still plenty of memory free
-
-This is my code: int size = 100000000; double sizeInMegabytes = (size * 8.0) / 1024.0 / 1024.0; //762 mb double[] randomNumbers = new double[size]; Exception: Exception of type 'System.OutOfMemoryException' was thrown. I have 4GB memory on this machine 2.5GB is free when I start this running, there is clearly enough space on the PC to handle the 762mb of 100000000 random numbers. I need to store as many random numbers as possible given available memory. When I go to production there will be 12GB on the box and I want to make use of it. Does the CLR constrain me to a default max memory to start with? and how do I request more? Update I thought breaking this into smaller chunks and incrementally adding to my memory requirements would help if the issue is due to memory fragmentation , but it doesn't I can't get past a total ArrayList size of 256mb regardless of what I do tweaking blockSize . private static IRandomGenerator rnd = new MersenneTwister(); private static IDistribution dist = new DiscreteNormalDistribution(1048576); private static List ndRandomNumbers = new List (); private static void AddNDRandomNumbers(int numberOfRandomNumbers) { for (int i = 0; i From my main method: int blockSize = 1000000; while (true) { try { AddNDRandomNumbers(blockSize); } catch (System.OutOfMemoryException ex) { break; } } double arrayTotalSizeInMegabytes = (ndRandomNumbers.Count * 8.0) / 1024.0 / 1024.0;

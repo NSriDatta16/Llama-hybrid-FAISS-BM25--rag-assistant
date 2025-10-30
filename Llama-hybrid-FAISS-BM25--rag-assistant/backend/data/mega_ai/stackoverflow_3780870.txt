@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3780870
-[parent_id]: 
-[tags]: 
-Using 'AsParallel()' / 'Parallel.ForEach()' guidelines?
-
-Looking for a little advice on leveraging AsParallel() or Parallel.ForEach() to speed this up. See the method I've got (simplified/bastardized for this example) below. It takes a list like "US, FR, APAC", where "APAC" is an alias for maybe 50 other "US, FR, JP, IT, GB" etc. countires. The method should take "US, FR, APAC", and convert it to a list of "US", "FR", plus all the countries that are in "APAC". private IEnumerable Countries (string[] countriesAndAliases) { var countries = new List (); foreach (var countryOrAlias in countriesAndAliases) { if (IsCountryNotAlias(countryOrAlias)) { countries.Add(countryOrAlias); } else { foreach (var aliasCountry in AliasCountryLists[countryOrAlias]) { countries.Add(aliasCountry); } } } return countries.Distinct(); } Is making this parallelized as simple as changing it to what's below? Is there more nuance to using AsParallel() than this? Should I be using Parallel.ForEach() instead of foreach ? What rules of thumb should I use when parallelizing foreach loops? private IEnumerable Countries (string[] countriesAndAliases) { var countries = new List (); foreach (var countryOrAlias in countriesAndAliases.AsParallel()) { if (IsCountryNotAlias(countryOrAlias)) { countries.Add(countryOrAlias); } else { foreach (var aliasCountry in AliasCountryLists[countryOrAlias].AsParallel()) { countries.Add(aliasCountry); } } } return countries.Distinct(); }

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 184658
-[parent_id]: 
-[tags]: 
-GridSearch returns different result than metrics.precision_score
-
-I have a quite simple text classification setup where i need to optimize the precision score. I use scikit-learn with a LinearSVC and a TfidfVectorizer. To find the optimal parameters, i use a GridSearchCV as in the scikit-learn example . My data set consists of 3400 text samples, from which 450 are labeled as 1. Therefore, i set the class_weight parameter of the SVM to 'auto', as is suggested in the documentation (it has been renamed to 'balanced' in the latest version of scikit). training = load_training_data(some_file.json) d_train = training['data'] d_test = training['target'] x_train, x_test, y_train, y_test = train_test_split( d_train, d_test, test_size=0.33) vectorizer = TfidfVectorizer() X_train = vectorizer.fit_transform(x_train) X_test = vectorizer.transform(x_test) param_grid = { 'C': [0.01, 0.1, 1, 10, 100, 1000], } grid = GridSearchCV( LinearSVC(class_weight='auto'), param_grid=param_grid, scoring='precision', cv=5 ) grid.fit(X_train, y_train) pred = grid.predict(X_test) print(grid.best_score_) # returns 0.829 print(metrics.precision_score(y_test, pred)) # returns 0.768 now from my understanding, shouldn't the last 2 values be the same? shouldn't grid.best_score_ return the best precision found and that should be equal to the precision_score calculated by the metrics module? The values actually differ quite a bit and i am still trying to figure out why.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3552346
-[parent_id]: 
-[tags]: 
-Typedef issue with bison and flex
-
-In my parser, I have %union { SYMTABLE *p_entry ; QUAD *p_quad ; } ; Now, SYMTABLE is the typedef for a struct. The struct and typedef are in an included file. There are no issues with this. QUAD is the typedef for a struct (typedef struct quad QUAD). The struct and typedef are in an included file. There is no problem doing: bison -d parser.y gcc parser.tab.c -c My lexer needs yylval, so in the declarations part I have #include "parser.tab.h" /* bison generated header file */ extern YYSTYPE yylval ; When I do flex scanner.lex gcc lex.yy.c -c GCC complains In file included from scanner.lex:16: parser.y:30: error: syntax error before "QUAD" parser.y:30: warning: no semicolon at end of struct or union parser.y:32: error: syntax error before '}' token parser.y:32: warning: data definition has no type or storage class parser.tab.h:121: error: syntax error before "yylval" parser.tab.h:121: warning: data definition has no type or storage class If I go back to my parser.y file and replace QUAD with struct quad in ONLY the yylval %union, the problem goes away. I want to say this is a silly typedef mistake, but the bison generated file compiles just fine. I have included the header file for my QUAD typedef and struct quad in my scanner. It seems this is the only place where the issues occurs, so I could just replace QUAD with struct quad, but this is inconsistent with the SYMTABLE.

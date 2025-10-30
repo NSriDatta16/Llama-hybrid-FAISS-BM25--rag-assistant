@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5680116
-[parent_id]: 5680041
-[tags]: 
-You can compare the properties of the ProjectParticipant records in a group: participants.length == 5 and participants.all? { |p| p.project_id == project.id } This validates that your array of participants contains five entries and that all of them have the same project_id assigned. Comparing p.project == project will have the side-effect of loading the same Project five times. To check if they simply belong to a project, you can do this: participants.length == 5 and participants.all? { |p| p.project_id? } That project may be deleted and the reference could be invalid, so you may need to resort to actually fetching it: participants.length == 5 and participants.all? { |p| p.project } You can also use the group_by method to see if there's only one project involved: grouped = participants.group_by(&:project) !grouped[nil] and grouped.length == 1 and grouped.first[1].length == 5 The group_by method will organize the given array into a hash where the key is specified as a parameter and the value is a list of objects matching. It can be handy for situations like this.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3104995
-[parent_id]: 3104661
-[tags]: 
-It doesn't only not block the main window, it is also very likely to disappear behind it. That's a direct consequence of it running on a different thread. When you don't specify an owner for the message box then it goes looking for one with the GetActiveWindow() API function. It only considers windows that use the same message queue. Which is a thread-specific property. Losing a message box is quite hard to deal with of course. Similarly, MessageBox only disables windows that belong to the same message queue. And thus won't block windows created by your main thread. Fix your problem by letting the UI thread display the message box. Use Dispatcher.Invoke or leverage either the ReportProgress or RunWorkerCompleted events. Doesn't sound like the events are appropriate here.

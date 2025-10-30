@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4302058
-[parent_id]: 
-[tags]: 
-Is there an order in which models are generated into database?
-
-In my project I need to change the location where files are being uploaded. This is done using a FileSystemStorage. The path were the files are uploaded should be easy to configure, for example using the Django Admin. from django.core.files.storage import FileSystemStorage from django.db import models class Setting(models.Model): entry = models.CharField(primary_key=True, db_column="entry", max_length=50) value = models.CharField(db_column="value", max_length=250, blank=True, null=True) def __unicode__(self): return "%s" %(self.entry) class Meta: db_table = 'settings' verbose_name = 'Setting' verbose_name_plural = 'Settings' fs = FileSystemStorage(location=Setting.objects.get(entry__exact='upload_path').value) def generate_filename(instance, filename): ... class FileImport(models.Model): data_file = models.FileField(_('Data file'), upload_to=generate_filename, storage=fs) I receive this error: django.db.utils.DatabaseError: relation "settings" does not exist LINE 1: ...ELECT "settings"."entry", "settings"."value" FROM "settings"... for the line where FileSystemStorage is being created. Is there a way of telling Django to create table settings(for Setting objects) first and then fill this table with some fixtures?

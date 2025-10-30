@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 475115
-[parent_id]: 
-[tags]: 
-GARCH(1,1) residuals are not homoskedastic
-
-Given the following simulated GARCH(1, 1) process : omega = 0.9 a1 = 0.2 b1 = 0.6 mu = 5 errors = [0] # trivial case stds = [0] # trivial case series = [] for i in range(10000): std = math.sqrt(omega + a1 * errors[-1]**2 + b1 * stds[-1]**2) stds.append(std) noise = gauss(0, 1) error = std * noise errors.append(error) series.append(mu + error) This is what the series looks like: Fitting a GARCH(1, 1) model: model = arch_model(series, rescale=True) fit = model.fit() fit.summary() From the summary above, it can be seen that the algorithm is able to correctly estimate the mu, alpha, beta and omega parameters that were originally used to create the time series. However when I run the LM test the residuals are not homoskedastic: fit.arch_lm_test() ARCH-LM Test H0: Residuals are homoskedastic. ARCH-LM Test H1: Residuals are conditionally heteroskedastic. Statistic: 2007.3327 P-value: 0.0000 Distributed: chi2(38) If I plot the ACF of the residuals it looks like white noise...: plot_acf(fit.resid) ...but the acf plot of squared residuals tells a different story: plot_acf(np.square(fit.resid)) Is there any reason why the residuals of this GARCH(1, 1) model are still heteroskedastic?

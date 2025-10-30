@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2377831
-[parent_id]: 2377798
-[tags]: 
-If I understood correctly your question, you don't like the way a client of your class must use the method you are providing... What about making the frame to dispose a property of the class instead of an out parameter? class MotionDetector{ public bool PreProcessFrame(Frame in); public Frame frameToDispose{ get; } } Then you could use it like: bool groupCaptured = motionDetector.ProcessFrame(nextFrame); if (IsStaticFrame(motionDetector.frameToDispose)){ // ... } Otherwise (if it makes sense for your application) you might do like this: class MotionDetector{ // returns frame to dispose if sucessful, null otherwise public Frame PreProcessFrame(Frame in); } EDIT about letting consumer know the group captured, using an event as suggested in the comments: class GroupCapturedEventArgs : EventArgs{ // put relevant information here... } class MotionDetector{ public event EventHandler GroupCaptured; // then somewhere in your code: private vois SomeMethod() { // a group captured if (GroupCaptured != null) { GroupCaptured (this,new GroupCapturedEventArgs(/*whatever*/)); } } }

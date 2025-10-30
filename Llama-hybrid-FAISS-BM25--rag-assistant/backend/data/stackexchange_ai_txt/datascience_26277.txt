@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 26277
-[parent_id]: 26273
-[tags]: 
-Your problem is that neural networks work poorly when the input is not scaled to a simple range. A usual choice is to scale and offset each column so that it has mean 0 and standard deviation 1. In your case, x1 and x2 vary from 0 to 49999 and roughly 10 to 50009. This range for inputs will causes lots of numeric issues. With a balanced dataset as you have, 51% accuracy is basically just guessing (within experimental error), so the network has learned nothing. Try again with scaling - e.g. x1 = (x1 - 25000) / 14433 x2 = (x2 - 25000) / 14433 I have tested your code with this addition, and it gains 100% validation accuracy within the first epoch. If you want to assess other values in testing later you will need to scale them in the same way. Note your predictions may be off in testing when x1 and x2 are not close to 10 apart, because you have only trained with examples which are close to exactly 10 apart. How the network behaves when this is not the case - e.g. for inputs of x1 = 100 and x2 = 1000, or x1 = 90 and x2 = 15, may not generalise well compared to the original comparison function.

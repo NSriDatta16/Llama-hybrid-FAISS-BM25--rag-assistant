@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5014061
-[parent_id]: 
-[tags]: 
-What's the use of _ATL_PACKING constant when computing distance from the start of object?
-
-ATL features a set of macros for so-called COM maps . COM map is a table that associates an interface GUID with an offset that is to be added to this pointer to get to the corresponding subobject - the whole stuff works as replacement to explicit static_cast for the upcast inside IUnknown::QueryInterface() . The map entries are built by using offsetofclass macro: #define _ATL_PACKING 8 #define offsetofclass(base, derived)\ ((DWORD_PTR)(static_cast ((derived*)_ATL_PACKING))-_ATL_PACKING) which I'll rewrite as the following pseudocode "function" for readability in this question: derived* derivedPointer = (derived*)_ATL_PACKING; base* basePointer = static_cast (derivedPointer); DWORD_PTR offset = (DWORD_PTR)(basePointer)-_ATL_PACKING; Looks reasonable - it obtains a pointer to an imaginary derived object, then does an explicit static_cast to shift the pointer, then computes distance between those imaginary objects. The question is why is the constant 8 there? Why do we need that constant and why is it chosen to be 8?

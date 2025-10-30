@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4305708
-[parent_id]: 2183617
-[tags]: 
-Another solution is the following: run your criteria.list() without setting any alias => the referenced sets/list of the root entity will be filled with proxies => here you set correctly the max results and such run the alias criteria on its own in the same hibernate session => the above proxies will be initialized Something like this: Criteria criteria = this.getSession().createCriteria(User.class); criteria.setResultTransformer(CriteriaSpecification.ROOT_ENTITY); criteria.setMaxResults(10); // First get the results without joining with the other tables List results = criteria.list(); // at this point the set roles is filled with proxies // we'll now create and execute the join so these proxies are filled since we're still in the same session getSession().createCriteria(User.class, "u") .createAlias("u.roles", "r", CriteriaSpecification.LEFT_JOIN) .list(); return results; Hope this can help, Stijn

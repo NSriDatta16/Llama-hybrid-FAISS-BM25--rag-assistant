@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 427482
-[parent_id]: 427327
-[tags]: 
-For this type of outlier a filter should work. For instance, a moving average is a filter, and can be applied here in a trend/noise decomposition framework: $$T_i=\frac 1 n\sum_{k=0}^{n-1}x_{i-k} \\N_i=x_i-T_i$$ When the noise component is "too large" it indicates an outlier. Here's a Python implementation: for i in np.arange(len(T)): T[i] = np.mean(y_test[np.max([0,i-m]):(i+1)]) plt.plot(t, T) N = y_test[:,0] - T plt.figure() plt.plot(t,N) plt.show() np.std(N) The plot of your series with a trend: The plot of the noise: As you can see the noise component jumps at the outlier to 30 while the standard deviation of a noise is ~4. You can also calculate the moving window dispersion of the noise, and detect an outlier when the noise sticks out of the running volatility. This filter is very similar to an outlier test known as Grubbs . Here, I'm using the moving window as a sample in Grubbs test.

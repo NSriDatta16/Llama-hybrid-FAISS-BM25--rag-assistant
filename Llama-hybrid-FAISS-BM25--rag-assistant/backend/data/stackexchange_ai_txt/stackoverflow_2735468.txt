@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2735468
-[parent_id]: 2730758
-[tags]: 
-It turns out the problem was in using managed resources - resx builder creates Bitmap objects from image files and serializes those objects, it does not store the original file stream . However, embedded resources can store flat binary files. I am now embedding all files from my images folder using the following .csproj entries: Visual Studio shows them as normal in-project files with Build Action set to Embedded Resource . Then, from my code, I load the original file streams with: var assembly = GetType().Assembly; var regex = new Regex("\\.(png|jpg|gif))$"); foreach (var bitmap in assembly.GetManifestResourceNames()) { if(!regex.IsMatch(bitmap) continue; var stream = assembly.GetManifestResourceStream(bitmap); //handle the stream here }

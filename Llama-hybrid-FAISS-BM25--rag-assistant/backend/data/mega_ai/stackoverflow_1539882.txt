@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1539882
-[parent_id]: 1539783
-[tags]: 
-The first thing that feels wrong about the Save function is that it actually has two responsibilities: it selects a storage and it serializes an object graph to this storage. I would start by isolating responsibilities: public void Save(XmlWriter xmlWriter) { XDocument xDoc = new XDocument(new XElement("BookmarkCollection", Items.Select(bookmark => new XElement("Bookmark", new XElement("Name", bookmark.Name), new XElement("Link", bookmark.Link), new XElement("Remarks", bookmark.Remarks), new XElement("DateAdded", bookmark.DateAdded), new XElement("DateLastAccessed", bookmark.DateLastAccessed)) ) )); xDoc.Save(xmlWriter); } public void Save() { using (XmlWriter xmlWriter = XmlWriter.Create(m_StreamProvider.SaveFileStream(m_FilenameProvider.Filename))) { Save(xmlWriter); } } As far as the unit test is concerned, you could define an XSD schema and then validate the result XML against this schema and also test that it contains the values you are looking for.

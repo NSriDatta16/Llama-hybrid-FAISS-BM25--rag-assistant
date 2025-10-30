@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3859609
-[parent_id]: 
-[tags]: 
-three20 TTURLRequest resend
-
-I have a REST service that uses an auth_token that expires every so often. when a request fails, I want to re-authenticate (which I'm able to do) and then resend the same exact TTURLRequest in the following generic way: - (void)request:(TTURLRequest*)request didFailLoadWithError: (NSError*)error { NSLog(@"error %@ %@ %@", [error localizedDescription], [error localizedFailureReason], [error localizedRecoverySuggestion] ); if (numRetries == 0) { [self authenticateUser:nil]; request.urlPath = [request.urlPath stringByReplacingOccurrencesOfRegex:@"access_token=([\\w-]+)" withString:[NSString stringWithFormat:@"access_token=%@", accessToken]]; NSLog(@"URL: %@", request.urlPath); [request send]; numRetries++; } } all of my TTURLRequest s use the same delegate which uses this failure method. but for some reason, when I call [request send] the request gets to the "loading" phase, but does not ever seem to complete. However, if I do a manual refresh (by dragging down the table view) it re-generates the TTURLRequest from scratch and seems to work fine. What is the correct way to 'resend' this request?

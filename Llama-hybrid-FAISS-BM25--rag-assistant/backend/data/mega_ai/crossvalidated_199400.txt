@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 199400
-[parent_id]: 
-[tags]: 
-Predictive modeling with feature selection using a small sample size?
-
-I am trying to build a predictive model for a binary classification problem. I have 200,000 features and 100 samples. I want to reduce the # of features and not over-fit the model, all while being constrained with a very small sample size. This is currently what I'm doing: from sklearn.feature_selection import RFECV from sklearn.cross_validation import train_test_split from sklearn.svm import SVC from sklearn.preprocessing import StandardScaler import numpy as np # remove mean and scale to unit variance scaler = StandardScaler() scaler.fit(features) features = scaler.transform(features) # split our data set into training, and testing xTrain, xTest, yTrain, yTest = train_test_split(features, classes, test_size=0.30) # create classifier to use with recursive feature elimination svc = SVC(kernel="linear", class_weight = 'balanced') # run recursive feature elimination with cross-validation rfecv = RFECV(estimator=svc, step=1, cv=4, scoring = 'roc_auc') # pick features using roc_auc score because we have an imbalance of classes newTrain = rfecv.fit_transform(xTrain, yTrain) # test model svc.fit(newTrain, yTrain) svc.predict(xTest) I believe that I'm getting overly-optimistic classification accuracy, likely due to model over-fitting. How can I test whether I am over-fitting my model? What would be the most optimal way to feature select and generate a predictive model using such a small sample size (and large # of features)?

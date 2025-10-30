@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5350263
-[parent_id]: 5350174
-[tags]: 
-Do it in the method you call. Essentially, you should set up the method that gets called as a self-contained work unit (in fact, it will then be compatible with being called through either [NSOperation][1] or Grand Central Dispatch , too: both better ways of organising concurrent work). But what if I can't change the implementation of the method I'm calling on a new thread? In that case, you would go from doing this: [NSThread detachNewThreadSelector: @selector(blah:) toTarget: obj withObject: arg] to doing this: [NSThread detachNewThreadSelector: @selector(invokeBlah:) toTarget: self withObject: dict] - (void)invokeBlah: (id)dict { NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; id obj = [dict objectForKey: @"target"]; id arg = [dict objectForKey: @"argument"]; [obj blah: arg]; [pool release]; } rather than using the dictionary, you could also create an NSInvocation that encapsulates the remote object call. I just chose a dictionary because it's the quickest way to show the situation in a SO answer. Either would work.

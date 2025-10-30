@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4871898
-[parent_id]: 4792869
-[tags]: 
-I think the problem is that you are storing values somewhere in a vector that aren't supposed to be stored permanently. In particular, this line: UN.push_back(UserName.c_str()); Seems to be storing the result of UserName.c_str() into a vector . If you do this, then you'll run into trouble as soon as you modify the UserName string, or when that string goes out of scope. The value of c_str() is pretty fragile - it's not valid after doing just about anything to the source string - and exists primarily so that you can take string data and pass it into C code that needs a const char* as an argument. To fix this, I would suggest either explicitly copying the strings before inserting them into the vector: UN.push_back(strdup(UserName.c_str()); (You don't have to use strdup here; it's just an example) Alternatively, consider storing std::string s in the vector , which own the string resource they point at and don't have this problem. Hope this helps!

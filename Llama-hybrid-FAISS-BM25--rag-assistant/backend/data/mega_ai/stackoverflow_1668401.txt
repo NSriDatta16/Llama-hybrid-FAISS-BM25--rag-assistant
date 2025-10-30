@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1668401
-[parent_id]: 1667255
-[tags]: 
-If you do it like this: void dont_do_this_at_home(const char *ptr) { char **steve-o_ptr = (char **) &ptr; char *bam_margera = "viva la bam"; *steve-o_ptr = bam_margera; } Then the pointer that you send into the function will be changed despite being a const pointer, the other suggestions so far only let you change the contents of the string, not the pointer to the string. And I agree with the others that you shouldn't, ever , "un-const" any parameter you get, since the callee may really depend on that there are no side-effects to the function regarding those parameters. There is also this way to get rid of the warnings/errors typedef struct { union { const void* the_const; void* the_no_const; } unconsting; }unconst_t; /* Here be dragons */ void* unconst_pointer(const void* ptr) { unconst_t unconst.unconsting.the_const = ptr; return unconst.unconsting.the_no_const; } As you see it is quite possible and popular to actually do this, but you have to know what you are doing or mysterious faults may appear.

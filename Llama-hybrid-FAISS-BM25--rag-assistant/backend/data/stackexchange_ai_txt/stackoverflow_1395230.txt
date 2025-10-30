@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1395230
-[parent_id]: 1393546
-[tags]: 
-The problem with this is that dojo.byId expects a document for the second argument. Another problem is that the ID is not 'known' until the element is placed in the DOM. (I may be wrong on this last point and/or it may depend on browsers. In experiments I performed, dojo.byId didn't return anything until the HTML was in the DOM.) That being said, you could accomplish what you want by placing the data returned by your ajax call in a hidden element and then using dojo.query on it. Assuming you have this in your HTML: Then your xhrGet looks like this: dojo.xhrGet( { url: 'http://jsbin.com/erawu', handleAs: 'text', load: function(data) { var storage = dojo.byId('storage'); storage.innerHTML = data; var want = dojo.query('#iwant', storage )[0]; // or dojo.query(...).forEach(...) if (want) { dojo.byId('hello').innerHTML = want.innerHTML; // depending on what you want // you could also use dojo.place( want, dojo.byId('hello'), 'first') } }, error: function() { console.log( arguments ); console.error('ONOES!'); } }); Here's a working example using dojo 1.2.

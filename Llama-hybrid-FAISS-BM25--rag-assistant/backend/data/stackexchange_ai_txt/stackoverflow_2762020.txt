@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2762020
-[parent_id]: 2761563
-[tags]: 
-The difference is syntactic sugar. Only a few substrings of the type names matter as for as the type affinity is concerned. INT, INTEGER, SMALLINT, TINYINT → INTEGER affinity, because they all contain "INT". LONGCHAR, LONGVARCHAR → TEXT affinity, because they contain "CHAR". DEC, DECIMAL, DATETIME, SMALLDATETIME → NUMERIC, because they don't contain any of the substrings that matter. The rules for determining affinity are listed at the SQLite site . If you insist on strict typing, you can implement it with CHECK constraints: CREATE TABLE T ( N INTEGER CHECK(TYPEOF(N) = 'integer'), Str TEXT CHECK(TYPEOF(Str) = 'text'), Dt DATETIME CHECK(JULIANDAY(Dt) IS NOT NULL) ); But I never bother with it. As for the capacity of each type: INTEGER is always signed 64-bit. Note that SQLite optimizes the storage of small integers behind-the-scenes, so TINYINT wouldn't be useful anyway. REAL is always 64-bit ( double ). TEXT and BLOB have a maximum size determined by a preprocessor macro, which defaults to 1,000,000,000 bytes.

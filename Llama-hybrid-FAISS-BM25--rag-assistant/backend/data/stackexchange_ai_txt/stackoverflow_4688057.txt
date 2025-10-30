@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4688057
-[parent_id]: 4687738
-[tags]: 
-The retain loops caused by timers are a pain in the neck. The least fragile approach I've used is to not retain the timer, but always set the reference to nil when invalidating it. @interface Foo : NSObject { __weak NSTimer *_timer; } @end @implementation Foo - (void) foo { _timer = [NSTimer ....self....]; } - (void) reset { [_timer invalidate], _timer = nil; } - (void) dealloc { // since the timer is retaining self, no point in invalidating here because // that just can't happen [super dealloc]; } @end The bottom line, though, is that you'll have to have something call -reset for self to be released. A solution is to stick a proxy between self and the timer . The proxy can have a weak reference to self and simply passes the invocation of the timer firing along to self . Then, when self is deallocated (since the timer doesn't retain self and neither does the proxy), you can call invalidate in dealloc . Or, if targeting Mac OS X, turn on GC and ignore this nonsense entirely.

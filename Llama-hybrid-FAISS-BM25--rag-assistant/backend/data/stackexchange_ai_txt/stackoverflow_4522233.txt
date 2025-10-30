@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4522233
-[parent_id]: 4500629
-[tags]: 
-Seems there are no takers for any answer and I've found a solution approach myself: 1. Convert the last join to an ActiveRecord::Relation Organisation.where(o[:id].in(op)) The only issue with this is that this calls Arel::SelectManager.to_a which comes with a deprecation warning (and is also an expensive operation). I haven't found an alternative though (suspect there is none and this deprecation warning is just one of the inconsistencies observable in Arel and it's adoption in ActiveRecord). 2. Self-join on nested set to get all descendants o = Organisation.scoped.table op = Organisation.where(o[:person_id].in(Person.self_and_deputies(person_id).project(:id))).arel o1 = Arel::Table.new(:organisations, :as => "o1") o2 = Arel::Table.new(:organisations, :as => "o2") o3 = o1.join(o2).on( o1[:lft].gteq(o2[:lft]).and( o1[:rgt].lteq(o2[:rgt]))).where( o2[:id].in(op)).project("distinct o1.id") Organisation.where(o[:id].in(o3))

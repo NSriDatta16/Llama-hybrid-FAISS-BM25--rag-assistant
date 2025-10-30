@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3826542
-[parent_id]: 
-[tags]: 
-Read-only ("const"-like) function parameters of C#
-
-Coming from a C++ background, I'm used to sticking the const keyword into function definitions to make objects being passed in read-only values. However, I've found out that this is not possible in C# (please correct me if I'm wrong). After some Googling, I arrived at the conclusion that the only way to make a read-only object is to write an interface that only has 'get' properties and pass that in instead. Elegant, I must say. public interface IFoo { IMyValInterface MyVal{ get; } } public class Foo : IFoo { private ConcreteMyVal _myVal; public IMyValInterface MyVal { get { return _myVal; } } } I would pass it into: public void SomeFunction(IFoo fooVar) { // Cannot modify fooVar, Excellent!! } This is fine. However, in the rest of my code, I would like to modify my object normally. Adding a 'set' property to the interface would break my read-only restriction. I can add a 'set' property to Foo (and not IFoo ), but the signature expects an interface rather than a concrete object. I would have to do some casting. // Add this to class Foo. Might assign null if cast fails?? set { _myVal = value as ConcreteMyVal; } // Somewhere else in the code... IFoo myFoo = new Foo; (myFoo as Foo).MyFoo = new ConcreteMyVal(); Is there a more elegant way of replicating const or making read-only function parameters without adding another property or a function?

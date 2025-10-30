@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1362939
-[parent_id]: 1360853
-[tags]: 
-I think I found the problem. In the SubSonic source there's a minor flaw in the Update routine where it queries the list of tables in the update query object for a column name. The Linq query needed to use the column's QualifiedName property, not the Name property. The query settings (which is the right hand side of the query) uses the fully qualified name. I took the liberty of submitting an issue on SubSonic's GitHub site as well :) For those interested, the issue is in Update.cs (in the Query folder), Line 229. Change this... var col= table.Columns.SingleOrDefault( x => x.Name.Equals(s.ColumnName, StringComparison.InvariantCultureIgnoreCase) ); to this... var col = table.Columns.SingleOrDefault( x => x.QualifiedName.Equals( s.ColumnName, StringComparison.InvariantCultureIgnoreCase ) ); Rebuild and you're good to go.

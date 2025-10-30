@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 457311
-[parent_id]: 450598
-[tags]: 
-I tested a little more, and found out that the same solution can be used inside a class library . I made a new class (in the class library) with a shared (static) method like this: Public Class MySettingsChanger Public Shared Sub SetConnectionString(ByVal cnnString As String) My.Settings.RunTimeConnectionString = cnnString End Sub End Class And extended the MySettings class (in the class library) the same way as in the main project: Namespace My Partial Friend NotInheritable Class MySettings Public WriteOnly Property RunTimeConnectionString() Set(ByVal value) My.Settings("MyConnectionString") = value End Set End Property End Class End Namespace At least it works in my case. The name of the connection in the main project and in the class library is the same only (the short name, not the whole ProjectNamespace.MySettings.ConnectionName). I haven't tested with having a different name of the connection in the class library, but think it should not matter.

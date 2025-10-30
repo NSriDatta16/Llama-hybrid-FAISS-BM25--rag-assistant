@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5730916
-[parent_id]: 
-[tags]: 
-Summing a column of expressions in SSRS
-
-The detail row in my table contains a column with an expression: =sum(Fields!one.Value) / sum(Fields!two.Value) I want to sum that column, but the results I get are not the sum of the ratios, but the ratio of the sums. For example: sum(Fields!one.Value) sum(Fields!two.Value) ratio 3 6 0.5 3 6 0.5 total: 6 12 0.5 I want the bottom right corner value to be the sum of the values above it (i.e. 1.0 ), not the ratio of the values to the left of it. I've tried calculating the sum as: sum( sum(Fields!one.Value) / sum(Fields!two.Value) ) but that gives the 0.5 . Anyone have any ideas? My Solution: I added another column to the right of the ratio column and set its visibility to "not visible". In the detail row, I added this expression: =runningValue( sum(Fields!one.Value) / sum(Fields!two.Value), Sum, "table1_grp") ( table1_grp is in internal group). I copied the value from the runningValue textbox in the ratio column in the total row. The expression is: =ReportItems!Textbox55.Value So, the running sum is invisible in the table, but I use the final value in the total row. UPDATE: My colleague came up with an elegant solution. In ratio total box, use the following expression: =sum( sum(Fields!one.Value, "table1_grp") / sum(Fields!two.Value, "table1_grp") ) adding the scope to the inner sums does the trick.

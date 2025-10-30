@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5607698
-[parent_id]: 
-[tags]: 
-How to generate OpenPGP KeyPair without passphrase using BouncyCastle?
-
-I'm working on a project which needs to generate GPG-Keys for public-key encryption. My language of choice for it is Scala and the library for the cryptographic stuff is BouncyCastle Key generation works fine, but I can't find a way to generate keys without a passphrase. Every class and every way to generate keys in BounceyCastle needs a passphrase. Using an empty passphrase results in gpg still asking me for it when decrypting/signing something, passing null throws an exception on key generation. Here's the code I'm using (imports stripped): object KeyGenerator { Security.addProvider(new BouncyCastleProvider()) val kpg = KeyPairGenerator.getInstance("RSA", "BC") kpg.initialize(2048) def generateKeyPair(userID: String, expiration: Option[Date]): PGPSecretKeyRing = { val now = new Date val keyPair = kpg.generateKeyPair(); val secretKey = new PGPKeyPair(RSA_GENERAL, keyPair, now) val keyPair2 = kpg.generateKeyPair(); val secretKey2 = new PGPKeyPair(RSA_GENERAL, keyPair2, now) val subpacketGen = new PGPSignatureSubpacketGenerator subpacketGen.setKeyFlags(true, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA | KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE) val keyRingGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, secretKey, userID, RSA_GENERAL, "".toCharArray, true, subpacketGen.generate, null, new SecureRandom(), "BC"); keyRingGen.addSubKey(secretKey2) keyRingGen.generateSecretKeyRing } }

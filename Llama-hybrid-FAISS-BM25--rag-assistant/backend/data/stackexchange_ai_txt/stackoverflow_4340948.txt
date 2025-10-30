@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4340948
-[parent_id]: 
-[tags]: 
-How do Tasks in the Task Parallel Library affect ActivityID?
-
-Before using the Task Parallel Library, I have often used CorrelationManager.ActivityId to keep track of tracing/error reporting with multiple threads. ActivityId is stored in Thread Local Storage, so each thread get's its own copy. The idea is that when you fire up a thread (activity), you assign a new ActivityId. The ActivityId will be written to the logs with any other trace information, making it possible to single out the trace information for a single 'Activity'. This is really useful with WCF as the ActivityId can be carried over to the service component. Here is an example of what I'm talking about: static void Main(string[] args) { ThreadPool.QueueUserWorkItem(new WaitCallback((o) => { DoWork(); })); } static void DoWork() { try { Trace.CorrelationManager.ActivityId = Guid.NewGuid(); //The functions below contain tracing which logs the ActivityID. CallFunction1(); CallFunction2(); CallFunction3(); } catch (Exception ex) { Trace.Write(Trace.CorrelationManager.ActivityId + " " + ex.ToString()); } } Now, with the TPL, my understanding is that multiple Tasks share Threads. Does this mean that ActivityId is prone to being reinitialized mid-task (by another task)? Is there a new mechanism to deal with activity tracing?

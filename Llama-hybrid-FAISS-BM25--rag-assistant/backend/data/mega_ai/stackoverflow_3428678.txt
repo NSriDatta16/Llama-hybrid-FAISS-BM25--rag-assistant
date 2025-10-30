@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3428678
-[parent_id]: 3428410
-[tags]: 
-You don't need a custom type. Here is a mapping that works for a SQL Server image column named Content: Map(x => x.Content); Here is usage of that mapping: byte[] content = nhSession.CreateCriteria () .Add (ac => ac.Id == 3) .SetProjection(Projections.Property("Content")) .UniqueResult (); ...and here's a way to get it out without a mapping (AttachmentDTO is not a mapped NH class, just a normal class) : nhSession.CreateSQLQuery("select a.Content from Attachments a where a.Id = 1") .SetResultTransformer(Transformers.AliasToBean(typeof(AttachmentDTO))) .UniqueResult (); Here's the DTO class: public class AttachmentDTO { public int Id { get; set; } public string ContentType { get; set; } public byte[] Content { get; set; } } Good luck!

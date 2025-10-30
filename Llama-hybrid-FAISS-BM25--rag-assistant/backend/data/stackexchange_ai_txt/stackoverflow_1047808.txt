@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1047808
-[parent_id]: 1047632
-[tags]: 
-I've only ever experienced the issue with path separators when the client is using MSIE (implying Windows paths). I've used a fairly simple regular expression to handle that. However, you could extend the regular expression (or even split) to handle the most common path separators - '/', '\' and the occasional ':'. Alternatively, you should be able to work out the filesystem type from the useragent string (perhaps using HTTP::DetectUserAgent or HTTP::BrowserDetect ). Given that you could call the fileparse_set_fstype function of File::BaseName before parsing the file. Something like: use File::Basename; use HTTP::BrowserDetect; # ... get the filename into $upload_file and agent into $user_agent_string. my $browser = HTTP::BrowserDetect->new($user_agent_string); my $ostype; $ostype = 'MSWin32' if $browser->windows; $ostype = 'Unix' if $browser->unix; # There are more tests available. fileparse_set_fstype($ostype); my $filename = basename( $upload_file);

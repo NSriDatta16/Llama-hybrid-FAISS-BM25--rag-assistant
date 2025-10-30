@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3257187
-[parent_id]: 3256192
-[tags]: 
-None of the answer above seemed to pay attention to a detail: static is mentioned here, so these constants seem to be independent of the actual instance of the class. In other words: those are global constants. As you guessed, the presence of the const keyword is important here, because of the optimizations the compiler will apply. Anyway, the idea is to use a helper structure. // foo.h class Foo { public: static double const m1; static double const m2; static double const m3; }; // foo.cpp struct Helper { double m1, m2, m3; Helper() { complexInit(m1, m2, m3); } } gHelper; double const Foo::m1 = gHelper.m1; double const Foo::m2 = gHelper.m2; double const Foo::m3 = gHelper.m3; Of course, in a real program, i would encourage you to actually wrap the constants behind some kind of interface, it's really bad practice to expose them this way, because it makes changing them (using another type) very difficult. Also note that you don't need pointers for output parameters, plain references do.

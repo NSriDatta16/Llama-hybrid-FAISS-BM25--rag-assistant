@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5185354
-[parent_id]: 5185025
-[tags]: 
-Most likely, what is happening is a tricksy bit of virtual addressing behind your back. Namely, an application is free to reserve up to the full 4GB of 32-bit address space available to it (less than 4GB, really, because there is fragmentation caused by various system pieces). When you do malloc(REALLYBIGNUMBER) , the system uses vm_allocate() to fulfill the request. The mach memory manager hands you back the addresses, but doesn't actually back it with real memory (kinda like the US economy has tons of $$$ in the market not backed by any real asset). Physical memory will only be used when you write (or, technically, read) something to the memory. And it will only happen page by page. So, if you were to walk through the allocated buffer in strides of 4096 (page size) and write one byte, you'd quickly see real memory being consumed.

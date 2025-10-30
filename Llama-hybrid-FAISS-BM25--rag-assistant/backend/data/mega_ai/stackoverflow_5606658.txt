@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5606658
-[parent_id]: 5605620
-[tags]: 
-If you don't want to use builtin openmp scheduling options as @Jonathan Dursi's answer shows then you could implement required options yourself: #include #include /* $ gcc -O3 -fopenmp -Wall *.c && ./a.out */ static void doloop(int n) { int thread_num, num_threads, start, end, i; #pragma omp parallel private(i,thread_num,num_threads,start,end) { thread_num = omp_get_thread_num(); num_threads = omp_get_num_threads(); start = thread_num * n / num_threads; end = (thread_num + 1) * n / num_threads; for (i = start; i != end; ++i) { printf("%d %d\n", thread_num, i); } } } int main() { omp_set_num_threads(2); doloop(10); return 0; } Output 0 0 0 1 0 2 0 3 0 4 1 5 1 6 1 7 1 8 1 9

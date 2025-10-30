@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2891473
-[parent_id]: 
-[tags]: 
-bash: function + source + declare = boom
-
-Here is a problem: In my bash scripts I want to source several file with some checks, so I have: if [ -r foo ] ; then source foo else logger -t $0 -p crit "unable to source foo" exit 1 fi if [ -r bar ] ; then source bar else logger -t $0 -p crit "unable to source bar" exit 1 fi # ... etc ... Naively I tried to create a function that do: function safe_source() { if [ -r $1 ] ; then source $1 else logger -t $0 -p crit "unable to source $1" exit 1 fi } safe_source foo safe_source bar # ... etc ... But there is a snag there. If one of the files foo , bar , etc. have a global such as -- declare GLOBAL_VAR=42 -- it will effectively become: function safe_source() { # ... declare GLOBAL_VAR=42 # ... } thus a global variable becomes local. The question: An alias in bash seems too weak for this, so must I unroll the above function, and repeat myself, or is there a more elegant approach? ... and yes, I agree that Python, Perl, Ruby would make my life easier, but when working with legacy system, one doesn't always have the privilege of choosing the best tool.

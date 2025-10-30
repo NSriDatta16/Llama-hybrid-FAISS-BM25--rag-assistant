@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4870269
-[parent_id]: 4870070
-[tags]: 
-The question I linked to above goes into detail about the various options when encapsulating a method call in a code ref. In your case, I would write the main package as: my $storage = Storage->new; my $parser = Parser->new; $parser->generic_batch_store(sub {$storage->batch_store(@_)}); $parser->parse; $storage is changed to a lexical so that the code reference sub {$storage->batch_store(@_)} can close over it. The (@_) added to the end allows arguments to be passed to the method. I am not a Moose expert, but I believe that you will need to call the code with an additional dereferencing arrow: $self->generic_batch_store->(\@buf); which is just shorthand for: ($self->generic_batch_store())->(\@buf);

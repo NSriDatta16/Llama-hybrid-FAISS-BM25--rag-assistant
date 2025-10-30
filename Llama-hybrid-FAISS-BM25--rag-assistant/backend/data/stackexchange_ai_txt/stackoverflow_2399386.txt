@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2399386
-[parent_id]: 
-[tags]: 
-Sorting deeply nested attributes in Rails
-
-I want to be able to drag and drag App model which is nested under Category model. http://railscasts.com/episodes/196-nested-model-form-part-1 Here's the Railscast I've tried to follow. #Category controller def move params[:apps].each_with_index do |id, index| Category.last.apps.update(['position=?', index+1], ['id=?', Category.last.id]) end render :nothing => true end I'm able to sort Categories with something similar, but since I'm updating an attribute, I'm having trouble. This is how I sort the Categories list. def sort params[:categories].each_with_index do |id, index| Category.update_all(['position=?', index+1], ['id=?', id]) end render :nothing => true end Upon further inspection, what I need is to be able to update all apps at the same time, except I can't just do App.update_all, since App is an attribute of category. I tried using @category = Category.find(params[:id]) @app = @category.apps.all But, I'm not passing in the Category id, so it doesn't know which Category it is. Here it is in my view %ul#apps - for app in @category.apps - content_tag_for :li, app do %span.handle [drag] = h app.title = sortable_element("apps", :url => move_categories_path, :handle => "handle") Any help is appreciated.

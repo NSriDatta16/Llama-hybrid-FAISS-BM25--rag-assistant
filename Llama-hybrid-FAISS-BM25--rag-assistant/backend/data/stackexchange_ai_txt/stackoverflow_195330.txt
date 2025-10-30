@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 195330
-[parent_id]: 60871
-[tags]: 
-I think you’ve mistakenly ruled out a memory leak too early. Even a tiny memory leak can cause a severe memory fragmentation. Assuming your application behaves like the following: Allocate 10MB Allocate 1 byte Free 10MB (oops, we didn’t free the 1 byte, but who cares about 1 tiny byte) This seems like a very small leak, you will hardly notice it when monitoring just the total allocated memory size . But this leak eventually will cause your application memory to look like this: . . Free – 10MB . . [Allocated -1 byte] . . Free – 10MB . . [Allocated -1 byte] . . Free – 10MB . . This leak will not be noticed... until you want to allocate 11MB Assuming your minidumps had full memory info included, I recommend using DebugDiag to spot possible leaks. In the generated memory report, examine carefully the allocation count (not size) .

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4135707
-[parent_id]: 4121666
-[tags]: 
-Here's the big question, do you need to leverage Mongo's "addToSet" and "push" operations? If you really plan to modify just individual items in the array, then you should probably build these arrays as objects. Here's how I would structure this: { id: 1, items: { "2" : { "blocks" : { "3" : { txt : 'hello' } } }, "5" : { "blocks" : { "1" : { txt : 'foo'}, "2" : { txt : 'bar'} } } } } This basically transforms everything in to JSON objects instead of arrays. You lose the ability to use $push and $addToSet but I think this makes everything easier. For example, your query would look like this: db.objects.update({'items.2': {$exists:true} }, {'$set': {'items.2.blocks.0.txt': 'hi'}}) You'll also notice that I've dumped the "IDs". When you're nesting things like this you can generally replace "ID" with simply using that number as an index. The "ID" concept is now implied. This feature has been added in 3.6 with expressive updates . db.objects.update( {id: 1 }, { $set: { 'items.$[itm].blocks.$[blk].txt': "hi", } }, { multi: false, arrayFilters: [ { 'itm.id': 2 }, { 'blk.id': 3} ] } )

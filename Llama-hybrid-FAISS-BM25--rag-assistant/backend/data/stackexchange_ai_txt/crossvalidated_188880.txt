@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 188880
-[parent_id]: 188361
-[tags]: 
-I agree that the models have the same fitted values, but your two glht calls are testing different hypotheses. The first is a single contrast comparing the two poverty means, averaging over children ; whereas the second is the set of all pairwise comparisons among the four poverty*children combinations. The lsmeans package is helpful in providing some insight, because it makes it relatively easy to construct the needed contrasts. In particular, try this: library(lsmeans) library(multcomp) summary(glht(TC1, linfct = lsm(pairwise ~ poverty*children))) This will generate all six pairwise comparisons of the four poverty*children means, and should give the same results as you show for the interak comparisons from TC1_2 . The $P$ values may vary slightly because they are computed by a simulation method with the multivariate $t$ distribution. Alternatively, the lsmeans package can provide the same results without needing multcomp or glht : pairs(lsmeans(TC1, ~ poverty * children), adjust = "mvt") pairs(lsmeans(TC1_2, ~ interak), adjust = "mvt")

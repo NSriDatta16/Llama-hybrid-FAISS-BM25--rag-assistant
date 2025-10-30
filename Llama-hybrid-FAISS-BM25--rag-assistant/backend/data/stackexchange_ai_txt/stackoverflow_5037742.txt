@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5037742
-[parent_id]: 5037605
-[tags]: 
-While Robert's suggestion of calling Quit may work, it's also flawed because if the user has Excel open before your application creates the Application object, then calling Quit will quit their open instance of Excel. The issue is that the COM application doesn't know that you're done with the reference to the Excel Application object. Even if it goes out of scope and becomes eligible for garbage collection/finalization, the finalization won't occur immediately. In some rare circumstances, it's necessary to call Marshal.FinalReleaseComObject on the COM object but most of the time this is not necessary. So while explicitly triggering garbage collection is almost always frowned upon, the reality is that it is sometimes necessary in .NET/COM interop. Try this (after ensuring that you're no longer holding any references to Excel objects...) GC.Collect(); GC.WaitForPendingFinalizers();

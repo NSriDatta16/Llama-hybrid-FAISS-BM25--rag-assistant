@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3554727
-[parent_id]: 
-[tags]: 
-Rails Arel selecting distinct columns
-
-I've hit a slight block with the new scope methods (Arel 0.4.0, Rails 3.0.0.rc) Basically I have: A topics model, which has_many :comments , and a comments model (with a topic_id column) which belongs_to :topics . I'm trying to fetch a collection of "Hot Topics", i.e. the topics that were most recently commented on. Current code is as follows: # models/comment.rb scope :recent, order("comments.created_at DESC") # models/topic.rb scope :hot, joins(:comments) & Comment.recent & limit(5) If I execute Topic.hot.to_sql , the following query is fired: SELECT "topics".* FROM "topics" INNER JOIN "comments" ON "comments"."topic_id" = "topics"."id" ORDER BY comments.created_at DESC LIMIT 5 This works fine, but it potentially returns duplicate topics - If topic #3 was recently commented on several times, it would be returned several times. My question How would I go about returning a distinct set of topics, bearing in mind that I still need to access the comments.created_at field, to display how long ago the last post was? I would imagine something along the lines of distinct or group_by , but I'm not too sure how best to go about it. Any advice / suggestions are much appreciated - I've added a 100 rep bounty in hopes of coming to an elegant solution soon.

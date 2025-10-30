@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2650828
-[parent_id]: 2650183
-[tags]: 
-You're violating the ODR (one definition rule) and most likely the member functions are inlined -- since they are inlined with two different definitions of std::auto_ptr you get undefined behavior. On top of that, as Eddy points out, when auto_ptr::~auto_ptr frees the held object, it will call operator delete in the EXE instead of in the DLL where operator new was called. This mismatch can also produce a crash. In general it is very fragile to export implemented classes (interface classes consisting solely of pure virtual functions, and exporting a free factory function for construction) are OK and then you don't use __declspec(dllexport) on the class, only on the factory function.

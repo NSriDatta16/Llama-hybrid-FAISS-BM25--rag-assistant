@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4580889
-[parent_id]: 4579043
-[tags]: 
-Your function generateEvent does the following: creates a KeyEvent converts (upcasts) the object into an Event by copying and slicing returns that Event object You then try to take that Event object copy and put it into a KeyEvent again. You are trying to use polymorphism but are actually just slicing. Consider (with caution!) dynamic allocation: boost::shared_ptr generateEvent() { KeyEvent* e = new KeyEvent; e->type = "KEYBOARD_EVENT"; e->source = "Keyboard0"; e->key = "SPACEBAR"; e->modifier = "none"; return boost::shared_ptr (static_cast (e)); } int main() { boost::shared_ptr e = generateEvent(); // you can now use dynamic_cast and/or virtual // function calls to treat e as a pointer-to-KeyEvent } Also note that return 0; is implicit in the entrypoint function.

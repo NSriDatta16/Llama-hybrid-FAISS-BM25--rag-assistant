@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2568466
-[parent_id]: 2568436
-[tags]: 
-It appears the function GetDriveLetter is expecting a char* which points to sufficient memory to contain the drive letter. I think the easiest way to approach this problem is to pass a raw IntPtr and wrap the calls to GetDriveLetter in an API which takes care of the resource management and conversion to a string . [return:MarshalAsAttribute(UnmanagedType.Bool)] private static extern bool GetDriveLetter(IntPtr ptr); public static bool GetDriveLetter(out string drive) { drive = null; var ptr = Marshal.AllocHGlobal(10); try { var ret = GetDriveLetter(ptr); if ( ret ) { drive = Marshal.PtrToStringAnsi(ptr); } return ret; } finally { Marshal.FreeHGlobal(ptr); } }

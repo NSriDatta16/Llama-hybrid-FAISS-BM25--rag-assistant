@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2883729
-[parent_id]: 
-[tags]: 
-ASP.NET MVC2 and Browser Caching
-
-I have a web application that fetches a lot of content via ajax. For example when a user edits some data, the browser will send the changes using an ajax post and then do an ajax get to get fresh content and replace an existing div on the page with that content. This was working just find with MVC1, but in MVC2 I would get inconsistent results. I've found that MVC1 by default included an Expires item in the response headers set to the current time, but in MVC2 the Expires header is missing. This is a problem with some browsers (IE8) actually using the cached version of the ajax get instead of the fresh version. To deal with the problem I created a simple ActionFilterAttribute that sets the reponse cache to NoCache (see below), which works, but it seems kind of sillly to decorate every controller with this attribute. Is there a global way to set this for every controller? Is this a bug in MVC2 and it really should be setting the expires on every ActionResult/view/page? Don't most MVC programs deal with data entry where stale data is a very bad thing? Thanks Dan public class ResponseNoCachingAttribute : ActionFilterAttribute { public override void OnResultExecuted(ResultExecutedContext filterContext) { base.OnResultExecuted(filterContext); filterContext.HttpContext.Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache); } }

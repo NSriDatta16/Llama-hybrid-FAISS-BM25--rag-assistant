@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3359503
-[parent_id]: 3298838
-[tags]: 
-I would take a generalized archiving approach to this problem: Create a central database with all the schemas for all tables you need to export Since you want to maintain the Filestream data, I don't see how .csv or bcp files could be used. Plus, this fits into the idea you mentioned of having one giant database to accumulate the information. For each table, add a new column called DbName. DbName will be the name of the database that the original record comes from. You can combine this column with the User ID to create a composite key . This will allow you to keep the identity fields in your tables and still be able to merge users with the same ID into one table. Create a stored procedure which will load the necessary data into the new database and delete it at the same time (or at least mark for delete). Presumably this stored procedure will be run as a SQL Agent job and you could have one in each database. The users to be removed could be referred to via a centralized table.

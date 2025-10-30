@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2713554
-[parent_id]: 2711856
-[tags]: 
-Having the database on a persistent storage volume (whether it's a card or internal Flash) increases the potential for corruption, and it's almost always due to the sleep wake cycle. When the device is suspended, the store is typically unmounted and when it resumes, it is re-mounted. Depending on the OEM implementation, connections may or may not survive that tear-down and build up well (I've seen devices where it a connection held through a sleep/wake cycle would always fail, though not always with corruption). My typical methodology fo devices where the device going into suspend/sleep while running is to always close the database after every "transaction" with the database. Yes, this slows things down, but it greatly reduces both corruption and connection invalidation. I've even taken it to further extremes by watching for power manager events in the DAL and having it abandon and retry any data action it's working on during a power state change.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3862162
-[parent_id]: 3862104
-[tags]: 
-For embedding c in perl, you're looking for XS. Extensive documentation on that can be found in perlxs and perlxstut . As for building perl data structures from C, you will have to use the parts of the perlapi that deal with hashes. Much documentation on XS already explains various bits of that. The important parts you're looking for are newHV and hv_store . Here's a tiny (and completely untested) example of something similar to what you might want to do: SV * some_func () PREINIT: HV *hash; CODE: hash = newHV(); hv_stores(hash, "foo", 3, newSViv(42)); hv_stores(hash, "bar", 3, newSViv(23)); RETVAL = newRV_noinc((SV *)hash); OUTPUT: RETVAL That's an XS subroutine called some_func , that'll build a hash and return a reference to it to perl space: my $href = some_func(); # $href = { foo => 42, bar => 23 };

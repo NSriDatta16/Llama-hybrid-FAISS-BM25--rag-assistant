@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5055278
-[parent_id]: 
-[tags]: 
-How to upload binary data using POST
-
-I have something like this in my code: String boundary = "thisIsMyBoundaryString"; StringBuilder body = new StringBuilder(); ... byte[] data = bos.toByteArray(); body.append(new String(data)); body.append("\r\n--" + boundary + "--\r\n"); String entity = body.toString(); I'm building a POST request and need to insert some binary data (JPEG compressed bitmap). After appending byteArray, I want to append newLine and boundary string, but the StringBuilder gets corrupted - seems that the bytes from the added boundary become misaligned from that point on and they are no longer being interpreted as my original string but as some random characters. Is this what is happening here? How can I resolve this? Maybe I should add a byte of padding to byteArray before appending boundary? What is the proper way of adding binary data to POST request? Please note that using Base64 encoding is not an option here. [edit] Solution was to use MultipartEntity to make such requests and forget about adding boundaries manually. Here is relevant code snippet: FileBody bin = new FileBody(new File(Environment.getExternalStorageDirectory() + "/" + FILE_NAME)); MultipartEntity entity = new MultipartEntity(); entity.addPart("message", new StringBody("A message that goes with request")); entity.addPart("file", bin); (Third line has to be inside of a try/catch block but I removed it for readability)

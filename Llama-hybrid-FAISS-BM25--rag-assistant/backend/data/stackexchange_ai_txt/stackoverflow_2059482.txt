@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2059482
-[parent_id]: 
-[tags]: 
-Temporarily modify the current process's environment
-
-I use the following code to temporarily modify environment variables. @contextmanager def _setenv(**mapping): """``with`` context to temporarily modify the environment variables""" backup_values = {} backup_remove = set() for key, value in mapping.items(): if key in os.environ: backup_values[key] = os.environ[key] else: backup_remove.add(key) os.environ[key] = value try: yield finally: # restore old environment for k, v in backup_values.items(): os.environ[k] = v for k in backup_remove: del os.environ[k] This with context is mainly used in test cases. For example, def test_myapp_respects_this_envvar(): with _setenv(MYAPP_PLUGINS_DIR='testsandbox/plugins'): myapp.plugins.register() [...] My question: is there a simple/elegant way to write _setenv ? I thought about actually doing backup = os.environ.copy() and then os.environ = backup .. but I am not sure if that would affect the program behavior (eg: if os.environ is referenced elsewhere in the Python interpreter).

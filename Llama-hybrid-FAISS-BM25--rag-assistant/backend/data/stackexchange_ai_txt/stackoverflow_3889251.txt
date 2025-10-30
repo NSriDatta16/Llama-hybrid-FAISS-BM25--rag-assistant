@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3889251
-[parent_id]: 3889082
-[tags]: 
-Some data types must be aligned to a certain boundary. So for example: struct V { char a; double b; char c; double d; }; sizeof(char) is 1 and sizeof(double) is 8 but the size of that struct may be more than the expected 18 if it needs the doubles to align to an 8-byte boundary. In that case, and because the members should appear in memory in the order they are declared in the struct, there may be 7 bytes of "padding" close to the member c, and possibly some with member a too. The danger here comes when the packing is non-standard so the size of this struct could vary, and you send it in "binary" format over a wire or store it in a file where it will be read elsewhere (even if the endian-ness of the double is the same). As an alternative to the suggestions to remove the warning through pragmas, you might decide to deal with it in the code by changing the order of your members. Put those that need the biggest alignment first, and the lower ones later. So first put pointers and doubles, then ints, then shorts and any char members last.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 788568
-[parent_id]: 
-[tags]: 
-Sqlite3: Disabling primary key index while inserting?
-
-I have an Sqlite3 database with a table and a primary key consisting of two integers, and I'm trying to insert lots of data into it (ie. around 1GB or so) The issue I'm having is that creating primary key also implicitly creates an index, which in my case bogs down inserts to a crawl after a few commits (and that would be because the database file is on NFS.. sigh ). So, I'd like to somehow temporary disable that index. My best plan so far involved dropping the primary key's automatic index, however it seems that SQLite doesn't like it and throws an error if I attempt to do it. My second best plan would involve the application making transparent copies of the database on the network drive, making modifications and then merging it back. Note that as opposed to most SQlite/NFS questions, I don't need access concurrency. What would be a correct way to do something like that? UPDATE: I forgot to specify the flags I'm already using: PRAGMA synchronous = OFF PRAGMA journal_mode = OFF PRAGMA locking_mode = EXCLUSIVE PRAGMA temp_store = MEMORY UPDATE 2: I'm in fact inserting items in batches, however every next batch is slower to commit than previous one (I'm assuming this has to do with the size of index). I tried doing batches of between 10k and 50k tuples, each one being two integers and a float.

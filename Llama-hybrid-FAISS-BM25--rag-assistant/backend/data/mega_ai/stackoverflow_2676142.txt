@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2676142
-[parent_id]: 2674437
-[tags]: 
-I'm surprised that your unelegant way doesn't have the same problems as the slice way. This looks like a bug to me upon looking at the Scipy code. When you try to set a certain row and column in a dok_matrix to zero when it is already zero, there is be an error because it tries to delete the value at that row and column without checking if it exists. In answer to your question, what you are doing in your inelegant way is exactly what the __setitem__ method does currently with your elegant method (after a couple of isinstance checks and what not). If you want to use the elegant way, you can fix the bug I mentioned in your own Scipy package by opening up dok.py in Lib/site-packages/scipy/sparse/ and changing line 222 from if value==0: to if value==0 and self.has_key((i,j)): Then you can use the elegant way and it should work just fine. I went to submit a bug fix, but this it is already fixed for the next version and this is the way that it was fixed.

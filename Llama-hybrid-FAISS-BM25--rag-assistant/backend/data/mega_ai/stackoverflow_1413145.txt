@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1413145
-[parent_id]: 1413129
-[tags]: 
-As you've noted HttpServletRequest does not have a setParameter method. This is deliberate, since the class represents the request as it came from the client, and modifying the parameter would not represent that. One solution is to use the HttpServletRequestWrapper class, which allows you to wrap one request with another. You can subclass that, and override the getParameter method to return your sanitized value. You can then pass that wrapped request to chain.doFilter instead of the original request. It's a bit ugly, but that's what the servlet API says you should do. If you try to pass anything else to doFilter , some servlet containers will complain that you have violated the spec, and will refuse to handle it. A more elegant solution is more work - modify the original servlet/JSP that processes the parameter, so that it expects a request attribute instead of a parameter. The filter examines the parameter, sanitizes it, and sets the attribute (using request.setAttribute ) with the sanitized value. No subclassing, no spoofing, but does require you to modify other parts of your application.

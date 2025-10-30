@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3135439
-[parent_id]: 3135237
-[tags]: 
-It seems like you have a system that is very much I/O bound (files on he input side and DB on the output side). I don't see any CPU intensive parts in there. The obvious optimization is already in the question: bunch a whole lot of incoming files and group the data per device. The cost is memory consumption and latency in Db updates. You'll need parameters for that. As a first idea, I would set it up in 3 blocks connected by bounded-queues. Those queues will let any component that is 'overwhelmed' throttle its suppliers. block 1: 1 or 2 threads (depends on I/O system) to read and parse files, block 2: 1 thread to organize and group data. Decide when device-data should go to the Db block 3: 1+ threads pushing data to the Db. The blocks give this system some flexibility. The limited queues let you control resource consumption. Note that block 2 should be parametrized to tune block-size.

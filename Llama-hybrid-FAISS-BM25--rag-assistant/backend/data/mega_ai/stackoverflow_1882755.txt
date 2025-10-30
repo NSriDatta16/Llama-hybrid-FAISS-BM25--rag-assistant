@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1882755
-[parent_id]: 1882399
-[tags]: 
-I suspect that factoryReg doesn't actually invoke the callback, but stores the pointer and invokes the callback when something happens. If that is the case, then this code: TemplCallback myCallback(spc); factoryReg(spc.getName(), &myCallback); causes factoryReg to store pointer to a temporary, which will go out of scope as soon as your registration function returns. Thus, when the callback is invoked, the object is not alive and you have undefined behaviour. Your TemplCallback class looks funny. I don't think you actually want it to use a different object, but to invoke the inherited versions of ENTRY and EXIT : template class TemplCallback : public Base { public: TempCallback(const char* name) : Base(name) {} virtual ENTRY(void* data) { // do special processing Base::ENTRY(data); } virtual EXIT(void* data) { // do special processing Base::EXIT(data); } };

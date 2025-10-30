@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3919644
-[parent_id]: 
-[tags]: 
-How to make a class that acts like a string?
-
-I have a context manager that captures output to a string for a block of code indented under a with statement. This context manager yields a custom result object which will, when the block has finished executing, contain the captured output. from contextlib import contextmanager @contextmanager def capturing(): "Captures output within a 'with' block." from cStringIO import StringIO class result(object): def __init__(self): self._result = None def __str__(self): return self._result try: stringio = StringIO() out, err, sys.stdout, sys.stderr = sys.stdout, sys.stderr, stringio, stringio output = result() yield output finally: output._result, sys.stdout, sys.stderr = stringio.getvalue(), out, err stringio.close() with capturing() as text: print "foo bar baz", print str(text) # prints "foo bar baz" I can't just return a string, of course, because strings are immutable and thus the one the user gets back from the with statement can't be changed after their block of code runs. However, it is something of a drag to have to explicitly convert the result object to a string after the fact with str (I also played with making the object callable as a bit of syntactic sugar). So is it possible to make the result instance act like a string, in that it does in fact return a string when named? I tried implementing __get__ , but that appears to only work on attributes. Or is what I want to do not really possible?

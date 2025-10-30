@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1534378
-[parent_id]: 1530627
-[tags]: 
-Would this work? def doWhile[T](iter: Iterator[T])(predicate: T => Boolean): Unit = if(iter.hasNext && predicate(iter.next())) doWhile(iter)(predicate) It's tail recursive so it doesn't blow the stack up. As you have to run the predicate for each element of the iterator, the predicate is a function from T to Boolean . Your code would then reduce to: doWhile(it) { task => workflow.isAutoRun && runTask(task) } Due to the side effect nature of your actions, the action is already performed when you evaluate the predicate (not very nice, but if that's how the legacy code works, you have to work around it :). A more functional way of doing it would be along the lines of: def doWhile[T](iter: Iterator[T])(predicate: => Boolean)(action: T => Unit): Unit = if(iter.hasNext && predicate) { action(iter.next) doWhile(iter)(predicate)(action) } Note: I might find a better name for this method than doWhile , but it's late ... Hope it helps :) -- Flaviu Cipcigan

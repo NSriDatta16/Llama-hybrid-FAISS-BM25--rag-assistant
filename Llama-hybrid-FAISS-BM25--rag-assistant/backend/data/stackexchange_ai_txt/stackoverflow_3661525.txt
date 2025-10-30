@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3661525
-[parent_id]: 
-[tags]: 
-Perl Test::More and setting up test requirements
-
-With Test::More I often want to have a module that runs tests and has the ability to abort the callers test_plan . I have a series of tests that set up a plugin list for Catalyst::Test . I don't want to have to make my test check to see if they exist; instead, I want my script to abort if those plugins aren't present. I was trying to track down a bug in my Catalyst::Authentication::Store::DBI::ButMaintained , and I noticed this bug is also present in Catalyst::Authentication::Store::DBI . Here it is: eval { require Catalyst::Model::DBI; require Catalyst::Plugin::Session; require Catalyst::Plugin::Session::State::Cookie; require Catalyst::Plugin::Session::Store::File; require DBD::SQLite; require Test::WWW::Mechanize::Catalyst; } or plan skip_all => $@; ... $ENV{'TESTAPP_PLUGINS'} = [ qw( Authentication Session Session::Store::File Session::State::Cookie Authorization::Roles ) ]; As you can see, the eval/skip_all doesn't check Authorization::Roles inclusion, but the test depends on it by virtue of it being a plugin. I have another question though -- is there a more elegant way to specify Test-dependencies than this? Keep in mind my goal is the same as the original authors. I simply want to skip the test, if the test requirements don't exist. Ideally, in this case, I'd like to hack Catalyst::Test to wrap the plugin mechanism for Catalyst::Plugin::* stuff, and then find a better way to do the rest of this stuff without eval/skip_all .

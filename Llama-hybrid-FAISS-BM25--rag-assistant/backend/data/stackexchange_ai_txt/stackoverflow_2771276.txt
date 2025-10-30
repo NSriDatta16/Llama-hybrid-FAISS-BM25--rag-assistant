@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2771276
-[parent_id]: 
-[tags]: 
-Clone existing structs with different alignment in Visual C++
-
-Is there a way to clone an existing struct with different member alignment in Visual C++? Here is the background: I use an 3rd-party library, which defines several structs. To fill up the structs, I pass the address of the struct instances to some functions. Unfortunately, the functions only returns unaligned buffer, so that data of some members are always wrong. /Zp is out of choice, since it breaks the other parts of the program. I know #pragma pack modifies the alignment of the following defined struct, but I would rather avoid copying the structs into my code, for the definitions in the library might change in the future. Sample code: library.h: struct am_aligned { BYTE data1[10]; ULONG data2; }; struct untouched { BYTE data1[9]; int data2; }; test.cpp: #include "library.h" // typedef alignment(1) struct am_aligned am_unaligned; int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) { char buffer[20] = {}; for (int i = 0; i am_unaligned is my custom declaration, and only effective in test.cpp . The commented line does not work of course. untouched should still has the default alignment. instance.data2 is 0x0f0e0d0c , while 0x0d0c0b0a is desired. Thanks for help!

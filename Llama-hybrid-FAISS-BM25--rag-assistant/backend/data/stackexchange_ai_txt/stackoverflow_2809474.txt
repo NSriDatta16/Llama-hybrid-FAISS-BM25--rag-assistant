@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2809474
-[parent_id]: 2809309
-[tags]: 
-What you want is possible, but as you need write access as well, the result will be a little bit more complex sometimes. What you want is the setter function returning not a direct "Point write access", rather a temporary copy, which will do the write once the copy goes out of the scope. Following code fragment tries to outline the solution: class PointVector { MyClass container_; public: class PointExSet: public Point { MyClass &container_; int index_; public: PointExSet(MyClass &container, int index) :Point(container.GetVector(index)),container_(container),index_(index) { } ~PointExSet() { container_.PutVector(index_) = *this; } }; PointExSet operator [] (int i) { return PointExSet(container_,i); } }; It is not as nice as you would probably hope it to be, but I am afraid you cannot get a much better solution in C++.

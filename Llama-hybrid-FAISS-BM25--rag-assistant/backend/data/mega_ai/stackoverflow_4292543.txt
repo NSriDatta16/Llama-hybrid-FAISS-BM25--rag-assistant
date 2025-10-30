@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4292543
-[parent_id]: 4291982
-[tags]: 
-strager's answer seems like a good explanation on why your code behaves differently on the 2 environments. The problem lies elsewhere though. If you want to set a value to NULL in the query you shound use exactly NULL, but you are using mysql_real_escape_string() which result is always a string: $ php -r 'var_dump(mysql_real_escape_string(null));' string(0) "" You should handle this differently. E.g: $value = null $escaped_value = is_null($value) ? "NULL" : mysql_real_escape_string($value); var_dump($escaped_value); // NULL Some DB layers, like PDO, handle this just fine for you.

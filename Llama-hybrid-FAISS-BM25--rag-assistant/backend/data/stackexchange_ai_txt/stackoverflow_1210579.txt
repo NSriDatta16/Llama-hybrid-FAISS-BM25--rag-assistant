@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1210579
-[parent_id]: 1169097
-[tags]: 
-Here is the best solution I can find. I've got a more detailed discussion and demo code here: http://tomdalling.com/blog/cocoa/implementing-your-own-cocoa-bindings/ Basically, you DO NOT override bind:toObject:withKeyPath:options: or unbind: . The default implementation on NSObject will use NSAutounbinder to avoid retain cycles. As Louis Gerbarg pointed out, there are still situations where NSAutounbinder doesn't kick in. However, you can get your bindings working at least as well as Apple's bindings. Because the default implementation of bind:toObject:withKeyPath:options: doesn't update the model when the view changes, view-driven changes must be propagated manually. You can use -[NSObject infoForBinding:] to get all the information necessary to update the bound object. I've added my own method on NSObject with a category: -(void)propagateValue:(id)value forBinding:(NSString*)binding; It handles getting the bound object, the bound key path, and applying the value transformer. The implementation is available from the link at the top.

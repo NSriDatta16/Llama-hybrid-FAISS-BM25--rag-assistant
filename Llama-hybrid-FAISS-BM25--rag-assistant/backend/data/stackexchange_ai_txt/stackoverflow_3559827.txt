@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3559827
-[parent_id]: 3559703
-[tags]: 
-As zneak says, Javascript (and thus JSON) arrays cannot have out-of-order array keys. Thus, you either need to accept that you'll be working with JSON objects, not arrays, or call array_values before json_encode : json_encode(array_values($data)); However, it looks like you're looking to display time series data with flot. As you can see on the flot time series example , it should be a two element array like so: $.plot( $('#placeholder'), [[ [1281830400, 34910], [1281916800, 45385], [1282003200, 56928], [1282089600, 53884], [1282176000, 50262], [1281657600, 45446], [1281744000, 34998] ]], { label: 'Hits 2010-08-20', xaxis: {mode: 'time'} } ) Given your array (let's call it $data ) we can get the proper JSON like so: json_encode( array_map( function($key, $value) { return array($key, $value); }, array_keys($data), array_values($data) ) );

@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 282105
-[parent_id]: 168881
-[tags]: 
-I recommend using RandomForestRegressor from the new Spark ML library (as opposed to MLlib which will be gradually phased out). For that you need to convert your data into a Spark dataframe: df = spark.createDataFrame([ ... (1.0, Vectors.dense(1.0)), ... (0.0, Vectors.sparse(1, [], []))], ["label", "features"]) Alternatively, you can read-in and process the data from a csv file: df = sqlContext.read.format('com.databricks.spark.csv').options(header='true').load('./data/titanic.csv') Once the data is loaded into the dataframe, you want to make sure that it contains numeric types (as opposed to strings) in order to run the regression. If you have multiple features, you would need to group them using VectorAssembler into a single features vector. Once that is done, you are ready to instantiate Random Forest Regressor and fit the model: rf = RandomForestRegressor(numTrees=100, maxDepth=6, labelCol="label", featuresCol="features", seed=0) model = rf.fit(trainingData) For additional information have a look at the regression example and API docs .

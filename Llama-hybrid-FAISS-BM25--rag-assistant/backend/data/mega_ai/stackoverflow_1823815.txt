@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1823815
-[parent_id]: 1823563
-[tags]: 
-You really really don't want to add a category to NSNull that adds such common methods. That will change the behavior of NSNull for all instances in the application, including ones created by the underlying frameworks solely for their private use. If you need a value class that represents the notion of "value doesn't exist and therefore I'm going to return these default values instead", create a class or instance that represents exactly that. As for why it crashes, I couldn't tell you without seeing the actual details of the crash. And, yes, it really is THAT bad to add a category to a class that adds such a common method. All it takes is one bit of code in a plug-in or framework that does: if ([fooMaybeNull respondsToSelector: @selector(intValue)] bar = [fooMaybeNull intValue]; Not terribly farfetched -- I have had to debug nasty crashers or misbehaviors due to exactly this kind of willy-nilly category addition. If you are going to add methods to a class via categories, prefix your method names so as to isolate them from existing functionality . It is still fragile, but manageably so.

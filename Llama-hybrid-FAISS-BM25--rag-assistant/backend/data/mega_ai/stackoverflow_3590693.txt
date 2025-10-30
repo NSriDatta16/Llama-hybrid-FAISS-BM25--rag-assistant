@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3590693
-[parent_id]: 
-[tags]: 
-Optimizing SQL to determine unique page views per user
-
-I need to determine if user has already visited a page, for tracking unique page views. I have already implemented some HTTP header cache, but now I need to optimize the SQL queries. The visit is unique, when: pair: page_id + user_id is found in the visit table or pair: page_id + session_id is found or: page_id + [ ip + useragent ] - (this is a topic for another discussion, whether it should be only ip or ip+useragent) So I have a table tracking user visits: visit: page_id user_id session_id useragent ip created_at updated_at Now on each user visit (which does not hit cache) I will update a row if it exists. If there are any affected rows, I will insert new visit to the table. This are one or two queries (assuming the cache will work, mostly two queries), but the number of rows is limited somehow. Maybe it would be better to store all the visits and then clean up the database within e.g. a month? The questions are: how should be the visit table constructed (keys, indexes, relations to user and page_views table). Some of the important fields may be null (e.g. user_id), what about indexes then? Do I need a multi column primary key? which would be the fastest sql query to find the unique user? is this sane approach? I use PostgreSQL and PDO (Doctrine ORM). All my sessions are stored in the same DB.

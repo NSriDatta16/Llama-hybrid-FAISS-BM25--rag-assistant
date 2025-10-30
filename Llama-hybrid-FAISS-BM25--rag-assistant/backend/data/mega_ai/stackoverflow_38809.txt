@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 38809
-[parent_id]: 1069
-[tags]: 
-Graeme's suggestion of custom malloc/free is a good idea. See if you can characterize some pattern about the corruption to give you a handle to leverage. For example, if it is always in a block of the same size (say 64 bytes) then change your malloc/free pair to always allocate 64 byte chunks in their own page. When you free a 64 byte chunk then set the memory protection bits on that page to prevent reads and wites (using VirtualQuery). Then anyone attempting to access this memory will generate an exception rather than corrupting the heap. This does assume that the number of outstanding 64 byte chunks is only moderate or you have a lot of memory to burn in the box!

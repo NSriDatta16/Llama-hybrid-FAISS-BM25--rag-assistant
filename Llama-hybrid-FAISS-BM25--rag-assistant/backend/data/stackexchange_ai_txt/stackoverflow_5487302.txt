@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5487302
-[parent_id]: 
-[tags]: 
-stopping parser when error found in semantic action
-
-I wish to stop a token parser when the semantic action code finds a problem. IF x > 10 is syntactically correct, but if x does not exist the the parser should stop The grammar rule and semantic action look like this condition = ( tok.identifier >> tok.oper_ >> tok.value ) [ boost::phoenix::bind( &cRuleKit::AddCondition, &myRulekit, boost::spirit::_1, boost::spirit::_2, boost::spirit::_3 ) ] ; So now I add a check for the existence of the identifier condition = ( tok.identifier[boost::bind(&cRuleKit::CheckIdentifier, &myRulekit, ::_1, ::_3 ) ] >> tok.oper_ >> tok.value ) [ boost::phoenix::bind( &cRuleKit::AddCondition, &myRulekit, boost::spirit::_1, boost::spirit::_2, boost::spirit::_3 ) ] ; This works! I am not thrilled by the elegance. The grammar syntax is now hard to read and mixing use of boost::bind and boost::phoenix::bind is terribly confusing. How can I improve it? I would like to get at the 'hit' parameter from phoenix::bind so that I can do the check inside cRuleKit::AddCondition() and so keep the grammar and actions seperate and avoid using boost::bind. The answer is to use the placeholder _pass condition = ( tok.identifier >> tok.oper_ >> tok.value ) [ boost::phoenix::bind( &cRuleKit::AddCondition, &myRulekit, boost::spirit::_pass, boost::spirit::_1, boost::spirit::_2, boost::spirit::_3 ) ] ;

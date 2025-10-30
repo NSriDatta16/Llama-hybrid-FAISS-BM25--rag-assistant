@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 934019
-[parent_id]: 933933
-[tags]: 
-I'm not sure there is enough there for a complete analysis... I'm assuming we are talking about string.Contains / string.StartsWith here (not List .Contains ). If the generated TSQL is similar, then the results should be comparable. There are a few caveats to this - for example, is the query column a calculated+persisted value? If so, the SET options must be exact matches for it to be usable "as is" (otherwise it has to re-calculate per row). So: what is the TSQL from the SP and LINQ? Are they directly comparable? You mention a VIEW - I'm guessing this could make a big difference if (for example) it filters out data (either via a WHERE or an INNER JOIN ). Also - LIKE clauses starting % are rarely a good idea - not least, it can't make effective use of any index. You might have better performance using "full text search"; but this isn't directly available via LINQ, so you'll have to wrap it in an SP and expose the SP via the LINQ data-context (just drag the SP into the designer). My money is on the VIEW (and the other code in the SP) being the main difference here.

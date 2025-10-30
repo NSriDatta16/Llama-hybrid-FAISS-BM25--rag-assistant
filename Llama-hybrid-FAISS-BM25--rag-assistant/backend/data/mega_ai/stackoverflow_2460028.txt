@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2460028
-[parent_id]: 2389264
-[tags]: 
-Ok - I figured out the root issue. It was what I alluded to in the EDIT to the main question. The problem was that in the xml, it was correctly serializing doubles that had a value of double.NaN. I was using these values to indicate "na" for when the denominator was 0D. Example: ROE (Return on Equity = Net Income / Average Equity) when Average Equity is 0D would be serialized as: NaN When the DCS tried to de-serialize it, evidently it first tries to read the number and then catches the exception when that fails and then handles the NaN. The problem is that this seems to generate a lot of overhead when in DEBUG mode. Solution: I changed the property to double? and set it to null instead of NaN. Everything now happens instantly in DEBUG mode now. Thanks to all for your help.

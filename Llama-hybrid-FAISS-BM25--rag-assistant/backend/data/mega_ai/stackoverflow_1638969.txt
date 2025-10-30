@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1638969
-[parent_id]: 1638709
-[tags]: 
-Umm, you really need to control access to the FILE stream with a mutex, at the minimum. You aren't looking at some clever implementation of lock free methods, you are looking at really bad (and dusty) code. Using thread local FILE streams is the obvious and most elegant fix, just use locks appropriately to ensure no two threads operate on the same offset of the same file at once. Or, more simply, ensure that threads block (or do other work) while waiting for the file lock to clear. POSIX advisory locks would be best for this, or your dealing with dynamically growing a tree of mutexes... or initializing a file lock mutex per thread and making each thread check the other's lock (yuck!) (since files can be re-named). I think you are staring down the barrel of some major fixes .. unfortunately (from what you have indicated) there is no choice but to make them. In this case, its actually easier to debug a threaded program written in this manner than it would be to debug something using forks, consider yourself lucky :)

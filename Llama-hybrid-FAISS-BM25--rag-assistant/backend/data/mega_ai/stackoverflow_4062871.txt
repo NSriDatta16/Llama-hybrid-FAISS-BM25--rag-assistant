@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4062871
-[parent_id]: 4062847
-[tags]: 
-Your best bet would be to measure the performance on real production data rather than trying to guess (or ask us). That's because performance can sometimes depend on the data you're processing, although in this case it seems unlikely (but I don't know that, hence why you should check). If this is a query you will be doing a lot, you should consider another (indexed) column which contains the lowercased first letter of name and have it set by an insert/update trigger. This will, at the cost of a minimal storage increase, make this query blindingly fast: select * from table where name_first_char_lower = @firstletter That's because most database are read far more often than written, and this will amortise the cost of the calculation (done only for writes) across all reads. It introduces redundant data but it's okay to do that for performance as long as you understand (and mitigate, as in this suggestion) the consequences and need the extra performance.

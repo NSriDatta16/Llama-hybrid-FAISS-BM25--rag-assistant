@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 319446
-[parent_id]: 
-[tags]: 
-Inconsistent Out-of-bag error estimates
-
-I keep getting different out-of-bag error estimates from the caret package, depending on how the estimates are computed. I can't seem to nail down exactly where the discrepancy is coming from. Consider a simple random forest model using the built-in mtcars dataset: set.seed(100) tc A print out of the model reports that mtry = 6 was the best meta-parameter value and the associated error estimates are RMSE = 2.301918 and R^2 = 0.8494180 . My understanding is that these error estimates are computed over out-of-bag examples in the data due to trainControl( method="oob" ) setting. Is this correct? If I now apply the oob() function from $modelInfo to the best model (as captured by $finalModel ), I would expect to get the same performance estimates as the mtry=6 entry in the table above, but I don't: m$modelInfo$oob( m$finalModel ) # RMSE Rsquared # 2.3485040 0.8432614 Furthermore, if I now compute predict( m$finalModel ) , it should return out-of-bag predictions, since newdata parameter is omitted . However, this results in yet another estimate of OOB error when passed to postResample : caret::postResample( predict(m$finalModel), mtcars$mpg ) # RMSE Rsquared MAE # 2.3485040 0.8468821 1.8463368 (Notice that although RMSE agrees with the oob() call above, R^2 has a different value.) While I appreciate that the values are in the same "ballpark", I don't understand where the discrepancy comes from. Does anybody have any insight?

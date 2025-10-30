@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2980889
-[parent_id]: 
-[tags]: 
-Dev-C++ and Detours compiling error
-
-As title says I'm trying to compile with Dev-C++ a simple DLL using Detours, but I get this error: syntax error before token '&' on this lines: DetourAttach(&(PVOID &)trueMessageBox, hookedMessageBox) DetourDetach(&(PVOID &)trueMessageBox, hookedMessageBox) The complete code is #include #include #pragma comment( lib, "Ws2_32.lib" ) #pragma comment( lib, "detours.lib" ) #pragma comment( lib, "detoured.lib" ) int (WINAPI * trueMessageBox)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) = MessageBox; int WINAPI hookedMessageBox(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) { LPCSTR lpNewCaption = "You've been hijacked"; int iReturn = trueMessageBox(hWnd, lpText, lpNewCaption, uType); return iReturn; } BOOL WINAPI DllMain( HINSTANCE, DWORD dwReason, LPVOID ) { switch ( dwReason ) { case DLL_PROCESS_ATTACH: DetourTransactionBegin(); DetourUpdateThread( GetCurrentThread() ); DetourAttach(&(PVOID &)trueMessageBox, hookedMessageBox) DetourTransactionCommit(); break; case DLL_PROCESS_DETACH: DetourTransactionBegin(); DetourUpdateThread( GetCurrentThread() ); DetourDetach(&(PVOID &)trueMessageBox, hookedMessageBox) DetourTransactionCommit(); break; } return TRUE; }

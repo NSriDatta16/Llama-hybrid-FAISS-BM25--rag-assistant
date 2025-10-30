@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 632934
-[parent_id]: 632592
-[tags]: 
-It turned out to be a subtle rails bug: When an exception is raised in these two lines logger = ActiveSupport::BufferedLogger.new(configuration.log_path) logger.level = ActiveSupport::BufferedLogger.const_get(configuration.log_level.to_s.upcase) rails assumes it can't find the log file. However, the actual error occurred in the second line: a NameError because the constant is incorrect. The reason is that there was a legacy log level in my configuration file: config.log_level = Logger::INFO Rails 2.2 uses its own logger, and doesn't understand the above line. Solution: remove line, or use: config.log_level = :info

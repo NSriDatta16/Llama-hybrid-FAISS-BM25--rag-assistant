@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2579118
-[parent_id]: 
-[tags]: 
-Why does ANTLR not parse the entire input?
-
-I am quite new to ANTLR, so this is likely a simple question. I have defined a simple grammar which is supposed to include arithmetic expressions with numbers and identifiers (strings that start with a letter and continue with one or more letters or numbers.) The grammar looks as follows: grammar while; @lexer::header { package ConFreeG; } @header { package ConFreeG; import ConFreeG.IR.*; } @parser::members { } arith: term | '(' arith ( '-' | '+' | '*' ) arith ')' ; term returns [AExpr a]: NUM { int n = Integer.parseInt($NUM.text); a = new Num(n); } | IDENT { a = new Var($IDENT.text); } ; fragment LOWER : ('a'..'z'); fragment UPPER : ('A'..'Z'); fragment NONNULL : ('1'..'9'); fragment NUMBER : ('0' | NONNULL); IDENT : ( LOWER | UPPER ) ( LOWER | UPPER | NUMBER )*; NUM : '0' | NONNULL NUMBER*; fragment NEWLINE:'\r'? '\n'; WHITESPACE : ( ' ' | '\t' | NEWLINE )+ { $channel=HIDDEN; }; I am using ANTLR v3 with the ANTLR IDE Eclipse plugin. When I parse the expression (8 + a45) using the interpreter, only part of the parse tree is generated: Why does the second term (a45) not get parsed? The same happens if both terms are numbers.

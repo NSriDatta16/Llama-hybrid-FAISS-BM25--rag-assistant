@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3481041
-[parent_id]: 
-[tags]: 
-Generate an concatenated SMS UDH and prepend it to message text
-
-In order to send SMS (7-bit) longer than 160 chars, you have to break the message up into 153 character messsage data parts and prefix each of these with a 5 octect UDH (user data header), explaining that these are parts of a multipart SMS and should be 're-assembled' by the receiving device. As the UDH is sent as part of the message data, whatever service I'm sending it through should, hopefully, ignore it and send it on to the recipient phone which will decode it and concatenate the parts of the long SMS. I am using the following test code, but I get two separate messages. Any suggestions as to what I am doing wrong? private void sendButton_Click(object sender, EventArgs e) { if ((cellNumberText.Text.Trim().Length == 10) && (messageText.Text.Trim().Length > 0)) { SendSms(cellNumberText.Text.Trim(), BuildUdh(255, 2, 1) + "Hello first time. "); SendSms(cellNumberText.Text.Trim(), BuildUdh(255, 2, 2) + "Hello second time. "); } } private string BuildUdh(byte messageId, byte partCount, byte partId) { var udg = new byte[5]; udg[0] = 0x00; udg[1] = 0x03; udg[2] = messageId; udg[3] = partCount; udg[4] = partId; return BitConverter.ToString(udg);

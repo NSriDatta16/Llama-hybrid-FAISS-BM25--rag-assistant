@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3845556
-[parent_id]: 
-[tags]: 
-Groovy MockFor - how to handle calls to "with" methods on mocks
-
-I faced with interesting problem while using mocking support in Groovy to test collaboration with dependency. We have two classes (example): class Dependency { void method() { throw new OperationNotSupportedException() } } class Dependent { Dependency dependency void useDependency() { dependency.with { method() } } } Pay attention to the way how method() being called on dependency - it's done inside "with" method of dependency. I need to mock call to method() in test so my first attempt was to do something like this: class IgnoringWithTest { @Test void testWithMock() { def depMock = new MockFor(Dependency) Dependent dep = new Dependent() depMock.demand.method { } dep.dependency = depMock.proxyInstance() dep.useDependency() depMock.verify dep.dependency } } Unfortunately this "naive" approach lead to error message during test execution "No call to 'with' expected at this point. Still 1 call(s) to 'method' expected." It's fine as we really try to call with() method on dependency here. I tried to ignore call to with() method by adding next line: depMock.ignore('with') After this I didn't receive complains about with() method calls however it turned out that expectation declared using demand was ignored. As a result I got OperationNotSupportedException. And now is the question - how to make mock for method() without having problems when in implementation it will be called in closure passed to with()?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3457776
-[parent_id]: 3457578
-[tags]: 
-Comments below each part (bits I haven't mentioned are correct): /* Static char array */ char src[] = "rabbit"; This array is not static - it has auto storage duration. /* pointer to array of pointers to char's - create 6 pointers in this array */ char *dest[sizeof(src)]; This is an array of pointers to char, not a pointer to an array. The length of the array is 7, because the sizeof(src) is 7 (it includes the nul string terminator). /* chr_ptr pointer now points to the memory location where 'rabbit' is stored. */ chr_ptr = src; More precisely, it points at the first character in src , which is the 'r' in "rabbit" . /* ptr_ptr points to the first memory address of the pointer array of where dest is stored */ ptr_ptr = dest; It points at the first pointer in the dest array. /* Keep going until NULL is found - However, my program never finds it, ends in UB */ while(ptr_ptr != NULL) { Correct - because you never initialised dest . You could change the declaration of dest to this: char *dest[sizeof(src)] = { 0 }; ...and it will work.

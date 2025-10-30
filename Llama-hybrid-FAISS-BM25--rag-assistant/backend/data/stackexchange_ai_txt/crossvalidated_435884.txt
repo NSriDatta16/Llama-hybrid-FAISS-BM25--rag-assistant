@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 435884
-[parent_id]: 
-[tags]: 
-It’s possible to apply transform operations only to the training set while cross-validating with cross_val_score and pipelines?
-
-I am trying to include steps in a pipeline that transform the data, ex. balancing the dataset. This pipeline is intended to be used with cross_val_score . However, I want to apply some transformations only over the training fold, since it may have no sense to apply them to the test set before scoring, ex. resampling the data. In the code below, I observed that cross_val_score calls transform twice for each partition (once for each train/test). There is a built-in solution for this in scikit-learn to avoid writing an ad-hoc transformer with some patches to count calls, etc? from sklearn import linear_model from sklearn.base import TransformerMixin from sklearn.datasets.samples_generator import make_blobs from sklearn.model_selection import cross_val_score, KFold from sklearn.pipeline import Pipeline class CustomTransformer(TransformerMixin): _calls = 0 def fit( self, X, y = None ): return self def transform( self, X, y = None ): '''... just for illustrating the problem ''' self._calls += 1 print('Shape: {0} call: {1}'.format(X.shape[0], self._calls)) return X X, y = make_blobs(n_samples=100, centers=3, n_features=2, random_state=0) pipe = Pipeline(steps=[('ct', CustomTransformer()), \ ('logistic', linear_model.LogisticRegression(solver='lbfgs', multi_class='auto'))]) scores = cross_val_score(pipe, X, y, cv=KFold(n_splits=4,random_state=0)) Thanks!

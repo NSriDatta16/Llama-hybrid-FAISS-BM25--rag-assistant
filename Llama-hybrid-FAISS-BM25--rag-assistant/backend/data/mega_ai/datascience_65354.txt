@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 65354
-[parent_id]: 
-[tags]: 
-How to improve tensorflow 2.0 code for policy gradient?
-
-I recreated some code I found online for solving the bandits problem using policy gradient. The example was in tensorflow 1.0 so I recreated it with tensorflow 2.0 using eager execution and gradient tape, however, when training the model, I have to convert the weights Tensor to a numpy array, update the weights then reassign the tf.Variable back from the numpy array. I feel this is not performant and could find a better way. Full code is here https://github.com/entrpn/reinforcement-learning/blob/master/tf2_rl/bandits.py The main code I'm looking to improve as follows: def train(agent,action,reward, learning_rate=0.001): with tf.GradientTape() as t: current_loss = loss(agent(action),reward) dW = t.gradient(current_loss,[agent.weights]) weights_as_np = agent.weights.numpy() responsible_weight = agent.weights[action] responsible_weight_dw = np.array(dW)[0][action] weights_as_np[action] = weights_as_np[action] - learning_rate*responsible_weight_dw agent.weights.assign(tf.Variable(weights_as_np))

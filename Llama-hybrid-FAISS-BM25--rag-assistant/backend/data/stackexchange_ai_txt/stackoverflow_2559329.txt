@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2559329
-[parent_id]: 2559204
-[tags]: 
-The problem is with the arg_count++; inside the if(input[i] == ' ') and if(input[i] == '\0') when you are parsing the command line and you find a space or you reach the end of the command line you are increment arg_count before you put a \0 at the end of the command you were reading. So change it to: if(input[i] == ' ') { // arg_count++; REMOVE THIS. break; } if(input[i] == '\0') { // arg_count++; REMOVE THIS. done = 1; break; } temp[arg_count][k++] = input[i++]; } temp[arg_count][k++] = '\0'; // add null-char at the end. arg_count++; // increment should happen here. More bugs: You are not returning anything from splitcommand You cannot just return cmdptr because they point to local char arrays( temp ) which will not persist after the function returns. So you'll have to make sure that the array temp persists even after function call by allocating it dynamically or making it global. Arguments to execvp look good to me. Others please take a look.

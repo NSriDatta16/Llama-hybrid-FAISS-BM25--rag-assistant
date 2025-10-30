@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5425521
-[parent_id]: 5425069
-[tags]: 
-The pascal calling convention is your problem. It is ancient, the pinvoke marshaller doesn't support it. It passes arguments left-to-right, the pinvoke marshaller is assuming stdcall so passes them right-to-left. Use __stdcall instead: __declspec( dllexport ) double __stdcall Process(lpUnmagedStruct lpStruct, int size, char* szMessage, int messageSize); Next problem is the string, returning one requires you to use a StringBuilder in the declaration and pass an initialized one in the call: [DllImport("MyDll.dll", EntryPoint="Process", CharSet = CharSet.Ansi)] public static extern double Process(ManagedStruct[] myStruct, int size, StringBuilder message, int messageSize); ... var buffer = new StringBuilder(666); double retval = Process(arrayOfStruct, 3, buffer, buffer.Capacity); var message = buffer.ToString(); I took the liberty of adding the messageSize argument, required to safely copy the string into the message buffer without risking destroying the garbage collected heap.

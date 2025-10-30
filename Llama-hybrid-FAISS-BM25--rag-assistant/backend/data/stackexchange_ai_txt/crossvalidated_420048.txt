@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 420048
-[parent_id]: 419199
-[tags]: 
-I was able to come up with a solution to this problem, and wanted to post here in case anyone else found it helpful. Comments by usεr11852 about sparse encoding helped point me in the right direction. My strategy was as follows. 1) Restructure my SQL pull in a long format, to avoid the column issue I was facing in SQL. See example below: Patient_ID,Var,Val 100000001,_Arthritis_Ind,0 100000001,Age,75 100000001,Diag_A001_Ind,1 100000002,_Arthritis_Ind,0 100000002,Age,60 100000003,_Arthritis_Ind,0 100000003,Age,71 100000003,Diag_A000_Ind,1 etc... 2) Use the sparseMatrix function in the R package Matrix to reshape the data from long into wide format. Because the matrix is extremely sparse, I didn't run into memory issues. The method is described at this link: https://www.r-bloggers.com/casting-a-wide-and-sparse-matrix-in-r/ 3) Run xgboost, with _Arthritis_Ind as my target variable, which ran without issues.

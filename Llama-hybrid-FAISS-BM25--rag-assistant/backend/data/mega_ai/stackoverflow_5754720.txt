@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5754720
-[parent_id]: 5686412
-[tags]: 
-You could achieve it by a workaround using your custom "alias to map" transformer, so your code would change to something like this Query q = mySession.createQuery( "SELECT u.id AS id, u.name AS text, u AS obj FROM User u") .setResultTransformer( AliasToMapTransformer.renameAlias("obj", "object").build() ); And then using this class: public class AliasToMapTransformer extends BasicTransformerAdapter { private Map renameAliasMap; public AliasToMapTransformer(Map renameAliasMap) { this.renameAliasMap = (renameAliasMap == null) ? Collections. emptyMap() : renameAliasMap; } @Override public Object transformTuple(Object[] tuple, String[] aliases) { Map result = new HashMap (tuple.length); for (int i = 0; i aliasConversionMap = new HashMap (); public Builder renameAlias(String alias, String newAlias) { aliasConversionMap.put(alias, newAlias); return this; } public AliasToMapTransformer build() { return new AliasToMapTransformer(aliasConversionMap); } } }

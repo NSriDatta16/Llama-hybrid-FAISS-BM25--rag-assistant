@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2922715
-[parent_id]: 2922589
-[tags]: 
-I recommend read and internalize Using tables as Queues . If you use the data as a queue, you must organize it properly for queuing operations. The article I linked goes into details about how to do this, what you have is a variant of a Pending Queue. One thing you must absolutely get rid of is the randomness. If there is one thing that is hard to reproduce in a query, is randomness. ORDER BY NEWID() will scan every row, generate a guid, then SORT, and then give you back top 100 . You cannot, under any circumstances, have every worker thread scan the entire table every time, you'll kill the server as the number of unprocessed entries grows. Instead use pending processing date. Have the queue be organized (clustered) by processing date column (when the item is due for retry) and dequeue using the techniques I show in my linked article. If you want to retry, the dequeue should postpone the item instead of deleting it, ie. WITH (...) UPDATE SET due_date = dateadd(day, 1, getutcdate()) ...

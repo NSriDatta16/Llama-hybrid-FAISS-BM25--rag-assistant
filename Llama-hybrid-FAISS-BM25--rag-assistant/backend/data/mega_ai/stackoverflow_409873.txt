@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 409873
-[parent_id]: 409727
-[tags]: 
-It's probably the GROUP BY that's causing the problem. In order to do grouping, the database has to sort the rows to put duplicate items together. An index probably won't help. A back-of-the-envelope calculation: Assuming each row takes 100 bytes of space, that's 29,500,000,000 bytes, or about 30GB of storage. It can't fit all that in memory, so your system is thrashing, which slows operations down by a factor of 1000 or more. Your HD space may be disappearing into swap space, if it's using swap files. If you only need to do this calculation once, try breaking it apart into smaller subsets of the data. Assuming pl_namespace is numeric and ranges from 1-295million, try something like this: SELECT pl_namespace, COUNT(*) FROM pagelinks WHERE pl_namespace between 1 and 50000000 GROUP BY (pl_namespace); Then do the same for 50000001-100000000 and so forth. Combine your answers together using UNION or simply tabulate the results with an external program. Forget what I wrote about an index not helping GROUP BY; here, an index will help the WHERE clause.

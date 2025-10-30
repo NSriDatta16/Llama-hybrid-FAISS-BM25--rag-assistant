@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5071264
-[parent_id]: 5063338
-[tags]: 
-You should be able to use HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache); but you will have to have a http handler that renders the script directly to the response stream and than set the source url of the script tag to the handler or configure IIS to handle all javascripts using a specific handler: Point *.js to the aspnet_isapi.dll ISAPI Extension and than add the following in your web.config And than the handler: namespace skmHttpHandlers { public class JavascriptHandler : IHttpHandler { public void ProcessRequest(HttpContext context) { context.Response.Clear(); context.Response.Cache.SetCacheability(HttpCacheability.NoCache) using (var scriptStream = File.Open(Server.MapPath("~/script/TheScript.js"), FileMode.Open)) scriptStream.CopyTo(context.Response.OutputStream); context.Response.End(); } public bool IsReusable { get { return false; } } } }

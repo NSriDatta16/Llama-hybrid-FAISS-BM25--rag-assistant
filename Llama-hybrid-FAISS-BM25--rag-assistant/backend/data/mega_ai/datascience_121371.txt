@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 121371
-[parent_id]: 
-[tags]: 
-Visualize Catboost and XGBoost training process + Cross Validation
-
-I want to optimize Catboost and XGBoost models and visualize this process such that: Use 3-fold cross-validation Use my own pre-processing pipeline (Missing value imputation, over- or undersampling) Use Catboost and XGboost - independent tools for cross-validation and visualization ( NOT use catboost.cv and xgboost.cv) Now I have this: from imblearn.pipeline import Pipeline as ImbPipeline pipe = ImbPipeline(steps=[ ('imp', Imputer()), ('res', RandomOverSampler(random_state=11)), ('clf', CatBoostClassifier(cat_features=cols_cat, random_seed=11, verbose=50)) ]) param = [{'clf__iterations': [500]}] cb = GridSearchCV(pipe, param) cb.fit(X_train, y_train) After cross-validation in complete (500 iterations and 3 folds), I want to build a plot like this: 100 iterations - average CV Test score by 3 folds ... 200 iterations - average CV Test score by 3 folds ... 300 iterations - average CV Test score by 3 folds ... 400 iterations - average CV Test score by 3 folds ... 500 iterations - average CV Test score by 3 folds ... It's like early stopping, but I want to have results averaged by 3 folds, so I am ready to wait 500 iterations - but I don't want to do this search: param = [{'clf__iterations': [100, 200, 300, 500]}] catboost.cv can build such plots, but catboost.cv doesn't support custom pipelines. Using libraries like Optuna is an option, I don't hold on GridSearchCV. Do I can achieve this?

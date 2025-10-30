@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 47542
-[parent_id]: 
-[tags]: 
-Zero padding for LSTM input
-
-I am building a text-generation model. In the first layer, I am using Word2Vec embeddings. Now since the input is sentences they are variable length and I am padding them with zero. The input is basically zero padded arrays of indexes of the words which appeared. My problem is that 0 is an index of some word, so isn't padding the sequences with 0 is feeding wrong information to the model. PFB my code. train_x is the training input, train_y is the final word in my sentence, corpus is the entire corpus of sentences. word2idx function fetches index for the word it is passed, max_sentence_len is the max sentence length in the corpus and is used for zero-padding. train_x = np.zeros([len(corpus), max_sentence_len], dtype=np.int32) train_y = np.zeros([len(corpus)], dtype=np.int32) for i, sentence in enumerate(corpus): if len(nltk.word_tokenize(sentence)) > 2: for t, word in enumerate(nltk.word_tokenize(sentence)[:-1]): if word in word_model.wv.vocab: train_x[i, t] = word2idx(word) train_y[i] = word2idx(nltk.word_tokenize(sentence)[-1]) To elaborate further say the index of hi is 0 and there is 1 and my max_sentence_len is 5 so for an input hi there, my input array looks like [0,1,0,0,0] which translates to [hi, there, hi, hi, hi]. This sounds incorrect to me. Is this how it should be or is there a way to go about it.

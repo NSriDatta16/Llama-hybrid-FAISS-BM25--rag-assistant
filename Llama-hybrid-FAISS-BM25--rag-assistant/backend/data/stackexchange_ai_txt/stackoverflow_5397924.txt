@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5397924
-[parent_id]: 5397889
-[tags]: 
-simple way... public AccessLevelAgentBase(XElement agentElement) { this.AccessLevels = (string)agentElement.Element("AccessLevels"); this.GetAccessLevelKeystroke = (string)agentElement.Element("GetAccessLevelKeystroke"); this.Doohicky = (int)agentElement.Element("Doohicky"); } ... not so simple way... public AccessLevelAgentBase(XElement agentElement) { var type = this.GetType(); var props = from prop in type.GetProperties() let attrib = prop.GetCustomAttributes(typeof(XmlElementAttribute), true) .OfType () .FirstOrDefault() where attrib != null let elementName = string.IsNullOrWhiteSpace(attrib.ElementName) ? prop.Name : attrib.ElementName let value = agentElement.Element(elementName) where value != null select new { Property = prop, Element = value, }; foreach (var item in props) { var propType = item.Property.PropertyType; if (propType == typeof(string)) item.Property.SetValue(this, (string)item.Element, null); else if (propType == typeof(int)) item.Property.SetValue(this, (int)item.Element, null); else throw new NotSupportedException(); } }

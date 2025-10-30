@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2095146
-[parent_id]: 
-[tags]: 
-Lucene.NET and lazy loading
-
-Here's a tricky question: I want to do lazy loading over a Lucene search result. Possible? Here's my code: public IEnumerable Search(string query) { var parsedQuery = new QueryParser(...).Parse(); var searcher = new IndexSearcher(parsedQuery, storage); try { var hits = searcher.Search(parsedQuery); // Hooray for LINQ's lazy-evaluated Select method! // But oh noes!! searcher will be closed by the time it // gets executed, thus resulting in an exception. :-( return hits.Select(hit => PullBizObjectFromDatabase(hit)); } finally { searcher.Close(); } } Consuming code: var searchResults = from result in blah.Search("hello, world!") where SomeBizLogic(result) select result; // Print the top 50 search results. foreach (var result in searchResults.Take(50)) { // Exception! The searcher field inside Search(...) has been closed! :-( Console.WriteLine(result); } My question is, how can I lazy-load search results from Lucene?

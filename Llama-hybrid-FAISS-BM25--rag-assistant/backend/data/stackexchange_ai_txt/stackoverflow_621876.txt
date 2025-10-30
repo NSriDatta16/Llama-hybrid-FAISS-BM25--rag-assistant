@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 621876
-[parent_id]: 
-[tags]: 
-How come MooseX::Storage doesn't seem to follow attribute traits for some objects?
-
-I have put together a little test case to demonstrate my problem: package P1; use Moose; use MooseX::Storage; with Storage; has 'blah' => ( is => 'rw', ); package P2; use Moose; use MooseX::Storage; with Storage; has 'lol' => ( is => 'rw', traits => ['DoNotSerialize'] ); package P3; use Moose; extends 'P2'; has 'magic' => ( is => 'rw', ); package Test; my $obj = P3->new( magic => 'This ok!', lol => sub { 'weee' } ); my $stored = P1->new(blah => $obj); use Data::Dumper; print Dumper ($stored->pack); I would expect this to print the object, but not the 'lol' attribute in the P2 package - however, I can still see this in the result of $stored->pack $VAR1 = { '__CLASS__' => 'P1', 'blah' => bless( { 'magic' => 'This ok!', 'lol' => sub { "DUMMY" } }, 'P3' ) }; Am I using MooseX::Storage wrong, or does this look like buggy behaviour?

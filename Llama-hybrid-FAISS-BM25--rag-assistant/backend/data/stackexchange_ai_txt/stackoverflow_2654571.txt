@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2654571
-[parent_id]: 82058
-[tags]: 
-Bertrand LeRoy, who worked on ASP.NET Atlas/AJAX, described the design of the JavaScriptSerializer DateTime output and revealed the origin of the mysterious leading and trailing forward slashes. He made this recommendation: run a simple search for "\/Date((\d+))\/" and replace with "new Date($1)" before the eval (but after validation) I implemented that as: var serializedDateTime = "\/Date(1271389496563)\/"; document.writeln("Serialized: " + serializedDateTime + " "); var toDateRe = new RegExp("^/Date\\((\\d+)\\)/$"); function toDate(s) { if (!s) { return null; } var constructor = s.replace(toDateRe, "new Date($1)"); if (constructor == s) { throw 'Invalid serialized DateTime value: "' + s + '"'; } return eval(constructor); } document.writeln("Deserialized: " + toDate(serializedDateTime) + " "); This is very close to the many of the other answers: Use an anchored RegEx as Sjoerd Visscher did -- don't forget the ^ and $. Avoid string.replace, and the 'g' or 'i' options on your RegEx. "/Date(1271389496563)//Date(1271389496563)/" shouldn't work at all.

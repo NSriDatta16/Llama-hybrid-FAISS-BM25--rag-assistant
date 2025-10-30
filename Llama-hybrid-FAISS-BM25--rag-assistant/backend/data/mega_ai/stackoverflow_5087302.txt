@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5087302
-[parent_id]: 
-[tags]: 
-Running three commands in the same process with Python
-
-I need to run those three commands for profiling/code coverage reporting on Win32. vsperfcmd /start:coverage /output:run.coverage helloclass vsperfcmd /shutdown I can't run one command by one because the helloclass executable should be profiled in the same process of vsperfcmd. What I think of is to make a batch file to run those three commands, and run the batch file in Python. However, I think python should have a way to do the equivalent action of launching a shell and run commands. Q : How can I run the commands in the same process in Python? Q : Or, how can I launch command shell and run commands in Python? SOLVED import subprocess cmdline = ["cmd", "/q", "/k", "echo off"] cmd = subprocess.Popen(cmdline, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True) batch = b"""\ rem vsinstr -coverage helloclass.exe /exclude:std::* vsperfcmd /start:coverage /output:run.coverage helloclass vsperfcmd /shutdown exit """ cmd.stdin.write(batch) cmd.stdin.flush() # Must include this to ensure data is passed to child process result = cmd.stdout.read() print(result)

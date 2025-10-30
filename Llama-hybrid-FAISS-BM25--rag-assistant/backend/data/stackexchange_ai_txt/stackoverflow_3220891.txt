@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3220891
-[parent_id]: 3220670
-[tags]: 
-I suggest subclassing ConfigParser.ConfigParser (or SafeConfigParser , &c) to safely access the "protected" attributes (names starting with single underscore -- "private" would be names starting with two underscores, not to be accessed even in subclasses...): import ConfigParser class MyParser(ConfigParser.ConfigParser): def as_dict(self): d = dict(self._sections) for k in d: d[k] = dict(self._defaults, **d[k]) d[k].pop('__name__', None) return d This emulates the usual logic of config parsers, and is guaranteed to work in all versions of Python where there's a ConfigParser.py module (up to 2.7, which is the last of the 2.* series -- knowing that there will be no future Python 2.any versions is how compatibility can be guaranteed ;-). If you need to support future Python 3.* versions (up to 3.1 and probably the soon forthcoming 3.2 it should be fine, just renaming the module to all-lowercase configparser instead of course) it may need some attention/tweaks a few years down the road, but I wouldn't expect anything major.

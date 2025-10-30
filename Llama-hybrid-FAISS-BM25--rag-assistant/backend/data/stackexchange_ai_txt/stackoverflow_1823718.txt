@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1823718
-[parent_id]: 1823624
-[tags]: 
-The partial implementation below may give you some ideas for flexibly storing and retrieving properties. For managing property addition and removal, when you add properties no problem. When you drop properties you could not allow new properties of that type to be created in the future but preserve existing data or remove all data associated with those properties. /// /// The data storage could look something like this /// create table PersistedObject (ObjectId int ) /// create table PersistedProperty (PropertyId int , PropertyName varchar(50) ) /// create table Data (ValueId int, PropertyId int, SerializedValue image ) /// interface IFlexiblePersistence { object this[string propertyName] { get; set;} void Persist(); } class Person : IFlexiblePersistence { Dictionary data; public Person(int personId) { data = PopulatePersonData(personId); } public object this[string propertyName] { get { return data[propertyName]; } set { data[propertyName] = value; Persist(); } } public void Persist() { LoopThroughAllValuesAndSaveToDB(); } }

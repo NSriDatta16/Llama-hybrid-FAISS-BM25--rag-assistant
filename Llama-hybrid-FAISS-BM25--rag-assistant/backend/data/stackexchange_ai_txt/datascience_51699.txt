@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 51699
-[parent_id]: 
-[tags]: 
-Using TF Dataset API to process sequences for stateful RNN
-
-I am trying to use the TensorFlow (v1.13) Dataset API to save and load long sequences for a stateful RNN. Basically, lets say I have n_seq sequences, each fixed to a length of 120. I want to load batches to train my stateful RNN according to this post , basically: batch 1 batch 2 batch 3 batch 4 element0 s21 s22 s23 s24 ... element1 s11 s12 s13 s14 where sij denotes j-th window of the i-th sequence. This is done based on how a stateful RNN works in TF, as when stateful=True , "the last state for each sample at index i in a batch will be used as initial state for the sample of index i in the following batch." ( source ) Initial Solution I am saving each sequence to its own *.tfrecord file. Then I am loading them using: tf_dataset = tf.data.Dataset.list_files(path, shuffle=False, seed=1) tf_dataset = tf_dataset.interleave( lambda filename: tf.data.TFRecordDataset(filename).map(parse_func), cycle_length=BATCH_SIZE, block_length=1 ) tf_dataset = tf_dataset.batch(batchsize) This actually mostly works EXCEPT for the final files. Namely if n_files % BATCH_SIZE != 0 , the finale files will be together in the same batch. Is there a better way to handle this? NOTE: This question was previously asked on stackoverflow.coom, but deleted due to lack of response. I think this will be a better home for it.

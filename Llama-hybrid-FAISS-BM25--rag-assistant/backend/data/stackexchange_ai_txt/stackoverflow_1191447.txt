@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1191447
-[parent_id]: 
-[tags]: 
-Passing an unmanaged C++ structure by reference to a managed C++ method causes an access violation when the structure is referenced
-
-I'm trying to pass this structure: #pragma unmanaged typedef struct { void* data; unsigned nlen; unsigned int type; } PARAMETER; To this class static method: #pragma managed private class __gc GlobalFunctions { static void WriteField(Object* object, PARAMTER& par, unsigned dec) { switch (par.type) { .... } } }; From this function: public class __gc WorkerClass { void SetValueAt(long index, Object* value) { PARAMETER aux; aux.type = 3; GlobalFunctions::WriteField(value, aux, 0); } }; On a 64-bit system, I get an access violation saying that the address '0x000c' cannot be read. Now, on a 64-bit system, the dereference of par.type would be address of 0x0c if the reference of par was a null pointer. Except par is on the stack - I'm not passing a null pointer into WriteField, but I seem to be getting one out. Now, in Managed C++, when calling from one managed class instance method to another static method, is the fact that I'm passing an unmanaged structure by reference vulnerable to some sort of marshalling issue? Is there any web documentation explaining how unmanaged structures are treated by managed code?

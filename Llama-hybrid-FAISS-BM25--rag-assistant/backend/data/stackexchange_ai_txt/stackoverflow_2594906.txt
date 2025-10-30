@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2594906
-[parent_id]: 2577914
-[tags]: 
-The raw SQL would be SELECT entry.id, entry.title, entry.content, entry.user_id, entry.created_at FROM entry WHERE entry.created_at = ( SELECT Max(e2.created_at) from entry as e2 where e2.user_id = entry.user_id ) So one option is using the where argument of the extra() modifier : Entry.objects.extra(where='entry.created_at = ( SELECT Max(e2.created_at) from entry as e2 where e2.user_id = entry.user_id )') Of course, you'd probably have to change entry to whatever the actual name of the table is in the database. Assuming you're comfortable looking at ._meta , you can try this: Entry.objects.extra( where= '%(table)s.created_at = ( SELECT Max(e2.created_at) from %(table)s as e2 where e2.user_id = %(table)s.user_id )' % { 'table':Entry._meta.db_table } ) There's probably a more elegant way to get the name of a table.

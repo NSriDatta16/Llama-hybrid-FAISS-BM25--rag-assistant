@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 303072
-[parent_id]: 303026
-[tags]: 
-Is the code that is not executing rendered out as script blocks, I understand the libraries loaded but any script blocks or inline javascript will not execute when loaded dynamically like that. You have to come up witha solution that will evaluate the script blocks returned for any of it to be valid. I'll see if I can dig an example from prototype, I remember them having one. UPDATE: This is straight from prototype... ScriptFragment: ' ]*>([\\S\\s]*?) ' extractScripts: function() { var matchAll = new RegExp(Prototype.ScriptFragment, 'img'); var matchOne = new RegExp(Prototype.ScriptFragment, 'im'); return (this.match(matchAll) || []).map(function(scriptTag) { return (scriptTag.match(matchOne) || ['', ''])[1]; }); } evalScripts: function() { return this.extractScripts().map(function(script) { return eval(script) }); } Of course you can simplify that for your needs, but when a page is returned dynamically you have to manually evaluate all scripts as the browser will not evaluate script injected into the element automagically.

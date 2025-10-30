@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5717486
-[parent_id]: 
-[tags]: 
-XCode 4:Insert Subversion revision number in Xcode
-
-Yes, this is very related to this question , yet I think that question is adequately answered for XCode 3. Not sure if this should be merged or not. So - Using similar instructions from there, I've long had the nice effect of having build numbers encoded into archived .ipa files, such that Organizer shows versions like "1.0.3281" (where 3281 is the revision via the below build script attached to my iOS target): REV=`svnversion -nc | /usr/bin/sed -e 's/^[^:]*://;s/[A-Za-z]//'` echo "REV=$REV" echo "#define kRevisionNumber @\"$REV\"" > ${PROJECT_DIR}/revision.h echo "INFOPLIST_PATH=${INFOPLIST_PATH}" BASEVERNUM=`/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "${INFOPLIST_FILE}" | sed 's/,/, /g'` echo "BASEVERNUM=$BASEVERNUM" PLISTARG1="Set :CFBundleVersion $BASEVERNUM.$REV" echo "PLISTARG1=$PLISTARG1" /usr/libexec/PlistBuddy -c "$PLISTARG1" "${TARGET_BUILD_DIR}"/${INFOPLIST_PATH} However, XCode 4 (which I've since come to love) clearly needs some tweaking, as this magic only sort-of works. Here is the result of the scripts above. REV=3281 INFOPLIST_PATH=Foo.app/Info.plist BASEVERNUM=1.0 PLISTARG1=Set :CFBundleVersion 1.0.3281 And I can see by looking in ~/Library/.../Foo.app/Info.plist that yes, it did update the right version: CFBundleVersion 1.0.3281 So clearly there is an additional file needing updating.. perhaps in the .xcarchive? Any suggestions on where to drill into first?

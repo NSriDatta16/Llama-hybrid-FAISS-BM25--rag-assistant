@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4011930
-[parent_id]: 4011505
-[tags]: 
-To answer my own question a couple hours later... One way would be to implement hook_views_pre_render() : /** * Implementation of hook_views_pre_render(). */ function mymodule_views_pre_render(&$view) { if ($view->name == 'myview') { // perform calculations on each row $pointsEarned = $pointsPossible = 0; foreach($view->result as $submission) { if (is_numeric($submission->node_data_field_pointsearned_field_pointsearned_value)) { $pointsEarned += $submission->node_data_field_pointsearned_field_pointsearned_value; $pointsPossible += $submission->node_node_data_field_pointspossible_field_pointspossible_value; } } // insert a 'total' row $row = new stdClass(); $row->node_data_field_pointsearned_field_pointsearned_value = $pointsEarned; $row->node_node_data_field_pointspossible_field_pointspossible_value = $pointsPossible; $view->result[] = $row; if ($pointsPossible > 0) { // insert an 'average' row $row = new stdClass(); $row->users_name = 'Average:'; $row->node_data_field_pointsearned_field_pointsearned_value = round($pointsEarned/$pointsPossible * 100) . "%"; $view->result[] = $row; } } }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 524631
-[parent_id]: 523773
-[tags]: 
-Here's a full example using LWP. If you use call the content_type in list context, you get the type and charset as separate values: use v5.10; my $url = 'https://www.perl.com'; use LWP::UserAgent; my $ua = LWP::UserAgent->new; my $response = $ua->head( $url ); my( $type, $charset ) = $response->content_type; say "LWP: Content type is ", $type; say "LWP: charset is ", $charset; Here's the same thing in Mojolicious, which doesn't break up the Content-type header for you. use Mojo::UserAgent; my $ua = Mojo::UserAgent->new; my $tx = $ua->head( $url ); my( $type, $charset ) = split /\s*;\s*/, $tx->result->headers->content_type, 2; say "Mojo: Content type is ", $type; say "Mojo: charset is ", $charset; Some servers choke on HEAD requests, so when I do this and get an error of any sort, I retry it with a GET request and only request the first couple hundred of bytes of the resources.

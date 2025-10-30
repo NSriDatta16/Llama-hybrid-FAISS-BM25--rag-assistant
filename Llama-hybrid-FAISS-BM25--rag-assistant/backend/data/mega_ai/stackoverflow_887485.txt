@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 887485
-[parent_id]: 
-[tags]: 
-Keeping track of state in JFlex
-
-I'm writing a custom flex file to generate a lexer for use with JSyntaxpane. The custom language I need to lex has different states that can be embedded into each other in a kind of stack. I.E you could be writing an expression that has a single quoted string in it and then embed another expression within the string using a special token eval(). But you can also embed the expression within a double quoted string. eg: someExpressionFunction('a single-quoted string with an eval(expression) embedded in it', "a double-quoted string with an eval(expression) embedded in it") This is a simplification, there are more states than this, but assuming I need to have different states for DOUBLE_STRING and SINGLE_STRING it adequately describes my situation. What's the best way to ensure I return to the correct state upon closing the eval expression (i.e return to DOUBLE_STRING if I was in double quotes, SINGLE_STRING if I was in single quotes) The solution I've come up with, which works, is to keep track of state using a Stack and some custom methods to use in lieu of using yybegin to start a different state. private Stack stack = new Stack (); public void yypushState(int newState) { stack.push(yystate()); yybegin(newState); } public void yypopState() { yybegin(stack.pop()); } Is this the best way to achieve this? Is there a simpler built-in function of JFlex I can leverage or a best practice I should know about?

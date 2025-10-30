@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2384356
-[parent_id]: 2384114
-[tags]: 
-Expanding on DuffyMo's post you could do something like With SalesStats As ( Select Sales, NTILE( 100 ) OVER ( Order By Sales ) As NtileNum From tbl_Sales ) Select Avg( Sales ), Max( Sales ), Min( Sales ) From SalesStats Where NtileNum Between 5 And 95 This will exclude the lowest 5% and highest 95%. If you have numbers that vary wildly, you may find that the Average isn't a quality summary statistic and should consider using median. You can do that by doing something like: With SalesStats As ( Select NTILE( 100 ) OVER ( Order By Sales ) As NtileNum , ROW_NUMBER() OVER ( Order By Id ) As RowNum From tbl_Sales ) , TotalSalesRows ( Select COUNT(*) As Total From tbl_Sales ) , Median As ( Select Sales From SalesStats Cross Join TotalSalesRows Where RowNum In ( (TotalRows.Total + 1) / 2, (TotalRows.Total + 2) / 2 ) ) Select Avg( Sales ), Max( Sales ), Min( Sales ), Median.Sales From SalesStats Cross Join Median Where NtileNum Between 5 And 95

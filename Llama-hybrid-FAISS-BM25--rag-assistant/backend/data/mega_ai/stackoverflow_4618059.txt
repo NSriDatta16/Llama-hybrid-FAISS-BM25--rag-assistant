@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4618059
-[parent_id]: 4615890
-[tags]: 
-I have found a reasonable solution. The question is whether it is correct. Instead of exporting (or calling via lua_cpcall) the original function int PushHello(lua_State *L) a wrapper int SafeFunction (lua_State *L) is exported/called. The wrapper looks like: template int SafeFunction(lua_State *L){ int result = 0; try{ result = func(L); } // transform exception with description into lua_error catch(exception &e){ luaL_error(L, e.what()); } // rethrow lua error - C++ Lua throws lua_longjmp* catch(lua_longjmp*){ throw; } // any other exception as lua_error with no description catch(...){ luaL_error(L, "Unknown error"); } return result; } What do you think about it? Do you see any problems?

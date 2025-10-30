@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3908481
-[parent_id]: 3908244
-[tags]: 
-The old Bison version on my school's server says you have 241 shift/reduce conflicts. One is the dangling if/else statement. Putting "OptElse" does NOT solve it. You should just write out the IfStmt and an IfElseStmt and then use %nonassoc and %prec options in bison to fix it. Your expressions are the issue of almost all of the other 240 conflicts. What you need to do is either force precedence rules (messy and a terrible idea) or break your arithmetic expressions into stuff like: AddSubtractExpr: AddSubtractExpr PLUS MultDivExpr | .... ; MultDivExpr: MultiDivExpr TIMES Factor | .... ; Factor: Variable | LPAREN Expr RPAREN | call | ... ; Since Bison produces a bottom up parser, something like this will give you correct order of operations. If you have a copy of the first edition of the Dragon Book, you should look at the grammar in Appendix A. I believe the 2nd edition also has similar rules for simple expressions.

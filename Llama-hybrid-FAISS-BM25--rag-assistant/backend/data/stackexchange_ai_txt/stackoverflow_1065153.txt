@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1065153
-[parent_id]: 
-[tags]: 
-Scanning variable number of 'fields' from a text file
-
-I'd like to scan a variables that form vectors from white space delimited text file and the stumbling block (all to often for me) is lack of elegance. Currently my scanning code requires delineating the size of the vector as the first element in the file: 7 : 1 3 6 8 -9 .123 1.1 Which bothers me because the '7' could be determined by inspecting the white space. I've tried various forms of fscanf(), strtok() etc., but all seem to be brute forcish. Without resorting to lex/yacc (not available) could someone suggest something more elegant than the following? typedef struct vector_tag { int Length; double * value; } vector; vector v; char buf[BIG_ENOUGH], key[BIG_ENOUGH], val[BIG_ENOUGH]; void scan_vector(FILE * fh) { int i, length; double * data; char * tok; do { if (feof(fh)) return; fgets(buf, sizeof buf, fh); } while (2 != sscanf(buf,"%[^:]:%[^\n\r]",key,val)); length = v.Length = strtol(key,NULL,10); data = v.value = malloc(length * sizeof(double)); tok = strtok(val, " "); /* I'd prefer tokenizing on whitespace */ for (i = 0; i++ Solution: Thanks to the checked answer, I implemented: static int scan_vector(FILE * fh, vector * v) { if (1 == fscanf(fh,"%d:",& v->length)) { int i; v->value = malloc(v->Length * sizeof(double)); assert (NULL != v->value); for (i = 0; i Length; i++) { if (fscanf(fh,"%lf",v->value + i) != 1) return(0); } return(1); } return(0); } /* scan_vector() */

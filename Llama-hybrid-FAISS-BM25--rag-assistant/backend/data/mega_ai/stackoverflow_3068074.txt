@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3068074
-[parent_id]: 3066795
-[tags]: 
-I suspect the reason its not working would be clear if your error reporting was working correctly. You're not escaping the session data, and should NOT be serializing the ID. Coincidentally, your code is messy, badly documented and inefficient - e.g. you don't need to see if you already have data then choose to do an insert or update: $sql = "REPLACE INTO session_data ( session_id, http_user_agent, session_data, session_expire ) VALUES ( '".mysql_real_escape_string($session_id))."', '".mysql_real_escape_string($_SERVER["HTTP_USER_AGENT"])."', '".mysql_real_escape_string($session_data)."', '".(time() + $this->sessionLifetime)."' ) and.... // don't bother with the unserialization - PHP handles this automatically return unserialize($fields["session_data"]); (!) Like your comment says - don't try to unserialize the data in the handler. C.

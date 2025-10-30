@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5601922
-[parent_id]: 
-[tags]: 
-Trying to parse multiple, possibly incomplete XML fragments from a buffer with Nokogiri
-
-Receiving XML formatted messages via a tcp socket and trying to parse them with Nokogiri. If I could rely on a single, complete root tag in my buffer everything would be straightforward. Trivial example: some long text .... more text => # ]>, # ]>]>]> everything as expected. Long messages may be split across packets, leaving the buffer holding an incomplete tag: exceptionally long text .... => # ]>]>]> still as expected, Nokogiri::XML::SyntaxError: Premature end of data in tag doc line 1, we can wait for more data in the buffer. However, short messages may be clustered within a single packet and arrive at once: text other text => # ]>]>]> second message not parsed, Nokogiri::XML::SyntaxError: Extra content at the end of the document. I can't see any way to get Nokogiri to return to me the extra content so I can try to continue parsing. This may be a limitation of the underlying libxml2 or Nokogiri's interface with the library. String.scan doesn't give string indexes (to split messages and preserve the extra text) and Regexp.match won't match globally. Any ideas on how best to extract all of the complete messages from my buffer and leave the trailing incomplete one?

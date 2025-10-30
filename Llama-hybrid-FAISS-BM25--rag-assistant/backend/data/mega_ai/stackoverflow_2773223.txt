@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2773223
-[parent_id]: 469597
-[tags]: 
-Theres no way to do it in standard C++ but if you have a good working knowledge of your specific compiler internals it can probably be achieved. In Visual C++ the pointers to the static init functions are located in the .CRT$XI segment (for C type static init) or .CRT$XC segment (for C++ type static init) The linker collects all declarations and merges them alphabetically. You can control the order in which static initialization occurs by declaring your objects in the proper segment using #pragma init_seg for example, if you want file A's objects to be created before file B's: File A.cpp: #pragma init_seg(".CRT$XCB") class A{}A; File B.cpp: #pragma init_seg(".CRT$XCC") class B{}B; .CRT$XCB gets merged in before .CRT$XCC . When the CRT iterates through the static init function pointers it will encounter file A before file B. In Watcom the segment is XI and variations on #pragma initialize can control construction: #pragma initialize before library #pragma initialize after library #pragma initialize before user ...see documentation for more

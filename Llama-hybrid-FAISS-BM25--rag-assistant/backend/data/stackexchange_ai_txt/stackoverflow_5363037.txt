@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5363037
-[parent_id]: 5360764
-[tags]: 
-The reason why this happens is because your entity is not saved yet and you execute query to get it. Query will not find it in database and correctly return null. You should not need to use repository / unit of work / ObjectContex as internal storage of not saved entities among service calls. If you need it you should check your application design and refactor it because something is probably wrong. Anyway you can get not saved entity from context but it is not very nice code. You will need special method on your repository to get entity by id. You will use it instead of calling FirstOrDefault . Something like: public MyPoco GetById(Guid id) { MyPoco enity = context.ObjectStateManager.GetObjectStateEntries(EntityState.Added) .Where(e => e.Entity != null && e.Entity.GetType() == typeof(MyPoco))) .Select(e => (MyPoco)e.Entity) .Where(p => p.Id == id) .SingleOrDefault(); if (entity == null) { entity = context.MyPocos.FirstOrDefault(p => p.Id == id); } }

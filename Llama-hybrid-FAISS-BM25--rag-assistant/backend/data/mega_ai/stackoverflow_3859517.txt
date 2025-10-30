@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3859517
-[parent_id]: 
-[tags]: 
-Type of pointer to member from base class
-
-I have a problem regarding member pointers. The following code fails to compile using both Oracle Solaris Studio 12.2's CC and cygwin GCC 4.3.4 but works with Microsoft Visual C++ 2010: struct A { int x; }; struct B : public A { }; template class Bar { public: template void foo(M T::*p); }; int main(int, char *[]) { Bar bbar; bbar.foo(&B::x); return 0; } At the next to last line both compilers mentioned above fail to find a match for Bar ::foo(int A::*) . I wrote a simple test to confirm that the type of the expression &B::x is actually int A::* : // ... static void foo(int A::*p) { std::cout The following workaround works with GCC (not tested with Oracle CC yet) but fails with VC++ due to ambiguity: template class Bar { public: template void foo(M T::*p); template inline void foo(M _T_base::*p) { foo(static_cast (p)); } }; My question: Which behavior is correct? Apparently VC++ does an implicit upcast from int A::* to int B::* to satisfy the call to the member function template, shouldn't the other two compilers consider doing the same?

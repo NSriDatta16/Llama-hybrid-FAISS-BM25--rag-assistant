@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4052901
-[parent_id]: 
-[tags]: 
-Lazy loading returns equal records
-
-I have entities: public class Document : PersistentObjectBase { public virtual long? FolderId { get; set; } } public class DocumentFolder : PersistentObjectBase { public virtual long? ParentFolderId { get; set; } #region [Lazy subfolders] protected virtual IList NSubFolders { get; set; } public virtual IList SubFolders { get { return GetObjectWithInitializationCheck(NSubFolders); } set { NSubFolders = value; } } #endregion #region [Lazy Documents] protected virtual IList NDocuments { get; set; } public virtual IList Documents { get { return GetObjectWithInitializationCheck(NDocuments); } set { NDocuments = value; } } #endregion } where: protected static T GetObjectWithInitializationCheck (T propertyValue) where T : class { if (ObjectInitialized(propertyValue)) { return propertyValue; } return null; } While building criteria, I do: criteria.SetResultTransformer(new DistinctRootEntityResultTransformer()); criteria.CreateCriteria("NSubFolders", "subFolders", JoinType.LeftOuterJoin); criteria.CreateCriteria("NDocuments", "documents", JoinType.LeftOuterJoin); The method returns folders with subfolders and documents, but it is possible to find the folder or documents multiple times in the lists. For example, I have only 30 folders but I get about 180 where there is one folder mare than 1 times. Sorry for my poor English...

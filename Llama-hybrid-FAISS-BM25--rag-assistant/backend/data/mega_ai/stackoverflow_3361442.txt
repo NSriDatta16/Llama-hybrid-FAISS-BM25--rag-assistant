@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3361442
-[parent_id]: 3361129
-[tags]: 
-Make sure sessions are only started from a cookie. Use session_regenerate_id() when adding/updating auth info Add an internal check that compares a hash made of the session_id, remote_addr and user_agent to the currently stored hash (inside your session data), eg: session_start(); if (empty($_SESSION['auth_hash'])) { // new visitor $_SESSION['auth_hash'] = sha1(session_id() . 'SECRET_STRING' . $_SERVER['REMOTE_ADDR']); } if ($_SESSION['auth_hash'] != sha1(session_id() . 'SECRET_STRING' . $_SERVER['REMOTE_ADDR'])) { // invalid user / mitm-attack session_destroy(); // display login or so } after adding/updating auth info, eg: session_regenerate_id(); $_SESSION['auth_hash'] = sha1(session_id() . 'SECRET_STRING' . $_SERVER['REMOTE_ADDR']); @Daniel: This is NOT true, assigning your own value to a session cookie WILL create that session, and when that session already exists, WILL use that session. If measures like I suggested above are nog used, session takeovers and mitm attacks are possible...

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4261945
-[parent_id]: 4261870
-[tags]: 
-I'd say it's because you have a dynamic ViewPage, not a strongly-typed one: Inherits="System.Web.Mvc.ViewPage >" Not saying its the problem, but will make things tricky. Why don't you project your query into a ViewModel, and bind to that: var data = ( from f in DietCenterDB.Franchises join fc in DietCenterDB.FranchiseContents on f.ID equals fc.FranchiseId into ffc from subffc in ffc.DefaultIfEmpty() select new MyViewModel { State = f.State, City = f.City, AccountCode = f.AccountCode, CenterNumber = f.CenterNumber, FranchiseContentId = (subffc == null ? 0 : subffc.FranchiseContentId) } ).ToList(); And then in your View: Inherits="System.Web.Mvc.ViewPage >" EDIT MyViewModel is a simple class you need to create, which allows lightweight storage for your model: public class MyViewModel { public int State {get;set;} public int City {get;set;} public int AccountCode {get;set;} public int CenterNumber {get;set;} public int FranchiseContentId {get;set;} }

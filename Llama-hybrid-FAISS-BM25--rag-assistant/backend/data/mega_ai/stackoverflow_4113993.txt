@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4113993
-[parent_id]: 4096679
-[tags]: 
-Just to be excessively pedantic ... If you know that both lists are sorted (FileInfo lists often come pre-sorted, so this approach might be applicable to you), then you can achieve true linear performance without the time and memory overhead of a hashset. Hashset construction still requires linear time to build, so complexity is closer to O(n + m); the hashset has to internally allocate additional object references for at most 250k strings in your case and that's going to cost in GC terms. Something like this half-baked generalisation might help: public static IEnumerable GetMismatches(IList fileNames, IList processedFileNames, StringComparer comparer) { var filesIndex = 0; var procFilesIndex = 0; while (filesIndex = processedFileNames.Count) { yield return files[filesIndex++]; } else { var rc = comparer.Compare(fileNames[filesIndex], processedFileNames[procFilesIndex]); if (rc != 0) { if (rc I would strongly agree with Ani that sticking to a generic or canonical type is A Very Good Thing Indeed. But I'll give mine -1 for unfinished generalisation and -1 for elegance...

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4371425
-[parent_id]: 4371365
-[tags]: 
-(1) You don't need to calculate the results separately and then UNION them like that. (2) I think WITH ROLLUP will probably do what you need. SELECT COUNT(*), AVG (q1) AS q1,... FROM thotels_results WHERE brand in ('ABC','EFG','XYZ') AND date = 'NOV2010' GROUP BY brand WITH ROLLUP But as pointed out in the comments this doesn't do the "mean-of-mean"s averaging required. The best I could come up with for that is CREATE TEMPORARY TABLE results SELECT brand, COUNT(*) AS cnt, AVG (q1) AS q1 ... FROM thotels_results WHERE brand in ('ABC','EFG','XYZ') AND date = 'NOV2010' GROUP BY brand; CREATE TEMPORARY TABLE results2 SELECT cast(NULL as char), AVG(cnt), AVG(q1) FROM results r2; /*MySQL doesn't allow the same temp table to be accessed twice in a UNION!*/ SELECT * FROM results r UNION ALL SELECT * FROM results2; DROP TEMPORARY TABLE results; DROP TEMPORARY TABLE results2;

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3283715
-[parent_id]: 1054966
-[tags]: 
-I agree with JaredPar that the documentation states access is synchronized and thus treadsafe. However if you look at the source code for the implementation of the delivered backing stores you will see it is coded with the expectation to be run in a multithreaded environment. So perhaps this is a case of stale documentation. The following excerpt is from the IsolatedStorageBackingStore in EntLib 5.0 thought the 4.1 implemenation is the same. The excerpt is just one method for clarity sake but all the access to the underlying IsolatedStorageFile is locked. /// /// Adds new item to persistence store /// /// Unique key for storage item /// Item to be added to cache. May not be null. protected override void AddNewItem(int storageKey, CacheItem newItem) { lock (store) { string storageLocation = GenerateItemLocation(storageKey); IsolatedStorageCacheItem cacheItem = new IsolatedStorageCacheItem(store, storageLocation, this.encryptionProvider); cacheItem.Store(newItem); } }

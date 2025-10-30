@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 94271
-[parent_id]: 69639
-[tags]: 
-The API is a bit confusing. You pass a RegularizerApplicator instance to the model, which takes a list of tuples of the form (regex, regularizer) . The regex matches against your model's parameter's name. For example, if you had layer called linear_relu_stack.0.bias , linear_relu_stack.0.weight , you could apply a single regularizer to both with the regex "^linear_relu_stack.0.(bias|weight)$" . The regularizer itself is an just instance of L1Regularizer or L2Regularizer , where you can specify the alpha. In all, your model would look something like this after adding regularization: from allennlp.nn.regularizers.regularizer_applicator import RegularizerApplicator from allennlp.nn.regularizers.regularizers import L2Regularizer AcademicPaperClassifier(*model_args, regularizer=RegularizerApplicator([ (".*LSTM.*", L2Regularizer(alpha=0.01)), (".*FFN.*", L2Regularizer(alpha=0.01)), ])) The API documentation is the best resource for this: http://docs.allennlp.org/v0.9.0/api/allennlp.nn.regularizers.html#allennlp.nn.regularizers.regularizer_applicator.RegularizerApplicator.from_params

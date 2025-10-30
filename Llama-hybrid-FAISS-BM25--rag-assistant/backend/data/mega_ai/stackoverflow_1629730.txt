@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1629730
-[parent_id]: 1629391
-[tags]: 
-Irrespective of the how you do it (hashing, encoding, database lookup) I recommend that you don't try to map a huge number of URLs to files in a big flat directory. The reason is that file lookup for most file systems involves a linear scan through the filenames in a directory. So if all N of your files are in one directory, a lookup will involve 1/2 N comparisons on average; i.e. O(N) (Note that ReiserFS organizes the names in a directory as a BTree. However, ReiserFS seems to be the exception rather than the rule.) Instead of one big flat directory, it would be better to map the URIs to a tree of directories. Depending on the shape of the tree, lookup can be as good as O(logN) . For example, if you organized the tree so that it had 3 levels of directory with at most 100 entries in each directory, you could accommodate 1 million URLs. If you designed the mapping to use 2 character filenames, each directory should easily fit into a single disk block, and a pathname lookup (assuming that the required directories are already cached) should take a few microseconds.

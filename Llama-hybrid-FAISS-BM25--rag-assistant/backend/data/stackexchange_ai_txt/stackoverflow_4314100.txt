@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4314100
-[parent_id]: 4306957
-[tags]: 
-I'm leaving my other answer as-is because it contains a lot of good info for those who may stumble upon it. As far as solving your problem more elegantly? You'll need to flip the find on it's head and search from the Post model with an ad-hoc join, like this: // From the CategoriesController $this->Category->Post->find('all', array( 'joins' => array( array( 'table' => 'categories_posts', 'alias' => 'CategoryFilter', 'type' => 'inner', 'conditions' => array( 'CategoryFilter.post_id = Post.id' ) ), array( 'table' => 'categories', 'alias' => 'CategoryUriFilter', 'type' => 'inner', 'conditions' => array( 'CategoryUriFilter.id = CategoryFilter.category_id' ) ) ), 'conditions' => array( 'CategoryUriFilter.uri' => $uri ), 'contain' => array('Category') )); The array returned will be formatted a bit differently, but it should contain all of the data you were looking for.

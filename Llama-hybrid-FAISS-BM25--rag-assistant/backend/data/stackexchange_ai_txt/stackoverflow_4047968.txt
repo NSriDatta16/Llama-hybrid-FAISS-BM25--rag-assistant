@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4047968
-[parent_id]: 4047940
-[tags]: 
-No. What you return when you do that is a COPY of the hash contents, and that copy is NOT tied, just as you surmised in the second paragraph. You are also correct in that to achieve you result, you need to return a refernce to a tied hash instead: return \%myhash; Example use Tie::IxHash; sub make_ordered_hash { my @hash_contents = (1,11,5,15,3,13); tie(my %myhash, Tie::IxHash, @hash_contents); return %myhash; } sub make_ordered_hashref { my @hash_contents = (1,11,5,15,3,13); tie(my %myhash, Tie::IxHash, @hash_contents); return \%myhash; } my @keys; my %hash1 = make_ordered_hash(); @keys = keys %hash1; print "By Value = @keys\n"; my $hash2 = make_ordered_hashref(); @keys = keys %$hash2; print "By Reference = @keys\n"; Result: By Value = 1 3 5 By Reference = 1 5 3

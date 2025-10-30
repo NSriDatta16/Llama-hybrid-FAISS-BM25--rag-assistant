@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 77625
-[parent_id]: 20148
-[tags]: 
-I've worked on a high-volume system using MySQL and I've tried both MyISAM and InnoDB. I found that the table-level locking in MyISAM caused serious performance problems for our workload which sounds similar to yours. Unfortunately I also found that performance under InnoDB was also worse than I'd hoped. In the end I resolved the contention issue by fragmenting the data such that inserts went into a "hot" table and selects never queried the hot table. This also allowed deletes (the data was time-sensitive and we only retained X days worth) to occur on "stale" tables that again weren't touched by select queries. InnoDB seems to have poor performance on bulk deletes so if you're planning on purging data you might want to structure it in such a way that the old data is in a stale table which can simply be dropped instead of running deletes on it. Of course I have no idea what your application is but hopefully this gives you some insight into some of the issues with MyISAM and InnoDB.

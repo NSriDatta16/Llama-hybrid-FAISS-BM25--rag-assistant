@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1339531
-[parent_id]: 1339470
-[tags]: 
-Elegant way would be to change callFunction or to write wrapper for it as follows: // legacy function void callFunction( TCHAR* buf, int buf_size) { // some code } // helpful template void callFunction( std::vector ::iterator begin_it, std::vector ::iterator end_it ) { callFunction( &*begin_it, std::distance( begin_it, end_it ) ); } // somewhere in the code int neededLength = computeLength(); std::vector buffer( neededLength ); callFunction( buffer.begin(), buffer.end() ); You could even make wrapper for all such functions (with different types, not only TCHAR): template void callFunction( T begin_it, typename std::vector ::iterator end_it ) { callFunction( &*begin_it, std::distance( begin_it, end_it ) ); } Type T will be properly deduced (as std::vector ) and you'll be able still write callFunction( buffer.begin(), buffer.end() ); . Note that you cannot declare template function as void callFunction( typename std::vector ::iterator begin_it, typename std::vector ::iterator end_it ) as someone proposed recently as an edit to this answer, because in that case you will get the deducion error.

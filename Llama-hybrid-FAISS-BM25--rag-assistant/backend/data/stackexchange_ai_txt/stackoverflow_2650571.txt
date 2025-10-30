@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2650571
-[parent_id]: 1027303
-[tags]: 
-If I've understood the question correctly, you have a join table containing the PostId, TagId relationship called Post_Tag_MM, and you want all the Posts that do NOT have any of the tags identified by a collection of tag ids. Then, in plain sql you could do: select * from posts where id not in (select distinct PostId from Post_Tag_MM where TagId in (1,2,3)); Using the DetachedCrietria API, that subquery would look like this, assuming you've mapped the Post_Tag_MM table to a PostTag class: var subCriteria = DetachedCriteria.For(typeof (PostTag)) .SetProjection(Projections.Property("PostId")) .Add(Restrictions.PropertyIn("TagId", tagIdList)); attach and negate the 'property in' subquery criteria to your main criteria like this var result = session.CreateCriteria.For(typeof(Post)) .SetResultTransformer(new DistinctRootEntityResultTransformer()) .Add(Subqueries.PropertyNotIn("Id", subCriteria)) .List ();

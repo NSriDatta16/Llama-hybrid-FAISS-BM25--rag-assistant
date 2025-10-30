@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 447023
-[parent_id]: 446729
-[tags]: 
-You are using READ COMMITTED, as you expect. Deadlocks like this can occur if an UPDATE acquires an eXclusive key lock on the clustered index and modifies a row, and that lock blocks a SELECT’s bookmark lookup on the clustered index. Locks of this nature can often be eliminated by creating a covering non-clustered index. Another option available to you is to set READ_COMMITTED_SNAPSHOT ON for the database. This changes how the way SELECT statements read committed data; instead of taking shared locks, they read prior versions (a snapshot) of any data changed by transactions that began at the start of the SELECT statement. This doesn't come entirely for free though; the cost is increased activity in tempDB . [There is also the potential for issues with triggers in READ COMMITTED SNAPSHOT mode.]

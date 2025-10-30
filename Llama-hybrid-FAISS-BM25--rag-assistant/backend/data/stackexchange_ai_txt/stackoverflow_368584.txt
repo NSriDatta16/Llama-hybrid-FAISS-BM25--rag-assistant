@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 368584
-[parent_id]: 367201
-[tags]: 
-If you look at the implementation for SetOut it looks thread safe to me: [HostProtection(SecurityAction.LinkDemand, UI=true)] public static void SetOut(TextWriter newOut) { if (newOut == null) { throw new ArgumentNullException("newOut"); } new SecurityPermission(SecurityPermissionFlag.UnmanagedCode).Demand(); _wasOutRedirected = true; newOut = TextWriter.Synchronized(newOut); lock (InternalSyncObject) { _out = newOut; } } Edit The cloest thing to a solution I could come up with is using reflection to get their InternalSyncObject and then lock on it. A word of caution, this is an extremly bad idea and should only be used when no other option exists. You could cause the framework to behave unexpectadly and crash the process. You will also need to pay attention to any service packs and major releases making sure the internal variable is still used. Since its internal there is no promise that it will be there in the next release. Write your code defensivley and try and degrade the user experience nicely should you not the object with reflection. Good luck:-)

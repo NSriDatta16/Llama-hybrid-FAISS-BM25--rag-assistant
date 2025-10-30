@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 272504
-[parent_id]: 
-[tags]: 
-EINTR error for semop call
-
-I am using the following code fragment in a php script to safely update a shared resource. $lock_id = sem_get( ftok( 'tmp/this.lock', 'r')); sem_acquire($lock_id) //do something sem_release($lock_id) When I stress test this code with large number of requests I get an error: Warning: semop() failed acquiring SYSVSEM_SETVAL for key 0x1e: No space left on device in blahblah.php on line 1293 php sources show the following code for failed acquiring SYSVSEM_SETVAL while (semop(semid, sop, 3) == -1) { if (errno != EINTR) { php3_error(E_WARNING, "semop() failed acquiring SYSVSEM_SETVAL for key 0x%x: %s", key, strerror(errno)); break; } } which means semop fails with EINTR. man page reveals that the semop() system call was interrupted by a signal. My question is can I safely ignore this error and retry sem_acquire? Edit : I have misunderstood this problem, Pl see the clarification I have posted below. raj

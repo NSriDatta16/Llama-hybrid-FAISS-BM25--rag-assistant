@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5761540
-[parent_id]: 5734360
-[tags]: 
-You need to adjust the Page class so that it doesn't store the extra data. So something like: module Anemone class Page def to_hash {'url' => @url.to_s, 'links' => links.map(&:to_s), 'code' => @code, 'visited' => @visited, 'depth' => @depth, 'referer' => @referer.to_s, 'fetched' => @fetched} end def self.from_hash(hash) page = self.new(URI(hash['url'])) {'@links' => hash['links'].map { |link| URI(link) }, '@code' => hash['code'].to_i, '@visited' => hash['visited'], '@depth' => hash['depth'].to_i, '@referer' => hash['referer'], '@fetched' => hash['fetched'] }.each do |var, value| page.instance_variable_set(var, value) end page end end end Anemone.crawl("http://www.example.com/") do |anemone| anemone.storage = Anemone::Storage.MongoDB end It's been a while since I've looked at the internals but if I remember correctly, the Page needs to contain the links, depth, fetched and some of the other meta-data so it knows what it has already crawled and what it has left to do. Hope this helps.

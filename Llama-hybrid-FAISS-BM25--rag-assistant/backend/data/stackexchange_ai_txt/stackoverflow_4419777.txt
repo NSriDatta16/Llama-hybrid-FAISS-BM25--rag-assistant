@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4419777
-[parent_id]: 4419434
-[tags]: 
-There are 2 aspects to this. 1) the client's beacon call should be done as quickly as possible. This means the incoming HTTP request should respond 200 OK and exit as soon as possible, so it probably shouldn't do the actual data writing itself. It should hand that off to another process in the background, either by a background shell execution or by utilizing a queue/job mechanism like Gearman . 2) The data writing itself, if done in a background thread away from the client's attention, has a little more time luxury. 1000 writes per second should be fine for a modern hardware well tuned database with row locking that's not being SELECTed from too heavily at the same instant. Perhaps, though, this could be a good usage scenario for a key-value store for the immediate data storage. Then a separate analysis/reporting process could query the key-value store off-line for all stored data, process it, and eventually copy it into a database.

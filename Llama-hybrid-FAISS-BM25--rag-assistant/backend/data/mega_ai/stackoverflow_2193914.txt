@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2193914
-[parent_id]: 
-[tags]: 
-Remove bias from the monthly totals
-
-In order to remove the bias introduced by the differences in the number of days in the months and years (in case of leap years), from monthly total comparisons of arbitrary quantities and assuming, for example, a table named My_Table with a datetime column named order_date , and an integer one named revenue , I use the following query to get unbiased monthly revenue totals: -- sum revenue per month, divided by the number of days of that month -- and then multiplied by the average days of the that year's months SELECT datepart(mm,order_date) as my_month, sum( round(convert(decimal, revenue) / CASE WHEN MONTH(order_date) = 2 THEN CASE WHEN (YEAR(order_date) % 4 = 0 AND YEAR(order_date) % 100 != 0) OR (YEAR(order_date) % 400 = 0) THEN 29 ELSE 28 END WHEN (MONTH(order_date)%8 + floor(MONTH(order_date)/8)) % 2 = 0 THEN 30 ELSE 31 END * CASE WHEN (YEAR(order_date) % 4 = 0 AND YEAR(order_date) % 100 != 0) OR (YEAR(order_date) % 400 = 0) THEN 366 ELSE 365 END / 12 , 3) ) as monthly_unb_revenue FROM My_Table group by datepart(mm,order_date) I would like your opinions or other practices

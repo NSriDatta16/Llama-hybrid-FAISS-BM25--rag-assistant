@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5561549
-[parent_id]: 5068499
-[tags]: 
-Frequently I do the following: models.py: Your "related_name" value is supposed to be plural. "child" makes it hard to understand what is going on, while "child_set" makes it clear that there could be more than one. parent = models.ForeignKey('self', blank=True, null=True, related_name='child_set') views.py: Make sure you only search the parent category for the child def category(request, parent, child=None): parent = Category.objects.get(name=parent) if child: child = parent.child_set.get(name=child) return render_to_response('all_products.html', { 'p': Product.objects.all(), 'c': parent, 's': child, 'current_category': child or parent, }) urls.py: Nest your patterns to leverage the DRY principle view_prefix = 'products.views' url_patterns = patterns('', (r'^products/(?P [^/]+)/', include(patterns(view_prefix, url(r'^$', 'category'), url(r'^(?P [^/]+)/$', 'category'), ))), )

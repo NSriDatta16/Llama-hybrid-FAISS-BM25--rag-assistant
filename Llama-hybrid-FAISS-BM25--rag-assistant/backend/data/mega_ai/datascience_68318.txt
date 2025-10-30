@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 68318
-[parent_id]: 
-[tags]: 
-Leaky ReLU inside of a Simple Python Neural Net
-
-To build a simple 1-layer neural network, many tutorials use a sigmoid function as the activation function. According to scholarly articles and other online sources, a leaky ReLU is a better alternative; however, I cannot find a way to alter my code snippet to allow a leaky ReLU. I tried logic like if x > 0 then x else x/100 as the activation function, then the same for the derivative. Is it failing because the output layer cannot have a ReLU? Should I change the first layer to ReLU then add a softmax output layer? import numpy as np np.random.seed(1) X = np.array([[0,0,1],[0,1,1],[1,0,1],[1,1,1]]) y = np.array([[0,1,0,1]]).T class NN: def __init__(self, X, y): self.X = X self.y = y self.W = np.random.uniform(-1, 1, (X.shape[1], 1)) self.b = np.random.uniform(-1, 1, (X.shape[1], 1)) def nonlin(self, x, deriv=False): if deriv: return x*(1-x) return 1/(1+np.exp(-x)) def forward(self): self.l1 = self.nonlin(np.dot(self.X, self.W + self.b)) self.errors = self.y - self.l1 print(abs(sum(self.errors)[0])) def backward(self): self.l1_delta = self.errors * nonlin(self.l1, True) self.W += np.dot(self.X.T, self.l1_delta) self.b += np.dot(self.X.T, self.l1_delta) def train(self, epochs=20): for _ in range(epochs): self.forward() self.backward() nn = NN(X, y) nn.train()

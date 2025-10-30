@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4503756
-[parent_id]: 
-[tags]: 
-How to track auto-generated id's in select-insert statement
-
-I have two tables detail and head. The detail table will be written first. Later, the head table will be written. The head is a summary of the detail table. I would like to keep a reference from the detail to the head table. I have a solution but it is not elegant and requires duplicating the joins and filters that were used during summation. I am looking for a better solution. The below is an example of what I currently have. In this example, I have simplified the table structure. In the real world, the summation is very complex. -- Preparation create table #detail ( detail_id int identity(1,1) , code char(4) , amount money , head_id int null ); create table #head ( head_id int identity(1,1) , code char(4) , subtotal money ); insert into #detail ( code, amount ) values ( 'A', 5 ); insert into #detail ( code, amount ) values ( 'A', 5 ); insert into #detail ( code, amount ) values ( 'B', 2 ); insert into #detail ( code, amount ) values ( 'B', 2 ); -- I would like to somehow simplify the following two queries insert into #head ( code, subtotal ) select code, sum(amount) from #detail group by code update #detail set head_id = h.head_id from #detail d inner join #head h on d.code = h.code -- This is the desired end result select * from #detail Desired end result of detail table: detail_id code amount head_id 1 A 5.00 1 2 A 5.00 1 3 B 2.00 2 4 B 2.00 2

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3917161
-[parent_id]: 
-[tags]: 
-Custom Insert and Update methods defeated by automatic Save
-
-I am porting a Grails application from Oracle to MySQL database. The original Oracle version is a legacy database which uses a few complex Views leveraging Oracle's INSTEAD OF INSERT OR UPDATE feature which MySQL doesn't have. As a workaround I have implement Insert and Update methods on the Domain classes which point to these kinds of Views. For example, class AdminUser { //... def update() { if(this.validate()) { Sql sql = Utils.getHibernateSql() sql.execute( "update table_x ...", [...] ) sql.execute( "update table_y ...)", [...] ) sql.execute( "update table_z ...", [...] ) return true } return false } //... } Here is a description of the problem I am running into at the moment: Within a service method I load an instance of AdminUser using AdminUser.get I modify the loaded instance and call update(), all appears well Once the service method finishes executing an exception is thrown due to something calling save on the instance. How can I prevent the magical save happening in step (3) (I recently read somewhere that Grails will automatically save a modified Domain class instance which hasn't yet been saved upon exiting a service method, but I can't seem to find the link to that resource right now)?

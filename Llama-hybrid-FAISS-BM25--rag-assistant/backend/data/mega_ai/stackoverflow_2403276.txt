@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2403276
-[parent_id]: 496711
-[tags]: 
-I have been in the exact same situation. As nobody proposed my solution (and I think my solution is more elegant), I will add it here for future generations :-) The solution consists of two steps: create parent ApplicationContext and register your existing bean in it. create child ApplicationContext (pass in parent context) and load beans from XML file Step #1: //create parent BeanFactory DefaultListableBeanFactory parentBeanFactory = new DefaultListableBeanFactory(); //register your pre-fabricated object in it parentBeanFactory.registerSingleton("dataSource", dataSource); //wrap BeanFactory inside ApplicationContext GenericApplicationContext parentContext = new GenericApplicationContext(parentBeanFactory); parentContext.refresh(); //as suggested "itzgeoff", to overcome a warning about events Step #2: //create your "child" ApplicationContext that contains the beans from "beans.xml" //note that we are passing previously made parent ApplicationContext as parent ApplicationContext context = new ClassPathXmlApplicationContext( new String[] {"beans.xml"}, parentContext);

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 450581
-[parent_id]: 
-[tags]: 
-How to average time intervals?
-
-In Oracle 10g I have a table that holds timestamps showing how long certain operations took. It has two timestamp fields: starttime and endtime. I want to find averages of the durations given by these timestamps. I try: select avg(endtime-starttime) from timings; But get: SQL Error: ORA-00932: inconsistent datatypes: expected NUMBER got INTERVAL DAY TO SECOND This works: select avg(extract( second from endtime - starttime) + extract ( minute from endtime - starttime) * 60 + extract ( hour from endtime - starttime) * 3600) from timings; But is really slow. Any better way to turn intervals into numbers of seconds, or some other way do this? EDIT: What was really slowing this down was the fact that I had some endtime's before the starttime's. For some reason that made this calculation incredibly slow. My underlying problem was solved by eliminating them from the query set. I also just defined a function to do this conversion easier: FUNCTION fn_interval_to_sec ( i IN INTERVAL DAY TO SECOND ) RETURN NUMBER IS numSecs NUMBER; BEGIN numSecs := ((extract(day from i) * 24 + extract(hour from i) )*60 + extract(minute from i) )*60 + extract(second from i); RETURN numSecs; END;

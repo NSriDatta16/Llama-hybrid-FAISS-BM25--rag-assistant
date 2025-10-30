@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1601635
-[parent_id]: 1169604
-[tags]: 
-As you said the database is read-only to your app, I would just have the APN trigger a download of a new database file and write it to disk instead of having to execute SQL statements to modify an existing db. (Unless your database is very large and you're only making a small change, when the download size would be a consideration). In any case, if you are loading the database from the bundle it will be read-only so you can't execute insert statements on it - you will need to make a writable copy. Having the update process replace this copy in its entirety means you don't have to worry about the SQL executing correctly on each device. e.g. what happens if the app terminates mid-insert? Similarly for images, your life would be easier if they were copied to a writable images directory on first launch rather than loaded from the bundle so you always look in the same place for them and don't care whether or not there's been an update. Just make sure you clean up anything that's no longer required after an update so you're not eating more of the user's storage than you need to.

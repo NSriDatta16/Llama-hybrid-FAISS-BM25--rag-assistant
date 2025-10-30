@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 511394
-[parent_id]: 209360
-[tags]: 
-Mean preserving or average preserving splines can be generated from "normal" interpolating splines. Your requirements: $\frac{1}{x_{i+1}-x_i} \int_{x_i}^{x_{i+1}} f(x) \text{d}x = \text{avg}_i$ $f\in\text{C}^1$ , or at least $f\in\text{C}^0$ $f(x)\geq 0$ can be written equivalently by defining the integral $F(x) = \int_{x_0}^x f(t) \text{d}t$ : $F(x_{i+1}) = F(x_i) + \text{avg}_i \, (x_{i+1}-x_i)$ $F\in\text{C}^2$ , or at least $F\in\text{C}^1$ $F(x)$ is monotonic This is now a standard spline interpolation for $F$ . In R you could do something like: avg = c(2.2, 3.5, 5.5, 4.5, 2.2, 0.2, 4.5) X=0:length(avg) Y=vector(length=length(X)) Y[0]=0 for(i in 2:length(Y)) Y[i]=Y[i-1]+avg[i-1]*(X[i]-X[i-1]) #s=splinefun(X,Y,method="natural") #s=splinefun(X,Y,method="monoH.FC") s=splinefun(X,Y,method="hyman") Xplot=seq(X[1],tail(X,n=1),by=0.02) Yplot=s(Xplot,deriv=1) barplot(avg, space=0,ylim=c(-0.5,6)) lines(Xplot,Yplot) result for s=splinefun(X,Y,method="natural") (not guaranteed positive) result for s=splinefun(X,Y,method="monoH.FC") result for s=splinefun(X,Y,method="hyman")

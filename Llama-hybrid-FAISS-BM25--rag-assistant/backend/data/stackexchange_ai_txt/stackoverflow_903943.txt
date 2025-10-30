@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 903943
-[parent_id]: 890924
-[tags]: 
-Well, I think I have to answer to this. The problem is that Django caches its models in a singleton (singleton like structure) called AppCache. Basically, to reload Django models you need to first reload and re-import all the model modules stored in the AppCache. Then you need to wipe out the AppCache. Here's the code for it: import os from django.db.models.loading import AppCache cache = AppCache() curdir = os.getcwd() for app in cache.get_apps(): f = app.__file__ if f.startswith(curdir) and f.endswith('.pyc'): os.remove(f) __import__(app.__name__) reload(app) from django.utils.datastructures import SortedDict cache.app_store = SortedDict() cache.app_models = SortedDict() cache.app_errors = {} cache.handled = {} cache.loaded = False I've put all of this in a separate file called reloadmodels.py in the root directory of my Django site. Using IPython I can reload everything by running: %run ~/mysite/reloadmodels.py

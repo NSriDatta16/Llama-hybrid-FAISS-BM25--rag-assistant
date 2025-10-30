@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 40931
-[parent_id]: 
-[tags]: 
-Multiple GPU in MXNet C++
-
-I am trying to make MXNet (C++ API) learn, with a common sample in C++, on multiple GPU. According to this MXNet forum post , we need to aggregate manually the gradients that we fetch at the backpropagation time. Now, if I separate the gradients of each GPU, both networks are training. If I concatenate the weights, it doesn't work. (Like this) : gradValuesCombined.insert(gradValuesCombined.end(), gradValues1.begin(), gradValues1.end()); gradValuesCombined.insert(gradValuesCombined.end(), gradValues1.begin(), gradValues1.end()); NDArray combined1(gradValuesCombined.data(), combinedShape, ctx1); However, if the gradients have the same batch_size, then summing the gradients works. gradArray1[i] + gradArray2[i] But, summing all the gradients like if it was a one-batch vector, doesn't work: combinedOneDim[0] = 1; int sizeOneBatch = combinedOneDim.Size(); gradValuesCombinedOneDim.insert(gradValuesCombinedOneDim.end(), gradValues1.begin(), gradValues1.begin() + sizeOneBatch); for(int i = 1; i ()); } for(int i = 0; i ()); } At that stage, I figured that it was because I had to keep the initial shape of the gradient. But if I try to average the weights on the batch dimension, and copy the values to keep the same gradient shape, it should work. But it doesn't... And if I just sum everything on the first dimension and fill the rest with zeroes, it doesn't work either... I verified, the synchronization of data is correct and working. So what do I miss?

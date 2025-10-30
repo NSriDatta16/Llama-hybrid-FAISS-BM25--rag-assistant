@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 751504
-[parent_id]: 751136
-[tags]: 
-The other responses are correct, but for completeness I'll just add that, by design, C++ can only deduce template arguments automatically in certain cases , and this isn't one of them. When you think about it, you'll realise that automatic deduction in this case would lead to an undesirable situation. std::list ::iterator is not a real type, it's just a typedef alias for a real type (e.g. it might be T* ) to which it is immediately translated, so the compiler would have to build some sort of "reverse index" in order to map T* back to std::list ::iterator for automatic deduction of T to work here. But this mapping would break as soon as another class template was created that had a type member called iterator that was typedef ed to T* -- then the compiler would have two choices of what to translate T* to, and no way to choose between them. Clearly, any automatic deduction policy that breaks when an unrelated class adds a particular typedef type member is much too fragile to work.

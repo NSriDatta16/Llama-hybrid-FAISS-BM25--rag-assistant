@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3363057
-[parent_id]: 3094241
-[tags]: 
-What you propose with memcached will also work with a caching table. The first service call would (1) INSERT results INTO the caching table with a snapshot ID (2) return the first page from the caching table and the snapshot ID. Subsequent calls would return pages based on page size and page number by querying the caching table using the snapshot ID. I should think this could also be optimized by using an in-memory caching table, but that depends on whether your database supports INSERT-INTO from a disk table to an in-memory table. That might get complicated in a clustered environment though. Such a cache is stateful by its very nature if you are retaining a client-specific copy between requests, whether storage is in a session object, database table or memcached data store. Given the requirements though, you have no choice but to cache results in some form or another, except you risk the chance of returning deleted or no-longer-relevant records as legitimate results.

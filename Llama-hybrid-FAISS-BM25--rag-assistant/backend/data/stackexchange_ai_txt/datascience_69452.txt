@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 69452
-[parent_id]: 
-[tags]: 
-Weights for unbalanced classification
-
-I'm working with an unbalanced classification problem, in which the target variable contains: np.bincount(y_train) array([151953, 13273]) i.e. 151953 zeroes and 13273 ones. To deal with this I'm using XGBoost 's weight parameter when defining the DMatrix: dtrain = xgb.DMatrix(data=x_train, label=y_train, weight=weights) For the weights I've been using: bc = np.bincount(y_train) n_samples = bc.sum() n_classes = len(bc) weights = n_samples / (n_classes * bc) w = weights[y_train.values] Where weights is array([0.54367469, 6.22413923]) , and with the last line of code I'm just indexing it using the binary values in y_train . This seems like the correct approach to define the weights, since it represents the actual ratio between the amount of values of one class vs the other. However this seems to be favoring the minoritary class, which can be seen by inspecting the confusion matrix: array([[18881, 19195], [ 657, 2574]]) So just by trying out different weight values, I've realized that with a fairly close weight ratio, specifically array([1, 7]) , the results seem much more reasonable: array([[23020, 15056], [ 837, 2394]]) So my question is: Why using the actual weights of each class yielding poor metrics? Which is the right way to set the weights for an unbalanced problem?

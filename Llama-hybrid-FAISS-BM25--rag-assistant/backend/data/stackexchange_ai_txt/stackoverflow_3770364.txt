@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3770364
-[parent_id]: 
-[tags]: 
-Concurrent acess to EF4 entities (Parallel + EF4)
-
-I'm currently working in a dispatcher service that processes thousands of messages delivered in different channels (email, private message, application message) using EF4 and WCF. To try to speed up message dispatching i'm trying to use Parallels: Parallel.ForEach(currentMessageList, m => { Processors.DispatcherWrapper.Dispatch(m, m.unfChannels.AgentName, m.unfChannels.AgentParameters); } ); My Dispatch method uses reflection to match channel configuration method and process each message concurrently, but I'm having big problems trying to update EF objects within the threads when i make SaveChanges() to a global entity (it's initialized on application_start) Problems come in various flavors: Null object references List item The property is part of the object's key information and cannot be modified. The underlying provider failed on Open. New transaction is not allowed because there are other threads running in the session. (after forcing connection open if closed) The question is if EF4 is thread safe to implement this scenario? Is my approach of having a global Entities the best solution, or should i make per task EF4 initializations? Any help is welcome, has i already lost 2 hours trying to figure out a possible workaround.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1167788
-[parent_id]: 1167636
-[tags]: 
-While c.close() inside the try should be adequate, I am wondering if you have other issues that are triggering this. The code really should be closing the connection AND inputstream inside of a finally. Something like this: StreamConnection c = null; InputStream is = null; try { StringBuffer sb = new StringBuffer(); c = (StreamConnection) Connector.open( "http://www.cnn.com.br/", Connector.READ_WRITE); is = c.openInputStream(); InputStreamReader r = new InputStreamReader(is, "UTF-8"); System.out.println(r.read()); } catch (IOException ex) { ex.printStackTrace(); } finally { if (is != null) { try { is.close(); } catch (Exception ex) { System.out.println("Failed to close is!"); } } if (c != null) { try { c.close(); } catch (Exception ex) { System.out.println("Failed to close conn!"); } } }

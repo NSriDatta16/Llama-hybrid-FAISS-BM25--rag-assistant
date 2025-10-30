@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 634078
-[parent_id]: 628685
-[tags]: 
-I presume that your "big table" is subscribers, and that season_id is probably neither selective nor indexed (indexing it is rather meaningless if it's not selective, anyway), which means that you'll have to fully scan subscribers, anyway. Parting, I would join (with an inner join) the two other tables - note that if there is no bio_id in shirt_size it's exactly the same for your query as if there were no bio. First bit: select uid from bio inner join shirtsizes on shirtsizes.bio_id = bio.bio_id At which point you want to check that shirtsizes is indexed on bio_id. Now you can left outer join this query to subscribers: select * from subscribers s left outer join (select uid from bio inner join shirtsizes on shirtsizes.bio_id = bio.bio_id) x on x.uid = s.uid where s.season_id = 185181 and x.uid is null which is likely to run reasonably fast if neither bio nor shirtsizes are gigantic ...

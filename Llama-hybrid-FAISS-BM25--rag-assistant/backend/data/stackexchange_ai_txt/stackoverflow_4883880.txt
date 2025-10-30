@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4883880
-[parent_id]: 4878043
-[tags]: 
-If you want to stick to "application/xml" format and avoid JSON format, you should wrap this data into a JAXB annotated object, so that Jersey can use the built-in MessageBodyWriter / MessageBodyReader . @XmlRootElement @XmlAccessorType(XmlAccessType.FIELD) public ListOfIds{ private List ids; public ListOfIds() {} public ListOfIds(List ids) { this.ids= ids; } public List getIds() { return ids; } } On the client side (using Jersey client) // get your list of Long List list = computeListOfIds(); // wrap it in your object ListOfIds idList = new ListOfIds(list); Builder builder = webResource.path("/agentsIds/").type("application/xml").accept("application/xml"); ClientResponse response = builder.post(ClientResponse.class, idList);

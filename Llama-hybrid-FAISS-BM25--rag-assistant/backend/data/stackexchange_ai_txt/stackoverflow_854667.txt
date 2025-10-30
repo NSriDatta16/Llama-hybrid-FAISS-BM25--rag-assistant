@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 854667
-[parent_id]: 854541
-[tags]: 
-I suspect that libpng does that (style 2) for a few possible reasons: Avoid large allocations (as mentioned), and may ease handling VERY large PNGs, especially in systems without VM (perhaps) allow for interleaved decode ala interleaved JPEG (if PNG supports that) Ease of certain transformations (vertical flip) (unlikely) Ease of scaling (insert or remove lines without needing a full second buffer, or widen/narrow lines) (unlikely but possible) The problem with this approach (assuming each line is an allocation) is a LOT more allocation/free overhead, and perhaps encourage memory fragmentation. Unless you have a good reason, use style 1 (single allocation), and perhaps round to a "good" boundary for the architecture you're using (could be 4, 8, 16 or perhaps even more bytes). Note that many library functions may look for style 1 with no padding - think about how you'll be using this and where you'll be passing them to.

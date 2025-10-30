@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1175336
-[parent_id]: 1175201
-[tags]: 
-I like your approach #2 more so than #1. I think you could get away with creating a single route that goes to a SlugHandler action in a SlugController (or whatever else you want to call these). You would need only one route for this. Your SlugHandler action would then accept a slug string, then call upon a method to determine whether the slug is a category or a product. (You did say these were unique, yes? i.e., not possible to have same slug for BOTH a product and a category.) From there, you could call upon the appropriate Product or Category action method, passing along the slug string. Some code fragments follow: internal enum SlugType { Category, Product } private SlugType DetermineSlugTypeFromSlugName(string slug) { // some database magic happens here to return appropriate SlugType } public ActionResult SlugHandler(string slug) { SlugType slugType = DetermineSlugTypeFromSlugName(slug); switch (slugType) { case SlugType.Category: return Category(slug); case SlugType.Product: return Product(slug); default: return SomeErrorAction(); } } Best of luck! -Mike

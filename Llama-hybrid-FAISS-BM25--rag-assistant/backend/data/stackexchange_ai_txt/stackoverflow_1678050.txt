@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1678050
-[parent_id]: 1677326
-[tags]: 
-For the HQL world a single query does the trick... var maxScore = session.CreateQuery(@"select sum(game.Score) from Game game group by game.Match order by sum(game.Score) desc") .SetMaxResults(1) .UniqueResult (); Hope this helps.. Update: And for the Criteria world, may be there is a better result transformation but this just works :) var max = (int)session.CreateCriteria ("game") .SetProjection(Projections.ProjectionList() .Add(Projections.GroupProperty("game.Match")) .Add(Projections.Sum("game.Score"), "total")) .AddOrder(Order.Desc("total")) .SetMaxResults(1) .SetResultTransformer(Transformers.AliasToEntityMap) .UniqueResult ()["total"];

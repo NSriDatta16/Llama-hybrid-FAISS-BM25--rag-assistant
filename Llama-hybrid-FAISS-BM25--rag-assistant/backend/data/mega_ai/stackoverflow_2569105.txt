@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2569105
-[parent_id]: 2569016
-[tags]: 
-SNMP was designed to be unreliable. It uses UDP as its transport protocol. Routers will drop SNMP packets when they've got high priority work to do. So yes, it sounds very reasonable that SET commands are dropped occasionally :) First upgrade to the newest version of the SNMP library if there is one. Then you can set up a retry mechanism: verify each SET with a GET. If this fails, queue the SET for a later attempt. This requires an elaborate queuing mechanism: a later SET for the same setting should be queued after, or over, an existing queued SET. Another option is to synchronize the entire state every hour; use GET for a setting, if it has changed, SET it. Changes that do not make it through for over 3 hours can be reported using an alerting system. There are many more options, but if you have just 1 failure per week average, I'd go with the simplest one: Verify a SET with a GET, retry for 5 times, if it still fails, email.

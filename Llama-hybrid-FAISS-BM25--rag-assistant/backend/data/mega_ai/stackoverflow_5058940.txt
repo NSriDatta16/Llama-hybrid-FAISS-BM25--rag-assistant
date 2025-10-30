@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5058940
-[parent_id]: 
-[tags]: 
-GWT RequestFactory: How can I get a persistent id from stableId()?
-
-I use Long ids in my entities, not only to store them in the datastore, but to reference other entities. Now, I'm using RequestFactory to create() objects on the client and persist them, but I need a way to figure out what id the server has generated. Here's one way I've figured out that requires two trips: final OrganizationProxy proxy = context.create(OrganizationProxy.class); context.persist().using(proxy).fire(new Receiver (){ public void onSuccess(Void response) { requestFactory.find(proxy.stableId()).fire(new Receiver () { public void onSuccess(OrganizationProxy response) { //hey, now response has the server-generated id in it, along with any other values the server populated } }); } }); But it seems like there must be a way to get the persistent id without the second trip. It seems like requestFactory.find() would need the persistent id to work at all in the first place. How can I get at the persistent id without a second request to the server? =======Update======= It finally occurred to me (after tbroyer told me ;)) that I could return the Long id from the persist() method in the RequestContext. This doesn't retrieve the persistent id from the EntityProxyId , but it does get me the persistent id of a new object in a single request. I'll leave this question open - I am still interested in getting the persistent id out of an EntityProxyId.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1528215
-[parent_id]: 1224432
-[tags]: 
-I just had to deal with this and it's a pain in the ass but here's what to do: You have to install an eventFilter on your ListWidget subclass and then watch for the ChildRemoved event. This event covers moves as well as removal, so it should work for re-arranging items with drag and drop inside a list. I write my Qt in C++, but here's a pythonification version: class MyList(QtGui.QListWidget): def __init__(self): QtGui.QListWidget.__init__(self) self.setDragDropMode(self.InternalMove) self.installEventFilter(self) def eventFilter(self, sender, event): if (event.type() == QEvent.ChildRemoved): self.on_order_changed() return False # don't actually interrupt anything def on_order_changed(self): # do magic things with our new-found knowledge If you have some other class that contains this list, you may want to move the event filter method there. Hope this helps, I know I had to fight with this for a day before figuring this out.

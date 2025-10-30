@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2659914
-[parent_id]: 2643837
-[tags]: 
-Some ideas: 1) Because the bottlenect is not in the IO the file should be kept almost entirely in RAM for easier access. 2) Implementation should not allow threads to block. It's better to have slightly non optimal solution if that reduces blocking. Assuming we have big data file threads can employ shot in the dark tactics. This means once the thread acquires the lock, it just increments fpos and unlocks the memory. Then it grants itself privilege to process the part of the memory it just got. For example the thread could process all the lines which have their beginnings in the fragment. Outcomes: 1) It's almost impossible for a thread to block. The lock times are very short (in the range of several instructions + time to flush caches) 2) Flexibility. Thread can take as much data as it wants to. Of course, there should be some mechanisms to adapt to the length of line in the data file to avoid worst case scenario.

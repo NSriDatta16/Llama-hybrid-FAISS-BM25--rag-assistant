@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 295263
-[parent_id]: 
-[tags]: 
-Language model created with SRILM does not sum to 1
-
-I created an n-gram language model on the Penn Treebank using the following command: ngram-count -text $trainfile -order 5 -lm $temp/templm.ptb -gt3min 1 -gt4min 1 -kndiscount -interpolate -unk This code snippet was taken from Mikolov's rnnlm toolkit. I tried to check if the created ngram LM is valid, and I think it is not (or maybe I don't understand something). When I open the created ARPA file, I looked, for example, on all bigrams that start with the word "country": -1.445136 country 's -0.06955435 -0.91566 country -1.380222 country -0.06098625 -2.46688 country N -0.06098624 ... -1.756313 country with -0.06098624 -2.699641 country without -0.06098625 -1.975222 country would -0.1501413 and on the unigram -3.751397 country -0.3271779 Now, as I understand (and probably I have a mistake somewhere), the number to the left of all bigrams are the log10 conditional probability: $\log_{10}(\Pr(\text{word|prev word=country}))$. In addition, the number to the right of the unigram "country" (which is -0.3271779) is log10 of the backoff. When I sum all the probabilities P(word|prev word=country) (without the backoff) I get: $$ \sum_{word\in W} \Pr(\text{word|prev word=country})=0.64$$ The backoff number is $$ 10^{-0.3271779}=0.47078444$$ When I add this number to the sum I get 1.110339152, which is higher than 1. What do I miss? Shouldn't it be equal to one?

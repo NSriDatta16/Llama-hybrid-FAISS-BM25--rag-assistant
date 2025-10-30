@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 126669
-[parent_id]: 126650
-[tags]: 
-This is fairly easy to do with the optim function in R. My understanding is that you want to run a logistic regression where y is binary. You simply write the function and then stick it into optim. Below is some code I didn't run (pseudo code). #d is your data frame and y is normalized to 0,1 your.fun=function(b) { EXP=exp(d$x1*b +d$x2*b^2) VALS=( EXP/(1+EXP) )^(d$y)*( 1/(1+EXP) )^(1-d$y) return(-sum(log(VALS))) } result=optim(0,your.fun,method="BFGS",hessian=TRUE) # estimates result$par #standard errors sqrt(diag(inv(result$hessian))) # maximum log likelihood -result$value Notice that your.fun is the negative of a log likelihood function. So optim is maximizing the log likelihood (by default optim minimizes everything which is why I made the function negative). If Y is not binary go to http://fisher.osu.edu/~schroeder.9/AMIS900/ch5.pdf for multinomial and conditional function forms in logit models.

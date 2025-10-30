@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 951546
-[parent_id]: 951387
-[tags]: 
-Your proposed model is composed of two database patterns: an entity-attribute-value table and a polymorphic association . Entity-attribute-value has some pretty big issues both in the performance and data integrity department. If you don't need to access the additional attributes in queries, then you can serialize the attribute value mapping to a text field in some standard serialization (JSON, XML). Not "pure" from the database design standpoint, but possibly a good pragmatic choice, given that you are aware of the tradeoffs. On postgres you can also use the hstore contrib module to store key-value pairs to make it usable in queries, if the limitation of string only values is acceptable. For polymorphic association, you can get referential integrity by introducing an association table: users attrib_assocs custom_attribs ----- ------------- -------------- attrib_assoc_id --> id To get slightly more integrity, also add the entity_type to the primary key and corresponding foreign keys and a check constraint on users table that the entity_type equals 'user'.

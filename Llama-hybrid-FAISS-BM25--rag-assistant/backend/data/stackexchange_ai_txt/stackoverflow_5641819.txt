@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5641819
-[parent_id]: 5641539
-[tags]: 
-Found a way around it: rather than have XamlReader parse a string, it worked better if I gave it an XmlReader . The fragment of XML with the DataTemplate defined in it was part of a larger XML document that had all its namespaces defined in its root. This had already been read into an XDocument , and out of which I'd grabbed the XElement with the ResourceDictionary defined in it. The new code, part of MainWindow.xaml.cs , looks like this: ResourceDictionary dictionary = XamlReader.Load(myXElement.CreateReader()) as ResourceDictionary; this.Resources.MergedDictionaries.Add(dictionary); This threw a different exception, where it couldn't resolve the type of (http://myschemas/MyProfile)Binding . It turns out that you need to qualify the namespaces of everything , including the {Binding ...} references. So the XML fragment had to be amended to: Now XamlParser knew that Binding was a type in the "http://schemas.microsoft.com..." namespace.

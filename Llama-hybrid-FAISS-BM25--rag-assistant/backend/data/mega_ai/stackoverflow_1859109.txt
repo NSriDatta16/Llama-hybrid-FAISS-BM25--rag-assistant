@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1859109
-[parent_id]: 1855687
-[tags]: 
-Here is how you can achieve what you want (kind of lazy loading but not the same) var posts = NHibernateSessionManager.Session.CreateQuery("Select p.Id as Id, p.Title as Title, p.DateCreated as DateCreated from Post p") .SetResultTransformer(NHibernate.Transform.Transformers.AliasToBean(typeof(Post))) .List (); What the AliasToBean is intended for is, doing selects for specific columns (usually from more than one entities) and return a strongly typed collection instead of a System.Object[]. Now if you Bean (class) is your Post class then it will popultate to that class ONLY the requested columns and nothing else. What you will NOT be having though is a collection of NHibernate managed objects. All Posts in the returned lists are detached non controlled objects. For doing things like "getting all recent posts" without having to get the most "heavyweight" columns of your entity while not having to create other classes to convert the data to, the above solution is kind of perfect. Check this out for more info: NHibernate: returning a strongly typed list having applied an aggregate function

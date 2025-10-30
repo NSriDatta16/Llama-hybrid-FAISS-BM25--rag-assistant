@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 80437
-[parent_id]: 80398
-[tags]: 
-Based on @BenReiniger's comment, I removed the numeric portion from the ColumnTransformer and ran the following code: from sklearn.compose import ColumnTransformer from sklearn.preprocessing import OneHotEncoder from sklearn.impute import SimpleImputer from sklearn.pipeline import Pipeline categorical_transformer = Pipeline(steps=[ ('imputer', SimpleImputer(strategy='constant', fill_value='missing')), ('onehot', OneHotEncoder(handle_unknown='ignore', sparse=True))]) preprocessor = ColumnTransformer(transformers=[ ('cat', categorical_transformer, selector(dtype_include="object")) ]) X = pd.DataFrame(preprocessor.fit_transform(X)) print_memory_usage_of_data_frame(X) The result was Memory usage is 0.106 MB , Running the same code above but with sparse option set to False: OneHotEncoder(handle_unknown='ignore', sparse=False) resulted in Memory usage is 20.688 MB . So it is clear that changing the sparse parameter in OneHotEncoder does indeed reduce memory usage.

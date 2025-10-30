@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5020404
-[parent_id]: 5009295
-[tags]: 
-In the OP, I said I had my own opinion. Here it is. Although the "fancy initializer" approach is elegant, it can lead to some really unexpected behavior -- specifically generating keys when you don't expect it -- and there's no way to know this by looking at the hash table. Consider the following: >> ht1 = Hash.new {|h,k| h[k]=[]} >> ht2 = {} >> ht1["cats"] ["Jellicle"] >> (ht2["cats"] ||= []) ["Jellicle"] so far so good -- ht1 and ht2 are identical. but: >> ht1["dogs"] ? "got dogs" : "no dogs" => "got dogs" >> ht2["dogs"] ? "got dogs" : "no dogs" => "no dogs" Note that simply accessing ht1[some_key] changes the state of the hash table , i.e. it create a new entry. You might argue that the end user should always use has_key?() to test for the presence of a hash entry -- and you'd be right -- but the above usage is an accepted idiom. For the hash table to automagically create an entry would be an unexpected side effect, so you should be careful if the hash table is ever exposed to the end user. (Note, however, that steenslag's answer shows how you can turn this off.)

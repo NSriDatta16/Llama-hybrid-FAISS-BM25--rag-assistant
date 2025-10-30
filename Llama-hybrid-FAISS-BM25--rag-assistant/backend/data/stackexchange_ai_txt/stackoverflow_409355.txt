@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 409355
-[parent_id]: 409293
-[tags]: 
-Your original code is really confusing, you can just use original code linked from the previous question original question here . In fact, you shouldn't have opened another question in the first place, but should have added a comment in the original asking for further clarification. You have a P/Invoke definition. This is simply a static method call. You put it in a class. Something like this: public class MyClass { [DllImport("coredll.dll", SetLastError=true, CharSet=CharSet.Auto)] [return: MarshalAs(UnmanagedType.Bool)] internal static extern bool GetDiskFreeSpaceEx(string lpDirectoryName, out ulong lpFreeBytesAvailable, out ulong lpTotalNumberOfBytes, out ulong lpTotalNumberOfFreeBytes); } Then you call it (no idea what you're trying to do with all of your marshaling stuff): ulong GetDiskSize(string volumeName) { ulong avail; ulong total; ulong totalfree; MyClass.GetDiskFreeSpaceEx(volumeName, out avail, out total, out totalFree); return total; // return others as desired } Then to use it it's something like this: ulong diskSize = GetDiskSize("\\Storage Card");

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 883580
-[parent_id]: 879381
-[tags]: 
-With 100 records (or 1,000,000 if indexed on employee name) your best option for this specific case is to retrieve the email address as you need it using the ExecuteScalar method of the SqlCommand object. Pulling the whole table across the wire just to get a single field is almost always a bad idea. Select * even with a where clause is usually a bad idea too, for both performance and maintenance reasons. The following code will get you the EmailAddress for an employee name. Using cn as new SqlConnection("Data Source=.\SQLExpress;Initial Catalog=MyDatabase;Integrated Security=True;") Using cmd as new SqlCommand("SELECT EmailAddress From Employees WHERE EmployeeName = '" & employeeName & "'", cn) Return TryCast(cmd.ExecuteScalar(), String) End Using End Using As others have said, DataTables are for offline storage in the relatively rare occasions when you need it. And you're right, there's no reason to use a DataSet unless you need to offline-cache a whole database (or subset of a database).

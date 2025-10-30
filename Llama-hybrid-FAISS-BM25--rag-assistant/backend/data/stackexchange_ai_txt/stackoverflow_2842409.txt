@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2842409
-[parent_id]: 
-[tags]: 
-Bulk insert of hundreds of millions of records
-
-What is the fastest way to insert 237 million records into a table that has rules (for distributing data across child tables)? I have tried or considered: Insert statements. Transactional inserts ( BEGIN and COMMIT ). The COPY FROM command. http://pgbulkload.projects.postgresql.org/ Inserts are too slow (four days) and COPY FROM ignores rules (and has other issues). Example data: station_id,taken,amount,category_id,flag 1,'1984-07-1',0,4, 1,'1984-07-2',0,4, 1,'1984-07-3',0,4, 1,'1984-07-4',0,4,T Table structure (with one rule included): CREATE TABLE climate.measurement ( id bigserial NOT NULL, station_id integer NOT NULL, taken date NOT NULL, amount numeric(8,2) NOT NULL, category_id smallint NOT NULL, flag character varying(1) NOT NULL DEFAULT ' '::character varying ) WITH ( OIDS=FALSE ); ALTER TABLE climate.measurement OWNER TO postgres; CREATE OR REPLACE RULE i_measurement_01_001 AS ON INSERT TO climate.measurement WHERE date_part('month'::text, new.taken)::integer = 1 AND new.category_id = 1 DO INSTEAD INSERT INTO climate.measurement_01_001 (id, station_id, taken, amount, category_id, flag) VALUES (new.id, new.station_id, new.taken, new.amount, new.category_id, new.flag); The data was originally in MySQL, but must be switched to PostgreSQL for performance reasons (and to leverage the PL/R extension). Thank you!

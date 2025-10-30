@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2989979
-[parent_id]: 
-[tags]: 
-Where's the rest of the space used in this table?
-
-I'm using SQL Server 2005. I have a table whose row size should be 124 bytes. It's all ints or floats, no NULL columns (so everything is fixed width). There is only one index, clustered. The fill factor is 0. Here's the table def: create table OHLC_Bar_Trl ( obt_obh_id int NOT NULL REFERENCES OHLC_Bar_Hdr (obh_id), obt_bar_start_ms int NOT NULL, obt_bar_end_ms int NOT NULL, obt_last_price float NOT NULL, obt_last_ms int NOT NULL, obt_bid_price float NOT NULL, obt_bid_size int NOT NULL, obt_bid_ms int NOT NULL, obt_bid_pexch_price float NOT NULL, obt_ask_price float NOT NULL, obt_ask_size int NOT NULL, obt_ask_ms int NOT NULL, obt_ask_pexch_price float NOT NULL, obt_open_price float NOT NULL, obt_open_ms INT NOT NULL, obt_high_price float NOT NULL, obt_high_ms INT NOT NULL, obt_low_price float NOT NULL, obt_low_ms INT NOT NULL, obt_volume float NOT NULL, obt_vwap float NOT NULL ) go create unique clustered index idx on OHLC_Bar_Trl (obt_obh_id,obt_bar_end_ms) After inserting a ton of data, sp_spaceused returns the following name rows reserved data index_size unused OHLC_Bar_Trl 117076054 29807664 KB 29711624 KB 92344 KB 3696 KB which shows a rowsize of approx (29807664*1024)/117076054 = 260 bytes/row. Where's the rest of the space? Is there some DBCC command I need to run to tighten up this table (I could not insert the rows in correct index order, so maybe it's just internal fragmentation)?

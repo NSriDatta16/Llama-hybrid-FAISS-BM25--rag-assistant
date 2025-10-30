@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1268875
-[parent_id]: 
-[tags]: 
-Running mstest *without* it using a ThreadPool
-
-I'm writing some managed code to wrap a the native calls for IntervalZero's RTX product . RTX basically enables real time coding under Windows by setting up a kernel proxy. What's important here is that RTX generates the proxy when DllMain gets called with DLL_THREAD_ATTACH (and tears it down on DLL_THREAD_DETACH). If that proxy hasn't been generated and you make a call into the library, you get an immediate BSOD . Well I'm 99.9% certain that when mstest.exe runs its unit tests, it queues them up using the ThreadPool class (it's the only thing that explains this behavior). The unfortunate thing there is that the thread has already been created before the RTX library is even loaded, so the DllMain is never called and RTX subsystem is unaware of its existence, and so when a unit test tries to call into the library things come undone. I really need to be able to run unit tests on this stuff so I can get reasonable, automatable test coverage. is there a way to tell mstest to spawn a new thread at run time for each test? I know it would normally be slower to do that, but it's still going to be way faster than coming back up after a blue screen.

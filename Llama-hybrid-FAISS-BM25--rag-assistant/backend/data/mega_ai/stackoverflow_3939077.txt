@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3939077
-[parent_id]: 1729345
-[tags]: 
-Sorry to revisit such an old post, but I encountered some challenges with the accepted answer's implementation of a decorator that is responsible for the logging of the Soap requests and wanted to share in case anyone else runs into this. Imagine you set up your instance like the following, using the SoapClientLogger class outlined in the accepted answer. $mySoapClient = new SoapClientLogger(new SoapClient()); Presumably any method you call on the SoapClientLogger instance will get passed through the __call() method and executed on the SoapClient. However, typically you make use of a SoapClient by calling the methods generated from the WSDL, like this: $mySoapClient->AddMember($parameters); // AddMember is defined in the WSDL This usage will never hit the SoapClientLogger's _doRequest() method and thus the request will not be logged. Instead AddMember() is routed through $mySoapClient::_call() and then right on down to the SoapClient instance's _doRequest method. I'm still searching for an elegant solution to this.

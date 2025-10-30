@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4072874
-[parent_id]: 4072488
-[tags]: 
-I'm guessing this might have something to do with the way you are assigning your variables. My advice is to declare local variables inside your procedure, and to assign them using SELECT...INTO . This is a good practice in general, and may help you with your problem. Here's what your procedure would look like: DELIMITER $$ DROP PROCEDURE IF EXISTS deleteOrg $$ CREATE PROCEDURE deleteOrg(IN IN_ID INT) MODIFIES SQL DATA BEGIN DECLARE V_ORG_ID INT; DECLARE V_MY_LEFT INT; DECLARE V_MY_RIGHT INT; DECLARE V_MY_WIDTH INT; START TRANSACTION; SELECT id, lft, rgt, rgt - lft + 1 into V_ORG_ID, V_MY_LEFT, V_MY_RIGHT, V_MY_WIDTH FROM organization WHERE id = IN_ID; -- delete statements for removing roles and other dependencies DELETE FROM organization WHERE id = V_ORG_ID; UPDATE organization SET rgt = rgt - V_MY_WIDTH WHERE rgt > V_MY_RIGHT; UPDATE organization SET lft = lft - V_MY_WIDTH WHERE lft > V_MY_LEFT; COMMIT; END; $$ DELIMITER ;

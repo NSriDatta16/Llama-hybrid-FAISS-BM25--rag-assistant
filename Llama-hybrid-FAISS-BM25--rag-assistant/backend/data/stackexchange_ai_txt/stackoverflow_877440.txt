@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 877440
-[parent_id]: 
-[tags]: 
-try... except... except... : how to avoid repeating code
-
-I'd like to avoid writting errorCount += 1 in more than one place. I'm looking for a better way than success = False try: ... else: success = True finally: if success: storage.store.commit() else: storage.store.rollback() I'm trying to avoid store.rollback() in every except clause. Any idea on how to do this? count = 0 successCount = 0 errorCount = 0 for row in rows: success = False count += 1 newOrder = storage.RepeatedOrder() storage.store.add(newOrder) try: try: newOrder.customer = customers[row.customer_id] except KeyError: raise CustomerNotFoundError, (row.customer_id,) newOrder.nextDate = dates[row.weekday] _fillOrder(newOrder, row.id) except CustomerNotFoundError as e: errorCount += 1 print u"Error: Customer not found. order_id: {0}, customer_id: {1}".format(row.id, e.id) except ProductNotFoundError as e: errorCount += 1 print u"Error: Product not found. order_id: {0}, product_id: {1}".format(row.id, e.id) else: success = True successCount += 1 finally: if success: storage.store.commit() else: storage.store.rollback() print u"{0} of {1} repeated orders imported. {2} error(s).".format(successCount, count, errorCount)

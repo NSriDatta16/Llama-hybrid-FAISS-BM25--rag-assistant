@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3038241
-[parent_id]: 
-[tags]: 
-Attachment_fu file saving problem
-
-Attachment_fu plugin is kind of old, but I have to modify an old app and I can't use another plugin like paperclip etc. So here's the code without further ado Submissions table structure --------------------------- | content_type | varchar(255) | YES | | NULL | filename | varchar(255) | YES | | NULL app/models/submission.rb ------------------------ has_attachment :storage => :file_system, :path_prefix => 'public/submissions', :max_size => 2.megabytes, :content_type => ['application/pdf', 'application/msword', 'text/plain'] app/models/user.rb ------------------ has_one :submission, :dependent => :destroy app/views/user/some_action.html.erb ----------------------------------- { :action => "some_action" }, :html => {:multipart => true} do |f| %> .... app/controllers/user_controller.rb ---------------------------------- @user = User.find_user(session[:user_id]) @submission = @user.submission if request.post? @submission.uploaded_data = params[:submission][:uploaded_data] end When the form is submitted, the database fields "content_type" and "filename" get updated and display the correct values, but the file does not appear in public/submissions/ directory. I have checked the permissions on the submissions directory. What am I missing? Many Thanks

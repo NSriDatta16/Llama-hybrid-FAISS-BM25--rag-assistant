@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1135560
-[parent_id]: 
-[tags]: 
-Pointer to Value in a std::map
-
-I have a std::map that is used by multiple threads to store data. The map is declared like this: std::map calls; From each thread, I have to acquire a mutex lock, obtain a pointer or reference to the object belonging to that thread, then release the mutex lock. I can modify the object after that because each object is used only by one thread. As soon as the thread dies, the corresponding pair in the map would also get deleted. I would like to know the best way to implement this. I was thinking of two ways: 1) I know this one could look outrageously crazy, but still std::map calls; ... { mutex.lock(); Call* callptr = &calls[id]; mutex.unlock(); // use callptr } or 2) I think this one looks more sensible std::map > calls; ... { mutex.lock(); std::auto_ptr callptr = map[id]; mutex.unlock(); // use callptr mutex.lock(); map[id] = callptr; mutex.unlock(); } The threads actually are created in a different dll and I don't have the code for that. This dll that I'm writing now gets imported by that dll and used. So it has to be implemented with std::map only, but could anyone tell me if one of these methods is ok or if there are ways to make it more stable. Thanks

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2691444
-[parent_id]: 
-[tags]: 
-How can I create a generic UniqueValidationAttribute in C# and DataAnnotation?
-
-I'm trying to create a UniqueAttribute using the System.ComponentModel.DataAnnotations.ValidationAttribute I want this to be generic as in I could pass the Linq DataContext, the table name, the field and validate if the incoming value is unique or not. Here is a non-compilable code fragment that I'm stuck at right now: using System; using System.Collections.Generic; using System.Linq; using System.Text; using System.ComponentModel.DataAnnotations; using System.Data.Linq; using System.ComponentModel; namespace LinkDev.Innovation.Miscellaneous.Validation.Attributes { public class UniqueAttribute : ValidationAttribute { public string Field { get; set; } public override bool IsValid(object value) { string str = (string)value; if (String.IsNullOrEmpty(str)) return true; // this is where I'm stuck return (!Table.Where(entity => entity.Field.Equals(str)).Any()); } } } I should be using this in my model as follows: [Required] [StringLength(10)] [Unique(new DataContext(),"Groups","name")] public string name { get; set; } Edit: Note that according to this: Why does C# forbid generic attribute types? I cannot use a generic type with the attribute. So my new approach here will be using Reflection/Expression trees to construct the Lambda expression tree on the fly.

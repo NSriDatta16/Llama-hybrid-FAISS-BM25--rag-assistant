@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 61460
-[parent_id]: 61433
-[tags]: 
-Your way seems to be correct. I would suggest one other way that you might want to try (maybe it won't make your life better, but still): Since you want your data points to basically live on a sphere, you could train the angles in spherical coordinates . Fix the radius to $\sqrt{n}$ and this way your network has to learn one dimension fewer. I'm not sure how this will affect performance though. One way to implement this in tensorflow could be def spherical(input): layer = [] for i in range(input.get_shape()[1]+1): elem = 1 for j in range(i): elem = elem*tf.sin(input[:,j]) if i This will map any input (a tensor with shape=(ndatapoints, ndims) ) to the unit sphere in ndims+1 . By multiplication and shifting you could map it to any sphere you want. It is probably not the most elegant way, but it gets the job done. The mapping is not injective, if you would need it to be, you would have to make sure the elements of input stick to the respective intervals. If you end up trying this, let me know how it went please ;)

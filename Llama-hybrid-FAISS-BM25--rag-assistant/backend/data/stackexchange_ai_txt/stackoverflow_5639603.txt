@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5639603
-[parent_id]: 
-[tags]: 
-Finite difference in Haskell, or how to disable potential optimizations
-
-I'd like to implement the following naive (first order) finite differencing function: finite_difference :: Fractional a => a -> (a -> a) -> a -> a finite_difference h f x = ((f $ x + h) - (f x)) / h As you may know, there is a subtle problem: one has to make sure that (x + h) and x differ by an exactly representable number. Otherwise, the result has a huge error, leveraged by the fact that (f $ x + h) - (f x) involves catastrophic cancellation (and one has to carefully choose h , but that is not my problem here). In C or C++, the problem can be solved like this: volatile double temp = x + h; h = temp - x; and the volatile modifier disables any optimization pertaining to the variable temp , so we are assured that a "clever" compiler will not optimize away those two lines. I don't know enough Haskell yet to know how to solve this. I'm afraid that let temp = x + h hh = temp - x in ((f $ x + hh) - (f x)) / h will get optimized away by Haskell (or the backend it uses). How do I get the equivalent of volatile here (if possible without sacrificing laziness)? I don't mind GHC specific answers.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1606926
-[parent_id]: 
-[tags]: 
-Code Banking with SDCC
-
-I need to use code banking in an 8051 microcontroller to fit all the code. SDCC says it supports it, but I'm having trouble at the linking step. I have a test project with 3 files: main.c, func1.c, and bank.asm. The main function should call func1() and then sit in a while loop. But func1() is in a different code bank. // main.c int func1(void) banked; void main() { int i = func1(); while(i) { } } // func1.c #pragma codeseg BANK1 int func1(void) { return 99; } //bank.asm .area HOME (CODE) .area GSINIT0 (CODE) .area GSINIT1 (CODE) .area GSINIT2 (CODE) .area GSINIT3 (CODE) .area GSINIT4 (CODE) .area GSINIT5 (CODE) .area GSINIT (CODE) .area GSFINAL (CODE) .area CSEG (CODE) .area HOME (CODE) __sdcc_banked_call:: ret ;make the call __sdcc_banked_ret:: ret ;return to caller I have a build batch file to compile everything and link it all together. sdcc -c func1.c sdcc -c main.c asx8051 -ol bank.asm sdcc "-Wl -b BANK1=0x018000" main.rel func1.rel bank.rel I get this linker error: ?ASlink-Error-Insufficient ROM/EPROM/FLASH memory. How do I get this to link?

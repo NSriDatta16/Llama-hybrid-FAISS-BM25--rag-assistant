@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 874977
-[parent_id]: 874755
-[tags]: 
-For any interesting number of rows, the optimal way (for most definitions of "optimal") to access a single random record by key is to create an index. CREATE INDEX my_index ON my_table ( key_column ); or in an ActiveRecord migration: add_index(:my_table, :key_column) Database indices typically use binary search, using B-trees or similar, which offers a good balance between storage costs and time for retrieval and update. Ensuring the index is used should be relatively straightforward for single-table operations: MyTable.find_by_key_column('ABC123') for example, should generate something like this (check development.log): SELECT * FROM my_table WHERE (key_column = 'ABC123') which even MySQL's relatively unimpressive optimiser should have no problem running optimally. Row storage should not be a concern for individual row retrieval, which is fortunate as there isn't much you can do to control it anyway. For MySQL performance you should probably choose MyISAM over InnoDB as the storage engine, provided your definition of "optimal" doesn't include "most reliable".

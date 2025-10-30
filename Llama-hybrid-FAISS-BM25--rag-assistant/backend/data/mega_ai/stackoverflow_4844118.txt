@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4844118
-[parent_id]: 4843445
-[tags]: 
-If you want to use random access then you should use arrays. Random access to elements of list will work, but it is inefficient (it needs to iterate over the list from the start). A version using arrays would look like this: // Needs to be declared as array let conslist = [|f1; f2|];; // Add type annotations to specify that arguments are arrays let pmap2 (arr1:_[]) (arr2:_[]) = seq { for i in 0 .. 1 do yield async { return arr1.[i] arr2.[i] } } |> Async.Parallel |> Async.RunSynchronously However, you can also rewrite the example to work with any sequences (including arrays and lists) using the Seq.zip function. I think this solution is more elegant and it doesn't force you to use imperative arrays (and it doesn't have the performance disadvantage): // Works with any sequence type (array, list, etc.) let pmap2 functions arguments = seq { for f, arg in Seq.zip functions arguments do yield async { return f arg } } |> Async.Parallel |> Async.RunSynchronously

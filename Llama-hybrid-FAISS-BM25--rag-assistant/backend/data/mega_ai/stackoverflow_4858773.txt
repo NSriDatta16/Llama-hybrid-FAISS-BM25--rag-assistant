@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4858773
-[parent_id]: 4858488
-[tags]: 
-I don't believe SQL has a similarly elegant solution. You have to drop any related constraints first before you can drop the table. Fortunately, this is all stored in the information schema and you can access that to get your whack list. This blog post should be able to get you what you need: http://weblogs.asp.net/jgalloway/archive/2006/04/12/442616.aspx -- t-sql scriptlet to drop all constraints on a table DECLARE @database nvarchar(50) DECLARE @table nvarchar(50) set @database = 'DatabaseName' set @table = 'TableName' DECLARE @sql nvarchar(255) WHILE EXISTS(select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS where constraint_catalog = @database and table_name = @table) BEGIN select @sql = 'ALTER TABLE ' + @table + ' DROP CONSTRAINT ' + CONSTRAINT_NAME from INFORMATION_SCHEMA.TABLE_CONSTRAINTS where constraint_catalog = @database and table_name = @table exec sp_executesql @sql END

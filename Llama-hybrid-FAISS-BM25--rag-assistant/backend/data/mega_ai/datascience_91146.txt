@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 91146
-[parent_id]: 
-[tags]: 
-Why does keras.Model subclass behave differently to the sequential API?
-
-I have implemented WGAN based on this blog . I tried to implement define_critic() as a subclass of keras.Model with the goal of having the same result. class CNNBlock(layers.Layer): def __init__(self, channels, kernel_size=(4, 4)): super(CNNBlock, self).__init__() w_init = initializers.RandomNormal(stddev=0.02) const = ClipConstraint(0.01) self.conv = layers.Conv2D(channels, kernel_size, strides=(2, 2), padding="same", kernel_initializer=w_init, kernel_constraint=const) self.bn = layers.BatchNormalization() self.relu = layers.LeakyReLU(alpha=0.2) def call(self, input_tensor, training=False): x = self.conv(input_tensor) x = self.bn(x) return self.relu(x) class CriticModel(Model): def __init__(self, channel): super(CriticModel, self).__init__() self.cnn1 = CNNBlock(channel[0]) self.cnn2 = CNNBlock(channel[1]) def call(self, input_tensor, training=False, mask=None): x = self.cnn1(input_tensor, training=training) x = self.cnn2(x, training=training) x = layers.Flatten()(x) x = layers.Dense(1)(x) return x def get_config(self): super(CriticModel, self).get_config() However, when I run the code, I get an error on the call c_model.train_on_batch(X_real, y_real) . Error ValueError: tf.function-decorated function tried to create variables on non-first call. I don't understand why my change leads to this error. The entire code can be found here

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1664220
-[parent_id]: 1663157
-[tags]: 
-In C++ I have a reference to an object that wants to point back to its owner, but I can't set the pointer during the containing class' construction because its not done constructing. You can store the pointer alright. What you can't do is to try to get to the members/methods of A through the pointer in the constructor of B, since the parent instance might not be fully initialized at the point: #include class Y; class X { Y* y; public: X(Y* y); }; class Y { X x; int n; public: Y(): x(this), n(42) {} int get_n() const { return n; } }; X::X(Y* p): y(p) { //Now this is illegal: //as it is, the n member has not been initialized yet for parent //and hence get_n will return garbage std::cout get_n() If you were to switch around the members in Y, so n would get initialized first, the constructor of X would print 42, but that is too fragile to depend on.

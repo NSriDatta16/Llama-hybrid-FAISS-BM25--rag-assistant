@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2455609
-[parent_id]: 
-[tags]: 
-How to create a generic type that takes either T or IEnumerable ?
-
-Let's say I have a type: public class Transformer where T : IMessage where TResult : IMessage { private Func > _transformer; public Transformer(Func transformer) { _transformer = null // ? } public Transformer(Func > transformer) { _transformer = transformer; } } So in essence, I'd like to convert Func into Func > in the first constructor. I've tried to create a private inner class that takes Func and defined a method that returns IEnumerable like this: private class TransformerWrapper { private readonly Func _func; public TransformerWrapper(Func func) { _func = func; } public IEnumerable Transform (T message) where T : IMessage { yield return _func(message); } } But it's not really working out. I get an error saying delegate has an invalid argument - cannot convert from T to T. First of all, what is happening with the compiler error and second, is there another way? Update Minutes after I posted, I found a solution: public Transformer(Func transformer) { _transformer = new TransformerWrapper (transformer).Transform; } And, private class TransformerWrapper { private readonly Func _func; public TransformerWrapper(Func func) { _func = func; } public IEnumerable Transform(T message) { yield return _func(message); } } I still can't get my head around why the first solution did not work. I need to think about that one...

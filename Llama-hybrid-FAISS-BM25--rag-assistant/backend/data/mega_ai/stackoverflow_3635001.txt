@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3635001
-[parent_id]: 1034910
-[tags]: 
-just as a piece of thought: in application controller define def when_fragment_expired( name, time_options = nil ) # idea of avoiding race conditions # downside: needs 2 cache lookups # in view we actually cache indefinetely # but we expire with a 2nd fragment in the controller which is expired time based return if ActionController::Base.cache_store.exist?( 'fragments/' + name ) && ActionController::Base.cache_store.exist?( fragment_cache_key( name ) ) # the time_fraqgment_cache uses different time options time_options = time_options - Time.now if time_options.is_a?( Time ) # set an artificial fragment which expires after given time ActionController::Base.cache_store.write("fragments/" + name, 1, :expires_in => time_options ) ActionController::Base.cache_store.delete( "views/"+name ) yield end then in any action use def index when_fragment_expired "cache_key", 5.minutes @object = YourObject.expensive_operations end end in view cache "cache_key" do view_code end

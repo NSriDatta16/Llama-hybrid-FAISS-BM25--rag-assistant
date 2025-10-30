@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5096172
-[parent_id]: 5095738
-[tags]: 
-I would move the boolean logic to the LastIntervalUpdated class: public class LastIntervalUpdated { public bool IsLastIntervalNewer { get { return this.dbPostTime_EST == null || this.retrievalTime_EST > this.dbPostTime_EST } } //other properties... } Then you can put the comment in closer to the definition. It also allows you to simplify the query to: private static bool isLastIntervalNewerThanDB(string muiMethod) { using (var db = new IntLMPDB()) { LastIntervalUpdated liRec = db.LastIntervalUpdateds.FirstOrDefault(rec => rec.method == muiMethod); if(liRec == null) throw new Exception(string.Format("Could NOT find LastIntervalUpdated record for muiMethod: {0}", muiMethod)) return liRec.IsLastIntervalNewer; } } I would also consider creating an exception type for failed lookups such as ObjectNotFoundException rather than throwing Exception directly.

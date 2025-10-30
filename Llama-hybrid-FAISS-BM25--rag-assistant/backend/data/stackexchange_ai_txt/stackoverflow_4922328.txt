@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4922328
-[parent_id]: 4921932
-[tags]: 
-Warning: the code here only showcases the storage aspect, it is a skeleton, no dynamic aspect (construction, copy, move, destruction) has been taken into account. I would suggest an approach using the C++0x new class aligned_storage , which is precisely meant for having raw storage. // header class Foo { public: private: struct Impl; Impl& impl() { return reinterpret_cast (_storage); } Impl const& impl() const { return reinterpret_cast (_storage); } static const size_t StorageSize = XXX; static const size_t StorageAlign = YYY; std::aligned_storage ::type _storage; }; In the source, you then implement a check: struct Foo::Impl { ... }; Foo::Foo() { // 10% tolerance margin static_assert(sizeof(Impl) This way, while you'll have to change the alignment immediately (if necessary) the size will only change if the object changes too much. And obviously, since the check is at compilation time, you just cannot miss it :) If you do not have access to C++0x features, there are equivalents in the TR1 namespace for aligned_storage and alignof and there are macros implementations of static_assert .

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4912737
-[parent_id]: 4912275
-[tags]: 
-I don't find it elegant, but might help in getting general idea how to create one ;) It uses simple_html_dom to find and manipulate elements in original html $htmlcode = Animals Some content goes here. Some content goes here. Mammals Some content goes here. Some content goes here. Terrestrial Mammals Some content goes here. Some content goes here. Marine Mammals Some content goes here. Some content goes here. Whales Some content goes here. Some content goes here. EOHTML; // simpehtmldom or other dom manipulating library require_once 'simple_html_dom.php'; $html = str_get_html($htmlcode); $toc = ''; $last_level = 0; foreach($html->find('h1,h2,h3,h4,h5,h6') as $h){ $innerTEXT = trim($h->innertext); $id = str_replace(' ','_',$innerTEXT); $h->id= $id; // add id attribute so we can jump to this element $level = intval($h->tag[1]); if($level > $last_level) $toc .= " "; else{ $toc .= str_repeat(' ', $last_level - $level); $toc .= ' '; } $toc .= " {$innerTEXT} "; $last_level = $level; } $toc .= str_repeat(' ', $last_level); $html_with_toc = $toc . " " . $html->save();

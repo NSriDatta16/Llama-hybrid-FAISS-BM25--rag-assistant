@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1376602
-[parent_id]: 
-[tags]: 
-ï»¿ character (UTF-8 BOM) in middle of ASP.NET response due to HttpResponse.TransmitFile()
-
-I've seen this post: ï»¿ characters appended to the begining of each file . In that case, the author was manually reading the source file and writing the contents. In my case, I'm abstracting it away via HttpRequest. TransmitFile (): public void ProcessRequest(HttpContext context) { HttpRequest req = context.Request; HttpResponse resp = context.Response; resp.ContentType = "application/javascript"; resp.TransmitFile("foo.js"); resp.TransmitFile("bar.js"); resp.TransmitFile("baz.js"); } The .js files are indeed encoded in UTF-8. This means the ï»¿ BOM incorrectly appears at the beginning of each but the first file. The nice things about TransmitFile() are that (a) it abstracts away the entire reading+writing process, and (b) it's optimized to not read the files into memory first -- which is hugely important when the files are large and/or you have many concurrent requests. But the flip side is that I'm not able to re-encode it into UTF-8 without the BOM. (I guess this is an example of a leaky abstraction.) Is there any elegant way to solve this problem? Thanks!

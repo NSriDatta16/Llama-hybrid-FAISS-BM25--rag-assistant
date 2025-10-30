@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3239179
-[parent_id]: 3238406
-[tags]: 
-When calling a method that takes any delegate of the Func you shouldn't need to explicitly create the delegate, because F# implicitly converts lambda expressions to delegate type (in member calls). I think that just calling the method with lambda function should work (if it doesn't, could you share the error message?) Here is a simple example that demonstrates this: type Foo() = member x.Bar(a:System.Func ) = a.Invoke() let f = Foo() let rnd = f.Bar(fun () -> new Random() :> obj) In your case, I suppose something like this should work: m.GetMetadataForType((fun () -> :> obj), modelType) Note that you need explicit upcast ( expr :> obj ), to make sure the lambda function returns the right type ( obj ). If you want to assign the lambda function to a local value using let , then it won't work, because implicit conversion works only when it is passed as an argument directly. However, in that case, it makes the code a bit nicer.

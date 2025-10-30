@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 454044
-[parent_id]: 437334
-[tags]: 
-Most of your parameter space looks reasonable to me; I'll disagree with @drenerbas about the regularizations being too large. The one that looks most out of place is scale_pos_weight seems too big: since your metrics depend on the cutoff, you probably will want the two classes to be roughly balanced when considering weights, so scale_pos_weight of around 300. But 2/3 of your range is above 1000, rather over-weighting the positive class, which might hurt these metrics, so effectively cutting your number of sampled hyperparameter points by 1/3. (I would be concerned that your min_child_weight s are too small, but limiting to depth 6 mostly obviates that.) To speak to the process, you should see what hyperparameters are giving you those scores, and see if there's any trend; if all the top scores occur for a certain range of (say) scale_pos_weight , then then shrink that space and run some more. (That can be badly affected by inter-related hyperparameters as @drenerbas says (+1), but it may help.) Finally, maybe consider a "smarter" optimization algorithm like Bayesian searches.

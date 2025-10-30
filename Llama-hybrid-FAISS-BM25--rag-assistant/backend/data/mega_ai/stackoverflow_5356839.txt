@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5356839
-[parent_id]: 1619773
-[tags]: 
-I don't think there is a solution to mp3 binary data, but if it's a wav one, then this should work: private function loaded(event:Event):void { var urlStream:URLStream = event.target as URLStream; bArr = new ByteArray(); urlStream.readBytes(bArr, 0); /** * Remove wav header here */ bArr.position = 0; sampleMP3.addEventListener(SampleDataEvent.SAMPLE_DATA, sampleDataHandler); soundChannel = sampleMP3.play(); } private function sampleDataHandler(event:SampleDataEvent):void { var bytesToRead:int = (bArr.bytesAvailable > 65536 ? 65536 : bArr.bytesAvailable); event.data.writeBytes(bArr, bArr.position, bytesToRead); bArr.position += bytesToRead; } Remember to remove wav header before sampling data though. Also, it only works well when sample rate is 44.1kHz. For other sample rates, you need to manually repeat or remove samples to make it 44.1kHz-like. Do pay attention to mono sounds, as you need to supply both left & right channel samples to Flash, thus need to repeat samples. Good starting point is WavDecoder class inside Popforge's audio.format.wav package.

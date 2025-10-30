@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 217986
-[parent_id]: 216865
-[tags]: 
-Although I think Jonathan Leffler gave you the right answer. Here is a very rare case, where I use an #undef. Normally a macro should be reusable inside many functions; that's why you define it at the top of a file or in a header file. But sometimes you have some repetitive code inside a function that can be shortened with a macro. int foo(int x, int y) { #define OUT_OF_RANGE(v, vlower, vupper) \ if (v vupper) {v = vupper; goto EXIT;} /* do some calcs */ x += (x + y)/2; OUT_OF_RANGE(x, 0, 100); y += (x - y)/2; OUT_OF_RANGE(y, -10, 50); /* do some more calcs and range checks*/ ... EXIT: /* undefine OUT_OF_RANGE, because we don't need it anymore */ #undef OUT_OF_RANGE ... return x; } To show the reader that this macro is only useful inside of the function, it is undefined at the end. I don't want to encourage anyone to use such hackish macros. But if you have to, #undef them at the end.

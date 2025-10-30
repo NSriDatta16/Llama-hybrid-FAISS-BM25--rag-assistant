@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3160694
-[parent_id]: 
-[tags]: 
-How to make a strongly typed reference to a namespace without picking an arbitrary type in it
-
-I'm working on a project in which I use Depency Injection. When registering a set of interfaces and classes, I need to point out the namespaces at which those interfaces and classes are located. I don't like providing string constants though, mainly because it hurts refactorability. I don't like taking one of the interfaces/classes and get it's namespace either. For example: typeof(FoodStore.Fruits.IApple).Namespace because it looks odd having all these arbitrary type names lingering around (why choose IApple over IOrange ?), only to distract from the actual point of the code. There's simply no sensible rule which type to pick. I came up with the following solution. Put a namespace anchor class in every namespace I need to reference: namespace FoodStore.Fruits { /// /// Serves as a type based reference to the namespace this class /// is located in. /// public sealed class _NamespaceAnchor { } } Now I can use: typeof(FoodStore.Fruits._NamespaceAnchor).Namespace Whenever I refactor the namespace, I don't have to worry about the DI registrations. Although this solution satisfies the question's requirements, I'm still not happy because now I have these sort of ugly empty classes hang around. I can't make them internal because - obviously - the references span across assemblies. My question is: does anyone know of a more elegant solution?

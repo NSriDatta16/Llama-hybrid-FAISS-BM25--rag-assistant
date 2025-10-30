@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2191489
-[parent_id]: 
-[tags]: 
-Releasing temporary COM objects
-
-Consider the following C# code using a COM object. MyComObject o = new MyComObject; try { var baz = o.Foo.Bar.Baz; try { // do something with baz } finally { Marshal.ReleaseComObject(baz); } } finally { Marshal.ReleaseComObject(o); } This will release the COM objects o and baz , but not the temporary objects returnd by o.Foo and o.Foo.Bar . This can cause problems, when those objects hold a large amount of unmanaged memory or other resources. An obvious but ugly solution would be, to clutter the code even more with try-finally and Marshal.ReleaseComObject . See C# + COM Interop, deterministic release As a workaround, I created a helper class class TemporaryComObjects: IDisposable { public C T (C comObject) { m_objects.Add(comObject); return comObject; } public void Dispose() { foreach (object o in m_objects) Marshal.ReleaseComObject(o); } } Usage: using (TemporaryComObjects t = new TemporaryComObjects()) { MyComObject o = t.T(new MyComObject); var baz = t.T(t.T(t.T(o.Foo).Bar).Baz); // do something with baz } My questions: Are there potential problems with this code? Has anybody a more elegant solution?

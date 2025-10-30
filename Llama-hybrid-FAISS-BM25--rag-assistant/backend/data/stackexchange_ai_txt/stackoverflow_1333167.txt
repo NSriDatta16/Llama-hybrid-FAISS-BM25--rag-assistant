@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1333167
-[parent_id]: 1332624
-[tags]: 
-So the question is are there any techniques for speeding up these kinds of queries? Well, not really. A column-based storage engine would probably be faster with those SELECT COUNT(*) queries but it would be less performant for pretty much any other query. Your best bet is to maintain a summary table via triggers. It doesn't have much overhead and the SELECT part will be instantaneous no matter how big the table. Here's some boilerplate code: DELIMITER // CREATE TRIGGER ai_books AFTER INSERT ON books FOR EACH ROW UPDATE books_cnt SET total = total + 1 WHERE status = NEW.status // CREATE TRIGGER ad_books AFTER DELETE ON books FOR EACH ROW UPDATE books_cnt SET total = total - 1 WHERE status = OLD.status; // CREATE TRIGGER au_books AFTER UPDATE ON books FOR EACH ROW BEGIN IF (OLD.status <> NEW.status) THEN UPDATE books_cnt SET total = total + IF(status = NEW.status, 1, -1) WHERE status IN (OLD.status, NEW.status); END IF; END //

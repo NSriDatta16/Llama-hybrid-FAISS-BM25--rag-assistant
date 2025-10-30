@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5193890
-[parent_id]: 5193503
-[tags]: 
-getsockname(2) followed by getnameinfo(3) reports the IP address that your TCP/IP stack has assigned to the socket. (Obviously, this won't match what the client could use if server and client are on opposite sides of a NAT system; in that case, perhaps there is clever UPnP trickery to discover the IP address that the client could use to contact the server.) I assume your server looks something like this: lfd = socket(); ret = bind(lfd,...); connection = listen(lfd, 10); /* add connection to your select queue or poll queue */ You could append code similar to this: struct sockaddr_storage me; socklen_t *len = sizeof(me); char name[40]; ret = getsockname(connection, &me, &len); ret = getnameinfo(&me, &len, name, sizeof(name), NULL, 0, NI_NUMERICHOST); getnameinfo(3) inspects the struct sockaddr_storage me for your IP address. Because these are generic interfaces, it'll work for IPv4 or IPv6 addresses.

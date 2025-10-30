@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1729614
-[parent_id]: 1729345
-[tags]: 
-I think the better way is to override SoapClient::__doRequest() (and not SoapClient::__soapCall() ) as you'll have direct access to the request- as well as to the response-XML. But the general approach to subclass SoapClient should be the way to go. class My_LoggingSoapClient extends SoapClient { // logging methods function __doRequest($request, $location, $action, $version, $one_way = 0) { $this->_logRequest($location, $action, $version, $request); $response = parent::__doRequest($request, $location, $action, $version, $one_way); $this->_logResponse($location, $action, $version, $response); return $response; } } EDIT From an OOP-design / design pattern point of view a Decorator is obviously the better way to handle this kind of problem - please see Gordon's answer . But this is a little bit more difficult to implement.

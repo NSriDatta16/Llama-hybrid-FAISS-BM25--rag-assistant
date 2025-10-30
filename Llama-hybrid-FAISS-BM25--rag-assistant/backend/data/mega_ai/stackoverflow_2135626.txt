@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2135626
-[parent_id]: 
-[tags]: 
-SQL Query execution shortcut OR logic?
-
-I have three tables: SmallTable (id int, flag1 bit, flag2 bit) JoinTable (SmallTableID int, BigTableID int) BigTable (id int, text1 nvarchar(100), otherstuff...) SmallTable has, at most, a few dozen records. BigTable has a few million, and is actually a view that UNIONS a table in this database with a table in another database on the same server. Here's the join logic: SELECT * FROM SmallTable s INNER JOIN JoinTable j ON j.SmallTableID = s.ID INNER JOIN BigTable b ON b.ID = j.BigTableID WHERE (s.flag1=1 OR b.text1 NOT LIKE 'pattern1%') AND (s.flag2=1 OR b.text1 <> 'value1') Average joined size is a few thousand results. Everything shown is indexed. For most SmallTable records, flag1 and flag2 are set to 1 , so there's really no need to even access the index on BigTable.text1, but SQL Server does anyway, leading to a costly Indexed Scan and Nested Loop. Is there a better way to hint to SQL Server that, if flag1 and flag2 are both set to 1 , it shouldn't even bother looking at text1 ? Actually, if I can avoid the join to BigTable completely in these cases (JoinTable is managed, so this wouldn't create an issue), that would make this key query even faster.

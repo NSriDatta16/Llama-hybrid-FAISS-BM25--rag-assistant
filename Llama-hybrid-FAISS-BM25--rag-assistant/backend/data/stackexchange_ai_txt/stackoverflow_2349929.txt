@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2349929
-[parent_id]: 986019
-[tags]: 
-Don't know if this helps, but I subclassed ValidationAttribute to expose a Resolve () method like so: public abstract class IocValidationAttribute : ValidationAttribute { protected T Resolve () { return IocHelper.Container().Resolve (); } } Then it can be used in any custom ValidatorAttribute that needs to hit a database: public class UniqueEmailAttribute : IocValidationAttribute { public override bool IsValid(object value) { ICustomerRepository customerRepository = Resolve (); return customerRepository.FindByEmail(value.ToString()) == null; } } I think it's a variation of the 'Static Gateway' approach mentioned by Mauricio Scheffer. I don't know if this is a good design or not. I'm not a huge fan of it, I'd rather the dependency was injected more 'elegantly', though I can't use constructor injection obviously, I'd like to use Property injection but can't work out a way to hook into the ASP.NET MVC framework code to do this (I've even pored though the MVC2 source code).

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2492511
-[parent_id]: 2491987
-[tags]: 
-Well it appears that unit testing the contents of a Func goes beyond the normal range of unit testing. A Func represents compiled code, and therefore can not be further inspected without resorting to parsing MSIL. In this situation, it is therefore necessary to fall back on delegates and instantiated types (as suggested by Nathan Baulch), or to use expression trees instead. My expression tree equivalent below: class Result { public Expression > NextAction { get; set; } } with the unit testing as follows: // Arrange ListController controller = new ListController(domain); // Act Result actual = controller.DefaultAction(); // Assert MethodCallExpression methodExpr = (MethodCallExpression)actual.NextAction.Body; NewExpression newExpr = (NewExpression)methodExpr.Object; Assert.That(newExpr.Type, Is.EqualTo(typeof(ProductsController))); Assert.That(methodExpr.Method.Name, Is.EqualTo("ListAction")); Note that there is some inherent fragility to this test as it implies the structure of the expression, as well as its behaviour.

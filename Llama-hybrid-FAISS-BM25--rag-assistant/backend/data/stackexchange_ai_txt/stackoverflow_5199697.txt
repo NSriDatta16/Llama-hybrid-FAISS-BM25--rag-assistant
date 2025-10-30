@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5199697
-[parent_id]: 5189755
-[tags]: 
-I don't know what your business logic looks like, but if you used a common method to save objects (whether new or modified) on the server, than you would be able to differentiate within that method, whether it is a modified object or really a new one. Example on the server: [Insert] public void InsertUser(UserDTO user) { this.SaveUser(user); } [Update] public void UpdateUser(UserDTO user) { this.SaveUser(user); } You could add a property to your User (or the base class, if you have one): public class UserDTO { [...] // only set this within the constructor, // unfortunately it cannot be "private set", because of RIA Services public bool IsNewEntity { get; set; } } In your SaveUser method use that flag: private void SaveUser(UserDTO user) { if (user.IsNewEntity) { // do something with a new user } else { // do something with an existing user } } The Constructor for the UserDTO would then be: public UserDTO() { this.IsNewEntity = true; } I know, this looks a little trivial, but I do not know of a more "elegant" way.

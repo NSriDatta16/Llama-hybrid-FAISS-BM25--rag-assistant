@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4993233
-[parent_id]: 4992599
-[tags]: 
-"I want to create a view in sql server database that must have the Where clause. and when i will drag it to .Net dbml file, and use some where then must ask the parameter. can this possible." I think you are asking if you can pass a "where" parameter to the View when it is called. This is not possible, but you can pass parameters to a Stored Procedure. Also, your stored procedure can query the View and use the param to filter it down. Here's an example: VIEW: named "PersonView" -- gives you everything (no Where clause) SELECT cit.CitizenID, cit.FirstName, cit.LastName, cit.OrganizationID, org.Name AS 'OrganizationName', FROM Citizens AS cit JOIN Organizations AS org ON cit.OrganizationID = org.ID STORED PROCEDURE: named "spPersonQuery" -- does your Where clause CREATE PROCEDURE [dbo].[spTest] -- Add the parameters for the stored procedure here @orgID int AS BEGIN SET NOCOUNT ON; SELECT * from dbo.PersonView as ps where ps.OrganizationID = @orgID END GO You can then drag your Stored Procedure into your DBML file and when you call it, you will pass in the int param "orgID".

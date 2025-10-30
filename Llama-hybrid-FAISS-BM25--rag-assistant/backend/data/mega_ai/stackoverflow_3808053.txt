@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3808053
-[parent_id]: 
-[tags]: 
-How to get a pointer to a binary section in MSVC?
-
-I'm writing some code which stores some data structures in a special named binary section. These are all instances of the same struct which are scattered across many C files and are not within scope of each other. By placing them all in the named section I can iterate over all of them. In GCC, I use _ attribute _((section(...)) plus some specially named extern pointers which are magically filled in by the linker. Here's a trivial example: #include extern int __start___mysection[]; extern int __stop___mysection[]; static int x __attribute__((section("__mysection"))) = 4; static int y __attribute__((section("__mysection"))) = 10; static int z __attribute__((section("__mysection"))) = 22; #define SECTION_SIZE(sect) \ ((size_t)((__stop_##sect - __start_##sect))) int main(void) { size_t sz = SECTION_SIZE(__mysection); int i; printf("Section size is %u\n", sz); for (i=0; i I'm trying to figure out how to do this in MSVC but I'm drawing a blank. I see from the compiler documentation that I can declare the section using __pragma(section(...)) and declare data to be in that section with __declspec(allocate(...)) but I can't see how I can get a pointer to the start and end of the section at runtime. I've seen some examples on the web related to doing _ attribute _((constructor)) in MSVC, but it seems like hacking specific to CRT and not a general way to get a pointer to the beginning/end of a section. Anyone have any ideas?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5290712
-[parent_id]: 5290150
-[tags]: 
-RFC-3986 Appendix B. gives us this regex for decomposing a generic URI: ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))? Since you are interested in plucking out everything up to the path, here is an equivalent regex which should work quite nicely (in PHP syntax to allow comments): $re = '%# Match URI and capture scheme and path in $1. ^ # Anchor to beginning of string. ( # $1: Everything up to path. (?: [^:/?#]+:)? # Optional scheme. (?://[^/?#]* )? # Optional authority. ) # End $1: Everything up to path. [^?#]* # Required path. (?:\? [^#]* )? # Optional query. (?:\# .* )? # Optional fragment. $ # Anchor to end of string. %x'; And here is the exact same regex, in short form, that should work in VB: myRegExp.Pattern = "^((?:[^:/?#]+:)?(?://[^/?#]*)?)[^?#]*(?:\?[^#]*)?(?:#.*)?$" This regex does not validate the URI, it just decomposes it into its various components, and pluck out the part you need into capture group 1. Note that every component but the path is optional (and the path, itself, may be empty). In other words, an empty string is a valid URI!

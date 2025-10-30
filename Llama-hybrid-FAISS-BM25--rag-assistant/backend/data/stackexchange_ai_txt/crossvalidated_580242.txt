@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 580242
-[parent_id]: 
-[tags]: 
-How to convert units of KDE into physical units
-
-I have a sample of people's heights. If I histogram it, I would usually divide by the bin width, so that my result becomes independent of my bin width, and I would label the axis something like (number of observations per unit height). If I do a KDE instead, it comes as a normalised distribution. To get that into physical units, do I simply multiply by the number of samples that I have? import requests # pip install requests for easy http request for CSV data import csv # Get sample data: url = "http://www.randomservices.org/random/data/Galton.txt" with requests.Session() as s: download = s.get(url) decoded_content = download.content.decode('utf-8') data_iter = csv.reader(decoded_content.splitlines(), delimiter='\t') data = [data for data in data_iter] # Organise it: height = np.zeros((len(data)-1,1)) for i in np.arange(1,len(data)): height[i-1] = data[i][4] # Plot it: for binWidth in [1,2,5]: bins,edges = np.histogram(height,bins=np.arange(55,80,binWidth)) plt.bar(edges[:-1]+0.5*np.mean(np.diff(edges)),bins/binWidth,alpha=0.5,label='binWidth=%g'%binWidth,width=binWidth) plt.xlabel('Height (inches)'); plt.ylabel('dN/dH (Count/Inch)') kernel = stats.gaussian_kde(height.flatten()) plt.plot(np.linspace(40,90,901),len(height)*kernel(np.linspace(40,90,901)),'k',label='KDE $\\times$ Nsamples') plt.xlim(40,90); plt.legend()

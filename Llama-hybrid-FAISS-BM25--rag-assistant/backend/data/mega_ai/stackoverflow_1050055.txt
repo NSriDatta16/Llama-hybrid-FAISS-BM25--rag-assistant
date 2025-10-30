@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1050055
-[parent_id]: 1050043
-[tags]: 
-Yes, sure - you would need to: 1) Bind to the particular OU DirectoryEntry myOU = new DirectoryEntry("LDAP://OU=MyOU,......,DC=MyCompany,DC=com"); 2) Enumerate all its sub-OU's DirectorySearcher subOUsearcher = new DirectorySearcher(myOU); subOUsearcher.SearchScope = SearchScope.OneLevel; // don't recurse down subOUsearcher.Filter = "(objectClass=organizationalUnit)"; foreach(SearchResult subOU in subOUsearcher.FindAll()) { // stick those Sub OU's into a list and then handle them } 3) One-by-one enumerate all the users in each of the sub-OU's and stick them into a global list of users DirectorySearcher userSearcher = new DirectorySearcher(myCurrentSubOu); userSearcher.SearchScope = SearchScope.OneLevel; // don't recurse down userSearcher.Filter = "(objectClass=user)"; foreach(SearchResult user in userSearcher.FindAll()) { // stick those users into a list being built up } 4) Return that list Marc

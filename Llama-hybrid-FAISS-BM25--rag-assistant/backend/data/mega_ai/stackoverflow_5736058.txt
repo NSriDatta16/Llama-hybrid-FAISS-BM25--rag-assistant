@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5736058
-[parent_id]: 5735719
-[tags]: 
-There are two things that can be going wrong here. Option 1 First, some "very bad code" may be short-circuiting the unwinding of the call stack on exceptions. E.g. ApplyUpdates or one of its child routines may also have a try...except block that calls Application.HandleException directly. To test this, if you put a breakpoint on QryCmdPerf.Close , do you reach it? If not, then Application.HandleException (or worse Application.ShowException ) has been called directly. Solving this requires a custom exception handler hooked to the Application.OnException event. You may have to set temporary state to know when this particular exception can be ignored. Yes it's messy, that why calling Application.HandleException directly, is "very bad code". Option 2 If you do reach the breakpoint, but the exception is being raised again, then it should be a lot simpler to solve. The Close method is probably attempting to save any pending changes, so is effectively applying the updates again. Rather than simply closing the data set, call CancelChanges or equivalent.

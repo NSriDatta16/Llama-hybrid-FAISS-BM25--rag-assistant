@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 381210
-[parent_id]: 324105
-[tags]: 
-Hardly a good way of doing it, but it seems you can get the AST through some internal interfaces and traverse this: QueryTranslator[] translators = hqlPlan.getTranslators(); AST ast = (AST)((QueryTranslatorImpl)translators[0]).getSqlAST(); new NodeTraverser(new NodeTraverser.VisitationStrategy() { public void visit(AST node) { if(node.getType() == SqlTokenTypes.FROM_FRAGMENT || node.getType() == SqlTokenTypes.JOIN_FRAGMENT) { FromElement id = (FromElement)node; System.out.println(node+": "+id.getClassAlias()+" - "+id.getClassName()); } } }).traverseDepthFirst(ast); So this seems to retrieve the alias-mappings from the compiled query, but I would be very careful using this solution: it typecasts objects to subclasses not usually visible to a hibernate-client and interprets the AST based on guessing the semantics of the different nodes. This might not work on all HQL-statements, and might not work, or have different behaviour, on a future hibernate-version.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3985105
-[parent_id]: 
-[tags]: 
-CakePHP: Setting up relationship between two models via a third table
-
-I have the following tables: Users Organizations Email_Addresses Email_Address_Relations Both Users and Organizations may have email addresses, which are stored in the Email_Addresses table and related to via the Email_Address_Relations table. Structure of Email_Address_Relations id char(36) NOT NULL module varchar(64) NOT NULL DEFAULT 'User' record_id char(36) NOT NULL email_address_id char(36) NOT NULL created datetime NOT NULL modified datetime NOT NULL My idea is to indicate the type of the email address (User or Organization) using a suitable value in the module field. The record_id and email_address_id fields will map the correct email address from the Email_Addresses to it's owner user or organization. How do I go about setting up such a model in CakePHP? Thanks, m^e To answer my last comment on setting up the models to provide default values for the module field, YES, it can be done as I found out from CakePHP Forums . This is how it is done. class User extends AppModel { var $hasMany = array( 'EmailAddress' => array( 'className' => 'EmailAddress', 'foreignKey' => 'record_id', 'conditions' => array( 'EmailAddress.module' => 'User' ) ) ); } class Organization extends AppModel { var $hasMany = array( 'EmailAddress' => array( 'className' => 'EmailAddress', 'foreignKey' => 'record_id', 'conditions' => array( 'EmailAddress.module' => 'Organization' ) ) ); }

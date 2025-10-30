@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 513510
-[parent_id]: 512984
-[tags]: 
-I'm also a beginner in LINQ. I don't know if this is the right way of grouping by several fields but I think you have to transform these grouping fields into a representing key. So, assuming that all your grouping fields are strings or ints you can make a key as follows: var qry = from pmt in products_mainTable join opt in orders_productsTable on pmt.guid equals opt.products_mainTableGUID join omt in orders_mainTable on opt.orders_mainTableGUID equals omt.guid where (opt.orders_mainTable.flags & 1) == 1 group omt by pmt.sku + opt.price + opt.size + pmt.guid + pmt.name into g orderby g.sku select new { g.FirstOrDefault().guid, g.FirstOrDefault().sku, g.FirstOrDefault().name, g.FirstOrDefault().color, g.FirstOrDefault().price, AvgPerOrder = g.Average(p => p.qty).GetValueOrDefault(0), QtySold = g.Sum(p => p.qty).GetValueOrDefault(), SoldFor = g.Sum(p => p.itemprice * p.qty).GetValueOrDefault() }; I didn't test this so please see if this helps you in any way.

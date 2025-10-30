@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2709009
-[parent_id]: 2705702
-[tags]: 
-The int 80h call itself will not corrupt anything, apart from putting the return value in eax . So the code fragment you have is fine. (But if your code fragment is part of a larger routine which is expected to be called by other code following the usual Linux x86 ABI, you will need to preserve ebx , and possibly other registers, on entry to your routine, and restore on exit.) The relevant code in the kernel can be found in arch/x86/kernel/entry_32.S . It's a bit hard to follow, due to extensive use of macros, and various details (support for syscall tracing, DWARF debugging annotations, etc.) but: the int 80h handler is system_call (line 493 in the version I've linked to); the registers are saved via the SAVE_ALL macro (line 497); and they're restored again via RESTORE_REGS (line 534) just before returning.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5162574
-[parent_id]: 5162130
-[tags]: 
-what you actually want to do is to apply a moving average of 2 samples trough your list, mathematically you convolve a window of [.5,.5], then take just the even samples. To avoid dividing by two the last element of odd arrays, you should duplicate it, this does not affect even arrays. Using numpy it gets pretty elegant: import numpy as np np.convolve(a + [a[-1]], [.5,.5], mode='valid')[::2] array([ 1., 11.]) np.convolve(b + [b[-1]], [.5,.5], mode='valid')[::2] array([ 1., 11., 20.]) you can convert back to list using list(outputarray). using numpy is very useful if performance matters, optimized C math code is doing the work: In [10]: %time a=reduce(list(np.arange(1000000))) #chosen answer CPU times: user 6.38 s, sys: 0.08 s, total: 6.46 s Wall time: 6.39 s In [11]: %time c=np.convolve(list(np.arange(1000000)), [.5,.5], mode='valid')[::2] CPU times: user 0.59 s, sys: 0.01 s, total: 0.60 s Wall time: 0.61 s

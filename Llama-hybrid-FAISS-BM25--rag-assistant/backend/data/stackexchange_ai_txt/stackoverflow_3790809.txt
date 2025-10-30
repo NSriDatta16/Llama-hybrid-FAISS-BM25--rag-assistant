@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3790809
-[parent_id]: 3322028
-[tags]: 
-I don't think you can do it this wait in Pig. A solution similar to what you wanted to do would be to load the mapping file in the UDF and then process each record in a FOREACH. An example is available in PiggyBank LookupInFiles . It is recommended to use the DistributedCache instead of copying the file directly from the DFS. DEFINE MAP_PRODUCT com.example.ourudf.Mapper('hdfs://../mappings.txt'); data = LOAD 'input.txt' USING PigStorage() AS (name:chararray, category:chararray); output = FOREACH data GENERATE title, MAP_PRODUCT(category); This will work if your mapping file is not too big. If it does not fit in memory you will have to partition the mapping file and run the script several time or tweak the mapping file's schema by adding a line number and use a native join and nested FOREACH ORDER BY/LIMIT 1 for each product.

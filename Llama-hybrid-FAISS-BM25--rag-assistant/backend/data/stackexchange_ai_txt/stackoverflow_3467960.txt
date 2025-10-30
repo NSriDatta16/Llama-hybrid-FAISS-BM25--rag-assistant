@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3467960
-[parent_id]: 3467798
-[tags]: 
-The most portable way to do it is one field at a time, using memcpy() for types longer than a byte. You don't need to worry about endianness for byte-length fields: uint16_t temp_u16; uint32_t temp_u32; struct IPv4Header header; header.Version = cIPHeaderSample[0] >> 4; header.InternetHeaderLength = cIPHeaderSample[0] & 0x0f; header.TypeOfServer = cIPHeaderSample[1]; memcpy(&temp_u16, &cIPHeaderSample[2], 2); header.TotalLength = ntohs(temp_u16); memcpy(&temp_u16, &cIPHeaderSample[4], 2); header.Identification = ntohs(temp_u16); header.Flags = cIPHeaderSample[6] >> 5; memcpy(&temp_u16, &cIPHeaderSample[6], 2); header.FragmentOffset = ntohs(temp_u16) & 0x1fff; header.TTL = cIPHeaderSample[8]; header.Protocol = cIPHeaderSample[9]; memcpy(&temp_u16, &cIPHeaderSample[10], 2); header.HeaderChecksum = ntohs(temp_u16); memcpy(&temp_u32, &cIPHeaderSample[12], 4); header.SourceAddress = ntohl(temp_u32); memcpy(&temp_u32, &cIPHeaderSample[16], 4); header.DestinationAddress = ntohl(temp_u32);

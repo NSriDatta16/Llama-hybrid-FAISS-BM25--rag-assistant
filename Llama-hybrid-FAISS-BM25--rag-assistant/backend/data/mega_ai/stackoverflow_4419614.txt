@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4419614
-[parent_id]: 
-[tags]: 
-Versioned model
-
-I am thinking of how best to implement a model that cannot be modified (ie: each time the model data is modified, a new instance of the object is created and a reference is added to the previous instance to reflect the fact that the old object has been deprecated by the new one). At the moment something quick and dirty that I thought up looks something like this: class VersionedModel(models.Model): # points to initial reference initial = models.ForeignKey(VersionedModel, verbose_name=_(u"initial"), related_name="versions", editable=False) # ought to be a one-one reference deprecated_by = models.ForeignKey(VersionedModel, ...) version = models.IntegerField(...) class Meta: abstract = True def save(self): prev_pk = self.pk self.pk = None prev = self.objects.get(pk=prev_pk) prev.deprecated_by = self super(self.__class__), self).save() Something tells me that even if this does works it is probably a very lousy way to do it. Is there a more "elegant" solution to do such a thing? Thanks!

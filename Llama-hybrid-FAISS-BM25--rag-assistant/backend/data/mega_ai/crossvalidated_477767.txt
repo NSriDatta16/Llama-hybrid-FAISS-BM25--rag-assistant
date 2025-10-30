@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 477767
-[parent_id]: 
-[tags]: 
-Permutation matrix loss for deep learning
-
-I have a matrix that should be a permutation matrix. I want a function that should return zero loss for all valid permutation matrices and a non-zero number otherwise. e.g. loss([ [1, 0, 0], [0, 1, 0], [0, 0, 1], ]) = 0 loss([ [0, 1, 0], [1, 0, 0], [0, 0, 1], ]) = 0 # Negative numbers and numbers greater than 1 are bad loss([ [-1, 0, 0], [0, 2, 0], [0, 0, 1], ]) > 0 # Fractions are bad loss([ [0.1, 0, 0], [0, 0.1, 0], [0, 0, 0.1], ]) > 0 etc. This is my current implementation in tensorflow @tf.function def bistable_loss(x): a = (x ** 2) b = (x - 1) ** 2 return a * b @tf.function def permute_matrix_loss(P): loss = 0 P_square = tf.math.square(P) axis_1_sum = tf.reduce_sum(P_square, axis=1) axis_0_sum = tf.reduce_sum(P_square, axis=0) # Penalize axes not adding up to one loss += tf.nn.l2_loss(axis_1_sum - 1) loss += tf.nn.l2_loss(axis_0_sum - 1) # Penalize numbers outside [0, 1] loss += tf.math.reduce_sum(bistable_loss(P)) return loss Is there any existing literature on this subject which has a more elegant/robust solution for this?

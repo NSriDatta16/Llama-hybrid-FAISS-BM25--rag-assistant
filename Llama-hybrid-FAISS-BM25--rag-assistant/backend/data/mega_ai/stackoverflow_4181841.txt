@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4181841
-[parent_id]: 3590663
-[tags]: 
-It's probably because "session_key" changed to just "key". Below is this update that works for me. require 'rack/utils' class FlashSessionCookieMiddleware def initialize(app, key = '_MYAPP_session') @app = app @key = (key || '_MYAPP_session') end def call(env) if env['HTTP_USER_AGENT'] =~ /^(Adobe|Shockwave) Flash/ params = ::Rack::Utils.parse_query(env['QUERY_STRING']) unless params[@key].nil? env['HTTP_COOKIE'] = "#{@key}=#{params[@key]}".freeze # puts "env['HTTP_COOKIE'] #{env['HTTP_COOKIE'].inspect}" end end @app.call(env) end end Also, you'll want to check to make sure your javascript is using the "key" instead of "session_key" for ActionController::Base.session_options[:key] when setting your javascript variable.

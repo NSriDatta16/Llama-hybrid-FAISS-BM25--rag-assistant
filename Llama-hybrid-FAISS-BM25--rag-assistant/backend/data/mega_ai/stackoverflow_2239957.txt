@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2239957
-[parent_id]: 2239778
-[tags]: 
-Here's how I would do it, although this isn't a direct translation of your code. I've done things in a functional style, piping results from one transformation to another. let rank seq = seq |> Seq.countBy (fun x -> x) // count repeated numbers |> Seq.sortBy (fun (k,v) -> k) // order by key |> Seq.fold (fun (r,l) (_,n) -> // accumulate the number of items seen and the list of grouped average ranks let r'' = r + n // get the rank after this group is processed let avg = List.averageBy float [r+1 .. r''] // average ranks for this group r'', ([for _ in 1 .. n -> avg]) :: l) // add a list with avg repeated (0,[]) // seed the fold with rank 0 and an empty list |> snd // get the final list component, ignoring the component storing the final rank |> List.rev // reverse the list |> List.collect (fun l -> l) // merge individual lists into final list Or to copy Mehrdad's style: let rank arr = let lt item = arr |> Seq.filter (fun x -> x Seq.length let lte item = arr |> Seq.filter (fun x -> x Seq.length let avgR item = [(lt item) + 1 .. (lte item)] |> List.averageBy float Seq.map avgR arr

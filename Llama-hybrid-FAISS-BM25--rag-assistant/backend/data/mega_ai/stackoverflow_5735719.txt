@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5735719
-[parent_id]: 
-[tags]: 
-Still get error popup even when ApplyUpdates is inside try...except
-
-Solution found, see my comment below D5, odbc to mysql database This code: with QryCmdPerf do begin Close; ParamByName('ACCTID').AsInteger:= AcctId; ParamByName('FROMDT').AsString:= MySQLDate(FromDt); ParamByName('TODT').AsString:= MySQLDate(ToDt); Open; first; try edit; FieldByName('PnL').AsFloat:= 97979; ApplyUpdates; except close; end; end; // with (specifically the "ApplyUpdates") causes a popup to appear with the text "Update Failed" if the PnL field already has the value 97979, evidently because of this code: procedure TUpdateSQL.ExecSQL(UpdateKind: TUpdateKind); begin with Query[UpdateKind] do begin Prepare; ExecSQL; if RowsAffected <> 1 then DatabaseError(SUpdateFailed); end; end; in DBTables.pas. Anyway, I want to be able to issue ApplyUpdates, and not have to worry about a popup if it doesn't do any updating. But if "try...except" doesn't work, what will? TIA

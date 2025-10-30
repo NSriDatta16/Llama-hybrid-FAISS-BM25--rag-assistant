@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1508834
-[parent_id]: 1508814
-[tags]: 
-Well you're lacking braces to start with, but I'd write it as: if (dict == null) { dict = IsolatedStorage.GetDropDowns(); } return dict["Priority"]; Note that you'll probably need some locking to make this thread-safe. In fact, why not just write it as: public static Dictionary > dict = IsolatedStorage.GetDropDowns(); to start with? Then you know it'll never be null. Anyway, please don't use the second idea. The check for nullity is insanely fast, and anyway you'll still fail with a NullReferenceException rather than a KeyNotFoundException ... If you really want to behave differently depending on whether or not a key is present, you should use (assuming dict is already non-null): List list; if (!dict.TryGetValue("Priority", out list)) { // Deal with the key being missing } else { return list; } I would also question your judgement about needing this to be "the fastest possible approach" - once you've made sure that you only perform the fetch from WCF once, are you sure it's really a performance bottleneck? I'd be shocked if that were the case.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5072047
-[parent_id]: 5062337
-[tags]: 
-I solved it by looping through the UnityContainer.Registration, and checking the LifetimeManagerType of each registration, if they are of ContainerControlledLifetimeManager and MappedToType equals to my base view model type, I create a new instance for it like so an set it to the set value on LOGOUT. var registrations = this.UnityContainer.Registrations; if (registrations != null) { foreach (var registration in registrations) { if (registration.LifetimeManagerType != null && registration.LifetimeManagerType == typeof(ContainerControlledLifetimeManager) && registration.MappedToType.FullName.Equals("Main.ViewModelBase")) { var objectType = registration.LifetimeManager.GetValue().GetType(); var newInstance = Activator.CreateInstance(objectType, new object[]{this.UnityContainer}); registration.LifetimeManager.SetValue(newInstance); } } } Not elegant but it works for now, cheers

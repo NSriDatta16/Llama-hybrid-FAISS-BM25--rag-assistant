@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2412480
-[parent_id]: 2412304
-[tags]: 
-You can't achieve this without declaring the variables first unless you ditch static variables and use concrete implementations instead. Even if you do declare the variables first you will have to call them using `$: class Config { const $myVar = 'blah'; public static $test; public static function write( $name, $value ) { //.... } } Config::write( 'test', 'foo' ); echo Config::$test; // Will be foo If you have a concrete implementation then you can leverage __get and __set so you don't have to declare all your variables. class Config { const $myVar = 'blah'; private $vars = array(); public function __set($name, $value) { $this->vars[$name] = $value; } public function __get($name) { if(isset($this->vars[$name]) return $this->vars[$name]; return null; } } echo Config::myVar; // Still the same $config = new Config(); $config->test = 'foo'; echo $config->test; // Will be foo This will mean you'll need to pass around your config object if you need it somewhere. If you find this annoying you might want to look into dependency injection .

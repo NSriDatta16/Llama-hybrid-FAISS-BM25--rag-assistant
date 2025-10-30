@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3750054
-[parent_id]: 3738094
-[tags]: 
-So, the question is how can you perform this query without using a "set" operation? Can I ask why you wouldn't use a set? Everything you do in SQL is based on sets, but if you want a slower, less elegant solution you can reduce your set size to 1 and loop through TRAILERS_INVENTORY using PL/SQL. declare v_exists varchar2(1 char); begin for item in (select distinct trailer_type from trailers_inventory) loop begin select 'Y' into v_exists from new_inventory where trailer_type = item.trailer_type; exception when no_data_found then v_exists := null; end; if v_exists is null then dbms_output.put_line(item.trailer_type || ' not in ' || ' NEW_INVENTORY'); end if; end loop; end; / Eek! That's why set operations are the way to go. :)

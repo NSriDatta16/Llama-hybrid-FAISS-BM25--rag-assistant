@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4065105
-[parent_id]: 4064964
-[tags]: 
-Firstly, in your example you are performing a SQL query using the underlying dialect of your RDBMS, not an HQL query. This is why you are able to do the join without an association mapping in your NHibernate configuration. To perform an HQL query you would use the session.CreateQuery method. To perform this query using HQL or Criteria API you need a one-to-many mapping from the Message class to the MessageReading class. The Message class should have a Readings property of type ISet . With this mapping in place you will be able to use the Criteria API like so: var criteria = session.CreateCriteria ); criteria.CreateAlias("Readings", "mr", JoinType.LeftOuterJoin); criteria.Add(Restrictions.Eq("User", user)); criteria.SetResultTransformer(Transformers.DistinctRootEntity); var results = criteria.List (); This will return a list of Message objects and populate the Readings property on each object. The DistinctRootEntity transformer ensures that only one copy of each Message object is returned even if there are multiple MessageReadings.

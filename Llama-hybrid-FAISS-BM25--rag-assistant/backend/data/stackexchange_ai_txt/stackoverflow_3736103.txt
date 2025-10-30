@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3736103
-[parent_id]: 3736040
-[tags]: 
-Your CSV strings are growing to over 80000 bytes and ending up on the LargeObjectHeap. The LOH is not garbage collected in the same way as other generations and can fragment over time, such as after many requests to your server or if you use string concatenation (naughty!) to build this csv data. The result is that your program reserves much more memory than it's actually using and an OutOfMemory exception is thrown. The fix in this instance is to write your csv data directly to the Response stream rather than string variables or even StringBuilder. Not only will this avoid the Large Object Heap, but it will keep your overall memory use lower and start pushing data out to your user faster.

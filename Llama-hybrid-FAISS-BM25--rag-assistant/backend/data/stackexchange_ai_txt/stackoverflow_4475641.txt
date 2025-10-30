@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4475641
-[parent_id]: 4475582
-[tags]: 
-One option is to retrieve the Person object from your database on the first hit and store it in System.Web.HttpContext.Current.Cache , this will allow extremely fast access and your Person data will be temporarily stored in RAM on the web server. But be careful: If you are storing significantly large amount of user data in this way, you could eat up a lot of memory. Nevertheless, this will be perfectly fine if you only need to cache a few thousand or so. Clearly, it depends upon how many users you expect to be using your app. You could add like this: private void CachePersonData (Person data, string storageKey) { if (HttpContext.Current.Cache[storageKey] == null) { HttpContext.Current.Cache.Add(storageKey, data, null, Cache.NoAbsoluteExpiration, TimeSpan.FromDays(1), CacheItemPriority.High, null); } } ... and retrieve like this: // Grab data from the cache Person p = HttpContext.Current.Cache[storageKey]; Don't forget that the object returned from the cache could be null, so you should check for this and load from the database as necessary (then cache).

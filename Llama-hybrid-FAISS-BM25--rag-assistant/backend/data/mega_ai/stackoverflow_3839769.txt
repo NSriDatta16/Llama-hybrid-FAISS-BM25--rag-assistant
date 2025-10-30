@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3839769
-[parent_id]: 
-[tags]: 
-Checking for a null object in EF causes an additional database hit ... how come?
-
-I am working with Entity Framework ... I have a database table for Patient which has a non-enforced foreign key relationship to the Employee table so I can associate a manager to a patient. I created my entity in EF for the Patient , the Employee and an association between Patient and Employee, which I name to ManagerEmployee . I also created another partial class for Patient that will allow me to easily get at the name of the employee from my business object class, also called Patient . public string ManagerName { get { return this.ManagerEmployee == null ? string.Empty : this.ManagerEmployee.Name; } } So I have: Patient Entity Patient Partial Class (to help with some of the data retrieval) Patient DTO (reads from the Patient Entity) The problem that I am having is that if the ManagerId (in this case is a Guid) does not related to an employee, or is not set (Guid.Empty) ... even though I am eager loading, it still makes another hit on the database. IQueryable query = ctx.ObjectContext.Patients.Include("ManagerEmployee"); So if I have a 1000 records, that have this value set, all is well, but if the value for ManagerId is NOT set on any of these records, it makes 1+1000 database hits. Wondering if anyone else has had this problem? There may be some bigger problem with the construction of my EF entities and/or associations, so I'm open to other suggestions. Thanks!

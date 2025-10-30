@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 254290
-[parent_id]: 254238
-[tags]: 
-I would recommend a derived table approach. Like this: SELECT myTable.Index, MIN(myTable.[Date]), MAX(myTable.[Date]) FROM myTable Inner Join ( SELECT Index From myTable WHERE [Date] BETWEEN '1/1/2000' AND '12/31/2000') As AliasName On myTable.Index = AliasName.Index GROUP BY myTable.Index ORDER BY myTable.Index ASC EDIT: Upon further review, there is another way you can create this query. The following query may be faster, slower, or execute in the same amount of time. This, of course, depends on how the table is indexed. Select [Index], Min([Date]), Max([Date]) From myTable Group By [Index] Having Sum(Case When [Date] Between '1/1/2000' And '12/31/2000' Then 1 Else 0 End) > 0 Under the best circumstances, this query will cause an index scan (not a seek) to filter out rows you don't want to display. I encourage you to run both queries and pick this oen the executes the fastest.

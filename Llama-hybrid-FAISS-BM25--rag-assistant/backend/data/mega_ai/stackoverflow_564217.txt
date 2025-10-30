@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 564217
-[parent_id]: 564100
-[tags]: 
-The likely problem is that luaL_loadfile() is documented to return the same values as lua_load() or one additional error code. In either case, the return value is an int where 0 means success and a nonzero value is an error code. So, the test luaL_loadfile(...) == NULL is true if the file was loaded, but the code calls that an error and returns. The function lua_pcall() also returns a status code, and you may want to verify that as well. Otherwise, the script as shown does create a global variable, and lua_getglobal() would retrieve that to the stack where it could be tested with lua_isstring() , or probably more usefully let you return its value if it is sufficiently string-like with lua_tostring() . The latter function will return either a const char * pointing at a nul-terminated string, or NULL if the value at the stack index can't be converted to a string. See the Lua reference manual as linked for the rest of the details and a caveat about using lua_tostring() inside a loop. Edit: I added better links to the manual in a couple of places.

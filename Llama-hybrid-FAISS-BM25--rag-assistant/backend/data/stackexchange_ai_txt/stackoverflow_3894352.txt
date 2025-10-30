@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3894352
-[parent_id]: 3893984
-[tags]: 
-WWW::Mechanize subclasses LWP::UserAgent , so you can still use any of LWP::UserAgent 's methods. Thus you can use the simple_request() method, which doesn't automatically handle redirects. It just returns you the response as an HTTP::Resonse object. Which means you can use the is_redirect() and header() methods to get the redirect URI. Which means you can then use the URI module to pull off everything after the #. Whew! Your code would look something like this: my $response = $mech->simple_request( HTTP::Request->new(GET => 'http://www.example.com/') ); if( $response->is_redirect ) { my $location = $response->header( "Location" ); my $uri = new URI( $location ); my $new_url = $uri->scheme . $uri->opaque; # And here is where you do the load of the new URL. } There may be some twiddling to do, potentially around the header() line, but this would be the general idea.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4907688
-[parent_id]: 4907154
-[tags]: 
-I solved my problem in the following way. When the subview of the scrollview receives a touchesBegan:withEvent: I set the alpha of that subview to 0.0. I then create an identical subview and add it to the scrollview's superview. For the initial position I use the following: CGPoint newOrigin = [self origin]; newOrigin.x = newOrigin.x + [[self superview] origin].x; newOrigin.y = newOrigin.y + [[self superview] origin].y - [(UIScrollView*)[self superview] contentOffset].y; [newSubview setOrigin: newOrigin]; // setOrigin is defined in a category on UIView - it does what you'd expect (Note - if you don't compensate for the scrollview content offset you can get puzzling behaviour...) My touchesMoved:withEvent method moves the subview (as per normal for implementing dragging) and then touchesEnded:withEvent removes the extra subview from the scrollview's superview and sets the alpha of the initial subview back to 1.0. So, in effect, the additional subview, piggy backs on the invisible subview.

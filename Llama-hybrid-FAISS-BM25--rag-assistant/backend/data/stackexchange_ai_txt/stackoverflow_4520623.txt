@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4520623
-[parent_id]: 4520561
-[tags]: 
-It depends on how serious you are about encapsulating the way the data is stored. If you're doing a lightweight class and you are just providing the storage but want to leave the accessing decisions completely up to the consumer of your class, you just expose it like a standard property or make it an auto-property. public List Parts { get; private set; } If you want to ensure the variable is never null, continue to use your private backing field and add checks. private List _Parts; public IList Parts { get { if (_Parts == null) _Parts = new List (); return _Parts; } private set { if (value != null) _Parts = value; } } If, however, you want to control synchronization, or anything else of that sort, you'd expose methods that are logical for what you're doing. public void AddPart(String part); public void RemovePart(String part); public String GetPart(int index); public IEnumerable GetAllParts() { foreach(String part in _Parts) yield return part; }

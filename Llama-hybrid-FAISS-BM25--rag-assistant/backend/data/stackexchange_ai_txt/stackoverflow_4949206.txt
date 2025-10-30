@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4949206
-[parent_id]: 4949177
-[tags]: 
-If your curr_rep_date property is declared as retain or copy , then this is a leak: self.curr_rep_date = [[NSMutableString alloc] init]; +alloc will return an instance you own, and the property is going to declare ownership as well (by sending retain to the array). You should be doing: self.curr_rep_date = [NSMutableString string]; In addition, doing things like: tempArrDt = (NSMutableArray *)[tmpRptDt componentsSeparatedByString:@"-"]; Or self.curr_rep_date = (NSMutableString *)[tmpRptDt stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%d",tmpYrVal] withString:[NSString stringWithFormat:@"%d",(tmpCurrYearInt-1)]]; Are totally wrong. Casting does not actually change the type of an object. It just shuts up the compiler. So -componentsSeparatedByString: will always return an immutable array, even if you cast it to an NSMutableArray (or anything else). Pay attention to return types.

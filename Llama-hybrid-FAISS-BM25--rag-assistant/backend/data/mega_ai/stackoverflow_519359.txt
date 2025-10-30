@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 519359
-[parent_id]: 519309
-[tags]: 
-Try to use the pragma open instead: use strict; use warnings; use open qw(:std :utf8); while(<>){ my @chars = split //, $_; print "$_" foreach(@chars); } You need to do this because the <> operator is magical. As you know it will read from STDIN or from the files in @ARGV. Reading from STDIN causes no problem as STDIN is already open thus binmode works well on it. The problem is when reading from the files in @ARGV, when your script starts and calls binmode the files are not open. This causes STDIN to be set to UTF-8, but this IO channel is not used when @ARGV has files. In this case the <> operator opens a new file handle for each file in @ARGV. Each file handle gets reset and loses it's UTF-8 attribute. By using the pragma open you force each new STDIN to be in UTF-8.

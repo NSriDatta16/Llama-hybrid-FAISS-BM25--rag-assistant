@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4099257
-[parent_id]: 
-[tags]: 
-ConcurrentHashMap: what's the point in locking updates only?
-
-I always thought that ConcurrentHashMap and similar classes (which maintain synchronized updates and don't synchronize reads) did a very useful and intuitive thing: they did not lock reads and lock all functionality on updates. And a strategy like that does keep all things consistent. But I read the documentation carefully, and opened the implementation of ConcurrentHashMap , and as I understand now, it does not block reads when another thread is performing updates. And if one thread starts doing putAll(hugeCollection) and another thread repeats contains(theSameObjectForAllCalls) at the same time then it's more then likely that the second thread gets different results while putAll is still working. Here is the related part from the docs: For aggregate operations such as putAll and clear, concurrent retrievals may reflect insertion or removal of only some entries. Another interesting thing is that: Retrievals reflect the results of the most recently completed update operations holding upon their onset. This works not due to some locking, but because a new object is first being added and only after that objects counter is incremented and the object becomes visible for read operations. So, what's the whole point of locking updates?

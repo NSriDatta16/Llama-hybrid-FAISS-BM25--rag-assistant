@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5163176
-[parent_id]: 5162265
-[tags]: 
-The API does not provide a way to get all the headers with a single call - check the Javadocs: http://download.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html Here is an example of how you could get all headers (without tedious null checks). private MultiValueMap getAllHeaders(HttpServletRequest request) { MultiValueMap allHeaders = new MultiValueMap(); List headerNames = Collections.list((Enumeration )request.getHeaderNames()); for (String headerName : headerNames) { allHeaders.putAll(headerName, Collections.list((Enumeration ) request.getHeaders(headerName))); } return allHeaders; } Once you are using the Java Servlet models you cannot get the header size in bytes without re-constructing it (ie: iterate over getAllHeaders and append : ), you will also need to add the boiler plate GET HTTP 1/1.1 etc. Definitely doable if you absolutely need a Java solution, but I get the feeling you should think about pushing this logic out of your java app and into a proxy.

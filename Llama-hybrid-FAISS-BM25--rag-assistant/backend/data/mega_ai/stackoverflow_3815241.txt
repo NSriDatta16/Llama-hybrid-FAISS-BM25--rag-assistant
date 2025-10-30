@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3815241
-[parent_id]: 3815159
-[tags]: 
-Both and neither. You need to delete in batches when dealing with a large number, because of single transaction log growth issues. Assuming you want to delete all records for a given @productId: declare @batchSize int = 10000; do while(1=1) begin delete top(@batchSize) from ProductInfo where productId = @productId; if (0 = @@rowcount) break; end The two forms of DELETE you posted are basically identical, the important thing is the table is organized by a clustered key based on productId key. If this is not true and you have a NC index on productId then the @batchSize has to be calibrated as to avoid the index tipping point .

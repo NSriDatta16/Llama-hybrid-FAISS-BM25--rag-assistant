@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3409931
-[parent_id]: 
-[tags]: 
-Why can you not declare constants in methods with Ruby?
-
-Consider the following, StubFoo is a stub of Foo, which I wish to stub out for some tests. class Runner def run Foo = StubFoo foo = Foo.new # using Foo... end end This generates the following error message: Dynamic constant assignment Yet, in RSpec I can do the following, which works and is perfectly legal: it "should be an example" do Foo = StubFoo foo = Foo.new foo.to_s.should == "I am stubbed!" end A few questions regarding this. Why does this work with the RSpec test case, but not the method above? As far as I'm aware, "it" is just a method within RSpec, yet I'm able to redeclare a constant within the "method". I'm doing this prior to using a mocking framework for purely wanting to know how mocking, stubbing etc... is different in Ruby. I hear that dynamic languages are easier to mock/stub, and there are guides on the Internet in which simple class reassignment is done as above. From my research, in Ruby it's not possible to declare constants within a method, yet I'm confused as mentioned above. Edit Right, this is starting to make more sense. I've updated run to be using const_set now. def run old = Foo self.class.const_set(:Foo, StubFoo) foo = Foo.new puts foo.to_s self.class.const_set(:Foo, old) foo = Foo.new puts foo.to_s end This generates a warning however, is this what/how mocking frameworks work then in Ruby? Obviously much more elegant and feature full, but do they simply repress this warning?

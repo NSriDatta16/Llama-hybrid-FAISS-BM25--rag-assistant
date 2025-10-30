@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5321718
-[parent_id]: 4950077
-[tags]: 
-I've found that "bug-feature" from another angle of view (trying to login customer from adminside), but still found the cause. The problem is with session_name() function. If you go to Mage_Core_Model_Session_Abstract_Varien you'll see there that the session object is using standart PHP session functions and PHP can't handle two sessions at the same time. You session id for adminside is stored in cookie adminhtml, while for clientside your session id is in frontend cookie. Then in adminside you have session ID initialized by adminhtml cookie. When in adminside, your customer/session object is stored inside something like $_SESSION['customer'] (haven't checked exact key) inside PHP session for ID stored in adminhtml cookie. This means that customer/session object is refering to different sessions when inside admin and client parts of magento.

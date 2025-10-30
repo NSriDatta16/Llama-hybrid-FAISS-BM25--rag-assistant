@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4703256
-[parent_id]: 4703055
-[tags]: 
-I've never implemented NX emulation, but knowing something about x86 here's my best guess of how it can work. It all has to do with how the kernel sets up your global descriptor table to define what range of addresses may contain code. If I may summarize it inelegantly... On x86 in 32-bit protected mode, those old "segment registers" from 16-bit code still have some meaning. The segment registers determine which entry in the GDT is used. The GDT entries are essentially a memory range. If the kernel points the cs (code segment) register at a GDT entry that only has addresses in range [x, y], then addresses outside that range are non-executable. Note that this is much more coarse-grain than an NX bit, because the NX bit goes in the page table entry. So the NX bit lets you mark an arbitrary page as non-executable, whereas using cs segments only let you specify a (usually vary large, contiguous) range as non-executable.

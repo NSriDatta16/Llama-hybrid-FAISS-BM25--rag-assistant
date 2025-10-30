@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 65015
-[parent_id]: 
-[tags]: 
-Truncating float/doubles for reproducibility
-
-I deploy machine learning models (typically GPU) to a variety of environments. I work sort of at the edge of ML R&D and devops, so I am really big into reproducibility, and one thing that drives me nuts is when models output similar but not byte-for-byte identical values, frustrating any hash-based automated testing. For example, here is a score from the same sample, inference model, code, container image, etc, but one is on a Titan, one is on an RTX 2080. Titan X = 0.9887396097183228 RTX 2080 = 0.9887396693229675 That's a relative error of 6.0e-08 or about 60 parts-per-billion. Obviously, this is the "same number", well within the weirdness of IEEE 754 and GPU processing. I'd like to truncate the output of my algos, as this simplifies the job of automated testing, but the question then becomes, how to round to achieve this, and how much precision? Sounds simple, but take for example this note on numpy.around Results may also be surprising due to the inexact representation of decimal fractions in the IEEE floating point standard [R9] and errors introduced when scaling by powers of ten. One part-per-million (for typically 0.0-1.0 confidence values) seems reasonable but I'm not sure if there are any subtle gotchas with this approach.

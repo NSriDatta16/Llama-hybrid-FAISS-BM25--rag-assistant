@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4531494
-[parent_id]: 4530870
-[tags]: 
-QueryTrace doesn't work as-is because many changes were made in Rails 3 esp in the area of ActiveRecord. So, hacking around, I made it work like this: You just need the 2 files below in the locations mentioned. Then restart the web server. After the SQL, you should see Called from: in a console (magenta on white) and log file In /vendor/plugins/query_trace/lib/query_trace.rb module QueryTrace def self.append_features(klass) super klass.class_eval do unless method_defined?(:log_info_without_trace) alias_method :log_info_without_trace, :sql alias_method :sql, :log_info_with_trace end end end def log_info_with_trace(event) log_info_without_trace(event) logger.debug("\e[1m\e[35m\e[1m\e[47mCalled from:\e[0m " + clean_trace(caller[2..-2]).join("\n ")) end def clean_trace(trace) Rails.respond_to?(:backtrace_cleaner) ? Rails.backtrace_cleaner.clean(trace) : trace end end In /vendor/plugins/query_trace/init.rb require 'query_trace' class ::ActiveRecord::LogSubscriber include QueryTrace end

@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 183455
-[parent_id]: 183452
-[tags]: 
-When your response is binary, you don't do an ANOVA. (For example, there is no within or between MSE.) Instead, you can do a chi-squared test, or you can fit a logistic regression model. Here is a simple example (with made up data), coded in R : tab = as.table(matrix(c(12, 33, 19, 38, 17, 31 ), nrow=2, byrow=TRUE)) rownames(tab) = c("Yes", "No") names(dimnames(tab)) = c("y", "x") tab # x # y A B C # Yes 12 33 19 # No 38 17 31 chisq.test(tab) # Pearson's Chi-squared test # X-squared = 18.695, df = 2, p-value = 8.716e-05 d = as.data.frame(tab) d # y x Freq # 1 Yes A 12 # 2 No A 38 # 3 Yes B 33 # 4 No B 17 # 5 Yes C 19 # 6 No C 31 lr.mod = glm(y~x, d, family=binomial, weights=Freq) summary(lr.mod) # ... # Coefficients: # Estimate Std. Error z value Pr(>|z|) # (Intercept) 1.1527 0.3311 3.481 0.000499 *** # xB -1.8160 0.4458 -4.073 4.64e-05 *** # xC -0.6631 0.4410 -1.504 0.132701 # ... # Null deviance: 204.71 on 5 degrees of freedom # Residual deviance: 185.62 on 3 degrees of freedom # ... 1-pchisq(q=(204.71 - 185.62), df=(5 - 3)) # [1] 7.155816e-05

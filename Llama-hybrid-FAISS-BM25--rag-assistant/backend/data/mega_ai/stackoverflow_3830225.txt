@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3830225
-[parent_id]: 3830070
-[tags]: 
-That's close to impossible using data annotations or it will require writing ugly code that relies on reflection, etc... (I think you get the point). I would recommend you looking at the FluentValidation . It has a good integration with ASP.NET MVC . Here's how your validation logic might look like: public class AddressValidator : AbstractValidator { public AddressValidator() { RuleFor(x => x.City) .NotEmpty(); RuleFor(x => x.PostalCode) .NotEmpty(); RuleFor(x => x.Street) .NotEmpty(); } } public class OrderValidator : AbstractValidator { public OrderValidator() { RuleFor(x => x.FirstAddress) .SetValidator(new AddressValidator()); RuleFor(x => x.SecondAddress) .SetValidator(new AddressValidator()) .When(x => x.RequireSecondAddress); } } You will also benefit from having a separate validation layer which also could be unit tested in a very elegant way .

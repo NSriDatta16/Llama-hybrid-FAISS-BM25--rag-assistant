@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 561794
-[parent_id]: 561762
-[tags]: 
-Really, you just want to use the null coalescing operator here. Example: var client = db.Clients .Where(c => c.Name == "Some Client") .SingleOrDefault() ?? new Client(); This will return whatever SingleOrDefault returns, except that if SingleOrDefault returns null, the expression returns new Client() instead. Edit: As John Skeet pointed out, this solution doesn't differentiate between the situation where there is no match and a null element is found, though clearly this is not necessarily a problem in many cases. An alternative is to create an extension method as follows. public static T SingleOrNew (this IEnumerable query) where T : new() { try { return query.Single(); } catch (InvalidOperationException) { return new T(); } } I would say this is probably the most elegant solution that works in the general case.

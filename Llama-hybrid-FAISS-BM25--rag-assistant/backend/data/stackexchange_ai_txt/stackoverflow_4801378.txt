@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4801378
-[parent_id]: 4199850
-[tags]: 
-I took a quick look at the source code. I didn't see any obvious way to do that. But I whipped up a quick and dirty awk script to insert the column names. Starting with this dump: PRAGMA foreign_keys=OFF; BEGIN TRANSACTION; CREATE TABLE test (test_id int primary key, test_name varchar(35)); INSERT INTO "test" VALUES(1,'Wibble'); INSERT INTO "test" VALUES(2,'Wobble'); INSERT INTO "test" VALUES(3,'Pernicious'); COMMIT; I ran this awk script /CREATE TABLE/ { # Extract the part between parens. This part contains the # column definitions. first_col = match($0, /\(.*\)/ ); if (first_col) { num_columns = split(substr($0, RSTART + 1, RLENGTH), a, ","); for (i = 1; i which gave me this output. INSERT INTO "test" (test_id, test_name) VALUES(1,'Wibble'); INSERT INTO "test" (test_id, test_name) VALUES(2,'Wobble'); INSERT INTO "test" (test_id, test_name) VALUES(3,'Pernicious');

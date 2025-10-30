@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 881552
-[parent_id]: 880918
-[tags]: 
-If you just want to run the executable and wait for the results, Anurag's solution is probably the best. I needed to respond to each line of output as it arrived, and found the following worked: 1) Create an object with a write(text) method. Redirect stdout to it (sys.stdout = obj). In your write method, deal with the output as it arrives. 2) Run a method in a seperate thread with something like the following code: p = subprocess.Popen('Text/to/execute with-arg', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False) while p.poll() is None: print p.stdout.readline().strip() Because you've redirected stdout, PIPE will send the output to your write method line by line. If you're not certain you're going to get line breaks, read(amount) works too, I believe. 3) Remember to redirect stdout back to the default: sys.stdout = __sys.stdout__

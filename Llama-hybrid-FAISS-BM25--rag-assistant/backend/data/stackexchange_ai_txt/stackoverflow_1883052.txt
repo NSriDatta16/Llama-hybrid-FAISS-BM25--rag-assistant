@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1883052
-[parent_id]: 1882309
-[tags]: 
-It turns out the approach I was using with AudioFileStreamSeek() is valid, I just wasn't sending the full initial mp4 header to the AudioFileStreamParseBytes() routine. The problem was I had assumed the packets began immediately after the mdat box tag. By examining the data offset value (kAudioFileStreamProperty_DataOffset) returned by the AudioFileStream Property Listener callback, I discovered the true start of the packet data was 18 bytes later. These 18 bytes are considered part of the initial mp4 header that must be sent to the AudioFileStream parser before sending the data of arbitrary packets after calls to AudioFileStreamSeek(). If these extra bytes are left out, then the AudioQueuePrime() call will always fail with a 'nope' error even though you may have sent valid parsed audio packets to the AudioQueue.

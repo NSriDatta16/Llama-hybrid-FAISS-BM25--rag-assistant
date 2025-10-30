@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4950847
-[parent_id]: 4947694
-[tags]: 
-Caveat: normally one wouldn't use such perverse model names. Assuming the models look like this: class ModelA 'ModelY', :join_table => 'model_x_model_ies' end class ModelY 'ModelX', :join_table => 'model_x_model_ies' end We can create a scope to get the ModelY's for all the ModelX's belonging to a Model A: class ModelY {:model_a_id=>a.id})} end then a simple method to call the scope on an instance of ModelA: class ModelA Test like so: require 'spec_helper' describe ModelA do before(:each) do @a = ModelA.create(:name=>"a") 2.times { @a.model_xes.create(:name=>"x") } end it "relates model_x" do @a.model_xes.count.should == 2 end it "relates model y" do x = @a.model_xes.first x.model_ies.create x.model_ies.count.should == 1 end it "relates model y through model x" do @a.model_xes.each do |x| 2.times { x.model_ies.create(:name=>"y") } end ys = @a.ys ys.count.should == 4 ys.all? { |y| y.name == "y" }.should be_true end end Note that HABTM has fallen out of favor, so you're encouraged to use has_many :through instead.

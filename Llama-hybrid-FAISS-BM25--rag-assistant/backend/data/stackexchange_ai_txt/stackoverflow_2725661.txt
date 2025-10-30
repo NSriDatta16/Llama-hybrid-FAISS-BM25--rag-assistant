@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2725661
-[parent_id]: 2724252
-[tags]: 
-You just implement the drag part . You don't need to know where the drop happen because the application receiving it will handle it and decide where to store your file. You create a QMimeData , not sure which type but from what i saw here and here , maybe "application/octet-stream" with your file as data in a QByteArray or "text/uri-list" with url to your file. You create a QDrag, and use its setMimeData() method and exec() (not sure about which QT::DropAction to choose). Here is an example (disclamer : i did it with color not files) : void DraggedWidget::mousePressEvent(QMouseEvent *event) { if (event->button() == Qt::LeftButton) start_pos = event->pos(); } void DraggedWidget::mouseMoveEvent(QMouseEvent *event) { if (event->buttons() & Qt::LeftButton) { int distance = (event->pos() - start_pos).manhattanLength(); if (distance >= QApplication::startDragDistance()) { /* Drag */ QMimeData *mime_data = new QMimeData; mime_data->setData( ... ); QDrag *drag = new QDrag(this); drag->setMimeData(mime_data); drag->exec(Qt::CopyAction); } } } Sorry it's quite incomplete, i hope it helps a little.

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 304821
-[parent_id]: 
-[tags]: 
-Sampling MaxEnt Distribution with PyMC3
-
-I’m trying to use PyMC3 to sample from a maximum entropy distribution over binary patterns of length $N$, constrained by means and pairwise correlations. The distribution is given by: $$P(X)=\frac{1}{Z}\exp\left({\displaystyle-\sum_i{\alpha_ix_i}-\sum_{i\ne j}{\beta_{ij}x_ix_j}}\right)$$ and is parameterized by the alpha and beta coefficients. I’ve started with the simplest example, in which the beta coefficients are zero and the alphas are not. I began with synthesizing data: data = pm.Model() alphas = np.array([-1,-2,0.5,3.5]) with data: X = pm.DiscreteUniform('X', lower=0, upper=1, shape=4) constraints = pm.math.dot(alphas,X) potential = pm.Potential("potential", constraints.sum()) datatrace = pm.sample(4000, step=BinaryMetropolis(vars=[X])) Then, I tried to learn these parameters from the data: model = pm.Model() with model: coeffs = pm.Normal('coeffs', mu=0, sd=1, shape=datatrace['X'].shape[1]) constraints = pm.math.dot(coeffs,datatrace['X'].T) potential = pm.Potential("potential", constraints.sum()) tr = pm.sample(4000) But I get very weird results… I’d appreciate help in understanding: What am I doing wrong at the moment in inferring the alphas. How to include the beta coefficients in the model (both for simulating data and inference purposes). EDIT : The sampler had converged to a stable solution coeffs=[1534.993,1686.984,1977.998,2277.013] , but not to the desired solution alphas = np.array([-1,-2,0.5,3.5]) from the data generating part…

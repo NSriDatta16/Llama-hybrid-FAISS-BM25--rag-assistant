@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3162066
-[parent_id]: 3161401
-[tags]: 
-Slightly off-topic but you could (ab)use the Obsolete attribute to achieve what you need. Mark the backing field as obsolete so that the compiler generates a warning when you try to access it, and then suppress those warnings within the property getter/setter. (The relevant warnings are CS0612 and CS0618 .) [Obsolete("Backing field should not be used outside of property")] private object _foo; public object Foo { #pragma warning disable 612, 618 get { return _foo; } set { _foo = value; OnFooChanged(EventArgs.Empty); } #pragma warning restore 612, 618 } This does feel like a nasty hack, and really isn't something that I'd recommend. There are other, preferable alternatives. For example, custom FxCop rules, unit tests, good code commenting etc.

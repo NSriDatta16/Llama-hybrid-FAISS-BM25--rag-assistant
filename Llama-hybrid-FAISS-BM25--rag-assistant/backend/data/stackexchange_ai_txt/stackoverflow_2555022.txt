@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2555022
-[parent_id]: 
-[tags]: 
-Can shared memory be read and validated without mutexes?
-
-On Linux I'm using shmget and shmat to setup a shared memory segment that one process will write to and one or more processes will read from. The data that is being shared is a few megabytes in size and when updated is completely rewritten; it's never partially updated. I have my shared memory segment laid out as follows: ------------------------- | t 0 | actual data | t 1 | ------------------------- where t 0 and t 1 are copies of the time when the writer began its update (with enough precision such that successive updates are guaranteed to have differing times). The writer first writes to t 1 , then copies in the data, then writes to t 0 . The reader on the other hand reads t 0 , then the data, then t 1 . If the reader gets the same value for t 0 and t 1 then it considers the data consistent and valid, if not, it tries again. Does this procedure ensure that if the reader thinks the data is valid then it actually is? Do I need to worry about out-of-order execution (OOE)? If so, would the reader using memcpy to get the entire shared memory segment overcome the OOE issues on the reader side? (This assumes that memcpy performs it's copy linearly and ascending through the address space. Is that assumption valid?)

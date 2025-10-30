@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5488198
-[parent_id]: 
-[tags]: 
-url encoded xml file
-
-I have kml files stroed in the db which I zip using http://dotnetzip.codeplex.com/ . Unfortunately my controller spews out xml that is url encoded. Ho can I prevent this. Here is my code: public void GetKMZById(int? Id) { try { if (Id == null) { throw new ArgumentException("No Id provided."); } Response.AddHeader("Content-Disposition", "attachment;filename=Map.kmz"); Response.AppendHeader("Connection", "close"); Response.ContentType = "application/vnd.google-earth.kmz"; Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache); //Response.Charset = "utf-8"; //Response.HeaderEncoding = UnicodeEncoding.UTF8; //Response.ContentEncoding = UnicodeEncoding.UTF8; SearchKMZFile SearchKMZFile = SearchKMZFileRepository.Get((int)Id); ZipOutputStream outzip = new ZipOutputStream(Response.OutputStream); outzip.EnableZip64 = Zip64Option.Never; outzip.CompressionLevel = Ionic.Zlib.CompressionLevel.BestCompression; outzip.PutNextEntry("Map.kml"); XmlTextWriter xmlTW = new XmlTextWriter(outzip, Encoding.UTF8); xmlTW.WriteString(SearchKMZFile.KMZ); xmlTW.Flush(); outzip.Close(); } catch (Exception e) { ModelState.AddModelError("Exception", e.Message); } } The unziped xml look like this: &lt;?xml version="1.0" encoding="us-ascii"?&gt; &lt;kml xmlns="http://www.opengis.net/kml/2.2"&gt; &lt;Document&gt; &lt;Style id="s"&gt; &lt;LineStyle&gt;

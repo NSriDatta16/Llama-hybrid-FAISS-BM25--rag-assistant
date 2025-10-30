@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3080881
-[parent_id]: 
-[tags]: 
-php change ip of request in socket
-
-I want to change the IP of every request in a socket connection in php.(to prevent the host from blocking my ip if I sent large number of requests) Iam attaching my code below function httpGet( $url, $followRedirects=true ) { global $final_url; $url_parsed = parse_url($url); if ( empty($url_parsed['scheme']) ) { $url_parsed = parse_url('http://'.$url); } $final_url = $url_parsed; $port = $url_parsed["port"]; if ( !$port ) { $port = 80; } $rtn['url']['port'] = $port; $path = $url_parsed["path"]; if ( empty($path) ) { $path="/"; } if ( !empty($url_parsed["query"]) ) { $path .= "?".$url_parsed["query"]; } $rtn['url']['path'] = $path; $host = $url_parsed["host"]; $foundBody = false; $out = "GET $path HTTP/1.0\r\n"; $out .= "Host: $host\r\n"; $out .= "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1) Gecko/20061010 Firefox/2.0\r\n"; $out .= "Connection: Close\r\n\r\n"; if ( !$fp = @fsockopen($host, $port, $errno, $errstr, 30) ) { $rtn['errornumber'] = $errno; $rtn['errorstring'] = $errstr; } fwrite($fp, $out); while (!@feof($fp)) { $s = @fgets($fp, 128); if ( $s == "\r\n" ) { $foundBody = true; continue; } if ( $foundBody ) { $body .= $s; } else { if ( ($followRedirects) && (stristr($s, "location:") != false) ) { $redirect = preg_replace("/location:/i", "", $s); return httpGet( trim($redirect) ); } $header .= $s; } } fclose($fp); return(trim($body)); }

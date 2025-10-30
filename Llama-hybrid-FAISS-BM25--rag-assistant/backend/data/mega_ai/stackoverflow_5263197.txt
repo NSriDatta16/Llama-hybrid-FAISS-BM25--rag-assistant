@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5263197
-[parent_id]: 5263052
-[tags]: 
-From my own experience, I've always used ORDER BY RAND() , but this has it's own performance implications on larger datasets. For example, if you had a table that was too big to fit in memory then MySQL will create a temporary table on disk, and then perform a file sort to randomise the dataset (storage engine permitting). Your LIMIT 10 clause will have no effect on the execution time of the query AFAIK, but it will reduce the size of the data to send back to the client obviously. Basically, the limit and order by happen after the query has been executed (full table scan to find matching records, then it is ordered and then it is limited). Any rows outside of your LIMIT 10 clause are discarded. As a side note, adding in the SQL_NO_CACHE will disable MySQL's internal query cache, but will does not prevent your operating system from caching the data (due to the random nature of this query I don't think it would have much of an effect on your execution time anyway). Hopefully someone can correct me here if I have made any mistakes but I believe that is the general idea.

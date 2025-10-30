@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 889345
-[parent_id]: 849897
-[tags]: 
-I would say that if you can "undo" the imported data when rolling back the migration version, then it's appropriate to put imports into the migration. For example, I have a migration which sets up a lot of lookup tables and other meta-data. The data for these tables are populated during this phase. As the data for these lookup tables changes, I create new YAML files storing the meta-data and load those files in subsequent migrations (and un-do those YAMLS, re-loading the previous YAML file when backing out of a migration version). This is pretty clean. I have files (in different well-defined folders in my case) with these files: 002_setup_meta_data.rb 002_meta_data.yaml 007_change_meta_data.rb 007_meta_data.yaml If you're importing "production" data from another system into transactional (non-static) tables, then I would say using migrations is not appropriate. Then I would follow Brian Hogan's advice of using rake tasks.

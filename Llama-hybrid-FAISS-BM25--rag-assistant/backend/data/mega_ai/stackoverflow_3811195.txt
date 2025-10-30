@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3811195
-[parent_id]: 3811171
-[tags]: 
-Sure: just supply a pointer to the int , as was the intention of the API designer: void *findPos(void *param) { int origPos=*(int *)param; ... } pthread_create( &threadIdArray[i], NULL, findPos, &i ); Casting between int and void * is unsafe because the conversion is not necessarily invertible. You must also ensure that i is still valid when the thread starts executing (if i has automatic storage duration, this would eg be the case if the calling function also calls pthread_join() ). In your case ( i being a loop variable), you should duplicating the variable's value in a safe location, eg on the heap via malloc() or by pushing it on a stack with appropriate liefetime: static int args[THREAD_COUNT]; for(int i = 0; i

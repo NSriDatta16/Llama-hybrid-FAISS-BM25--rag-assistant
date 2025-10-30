@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2649883
-[parent_id]: 
-[tags]: 
-bash: how to know NUM option in grep -A -B "on the fly"?
-
-I am trying to analyze my agent results from a collection of 20 txt files here . If you wonder about the background info, please go see my page , what I am doing here is just one step. Basically I would like to take only my agent's result out of the messy context, so I've got this command for a single file: cat run15.txt | grep -A 50 -E '^Agent Name: agent10479475' | grep -B 50 '^==' This means : after the regex match, continue forward by 50 lines, stop, then match a line separator starts with "==", go back by 50 lines, if possible (This would certainly clash the very first line). This approach depends on the fact that the hard-coded line number counter 50, would be just fine to get exactly one line separator. And this would not work if I do the following code： cat run*.txt | grep -A 50 -E '^Agent Name: agent10479475' | grep -B 50 '^==' The output would be a mess... My question is: how to make sure grep knows exactly when to stop going forward, and when to stop getting backward? Any suggestion or hint is much appreciated. Edited : I was doing something the hard way, again... The bash gurus suggest some more powerful tools. I will certainly switch to sed or awk from now on. This is my approach in the end, after trials and errors : NUM=10479475 for i in {1..20}; do cat "run$i.txt" | grep -A 50 -E "^Agent Name: agent_*$NUM" | grep -B 50 '^==';done > myresults.txt

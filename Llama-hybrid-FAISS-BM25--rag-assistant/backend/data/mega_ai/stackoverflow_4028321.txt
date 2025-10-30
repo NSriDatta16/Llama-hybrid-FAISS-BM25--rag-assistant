@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4028321
-[parent_id]: 
-[tags]: 
-Any ideas about the best work around for __new__ losing its arguments?
-
-So, I only realised today that __new__ is deprecated for receiving arguments, as of python 2.6 (it isn't mentioned in the documentation, which is also not true in terms of the behavior of __new__ calling __init__ as far as I can see). This means my functional code has started raising warnings, and I want to rid myself of them. But I can't see an elegant way to work around. I have a bunch of classes that perform optimizations when they are constructed. So I have class Conjunction(Base): def __new__(cls, a, b): if a == True: return b elif b == True return a else: return super(Conjunction,cls).__new__(cls, a, b) And so on (real versions cover lots more cases). So unlike what Guido says in this response (the only reference to it I can find), my __new__ method does use its arguments, and cannot be replaced by an overridden __init__ function. The best I can do is to split this in two: def Conjunction(a, b): if a == True: return b elif b == True return a else: return ConjunctionImpl(a, b) class ConjunctionImpl(Base): # ... But that is plain ugly and stinks to high heaven. Am I missing an elegant way to have a class constructor return some arbitrary object based on the constructor parameters it is given?

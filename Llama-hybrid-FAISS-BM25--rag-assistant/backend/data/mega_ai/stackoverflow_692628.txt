@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 692628
-[parent_id]: 692614
-[tags]: 
-You need to use a left join rather than an inner join, and then handle the case where ratings.ratings is null: $result = mysql_query(" SELECT jokedata.id AS joke_id, jokedata.datesubmitted AS datesubmitted, jokedata.joketitle AS joke_title, -- average is 0 if count or sum is null IFNULL(SUM(ratings.rating)/COUNT(ratings.rating), 0) AS average FROM jokedata -- return all rows from left table (jokedata), and all nulls for ratings -- data when there is no matching row in the right table (ratings) LEFT JOIN ratings ON ratings.content_type = 'joke' AND jokedata.id = ratings.relative_id WHERE jokecategory = '$cur_category' GROUP BY jokedata.id ORDER BY average desc LIMIT $offset, $jokes_per_page "); The left join will return all results from jokedata and will just return all nulls for ratings for each row where the join condition is not met.

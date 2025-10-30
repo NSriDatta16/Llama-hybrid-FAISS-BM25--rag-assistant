@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4291757
-[parent_id]: 4291574
-[tags]: 
-No. Like already pointed out elsewhere, new is a reserved keyword. Trying to use it as a method name will result in a Parse error: "syntax error, unexpected T_NEW , expecting T_STRING ". Namespaces will not help, because the new keyword applies to any namespace. The only way around this would be by means of a virtual method, e.g. /** * @method String new new($args) returns $args */ class Foo { protected function _new($args) { return $args; } public function __call($method, $args) { if($method === 'new') { return call_user_func_array(array($this, '_new'), $args); } else { throw new LogicException('Unknown method'); } } } $foo = new Foo; echo $foo->new('hello'); // return hello echo $foo->boo(); // throws Exception But I would discourage this. All magic methods are slower than direct invocation of methods and if the simple rule is there may be no method name new , then just be it. Use a synonym.

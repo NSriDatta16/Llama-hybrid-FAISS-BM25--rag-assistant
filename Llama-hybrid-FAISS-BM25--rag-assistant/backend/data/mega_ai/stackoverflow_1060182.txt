@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1060182
-[parent_id]: 1060035
-[tags]: 
-I think you should be using a pyodbc.Binary instance to wrap the data: cur.execute('INSERT INTO testing (myimage) VALUES (?)', (pyodbc.Binary(data),)) Retrieving should be cur.execute('SELECT myimage FROM testing') print "image bytes: %r" % str(cur.fetchall()[0][0]) UPDATE: The problem is in insertion. Change your insertion SQL to the following: """DECLARE @txtptr varbinary(16) INSERT INTO testing (myimage) VALUES ('') SELECT @txtptr = TEXTPTR(myimage) FROM testing WRITETEXT testing.myimage @txtptr ? """ I've also updated the mistake I made in using the value attribute in the retrieval code. With this change, I'm able to insert and retrieve a 320K JPEG image into the database (retrieved data is identical to inserted data). N.B. The image data type is deprecated, and is replaced by varbinary(max) in later versions of SQL Server. The same logic for insertion/retrieval should apply, however, for the newer column type.

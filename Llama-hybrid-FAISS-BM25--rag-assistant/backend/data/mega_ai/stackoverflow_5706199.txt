@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5706199
-[parent_id]: 3197767
-[tags]: 
-I think your method is too big. It mixes different levels of abstraction, like error processing, message retrieval and message processing. If you refactor it in different methods, the goto naturally goes away (note: I assume your main method is called Process ): ... private byte[] buffer; private Queue queue; public void Process() { queue = new Queue (batch); while (connected) { ReceiveMessage(); TryProcessMessage(); } } private void ReceiveMessage() { try { socket.Recv(out buffer); } catch { // ignore the exception we get when the socket is shut down from another thread // the connected flag will be set to false and we'll break the processing } } private void TryProcessMessage() { try { ProcessMessage(); } catch (Exception ex) { ProcessError(ex); } } private void ProcessMessage() { if (buffer == null) return; var item = TraceItemSerializer.FromBytes(buffer); if (item == null) return; queue.Enqueue(item); if (HasMoreData()) { TryProcessMessage(); } } private bool HasMoreData() { return queue.Count

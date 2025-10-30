@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2138468
-[parent_id]: 2138363
-[tags]: 
-As you have noticed it will be difficult to answer your business requirements with triggers. The reason is that Oracle may update/insert the tables with more than one thread at the same time for a single query (parallel DML). This implies that your session can't query the table it updates while the update takes place . If you really want to do this with triggers you will have to follow the kind of logic shown in this article by Tom Kyte . As you can see it is not something simple. There is another, simpler, more elegant, easier to maintain method: use procedures. Revoke the right of update/insert to the user(s) of the application and write a set of procedures that allow the application to update the state columns. These procedures would hold a lock on the parent row (to prevent multiple sessions to modify the same set of rows) and would apply your business logic in an efficient, readable and easily-maintainable way.

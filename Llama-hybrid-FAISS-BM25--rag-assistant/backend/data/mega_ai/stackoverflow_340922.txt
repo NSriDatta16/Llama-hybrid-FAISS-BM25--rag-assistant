@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 340922
-[parent_id]: 340139
-[tags]: 
-As has been said, looking at the execution plan will give you some information. However, unless you use the plan stability feature, you can't rely on the execution plan always remaining the same. In the case of the query you posted, it doesn't look like the order of evaluation will change the logic in any way, so I guess what you are thinking about is efficiency. It's fairly likely that the Oracle optimizer will choose a plan that is efficient. There are tricks you can do to encourage a particular ordering if you want to compare the performance with base query. Say for instance that you wanted the timestamp condition to be executed first. You could do this: WITH subset AS ( SELECT /*+ materialize */ FROM my_table WHERE CURRENT_TIMESTAMP - 1 The "materialize" hint should cause the optimizer to execute the inline query first, then scan that result set for the other conditions. I'm not advising you do this as a general habit. In most cases just writing the simple query will lead to the best execution plans.

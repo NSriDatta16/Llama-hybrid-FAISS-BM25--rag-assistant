@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1451420
-[parent_id]: 1451085
-[tags]: 
-There is no equivalent to C header files in Perl. To declare and define global constants, you can use the define pragma. I have no experience with this module although the interface seems sensible. On the other hand, you can write a module where you define constants and import them into your module using use . For example: package MyConstants; use strict; use warnings; use Exporter qw( import ); use Const::Fast; our @EXPORT = qw(); our @EXPORT_OK = qw( $X $Y ); const our $X => 'this is X'; const our $Y => 'this is Y'; __PACKAGE__; __END__ You can then use this module as follows: #!/usr/bin/perl use strict; use warnings; use MyConstants qw( $X ); print "$X\n"; print "$MyConstants::Y\n"; If you are OK with using fully qualified variable names (e.g. $MyConstants::Y ), you do not need Exporter at all. Also, make sure variables you export are not modifiable elsewhere (see the caution in Exporter docs). Of course, you could also define constants using constant.pm . It may be faster to use such constants, but they are awkward if you need to interpolate them in a string.

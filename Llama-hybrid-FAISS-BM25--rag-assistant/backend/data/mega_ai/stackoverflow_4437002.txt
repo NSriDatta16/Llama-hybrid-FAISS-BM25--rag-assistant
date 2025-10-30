@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4437002
-[parent_id]: 4435942
-[tags]: 
-You absolutely cannot use system("foo &"); to create background processes that you can later monitor/kill. Any such use has a gigantic inherent bug: even if you know the pid, there is no way to tell if the process with that pid is the process you originally ran, or a completely different process that happened to get the same pid later. To solve this problem (and countless other problems you don't want to think about or it will make your head hurt) you should forget you ever learned about the system function and create your child processes with fork and exec , or posix_spawn . This will result in a direct child process (your current method is creating grandchildren which get orphaned and taken in by the init process) which you can wait / waitpid on, and until you perform a wait operation, the child process's pid belongs to you and cannot be reused, so it's safe to send signals to it, etc.

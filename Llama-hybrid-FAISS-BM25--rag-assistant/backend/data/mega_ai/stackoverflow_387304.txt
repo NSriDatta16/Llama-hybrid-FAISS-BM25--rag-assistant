@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 387304
-[parent_id]: 334519
-[tags]: 
-This is more anecdotal than a real answer... I had a similar experience using Samba and OpenLDAP server. I couldn't find a library to really do what I wanted so I rolled my own helper classes. I used ldapbrowser to see what fields Samba filled in when I created a user the "official" way and and basically duplicated that. The only tricky/non-standard LDAP thing was the crazy password encryption we have: userPass: "{MD5}" + Base64.encode64(Digest::MD5.digest(pass)) sambaNTPassword: OpenSSL::Digest::MD4.hexdigest(Iconv.iconv("UCS-2", "UTF-8", pass).join).upcase For the def authenticate(user, pass) function I try to get LDAP to bind to the domain using their credentials, if I catch an exception then the login failed, otherwise let them in.

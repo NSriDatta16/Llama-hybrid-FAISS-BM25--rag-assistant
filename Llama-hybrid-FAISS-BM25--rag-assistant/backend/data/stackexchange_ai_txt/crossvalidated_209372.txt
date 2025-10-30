@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 209372
-[parent_id]: 188817
-[tags]: 
-Yes. Yes. 1) You can implement your own logic for pipeline step. You can find detailed example in sklearn documentation . In your case it would be: from sklearn.linear_model import LogisticRegression from sklearn.base import BaseEstimator, TransformerMixin from sklearn.pipeline import Pipeline, make_pipeline class TenLogisticRegressionsClassifier(BaseEstimator, TransformerMixin): def __init__(self, N=10): self.estimators = { i:LogisticRegression() for i in range(N) } def fit(self, X, y=None): for k,v in self.estimators.items(): # Here some logic to divide dataset v.fit(newX, newY) def predict(self, X, y=None): for k,v in self.estimators.items(): # Here some logic to divide dataset v.predict(newX) pipeline = Pipeline([('something', TenLogisticRegressionsClassifier())]) # or pipeline = make_pipeline(TenLogisticRegressionsClassifier()) 2) Answer is on Stack Overflow from sklearn.externals import joblib joblib.dump(pipeline, 'pipeline.pkl') # or, if you want 1 file: joblib.dump(pipeline, 'filename.pkl', compress = 1) Then you can load it and use: pipeline_loaded = joblib.load('filename.pkl')

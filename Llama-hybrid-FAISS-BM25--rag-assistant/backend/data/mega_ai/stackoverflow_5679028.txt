@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5679028
-[parent_id]: 
-[tags]: 
-Slow anonymous function
-
-Suppose you have a loop with 50000 iterations and want to calculate mean values (scalars) from alot of matrices. This is not complete, but roughly like this: for k=1:50000 ... mean=sum(sum(matrix))/numel(matrix); %Arithmetic mean ... end And now want to include different mean equations to choose from. First I tried this: average='arithmetic' for k=1:50000 ... switch average case 'arithmetic' mean=sum(sum(matrix))/numel(matrix); %Arithmetic mean case 'geometric' mean=prod(prod(matrix)).^(1/numel(matrix)); %Geometric mean case 'harmonic' mean=numel(matrix)/sum(sum(1./matrix)); %Harmonic mean end ... end This is obviously alot slower than the first loop because it needs to find the matching string for every iteration which feels really unnecessary. Then I tried this: average='arithmetic' switch average case 'arithmetic' eq=@(arg)sum(sum(arg))/numel(arg); %Arithmetic mean case 'geometric' eq=@(arg)prod(prod(arg)).^(1/numel(arg)); %Geometric mean case 'harmonic' eq=@(arg)numel(arg)/sum(sum(1./arg)); %Harmonic mean end for k=1:50000 ... mean=eq(matrix); %Call mean equation ... end This is still about twice as slow as the first loop and I don't get why. The two last loops are almost similar in speed. Am I doing something wrong here? How can I achieve the same performance as the first loop with this extra feature? Help is very much appreciated!

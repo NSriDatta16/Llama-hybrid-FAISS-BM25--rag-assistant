@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1335802
-[parent_id]: 1335590
-[tags]: 
-If you're going the route of "just don't add duplicates", then checking "List.Contains" before adding an item works , but its O(n^2) where n is the number strings you want to add. Its no different from your current solution using two nested loops. You'll have better luck using a hashset to store items you've already added, but since you're using .NET 2.0, a Dictionary can substitute for a hash set: static List RemoveDuplicates (List input) { List result = new List (input.Count); Dictionary hashSet = new Dictionary (); foreach (T s in input) { if (!hashSet.ContainsKey(s)) { result.Add(s); hashSet.Add(s, null); } } return result; } This runs in O(n) and uses O(2n) space, it will generally work very well for up to 100K items. Actual performance depends on the average length of the strings -- if you really need to maximum performance, you can exploit some more powerful data structures like tries make inserts even faster.

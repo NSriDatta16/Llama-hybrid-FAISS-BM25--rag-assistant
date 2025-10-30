@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1406258
-[parent_id]: 1406107
-[tags]: 
-Instead of requiring a constructor constraint, pass a Func to the map constructor. That way the constructor can be internal, but the map can still effectively call it: public class EntityMap where T : Entity { private readonly Dictionary _entities = new Dictionary (); private readonly object _getLock = new object(); private readonly Func _entityGenerator; public T Get(int id) { lock (_getLock) { T ret; if (!_entities.TryGetValue(id, ret)) { ret = entityGenerator(); newEntity[id] = ret; ret.Id = id; } return ret; } } internal EntityMap(Func entityGenerator) { _entityGenerator = entityGenerator; } } Then initialize it with: EntityMap widgetMap = new EntityMap(() => new Widget()); You could potentially make it a Func instead and make the delegate responsible for creating an entity with the right ID. That way you could make your ID properly read-only, taking it as a parameter to the Entity constructor. (I've taken the liberty of making your Get method more efficient, btw.)

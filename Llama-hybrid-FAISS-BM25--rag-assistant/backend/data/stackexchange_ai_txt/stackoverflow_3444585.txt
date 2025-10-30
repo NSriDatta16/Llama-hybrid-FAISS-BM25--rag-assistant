@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3444585
-[parent_id]: 3443194
-[tags]: 
-In terms of organizing the code, you could do it in a mixin-like way (error handling apart): public interface MPropertySettable { } public static class PropertySettable { public static void SetValue (this MPropertySettable self, string name, T value) { self.GetType().GetProperty(name).SetValue(self, value, null); } } public class Foo : MPropertySettable { public string Bar { get; set; } public int Baz { get; set; } } class Program { static void Main() { var foo = new Foo(); foo.SetValue("Bar", "And the answer is"); foo.SetValue("Baz", 42); Console.WriteLine("{0} {1}", foo.Bar, foo.Baz); } } This way, you can reuse that logic in many different classes, without sacrificing your precious single base class with it. In VB.NET: Public Interface MPropertySettable End Interface Public Module PropertySettable _ Public Sub SetValue(Of T)(ByVal self As MPropertySettable, ByVal name As String, ByVal value As T) self.GetType().GetProperty(name).SetValue(self, value, Nothing) End Sub End Module

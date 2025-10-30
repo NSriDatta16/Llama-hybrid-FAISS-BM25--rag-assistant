@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3765581
-[parent_id]: 3764358
-[tags]: 
-Right, apparently what I needed was the use of a so-called scalar select . With the use of those I get this python code, which actually works as I want it to (generates the equivalent SQL to that of the first in my question which was my goal): moving_average_days = # configurable value, defaulting to 5 ndays = # configurable value, defaulting to 90 t1 = Measurements.alias('t1') ###### t2 = Measurements.alias('t2') query = select([t1.c.time, t1.c.value, select([func.avg(t2.c.value)], t2.c.time.between(t1.c.time - datetime.timedelta(moving_average_days), t1.c.time)).label('moving_average')], t1.c.time > (datetime.datetime.utcnow() - datetime.timedelta(ndays))). \ order_by(t1.c.time) This gives this SQL: SELECT t1.time, t1.value, ( SELECT avg(t2.value) AS avg_1 FROM measurements AS t2 WHERE t2.time BETWEEN t1.time - :time_1 AND t1.time ) AS moving_average FROM measurements AS t1 WHERE t1.time > :time_2 ORDER BY t1.time;

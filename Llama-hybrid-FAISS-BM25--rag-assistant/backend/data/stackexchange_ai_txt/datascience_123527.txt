@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 123527
-[parent_id]: 
-[tags]: 
-How to dynamically set value while initializing model in Pytorch?
-
-I want to set the in_features parameter in the Linear layer, but I want to dynamically set it while initializing the model. Because I will be getting that value in the forward function. class SimpleModel(torch.nn.Module): def __init__(self, hidden_channels, graph_feats): super().__init__() self.convs = torch.nn.ModuleList(.....) ...... ...... self.dense = torch.nn.Sequential(nn.Linear(graph_feats + (18 * x), 128), nn.ReLU(), nn.Linear(128, 128), nn.ReLU(), nn.Linear(128, 64), nn.ReLU(), nn.Linear(64, 1), ) def forward(self, x_cfg: Tensor,x_feat: Tensor, x_op: Tensor, edge_index: Tensor) -> Tensor: x = torch.concat([x_feat,self.embedding(x_op)],dim = 1) for conv in self.convs: x = conv(x, edge_index).relu() x_graph = torch.mean(x,0) x_cfg = torch.flatten(x_cfg, start_dim=1) x = torch.concat([x_cfg, x_graph.repeat((len(x_cfg),1))],axis=1) x = torch.flatten(self.dense(x)) return x model = SimpleModel(hidden_channels = [32, 64,128, 128, 64], graph_feats = 256).to(device) The variable x_cfg has a shape of (100000, 40, 18) . After flattening the last 2 dim (100000, 720) . I want to use this 40 value and put in that x value in self.dense while initializing. On the other hand, this 40 is not constant. I don't know if it is even doable in PyTorch or not. How can I achieve this? Or is there any alternative easier way to approach?

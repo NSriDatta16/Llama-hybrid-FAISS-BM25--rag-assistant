@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5687823
-[parent_id]: 5687696
-[tags]: 
-When you're inside the callback function the context of the function differs from when you setup the request. Therefore, the this object refers to something else (in this case I think it's the XMLHttpRequest object.) There are two ways of doing this. You could either save the this object in another variable, and then use that variable to access the element, like so: var element = $(this); $.ajax({ url: ' /' + $(this).attr('rel'), success: function(data) { if (data == '1') { $(element).addClass('selected'); }; } }); An alternative, and frankly nicer and more elegant solution is to use the jQuery.proxy method to ensure the callback gets fired in the correct context. $.ajax({ url: ' /' + $(this).attr('rel'), success: jQuery.proxy(function(data) { if (data == '1') { $(this).addClass('selected'); }, this); } });

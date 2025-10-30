@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4671573
-[parent_id]: 4671186
-[tags]: 
-The first part of your question is the expected outcome, CLR version 2 cannot load .NET 4.0 assemblies, the metadata format has changed. The last paragraph is harder to explain. It might have something to do with using LoadFile(), it's a frikin gawdawful way to load assemblies. One possible failure mode is that your plug-in assembly might still have references to 2.0 assemblies. This is pretty normal when it has a reference to yet another assembly that was compiled to target an earlier framework. This is normally silently resolved by the assembly loader, it just replaces the 2.0 reference with the corresponding 4.0 reference. You can verify this theory with ildasm.exe, run it on the plug-in assembly and looks through the manifest for .assembly directives. The version number is easy to see, you'd get something like .assembly extern mscorlib as mscorlib_2 { .publickeytoken = (B7 7A 5C 56 19 34 E0 89 ) .ver 2:0:0:0 } Always favor Assembly.LoadFrom().

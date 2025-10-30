@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5173037
-[parent_id]: 
-[tags]: 
-serial data truncated by termios on embedded device
-
-I am working on a C program listening to the serial port running on an ARM Linux embedded device. Other sets of data work fine, but always when I send a particular set of data, the beginning of the set is truncated. What is truncated is the following (slsniff program output running on the target): Device --> ^ (094) { (123) (002) (008) (002) (000) (000) (002) (001) (003) I have debugged enough to be fairly certain this is caused by some termios constant, which is using the end of text ETX to truncate. Right now I am down to: struct termios t; t.c_lflag &= ~(ICANON | IEXTEN | ECHO); t.c_iflag &= ~ICRNL; t.c_cc[VMIN] = 1; /* Character-at-a-time input */ t.c_cc[VTIME] = 0; /* with blocking */ The set separator character is a CR 0x0d, that seems to work fine in all cases. Any help greatly appreciated. Best regards, Bert

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 374589
-[parent_id]: 
-[tags]: 
-A mistake in Tensorflow's documation?
-
-Tensorflow's documentation gives an example for text generation using a RNN with eager execution . To the best of my understanding, this examples defines a simple RNN (with a GRU cell and a projection layer), and the flag "stateful=True" in the construction of the cell essentially means it is meant to be trained using TBPTT ( documentation ). But then, their usage of the dataset seems wrong - dataset = dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE, drop_remainder=True) Firstly, it seems to me as they should not shuffle the dataset (since sequences in consecutive batches should continue each other), and secondly, even without shuffling the structure of the batches this code produces seems wrong. For example, the sequence "abcdefghijkl" will be fed as - Batch 1: [abc, def] Batch 2: [ghi, jkl] instead of the way a stateful cell expects, which I think is - Batch 1: [abc, ghi] Batch 2: [def, jkl] So my questions are: Is this a example indeed wrong, or am I misunderstanding the mechanics? If it's wrong, is there a convenient method to obtain suitable batches (for training a "stateful" RNNs) from a tf.data.Dataset?

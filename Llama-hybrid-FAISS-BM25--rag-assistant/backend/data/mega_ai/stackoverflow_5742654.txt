@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5742654
-[parent_id]: 
-[tags]: 
-How to aliase a function with variable number of arguments?
-
-I have a method in a class with this signature: void addMessage_( std::string appender, LogLevel level /*= LOGLEVEL_INFO*/, char* msg, ... ); I want to create 'alias' of this method in this way: void debugMsg( std::string appender, char* msg, ... ){ addMessage(appender, LOGLEVEL_DEBUG, msg, ...); } My question is: do I need to expand the args to call the addMessage method? I don't want to replicate the code I each utility method, but I don't want to waste performance. What is the best solution? Solved: I let my solution as a documentation: void DEBUG_MSG(std::string appender, char* msg, ...){ va_list argptr; va_start(argptr,msg); addMessage_(appender, LOGLEVEL_DEBUG, msg, argptr); va_end(argptr); } And the addMessage_ method: void CGlobalLog::addMessage_( std::string appender, LogLevel level, char* msg, va_list args ){ int len; char *buffer; len = _vscprintf( msg, args ) // _vscprintf doesn't count + 1; // terminating '\0' buffer = (char*)malloc( len * sizeof(char) ); vsprintf( buffer, msg, args ); // C4996 // Note: vsprintf is deprecated; consider using vsprintf_s instead addMessage(buffer,appender,level); free( buffer ); } Thanks!

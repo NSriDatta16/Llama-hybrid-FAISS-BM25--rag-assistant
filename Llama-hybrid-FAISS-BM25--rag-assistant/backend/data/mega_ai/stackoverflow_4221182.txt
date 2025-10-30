@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4221182
-[parent_id]: 
-[tags]: 
-Renaming path helpers in Rails 3 routing
-
-I have a projects controller/model. Instead of listing projects on the #index page, I show a list of drop downs, which submits to projects#select, which finds the right Project (I've made sure there can only be 1 for each combination of options) and forwards the user to the #show page for that Project. So for my routes I do this... resources :projects, :only => [:index, :show] do collection do get 'select' end end And thats fine, but the helper method for #select is 'select_projects', which is understandable but in my case I really want 'select_project'. And I really don't want to alias this in another file. No problem I can use :as... resources :projects, :only => [:index, :show] do collection do get 'select', :as => 'select_project' end end But now my helper is 'select_project_projects'. So I cheat a little (still better than aliasing in another file)... resources :projects, :only => [:index, :show] match '/projects/select', :to => 'projects#select', :as => 'select_project' This looks like it might work, but it doesn't because /project/select actually matches the route for 'project#show'. Changing the order of the lines does the trick. match '/projects/select', :to => 'projects#select', :as => 'select_project' resources :projects, :only => [:index, :show] But is there a more elegant way of handling this? I realize this is borderline OCD, but I'd like to be able to have complete control over the route name within the resources block.

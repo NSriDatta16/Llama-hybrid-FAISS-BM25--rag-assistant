@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1096391
-[parent_id]: 
-[tags]: 
-What is the best datastructure for a small and simple cache
-
-I often need relatively small ( cache = {} def calculate_caches(parms): if parms not in cache: cache[parms] = calculate(parms) return cache[parms] Works fine but for longer running processes I'm afraid of memory leaks. So I often implement brute force memory clamping like this: if len(cache) > 1000: cache = {} Works reasonably well in most cases and still is clean, simple code. But If I want a real LRU strategy I need timestamps together with the cache entry. The problem of using a dict for this is, that expiring the cache now means traversing the whole cache which is neither elegant nor efficient. cache = {} def calculate_caches(parms): if parms not in cache: cache[parms] = (time.time(), calculate(parms)) expire() return cache[parms][1] def expire() if len(cache) > 1000: mintime = time.time() time2key = {} for key, (timestamp, val) in cache.items(): mintime = min([mintime, timestamp]) time2key[timestamp] = key if mintime in time2key: del cache[time2key[mintime]] Are there preferable approaches / datastructures to implement ad-hoc caching? My problem is quite similar to this question but I don't need the list to be sorted by time and I don't want dupes.

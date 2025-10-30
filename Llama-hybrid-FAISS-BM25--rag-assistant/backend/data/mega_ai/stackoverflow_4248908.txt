@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4248908
-[parent_id]: 4248798
-[tags]: 
-Use ABS(DATEDIFF..) to work out smallest difference, ORDER on that, restrict. Change ROW_NUMBER() to DENSE_RANK() if you want the average of 2 speeds that are the same difference from @dt declare @dt datetime = '11/22/2010 08:43:14' -- select the average speed (for all cars) but -- only use the record for each car closest to -- the given datetime (@dt) ;WITH Closest AS ( SELECT Speed, ROW_NUMBER() OVER(PARTITION BY ID ORDER BY ABS(DATEDIFF(second,@dt,TimeOfEntry))) AS Ranking FROM SpeedRecords ) SELECT AVG(Speed) FROM Closest WHERE Ranking = 1 For SQL Server 2000 you'd need a correlated subquery and TOP but it'd be awkward

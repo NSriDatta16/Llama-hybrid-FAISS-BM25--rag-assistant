@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1636137
-[parent_id]: 1635757
-[tags]: 
-The Microsoft Code forum has a way to check if a stored procedure is running. You could use that to wait until the job is complete: while 1=1 begin WAITFOR DELAY '000:00:10' if not exists ( SELECT * FROM master..sysprocesses p JOIN msdb..sysjobs j ON substring(left(j.job_id,8),7,2) + substring(left(j.job_id,8),5,2) + substring(left(j.job_id,8),3,2) + substring(left(j.job_id,8),1,2) = substring(p.program_name,32,8) WHERE j.name = 'YourJobName' AND program_name like 'SQLAgent - TSQL JobStep (Job %' ) break end This way the code works is that it waits for 10 seconds, then checks if the job YourJobName is running. It repeats that until the job is no longer running. You could put this in between the sp_start_job calls. Having said that, there must be an easier way. Can't you store the code for each of the 10 jobs in a stored procedure? The "master" job could call the 10 stored procedures, instead of starting the 10 jobs.

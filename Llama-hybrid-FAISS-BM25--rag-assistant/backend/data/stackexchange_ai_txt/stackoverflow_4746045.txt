@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4746045
-[parent_id]: 
-[tags]: 
-How should a service which needs to be stoppable, but not by clients, be stopped?
-
-The easy answer is to have an interface with all the regular operations which also includes a stop() method. interface Service { operation( parameters ...); somethingElse( parameters ... ); stop(); } The main problem with the stop method is that most clients who get a reference to a Service should probably not also be able to stop the service. Another alternative is to simply define two interfaces, the service and the Stoppable interface Service { operation( parameters ...); somethingElse( parameters ... ); } interface Stoppable { void stop(); } The only problem with this approach is if the implementation is wrapped by another Service, then the stop method is hidden away. The original problem of stopping clients from "stopping" your service is still possible, they just need to first check if the reference is an instance of Stoppable and then they can "stop" it. How would you solve this problem? I have an idea which solves the problem elegantly (well for me) without leaving a public stop available. However before I show it, I'd like some ideas.

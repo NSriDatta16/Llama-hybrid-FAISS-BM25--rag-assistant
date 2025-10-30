@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 987679
-[parent_id]: 
-[tags]: 
-Is synchronization necessary for unmodifiable maps?
-
-I'm using JDK 1.4...so I don't have access to the nice concurrency stuff in 1.5+. Consider the following class fragment: private Map map = Collections.EMPTY_MAP; public Map getMap() { return map; } public synchronized void updateMap(Object key, Object value) { Map newMap = new HashMap(map); newMap.put(key, value); map = Collections.unmodifiableMap(newMap); } Is it necessary to synchronize (or volatile) the map reference given that I will only be allowed to update the map via the updateMap method (which is synchronized)? The map object will be accessed (read) in multiple threads, especially via Iterators. Knowing that Iterators will throw an exception if the back-end map's structure is changed, I figured I would make the map unmodifiable. So as I change the structure of the map via updateMap, the existing iterators will continue working on the "old" map (which is fine for my purposes). The side effect is, I don't have to worry about synchronizing reads. In essense, I'm going to have a much greater magnitude of reads compared to writes. The threads that are currently iterating over the map object will continue to do so and any new threads that kick off will grab the latest map. (well, I assume it will considering erickson's comments here - Java concurrency scenario -- do I need synchronization or not? ) Can somebody comment on whether or not this idea is a good one? Thanks!

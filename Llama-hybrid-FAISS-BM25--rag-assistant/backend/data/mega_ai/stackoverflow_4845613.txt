@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4845613
-[parent_id]: 
-[tags]: 
-Defining a decorator in a class, which is also usuable within the class definition
-
-I'm trying to implement a "subcommand" system as an inheritable class in Python. My expected use case is something like: from command import Command import sys class MyCommand(Command): @Command.subcommand def foo(self): print "this can be run as a subcommand" def bar(self): print "but this is a plain method and isn't exposed to the CLI" MyCommand()(*sys.argv) # at the command line, the user runs "mycommand.py foo" I implemented Command.subcommand as a static method and everything worked fine until I tried to add a subcommand to the parent class, which got me TypeError: 'staticmethod' object is not callable . In hindsight, it's obvious that this won't work: class Command(object): @staticmethod def subcommand(method): method.is_subcommand = True return method @subcommand def common(self): print "this subcommand is available to all child classes" The only alternative I've found so far is to declare the subcommand decorator outside the parent class, then inject it after the class definition is complete. def subcommand(method): method.is_subcommand = True return method class Command(object): @subcommand def common(self): print "this subcommand is available to all child classes" Command.subcommand = staticmethod(subcommand) del subcommand However, as someone who never used Python before decorators were added, this feels very clunky to me. Is there a more elegant way to accomplish this?

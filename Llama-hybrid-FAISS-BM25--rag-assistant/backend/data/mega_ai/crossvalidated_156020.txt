@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 156020
-[parent_id]: 
-[tags]: 
-PyMC for Categorical Latent Model
-
-I'm learning PyMC and am trying to fit a simple categorical mixture model but the sampling estimates don't converge to the true values. I'm wondering if I've specified the model incorrectly or am using the sampler incorrectly. The true means are $\mu$ = [-10,0,10,20]. The code specifying the model is below. Any insights much appreciated! Updated info: I also coded this problem in Stan and encountered the same issue. This issue appears to be an "identifiability","aliasing", or "label switching" issue. For more detail, see section 19.2 of the current Stan manual. I'm not yet sure how to fix the problem. import matplotlib.pyplot as plt import numpy as np import pymc as mc from pymc.Matplot import plot # generate simulated data ndata = 1000 numCat = 4 c = np.random.randint(0,numCat,ndata) mu = [-10,0,10,20] sigma = .25 sample = np.zeros(ndata) for i in range(ndata): sample[i] = np.random.normal(mu[c[i]],sigma,1) # define the model in PyMC labels = mc.Categorical('labels', p = np.array([.25,.25,.25,.25]),size = ndata) means = mc.Uniform('means', lower=-30., upper=30., size=numCat) @mc.deterministic def mean(labels=labels, means=means): return means[labels] obs = mc.Normal('obs', mean, 1/(sigma**2), value=sample, observed = True) model = mc.Model({'labels': labels,'means': means, 'obs': obs}) # fit the model mcmc = mc.MCMC( model ) mcmc.sample( 50000,0 ) plot(mcmc)

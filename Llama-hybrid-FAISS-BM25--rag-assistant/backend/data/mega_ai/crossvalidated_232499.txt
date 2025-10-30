@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 232499
-[parent_id]: 232425
-[tags]: 
-My guess is that when you are performing the Bayesian updating, you are not using the correct updated prior. Logistic regression has no conjugate prior thus you will not be able to perform Bayesian updating the way that you want to. In addition, the default prior for bayesglm is a Cauchy distribution and you have only updated the location and scale for this distribution (in fact you haven't ever updated the intercept location and scale), but have never updated the degrees of freedom. Finally, the prior in bayesglm is always independent amongst the coefficients, but the updated posterior will not necessarily be independent. (There is also the question of what the scaled argument is doing to the prior, so you will likely want scaled=FALSE .) You may be able to get closer to what you want by taking samples from the posterior and then optimizing the location, scale, and degrees of freedom to find the best fitting t distribution (likely you will do this for each coefficient separately). Then use this as the prior for the next data subset.

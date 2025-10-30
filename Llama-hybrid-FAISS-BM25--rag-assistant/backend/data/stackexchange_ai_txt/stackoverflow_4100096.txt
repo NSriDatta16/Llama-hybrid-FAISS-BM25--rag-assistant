@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4100096
-[parent_id]: 
-[tags]: 
-a select statement in a transaction against a loopback linked server never stops
-
-In Sql Server 2008 r2, I have a table called Emp, and I'm trying to update some values in a transaction (outer tran), now after the update and before the commit, I began another transaction, in witch i tried to select data from the same table (Emp) but via a loopback linked server. the tsql look like this: USE MASTER GO EXEC sp_addlinkedserver @server = N'loopback',@srvproduct=N'',@provider = N'SQLNCLI', @datasrc = @@SERVERNAME,@catalog = 'MstrDtl' GO EXEC sp_serveroption loopback,N'remote proc transaction promotion','FALSE' Go create SYNONYM loopy FOR loopback.MstrDtl.dbo.Emp use MstrDtl BEGIN TRAN OuterTran BEGIN update table dbo.Emp set Salary = 123456 where Name='abcdx' BEGIN TRAN InnerTran select Salary from loopy where Name = 'abcdx' COMMIT TRAN InnerTran ROLLBACK TRAN OuterTran END so i have two questions: can i get old values (the affected rows with the update) in the query to loopback inside the InnerTran using this way? the query never stops, any idea?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1593398
-[parent_id]: 1593074
-[tags]: 
-One way to (more or less) achieve this is described on OPS4J Wiki page -- "Getting the benefits of maven-bundle-plugin in other project types" . You can configure dependency embedding and Bundle-ClassPath directive in your pom.xml to match the locations used by WAR plugin. The maven-bundle-plugin will then generate correct manifest headers. The instructions for maven-bundle-plugin might look like this: .,WEB-INF/classes,{maven-dependencies} WEB-INF/lib *;scope=compile|runtime true ETA : When using this approach, I found out two noteworthy things: the bundle plugin will complain about missing WEB-INF directories, because when the manifest goal is executed, the war plugin has not yet created them (it only runs at a later phase) although it doesn't make sense for the actual webapp, the Bundle-ClassPath directive must contain ".", or the bundle plugin will mess up the Import-Packages header. I found this in some JIRA issue via Google, but I can't find the URL anymore. Other than that it works fine.

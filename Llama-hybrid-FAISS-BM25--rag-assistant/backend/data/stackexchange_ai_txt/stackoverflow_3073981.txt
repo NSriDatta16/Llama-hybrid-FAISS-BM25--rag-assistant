@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3073981
-[parent_id]: 3073631
-[tags]: 
-When you append those children, I guess that libxml looks for the first namespace declaration for " http://www.w3.org/2000/blabla " and finds "blabla". Now if you put your default namespace declaration first, it will find that the default namespace works and it will not prefix those nodes with blabla. Update The issue is entirely cosmetic, but if you want to remove redundant namespace declarations, you can dump and reload your XML: $xml = $doc->saveXML(); $doc = new DOMDocument; $doc->loadXML($xml, LIBXML_NSCLEAN); echo $doc->saveXML(); Attention if you reuse the $doc variable, it doesn't mean that stuff like $blablaNode will remain functional, it won't. The new $doc is a new document. Oh, and it will also clean up redundant namespaces from the original document, possibly breaking that "keeping it intact" rule. Oh, and I forgot to mention that you have to explicitely declare which namespace is to be created into: $magicElement = $doc->createElementNS('http://www.w3.org/2000/blabla', 'magic');

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4349849
-[parent_id]: 
-[tags]: 
-Quick-and-dirty class constructor for MATLAB?
-
-I am trying to make MATLAB a bit more usable than it is (for me), and one of the things which I always wanted to fix is a better class constructor. I want to have the following interface: MyClass.new(some_args).method1; # instead of classical: obj = MyClass(some_args); obj.method1; I can easily achieve this by defining a static method new : classdef MyClass methods function obj = MyClass(varargin); end function method1(obj,varargin); end end methods (Static) function obj = new(varargin); obj = MyClass(varargin{:}); end end end But this requires adding such method to all classes, and therefore it is not very elegant/convenient. I thought that I could go around it by defining a common class with the following constructor classdef CommonClass methods (Static) function obj = new(varargin) # getting name of the current file (Object), i.e. basename(__FILE__) try clear E; E; catch E, [s, s] = fileparts(E.stack(1).file); end; # creating object with name $s obj = eval([s '(varargin{:})']); end end end classdef MyClass However, this doesn't work because MATLAB calls new() from Object.m , and therefore I get instance of Object instead of MyClass . Any ideas how I can improve it? EDIT1: I would like it to work also for classes created inside other ones: classdef MyAnotherClass > MyAnotherClass.new

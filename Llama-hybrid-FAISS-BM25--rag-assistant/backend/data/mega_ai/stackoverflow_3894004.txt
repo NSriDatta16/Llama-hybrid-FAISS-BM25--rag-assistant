@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3894004
-[parent_id]: 3893822
-[tags]: 
-This is one of the few, possibly the only, valid uses for the AUTONOMOUS_TRANSACTION pragma . This allows us to issue SQL in a discrete transaction, which means that stuff gets committed without affecting the wider transaction. Consequently your audit messages will be committed even if the database crashes before the user issues an explicit commit (or whatever). Obviously I don't know what data you want to log, but write a procedure like this and call it from your triggers: procedure write_audit (p_table_name in audit_table.table_name%type , p_action in audit_table.action%type ) is pragma autonomous_transaction; begin insert into audit_table (id, table_name, ts, action) values (audit_id.nextval, p_table_name, systimestamp, p_action); commit; end write_audit;

@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 14442
-[parent_id]: 14154
-[tags]: 
-LabeledPoint expects: LabeledPoint(label: Double, features: Vector) when you execute val trainingData2=LabeledPoint(1.0,trainingData.collect()) you're actually getting all the Rows in your trainingData set so you will have Array(Row(???), Row(???), ???) but what you need is to apply def transformToLabeledPoint(vector: Vector) = LabeledPoint(1.0, vector) , you can either apply a map on your trainingData or create a UDF and apply it to your trainingData, for instance: import org.apache.spark.ml.feature.SQLTransformer import org.apache.spark.mllib.regression.LabeledPoint import org.apache.spark.mllib.linalg.Vectors val df = spark.createDataFrame(Seq((1.0,100.0),(2.0,200.0))).toDF("id", "value") spark.udf.register("setLabel", (label: Double, x: Seq[Double]) => LabeledPoint(label, Vectors.dense(x.toArray))) val labeledTrainingData = new SQLTransformer() .setStatement("SELECT setLabel(1.0, array(*)) AS points FROM __THIS__") .transform(df) val labeledRDD = labeledTrainingData.rdd.map(_(1).asInstanceOf[LabeledPoint])

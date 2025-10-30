@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2535162
-[parent_id]: 
-[tags]: 
-PHP session_write_close() causes empty response
-
-When using session_write_close() in a shutdown function at the end of my script - PHP just dies. There is no error logged, response headers (firebug), or data (even whitespace!) returned. I have full PHP error reporting on with STRICT enabled and PHP 5.2.1. My guess is that since session_write_close() is being called after shutdown - some fatal error is being encountered that crashes PHP before it has a chance to send the output or log anything. This only happens on the logout page where I first: ... //If there is no session to delete (not started) if ( ! session_id()) { return; } // Get the session name $name = session_name(); // Delete the session cookie (if exists) if ( ! empty($_COOKIE[$name])) { //Get the current cookie config $params = session_get_cookie_params(); // Delete the cookie from globals unset($_COOKIE[$name], $_SESSION); //Delete the cookie on the user_agent setcookie($name, '', time()-43200, $params['path'], $params['domain'], $params['secure']); } // Destroy the session session_destroy(); ... then 2) do some more stuff 3) issue a redirect and 4) finally, after the whole page is done the register_shutdown_function(); I placed earlier runs and calls session_write_close() which saves the session to the database. The end. Since this blank response only occurs on logout I'm guessing that I'm not restarting the session properly which is causing session_write_close() to die fatally at the end of the script.

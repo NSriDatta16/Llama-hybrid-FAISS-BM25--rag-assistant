@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4847251
-[parent_id]: 4847213
-[tags]: 
-It's impossible to do without embedding some sort of runtime type information in struct A . For example, you could store a pointer to some sort of type information, and you must initialize that any time you create any 'derived' struct. struct RTTI { const char *typename; // etc. }; struct A { const RTTI *rtti; // rest of A }; struct B { A part_a; ... }; const RTTI RTTI_B = {"B"}; struct C { A part_a; ... }; const RTTI RTTI_C = {"C"}; void make_B(B *b) { b->part_a.rtti = &RTTI_B; // make the rest of B } void make_C(C *c) { c->part_a.rtti = &RTTI_C; // make the rest of C } B * A_downcast_B(A * a) { return (a->rtti == &RTTI_B) ? (B*)a : NULL; } Note that this is really just a simplified implementation of C++'s dynamic_cast operator, which only works with polymorphic data types. The reason that for that is that the runtime can only access the runtime type information if the object has some sort of type information embedded in it—its vtable.

@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 23735
-[parent_id]: 23734
-[tags]: 
-The new version (0.3.0) of Keras no longer has tied weights in AutoEncoder, and it still shows different convergence. This is because weights are initialized differently. In the non-AE example, Dense(32,16) weights are initialized first, followed by Dense(16,32). In the AE example, Dense(32,16) weights are initialized first, followed by Dense(16,32), and then when you create the AutoEncoder instance, Dense(32,16) weights are initialized again (self.encoder.set_previous(node) will call build() to initialize weights). Now the following two NNs converge exactly the same: autoencoder = Sequential() encoder = containers.Sequential([Dense(32,16,activation='tanh')]) decoder = containers.Sequential([Dense(16,32)]) autoencoder.add(AutoEncoder(encoder=encoder, decoder=decoder, output_reconstruction=True)) rms = RMSprop() autoencoder.compile(loss='mean_squared_error', optimizer=rms) np.random.seed(0) autoencoder.fit(trainData,trainData, nb_epoch=20, batch_size=64, validation_data=(testData, testData), show_accuracy=False)

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2608842
-[parent_id]: 
-[tags]: 
-Caching Authentication Data
-
-I'm currently implementing a REST web service using CouchDB and RESTlet. The RESTlet layer is mainly for authentication and some minor filtering of the JSON data served by CouchDB: Clients [ RESTlet CouchDB ] I'm using CouchDB also to store user login data, because I don't want to add an additional database server for that purpose. Thus, each request to my service causes two CouchDB requests conducted by RESTlet (auth data + "real" request). In order to keep the service as efficent as possible, I want to reduce the number of requests, in this case redundant requests for login data. My idea now is to provide a cache (i.e.LRU-Cache via LinkedHashMap) within my RESTlet application that caches login data, because HTTP caching will probabily not be enough. But how do I invalidate the cache data, once a user changes the password, for instance. Thanks to REST, the application might run on several servers in parallel, and I don't want to create a central instance just to cache login data. Currently, I save requested auth data in the cache and try to auth new requests by using them. If a authentication fails or there is now entry available, I'll dispatch a GET request to my CouchDB storage in order to obtain the actual auth data. So in a worst case, users that have changed their data will perhaps still be able to login with their old credentials. How can I deal with that? Or what is a good strategy to keep the cache(s) up-to-date in general? Thanks in advance.

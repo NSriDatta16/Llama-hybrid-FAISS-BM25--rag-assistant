@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5667702
-[parent_id]: 5667538
-[tags]: 
-It sounds like your strings are ending up on the Large Object Heap and not being compacted. Unfortunately, I don't know a good way to force a compact or cleanup of the Large Object Heap (LOH), and so the best advice I can give is to use shorter strings. The LOH takes anything larger than a mere 80Kb. Remember that because strings are immutable, if you build the string up over time you may be inserting many different strings into to LOH in the processes of creating your single large string. These other strings will be collected by the GC and the the physical memory returned to the operating system, but because the LOH is not compacted (think defragmented) they will continue to use up address space available to your process, which is typically capped at a mere 2GB. At this point you will start to see OutOfMemory exceptions.

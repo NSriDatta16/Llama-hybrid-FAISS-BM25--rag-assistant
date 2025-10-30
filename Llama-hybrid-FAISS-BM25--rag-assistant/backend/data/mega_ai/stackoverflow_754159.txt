@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 754159
-[parent_id]: 748276
-[tags]: 
-The text handling capabilities of MySQL aren't good enough for what you want. A stored function is an option, but will probably be slow. Your best bet to process the data within MySQL is to add a user defined function . If you're going to build a newer version of MySQL anyway, you could also add a native function . The "correct" way is to process the data outside the DB since DBs are for storage, not processing, and any heavy processing might put too much of a load on the DBMS. Additionally, calculating the word count outside of MySQL makes it easier to change the definition of what counts as a word. How about storing the word count in the DB and updating it when a document is changed? Example stored function: DELIMITER $$ CREATE FUNCTION wordcount(str LONGTEXT) RETURNS INT DETERMINISTIC SQL SECURITY INVOKER NO SQL BEGIN DECLARE wordCnt, idx, maxIdx INT DEFAULT 0; DECLARE currChar, prevChar BOOL DEFAULT 0; SET maxIdx=char_length(str); SET idx = 1; WHILE idx

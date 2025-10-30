@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4097287
-[parent_id]: 4092985
-[tags]: 
-Is the problem actually this: You serialize the object once and then save it to isolated storage. You read the object from isolated storage and deserialize it. You then update the object and reserialize it and then save it again. You read it back from isolated storage and can't deserialize it because of the extra characters. If that's the flow to recreate the issue, I suspect that subsequent saved seializations are of a slightly smaller object and so create a serialized string which is smaller than that written previously. When the later string is saved it is written on top of the previously saved string with the end of the old string being left there still. The solution is to make sure that the existing file is deleted or it's contents removed before saving the new contents. I had a similar issue previously and it was a pain to uncover. BTW. You may also want to reconsider your serialization strategy with regard to performance. Take a look at this blog post by Kevin Marshall for more information.

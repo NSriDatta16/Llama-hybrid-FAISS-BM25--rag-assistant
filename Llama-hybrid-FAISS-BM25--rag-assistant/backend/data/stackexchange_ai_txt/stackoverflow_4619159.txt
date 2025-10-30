@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4619159
-[parent_id]: 
-[tags]: 
-How can I get the Ganymed SSH library to tail a file (in Clojure)?
-
-The following code never manages to tail a file. It simply hangs waiting for reader input. Has anyone tried anything similar? (def output (ref [] )) (import 'ch.ethz.ssh2.Connection) (import 'ch.ethz.ssh2.Session) (import 'ch.ethz.ssh2.StreamGobbler) (import 'java.lang.StringBuilder) (import 'java.io.InputStream) (import 'java.io.BufferedReader) (import 'java.io.InputStreamReader) (let [connection (new Connection "hostname")] (. connection connect) (let [ok (. connection authenticateWithPassword "username" "password" ) session (. connection openSession )] (. session execCommand "tail -f filename.txt") (let [sb (StringBuilder.) stdout (StreamGobbler. (. session getStdout)) br (BufferedReader. (InputStreamReader. stdout)) ] (future (loop [line2 (. br readLine)] (if (= line2 nil) nil (do (dosync (ref-set output (conj @output line2))) (recur (. br readLine)))) ) ) ) ) )

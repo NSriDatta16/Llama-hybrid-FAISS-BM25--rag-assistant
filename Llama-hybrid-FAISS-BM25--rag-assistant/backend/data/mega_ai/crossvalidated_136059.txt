@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 136059
-[parent_id]: 136011
-[tags]: 
-I think that it is possible to model this in PyMC , but in my skimming of the Jaynes article, it does not seem to have all of the detail necessary. It does include the answer Maybe you can reverse engineer the model. Here is my guess at a start for you: import pymc as pm @pm.stochastic def R1(value=1500): return 1./value @pm.stochastic def R2(value=1500): return 1./value @pm.observed def d1(value=2237, R=R1, nu=31): x = nu * value/R return pm.chi2_like(x, nu) @pm.observed def d2(value=1347, R=R2, nu=61): x = nu * value/R return pm.chi2_like(x, nu) m = pm.MCMC([R1, R2, d1, d2]) m.sample(iter=200000, burn=100000, thin=10)

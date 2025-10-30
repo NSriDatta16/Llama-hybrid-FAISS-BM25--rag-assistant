@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4072488
-[parent_id]: 
-[tags]: 
-MySQL Error 2014 - Commands out of sync - when trying to call consecutive stored procs
-
-I have a hierarchical MySQL table setup using the Nested Set model. I have created a stored proc which allows me to delete an organization. When I try making consecutive calls to the stored proc, I get the following error referring to the second CALL command: 2014 - Commands out of sync; you can't run this command now Here is the SQL I am running: SELECT @id := id, @parent_id := parent_id FROM organization WHERE name = 'TESTDEAL'; CALL deleteOrg(@id); CALL deleteOrg(@parent_id); And here is my Stored Procedure: DELIMITER $$ CREATE PROCEDURE deleteOrg(IN IN_ID INT) MODIFIES SQL DATA BEGIN START TRANSACTION; SELECT @org_id := id, @myLeft := lft, @myRight := rgt, @myWidth := rgt - lft + 1 FROM organization WHERE id = IN_ID; # delete statements for removing roles and other dependencies DELETE FROM organization WHERE id = @org_id; UPDATE organization SET rgt = rgt - @myWidth WHERE rgt > @myRight; UPDATE organization SET lft = lft - @myWidth WHERE lft > @myRight; COMMIT; END; $$ DELIMITER ; Why would the second command be failing? Is MySQL trying to execute the second CALL command before the first one has been committed? Is there a way I can force the first one to fully execute before calling the second? EDIT: organization table is using InnoDB EDIT: Tried removing START TRANSACTION; and COMMIT; but am still getting same error

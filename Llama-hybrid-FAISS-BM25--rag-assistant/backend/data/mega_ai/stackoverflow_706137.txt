@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 706137
-[parent_id]: 
-[tags]: 
-MySQL trigger : is it possible to delete rows if table become too large?
-
-When inserting a new row in a table T, I would like to check if the table is larger than a certain threshold, and if it is the case delete the oldest record (creating some kind of FIFO in the end). I thought I could simply make a trigger, but apparently MySQL doesn't allow the modification of the table on which we are actually inserting : Code: 1442 Msg: Can't update table 'amoreAgentTST01' in stored function/trigger because it is already used by statement which invoked this stored function/trigger. Here is the trigger I tried : Delimiter $$ CREATE TRIGGER test AFTER INSERT ON amoreAgentTST01 FOR EACH ROW BEGIN DECLARE table_size INTEGER; DECLARE new_row_size INTEGER; DECLARE threshold INTEGER; DECLARE max_update_time TIMESTAMP; SELECT SUM(OCTET_LENGTH(data)) INTO table_size FROM amoreAgentTST01; SELECT OCTET_LENGTH(NEW.data) INTO new_row_size; SELECT 500000 INTO threshold; select max(updatetime) INTO max_update_time from amoreAgentTST01; IF (table_size+new_row_size) > threshold THEN DELETE FROM amoreAgentTST01 WHERE max_update_time = updatetime; -- and check if not current END IF; END$$ delimiter ; Do you have any idea on how to do this within the database ? Or it is clearly something to be done in my program ?

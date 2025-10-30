@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2052049
-[parent_id]: 2051834
-[tags]: 
-Extension methods and attributes will help you: public class SkipPropertyAttribute : Attribute { } public static class TypeExtensions { public static PropertyInfo[] GetFilteredProperties(this Type type) { return type.GetProperties().Where(pi => pi.GetCustomAttributes(typeof(SkipPropertyAttribute), true).Length == 0).ToArray(); } } public class Test { public string One { get; set; } [SkipProperty] public string Two { get; set; } } class Program { static void Main(string[] args) { var t = new Test(); Type ty = t.GetType(); PropertyInfo[] pinfo = ty.GetFilteredProperties(); foreach (PropertyInfo p in pinfo) { Console.WriteLine(p.Name); } Console.ReadKey(); } } UPDATE: Little more elegant implementation of the GetFilteredProperties (thanks to Marc Gravell ): public static class TypeExtensions { public static PropertyInfo[] GetFilteredProperties(this Type type) { return type.GetProperties() .Where(pi => !Attribute.IsDefined(pi, typeof(SkipPropertyAttribute))) .ToArray(); } }

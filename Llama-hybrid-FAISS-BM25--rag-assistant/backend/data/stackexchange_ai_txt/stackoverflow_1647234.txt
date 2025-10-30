@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1647234
-[parent_id]: 
-[tags]: 
-How can I use placeholders for variadic SQL functions with Perl's DBI?
-
-I don't know if "variadic" is actually the right word, but I'm talking about things that can take a list of values, like IN() . If you've been working with DBI for long, you've probably tried to do this: (Note: All examples extremely simplified for brevity) my $vals = join ', ', @numbers; my $sth = $dbh->prepare( "SELECT * FROM mytbl WHERE foo IN( ? )" ); $sth->execute( $vals ); # doesn't work DBI placeholders simply don't support these kinds of shenanigans, it's a single value for each ? or nothing, as far as I know. This leads me to end up doing something like: my $sth = $dbh->prepare( "SELECT * FROM mytbl WHERE foo IN ( $vals )" ); which isn't so horrible, but consider a function, like one I wrote today, that has to accept some arbitrary SQL with an IN clause and a list of values sub example { my $self = shift; my ( $sql, @args ) = @_; my $vals = join ', ', @args; $sql =~ s/XXX/$vals/; dbh->prepare( $sql ); ... } This ends up getting called by stuff that looks like my $sql = "SELECT * FROM mytbl WHERE foo IN( XXX ) AND bar = 42 ORDER BY baz"; my $result = $self->example( $sql, @quux ); This really offends my sense of aesthetics. Building custom SQL programmaticly is a big enough pain as it is; I don't want to go down the road of regexing my SQL strings if I don't have to. Is there a better way?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4230210
-[parent_id]: 1308386
-[tags]: 
-What I did was to create my own storage that will just not save the file to the disk: from django.core.files.storage import FileSystemStorage class CustomStorage(FileSystemStorage): def _open(self, name, mode='rb'): return File(open(self.path(name), mode)) def _save(self, name, content): # here, you should implement how the file is to be saved # like on other machines or something, and return the name of the file. # In our case, we just return the name, and disable any kind of save return name def get_available_name(self, name): return name Then, in my models, for my ImageField, I've used the new custom storage: from custom_storage import CustomStorage custom_store = CustomStorage() class Image(models.Model): thumb = models.ImageField(storage=custom_store, upload_to='/some/path')

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5032521
-[parent_id]: 5031553
-[tags]: 
-This is Tcl syntax, so you can set up a mechanism to run it as a Tcl script that creates a data structure of itself. #!/usr/bin/env tclsh # create a safe slave interpreter set slave [interp create -safe] # set up the slave to parse the input file $slave eval { proc virtual {subkey body} { eval $body } proc unknown {cmd args} { upvar 1 subkey subkey ;# access the 'subkey' variable from the 'virtual' proc if {[llength $args] == 1} {set args [lindex $args 0]} dict set ::data $subkey $cmd $args } set data [dict create] } $slave expose source # now do the parsing in the slave $slave eval source [lindex $argv 0] # fetch the data structure set data [$slave eval set data] # and do stuff with it. dict for {subkey subdict} $data { puts "$subkey destination = [dict get $subdict destination]" } And then, parser.tcl input_file outputs vs_devaetnet_80 destination = 167.69.107.41:http vs_devdpp_4430 destination = 167.69.107.31:https vs_devwww30_80 destination = 167.69.107.46:http

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5267248
-[parent_id]: 5267055
-[tags]: 
-I would probably start with a less efficient, but elegant functional solution that uses the Seq.windowed function (which turns sequence into sequence of consecutive groups of specified size): source // Create groups of specified size |> Seq.windowed requiredLength // Add starting indices to the sequence |> Seq.mapi (fun i v -> i, v) // Find all groups that contain only numbers larger than treshold |> Seq.filter (fun (i, v) -> v |> Seq.forall (( Seq.map fst This returns indices all such groups, so if there are multiple overlapping groups (i.e. a larger sequence matching the condition) then you'll get all starting indices. You could probably just filter consecutive numbers from the result to get only the first index of a group (using Seq.fold ). To get a more efficient version, you'll need to write a recursive function that iterates over the array or list. You'd probably need to remember (in a function argument) when you found a last value over the treshold. (This is essentially the same as imperative loop, except you use recursive function and keep state in arguments).

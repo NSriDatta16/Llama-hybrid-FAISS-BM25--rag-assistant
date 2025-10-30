@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 194952
-[parent_id]: 194795
-[tags]: 
-Here's the answer to my own question. The solution was to modify Lucene.Net.Store.FSDirectory, by commenting out this unused line: // Comments out by Corey Trager, Oct 2008 to workaround permission restrictions at shared host. This is not used. // public static readonly System.String LOCK_DIR = SupportClass.AppSettings.Get("Lucene.Net.lockDir", System.IO.Path.GetTempPath()); There was one more security permission hurdle after that, and here's that workaround too. I don't understand why one way of getting the names of files in a directory would be blocked, and another way not blocked. public override System.String[] List() { /* Changes by Corey Trager, Oct 2008, to workaround permission restrictions at shared host */ System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(directory.FullName); System.IO.FileInfo[] files = dir.GetFiles(); string[] list = new string[files.Length]; for (int i = 0; i

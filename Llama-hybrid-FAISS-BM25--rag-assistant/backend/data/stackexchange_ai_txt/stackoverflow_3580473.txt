@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3580473
-[parent_id]: 3580123
-[tags]: 
-Use an after insert trigger. Join from the inserted pseudo table to Tb on the primary key. Then update the values of desc. Something like: (But may not compile) CREATE TRIGGER TbFixTb_Trg ON Tb AFTER INSERT AS BEGIN UPDATE Tb SET DESC = SomeTransformationOf(i.DESC) FROM Tb INNER JOIN inserted i on i.Id = Tb.Id END GO This trigger happens after the insert has happened, but before insert statement completes. So the new, incorrect values are already placed in the target table. This trigger will not need to change as columns are added, deleted, etc. Caveat Integrity constraints are enforced before the after trigger fires. So you can't put on a check constraint to enforce the proper form of DESC. Because that would cause the statement to fail prior to the trigger having a chance to fix anything. (Please double check this paragraph before relying on it. It's been awhile since I've written a trigger.)

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 229206
-[parent_id]: 
-[tags]: 
-How do I cleanly extract MySQL enum values in Perl?
-
-I have some code which needs to ensure some data is in a mysql enum prior to insertion in the database. The cleanest way I've found of doing this is the following code: sub enum_values { my ( $self, $schema, $table, $column ) = @_; # don't eval to let the error bubble up my $columns = $schema->storage->dbh->selectrow_hashref( "SHOW COLUMNS FROM `$table` like ?", {}, $column ); unless ($columns) { X::Internal::Database::UnknownColumn->throw( column => $column, table => $table, ); } my $type = $columns->{Type} or X::Panic->throw( details => "Could not determine type for $table.$column", ); unless ( $type =~ /\Aenum\((.*)\)\z/ ) { X::Internal::Database::IncorrectTypeForColumn->throw( type_wanted => 'enum', type_found => $type, ); } $type = $1; require Text::CSV_XS; my $csv = Text::CSV_XS->new; $csv->parse($type) or X::Panic->throw( details => "Could not parse enum CSV data: ".$csv->error_input, ); return map { /\A'(.*)'\z/; $1 }$csv->fields; } We're using DBIx::Class . Surely there is a better way of accomplishing this? (Note that the $table variable is coming from our code, not from any external source. Thus, no security issue).

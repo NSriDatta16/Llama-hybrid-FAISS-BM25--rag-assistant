@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 139580
-[parent_id]: 
-[tags]: 
-Balanced Distribution Algorithm
-
-I'm working on some code for a loosely coupled cluster. To achieve optimal performance during jobs, I have the cluster remap its data each time a child enters or exits. This will eventually be made optional, but for now it performs its data balancing by default. My balancing is basically just making sure that each child never has more than the average number of files per machine, plus one. The plus one is for the remainder if the division isn't clean. And since the remainder will always be less than the number of children [except 0 case, but we can exclude that], children after a balancing will have at most avg + 1. Everything seems fine, until I realized my algorithm is O(n!). Go down the list of children, find out the avg, remainder, who has too many and who has too few. For each child in the too many list, go through list, send to each child who has too few. Is there a better solution to this? I feel there must be. Edit: Here is some psuedocode to show how i derived O(n!): foreach ( child in children ) { if ( child.dataLoad > avg + 1 ) { foreach ( child2 in children ) { if ( child != child2 && child2.dataLoad Edit: O(n^2). Foreach n, n => n*n => n^2. I guess I didn't have enough coffee this morning! ;) In the future I'd like to move to a more flexible and resilient distribution method[weights and hueristics], but for now, a uniform distribution of data works.

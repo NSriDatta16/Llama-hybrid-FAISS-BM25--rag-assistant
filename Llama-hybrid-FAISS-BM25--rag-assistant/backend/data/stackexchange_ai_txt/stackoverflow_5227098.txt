@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5227098
-[parent_id]: 5227079
-[tags]: 
-The first thing to do is to add an index on posts.user_id (or maybe posts.user_id + posts.type ). And another index on posts.created_at UPDATE I've just payed attention that your query grabs all fields from both tables, and posts table has 6 long text columns. So I believe you have a poor performance because mysql has to create quite a large temporary table or temp file to get all rows for satisfying your group by + order by clauses. I think the following query should help. SELECT u.*, p1.* FROM users u INNER JOIN ( SELECT p.user_id, p.created_at, p.id FROM posts p WHERE p.type IN ('post', 'page', 'file') GROUP by p.user_id ORDER BY p.created_at DESC LIMIT 30 )xxx ON xxx.user_id = u.id INNER JOIN posts p1 ON (p1.id = xxx.id)

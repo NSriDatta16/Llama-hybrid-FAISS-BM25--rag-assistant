@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1134831
-[parent_id]: 1134739
-[tags]: 
-Just to rule out any weird interactions, try the following: my $cookie_jar = HTTP::Cookies->new; my $ua = LWP::UserAgent->new; my %cookies = CGI::Cookie->fetch; my $encoded = $cookies{'SCred'}; $cookie_jar->set_cookie( 1, "SCred", $encoded, "/", $SSO_DOMAIN, "", 0, 0, 60*60, 0 ); $ua->cookie_jar($cookie_jar); # I get error on this line Now, for some reason, $ua is undefined, which means the constructor call: my $ua = LWP::UserAgent->new; failed. I am not too familiar with fastcgi . However, LWP::UserAgent croaks on any failure in the constructor: I am not sure how you are reaching the line in question. Have you checked the server logs? Total shot in the dark: Does the following add any useful information to the error log? my $ua = eval { LWP::UserAgent->new } or warn "LWP::UserAgent->new failed: $@";

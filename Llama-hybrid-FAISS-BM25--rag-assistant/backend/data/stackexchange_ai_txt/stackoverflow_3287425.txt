@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3287425
-[parent_id]: 3000211
-[tags]: 
-The Problem is, that you interleave all whitespaces - so after parsing the tokens and coming to the lexer, they just "don't exist" anymore. CommentLineBlock is syntax in your case, but you need the comment-blocks to be completely consumed in tokens ... language MyLanguage { syntax Main = CommentLineBlock*; token LineBreak = '\u000D\u000A' | '\u000A' // New Line |'\u000D' // Carriage Return |'\u0085' // Next Line |'\u2028' // Line Separator |'\u2029' // Paragraph Separator ; token CommentContent = !( '\u000A' // New Line |'\u000D' // Carriage Return |'\u0085' // Next Line |'\u2028' // Line Separator |'\u2029' // Paragraph Separator ); token CommentLine = "//" c:CommentContent*; token CommentLineBlock = c:(CommentLine LineBreak?)+ => Block {c}; interleave Whitespace = " " | "\r" | "\n"; } But then the problem is, that the subtoken-rules in CommentLine won't be processed - you get plain strings parsed. Main[ [ Block{ "/// This is block\r\n/// number one\r\n" }, Block{ "/// This is block\r\n/// number two" } ] ] I might try to find a nicer way tonight :-)

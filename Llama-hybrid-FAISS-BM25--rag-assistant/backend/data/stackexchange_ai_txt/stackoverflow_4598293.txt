@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4598293
-[parent_id]: 
-[tags]: 
-Rails 3: Sweeper not destroying fragments, thinks caching was disabled
-
-I want to expire fragments with a sweeper. The sweeper callbacks are executed, but the calls to expire_fragment do nothing, because (I assume) cache_configured? returns nil. Caching is configured and fragments are being created and used in my templates (verified it in the logs). What am I doing wrong? application.rb config.cache_store = :mem_cache_store, "XXX.XXX.XXX.XXX", { # I use a real IP :compress => true, :namespace => "#{Rails.env}_r3" } config.active_record.observers = [:auction_sweeper, :address_sweeper] production.rb config.action_controller.perform_caching = true auction_sweeper.rb class AuctionSweeper In log files, cache_configured? is nil and so is perform_caching and cache_store. AuctionSweeper.expire_details 12732 nil=nil&&nil So I assume, that my fragments are not expired because the code of expire_fragment reads: File actionpack/lib/action_controller/caching/fragments.rb, line 87 87: def expire_fragment(key, options = nil) 88: return unless cache_configured?

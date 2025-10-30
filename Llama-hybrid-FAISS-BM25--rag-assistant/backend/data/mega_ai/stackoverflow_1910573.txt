@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1910573
-[parent_id]: 
-[tags]: 
-Ruby 1.9: how can I properly upcase & downcase multibyte strings?
-
-So matz made the decision to keep upcase and downcase limited to /[A-Z]/i in ruby 1.9.1. ActiveSupport::Multibyte has long had great i18n case jiggering in ruby 1.8.x via String#mb_chars . However, when tried under ruby 1.9.1, it doesn't seem to work. Here's a simple test script I wrote, along with the output I'm getting: $ cat test.rb # encoding: UTF-8 puts("@ #{RUBY_VERSION} " + (__ENCODING__ rescue $KCODE).to_s) sd, su = "Iñtërnâtiônàlizætiøn", "IÑTËRNÂTIÔNÀLIZÆTIØN" def ps(u, d, k); puts "%-30s: %24s / %-24s" % [k, u, d] end ps sd.upcase, su.downcase, "Plain ruby" require 'rubygems'; require 'active_support' ps sd.upcase, su.downcase, "With active_support" ps sd.mb_chars.upcase.to_s, su.mb_chars.downcase.to_s, "With active_support mb_chars" $ ruby -KU test.rb @ 1.8.7 UTF8 Plain ruby : IñTëRNâTIôNàLIZæTIøN / iÑtËrnÂtiÔnÀlizÆtiØn With active_support : IñTëRNâTIôNàLIZæTIøN / iÑtËrnÂtiÔnÀlizÆtiØn With active_support mb_chars : IÑTËRNÂTIÔNÀLIZÆTIØN / iñtërnâtiônàlizætiøn $ ruby1.9 test.rb @ 1.9.1 UTF-8 Plain ruby : IñTëRNâTIôNàLIZæTIøN / iÑtËrnÂtiÔnÀlizÆtiØn With active_support : IñTëRNâTIôNàLIZæTIøN / iÑtËrnÂtiÔnÀlizÆtiØn With active_support mb_chars : IñTëRNâTIôNàLIZæTIøN / iÑtËrnÂtiÔnÀlizÆtiØn So, how do I get internationalized upcase and downcase with ruby 1.9.1? update I should add that I also tested with ActiveSupport from the current master , 2-3-* and 3-0-unstable rails branches at GitHub. Same results.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1457621
-[parent_id]: 1457571
-[tags]: 
-You shouldn't use the game_ratingstblx245v.game_id column in your GROUP BY, since it could be NULL when there are no ratings for a given game id. Use game_data.id instead. Here's how I would write the query: SELECT g.id, g.name, AVG( x.rating ) AS avg_user_rating, COUNT( DISTINCT x.userid ) AS user_count, AVG( r.critic_rating ) AS avg_critic_rating, COUNT( DISTINCT r.critic ) AS critic_count FROM game_data g LEFT JOIN game_ratingstblx245v x ON (x.game_id = g.id) LEFT JOIN game_ratings r ON (r.game_id = g.id) WHERE g.release_date Note that although this query produces a Cartesian product between x and r , it doesn't affect the calculation of the average ratings. Just be aware in the future that if you were doing SUM() or COUNT() , the calculations could be exaggerated by an unintended Cartesian product.

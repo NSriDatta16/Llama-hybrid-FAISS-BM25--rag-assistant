@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2357203
-[parent_id]: 
-[tags]: 
-nHibernate generating correct SQL, but returning empty rows
-
-I have the following ICriteria query, public override IQueryable GetQuery(ISession session) { ICriteria results = session.CreateCriteria () .Add(Restrictions.Eq("PartNumber", _partNumber)) .CreateCriteria("Applications") .CreateAlias("Vehicles", "vehicle", global::NHibernate.SqlCommand.JoinType.InnerJoin) .SetProjection(Projections.Property("vehicle.Make"), Projections.Property("vehicle.Model"), Projections.Property("vehicle.Type"), Projections.Property("vehicle.Engine"), Projections.Property("vehicle.ProductionStart"), Projections.Property("vehicle.ProductionEnd")) .SetResultTransformer(Transformers.AliasToBean ()); return results.List ().AsQueryable(); } And it produces the following SQL. SELECT vehicle2_.Make as y0_, vehicle2_.Model as y1_, vehicle2_.Type as y2_, vehicle2_.Engine as y3_, vehicle2_.ProductionStart as y4_, vehicle2_.ProductionEnd as y5_ FROM Parts this_ inner join Applications applicatio1_ on this_.PartId = applicatio1_.PartId inner join VehiclesToApplications vehicles5_ on applicatio1_.ApplicationId = vehicles5_.ApplicationId inner join Vehicles vehicle2_ on vehicles5_.VehicleId = vehicle2_.VehicleId WHERE this_.PartNumber = '0500-252' /* @p0 */ When I run the query from my app nHibernate returns the right amount of rows but all the fields are null or empty. But when I take the SQL it has generated (from nhibernate profiler) and run it on my db it returns the correct results. What am I doing wrong/missing?

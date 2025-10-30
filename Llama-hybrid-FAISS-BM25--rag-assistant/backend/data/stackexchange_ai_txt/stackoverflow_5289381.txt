@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5289381
-[parent_id]: 
-[tags]: 
-ctags chokes on source file with unbalanced braces due to #ifdef
-
-I am using ctags to generate a tags file for a C project I am working on, but many functions are missing in the file. This appears to be caused by unbalanced braces in the source files due to using #ifdef . A (simplified) example: #include struct mystruct { long member; #ifndef _MSC_VER }__attribute__ ((packed)); #else /* _MSC_VER */ }; #pragma pack(pop) #endif /* _MSC_VER */ char* greeting_text(){ return "Hello world\n"; } int main( int argc, const char* argv[] ){ char * greeting = greeting_text(); printf(greeting); return 0; } This compiles and works flawlessly with gcc -Wall under Linux. However, if I parse it using ctags problem.c , the tags file only contains entries for mystruct -- the functions are missing. ctags --verbose reports: OPENING problem.c as C language file problem.c: unexpected closing brace at line 8 problem.c: retrying file with fallback brace matching algorithm OPENING problem.c as C language file problem.c: unexpected closing brace at line 8 so apparently ctags does not like the preprocessor tricks in the file. Is there a way to make ctags handle this? The manpage of ctags even explicitly mentions this problem, but indicates ctags can work around this. However, this does not appear to work... This is with Exuberant Ctags 5.8 (Debian package 1:5.8-4). Edit: I'm also interested in alternatives to ctags that handle these kinds of constructs.

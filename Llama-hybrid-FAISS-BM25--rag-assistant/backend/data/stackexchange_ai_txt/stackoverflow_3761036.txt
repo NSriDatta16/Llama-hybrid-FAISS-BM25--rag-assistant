@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3761036
-[parent_id]: 478387
-[tags]: 
-Actually adding any header field to the NSURLRequest argument in shouldStartLoadWithRequest seems to work, because the request responds to setValue:ForHTTPHeaderField - but it doesn't actually work - the request is sent out without the header. So I used this workaround in shouldStartLoadWithRequest which just copies the given request to a new mutable request, and re-loads it. This does in fact modify the header which is sent out. if ( [request valueForHTTPHeaderField:@"MyUserAgent"] == nil ) { NSMutableURLRequest *modRequest = [request mutableCopyWithZone:NULL]; [modRequest setValue:@"myagent" forHTTPHeaderField:@"MyUserAgent"]; [webViewArgument loadRequest:modRequest]; return NO; } Unfortunately, this still doesn't allow overriding the user-agent http header, which is apparently overwritten by Apple. I guess for overriding it you would have to manage a NSURLConnection by yourself.

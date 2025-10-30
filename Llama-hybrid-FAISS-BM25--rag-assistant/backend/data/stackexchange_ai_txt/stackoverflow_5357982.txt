@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5357982
-[parent_id]: 
-[tags]: 
-ASP.NET MVC. How to create Action method that accepts and multipart/form-data
-
-I have a Controller method that needs to accept multipart/form-data sent by the client as a POST request. The form data has 2 parts to it. One is an object serialized to application/json and the other part is a photo file sent as application/octet-stream . I have a method on my controller like this: [AcceptVerbs(HttpVerbs.Post)] void ActionResult Photos(PostItem post) { } I can get the file via Request.File without problem here.However the PostItem is null. Not sure why? Any ideas Controller Code: /// /// FeedsController /// public class FeedsController : FeedsBaseController { [AcceptVerbs(HttpVerbs.Post)] public ActionResult Photos(FeedItem feedItem) { //Here the feedItem is always null. However Request.Files[0] gives me the file I need var processor = new ActivityFeedsProcessor(); processor.ProcessFeed(feedItem, Request.Files[0]); SetResponseCode(System.Net.HttpStatusCode.OK); return new EmptyResult(); } } The client request on the wire looks like this: {User Agent stuff} Content-Type: multipart/form-data; boundary=8cdb3c15d07d36a --8cdb3c15d07d36a Content-Disposition: form-data; name="feedItem" Content-Type: text/xml {"UserId":1234567,"GroupId":123456,"PostType":"photos", "PublishTo":"store","CreatedTime":"2011-03-19 03:22:39Z"} --8cdb3c15d07d36a Content-Disposition: file; filename="testFile.txt" ContentType: application/octet-stream {bytes here. Removed for brevity} --8cdb3c15d07d36a--

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3443161
-[parent_id]: 3442127
-[tags]: 
-You need to specify the projection property name like... .Add(Projections.Property("i.IncidentId"), "IncidentId") also, in general you do not project into the same domain object. You should create an incident dto like... public class IncidentDTO { public int IncidentID { get; set; } public DateTime CreationDatetime { get; set; } } and then... .SetProjection(Projections.ProjectionList() .Add(Projections.Property("i.IncidentId"), "IncidentId") .Add(Projections.Property("i.CreationDatetime"), "CreationDatetime") ) .SetResultTransformer(Transformers.AliasToBean ()); If you want Incidents matching some criteria (not a DTO), then don't set projections/resulttransformer. Instead you simply do something like this... IList incidents = session.CreateCriteria () .CreateAlias("Cause", "c") //now you can access Cause properties via `c.` .Add(Restrictions.Eq("c.CauseDesc", "some cause")) .List (); See how the root criteria object doesn't need an alias. If it helps, I only use CreateCriteria for the initial object. If I need to reference child objects, I use CreateAlias.

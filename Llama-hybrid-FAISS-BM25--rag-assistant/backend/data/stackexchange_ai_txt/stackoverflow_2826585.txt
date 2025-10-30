@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2826585
-[parent_id]: 
-[tags]: 
-php: handling exceptions within exception handlers?
-
-Let's say were using custom extensions of the Exception class to handle custom exceptions, like this for example: $testObject = new testClass(); and a autoload like this: function __autoload($class_name) { $file = $class_name.'.php'; if (file_exists($file)) { include $file; }else{ throw new loadException("File $file is missing"); } if(!class_exists($class_name,false)){ throw new loadException("Class $class_name missing in $file"); } return true; } try { $testObject = new testClass(); }catch(loadException $e){ exit(' '.$e.' '); } the file testClass.php does not exist, so a loadException is called with the message: File testClass.php is missing. (and all the other details...line number etc) all was fine, until i decided to hide all the errors and instead display a 404 page (or a 500 page...), so naturally i thought to add a loadErrorPage function. class loadException { ... function loadErrorPage($code){ $page = new pageClass(); echo $page->showPage($code); } } ... try { $testObject = new testClass(); }catch(loadException $e){ $e->loadErrorPage(500); } but this has the obvious problem that if the testClass.php AND pageClass.php files are missing, then a fatal error is shown instead of the preferred 404 page. I'm confused :S How do I elegantly handle this exception within a exception handle?

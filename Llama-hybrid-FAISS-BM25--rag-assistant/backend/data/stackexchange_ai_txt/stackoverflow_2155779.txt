@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2155779
-[parent_id]: 2155491
-[tags]: 
-It seems to produce a linker error even if you don't put it in the separate file. However, to produce a compiler error for other instantiations, implement the function and use a compile-time assertion, e.g #include template T f(T) { //assert some type-dependent "always-false" condition, //so it won't be triggered unless this function is instantiated BOOST_STATIC_ASSERT(sizeof(T) == 0 && "Only long or bool are available"); } template<> long f(long v) { return -v; } template<> bool f(bool v) { return !v; } int main() { //f(100); f(100L); f(false); } And just for general information, C++0x has a much more elegant way to deal with it: template T f(T) = delete; template<> long f(long v) { return -v; } template<> bool f(bool v) { return !v; }

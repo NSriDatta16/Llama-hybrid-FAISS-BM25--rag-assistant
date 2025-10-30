@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3796863
-[parent_id]: 3796300
-[tags]: 
-So you can write to the tmp/ directory under your application root, as long as you don't expect it to be there on the next request. So you have to do everything in one request cycle (or one delayed job). Here's what you would need to do. Run whatever script to generate your file and write it out to tmp/ . Then use something like Paperclip with the S3 backend to save the file to S3. Make sure you use the S3 storage backend (Paperclip uses the FS by default); instead of flushing writes out to the file system, it uses the AWS::S3 gem to upload them to S3. You can read more about it in the rdoc here: http://github.com/thoughtbot/paperclip/blob/master/lib/paperclip/storage/s3.rb Or you can always upload it to S3 yourself using whatever gem or library you like. I use this method in a couple production web apps. You can't count on tmp/ being there between requests, but within one it's reliably there.

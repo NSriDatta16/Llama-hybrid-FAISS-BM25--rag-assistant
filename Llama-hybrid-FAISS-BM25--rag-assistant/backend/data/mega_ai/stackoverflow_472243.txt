@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 472243
-[parent_id]: 472179
-[tags]: 
-There are several solutions (by default, they are dropped). Here is an example using the option HEADERFUNCTION which lets you indicate a function to handle them. Other solutions are options WRITEHEADER (not compatible with WRITEFUNCTION) or setting HEADER to True so that they are transmitted with the body. #!/usr/bin/python import pycurl import sys class Storage: def __init__(self): self.contents = '' self.line = 0 def store(self, buf): self.line = self.line + 1 self.contents = "%s%i: %s" % (self.contents, self.line, buf) def __str__(self): return self.contents retrieved_body = Storage() retrieved_headers = Storage() c = pycurl.Curl() c.setopt(c.URL, 'http://www.demaziere.fr/eve/') c.setopt(c.WRITEFUNCTION, retrieved_body.store) c.setopt(c.HEADERFUNCTION, retrieved_headers.store) c.perform() c.close() print retrieved_headers print retrieved_body

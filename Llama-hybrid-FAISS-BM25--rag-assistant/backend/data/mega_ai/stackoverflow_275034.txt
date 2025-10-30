@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 275034
-[parent_id]: 
-[tags]: 
-What is the underlying mechanism for ivar synthesis in the modern Objective C runtime
-
-One of the features of the modern (64 bit OS X and iPhone OS) Objective C runtime is the ability for properties to dynamically synthesize ivars without explicitly declaring them in the class: @interface MyClass : NSObject { // NSString *name; unnecessary on modern runtimes } @property (retain) NSStrng *name; @end @implementation MyClass @synthesize name; @end In quite a bit of my code I use custom getter implementations in order to initialize the properties: - (NSString *) name { if (!name) { name = @"Louis"; } return name; } The above is incompatible with synthesized ivars since it needs to access a an ivar that is not declared in the header. For various reasons I would like to update a number of my personal frameworks to use synthesized ivars when built on the modern runtimes, the above code needs to be modified to work with synthesized ivars in order to achieve that goal. While the Objective C 2.0 documentation states that the synthesized accessors on the modern runtime will synthesize the ivar on first use. It does not specify what low level mechanism is used to do this. Is it done by class_getInstanceVariable(), are the restrictions on class_addIvar() loosened, is it an undocumented function int he objective C 2.0 runtime? While I could implement my own side storage for the data backing my properties, I would much rather use the mechanism that synthesized accessors are using.

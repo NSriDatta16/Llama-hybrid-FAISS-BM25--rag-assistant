@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2843324
-[parent_id]: 2842319
-[tags]: 
-WM_PAINT messages keep on being sent until Windows has validated the dirty region of the window. The API that resets the dirty region is 'EndPaint'. Calling SwapBuffers should not effect the invalid window region at all. Your WM_PAINT handler should be something like the following: case WM_PAINT: HDC hdc; PAINTSTRUCT ps; hdc = BeginPaint(hwnd,&ps); wglMakeCurrent(hdc,scene.m_oglContext); scene.Render(); // wglSwapBuffers(hdc); wglMakeCurrent(hdc,0); EndPaint(hwnd,&ps); return 0; Lots of sample code for Open GL programming has a single HDC and OpenGL context setup at application start. While it makes sample code simpler, it does mean that the code cannot correctly deal with multiple OpenGL contexts. This WM_PAINT handler assumes that the OpenGL context is created for a scene, and then made current as necessary. The side effect of swapping the OpenGL context as necessary is that, the hdc retrieved from BeginPaint is used as the render (and SwapBuffer) target, which means the OpenGL application will now paint synchronously if and when other windows are dragged over the App's window.

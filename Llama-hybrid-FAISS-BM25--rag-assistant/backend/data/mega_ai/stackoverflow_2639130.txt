@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2639130
-[parent_id]: 
-[tags]: 
-accessing the hidden 'this' pointer
-
-I have a GUI architecture wherein elements fire events like so: guiManager->fireEvent(BUTTON_CLICKED, this); Every single event fired passes 'this' as the caller of the event. There is never a time I dont want to pass 'this', and further, no pointer except for 'this' should ever be passed. This brings me to a problem: How can I assert that fireEvent is never given a pointer other than 'this', and how can I simplify (and homogenize) calls to fireEvent to just: guiManager->fireEvent(BUTTON_CLICKED); At this point, I'm reminded of a fairly common compiler error when you write something like this: class A { public: void foo() {} }; class B { void oops() { const A* a = new A; a->foo(); } }; int main() { return 0; } Compiling this will give you In member function ‘void B::oops()’: error: passing ‘const A’ as ‘this’ argument of ‘void A::foo()’ discards qualifiers because member functions pass 'this' as a hidden parameter. "Aha!" I say. This (no pun intended) is exactly what I want. If I could somehow access the hidden 'this' pointer, it would solve both issues I mentioned earlier. The problem is, as far as I know you can't (can you?) and if you could, there would be outcries of "but it would break encapsulation!" Except I'm already passing 'this' every time, so what more could it break. So, is there a way to access the hidden 'this', and if not are there any idioms or alternative approaches that are more elegant than passing 'this' every time?

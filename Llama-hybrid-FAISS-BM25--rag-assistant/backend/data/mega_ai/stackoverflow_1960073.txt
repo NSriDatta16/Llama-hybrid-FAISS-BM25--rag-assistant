@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1960073
-[parent_id]: 1960038
-[tags]: 
-I'd be a bit concerned about your receive code. It creates a char* buffer to receive the data but doesn't actually allocate any memory for it. Now I can't tell whether you're calling the WinSock recv there since you don't explicitly say ::recv but I think you would need to either: allocate some space with malloc first (id recv wants a buffer); or pass the address of the buffer pointer (if recv allocates its own buffer). I'm actually surprised that the doesn't cause a core dump since the value of buffer could be set to anything when you call recv . Something like this may be better: char *Messager::receive(void){ int newSocket = 0; struct sockaddr_storage *senderAddress; socklen_t addressSize; char *buffer; addressSize = sizeof senderAddress; newSocket = accept(listenSocket, (struct sockaddr *)&senderAddress, &addressSize); buffer = new char[20]; recv(newSocket, buffer, 20, 0); return buffer; } But you need to remember that the client of this function is responsible for freeing the buffer when it's finished with it.

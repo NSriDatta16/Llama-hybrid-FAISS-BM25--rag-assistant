@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4590410
-[parent_id]: 4589917
-[tags]: 
-This line is wrong: int n = recvfrom(fd_, ret, buffSize, &recvAddress, &sockSize); It should be: int n = recvfrom(fd_, &(*ret)[0], buffSize, 0, &recvAddress, &sockSize); You're reading data directly onto the std::vector data structure, which is typically 3 pointers (beginning, end, and end-of-storage). So, you're overwriting those 3 pointers with data received over the socket, and then you're overwriting random memory after the vector. The compiler doesn't complain because any pointer type ( std::vector * in this case) is implicitly convertible to a void* (the second parameter to recvfrom ). You of course want to read data into the buffer pointed to by the vector, which is obtained by taking the address of its first element, namely &(*ret)[0] . We have to add the awkward parentheses because brackets [] have higher operator precedence than the unary dereferencing operator * . (Also note that you're missing the flags parameter to recvfrom() -- I'm assuming that was just a transcription error when writing this question, and I've now set that to 0 here.)

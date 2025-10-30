@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1399525
-[parent_id]: 1398539
-[tags]: 
-I don't think that java.sql.ResultSet is thread-safe, although admittedly this is not actually mentioned in the javadoc. I wouldn't be at all surprised if calling methods on a ResultSet from different threads causes those method calls to hang. As an alternative, I suggest having your retrieval thread as the only user of the ResultSet , pulling the rows off and then dumping the data itself on to your BlockingQueue . It then becomes trivial to detect the end of the result set and put your EOF marker on the queue. The generally preferred mechanism in JDBC for iterating over very large result sets is to use the fetchSize property of java.sql.Statement , although this is highly dependent on the database and JDBC driver. I know that the Oracle driver honours this setting, but not sure about others. If the driver decides that it needs to fetch the whole result set into memory before giving you the first row, then no matter what you do you won't be able to process the first rows while fetching the next ones.

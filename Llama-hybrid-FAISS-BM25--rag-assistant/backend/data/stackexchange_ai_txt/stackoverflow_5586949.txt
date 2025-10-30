@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5586949
-[parent_id]: 5586864
-[tags]: 
-You should call free when you're no longer using your allocated memory. Presumably, that's after your join, but since your integers are allocated inside the loop, you would need to keep a reference outside the loop. Rather than allocating your integers individually, consider allocating all of them at once, outside the loop: int *threadNums = malloc(sizeof(int) * NUM_THREADS) for (int j = 0; j (Not tested for syntax errors, but hopefully you get the idea) Pay special attention to the comment. If your threads are not done with the memory before you call free, you have a race condition which causes undefined behavior. One way of ensuring that is to join all of the threads. Alternatively, if the data is only used be the thread, the thread could be responsible for freeing the memory - in that case, you call free on your pointer when the thread function no longer needs it.

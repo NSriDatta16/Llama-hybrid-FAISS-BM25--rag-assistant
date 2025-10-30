@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1683916
-[parent_id]: 1683829
-[tags]: 
-Recap: You began a transaction. This doesn't actually "do" anything in and of itself, it modifies subsequent behavior You read data from a table. The default isolation level is Read Committed, so this select statement is not made part of the transaction. You then wait 15 seconds You then issue an update. With the declared transaction, this will generate a lock until the transaction is committed. You then commit the transaction, releasing the lock. So, guessing you ran this simultaneously in two windows (A and B): A read the "next" value from table def, then went into wait mode B read the same "next" value from the table, then went into wait mode. (Since A only did a read, the transaction did not lock anything.) A then updated the table, and probably commited the change before B exited the wait state. B then updated the table, after A's write was committed. Try putting the wait statement after the update, before the commit, and see what happens.

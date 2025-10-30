@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1483667
-[parent_id]: 1483564
-[tags]: 
-I am afraid there is nothing you can do. If the File#close method doesn't get called, then it's somewhat likely that the file will actually only be automatically closed by the operating system, when the Ruby interpreter exits. In other words: at the time that the file is closed, the Ruby interpreter (or at least your program) is long gone, so there is just no way that your program can be notified. I guess you could achieve some somewhat reasonable coverage by overriding the File object's #close method, installing your own finalizer and installing an at_exit handler. However, all of these have their problems: the #close method might not get called. The finalizer is only run when the object is garbage collected, which may be much later than you expect (and if you never run out of memory, then the garbage collector never runs and the finalizer never gets called). And even the at_exit handler is not guaranteed to run, if the interpreter crashes.

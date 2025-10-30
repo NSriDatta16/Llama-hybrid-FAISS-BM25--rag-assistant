@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1809508
-[parent_id]: 1809404
-[tags]: 
-You can attach the context to your exception manually. I have never tried it, but it would be interesting to create a custom exception that in the constructor calls and saves get_defined_vars() for later retrieval. This will be a heavy exception :-) proof of concept: class MyException extends Exception() { protected $throwState; function __construct() { $this->throwState = get_defined_vars(); parent::__construct(); } function getState() { return $this->throwState; } } even better: class MyException extends Exception implements IStatefullException() { protected $throwState; function __construct() { $this->throwState = get_defined_vars(); parent::__construct(); } function getState() { return $this->throwState; } function setState($state) { $this->throwState = $state; return $this; } } interface IStatefullException { function getState(); function setState(array $state); } $exception = new MyException(); throw $exception->setState(get_defined_vars());

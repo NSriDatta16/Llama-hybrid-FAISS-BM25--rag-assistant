@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3651477
-[parent_id]: 1746344
-[tags]: 
-Curious, is this final code still correct? From what I can see, you're doing the comparison in reverse, that is you are comparing the value of the pointer (i.e., the actual address that the pointer is referring to) with the integer being used as the update ... furthermore the destination is set as the temporary int being used as the update value. In other words rather than: lock cmpxchgl %edx, 16(%ebp) I would think you would want something like: //move the update value into ecx register movl 0x16(%ebp), %ecx //do the comparison between the value at the address pointed to by edx and eax, //and if they are the same, copy ecx into the address being pointed to by edx lock cmpxchgl %ecx, (%edx) Did the original code actually work as planned (not just compile), and if not, did you end up re-organizing the code so it looks more like the above?

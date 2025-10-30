@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 928568
-[parent_id]: 
-[tags]: 
-Creating multiple instances of global statics in C++?
-
-One of the libraries we are using for our product uses a singleton for access to it. I'm pretty sure it's implemented as a static instance (it isn't open source). This works well for a single document application, but our app may have more than one document loaded. I'm assuming access to the instance is written something like this: Instance* getInstance() { static Instance* inst = new Instance(); return inst; } In situations like this, is there some way to robustly create more than one instance? The only thing I can think of is to have more than process and use some type of IPC to tie it all together. I can't think of anything less hacky. I have asked the vendor to implement some type of session token so I can have multiple concurrent instances, but they are big and we are small. Cory Edit: the machine is a Windows machine the global static is basically a big factory. I want a session token of some type so I can easily say "release all the resources from this session" (there's no way to re-initialize the global statics that I know of) Rather than try some dodgy shenanigans to get what I want, I'm going to wrap the whole thing with my own class and add a session key to every getter. Internally I'll keep track of what has been allocated add my own release method to return resources. This is suboptimal for lots of reasons, but I can't think of a better idea. Thanks to everybody for the great feedback.

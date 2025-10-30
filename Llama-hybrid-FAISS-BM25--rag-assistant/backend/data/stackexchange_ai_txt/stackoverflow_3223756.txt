@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3223756
-[parent_id]: 3223660
-[tags]: 
-As far as I know, static member constraints (that are used by functions like Seq.sum ) are not able to discover members that are added by type extensions (essentially, extension methods), so I don't think there is a direct way of doing this. The best option I can think of is to creat a simple wrapper around the System.TimeSpan struct. Then you can define all the required members. The code would look like this: [ ] type TimeSpan(ts:System.TimeSpan) = member x.TimeSpan = ts new(ticks:int64) = TimeSpan(System.TimeSpan(ticks)) static member Zero = TimeSpan(System.TimeSpan.Zero) static member (+) (a:TimeSpan, b:TimeSpan) = TimeSpan(a.TimeSpan + b.TimeSpan) static member DivideByInt (n:TimeSpan, d:int) = TimeSpan(n.TimeSpan.Ticks / (int64 d)) let ts = [ TimeSpan(10L); TimeSpan(99L) ] let sum = ts |> Seq.sum let avg = ts |> Seq.average I called the type TimeSpan , so it hides the standard System.TimeSpan type. However, you still need to write ts.TimeSpan when you need to access the underlying system type, so this isn't as nice as it could be.

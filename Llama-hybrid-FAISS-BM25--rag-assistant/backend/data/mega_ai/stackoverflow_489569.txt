@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 489569
-[parent_id]: 255569
-[tags]: 
-You really need to keep two separate issues apart: 1) the primary key is a logical construct - one of the key candidates that uniquely and reliably identifies a row in your table. This can be anything, really - an INT, a GUID, a string - pick what makes most sense for your scenario. 2) the clustering key (the column or columns that define the "clustered index" on the table) - this is a physical storage-related thing, and here, a small, stable, ever-increasing data type is your best pick - INT or BIGINT as your default option. By default, the primary key on a SQL Server table is also used as the clustering key - but that doesn't need to be that way! I've personally seems massive performance gains over time when breaking up the previous GUID-based Primary Clustered Key into two separate key - the primary (logical) key on the GUID, and the clustering (ordering) key on a separate INT IDENTITY(1,1) column. The index fragmentation was down to minimal levels, and thus the index seek performance was was up - highly recommended ! Marc

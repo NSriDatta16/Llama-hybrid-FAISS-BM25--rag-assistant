@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1939556
-[parent_id]: 
-[tags]: 
-overloading operator delete, or how to kill a cat?
-
-I am experimenting with overloading operator delete, so that I can return a plain pointer to those who don't wish to work with smart pointers, and yet be able to control when the object is deleted. I define a class Cat that is constructed with several souls, has an overloaded operator delete that does nothing, and destructor that decrements the number of souls (and also does some bragging). When souls reaches 0 the destructor calls the global ::delete, and the cat dies. This sounds quite simple, but does not work as expected. Here's the code: class Cat { public: Cat(string n): name(n), souls(9) { cout here's the main: int main() { Cat *p = new Cat("Mitzi"); for (;;) { char c[100]; // cout report(); cout > c; delete p; } } I'd expect that the loop would run for 9 times, and then something unpleasant (crash) would happen. However, this is the output: Myaou... Mitzi is born Mitzi's here, 9 souls to spend come on, hit me!c !!! dtor called Mitzi is still alive! I have 8 souls left. !!! operator delete called 's here, 8 souls to spend come on, hit me!c !!! dtor called is still alive! I have 7 souls left. *** glibc detected *** /home/davidk/workspace/string_test/Debug/string_test: double free or corruption (fasttop): 0x080cd008 *** Seems that after the first delete the name member is destroyed, and the next delete causes a crash. Any explanations? I am compiling with gcc on Linux, can be a compiler bug? BTW, when I used the operator thanks!

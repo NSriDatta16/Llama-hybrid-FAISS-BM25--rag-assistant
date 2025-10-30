@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5567754
-[parent_id]: 
-[tags]: 
-Hibernate Criteria n+1 issue with maxresults
-
-Using hibernate ctiteria I want to select an object and it's associated oneToMany list of objects. I want to paginate through this list avoiding the dreaded hibernate n+1 select issue Here's a working solution which requires 11 trips to the database for 10 parent objects. Criteria criteria = this.getSession().createCriteria(Mother.class); criteria.addOrder(Order.asc("title")) .setMaxResults(details.getMaxRows()) .setFirstResult(details.getStartResult()) .setFetchMode("kittens", FetchMode.SELECT); List test = criteria.list(); And here's a solution which executes only one sql statement (hurray) but cannot handle pagination ie the setMaxResults and setFirstResult are incorrect on the parent object Mother (boo) Criteria criteria = this.getSession().createCriteria(Mother.class); criteria.addOrder(Order.asc("title")) .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY) .setMaxResults(details.getMaxRows()) .setFirstResult(details.getStartResult()) .setFetchMode("kittens", FetchMode.JOIN); List test = criteria.list(); This seems like such a common requirement but I've dug around for a solution with no luck. Any takers?

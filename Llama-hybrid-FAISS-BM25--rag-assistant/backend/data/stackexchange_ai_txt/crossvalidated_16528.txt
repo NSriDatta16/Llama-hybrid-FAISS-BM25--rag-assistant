@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 16528
-[parent_id]: 
-[tags]: 
-Is R's trimmed means function biased?
-
-I've been trying to understand how R's trimmed mean function works. I suspect it might be biased, but would like to get feedback here before I file a bug-report (if this is an inappropriate forum for such a question please let me know). Consider the following example (sorted for clarity): > x length(x) [1] 10 > percent.to.trim One would expect that the trimmed mean would be based on length(x) - 2 * length(x) * percent.to.trim = 5 observations. If this is the case, there are three possible methods of calculation: To remove the two smallest observations and the three largest observations. In this case, mean(x[3:7]) = 43.2 . To remove the three smallest observations and the two largest observations. In this case, mean(x[4:8]) = 54.2 . To remove the two smallest observations, the two largest observations and to average the third smallest and third largest observation (this is to be preferred for obvious reasons). In this case mean(c(x[4:7], mean(c(x[3], x[8])))) = 48.7 . However, R gives the following result: > mean(x, trim=percent.to.trim) [1] 45.66667 This must result from the trimmed mean being based on length(x) - 2 * floor(length(x) * percent.to.trim) = 6 observations, thus removing only the first two and last two observations: > mean(x[3:8]) [1] 45.66667 Is this a bug? I'm using R version 2.13.1 (2011-07-08), svn rev 56322 .

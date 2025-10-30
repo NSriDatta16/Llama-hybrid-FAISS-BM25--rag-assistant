@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1331996
-[parent_id]: 1331800
-[tags]: 
-I've long found weakref.proxy 's design and implementation to be somewhat shaky. Witness...: >>> import weakref >>> ob=set(range(23)) >>> rob=weakref.proxy(ob) >>> rob==ob False >>> rob.__eq__(ob) True ...DEFINITELY peculiar! In practice what I use from weakref are weak-key or sometimes weak-value dictionaries; but weakref.ref is sounder than the proxy wrapper on top of it: >>> wr=weakref.ref(ob) >>> wr()==ob True The need to "call" the ref to get the object (or None if the object has since disappeared) unfortunately makes it non-transparent (so a DB API module couldn't do it while staying compliant to the API). I don't understand why MySqlDb wants weak cursor->connection referencing at all, but if they do I see why they felt they had to use proxies rather than refs. However, one pays a very high price for that transparency! Btw, the "explicit __eq__ " trick (or an equivalent one with __cmp__ , depending on the type of the underlying object) may help you, even though it's definitely inelegant!

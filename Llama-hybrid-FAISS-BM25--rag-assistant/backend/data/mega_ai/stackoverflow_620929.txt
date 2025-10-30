@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 620929
-[parent_id]: 
-[tags]: 
-Rotate a Swing JLabel
-
-I am currently trying to implement a Swing component, inheriting from JLabel which should simply represent a label that can be oriented vertically. Beginning with this: public class RotatedLabel extends JLabel { public enum Direction { HORIZONTAL, VERTICAL_UP, VERTICAL_DOWN } private Direction direction; I thought it's be a nice idea to just alter the results from getPreferredSize() : @Override public Dimension getPreferredSize() { // swap size for vertical alignments switch (getDirection()) { case VERTICAL_UP: case VERTICAL_DOWN: return new Dimension(super.getPreferredSize().height, super .getPreferredSize().width); default: return super.getPreferredSize(); } } and then simply transform the Graphics object before I offload painting to the original JLabel : @Override protected void paintComponent(Graphics g) { Graphics2D gr = (Graphics2D) g.create(); switch (getDirection()) { case VERTICAL_UP: gr.translate(0, getPreferredSize().getHeight()); gr.transform(AffineTransform.getQuadrantRotateInstance(-1)); break; case VERTICAL_DOWN: // TODO break; default: } super.paintComponent(gr); } It seems to work—somehow—in that the text is now displayed vertically. However, placement and size are off. Actually, the width of the background (orange in this case) is identical with the height of the surrounding JFrame which is ... not quite what I had in mind. Any ideas how to solve that in a proper way? Is delegating rendering to superclasses even encouraged?

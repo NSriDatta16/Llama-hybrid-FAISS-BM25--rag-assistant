@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 50726
-[parent_id]: 
-[tags]: 
-How close to zero should the sum of the random effects be in GLMM (with lme4)
-
-I'm using the lme4 package in R to do some logistic mixed-effects modeling. My understanding was that sum of each random effects should be zero. When I make toy linear mixed-models using lmer , the random effects are usually colSums(ranef(model)$groups) ~ 0 But in toy binomial models (and in models of my real binomial data) some of the random effect sum to ~0.9. Should I be concerned? How do I interpret this? Here is a linear toy example toylin In this case the colMeans always come out $ Here is a binomial toy example (I would share my actual data, but it is being submitted for publication and I am not sure what the journal policy is on posting beforehand): toybin x=runif(n,-16,16) y1=matrix(0,gn,n) y2=y1 for (gx in 1:gn) { com=runif(1,1,5) ucom=runif(1,1,5) y1[gx,]=tanh(x/(com+ucom) + rnorm(1)) > runif(x,-1,1) y2[gx,]=tanh(2*(x+2)/com + rnorm(1)) > runif(x,-1,1) } c1=y1*0; c2=y2*0+1; y=c(t(y1[c(1:gn),]),t(y2[c(1:gn),])) g=rep(1:gn,each=n,times=2) x=rep(x,times=gn*2) c=c(c1,c2) df=data.frame(list(x=x,y=y,c=factor(c),g=factor(g))) (m=lmer(y~x*c + (x*c|g),data=df,family=binomial)) if (doplot==TRUE) {require(lattice) df$fit=fitted(m) print(xyplot(fit ~ x|g,data=df,group=c,pch=19,cex=.1)) } print(colMeans(ranef(m)$g)) m } Now the colMeans sometimes come out above 0.3, and definitely higher, on average than the linear example.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3760695
-[parent_id]: 3760639
-[tags]: 
-One idea to simplify your implementation is to write just a method to get the longest substring of two strings and then use Aggregate method from LINQ. Something like: strings.Skip(1).Aggregate(strings.First(), GetCommonSubString); I don't think there is any elegant way to implement GetCommonSubstring using standard methods for working with strings. If you care about performance, then you'll probably have to implement it in the "direct" way. A slower, but shorter alternative using LINQ could look something like this: var chars = str1.Zip(str2, (c1, c2) => new { Match = c1 == c2, Char = c1 }) .TakeWhile(c => c.Match).Select(c => c.Char).ToArray(); return new string(chars); This first "zips" the two strings and then takes parts where the characters are the same using TakeWhile . The rest generates an array of characters that can be used to create a string with the result.

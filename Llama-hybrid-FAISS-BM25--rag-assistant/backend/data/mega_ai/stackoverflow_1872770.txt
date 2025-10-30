@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1872770
-[parent_id]: 1872748
-[tags]: 
-Well all MFC is doing is recording what the last message it received was in a class. I'm sure you could add something like this to your thread message pumps ... Edit: Also its worth looking at __declspec( thread ) for defining a "global" in the thread local storage. This is what MFC does ... Edit: You'll have a message pump. If you first declare a variable similar to the following: __declspec( thread ) MSG g_LastMsg = 0; And then you need to change your message pump in each thread to something like this: MSG msg; while( GetMessage( &msg, NULL, 0, 0 ) ) { g_LastMsg = msg; TranslateMessage( &msg ); DispatchMessage( &msg ); } Now any time you want to see what the last message "pumped" was just check the g_LastMsg variable ... You could also build the message struct from inside your Window procedures if you prefer. Entirely up to you ...

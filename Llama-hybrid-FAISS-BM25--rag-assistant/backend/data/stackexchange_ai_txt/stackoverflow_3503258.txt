@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3503258
-[parent_id]: 3502904
-[tags]: 
-TIMTOWTDI . File::Slurp is the shortest way to express what you want to achieve. It also has built-in error checking. use File::Slurp qw(read_file write_file); my $data = read_file($file, binmode => ':raw'); write_file('debug.txt', {binmode => ':raw'}, $data); The IO::File API solves the global variable $/ problem in a more elegant fashion. use IO::File qw(); my $data; { my $input_handle = IO::File->new($file, 'r') or die "could not open $file for reading: $!"; $input_handle->binmode; $input_handle->input_record_separator(undef); $data = $input_handle->getline; } { my $output_handle = IO::File->new('debug.txt', 'w') or die "could not open debug.txt for writing: $!"; $output_handle->binmode; $output_handle->print($data); }

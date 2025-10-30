@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3809625
-[parent_id]: 3808259
-[tags]: 
-I found a bit of a hack to make it work. What you have to do is use reflection to get the fully qualified file path to the file you want then create a new file info object: //This is the private field name used for reflection private const string IsolatedStoreRootDir = "m_RootDir"; //This method takes a file path relative to isolated storage //and the current store private static FileInfo GetFileInfo(string path, IsolatedStorageFile store) { return new FileInfo(GetFullyQualifiedFileName(path, store)); } //This gets the fully qualified path of the root isolated storage directory //then appends the relative path to it. private static string GetFullyQualifiedFileName(string path, IsolatedStorageFile store) { return Path.Combine(store.GetType() .GetField(IsolatedStorageFileSystem.IsolatedStoreRootDir, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(store).ToString(), path); } //Here's how it's used static void Main(string[] args) { var store = IsolatedStorageFile.GetUserStoreForAssembly(); var length = GetFileInfo("TestFile.txt", store).Length; }

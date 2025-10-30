@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 120145
-[parent_id]: 
-[tags]: 
-What makes a GLM Hierarchical?
-
-Wikipedia defines a Hierarchical GLM as: Hierarchical linear models (or multilevel regression) organizes the data into a hierarchy of regressions, for example where A is regressed on B, and B is regressed on C. However, PyMC comes with a "Hierachical GLM" example defined as sat_t ~ spend + stu_tea_rat + salary + prcnt_take Why is this model hierarchical? Aren't we regressing sat_t on all the other variables directly ? Or am I reading the definition or model specification incorrectly? Here is the full code and result. sat_data = pd.read_csv('data/Guber1999data.txt') with Model() as model_sat: grp_mean = Normal('grp_mean', mu=0, sd=10) grp_sd = Uniform('grp_sd', 0, 200) # Define priors for intercept and regression coefficients. priors = {'Intercept': Normal.dist(mu=sat_data.sat_t.mean(), sd=sat_data.sat_t.std()), 'spend': Normal.dist(mu=grp_mean, sd=grp_sd), 'stu_tea_rat': Normal.dist(mu=grp_mean, sd=grp_sd), 'salary': Normal.dist(mu=grp_mean, sd=grp_sd), 'prcnt_take': Normal.dist(mu=grp_mean, sd=grp_sd) } glm.glm('sat_t ~ spend + stu_tea_rat + salary + prcnt_take', sat_data, priors=priors) trace_sat = sample(500, NUTS(), progressbar=False) scatter_matrix(trace_to_dataframe(trace_sat), figsize=(12,12));

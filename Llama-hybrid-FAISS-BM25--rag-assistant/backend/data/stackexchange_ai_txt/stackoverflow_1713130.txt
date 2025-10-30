@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1713130
-[parent_id]: 1677066
-[tags]: 
-Currently JRuby subclasses are not accessible via Java in this way, although it is planned in some capacity for future implementations (JRuby 1.5 perhaps). One option (depending on the API of your class) is to create a delegate: public class RubyIndexCreator extends IndexCreator { private IndexCreator rubyCreator; public RubyIndexCreator() { ScriptEngineManager factory = new ScriptEngineManager(); ScriptEngine engine = factory.getEngineByName("ruby"); FileReader r = new FileReader("ruby_index_creator.rb"); try { rubyCreator = engine.eval(r); } finally { r.close(); } } public Object create(String someArg) { return rubyCreator.create(someArg); } } I've glossed over some opportunities for caching, and also just sketched out managing the file reader, but hopefully you get the picture. In this particular example, ruby_index_creator.rb would implement your index creator class, and then return an instance of it - obviously from here you can reference other ruby files, and organize as appropriate: class MyIndexer That's about it!

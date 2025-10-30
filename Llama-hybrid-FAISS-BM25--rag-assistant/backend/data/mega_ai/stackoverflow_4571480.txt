@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4571480
-[parent_id]: 4571155
-[tags]: 
-If you want a general answer that works for all types, then what you do is: malloc() or operator new() to create an array of uninitialised storage of the right length, calculated by nelts * sizeof(T) Make an array consisting of the argument for a constructor for each element. Apply the constructor in placement form to each element using the corresponding argument. This only works if the same constructor will do for every element. If not, you will need a more complicated data structure and algorithm to choose the right constructor for each element. A special case of this is to use an array of the actual elements and use the copy constructor, and a special case of that is when the type is a POD and you can just use memcpy to construct the lot at once. If the constructor takes two arguments, you will need to write an initiator procedure (wrapper). For example: pair init_data[] = {make_pair(1.0,0.0), make_pair(3.0,4.0)}; void init(void *p, pair d) { new (p) complex(d.first, d.second); } and use that instead of just new(p).

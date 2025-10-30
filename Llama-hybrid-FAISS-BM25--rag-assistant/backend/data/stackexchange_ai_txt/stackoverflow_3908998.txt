@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3908998
-[parent_id]: 3908851
-[tags]: 
-Even in C99 there is no portable way to do this. This works on Linux: #define _GNU_SOURCE #include int main(void) { fesetenv(FE_NOMASK_ENV); feraiseexcept(FE_UNDERFLOW); return 0; } but without the #define _GNU_SOURCE and the fesetenv call (which are not portable), the exception is not thrown (== does not trigger SIGFPE , in Unix terms), it just sets a flag. And no iteration of MSVC supports , so you're stuck with completely nonstandard on Windows. That said, there does appear to be a Windows-specific equivalent: #include #pragma fenv_access (on) int main(void) { _controlfp_s(0, 0, _MCW_EM); /* throw all floating point exceptions */ /* trigger floating-point underflow here */ } You will have to cause an underflow condition using actual floating point operations. I don't know how to do that off the top of my head. It would probably be best to do it by hand in assembly language, to avoid interference from the compiler (even more non-portability, yes, but if you're on Windows you probably don't care about any CPU but x86).

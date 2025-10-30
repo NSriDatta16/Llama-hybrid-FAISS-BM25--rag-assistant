@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5334968
-[parent_id]: 5334948
-[tags]: 
-Use GetConstructors method of the Type object and chose the one with single parameter of type string, then invoke it. Like so: private ConstructorInfo GetStringConstructor(Type type) { return (from ctor in type.GetConstructors() let pars = ctor.GetParameters() where pars.Length == 1 && pars[0].ParameterType == typeof(string) select ctor).FirstOrDefault(); } Use it like so: var ctor = GetStringConstructor(typeof(Test)); if (ctor != null) files.Add(ctor.Invoke(new string[] {filePath})); I made a separate method for extracting the constructor, but if you only intend to use it for actually creating an instance, you can refactor it all in one method that takes string and Type parameters. Pay some attention to proper error handling though. However , I would consider Factory method pattern here instead of just diving in reflection right away. I can't know if it better suits your needs, but it seems like it probably does. EDIT: I admit that the CreateInstance is nicer, but my method has the advantage of more control and better error handling.

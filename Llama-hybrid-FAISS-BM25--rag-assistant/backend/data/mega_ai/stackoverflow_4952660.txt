@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4952660
-[parent_id]: 
-[tags]: 
-Display mysql results in one row
-
-mysql> select * from facts; +----+---------+------------+---------+ | id | fact_id | fact_value | host_id | +----+---------+------------+---------+ | 1 | 1 | rh5 | 1 | | 2 | 1 | rh4 | 2 | | 3 | 2 | virtual | 1 | | 4 | 2 | virtual | 2 | | 5 | 3 | rack 2 | 1 | +----+---------+------------+---------+ mysql> select * from hosts; +---------+-----------+ | host_id | host_name | +---------+-----------+ | 1 | bellagio | | 2 | mirage | +---------+-----------+ The query I used does the following: mysql> select host_name,fact_value from hosts as a left join facts as b on > b.host_id=a.host_id and b.fact_id in (1,2,3); +-----------+------------+ | host_name | fact_value | +-----------+------------+ | bellagio | rh5 | | bellagio | virtual | | bellagio | rack 2 | | mirage | rh4 | | mirage | virtual | +-----------+------------+ I want the results to print one row for each host, notice how it prints each fact_value on a separate row. The reason why i have the IN clause is that this table has over 40 possible columns for each host. I only want a handful (I select 3 in this example). Here's what i'm looking for. +-----------+--------+-----------+-----------+ | host_name | value1 | value 2 | value 3 | +-----------+--------+-----------+-----------+ | bellagio | rh5 | virtual | rack 2 | | mirage | rh4 | virtual | NULL | +-----------+--------+-----------+-----------+

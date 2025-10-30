@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2917602
-[parent_id]: 2915921
-[tags]: 
-Rss page is not HTML document, it is XML, so you should use Nokogiri::XML(open(url)) Then view source code of the rss page. There are no elements. All links in document are created with the tag: http://www.telegraph.co.uk/sport/football/world-cup-2010/teams/france/7769203/France-2-Costa-Rica-1-match-report.html Links to each article are also duplicated as tag, because article's ID in RSS is it's URL. http://www.telegraph.co.uk/sport/football/world-cup-2010/teams/france/7769203/France-2-Costa-Rica-1-match-report.html So, if you need all links in document, use: url = "http://www.telegraph.co.uk/sport/football/rss" doc = Nokogiri::XML(open(url)) doc.xpath('//link').each do |paragraph| puts paragraph.text end If you need only links to articles, use doc.xpath('//guid') As for the many feeds, just use loop feeds = ["http://www.telegraph.co.uk/sport/football/rss", "http://www.telegraph.co.uk/sport/cricket/rss"] feeds.each do |url| #and here goes code as before end

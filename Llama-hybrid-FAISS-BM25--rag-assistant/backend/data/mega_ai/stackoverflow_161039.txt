@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 161039
-[parent_id]: 160974
-[tags]: 
-GotW #57 says to use a proxy class with an implicit conversion for this very purpose. struct StateMethod; typedef StateMethod (StateMachine:: *FuncPtr)(); struct StateMethod { StateMethod( FuncPtr pp ) : p( pp ) { } operator FuncPtr() { return p; } FuncPtr p; }; class StateMachine { StateMethod stateA(); StateMethod stateB(); }; int main() { StateMachine *fsm = new StateMachine(); FuncPtr a = fsm->stateA(); // natural usage syntax return 0; } StateMethod StateMachine::stateA { return stateA; // natural return syntax } StateMethod StateMachine::stateB { return stateB; } This solution has three main strengths: It solves the problem as required. Better still, it's type-safe and portable. Its machinery is transparent: You get natural syntax for the caller/user, and natural syntax for the function's own "return stateA;" statement. It probably has zero overhead: On modern compilers, the proxy class, with its storage and functions, should inline and optimize away to nothing.

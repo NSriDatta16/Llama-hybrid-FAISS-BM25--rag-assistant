@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5067049
-[parent_id]: 5066813
-[tags]: 
-Here's what I would do (have done similarly): Put these in a utility header file: /* * Concatenate preprocessor tokens A and B without expanding macro definitions * (however, if invoked from a macro, macro arguments are expanded). */ #define PPCAT_NX(A, B) A ## B /* * Concatenate preprocessor tokens A and B after macro-expanding them. */ #define PPCAT(A, B) PPCAT_NX(A, B) Then define this before including your LREF macro header file: #define LREF_TAG cl_tag Then, in your LREF macro header file, #define LREF_PFX(x) PPCAT(LREF_TAG, x) #define LREF_SFX(x) PPCAT(x, LREF_TAG) Then replace every instance of _prefix ## foo with LREF_PFX(foo) and foo ## _prefix with LREF_SFX(foo) . (When pasting more than two tokens together, just use nested PPCAT's.) Your invocation would become #define LREF_TAG cl_tag #define _cl_tags(_) \ _(command_list) \ _(command) \ _(parameter) \ _(fixed_parameter) \ _(parameter_group) \ _(group) \ _(map) \ _(transform) LREF_FUNCTION_LOOKUP_TABLE(static);

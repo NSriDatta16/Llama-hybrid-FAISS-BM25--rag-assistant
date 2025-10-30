@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3621170
-[parent_id]: 3620348
-[tags]: 
-might be simpler to do the whole thing in python with the struct library. but if you're sold on ctypes (and I don't blame you, it's pretty cool): #include void floatarr(int* n, float** f) { int i; float* f2 = malloc(sizeof(float)*10); n[0] = 10; for (i=0;i and then in python: from ctypes import * fd = cdll.LoadLibrary('float.dll') fd.floatarr.argtypes = [POINTER(c_int),POINTER(POINTER(c_float))] fpp = POINTER(c_float)() ip = c_int(0) fd.floatarr(pointer(ip),pointer(fpp)) print ip print fpp[0] print fpp[1] the trick is that capitals POINTER makes a type and lowercase pointer makes a pointer to existing storage. you can use byref instead of pointer , they claim it's faster. I like pointer better because it's clearer what's happening.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3129842
-[parent_id]: 
-[tags]: 
-SIMD/SSE newbie: simple image filtering
-
-I'm very new to SIMD/SSE and I'm trying to do some simple image filtering (blurring). The code below filters each pixel of a 8-bit gray bitmap with a simple [1 2 1] weighting in horizontal direction. I'm creating sums of 16 pixels at a time. What seems very bad about this code, at least to me, is that there is a lot of insert/extract in it, which is not very elegant and probably slows everything down as well. Is there a better way to wrap data from one reg into another when shifting? buf is the image data, 16-byte aligned. w/h are width and height, multiples of 16. __m128i *p = (__m128i *) buf; __m128i cur1, cur2, sum1, sum2, zeros, tmp1, tmp2, saved; zeros = _mm_setzero_si128(); short shifted, last = 0, next; // preload first row cur1 = _mm_load_si128(p); for (x = 1; x > 8; sum1 = _mm_add_epi16(sum1, tmp1); sum2 = _mm_add_epi16(sum2, tmp2); // divide sum1 = _mm_srli_epi16(sum1, 2); sum2 = _mm_srli_epi16(sum2, 2); sum1 = _mm_packus_epi16(sum1, sum2); mm_store_si128(p + x - 1, sum1); }

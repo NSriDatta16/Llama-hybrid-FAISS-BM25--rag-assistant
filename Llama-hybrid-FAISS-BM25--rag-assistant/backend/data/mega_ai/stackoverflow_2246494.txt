@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2246494
-[parent_id]: 2246421
-[tags]: 
-If I'm understanding what you want to do, you're trying to have a non-privileged user be able to perform a privileged action without needing to authenticate? setuid shell scripts are considered a gigantic security risk, so they're disallowed by the kernel. If you want to write a separate executable program, however, you can set the set-user-ID-on-execution or set-group-ID-on-execution bits on it and get the behaviour you want. Be careful, you're now in the land of big potential security problems... man chmod for more information. Here's a quick and dirty example: $ echo "Hello, world!" > file $ sudo chown root file $ sudo chmod 600 file $ cat file cat: file: Permission denied But I can write a program: #include #include int main(int argc, char *argv[]) { setuid(0); system("cat file"); return 0; } Which can do what we'd like: $ cc -Wall -o app main.c $ chown root app $ chmod 4755 app $ ./app Hello, world!

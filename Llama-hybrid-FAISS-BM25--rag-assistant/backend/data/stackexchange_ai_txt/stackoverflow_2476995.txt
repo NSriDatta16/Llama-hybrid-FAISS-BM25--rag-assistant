@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2476995
-[parent_id]: 2417433
-[tags]: 
-The main issue is that the code coverage results file that MSTest produces is in a binary format. However, assuming that things haven't changed too much in VS2010, you should be able to use this utility to convert it into an XML file: http://codeexperiment.com/file.axd?file=2008%2f9%2fCodeCoverageConverter.zip NOTE: You'll probably need to recompile it against the VS2010 version of 'Microsoft.VisualStudio.Coverage.Analysis.dll. You can then use your preferred method of parsing that XML file, doing the maths for each of the instrumented assemblies to calculate an overall coverage ratio. The XPaths you're interested in (at least for VS2008) are: /CoverageDSPriv/Module/LinesCovered /CoverageDSPriv/Module/LinesNotCovered If you want to do that last step in pure MSBuild, then the 'XmlRead' and 'Math' tasks contained within the MSBuild Community Tasks library should be sufficient: http://msbuildtasks.tigris.org/ Once you have the overall ratio in an MSBuild property, you then simply use a conditional task to break the build if that number is lower than your desired threshold.

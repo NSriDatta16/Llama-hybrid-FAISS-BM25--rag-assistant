@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 521450
-[parent_id]: 519925
-[tags]: 
-Tell me if I'm wrong, but AFAIK, doing it that way will guarantee you that the data is correct - assuming the types have the same size on your different platforms : #include #include //#pragma pack(1) // not needed struct Header { unsigned short bodyLength; int msgID; unsigned short someOtherValue; unsigned short protocolVersion; float testFloat; Header() : bodyLength(42), msgID(34), someOtherValue(66), protocolVersion(69), testFloat( 3.14f ) {} }; int main() { std::tr1::array msgBuffer; Header header; const char* rawData = reinterpret_cast ( &header ); std::copy( rawData, rawData + sizeof(Header), msgBuffer.data()); // assuming msgBuffer is always big enough system("PAUSE"); return 0; } If the types are different on your targeted plateforms, you have to uses aliases (typedef) for each type to be sure the size of each used type is the same.

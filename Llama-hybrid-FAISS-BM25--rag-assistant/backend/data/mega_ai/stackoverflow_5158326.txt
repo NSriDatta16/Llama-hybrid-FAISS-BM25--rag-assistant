@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5158326
-[parent_id]: 
-[tags]: 
-Safest and Railsiest way in CanCan to do Guest, User, Admin permissions
-
-I'm relatively new to rails (3), and am building an application, using CanCan, where there are 3 tiers of users. Guest - unregistered visitor User registered and logged in visitor Admin - registered and logged in visitor with admin flag My ability is bog-stock right now, copied from cancan docs, basically defining the guest role and the admin role class Ability include CanCan::Ability def initialize(user) user ||= User.new # Guest user if user.is_admin? can :manage, :all else can :read, [Asana,Image,User,Video,Sequence] end end end I'm looking to add in the user role. Since I'm creating that throwaway user model, I thought about using new_record? to determine if the user is logged in or not. Something like: class Ability include CanCan::Ability def initialize(user) user ||= User.new # Guest user if !user.new_record? and user.is_admin? can :manage, :all elsif !user.new_record? and !user.is_admin? can {registered user-y permissions} else can :read, [Asana,Image,User,Video,Sequence] end end end But, it just doesn't feel right. Seems kind of disassociated from, like, actual logged-in-ed-ness, and have concerns about whether its actually secure. Looking for advice on a more elegant way to doing this. Thanks!

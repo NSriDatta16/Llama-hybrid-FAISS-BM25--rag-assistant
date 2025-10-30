@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3397991
-[parent_id]: 
-[tags]: 
-Scala actor to non-actor interaction (or synchronizing messages from an actor to a servlet)
-
-I have the following scala code: package dummy import javax.servlet.http.{HttpServlet, HttpServletRequest => HSReq, HttpServletResponse => HSResp} import scala.actors.Actor class DummyServlet extends HttpServlet { RNG.start override def doGet(req: HSReq, resp: HSResp) = { def message = RandomNumber Random number = {getRandom} resp.getWriter().print(message) def getRandom: String = {var d = new DummyActor;d.start;d.getRandom} } class DummyActor extends Actor { var result = "0" def act = { RNG ! GetRandom react { case (r:Int) => result = r.toString } } def getRandom:String = { Thread.sleep(300) result } } } // below code is not modifiable. I am using it as a library case object GetRandom object RNG extends Actor { def act{loop{react{case GetRandom=>sender!scala.util.Random.nextInt}}} } In the above code, I have to use thread.sleep to ensure that there is enough time for result to get updated, otherwise 0 is returned. What is a more elegant way of doing this without using thread.sleep ? I think I have to use futures but I cannot get my head around the concept. I need to ensure that each HTTP reaquest gets a unique random number (of course, the random number is just to explain the problem). Some hints or references would be appreciated.

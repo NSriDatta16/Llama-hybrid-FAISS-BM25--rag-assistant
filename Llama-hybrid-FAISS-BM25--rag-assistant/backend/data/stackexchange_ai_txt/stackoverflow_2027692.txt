@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2027692
-[parent_id]: 2027610
-[tags]: 
-For some reason, IE is really aggressive about caching AJAX GETs. So if you are fetching that via AJAX, the behavior is not surprising to me. Also not surprising is that using output cache attribute didn't fix the problem, because it is IE, rather than the server, which is doing the caching. What you need to do is to tell IE not to cache the request, by setting the appropriate headers in the HTTP. Here is how we do it: [CacheControl(HttpCacheability.NoCache), HttpGet] public JsonResult DoStuff() { //... } public class CacheControlAttribute : ActionFilterAttribute { public CacheControlAttribute(HttpCacheability cacheability) { this._cacheability = cacheability; } private HttpCacheability _cacheability; public override void OnActionExecuted(ActionExecutedContext filterContext) { HttpCachePolicyBase cache = filterContext.HttpContext.Response.Cache; cache.SetCacheability(_cacheability); } }

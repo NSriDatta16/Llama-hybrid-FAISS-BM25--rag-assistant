@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 552672
-[parent_id]: 552477
-[tags]: 
-I don't see that a Stored Procedure will speed up a singleton insert, unless there is other processing involved. May eb other benefits though - keeping all the logic in once place etc. Personally I would INSERT and trap the error if there are duplicates etc. If you do an IF NOT EXISTS check and then conditionally INSERT there is an interval where the transaction needs to hold a lock, which may increase blocking on the table. For a busy insert table worth checking how fragmented the table becomes. If you are inserting with a Clustered PK on an Identity / Auto-number column then all inserts are at one end (and the index can have a fill-factor of 100%), but if the inserts are random throughout the clustered index then you may be getting issues from page splits and so on. A related issue is that the Statistics on the table are likely to go out of date quickly, and that may effect the performance of queries with cached query plans etc.

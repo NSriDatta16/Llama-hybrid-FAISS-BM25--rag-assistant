@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 539728
-[parent_id]: 539249
-[tags]: 
-You definitely need the masking for the padded positions in the encoder. Nothing changes there. If you implement the decoder correctly/efficiently, you should not need the triangle mask in the decoder either. In an efficient implementation, you only have one query that comes from the most recently added token, and you do the self-attention with the hidden states from the previous step as keys and values. (And append the hidden states from the current step to be a part of the keys and values in the future.) No masking is necessary because you only attend to previous states anyway. In a sort of lazy implementation that people often do in tutorials, they often just call the decoder for the entire prefix of what is currently decoded. All decoder hidden states are computed over and over again. It is indeed not efficient, but the same code as for training can be used. In that case, the triangle mask is necessary. At inference time, it is no longer to prevent the model from cheating, it would just break because it would encounter something it never did at the training time.

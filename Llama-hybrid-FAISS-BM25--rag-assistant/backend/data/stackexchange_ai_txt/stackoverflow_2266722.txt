@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2266722
-[parent_id]: 2266179
-[tags]: 
-Well, there is no STL container which actually does what you wish, but there are possibilities. 1. STL By default, use a vector . Here it would mean: struct Entry { std::string name; int it; }; typedef std::vector container_type; If you wish to search by string, you always have the find algorithm at your disposal. class ByName: std::unary_function { public: ByName(const std::string& name): m_name(name) {} bool operator()(const Entry& entry) const { return entry.name == m_name; } private: std::string m_name; }; // Use like this: container_type myContainer; container_type::iterator it = std::find(myContainer.begin(), myContainer.end(), ByName("A")); 2. Boost.MultiIndex This seems way overkill, but you can always check it out here . It allows you to create ONE storage container, accessible via various indexes of various styles, all maintained for you (almost) magically. Rather than using one container ( std::map ) to reference a storage container ( std::vector ) with all the synchro issues it causes... you're better off using Boost.

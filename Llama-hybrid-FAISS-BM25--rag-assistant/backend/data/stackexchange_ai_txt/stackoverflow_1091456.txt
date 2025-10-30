@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1091456
-[parent_id]: 1091384
-[tags]: 
-(I'm answering my own question here to save me the next time, or anyone else, the days of tinkering I needed to find the answer.) What it really needs to change the way DTDs are resolved is an EntityResolver . Unfortunately it is not possible to set the EntityResolver to be used by the Transformer . So you have to create an XMLReader first with the CatalogResolver as its EntityResolver : SAXParserFactory spf = SAXParserFactory.newInstance(); spf.setNamespaceAware(true); XMLReader r = spf.newSAXParser().getXMLReader(); EntityResolver er = new CatalogResolver(); r.setEntityResolver(er); and use it in for the Transformer : SAXSource s = new SAXSource(r, xmlSrc); Result res = new SAXResult(myDefaultHandler()); transformer.transform(s, res);

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1251405
-[parent_id]: 1251167
-[tags]: 
-Looks interesting! Clever use of thread-local storage to reduce contention. But I wonder if this is really different from the problematic approach outlined by Meyers/Alexandrescu...? Say you have two threads for which the singleton is uninitialized (e.g. thread local slot is empty) and they run getHelper in parallel. Won't they get into the same race over the helper member? You're still calling operator new and you're still assigning that to a member, so the risk of rogue reordering is still there, right? EDIT: Ah, I see now. The lock is taken around the NULL-check, so it should be safe. The thread-local replaces the "first" NULL-check of the DCLP.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2735362
-[parent_id]: 2735322
-[tags]: 
-The question is somewhat unclear. If you simply want the last 10 messages that involve user #12345, simply use: SELECT * FROM messages WHERE sender = 12345 OR receiver = 12345 ORDER BY time DESC LIMIT 10 Update to match your updated requirements. Not the most elegant, but works as long as no user sends two messages at the same second. SELECT m1.* FROM messages m1 INNER JOIN (SELECT MAX(time) AS time, IF(receiver = 12345, sender, receiver ) AS user FROM messages GROUP BY user) m2 ON m1.time = m2.time AND (m1.sender = m2.user OR m1.receiver = m2.user) WHERE sender = 12345 OR receiver = 12345 ORDER BY m1.time DESC

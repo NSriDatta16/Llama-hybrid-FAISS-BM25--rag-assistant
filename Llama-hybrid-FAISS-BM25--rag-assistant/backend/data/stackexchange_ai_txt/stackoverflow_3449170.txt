@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3449170
-[parent_id]: 3448838
-[tags]: 
-There are some bugs related to thread sync, see in changed code below. When you apply lock sync to queue pay attention to put under lock all uses of queue. I've changed GetId method to probe for new ids if there are none. public class IdGenerator { private Queue mIds = new Queue (); private BackgroundWorker mWorker = new BackgroundWorker(); private static EventWaitHandle mWaitHandle = new AutoResetEvent(false); public IdGenerator() { GenerateIds(); this.mWorker.DoWork += new DoWorkEventHandler(FillQueueWithIds); } private void GenerateIds() { List ids = new List (); for (int i = 0; i 0) { id = this.mIds.Dequeue(); return id; } if (this.mIds.Count 0) { if (!this.mWorker.IsBusy) { this.mWorker.RunWorkerAsync(); } } else { needWait = true; } } if (needWait) { mWaitHandle.WaitOne(); needWait = false; } } while(true); return id; } void FillQueueWithIds(object sender, DoWorkEventArgs e) { GenerateIds(); mWaitHandle.Set(); } }

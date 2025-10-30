@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2344471
-[parent_id]: 2314064
-[tags]: 
-Just thought of another solution to tackle this problem. I believe this is a lot more elegant than the other solution and it's attribute-based (though this depends on how you want to attach this binder to your model). You can create your own model binder and derive it from DataAnnotationsModelBinder . Then set the culture before telling the base class to bind the model. public class CustomModelBinder : DataAnnotationsModelBinder { public override object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext) { //set the culture return base.BindModel(controllerContext, bindingContext); } } //and the action public ActionResult Foo([ModelBinder(typeof(CustomModelBinder))]SomeModel m) { return View(); } //Or if you don't want that attribute on your model in your actions //you can attach this binder to your model on Global.asax protected void Application_Start() { ModelBinders.Binders.Add(typeof(SomeModel), new CustomModelBinder()); RegisterRoutes(RouteTable.Routes); }

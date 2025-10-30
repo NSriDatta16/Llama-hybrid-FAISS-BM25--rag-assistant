@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1416207
-[parent_id]: 1416171
-[tags]: 
-(defun maybe-fill-paragraph (&optional justify region) "Fill paragraph at or after point (see `fill-paragraph'). Does nothing if `visual-line-mode' is on." (interactive (progn (barf-if-buffer-read-only) (list (if current-prefix-arg 'full) t))) (or visual-line-mode (fill-paragraph justify region))) ;; Replace M-q with new binding: (global-set-key "\M-q" 'maybe-fill-paragraph) Instead of using global-set-key , you can also rebind M-q only in specific modes. (Or, you could change the global binding, and then bind M-q back to fill-paragraph in a specific mode.) Note that many modes are autoloaded, so their keymap may not be defined until the mode is activated. To set a mode-specific binding, I usually use a function like this: (add-hook 'text-mode-hook (defun cjm-fix-text-mode () (define-key text-mode-map "\M-q" 'maybe-fill-paragraph) (remove-hook 'text-mode-hook 'cjm-fix-text-mode))) (The remove-hook isn't strictly necessary, but the function only needs to run once.)

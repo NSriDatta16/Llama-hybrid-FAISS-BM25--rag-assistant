@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4852320
-[parent_id]: 4852237
-[tags]: 
-The fundamental problem with the code above is that it only locks access to _failedTests when a thread is getting the dictionary or setting it. Only one thread can get a reference to the dictionary at a time, but once a thread has a reference to the dictionary, it can read and manipulate it without being constrained by locks. Is this a correct manner to safely add the failed test to the Dictionary? No, not if two threads are trying to add to the dictionary at the same time. Nor if you expect reads and writes to happen in a particular order. Is this threadsafe? It depends what you mean by threadsafe , but no, not by any reasonable definition. Is FailedTests.Add called INSIDE the lock or OUTSIDE the lock? The dictionary retrieval (the get accessor) happens inside a lock. This code calls Add after releasing the lock. Can you explain why this is correct/threadsafe or why not? If multiple threads operate on your dictionary at the same time, you can't predict the order in which those threads will change its contents and you can't control when reads will occur.

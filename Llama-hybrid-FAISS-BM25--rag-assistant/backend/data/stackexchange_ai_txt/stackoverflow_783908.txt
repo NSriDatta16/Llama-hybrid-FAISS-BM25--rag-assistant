@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 783908
-[parent_id]: 783721
-[tags]: 
-A possible solution which I've implemented is to create a custom ViewResult and do the work in there. This is not an elegant solution, as I've basically just copied and pasted the normal implementation into the overridden ExecuteResult and tweaked the rendered output there. This line: View.Render(viewContext, context.HttpContext.Response.Output); Becomes: TextWriter writer = new StringWriter(); View.Render(viewContext, writer); string renderedResult = writer.ToString(); renderedResult = renderedResult.Replace("hello", "goodbye"); context.HttpContext.Response.Output.Write(renderedResult); The relevant source is here: http://aspnet.codeplex.com/SourceControl/changeset/view/23011#288022 This is a pretty horrible way of doing it IMO, but it works.

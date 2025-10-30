@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2386399
-[parent_id]: 643656
-[tags]: 
-I ran into the same issue today. I believe the trick is not to use .ForeignKey(...) with the .HasOne mapping, but to use .PropertyRef(...) instead. The following is how I define a One-to-one relationship between an Organisation (Parent) and its Admin (Child): HasOne(x => x.Admin).PropertyRef(r => r.Organisation).Cascade.All(); The Admin has a simple reference to the Organisation using its Foreign Key: References(x => x.Organisation, "ORAD_FK_ORGANISATION").Not.Nullable(); When retrieving an Organisation, this will load up the correct Admin record, and properly cascades updates and deletes.

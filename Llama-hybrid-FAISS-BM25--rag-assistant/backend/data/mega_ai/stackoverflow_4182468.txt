@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4182468
-[parent_id]: 
-[tags]: 
-Moving MySQL InnoDB database to separate drive
-
-In my MySQL installation I have one InnoDB database that I know will grow very large so I have decided to move it to its own disk. I was hoping to do this by moving the files to the other disk and then create a symlink but I run into errors! This is what I have done: 1) In my.cnf I have set [mysqld] innodb_file_per_table (This works, I have one .ibd per .frm in the database folder.) 2)I have checked if symlinks are ok with SHOW VARIABLES LIKE "have_symlink"; (I know that the documentation says: Symlinks are fully supported only for MyISAM tables. For files used by tables for other storage engines, you may get strange problems if you try to use symbolic links. But I need foreign keys...) 3) I moved the database folder and created a symlink. 4) Restarted mysql and tried: mysql> USE db_name Database changed mysql> SHOW TABLES; ERROR 1018 (HY000): Can't read dir of './db_name/' (errno: 13) mysql> exit user@comp# perror 13 OS error code 13: Permission denied symlink is (as expected) lrwxrwxrwx mysql mysql db_name -> /path-to/db_name/ database folder permissions are drwx------ mysql mysql all file permissions are -rw-rw---- mysql mysql I am using Ubuntu 10.04 Server with MySQL 5.1.41 (default from apt). Have any of you done this successfully?

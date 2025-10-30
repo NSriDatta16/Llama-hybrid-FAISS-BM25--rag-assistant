@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 52396
-[parent_id]: 
-[tags]: 
-How to train DDQN model in reinforcement learning?
-
-I was reading through some RL code but couldn't understand one small bit. here is the code: # Apply Bellman Equation on batch samples to train our DDQN q = self.agent.predict(s) next_q = self.agent.predict(new_s) q_targ = self.agent.target_predict(new_s) for i in range(s.shape[0]): old_q = q[i, a[i]] if d[i]: q[i, a[i]] = r[i] else: next_best_action = np.argmax(next_q[i,:]) q[i, a[i]] = r[i] + self.gamma * q_targ[i, next_best_action] if(self.with_per): # Update PER Sum Tree self.buffer.update(idx[i], abs(old_q - q[i, a[i]])) # Train on batch self.agent.fit(s, q) # Decay epsilon self.epsilon *= self.epsilon_decay From my understanding, the Q function maps (state, action) pairs to rewards. However in the code above you assume that the Agent networks to return Q values. However a quick inspection of the Agent model , reveals that it actually returns actions, which makes sense since that's what the agent has to learn. Rewards are be calculated within env.step(action). So then, in the belmann equation we find this addition r[i] + self.gamma * q_targ[i, next_best_action] . Isn't q_targ[i, next_best_action] an action? so how can it be added to a reward?

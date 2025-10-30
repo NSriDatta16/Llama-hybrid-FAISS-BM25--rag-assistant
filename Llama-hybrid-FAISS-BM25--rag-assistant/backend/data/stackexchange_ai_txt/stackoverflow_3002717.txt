@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3002717
-[parent_id]: 3002671
-[tags]: 
-If anything is using time, it will be mysqld, that's what actually does all of the work. If you're connecting to a remote mysql server then mysqld will be on that machine, not your local one. The most direct way to speed it up would be to remove all keys and indexes from the table and then create them once the data is loaded. Keeping everything updated across that many inserts can be very taxing on a server, and will probably cause you to end up with fragmented indexes anyways. You can expect the index creation at the end of the inserts to take a while, but it won't be as bad as keeping them all up to date as the inserts are taking place. A better solution would be to stop using mysqldump for that table and switch to using LOAD DATA INFILE (with the matching SELECT ... INTO OUTFILE for creating the dump). Your absolute best bet would be to just copy the database files instead of trying to do a backup and restore. I think this still only works with MyISAM databases and not InnoDB, but someone else can correct me if things have changed recently.

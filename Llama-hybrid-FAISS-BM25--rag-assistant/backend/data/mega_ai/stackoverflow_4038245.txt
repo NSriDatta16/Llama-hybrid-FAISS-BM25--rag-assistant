@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4038245
-[parent_id]: 4037625
-[tags]: 
-I found a way using SolrJ. SolrQuery query = new SolrQuery(); query.setQuery( "whatever_by_id" ); QueryResponse rsp; rsp = server.query(query); Iterator iter = rsp.getResults().iterator(); while (iter.hasNext()) { SolrDocument resultDoc = iter.next(); String id = (String) resultDoc.getFieldValue("oid"); //id is the uniqueKey field SolrInputDocument inputdoc = new SolrInputDocument() ; for( Map.Entry f : resultDoc.entrySet()) { inputdoc.setField(f.getKey(), f.getValue()) ; } server.deleteById(id) ; server.commit() ; Collection docs = new ArrayList (); docs.add(inputdoc) ; server.add(docs) ; server.commit() ; } When we add the "new" inputdoc (a copy of the old resultDoc), it uses the new analyzer we have changed in the schema to index. It´s not very elegant, but it works.

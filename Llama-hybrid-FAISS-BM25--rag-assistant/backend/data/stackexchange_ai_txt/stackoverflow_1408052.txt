@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1408052
-[parent_id]: 1407874
-[tags]: 
-The encoding sent in the headers is iso-8859-1 according to python's urllib.urlopen (although firefox's live http headers seems to disagree with me in this case - reports utf-8). In the xml itself there is no encoding specified --> that's why xml.dom.minidom assumes it's utf-8. So the following should fix this specific issue: import urllib from xml.dom import minidom sock = urllib.urlopen('http://www.google.com/ig/api?weather=Munich,Germany&hl=de') s = sock.read() encoding = sock.headers['Content-type'].split('charset=')[1] # iso-8859-1 doc = minidom.parseString(s.decode(encoding).encode('utf-8')) Edit : I've updated this answer after the comment of Glenn Maynard. I took the liberty of taking one line out of the answer of Lennert Regebro.

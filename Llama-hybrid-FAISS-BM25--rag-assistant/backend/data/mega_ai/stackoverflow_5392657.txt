@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5392657
-[parent_id]: 
-[tags]: 
-Does _PyString_Resize realloc memory?
-
-I'm working on a Python C extension module (for CPython 2.5). It calls some underlying network API that fills a buffer. Currently the code is written basically as follow: PyObject * buffer; char * cbuf; size_t buffer_size = 1024; int sz; buffer = PyString_FromStringAndSize(NULL, buffer_size); if (buffer == NULL) return NULL; cbuf = PyString_AsString(buffer); Py_BEGIN_ALLOW_THREADS sz = read(cbuf, buffer_size); Py_END_ALLOW_THREADS if (sz > 0 && sz != buffer_size && _PyString_Resize(&buffer, sz) As far as I know this code works fine, but I wonder of the internals of _PyString_Resize . If sz is smaller than buffer_size, does it use the existing buffer of does it reallocate memory ? From an efficiency point of view I would probably prefer the former to avoid a useless copy of buffer content even if it consumes more memory than necessary. On the other hand reallocating memory may also have it's point to reduce memory footprint. So which one does _PyString_Resize does ? And is there an easy way to control this kind of behavior ?

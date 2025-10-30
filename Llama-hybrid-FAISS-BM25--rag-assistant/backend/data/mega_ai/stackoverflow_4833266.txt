@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4833266
-[parent_id]: 4832743
-[tags]: 
-There are two proper ways to deal with this: Have your co-workers stop doing the wrong thing. Good luck pulling this off with the boss, though... Make your function re-entrant and async-safe. If necessary, provide a function with a different signature (e.g. using the widely-used *_r naming convention) with the additional arguments that are necessary for state preservation. As for the non-proper way to do this, on Linux with GNU libc you can use backtrace() and friends to go through the caller list of your function. It's not easy to get right, safe or portable, but it might do for a while: /* * *** Warning *** * * Black, fragile and unportable magic ahead * * Do not use this, lest the daemons of hell be unleashed upon you */ int in_signal_handler_context() { int i, n; void *bt[1000]; char **bts = NULL; n = backtrace(bt, 1000); bts = backtrace_symbols(bt, n); for (i = 0; i In my opinion, it might just be better to quit rather than be forced to write code like this .

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5469968
-[parent_id]: 
-[tags]: 
-Download BitmapImage using Task Parallel Library
-
-Downloading a BitmapImage from a URI on the UI thread hangs up the application. To avoid this, I'm trying to download the BitmapImage in a separate thread, would like to know if it can be made simple with TPL. My current method is the following: Task.Factory.StartNew (() => new BitmapImage(myUri) { CacheOption = BitmapCacheOption.OnLoad }, CancellationToken.None, TaskCreationOptions.None, new StaTaskScheduler(1)) .ContinueWith(t => image1.Source = t.Result, TaskScheduler.FromCurrentSynchronizationContext()); The problem with this is of course the fact, that the BitmapImage wasn't created on the same thread as the Image. The BitmapImage loaded from URI cannot be frozen, so that wouldn't work normally. Currently, the simplest method I can think of is creating a stream from the URI, then loading the bitmap from that stream and freeze it before returning. That should create a really bloating code I believe. Is there a way to keep the code small(er) and (more) readable while trying to display an image from the web?

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5546304
-[parent_id]: 
-[tags]: 
-Instruments and zombie; retain count is 1, 2, then suddenly -1!
-
-I have Cocoa desktop app, which like many makes use of NSDates. Right now, one of the NSDates is becoming a Zombie. It's being used in an NSUndoManager's stack, so I figure there's something I'm not quite understanding. But that's okay, because I was planning to use Instruments to find out where it's being retained and released. Except, Instruments is showing very odd behavior (but behavior that I've seen once or twice before). I've posted a screenshot at http://taubler.com/zombie.png , and attempted to reproduce Instruments' trace here: 0 __NSCFDate Malloc 1 00:08.416.441 0x114a92150 16 Foundation getObjectValue 1 __NSCFDate Autorelease 00:08.416.462 0x114a92150 0 Foundation getObjectValue 2 __NSCFDate Retain 2 00:08.416.576 0x114a92150 0 Proxy -[SPTask setStart:] 3 __NSCFDate Release 1 00:09.815.661 0x114a92150 0 Foundation -[NSAutoreleasePool drain] 4 __NSCFDate Retain 2 00:10.703.345 0x114a92150 0 Proxy -[DraggingTask setOrigStart:] 5 __NSCFDate Release 1 00:10.871.257 0x114a92150 0 Proxy -[SPTask setStart:] 6 __NSCFDate Retain 2 00:11.482.473 0x114a92150 0 Foundation -[NSCFArray insertObject:atIndex:] 7 __NSCFDate Zombie -1 00:18.639.856 0x114a92150 0 Proxy -[SPTask setStart:] Notice how the retain count jumps from 2 to -1. Does anyone know why that is happening? It sure makes it tough to find the rogue deallocation... Thanks in advance!

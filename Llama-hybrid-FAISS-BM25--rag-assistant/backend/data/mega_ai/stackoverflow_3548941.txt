@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3548941
-[parent_id]: 3548479
-[tags]: 
-This works. var DownloadAbort: boolean; procedure Download(const URL, FileName: string); var hInet: HINTERNET; hURL: HINTERNET; Buffer: array[0..1023] of AnsiChar; BufferLen, amt: cardinal; f: file; const UserAgent = 'Delphi Application'; // Change to whatever you wish begin DownloadAbort := false; hInet := InternetOpen(PChar(UserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0); try hURL := InternetOpenUrl(hInet, PChar(URL), nil, 0, 0, 0); try FileMode := fmOpenWrite; AssignFile(f, FileName); try Rewrite(f, 1); repeat InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen); BlockWrite(f, Buffer[0], BufferLen, amt); if DownloadAbort then Exit; until BufferLen = 0; finally CloseFile(f); end; finally InternetCloseHandle(hURL); end; finally InternetCloseHandle(hInet); end; end; In practice, the code above will be part of your thread's Execute method, and you do not need DownloadAbort ; intead, you check if Terminated then Exit;

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3104792
-[parent_id]: 3104389
-[tags]: 
-Huh, using the non-standard dladdr and a ridiculously convoluted and unsafe way to cast method pointers to void pointers, there seems to be a way to obtain the name of a method from its pointer. This is certainly more dangerous than firearms. Don't do this at home (or at work, for that matter). C++ forbids to cast method pointers to void* (which is required by dladdr to work) even with the almighty C cast, but you can cheat that. #include #include template static void* voidify(T method) { asm ("movq %rdi, %rax"); // should work on x86_64 ABI compliant platforms } template const char* getMethodName(T method) { Dl_info info; if (dladdr(voidify(method), &info)) return info.dli_sname; return ""; } From there: int main() { std::cout ...aaaand you should be able to use that symbol name with LLVM. But it won't work with virtual methods (another good reason to not use it). EDIT Hacking much, much deeper into how virtual method pointers are handled, I've put together a more elaborate function that works for them, too. Only the most courageous of you should follow this link .

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2945619
-[parent_id]: 2938966
-[tags]: 
-I think I finally found a solution: First, in a header file, declare memset() with a pragma, like so: extern "C" void * __cdecl memset(void *, int, size_t); #pragma intrinsic(memset) That allows your code to call memset() . In most cases, the compiler will inline the intrinsic version. Second, in a separate implementation file, provide an implementation. The trick to preventing the compiler from complaining about re-defining an intrinsic function is to use another pragma first. Like this: #pragma function(memset) void * __cdecl memset(void *pTarget, int value, size_t cbTarget) { unsigned char *p = static_cast (pTarget); while (cbTarget-- > 0) { *p++ = static_cast (value); } return pTarget; } This provides an implementation for those cases where the optimizer decides not to use the intrinsic version. The outstanding drawback is that you have to disable whole-program optimization (/GL and /LTCG). I'm not sure why. If someone finds a way to do this without disabling global optimization, please chime in.

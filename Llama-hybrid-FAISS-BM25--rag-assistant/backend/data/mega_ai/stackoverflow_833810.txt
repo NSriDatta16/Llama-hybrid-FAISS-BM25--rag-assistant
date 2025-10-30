@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 833810
-[parent_id]: 833757
-[tags]: 
-Try this: DetachedCriteria criteria = DetachedCriteria.For( typeof( Race ), "race" ) .CreateAlias("Event", "event") .CreateAlias("race.Contestants", "contestant") .SetFetchMode("race.Contestants", FetchMode.Join) .SetFetchMode("contestant.Driver", FetchMode.Join) .Add( Restrictions.Eq( "event.EventId", eventId ) ) .AddOrder ( r => r.Time, Order.Desc ) .SetResultTransformer( new DistinctRootEntityResultTransformer() ) .SetFirstResult( firstRaceToFetch ) .SetMaxResults( count ); return this.ExecuteListQuery (criteria); } It should make a single query and join the races, events and contestants. You shouldn't use FetchMode.Join too much, the returning result set is larger. (It includes the race and event information as many times as you have contestants.)

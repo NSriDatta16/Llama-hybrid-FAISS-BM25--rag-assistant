@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2229781
-[parent_id]: 
-[tags]: 
-MySQL Data Adapter ver 6.1.3.0 not returning ID when ver 5 data adapter did work
-
-I recently upgraded my MySQL data adapter from v5 to v6. When I use the v5 MySQL Data Adapter this code below worked perfectly. However since I have begun using v6 of the data adapter, when I add a new record, it does not return the "new" ID of the record. Does anyone know an elegant way to achieve this? protected void SetRecord(ref T Data, string Sql) { // // Get a connection to use // string connectionKey = ""; MySqlConnection Connection = ConnectionManager.Current.OpenConnection(out connectionKey); MySqlDataAdapter da; MySqlCommandBuilder cb; DataTable dt = new DataTable(); DataRow dr; da = new MySqlDataAdapter(Sql, Connection); da.Fill(dt); // // If there is more than one row, then edit 1st row, else add new row // if (dt.Rows.Count > 0) { dr = dt.Rows[0]; DatabaseRow_Set(ref dr, Data); // // Update the DataSet with the Database // cb = new MySqlCommandBuilder(da); da.Update(dt); } else { dr = dt.NewRow(); DatabaseRow_Set(ref dr, Data); dt.Rows.Add(dr); // // Update the DataSet with the Database // cb = new MySqlCommandBuilder(da); da.Update(dt); // // Call get from data row to get new ID // DatabaseRow_Get(dr, ref Data); } // // Close Connection // ConnectionManager.Current.CloseConnection(connectionKey); }

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3826459
-[parent_id]: 
-[tags]: 
-How can I combine sql aggregate functions with distinct more cleanly?
-
-I've been running into the following case repeatedly lately, either I need to apply MAX() or SUM() to one column on a table, but I need DISTINCT sets of values for other columns. For example consider the following table and associated columns representing details of a login to StackOverflow. SoUserLogins (OpenIdToken, Name, IpAdress, LoginTimeStamp, QuestionsAsked) I might want a result set containing users and their last login. SELECT DISTINCT OpenIdToken, MAX(LoginTimeStamp) INTO #tmpLastLogin FROM SoUserLogins GROUP BY OpenIdToken But I need distinct values from the other columns. I'm going to wrap this in a common table expression (CTE) because I'm going to use it later and don't want to have to clean up another temporary table. ;WITH tmpLastLogin_CTE AS ( SELECT DISTINCT SOL.OpenIdToken, SOL.Name, SOL.IpAdress, SOL.QuestionsAsked TTL.LastLogin FROM SoUserLogins SOL JOIN #tmpLastLogin TLL ON SOL.OpenIdToken = TLL.OpenIdToken ) --Extra SQL using tmpLastLogin_CTE goes here You could change the MAX(LoginTimeStamp) to SUM(QuestionsAsked) in the code above with a few extra tweaks to see a similar example. My question, is there a cleaner or more elegant way to deal with these situations? I am using SQL Server.

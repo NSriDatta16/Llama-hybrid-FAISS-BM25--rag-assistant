@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 63571
-[parent_id]: 
-[tags]: 
-Tensorflow training with batch size of (1, None, features), but model expects extra dimension
-
-I've made an autoencoder like below, to accept variable-length inputs. It works for a single sample if I do model.fit(np.expand_dims(x, axis = 0) but this won't work when passing in an entire dataset. What's the simplest approach in this case? import numpy as np import tensorflow.python.keras.backend as K from tensorflow.python.keras.layers import Input, LSTM, Lambda from tensorflow.python.keras.models import Model def repeat(x): step_matrix = K.ones_like(x[0][:, :, :1]) latent_matrix = K.expand_dims(x[1], axis = 1) return K.batch_dot(step_matrix, latent_matrix) timesteps = None features = 2 latent_dim = 10 inputs = Input(shape = (timesteps, features)) encoded = LSTM(latent_dim, name = "encoded")(inputs) decoded = Lambda(repeat)([inputs, encoded]) outputs = LSTM(features, return_sequences = True)(decoded) autoenc = Model(inputs = inputs, outputs = outputs) autoenc.compile(optimizer = "adam", loss = "mse") encoder = Model( inputs = autoenc.input, outputs = autoenc.get_layer("encoded").output ) x1 = np.ones((20, 2)) x2 = np.ones((30, 2)) x3 = np.ones((40, 2)) X_train = np.array((x1, x2, x3)) autoenc.fit(x = X_train, y = X_train, epochs = 10, batch_size = 1)

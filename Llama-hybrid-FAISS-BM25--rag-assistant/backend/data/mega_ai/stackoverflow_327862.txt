@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 327862
-[parent_id]: 327010
-[tags]: 
-Rather than applying a work around each time again, you can fix the problem once and for all by writing a function object, and using that like strager proposed (though his implementation is rather not C++): struct join { std::string sep; join(std::string const& sep): sep(sep) { } template std::string operator()(Column const& a, Column const& b) const { return a._name + sep + b._name; } }; As i don't know your column type, i've left it templated. Now, whenever you want to build a query, just do std::string query = std::accumulate(cols.begin(), cols.end(), std::string("SELECT "), join(", ")) + " FROM some-table;";

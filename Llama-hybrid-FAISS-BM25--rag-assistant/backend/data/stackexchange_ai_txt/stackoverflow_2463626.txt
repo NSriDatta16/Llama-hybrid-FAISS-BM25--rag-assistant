@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2463626
-[parent_id]: 2462760
-[tags]: 
-You want to allow two different actions: making the xml file from the internal file, and making the internal file from the xml file. Since Make knows only the modification times, it knows which target is older but not whether it should be remade. So put in another file as a flag to record when either action was last taken, and make that your primary target; if either target is newer than the flag, it has been modified by something other than these actions, and make should rebuild the older target (and then touch the flag). There are several ways to implement this. In some versions of Make (such as recent versions of GNUMake) you can write double-colon rules, so that Make will rebuild a target differently, based on which preq triggered it: %.flag:: %.internal # convert $*.internal to $*.xml touch $@ %.flag:: %.xml # rewrite $*.internal based on $*.xml touch $@ A less elegant but more portable way is to look at $? and rebuild the other file: %.flag: %.xml %.internal ifeq ($?,$*.internal) # convert $*.internal to $*.xml else # rewrite $*.internal based on $*.xml endif touch $@

@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 68698
-[parent_id]: 54021
-[tags]: 
-This seems like a z-score problem. Try this. import pandas as pd from scipy import stats import numpy as np df = pd.DataFrame({'foo': ['43349', '43377', '43411', '43440', '43472', '43502', '43530', '43559', '43592', '43622'], 'baz': [-2760.14, -1149.73, -1551.41, -1208.17, -244.02, 111, 139.24, -27315.1, -30326.58, -1633.44]}) # print(df) def zscore(s): return (df['baz'] - np.mean(s)) / np.std(df['baz']) df[zscore(df['baz']).abs().gt(1)] Result: foo baz 7 43559 -27315.10 8 43592 -30326.58 That's looking for items that have a z-score of 1 or greater. If, for instance, you want to see which ones have a z-score of 2 or more: df[zscore(df['baz']).abs().gt(2)] Result: foo baz 8 43592 -30326.58 This will show you z-scores (I'm pretty sure there are many ways to do this kind of thing). cols = list(df.columns) cols.remove('foo') df[cols] for col in cols: col_zscore = col + '_zscore' df[col_zscore] = (df[col] - df[col].mean())/df[col].std(ddof=0) df Take a look at this as well. Ways to Detect and Remove the Outliers | Towards Data Science

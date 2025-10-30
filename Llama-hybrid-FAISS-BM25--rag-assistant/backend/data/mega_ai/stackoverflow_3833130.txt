@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3833130
-[parent_id]: 3833077
-[tags]: 
-If you declare data as a pointer, you'll have to allocate a separate memory block for the data array, i.e. you'll have to make two allocations instead of one. While there won't be much difference in the actual functionality, it still might have some negative performance impact. It might increase memory fragmentation. It might result in struct memory being allocated "far away" from the data array memory, resulting in the poor cache behavior of the data structure. If you use your own memory management routines, like pooled allocators, you'll have to set up two allocators: one for the struct and one for the array. By using the above technique (known as "struct hack") you allocate memory for the entire struct (including data array) in one block, with one call to malloc (or to your own allocator). This is what it is used for. Among other things it ensures that struct memory is located as close to the array memory as possible (i.e. it is just one continuous block), so the cache behavior of the data structure is optimal.

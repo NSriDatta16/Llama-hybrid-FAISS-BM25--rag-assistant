@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 10676
-[parent_id]: 10668
-[tags]: 
-Matasano Chargen had a good post a while back on porting some debugging code to OS X, which included learning how to read and write memory in another process (among other things). It has to work, otherwise GDB wouldn't : It turns out Apple, in their infinite wisdom, had gutted ptrace() . The OS X man page lists the following request codes: PT_ATTACH — to pick a process to debug PT_DENY_ATTACH — so processes can stop themselves from being debugged [...] No mention of reading or writing memory or registers. Which would have been discouraging if the man page had not also mentioned PT_GETREGS , PT_SETREGS , PT_GETFPREGS , and PT_SETFPREGS in the error codes section. So, I checked ptrace.h . There I found: PT_READ_I — to read instruction words PT_READ_D — to read data words PT_READ_U — to read U area data if you’re old enough to remember what the U area is [...] There’s one problem solved. I can read and write memory for breakpoints. But I still can’t get access to registers, and I need to be able to mess with EIP.

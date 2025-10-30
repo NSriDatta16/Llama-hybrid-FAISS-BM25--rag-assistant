@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3026427
-[parent_id]: 3026408
-[tags]: 
-Do they have to be separate programs/scripts? If not, I would put them in the same program and use async/agents to run the two tasks. Here's a starter-blog for that strategy: Link Basically one agent just sits in a loop: async read from pipe, update price The other agent sits in a loop: sleep for some time, read price and do calculation. Alternatively this could just be the synchronous 'main program' loop. (Depending on data structure, you may or may not need coordination to deal with one agent reading while other is updating.) Actually, you don't even need an agent, can just have async that runs in background. Something like // first script let mutable lastPrice = 0.0 async { while true do let! nextval = namedPipe.AsyncRead() lastPrice Async.Start // second script while true do System.Threading.Thread.Sleep(1000) printfn "%f" (calc lastPrice) if that helps.

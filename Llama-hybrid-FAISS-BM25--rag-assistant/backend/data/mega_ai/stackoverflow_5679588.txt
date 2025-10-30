@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5679588
-[parent_id]: 5679060
-[tags]: 
-As an alternative to the "dirty" imperative style, you can extend the Seq module with a general and reusable function for chunking. The function is a bit like fold , but it takes a lambda that returns option . If it returns None , then a new chunk is started and otherwise the element is added to the previous chunk. Then you can write an elegant solution: files |> Seq.filter(fun (x, y, z) -> y = baseconfig) |> Seq.chunkBy(fun (x, y, z) sum -> if sum + z > 50L*1024L*1024L then None else Some(sum + z)) 0L |> Seq.iter(fun files -> zipfilex.BeginUpdate() for f, _, _ in files do zipfilex.Add(f) zipfilex.CommitUpdate()) The implementation of the chunkBy function is a bit longer - it needs to use IEnumerator directly & it can be expressed using recursion: module Seq = let chunkBy f initst (files:seq ) = let en = files.GetEnumerator() let rec loop chunk st = seq { if not (en.MoveNext()) then if chunk <> [] then yield chunk else match f en.Current st with | Some(nst) -> yield! loop (en.Current::chunk) nst | None -> yield chunk yield! loop [en.Current] initst } loop [] initst

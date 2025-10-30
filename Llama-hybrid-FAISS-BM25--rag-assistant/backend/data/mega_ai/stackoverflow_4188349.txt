@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4188349
-[parent_id]: 
-[tags]: 
-Perl: how can I put all my inline C code into a separate file?
-
-This problem is so simple I can feel the RTFM's coming. However, I've been looking at the docs ( Inline , Inline-C , Inline-C-Cookbook ) all morning and I can't figure out how to solve this problem. I want to use inline C, but I don't want to have C code in the same file as my perl code. (Emacs doesn't like having two languages in one file. In principle this is a matter of convenience, but in practice I'm having to edit my C in one file then copy-paste it into my perl script.) Here is working perl: #!/usr/bin/perl use Inline C => DATA; use strict; use warnings; use List::Util qw(sum); use feature qw(say); my @array = (1..10); say "native perl: ", sum(@array), ", Inline C: ", sum1(\@array); __END__ __C__ double sum1(AV* array) { int i; double sum = 0.0; for (i=0; i (thanks to mobrule for getting me this far.) I want to move all of the C code (or as much as possible) into a separate header file. What I can do is put sum1 into a header, and do this: # same perl as above except now say sum2 instead of sum1 __END__ __C__ #include "sum.h" double sum2(AV* array) { sum1(array); } This is good enough as I no longer have to edit the C in perl-mode, but I wonder if there isn't a more elegant solution to this problem?

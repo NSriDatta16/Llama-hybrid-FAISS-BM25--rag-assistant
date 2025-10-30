@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2663725
-[parent_id]: 2663368
-[tags]: 
-Maybe I'm going too far off with this, but your use case sounds suspiciously as if it could heavily benefit from building on Rx ( Rx in 15 Minutes ). Rx is a framework for working with objects that produce values. It allows such objects to be composed in a very expressive way and to transform, filter and aggregate such streams of produced values. You say you have a bar: class Bar { double Open { get; } double Low { get; } double High { get; } double Close { get; } } A series is an object that produces bars: class Series : IObservable { // ... } A moving average indicator is an object that produces the average of the last count bars whenever a new bar is produced: static class IndicatorExtensions { public static IObservable MovingAverage( this IObservable source, int count) { // ... } } The usage would be as follows: Series series = GetSeries(); series.MovingAverage(20).Subscribe(average => { txtCurrentAverage.Text = average.ToString(); }); An indicator with multiple outputs is similar to GroupBy.

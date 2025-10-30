@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5553024
-[parent_id]: 5536830
-[tags]: 
-This is wonky and inelegant, but it does work for casting the VALUES LESS THAN some_date expression in DBA_TAB_PARTITIONS, at least for range partitioning, including interval partitioning, in 10g and 11g. Inspired by Tom Kyte's "Evaluate Expression" question. Your mileage may vary. declare l_hival varchar2(4000); l_sql varchar2(4000); l_high_date date; l_cursor integer default dbms_sql.open_cursor; l_rows_back number; begin -- partition position = 1 always grabs the "oldest" partition select high_value into l_hival from dba_tab_partitions where table_name = and partition_position = 1; dbms_sql.parse (l_cursor, 'begin :retval := ' || l_hival || '; end;', dbms_sql.native); dbms_sql.bind_variable (l_cursor, ':retval', l_high_date); l_rows_back := dbms_sql.execute (l_cursor); dbms_sql.variable_value (l_cursor, ':retval', l_high_date); dbms_output.put_line (to_char(l_high_date, 'yyyy-mm-dd-hh24.mi.ss')); end; / As it's PL/SQL, it could be encapsulated into a function to return the "high value" for any partitioned table passed in as arguments.

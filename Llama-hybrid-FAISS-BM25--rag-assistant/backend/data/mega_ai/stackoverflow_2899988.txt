@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2899988
-[parent_id]: 2899483
-[tags]: 
-I'd advise against testing getErrorCount() , as you'll make your tests fragile (as you add other constraints, you'll have to remember to update every instance of new BlogPost() anywhere in your test cases). Just check hasErrors() . Other than that... for each constraint, you need to generate some test data that violates it, call the validation routine, and assert on the errors. This is the code you need. Refactor out some methods to remove the duplication. example: private void assertConstraintWorks(clazz, fieldName, testData, expectedErrorCode) { def instance = clazz.newInstance((fieldName): testData) assertFalse instance.validate() assertTrue instance.hasErrors() assertEquals expectedErrorCode, instance.errors?.getFieldError(fieldName)?.code } void testConstraints() { assertConstraintWorks BlogPost, 'title', '', 'blank' assertConstraintWorks BlogPost, 'text', '', 'blank' assertConstraintWorks BlogPost, 'text', ObjectMother.bigText(2001), 'maxSize.exceeded' }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3576359
-[parent_id]: 3573392
-[tags]: 
-I would suggest you create a new group and make all user accounts belong to it. Then grant that role the db_datareader permission in all your databases. To create a new server role called 'EVERYONE': EXEC sp_addrole 'EVERYONE' ...then put all user accounts into it (you can find the T-SQL to do this from this article , but you'll have to dig it out--my firewall won't let me post that fragment here!). ...then make the role a member of each database's db_datareader role: EXEC sp_msforeachdb 'USE [?] EXEC sp_addrolemember [db_datareader], [EVERYONE]'; ( Note that for security reasons you probably do not want the full db_datareader permissions on the system databases like 'master', so you could might remove the EVERYONE group from those. ) Now you just need to remember: When you create a new user login, add it to the 'EVERYONE' role: EXEC sp_addrolemember [EVERYONE], [new_user_name] When you create a new database, add 'EVERYONE' to the 'db_datareader' role: USE [new_db_name]; EXEC sp_addrolemember [db_datareader], [EVERYONE]

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2813882
-[parent_id]: 2812834
-[tags]: 
-Your code is rather thread-happy. That can indeed get you in trouble when you expect them to time stuff. Especially when you use BGW or thread pool threads, the scheduler only allows them to run when there are not more threads active than you have CPU cores. Or when threads get "stuck" for a while. Yours get stuck. You also don't seem to use them effectively, polling loops burn a lot of needless CPU cycles. Leverage the capabilities of the SerialPort class to avoid this: You don't need a transmit thread. The serial port driver has a buffer, your Write() call will instantly return when the data fits the buffer. Writing from the main thread is fine. You don't necessarily need a receive thread. Serial port already has one, it runs the DataReceived event. It can bump a Timer that you started when you transmitted the data. SerialPort already has a ReadTimeout property. You can use it in a receive thread to timeout the Read() call. Sleep() doesn't interfere with serial ports, their drivers read data using hardware interrupts.

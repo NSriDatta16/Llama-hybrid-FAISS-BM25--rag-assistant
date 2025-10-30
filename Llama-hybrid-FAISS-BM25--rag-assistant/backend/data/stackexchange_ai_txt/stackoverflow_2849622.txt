@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2849622
-[parent_id]: 2849527
-[tags]: 
-Accessing files concurrently typically goes slower after 2-3 threads since the hard disk ends up thrashing about trying to read from all files simultaneously, similar to reading a defragmented file. To avoid this, split the work into file readers and file parsers. The file readers bring in the data from the file (also decompressing), and the file parsers parse the data. You could use PipedInputStream / PipedOutputStream to forward data from your file readers to file parsers. Because your files are zipped, reading involves both I/O and cpu, which can be interleaved nicely across 2-4 threads reading all files. For parsing the files, it's easiest to have just one thread reading from the PipedInputStream, so you will have one parser thread per file. Using multiple threads per file requires splitting up the stream and handling seaching at block boundaries, which complicates the process, and is not necessary here, since you probably have sufficient parallelism with 10 parser threads and 2-4 reader threads.

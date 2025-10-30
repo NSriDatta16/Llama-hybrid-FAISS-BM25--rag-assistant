@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2009246
-[parent_id]: 2009217
-[tags]: 
-List will be limited to the max of an array, which is 2GB (even in x64). If that isn't enough, you're using the wrong type of data storage. You can save a lot of overhead by starting it the right size, though - by passing an int to the constructor. Re your edit - with 134217728 x Int32, that is 512MB. Remember that List uses a doubling algorithm; if you are drip-feeding items via Add (without allocating all the space first) it is going to try to double to 1GB (on top of the 512MB you're already holding, the rest of your app , and of course the CLR runtime and libraries). I'm assuming you're on x86, so you already have a 2GB limit per process , and it is likely that you have fragmented your "large object heap" to death while adding items. Personally, yes, it sounds about right to start getting an out-of-memory at this point. Edit: in .NET 4.5, arrays larger than 2GB are allowed if the switch is enabled. The limit then is 2^31 items. This might be useful for arrays of references (8 bytes each in x64), or an array of large struct s.

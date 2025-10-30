@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3586157
-[parent_id]: 3585956
-[tags]: 
-You could do something like that: var averages = myTable .Where(item => item.ColumnX == 234) .Aggregate( new { count = 0, sum1 = 0.0, sum2 = 0.0 }, (acc, item) => new { count = acc.count + 1, sum1 = acc.sum1 + item.Column1, sum2 = acc.sum2 + item.Column2 }, acc => new { avg1 = acc.sum1 / acc.count, avg2 = acc.sum2 / acc.count }); Note the call to AsEnumerable() to force Aggregate to be executed locally (as EF probably doesn't know how to convert it to SQL) Actually it seems to work ;) Alternatively, you could use this query: var averages = from item in table where item.ColumnX == 234 group item by 1 into g select new { Average1 = g.Average(i => i.Column1), Average2 = g.Average(i => i.Column2) }; The use of group by here is not very intuitive, but it's probably easier to read than the other solution. Not sure it can be converted to SQL though...

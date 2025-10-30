@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5506626
-[parent_id]: 5506056
-[tags]: 
-You may want to create a VIEW so you can use it for many other queries: CREATE VIEW CallRecordsAgents AS ( SELECT HistoryID , CallID , Date , Data , LEFT( Agent+' ', CHARINDEX(' ', Agent+' ') - 1) AS Agent1 , RTRIM(LTRIM( SUBSTRING( Agent+' ', CHARINDEX(' ', Agent+' '), LEN(Agent+' ')))) AS Agent2 FROM CallRecords ) After that, the question: " How many transfers did Bob receive? ", would be solved by: SELECT COUNT(*) AS Transfers FROM CallRecordsAgents WHERE Agent2 = "Bob" And " How many transfers did every agent receive? ", would be: SELECT Agent2 , COUNT(*) AS TransfersReceived FROM CallRecordsAgents GROUP BY Agent2 The Agent2 extraction can be simplified (i think) with: , RTRIM( SUBSTRING( Agent, LEN(Agent1)+2, LEN(Agent) ) ) AS Agent2

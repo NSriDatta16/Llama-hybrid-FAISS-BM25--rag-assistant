@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3800410
-[parent_id]: 3800289
-[tags]: 
-First, change DragDropEffects rc = label1.DoDragDrop(label1, DragDropEffects.All | DragDropEffects.Link); to label1.DoDragDrop(label1.Text, DragDropEffects.Copy); Second, you must prepare your drop target. Lets assume, it is textbox. Here is exmple extension method which will allow to cofigure any textbox by calling MyTextBox.EnableTextDrop() : static class TextBoxExtensions { public static void EnableTextDrop(this TextBox textBox) { if(textBox == null) throw new ArgumentNullException("textBox"); // first, allow drop events to occur textBox.AllowDrop = true; // handle DragOver to provide visual feedback textBox.DragOver += (sender, e) => { if(((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy) && e.Data.GetDataPresent(typeof(string))) { e.Effect = DragDropEffects.Copy; } }; // handle DragDrop to set text textBox.DragDrop += (sender, e) => { if(((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy) && e.Data.GetDataPresent(typeof(string))) { ((TextBox)sender).Text = (string)e.Data.GetData(typeof(string)); } }; } }

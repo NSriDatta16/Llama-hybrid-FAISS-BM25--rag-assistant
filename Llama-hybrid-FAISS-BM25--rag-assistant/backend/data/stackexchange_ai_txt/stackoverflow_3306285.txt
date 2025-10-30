@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3306285
-[parent_id]: 3297102
-[tags]: 
-Well, Madhivanan's approach will work when you SELECT data and I appreciate that as that will also reduce storage space. Here is just a way if want to keep the generated BrandId in your table. You just need to perform an UPDATE after you INSET values to Id column. --Table with sample data DECLARE @Tbl TABLE(ID INT, BRANDID INT) INSERT INTO @Tbl(ID) VALUES (1),(1),(1),(2) --extract data SELECT * FROM @Tbl --Populate BrandId with auto generated id ;WITH POPULATEBRANDID AS ( SELECT ID, BRANDID, ROW_NUMBER() OVER (PARTITION BY ID ORDER BY ID) AS [myBRANDID] FROM @Tbl ) UPDATE POPULATEBRANDID SET BRANDID=myBRANDID WHERE BRANDID IS NULL --extract data SELECT * FROM @Tbl Let me know if it works for you.

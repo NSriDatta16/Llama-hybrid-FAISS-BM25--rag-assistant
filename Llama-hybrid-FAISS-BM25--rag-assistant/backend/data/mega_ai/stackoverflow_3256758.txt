@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3256758
-[parent_id]: 3256562
-[tags]: 
-Think of a dataset as a collection of tables and optionally information about the relationships between them. In your example code you are creating an independent Table that does not belong to a DataSet. To pragmatically create a table that is part of a dataset you could do the following: DataSet ds = new DataSet(); DataTable dt = ds.Tables.Add(); //or ds.Tables.Add(MyAlreadyCreatedTable); Jason Evans above is also correct, populating DataTables and DataSets is much simpler using SqlDataAdaptors as he demonstrated. Finally, the Method as you have it written is meant to return a DataSet. But it only captures a single result set from the stored procedure it is calling. It's possible that a procedure could return any number of separate results. All you should need to do is change the following: DataTable table = new DataTable(); using (SqlDataReader reader = command.ExecuteReader()) { table.Load(reader); } to //you can skip creating a new DataTable object using (SqlDataAdapter da = new SqlDataAdapter(command)) { da.Fill(result); // the result set you created at the top }

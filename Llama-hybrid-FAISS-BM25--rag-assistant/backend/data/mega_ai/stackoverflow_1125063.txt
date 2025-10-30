@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1125063
-[parent_id]: 1125014
-[tags]: 
-Well, https://stackoverflow.com/content/img/so/logo is a 404. If it were not, then you could use #!/usr/bin/perl use strict; use warnings; use LWP::Simple; my ($content_type) = head "https://stackoverflow.com/content/img/so/logo.png"; print "$content_type\n" if defined $content_type; __END__ As Kent Fredric points out , what the web server tells you about content type need not match the actual content sent by the web server. Keep in mind that File::MMagic can also be fooled. #!/usr/bin/perl use strict; use warnings; use File::MMagic; use LWP::UserAgent; my $mm = File::MMagic->new; my $ua = LWP::UserAgent->new( max_size => 1_000 * 1_024, ); my $res = $ua->get('https://stackoverflow.com/content/img/so/logo.png'); if ( $res->code eq '200' ) { print $mm->checktype_contents( $res->content ); } else { print $res->status_line, "\n"; } __END__

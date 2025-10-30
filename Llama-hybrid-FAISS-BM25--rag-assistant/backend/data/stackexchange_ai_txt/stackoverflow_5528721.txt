@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5528721
-[parent_id]: 
-[tags]: 
-Custom delegate methods in a NSTextView subclass - compiler warnings
-
-Long story short (please stop me if I'm doing this wrong): I want to have an NSTextView accept a custom drag type, and upon receipt of such a drag change the content to match. To do this, I subclass NSTextView to implement the custom drag type, and (from the subclass) send a message to the NSTextView delegate when done. This works just fine, but I get a familiar compiler warning (though everything works fine): Method '-dragReceivedWithTrack:' not found (return type defaults to 'id') Some code: @interface LyricTextView : NSTextView { } @end @interface NSObject (CustomDragging) -(BOOL)dragReceivedWithTrack:(NSDictionary *)track; @end @implementation LyricTextView -(BOOL)performDragOperation:(id )sender { NSData *data = [[sender draggingPasteboard] dataForType:kMyType]; NSDictionary *track = [NSKeyedUnarchiver unarchiveObjectWithData:data]; if ([[self delegate] respondsToSelector:@selector(dragReceivedWithTrack:)]) { return ([[self delegate] dragReceivedWithTrack:track]); // gives a warning, but works } return NO; } Shouldn't the informal protocol take care of the warning? What am I doing wrong?

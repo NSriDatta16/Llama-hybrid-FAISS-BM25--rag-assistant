@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5069962
-[parent_id]: 
-[tags]: 
-Fetch errors from APNS with PHP
-
-I use a self written script to send push notifications to APNS with PHP. In order to be able to process errors I use the extended format for the Push notifications and would like to fetch results from the stream: // $apns = a stream_socket_client connection $apnsMessage = pack('CNNnH*', 1, $i, $pnDetails['expiration_time'], 32, $pnDetails['token']); $apnsMessage .= pack('n', strlen($pnDetails['payload'])); $apnsMessage .= $pnDetails['payload']; fwrite($apns, $apnsMessage); // Check for errors $errorResponse = @fread($apns, 6) if ($errorResponse != FALSE) { $unpackedError = unpack('Ccommand/CstatusCode/Nidentifier', $errorResponse); } I have seen a very similar practice in the apns-php project, however, in my case the script always waits indefinitely at the fread line because it tries to read data which is not there (Apple only sends a response if there was an error). I have looking for ways to tell if there is any new data to read from a TCP stream, however, I could find none and the stream callback methods available for HTTP calls are not available for "raw" TCP connections either. How can I transform my script to make sure it only calls fread when there actually is data to read? How does the apns-php project solve this issue (from what I could tell they were just calling fread as well)?

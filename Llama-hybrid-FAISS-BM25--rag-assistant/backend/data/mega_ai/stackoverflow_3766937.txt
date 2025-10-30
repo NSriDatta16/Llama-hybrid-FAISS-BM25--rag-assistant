@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3766937
-[parent_id]: 3766136
-[tags]: 
-The warning you're seeing is Rails 3's attempt to discourage you from overwriting the base before_* and after_* methods. This is similar to how you would have before_filter and other callbacks in your controller. What this means is that instead of doing: def before_create self.username.downcase! self.salt = User.make_salt(self.username) self.hashed_password = User.hash_with_salt(@password, self.salt) end Rails wants you to do: before_create :downcase_username_and_create_password def downcase_username_and_create_password self.username.downcase! self.salt = User.make_salt(self.username) self.hashed_password = User.hash_with_salt(@password, self.salt) end In this case, you might even split up the two, as there could be a possibility that you'd want to generate a password independently: before_create :downcase_username, :create_password def downcase_username self.username.downcase! end def create_password self.salt = User.make_salt(self.username) self.hashed_password = User.hash_with_salt(@password, self.salt) end

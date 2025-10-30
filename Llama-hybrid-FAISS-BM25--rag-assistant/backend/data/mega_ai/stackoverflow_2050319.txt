@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2050319
-[parent_id]: 2044314
-[tags]: 
-WITH s (e_id, scale) AS ( SELECT 1, 0.0 UNION ALL SELECT 1, 0.1 UNION ALL SELECT 1, 0.1 UNION ALL SELECT 1, 0.2 UNION ALL SELECT 1, 0.2 UNION ALL SELECT 1, 0.3 ), cte AS ( SELECT e_id, scale, ROW_NUMBER() OVER (PARTITION BY e_id ORDER BY scale ASC) AS rn, COUNT(scale) OVER (PARTITION BY e_id) AS cn, COUNT(*) OVER (PARTITION BY e_id, scale) AS sn FROM s WHERE scale IS NOT NULL ) SELECT e_id, AVG(scale), ( SELECT AVG(scale) FROM cte ci WHERE ci.e_id = co.e_id AND ci.sn = MAX(co.sn) ) AS mode FROM cte co GROUP BY e_id This will select the average of all modal scales. Replace AVG with TOP 1 ... ORDER BY to get a single scale. Note how we can use MAX(co.sn) in the WHERE clause :)

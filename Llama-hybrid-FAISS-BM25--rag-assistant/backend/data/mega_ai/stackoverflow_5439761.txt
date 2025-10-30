@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5439761
-[parent_id]: 
-[tags]: 
-Why does this Thread behave so strange?
-
-Let's think of following code fragment, that behaves as expected. Thread runs, then it's paused and then it's unpaused and finishes it's execution: public static void main(final String[] args) throws InterruptedException { Executor exec = Executors.newSingleThreadExecutor(); MyThread thread = new MyThread(); exec.execute(thread); thread.pause(); thread.pause(); // unpause } Now let's add add some sleeping to thread so it's paused for a while: public static void main(final String[] args) throws InterruptedException { Executor exec = Executors.newSingleThreadExecutor(); MyThread thread = new MyThread(); exec.execute(thread); thread.pause(); Thread.sleep(500); thread.pause(); // unpause } But that code never finishes. Why ? Here's implementation of pause method, it checks private boolean field for pausing: public synchronized void pause() { paused = (paused) ? false : true; } And here is implementation of overriden run method: @Override public void run() { // don't worry, I just need som dummy data to take some cpu time ;) PriorityQueue queue = new PriorityQueue (); Random random = new Random(System.currentTimeMillis()); System.out.println("I stared"); checkPause(); // let's do some big computation for (int i=0; i When I tried debugging, I'll end on wait() method. Then it just waits :/

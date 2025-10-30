@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1340064
-[parent_id]: 1339991
-[tags]: 
-You can not reliably control in what order Oracle retrieve the row of a table without an ORDER BY . Furthermore, without the /*+APPEND*/ hint, Oracle will store the rows physically in a heap table where there is room, which may not be at the end of the table ! You may think Oracle inserts them sequentially but any DML or concurrent activity (2+ sessions inserting) might produce a different physical organization. You could use an INDEX ORGANIZED table to store the rows in the order of the PK. Most simple queries thereafter on that table will produce a sorted set of rows. This would not however guarantee that oracle will select the rows in that order if you don't specify an ORDER BY (depending on the query and the access path, the rows may come in any order). You could also use a view with an order by, this is probably your best bet if you can't touch the application (rename the table, create a view with the name of the table, let the application think it queries the table). I don't know if it is feasible in your case.

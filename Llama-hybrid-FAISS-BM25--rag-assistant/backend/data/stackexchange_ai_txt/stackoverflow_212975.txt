@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 212975
-[parent_id]: 212797
-[tags]: 
-Queue objects have this behavior because they lock using Condition objects form the threading module. So your solution is really the only way to go. However, if you really want a Queue method that does this, you can monkeypatch the Queue class. For example: def interruptable_get(self): while True: try: return self.get(timeout=1000) except Queue.Empty: pass Queue.interruptable_get = interruptable_get This would let you say q.interruptable_get() instead of interruptable_get(q) although monkeypatching is generally discouraged by the Python community in cases such as these, since a regular function seems just as good.

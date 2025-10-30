@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 65386
-[parent_id]: 
-[tags]: 
-Tensorflow Object Detection API, update performance measurement
-
-I am using Tensorflow Object Detection API to classify objects in the images. I am using own dataset. I am facing the problem of performance. I need a suggestion about the training strategy. I have updated cocoapi\PythonAPI\pycocotools\cocoeval.py file to check mAP per class. After line 466 I have added these lines: if ap == 1: avg_ap = 0.0 class_count = 0 my_class_ids = p.catIds num_classes = len(my_class_ids) for i in range(0, num_classes): my_mean = np.mean(s[:, :, i, :]) if my_mean > -1: print('{}. category# {}: {}'.format(i, my_class_ids [i], my_mean)) avg_ap += my_mean class_count += 1 if class_count > 0: print("Class average#{} mAP : {}".format(class_count, avg_ap / class_count)) The output looks like: 11. category# 19: 0.183361433778217 13. category# 21: 0.02725855003082726 16. category# 24: 0.4594024961926443 Average Precision (AP) @[ IoU=0.50:0.95 | area= all | maxDets=100 ] = 0.202 Here training data have examples: category# 19: 581, category# 21: 144 and category# 24: 453. So, data is a little bit skewed. I have used a pre-trained network trained with COCO data. The network is learning, the loss is going down and mAP is 0.202. However, some object classes have very low mAP like 0.02 shown above. How can I update my training strategy to improve performance measurement for those tough objects?

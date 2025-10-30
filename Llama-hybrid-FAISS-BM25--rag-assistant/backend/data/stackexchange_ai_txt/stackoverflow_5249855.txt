@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5249855
-[parent_id]: 5171786
-[tags]: 
-Finally figured it out when i replaced ActiveRecord with RDBI. I was getting the following error when my workers were trying to connect to the oracle database java.sql.SQLRecoverableException: I/O Exception: Connection reset at oracle.jdbc.driver.SQLStateMapping.newSQLException(SQLStateMapping.java:281) at oracle.jdbc.driver.DatabaseError.newSQLException(DatabaseError.java:118) at oracle.jdbc.driver.DatabaseError.throwSqlException(DatabaseError.java:224) After googling, i stumbled upon this post http://kr.forums.oracle.com/forums/thread.jspa?messageID=3793101 . So, i decided to pass the -Djava.security.egd=file:///dev/urandom option to my jvm. I edited the settings in glassfish's jvm options, but that did not work as those settings benefited my sinatra app but not the resque workers running in the background. So, i had to start the resque workers by passing the jvm argument. I wrote a rake task to do the same. desc "Start multiple workers for JRUBY production environment which ocnnects to oracle database" task :start_workers => :setup do threads = [] ENV['COUNT'].to_i.times do threads

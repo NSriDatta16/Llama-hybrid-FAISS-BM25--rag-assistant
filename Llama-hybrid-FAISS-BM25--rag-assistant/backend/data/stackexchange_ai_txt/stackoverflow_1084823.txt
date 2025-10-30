@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1084823
-[parent_id]: 1084812
-[tags]: 
-Flex should return the abstract token value to Bison. You can find the lexeme (the string matched) in Flex in the value: yytext And so you can do: {id} { yylval->strval=strdup(yytext); return(TOK_ID); } And so forth. The yylval struct relates IIRC to the bison union/whatever you are using to evaluate past the token-type .. so I might have in Bison %union { char *strval; int intval; node node_val; } Returning anything other than a token-type will break the automaton in Bison. Your Bison actions can access such as: id_production: TOK_ID { $ $ = create_id_node(yylval.strval); xfree(yylval.strval); // func makes a copy, so we are cool. } And so on. Any more explanation than this and I will probably start repeating documentation. Things to consult: Dragon Book (as always) Modern Compiler Implementation in C (great for getting started) Bison docs Flex docs Good Luck

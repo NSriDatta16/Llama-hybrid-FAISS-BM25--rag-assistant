@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2619502
-[parent_id]: 
-[tags]: 
-Count number of arguments to Excel formula in VBA
-
-I need to use VBA to determine the number of arguments passed to an Excel formula. For instance, suppose a cell contains the formula =MyFunc($A$1, "xyz", SUM(1,2,COUNT(C1:C12)), IF(B1>2,1,0)). Then the counter function should return 4. Does VBA contain any built-in functions for this, or does someone have an example of a regular expression that could calculate this? Update: Thank you both user225626 and Charles. One problem I found was when there were quoted string arguments that contained commas; these commas were causing the argument count to increase. I've modified Charles' code to account for this. Public Function CountFormulaArguments(sStr As String) As Integer Dim strChar As String Dim nArgs As Integer Dim n, nLParen, nCommas As Integer Dim blArray, bQuote As Boolean nLParen = 0 nArgs = 0 For n = 1 To Len(sStr) strChar = Mid(sStr, n, 1) If strChar = "(" Then nLParen = nLParen + 1 If nLParen = 1 Then nArgs = nArgs + 1 ElseIf strChar = ")" Then nLParen = nLParen - 1 ElseIf nLParen = 1 And strChar = "{" Then blArray = True ElseIf blArray And strChar = "}" Then blArray = False ElseIf Not bQuote And strChar = """" Then bQuote = True ElseIf bQuote And strChar = """" Then bQuote = False ElseIf nLParen = 1 And Mid(sStr, n, 1) = "," And Not blArray And Not bQuote Then nCommas = nCommas + 1 End If Next nArgs = nArgs + nCommas CountFormulaArguments = nArgs End Function

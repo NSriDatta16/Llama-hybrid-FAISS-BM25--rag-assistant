@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4271060
-[parent_id]: 
-[tags]: 
-Can someone come up with a better version of this enumerator?
-
-I'm pretty happy with the following method. It takes an enumerable and a list of sorted, disjoint ranges and skips items not in the ranges. If the ranges are null, we just walk every item. The enumerable and the list of ranges are both possibly large. We want this method to be as high performance as possible. Can someone think of a more elegant piece of code? I'm primarily interested in C# implementations, but if someone has a three-character APL implementation, that's cool too. public static IEnumerable WalkRanges (IEnumerable source, List > ranges) { Debug.Assert(ranges == null || ranges.Count > 0); int currentItem = 0; Pair currentRange = new Pair (); int currentRangeIndex = -1; bool betweenRanges = false; if (ranges != null) { currentRange = ranges[0]; currentRangeIndex = 0; betweenRanges = currentRange.First > 0; } foreach (T item in source) { if (ranges != null) { if (betweenRanges) { if (currentItem == currentRange.First) betweenRanges = false; else { currentItem++; continue; } } } yield return item; if (ranges != null) { if (currentItem == currentRange.Second) { if (currentRangeIndex == ranges.Count - 1) break; // We just visited the last item in the ranges currentRangeIndex = currentRangeIndex + 1; currentRange = ranges[currentRangeIndex]; betweenRanges = true; } } currentItem++; } }

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1332299
-[parent_id]: 
-[tags]: 
-Discriminated Union & let binding?
-
-Why are let bindings not permitted in a discriminated union? I assume it has to do with let bindings being executed in a default constructor? On a secondary note any suggestions on how I could rewrite AI_Choose would be appreciated. I want to keep the weighted priority in a tuple with the AI. My idea is to have AI_Weighted_Priority inherit AI_Priority and override Choose. I don't want to deal with zipping lists of different lengths (bad practice imo.) open AI type Condition = | Closest of float | Min | Max | Average member this.Select (aiListWeight : list ) = match this with | Closest(x) -> aiListWeight |> List.minBy (fun (ai, priority) -> abs(x - priority)) | Min -> aiListWeight |> List.minBy snd | Max -> aiListWeight |> List.maxBy snd | Average -> let average = aiListWeight |> List.averageBy snd aiListWeight |> List.minBy (fun (ai, priority) -> abs(average - priority)) type AI_Choose = | AI_Priority of list * Condition | AI_Weighted_Priority of list * Condition // I'm sad that I can't do this let mutable chosen = Option .None member this.Choose() = match this with | AI_Priority(aiList, condition) -> aiList |> List.map (fun ai -> ai, ai.Priority()) |> condition.Select |> fst | AI_Weighted_Priority(aiList, condition) -> aiList |> List.map (fun (ai, weight) -> ai, weight * ai.Priority()) |> condition.Select |> fst member this.Chosen with get() = if Option.isNone chosen then chosen

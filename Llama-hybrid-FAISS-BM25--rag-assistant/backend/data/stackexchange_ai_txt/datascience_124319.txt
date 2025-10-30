@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 124319
-[parent_id]: 
-[tags]: 
-Avoid killing learnable parameters when transforming input into intervals
-
-I'm trying to make a model using Pytorch which is training and transforming a set of coordinates, and then is downsampled using the model below. However, when I'm making the input coordinates into result_tensor, the trainable parameters from transformed_coordinates get killed. This happens when I define within_interval. Does anyone know why this happens and if there is a better way of doing this? class Class(torch.nn.Module): def __init__(self, n_classes=2): super(Class, self).__init__() # number of output channels dim = 3 self.dim = dim # Fully Connected self.fully_net = torch.nn.Sequential( torch.nn.Linear(dim, 64), torch.nn.Tanh(), torch.nn.Linear(64, n_classes), ) # Global Average Pooling self.global_avg_pool = torch.nn.AdaptiveAvgPool1d(1) def forward(self, input: torch.Tensor, transformed_coordinates): r_max = 20 r_min = 0 radius = transformed_coordinates intensity = input # Defining the number of intervals num_intervals = self.dim # Creating intervals from radius values intervals = torch.linspace(r_min, r_max, num_intervals + 1) # Initialize the result tensor result_tensor = torch.empty(0) # Loop through figures and radius intervals for figure_idx in range(len(intensity)): class_tensor = torch.empty(0) for interval_idx in range(num_intervals): # Find pixels that fall within the radius interval within_interval = torch.logical_and( radius > intervals[interval_idx], radius

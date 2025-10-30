@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4825432
-[parent_id]: 4810346
-[tags]: 
-It seems as though url is not getting captured in a closure , so it's undefined for all but the first GM_xmlhttpRequest run. Modifying SendData() , like so: function SendData(url) { var moreSubstantial = url + " "; GM_xmlhttpRequest( { method: 'GET', url: moreSubstantial, should be enough. Or, you can get the pages sequentially. Change parse() to something like: function parse (details) { var element = $(details); var coll = element.find("#my valid selector"); var TargetPages = coll.map (function() {return this.href;} ); (function getNextPage (J) { var PageURL = TargetPages[J]; GM_xmlhttpRequest ( { method: "GET", url: PageURL, headers: { 'User-agent': 'Mozilla/4.0 (compatible) Greasemonkey', 'Accept': 'application/atom+xml,application/xml,text/xml', }, onload: function (responseDetails) { doSomething (responseDetails.responseText); if (--J >= 0) getNextPage (J); } } ); } ) (TargetPages.length - 1); }

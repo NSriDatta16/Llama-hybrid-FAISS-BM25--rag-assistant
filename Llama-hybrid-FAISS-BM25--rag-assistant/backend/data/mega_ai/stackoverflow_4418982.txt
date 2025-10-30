@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4418982
-[parent_id]: 4418951
-[tags]: 
-There's no concept of "currently viewing" on the web, because everything happens as non-persistent connections. The closest you can get is "X users viewed this page during the last N seconds" (and if you choose a value of N that's small enough, you could say that it's pretty much equivalent). Then, to have user A view data based on user B's actions, in PHP, you need to have some persistent storage, usually as a database like MySQL (but memcached or xcache could work as well, if you don't really worry about losing the data if the server crashes). Simply write items such as "user X viewed page Y at time Z" to your persistent storage, and when page Y is displayed, query the storage for all views of page Y in the last N seconds, and count the number of different users. In SQL: INSERT INTO visits (user, page, time) VALUES (?,?,NOW()) SELECT COUNT(DISTINCT user) FROM visits WHERE page = ? AND time You could have the user tell the server "I'm still viewing" by submitting an AJAX request regularly (or having a small iframe on your page that reloads itself every few seconds without JavaScript).

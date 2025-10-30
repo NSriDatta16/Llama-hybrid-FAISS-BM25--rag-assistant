@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4844421
-[parent_id]: 4844222
-[tags]: 
-Troubleshoot this with Spy++, pay attention to the WM_SETCURSOR message. A scrollbar doesn't have any reason to change the cursor, you'll see it return FALSE (shown as 'fHaltProcessing:False in the Spy++ trace). Which cause the message to be sent to the parent of the control. Follow the trace, eventually you'll run into a parent window that returns TRUE. That's the one that changed the cursor. Odds are decent that this will be Outlook. No idea from your question why it thinks the UI is dead. Deriving your own class from Panel and overriding WndProc() to catch the message would be a workaround of sorts. I would however definitely focus on Outlook first. using System; using System.Windows.Forms; class MyPanel : Panel { protected override void WndProc(ref Message m) { if (m.Msg == 0x20) { // Trap WM_SETCURSOR Cursor.Current = Cursors.Default; m.Result = (IntPtr)1; } else base.WndProc(ref m); } }

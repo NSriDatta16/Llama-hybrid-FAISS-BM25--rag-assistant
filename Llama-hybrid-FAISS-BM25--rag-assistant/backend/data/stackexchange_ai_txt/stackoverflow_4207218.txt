@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4207218
-[parent_id]: 
-[tags]: 
-Track changes of an object contained in a Dictionary and change its TKey accordingly
-
-I am writing a class library to interact with a domain Active Directory. In my object model, I have the following: Domain; Organizational Unit; Group; User. In my Domain object, I have an Entries property and an Add() method. public class Domain { // The ReadOnlyDictionary is a custom wrapper over an IDictionary. public ReadOnlyDictionary Entries { get; } public void Add(IDirectoryEntry entry) { Entries.Add(entry.Name, entry); } } Now, let's suppose I have the following code testing for changes. [Test()] public void ChangeTesting { Domain domain = new Domain("LDAP://..."); Group g = new Group("groupName"); domain.Add(g); g.Name = "ChangedName"; Assert.IsTrue(domain.ContainsKey("ChangedName")); } For your information, I implemented the INotifyPropertyChanged interface to ease my life, but I don't seem to find a way to make it work the way I want. Perhaps am I not doing things right somehow, as for the location of different methods, I don't know. How can I make my Domain aware of a change that occured within one of its Entries , so that the TKey value is also changed? That is wanted because one could possibly add an entry, change its name meanwhile adding a new entry with the "old" name of the actual within entry, and cause a conflict, etc. In the end, causing the test to fail. But I'd like to make it pass like it actually is. Is there another better approach or workaround?

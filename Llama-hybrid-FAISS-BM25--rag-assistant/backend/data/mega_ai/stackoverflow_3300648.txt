@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3300648
-[parent_id]: 
-[tags]: 
-Core Data undo coalescing for an action spanning multiple run loop cycles
-
-I have a Core Data based UIKit application that allows the user the drag objects around on the screen. While an object is being dragged, I update its position attribute on each touchesMoved: event. To support undoing a drag operation in one go, I start a new undo group at the beginning of the drag, and end the group when the user lifts their finger. To save memory and to make undo operations fast, I want to coalesce undo data belonging to the drag operation, but Core Data makes this difficult. The problem is that processPendingChanges is called at the end of each run loop cycle, and it forces Core Data to file a new undo record for the position change that happened in that iteration. A drag operation can easily accumulate hundreds of such undo records, all of which but the first are unnecessary. Is there a way for me to keep using Core Data's magical built-in undo support, but without wasting precious memory on such duplicate undo records? I love that I don't need to care about maintaining object graph consistency across undo/redo operations, but not being able to correctly handle these continuous attribute updates seems to be a showstopper.

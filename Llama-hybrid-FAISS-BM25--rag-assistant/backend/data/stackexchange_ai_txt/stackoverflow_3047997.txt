@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3047997
-[parent_id]: 228038
-[tags]: 
-Greg Beech posted an unsafe option that is indeed as fast as it gets (it's an in-place reversal); but, as he indicated in his answer, it's a completely disastrous idea . That said, I'm surprised there is so much of a consensus that Array.Reverse is the fastest method. There's still an unsafe approach that returns a reversed copy of a string (no in-place reversal shenanigans) significantly faster than the Array.Reverse method for small strings: public static unsafe string Reverse(string text) { int len = text.Length; // Why allocate a char[] array on the heap when you won't use it // outside of this method? Use the stack. char* reversed = stackalloc char[len]; // Avoid bounds-checking performance penalties. fixed (char* str = text) { int i = 0; int j = i + len - 1; while (i Here are some benchmark results . You can see that the performance gain shrinks and then disappears against the Array.Reverse method as the strings get larger. For small- to medium-sized strings, though, it's tough to beat this method.

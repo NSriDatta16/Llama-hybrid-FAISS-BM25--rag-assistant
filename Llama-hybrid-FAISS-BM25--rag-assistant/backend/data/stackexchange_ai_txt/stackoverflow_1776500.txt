@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1776500
-[parent_id]: 1772756
-[tags]: 
-Here's my variation on the drag & drop sample by Wes Dyer , for Windows Forms (I'd make EnableDragging an extension method, probably): public Form2() { InitializeComponent(); EnableDragging(pictureBox1); EnableDragging(button1); EnableDragging(this); } private void EnableDragging(Control c) { // Long way, but strongly typed. var downs = from down in Observable.FromEvent ( eh => new MouseEventHandler(eh), eh => c.MouseDown += eh, eh => c.MouseDown -= eh) select new { down.EventArgs.X, down.EventArgs.Y }; // Short way. var moves = from move in Observable.FromEvent (c, "MouseMove") select new { move.EventArgs.X, move.EventArgs.Y }; var ups = Observable.FromEvent (c, "MouseUp"); var drags = from down in downs from move in moves.TakeUntil(ups) select new Point { X = move.X - down.X, Y = move.Y - down.Y }; drags.Subscribe(drag => c.SetBounds(c.Location.X + drag.X, c.Location.Y + drag.Y, 0, 0, BoundsSpecified.Location)); }

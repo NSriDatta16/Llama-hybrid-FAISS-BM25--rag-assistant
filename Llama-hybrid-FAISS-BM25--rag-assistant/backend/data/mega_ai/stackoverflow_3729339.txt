@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3729339
-[parent_id]: 3223306
-[tags]: 
-I found the 1.5 source for PackageManagerService.java, and this looks like the code that's causing your problem: try { fd = mContext.getContentResolver().openFileDescriptor(pPackageURI, "r"); } catch (FileNotFoundException e) { Log.e(TAG, "Couldn't open file descriptor from download service."); res.returnCode = PackageManager.INSTALL_FAILED_INSUFFICIENT_STORAGE; // This break statement was line 3634. break main_flow; } The documentation for ContentResolver.openFileDescriptor says: Throws FileNotFoundException if no file exists under the URI or the mode is invalid. It looks like the problem is with your mPackageURI, so I would begin evaluating the values of fileName and Uri.parse(src.getAbsolutePath()) .

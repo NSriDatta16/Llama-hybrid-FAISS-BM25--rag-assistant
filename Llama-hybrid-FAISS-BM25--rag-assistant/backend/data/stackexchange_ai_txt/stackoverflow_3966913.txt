@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3966913
-[parent_id]: 3966753
-[tags]: 
-There's no simple way to delete something from the start of file in Windows. You have to either copy the file to another file, delete the original and rename the target file or copy all the data in the file few bytes back and then truncate the file. If the file is small and can be loaded into memory, the latter method becomes quite simple. The following code fragment implements the latter approach with a full-size memory buffer. var fs: TFileStream; ms: TMemoryStream; begin fs := TFileStream.Create('somefile', fmOpenReadWrite); // catch errors here! try ms := TMemoryStream.Create; try ms.CopyFrom(fs, 0); ms.Position := 42; // head bytes to skip fs.Position := 0; fs.CopyFrom(ms, ms.Size - ms.Position); fs.Size := fs.Position; finally FreeAndNil(ms); end; finally FreeAndNil(fs); end; end;

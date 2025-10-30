@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 39691
-[parent_id]: 39467
-[tags]: 
-thnx to all the google search and multiple articles related to logistic regression issues, this is what i came up with. if you look at the code there is a potential issue in this particular line: weighted_sum = _weight[0] + sum([_weight[j+1] * _x[j] for j in range(len(_x))]) guess = 1 / ( 1 + exp(weighted_sum)) in cases where weighted_sum is larger than 710, the corresponding exp function gives such large values that it leads to overflow errors. similarly for real low numbers it can also lead to underflow issues. in order tofix that, i have used normalization techniques. courtesy - https://stats.stackexchange.com/questions/70801/how-to-normalize-data-to-0-1-range this is the updated code: weighted_sum = [_weight[0]] + [_weight[j+1] * _x[j] for j in range(len(_x))] normalized_weighted_sum = (sum(weighted_sum) - min(weighted_sum))/ (max(weighted_sum) - min(weighted_sum)) guess = 1 / ( 1 + exp(normalized_weighted_sum)) this worked like a charm.

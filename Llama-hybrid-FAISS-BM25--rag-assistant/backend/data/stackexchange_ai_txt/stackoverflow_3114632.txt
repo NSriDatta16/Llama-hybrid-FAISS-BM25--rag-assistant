@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3114632
-[parent_id]: 3110121
-[tags]: 
-The way that the released Qt binaries work is this: Qt is built into a very long build path (e.g. on windows, c:\Qt\______________padding__________for_________packaging________________). Then it's packed up into an installer. The installer contains a custom plugin which scans through the binaries at install time and patches the Qt binaries, replacing the long build path with the user's install path. Note, the size of the binary can't be changed, so the user's install path must always be shorter than the build path... On Mac and Linux there is also similar munging of rpaths. Either the rpath uses $ORIGIN to make it relative, or it's binary patched like the above path. The scripts which make the binary packages are quite monolithic and this logic isn't easily extracted... For your use case, I would recommend that you simply build Qt in a predictable path all the time. Always build Qt at c:\Qt_test and deploy to c:\Qt_test on each agent. The downside is that Hudson might not be so good at automatically cleaning this up, so you'd have to script that yourself.

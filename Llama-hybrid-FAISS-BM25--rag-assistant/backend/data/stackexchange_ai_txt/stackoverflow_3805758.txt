@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3805758
-[parent_id]: 3805011
-[tags]: 
-Nobody got to the last two questions (btw: ask only one per thread). Using a lock in Dispose() is pretty lethal to the finalizer thread. There's no upper-bound on how long the lock might be held, your program will crash after two seconds when the CLR notices that the finalizer thread got stuck. Moreover, it is just a bug. You should never call Dispose() when another thread might still have a reference to the object. Yes, implementing a finalizer without implementing IDisposable is not unheard of. Any COM object wrapper (RCW) does that. So does the Thread class. This was done because it just isn't practical to call Dispose(). In the case of a COM wrapper because it is just not possible to keep track of all reference counts. In case of Thread because having to Join() the thread so that you could call Dispose() defeats the purpose of having a thread. Pay attention to Jon Hanna's post. Implementing your own finalizer is indeed wrong 99.99% of the time. You've got the SafeHandle classes to wrap unmanaged resources. You'd need something pretty obscure to not be wrappable by them.

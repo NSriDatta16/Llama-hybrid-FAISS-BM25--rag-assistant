@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3718192
-[parent_id]: 
-[tags]: 
-Delphi - How to get list of USB removable hard drives and memory sticks?
-
-In my application (Delphi), I need to list all the USB storage devices. These can be either flash memory sticks or external storage drives. There is a Jvcl component JvDriveCombo , and it has the DriveType property - the problem is if I select DriveType := Fixed then in addition to the external drive, it also lists the internal drives ( C:\ , D:\ etc). However, I only want to list the external drives. I believe there is DeviceIoControl function (I saw it on MSDN) but I have no idea of how to use it. I wonder if anyone can help me with the proper way / code to list USB storage devices? Thanks. EDIT: I just found some sample code and am posting it here: uses .... jwawinbase, JwaWinIoctl; procedure TForm1.Button1Click(Sender: TObject); var DriveCmdStr: string; DriveHandle: THandle; ADriveLetter: string; hp: STORAGE_HOTPLUG_INFO; rlen: DWORD; begin ADriveLetter := 'H'; DriveCmdStr := Format('\\.\%s:', [ADriveLetter]); DriveHandle := CreateFile(PChar(DriveCmdStr), GENERIC_READ, FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0); if DriveHandle = INVALID_HANDLE_VALUE then Exit; DeviceIoControl(DriveHandle, IOCTL_STORAGE_GET_HOTPLUG_INFO, nil, 0, @hp, SizeOf(hp), @rlen, nil); CloseHandle(DriveHandle); if hp.MediaRemovable then showmessage('media removable'); end; Now I would like to just know how to enumerate all the drive letters. Which is the most efficient function?

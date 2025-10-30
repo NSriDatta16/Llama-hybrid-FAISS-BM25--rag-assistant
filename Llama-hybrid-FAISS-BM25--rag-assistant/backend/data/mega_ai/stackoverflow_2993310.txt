@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2993310
-[parent_id]: 2993039
-[tags]: 
-You don't need to allocate any memory. In fact, you don't even need to call Copy . A simple string assignment is sufficient; the reference count will be tracked correctly acorss multiple threads. You also don't need to clear gMsgPtr ; since it's not a variable of type string , the compiler won't insert any cleanup code for it. begin New(gMsgPtr); gMsgPtr^ := aMsg; PostMessage(ParentHandle, wm_LogFile, aLevel, LParam(gMsgPtr)); end; If you want to call Copy anyway, you don't need to calculate the length first. It will automatically clamp the index parameters to the largest allowed range. When you want to ask for "rest of the string," you can simply pass MaxInt as the third parameter and Copy will know what to do. It likewise does that for the second parameter, automatically increasing any value to be at least 1, the lowest valid character index.

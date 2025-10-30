@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5167145
-[parent_id]: 5166851
-[tags]: 
-Several problems with my approach: I didn't realise that args is magical in Python, nor that I needed kwargs as well. I was replacing subprocess.Popen.__call__ , when I should be replacing subprocess.Popen itself. Most importantly, replacing Popen is obviously only going to affect the current process, not the new one that my code wanted to exec for the script. The new run_agent method should look like this: def run_agent(): real_popen = getattr(subprocess, 'Popen') try: setattr(subprocess, 'Popen', lambda *args, **kwargs: MockProcess(' ') imp.load_module( MY_SCRIPT.replace('.py', '').replace('.', '_'), file(SCRIPT_DIR), MY_SCRIPT, ('.py', 'r', imp.PY_SOURCE) ) finally: setattr(subprocess.Popen, '__call__', real_popen) I had a typo in my interactive session. It should read: Python 2.6.6 (r266:84292, Sep 15 2010, 16:22:56) [GCC 4.4.5] on linux2 Type "help", "copyright", "credits" or "license" for more information. >>> import subprocess >>> setattr(subprocess, 'Popen', lambda *args, **kwargs: [1,2]) >>> subprocess.Popen([1], stdout=1) [1, 2]

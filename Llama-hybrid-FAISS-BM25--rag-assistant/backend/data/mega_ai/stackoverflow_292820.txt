@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 292820
-[parent_id]: 
-[tags]: 
-How to correctly unregister an event handler
-
-In a code review, I stumbled over this (simplified) code fragment to unregister an event handler: Fire -= new MyDelegate(OnFire); I thought that this does not unregister the event handler because it creates a new delegate which had never been registered before. But searching MSDN I found several code samples which use this idiom. So I started an experiment: internal class Program { public delegate void MyDelegate(string msg); public static event MyDelegate Fire; private static void Main(string[] args) { Fire += new MyDelegate(OnFire); Fire += new MyDelegate(OnFire); Fire("Hello 1"); Fire -= new MyDelegate(OnFire); Fire("Hello 2"); Fire -= new MyDelegate(OnFire); Fire("Hello 3"); } private static void OnFire(string msg) { Console.WriteLine("OnFire: {0}", msg); } } To my surprise, the following happened: Fire("Hello 1"); produced two messages, as expected. Fire("Hello 2"); produced one message! This convinced me that unregistering new delegates works! Fire("Hello 3"); threw a NullReferenceException . Debugging the code showed that Fire is null after unregistering the event. I know that for event handlers and delegate, the compiler generates a lot of code behind the scene. But I still don't understand why my reasoning is wrong. What am I missing? Additional question: from the fact that Fire is null when there are no events registered, I conclude that everywhere an event is fired, a check against null is required.

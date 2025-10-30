@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5713330
-[parent_id]: 
-[tags]: 
-How to handle HttpWebRequest timeout in F# Async.Parallel
-
-I just spent a long time breaking my teeth on why this code was 'hanging' for some urls: let getImage (imageUrl:string) = async { try let req = WebRequest.Create(imageUrl) :?> HttpWebRequest req.UserAgent HttpWebResponse use stream = response.GetResponseStream() let ms = new MemoryStream() let bytesRead = ref 1 let buffer = Array.create 0x1000 0uy while !bytesRead > 0 do bytesRead := stream.Read(buffer, 0, buffer.Length) ms.Write(buffer, 0, !bytesRead) return SuccessfulDownload(imageUrl, ms.ToArray()) with ex -> return FailedDownload(imageUrl, ex.Message) } After managing to track down which of the 3000 urls was hanging, I learned that AsyncGetResponse doesn't take any notice of HttpWebRequest.Timeout . I've done a bit of searching which throws up suggestions of wrapping the async request in a thread with a timer. That's great for C#, but if I'm running 3000 of these through Async.Parallel |> Async.RunSynchronously , what's the best way to handle this problem?

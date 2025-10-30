@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2133223
-[parent_id]: 2132594
-[tags]: 
-I would add to dbemerlin's answer that the key here is Rico's note that properties are not "lvalues", or, as we call them in C#, "variables". In order to mutate a mutable struct (and ideally, you should not; mutable structs often cause more problems than they solve) you need to mutate a variable . That's what a variable is -- a storage location whose contents change. If you have a field of type vector and you say Foo.vector.x = 123; then we have a variable of value type -- the field Foo.vector -- and we can therefore mutate its property x. But if you have a property of value type: Foo.Vector.x = 123; the property is not a variable. This is equivalent to Vector v = Foo.Vector; v.x = 123; which mutates the temporary variable v, not whatever storage location is backing the property. The whole problem goes away if you abandon mutable value types. To change x, make a new vector with the new values and replace the whole thing: Foo.Vector = new Vector(x, Foo.Vector.y);

@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 58029
-[parent_id]: 58023
-[tags]: 
-My memory of how Markov chains work is pretty vague, so this may be utterly unhelpful -- I've created three functions below : trans.func is a helper function for gen.trans.matrix, which creates a transition matrix for n nodes. Markov.sim takes two inputs: a transition matrix, and a desired duration length, d, and delivers simulated data from the Markov chain. Hope the is enough to get you going -- trans.func = function(n){ breaks = runif(n-1,0,1) breaks.s = breaks[order(breaks,decreasing = F)] trans = c(breaks.s[1],diff(c(breaks.s,1))) return(trans) } gen.trans.matrix = function(n){ t(replicate(n,trans.func(n))) } markov.sim = function(mat, d){ start = floor(runif(1,1,ncol(mat) + 1)) empty.vec = rep(NA,d) empty.vec[1] = start curr.node = start for(i in 2:d){ random.draw = runif(1,0,1) next.node = (sum(random.draw > cumsum(mat[curr.node,])) + 1) curr.node = next.node empty.vec[i] = curr.node } return(empty.vec) } mat.temp = gen.trans.matrix(3) markov.sim(mat.temp, 50)

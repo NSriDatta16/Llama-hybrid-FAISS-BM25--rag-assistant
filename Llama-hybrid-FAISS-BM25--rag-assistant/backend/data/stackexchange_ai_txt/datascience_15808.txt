@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 15808
-[parent_id]: 
-[tags]: 
-Loss function for sparse tagging
-
-I am writing a musical transcription system with a RNN (LSTM). Input: 1 vector of features per timestep (about 40 timesteps in a second) Output: 1 binary vector of notes per timestep (dimension=36) (1 is on, 0 if off). Model : LSTM(512) + LSTM(256) + Dense(36, activation='sigmoid') I am currently training on monophonic data (i.e. my output has at most one 1 per timestep). The problem is that because of the sparsity the best strategy to use is to always return 0. I tried the loss functions 'mean_squared_error', 'mean_absolute_error', 'binary_crossentropy', 'cosine_proximity' and one custom I wrote with keras : K.sum(K.abs(y_pred - y_true), axis=-1) * K.mean(y_pred, axis=-1) / K.maximum(K.mean(y_pred * y_true, axis=-1), K.epsilon()) All those function led with sufficient training to the always zero output. I can either change my loss function or my encoding, but the problem is that I need to support polyphonic data, i.e. when there is more than one class to select. Or can I train as many LSTM as there are notes (88 for a piano keyboard), and each one detects if its note is played but I think this is pretty much equivalent, isn't it ? I think my data is pretty much equivalent to what keras calls categorical data (binary matrix). Currently I have only 36 classes, and 24 are always zero.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4129983
-[parent_id]: 
-[tags]: 
-MySQL - Max() return wrong result
-
-I tried this query on MySQL server (5.1.41)... SELECT max(volume), dateofclose, symbol, volume, close, market FROM daily group by market I got this result: max(volume) dateofclose symbol volume close market 287031500 2010-07-20 AA.P 500 66.41 AMEX 242233000 2010-07-20 AACC 16200 3.98 NASDAQ 1073538000 2010-07-20 A 4361000 27.52 NYSE 2147483647 2010-07-20 AAAE.OB 400 0.01 OTCBB 437462400 2010-07-20 AAB.TO 31400 0.37 TSX 61106320 2010-07-20 AA.V 0 0.24 TSXV As you can see, the maximum volume is VERY different from the 'real' value of the volume column?!? The volume column is define as int(11) and I got 2 million rows in this table but it's very far from the max of MyISAM storage so I cannot believed this is the problem!? What is also strange is data get show from the same date (dateofclose). If I force a specific date with a WHERE clause, the same symbol came out with different max(volume) result. This is pretty weird... Need some help here! UPDATE : Here's my edited "working" request: SELECT a.* FROM daily a INNER JOIN ( SELECT market, MAX(volume) AS max_volume FROM daily WHERE dateofclose = '20101108' GROUP BY market ) b ON a.market = b.market AND a.volume = b.max_volume So this give me, by market, the highest volume's stock (for nov 8, 2010).

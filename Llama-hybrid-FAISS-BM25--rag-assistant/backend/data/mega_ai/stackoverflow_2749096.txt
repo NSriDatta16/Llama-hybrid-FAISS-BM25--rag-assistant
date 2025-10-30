@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2749096
-[parent_id]: 2748995
-[tags]: 
-It's implementation-specific, but in practice the rule (in the absence of #pragma pack or the like) is: Struct members are stored in the order they are declared. (This is required by the C99 standard, as mentioned here earlier.) If necessary, padding is added between struct members, to ensure that the latter one uses the correct alignment. Each primitive type T requires an alignment of sizeof(T) bytes. So, given the following struct: struct ST { char ch1; short s; char ch2; long long ll; int i; }; ch1 is at offset 0 a padding byte is inserted to align... s at offset 2 ch2 is at offset 4, immediately after s 3 padding bytes are inserted to align... ll at offset 8 i is at offset 16, right after ll 4 padding bytes are added at the end so that the overall struct is a multiple of 8 bytes. I checked this on a 64-bit system: 32-bit systems may allow structs to have 4-byte alignment. So sizeof(ST) is 24. It can be reduced to 16 bytes by rearranging the members to avoid padding: struct ST { long long ll; // @ 0 int i; // @ 8 short s; // @ 12 char ch1; // @ 14 char ch2; // @ 15 } ST;

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3693072
-[parent_id]: 3693052
-[tags]: 
-I suggest you turn the streams variable into an Array or a List , because enumerating through it a second time will (if I'm not mistaken) create new copies of the streams. var streams = locations.Select(a => new FileStream(a, FileMode.Open)).ToList(); // dispose right away of those you won't need foreach (FileStream stream in streams.Where(a => a.Length == 0)) stream.Dispose(); var notEmptyStreams = streams.Where(a => a.Length > 0); // the rest of your code here foreach (FileStream stream in notEmptyStreams) stream.Dispose(); EDIT For these constraints, maybe LINQ isn't the best tool around. Maybe you could get away with a simple foreach loop? var streams = locations.Select(a => new FileStream(a, FileMode.Open)); int count = 0; int sum = 0; foreach (FileStream stream in streams) using (stream) { if (stream.Length == 0) continue; count++; sum += stream.ReadByte(); } int average = sum / count;

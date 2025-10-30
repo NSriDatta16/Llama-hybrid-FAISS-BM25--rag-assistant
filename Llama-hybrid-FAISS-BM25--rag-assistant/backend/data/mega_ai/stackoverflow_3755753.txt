@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3755753
-[parent_id]: 3755575
-[tags]: 
-Well, I think you should consider separating the recursive traversal of the "categories" from the creation of the breadcrumb string. Mixing them together, as you do, makes the code harder to understand and maintain. By separating the parts of the implementation that are likely to change, you make the end result easier to understand, less fragile, and less ugly. public static IEnumerable GetHierarchy ( this T item, Func getParent ) { while( item != null ) { yield return item; item = getParent( item ); } } Now you can use String.Join() to do the rest: > ", Model.GetHierarchy( item => item.GetParent() ) .Select( item => item.catName ) ) %> In the code above, I assume that GetParent() provides a simple means of navigating to the parent of a given object instance. If this code varies at runtime, you could either use another lambda, or create an interface to unify the different types of classes that have "parents". Obviously, if you're going to be generating bread-crumb string in multiple views, you should consider wrapping this in a helper.

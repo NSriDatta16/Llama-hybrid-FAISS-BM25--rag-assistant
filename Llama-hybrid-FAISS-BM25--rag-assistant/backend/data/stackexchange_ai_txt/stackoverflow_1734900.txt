@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1734900
-[parent_id]: 1734819
-[tags]: 
-Welll... sending structs through the network is kinda hard if you are doing it properly. Carl is right - you can send a struct through a network by saying: send(socket, (char*)my_struct, sizeof(my_struct), 0); But here's the thing: sizeof(my_struct) might change between the client and server. Compilers often do some amount of padding and alignment, so unless you define alignment explicitly (maybe using a #pragma pack()), that size may be different. The other problem tends to be byte-order. Some machines are big-endian and others are little-endian, so the arrangement of the bytes might be different. In reality, unless your server or client is running on non-Intel hardware (which is probably not the case) then this problem exists more in theory than in practice. So the solution people often propose is to have a routine that serializes the struct. That is, it sends the struct one data member at a time, ensuring that the client and server only send() and recv() the exact specified number of bytes that you code into your program.

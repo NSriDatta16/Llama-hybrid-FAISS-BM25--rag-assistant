@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 46628
-[parent_id]: 46626
-[tags]: 
-Are you absolutely certain that half came from one distribution and the other half from the other? If not, we can model the proportion as a random variable (which is a very bayesian thing to do). The following is what I would do, some tips are embedded. from pymc import * size = 10 p = Uniform( "p", 0 , 1) #this is the fraction that come from mean1 vs mean2 ber = Bernoulli( "ber", p = p, size = size) # produces 1 with proportion p. precision = Gamma('precision', alpha=0.1, beta=0.1) mean1 = Normal( "mean1", 0, 0.001 ) #better to use normals versus Uniforms (unless you are certain the value is truncated at 0 and 200 mean2 = Normal( "mean2", 0, 0.001 ) @deterministic def mean( ber = ber, mean1 = mean1, mean2 = mean2): return ber*mean1 + (1-ber)*mean2 #generate some artificial data v = np.random.randint( 0, 2, size) data = v*(10+ np.random.randn(size) ) + (1-v)*(-10 + np.random.randn(size ) ) obs = Normal( "obs", mean, precision, value = data, observed = True) model = Model( {"p":p, "precision": precision, "mean1": mean1, "mean2":mean2, "obs":obs} )

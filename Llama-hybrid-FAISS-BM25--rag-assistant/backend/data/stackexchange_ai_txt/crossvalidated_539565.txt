@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 539565
-[parent_id]: 539559
-[tags]: 
-The among-female variance (from the (1|female) term) and the overdispersion (from the NB fit) are sharing/competing for the variability around the fixed-effect values, so it's not surprising that the estimated among-female variance would decrease (in this case to zero) when you move to a NB model. I don't see anything wrong with MASS::glm.nb(feeding ~ inf_cat + offset(total_inf_cat) + female, ...) or glmmTMB::glmmTMB(feeding ~ inf_cat + offset(total_inf_cat) + female, family = nbinom2, ...) (i.e. converting the (1|female) random effect to a fixed effect of female). Or you could simply drop the (1|female) term (this should have no effect on the fitted model, as the among-female variance was already estimated as effectively zero.) If you feel very strongly about keeping the random effect of female, and not wanting it to be singular, then you need to regularize (e.g. using the blme package) or go Bayesian (e.g. rstanarm::stan_glmer() , MCMCglmm ).

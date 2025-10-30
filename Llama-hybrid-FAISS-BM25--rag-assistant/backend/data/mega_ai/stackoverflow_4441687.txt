@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4441687
-[parent_id]: 4441068
-[tags]: 
-This is probably what the WinForms code is doing: When a window is created, use SetWindowLongPtr (handle, GWL_USERDATA, value) to store a reference to the object owning the window. The Control::FromHandle calls GetWindowLongPtr (handle, GWL_USERDATA) to retrieve the managed object reference which you can then do managed stuff with (GetType(), etc) To do this in native Win32 and C++, create an interface class like: class IControl { public: virtual const string &GetTypeName () = 0; }; and then derive controls from it: class TextBoxControl : public IControl { virtual const string &GetTypeName () { return "TextBox"; } } and then in the control constructor: TextBoxControl::TextBoxControl () { handle = CreateWindowEx (parameters to create a text box); SetWindowLongPtr (handle, GWL_USERDATA, this); } and finally, given a window handle: string GetWindowTypeName (HWND handle) { IControl *control = GetWindowLongPtr (handle, GWL_USERDATA); return control->GetTypeName (); }

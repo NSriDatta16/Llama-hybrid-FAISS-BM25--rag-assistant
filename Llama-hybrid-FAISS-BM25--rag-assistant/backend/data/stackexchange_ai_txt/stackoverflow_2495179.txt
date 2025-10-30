@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2495179
-[parent_id]: 2494650
-[tags]: 
-It sounds to me like you should factor out the current validation logic with something that is more flexible. That is, instead of requiring the numbers to match up it might be possible to only require that the balance is 0 or positive (i.e. so you cannot sell what you do not own). To implement this I'd refactor your data storage so that you can check the owned amount as a single value rather than matching it against past transactions. This could easily be implemented with a single query along these lines: public void SellStock( int clientID, string stockSymbol, int quantityToSell ) { using( var scope = new TransactionScope() ) { // pseudo-sql for reducing client portfolio by quantity update ClientStockPortfolio set Quantity = Quantity - quantityToSell where ID = clientID and StockSymbol = stockSymbol and Quantity >= quantityToSell // log transaction history and update other tables as needed } }

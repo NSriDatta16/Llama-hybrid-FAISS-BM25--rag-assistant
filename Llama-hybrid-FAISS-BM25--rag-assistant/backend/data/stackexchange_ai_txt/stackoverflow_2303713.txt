@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2303713
-[parent_id]: 
-[tags]: 
-How to serialize DOM node to JSON even if there are circular references?
-
-I want to serialize DOM node or even whole window to JSON. For example: >> serialize(document) -> { "URL": "http://stackoverflow.com/posts/2303713", "body": { "aLink": "", "attributes": [ "getNamedItem": "function getNamedItem() { [native code] }", ... ], ... "ownerDocument": "#" // recursive link here }, ... } JSON.stringify() JSON.stringify(window) // TypeError: Converting circular structure to JSON The problem is JSON does not support circular references by default. var obj = {} obj.me = obj JSON.stringify(obj) // TypeError: Converting circular structure to JSON window and DOM nodes have many of them. window === window.window as will as document.body.ownerDocument === document . Also, JSON.stringify does not serialize functions, so this is not what I'm looking for. dojox.json.ref `dojox.json.ref.toJson()` can easily serialize object with circular references: var obj = {} obj.me = obj dojox.json.ref.toJson(obj); // {"me":{"$ref":"#"}} Good, isn't it? dojox.json.ref.toJson(window) // Error: Can't serialize DOM nodes Well not good enough for me. Why? I'm trying to make DOM compatibility table for different browsers. For instance, Webkit supports placeholder attribute and Opera doesn't, IE 8 supports localStorage and IE 7 doesn't, and so on. I don't want to make thousands of test-cases. I want to make generic way for test them all. Update, June 2013 I made a prototype NV/dom-dom-dom.com .

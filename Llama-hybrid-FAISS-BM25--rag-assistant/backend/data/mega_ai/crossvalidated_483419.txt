@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 483419
-[parent_id]: 483362
-[tags]: 
-Since you are doing logistic regression and not simple linear regression, the equation $\hat f(x_0)=\hat\beta_0+\hat\beta_1x_0+\hat\beta_2x_0^2+\hat\beta_3x_0^3+\hat\beta_4x_0^4$ does not refer to the probability of earning >250K, but to the logit of that probability. This is the same as saying that logistic regression is a linear model that uses logit as a link function. So, you have to define functions to convert between probabilities and logits (maybe they are already implemented in Numpy or something, but they are simple enough to type): def logit(p): return np.log(p/(1-p)) def invlogit(x): # inverse function of logit return 1/(1+np.exp(-x)) Now, we have to apply the pointwise SE you calculated to the logit of the point estimates, and then convert back to probabilities: upper_limit = invlogit(logit(y_pred)+1.96*std_err) lower_limit = invlogit(logit(y_pred)-1.96*std_err) Where std_err is an array with the standard errors of $\hat f(x)$ that you correctly calculated. Then, upper_limit and lower_limit will give an interval around the estimated probability.

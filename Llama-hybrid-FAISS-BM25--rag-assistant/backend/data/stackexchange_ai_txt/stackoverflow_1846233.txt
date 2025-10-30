@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1846233
-[parent_id]: 1846070
-[tags]: 
-More functional version (with simple interpolation of missing values) probs = [{:temperature => .. }] # array of measurings def average(list, key) list.reduce(0){|acc,el| acc+el[key]} / list.length unless list.empty end prob_groups = probs.group_by{|prob| prob[:recorded_at][0,2].to_i} average_groups = prob_groups.map do |hour,prob_group| { hour => { :temperature => average(prob_group, :temperature), :pression => average(prob_group, :pression) }} end.reduce{|acc,el| acc.merge(el)} def interpolate(p, n, key) (p[key] + n[key])/2 unless p.nil? || n.nil? || p[key].nil? || n[key].nil? end resuls = (1..24).map do |hour| if average_groups[hour] { hour => average_groups[hour] } else { hour => { :temperature => interpolate(average_groups[hour-1], average_groups[hour+1], :temperature), :pression => interpolate(average_groups[hour-1], average_groups[hour+1], :pression) }} end end.reduce{|acc,el| acc.merge(el)} Hope it works

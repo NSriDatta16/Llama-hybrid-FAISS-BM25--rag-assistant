@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1195559
-[parent_id]: 1195198
-[tags]: 
-Building off of what Earwicker said... names aren't the only way to go. You could also vary the method signatures... public interface I1 { int NumberOne { get; set; } } public interface I2 { int NumberTwo { get; set; } } public static class EitherInterface { public static void DoSomething (I1 item) where T : I1 { Console.WriteLine("I1 : {0}", item.NumberOne); } public static void DoSomething (I2 item) where T : I2 { Console.WriteLine("I2 : {0}", item.NumberTwo); } } Which when tested like this: public class Class12 : I1, I2 { public int NumberOne { get; set; } public int NumberTwo { get; set; } } public class TestClass { public void Test1() { Class12 z = new Class12(); EitherInterface.DoSomething ((I1)z); EitherInterface.DoSomething ((I2)z); } } Yields this output: I1 : 0 I2 : 0 This meets the goal of exposing a single method name to the caller, but doesn't help you since you aren't using parameters.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3848070
-[parent_id]: 
-[tags]: 
-AtomicBoolean vs synchronized block
-
-I was trying to cut thread contention in my code by replacing some synchronized blocks with AtomicBoolean . Here's an example with synchronized : public void toggleCondition() { synchronized (this.mutex) { if (this.toggled) { return; } this.toggled = true; // do other stuff } } And the alternative with AtomicBoolean : public void toggleCondition() { if (!this.condition.getAndSet(true)) { // do other stuff } } Taking advantage of AtomicBoolean 's CAS property should be way faster than relying on synchronization so I ran a little micro-benchmark . For 10 concurrent threads and 1000000 iterations, AtomicBoolean comes in only slightly faster than synchronized block. Average time (per thread) spent on toggleCondition() with AtomicBoolean: 0.0338 Average time (per thread) spent on toggleCondition() with synchronized: 0.0357 I know micro-benchmarks are worth what they're worth but shouldn't the difference be higher?

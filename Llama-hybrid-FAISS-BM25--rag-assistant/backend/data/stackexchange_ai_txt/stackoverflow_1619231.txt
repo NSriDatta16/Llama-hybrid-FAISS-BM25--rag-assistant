@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1619231
-[parent_id]: 
-[tags]: 
-Eager loading and repository pattern
-
-I'm wondering how to properly handle eager-loading problem for complex object graphs when using Repository pattern. This isn't ORM specific problem i guess. First try: public interface IProductRepository : IRepository { Product GetById(int id); IProductRepository WithCustomers(); } This would work fine, but that would involve repeating myself all the time (writing custom 'With' methods in repository implementations everywhere). Next approach: public interface IRepository where T : IAggregateRoot { ... void With(Expression > propToExpand); } With method will add an item to private collection which will be used later to find out what props should be eager loaded when retrieving necessary entity/ies. This kind a works and is fine. But i dislike usage: productRepository.With(x=>x.Customer); productRepository.With(x=>x.Price); productRepository.With(x=>x.Manufacturer); var product = productRepository.GetById(id); Basically - problem is that there isn't chaining. I would like it to be like this: var product = productRepository .With(x=>x.Customer) .With(x=>x.Price) .With(x=>x.Manufacturer) .GetById(id); I couldn't achieve this . Even if i could - i'm not sure if that solution would be elegant. This leads to thoughts that i'm missing something fundamental (lack of examples anywhere). Are there different ways how to handle this? What are best practices?

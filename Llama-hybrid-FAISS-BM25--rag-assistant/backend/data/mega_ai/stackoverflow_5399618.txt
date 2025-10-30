@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5399618
-[parent_id]: 5399516
-[tags]: 
-In order to get SQL to return a more tree-like structure would actually be pretty difficult. Instead, it probably makes more sense (and you'd have a LOT more control over your output) to reorganize the SQL results using PHP. SELECT id, woid, parent, name FROM files ORDER by parent ASC; This will get us everything. Then we iterate through the resultset, storing the result into an array keyed by parent. $folders = array(); foreach ($resultset AS $row) { $row['id'] = (int)$row['id']; $row['parent'] = (int)$row['parent']; if (!$folders[$row['parent']]) $folders[$row['parent']] = array(); $folders[$row['parent']][] = $row; } Then we can output this array recursively: function buildTree($inputArray, $parent = 0) { $return = array(); foreach ($inputArray[$parent] AS $key => $row) { if ($inputArray[$row['id']]) { $row['children'] = buildTree($inputArray, $row['id']); } $return[] = $row; } return $return; } $myStuff = buildTree($folders);

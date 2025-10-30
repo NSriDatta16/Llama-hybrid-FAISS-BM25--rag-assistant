@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1793567
-[parent_id]: 1787288
-[tags]: 
-SSH uses the SSH_ASKPASS variable only if the process is really detached from TTY (stdin redirecting and setting environment variables is not enough). To detach a process from console it should fork and call os.setsid(). So the first solution I found was: # Detach process pid = os.fork() if pid == 0: # Ensure that process is detached from TTY os.setsid() # call ssh from here else: print "Waiting for ssh (pid %d)" % pid os.waitpid(pid, 0) print "Done" There is also an elegant way to do this using the subprocess module: in the preexec_fn argument we can pass a Python function that is called in the subprocess before executing the external command. So the solution for the question is one extra line: env = {'SSH_ASKPASS':'/path/to/myprog', 'DISPLAY':':9999'} p = subprocess.Popen(['ssh', '-T', '-v', 'user@myhost.com'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, preexec_fn=os.setsid )

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3886477
-[parent_id]: 3886221
-[tags]: 
-You just need to call the ProvideValue method of the binding. The hard part is that you need to pass a valid IServiceProvider to the method... EDIT: actually, that's not true... ProvideValue returns a BindingExpression , not the value of the bound property. You can use the following trick: class DummyDO : DependencyObject { public object Value { get { return (object)GetValue(ValueProperty); } set { SetValue(ValueProperty, value); } } public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(object), typeof(DummyDO), new UIPropertyMetadata(null)); } public object EvalBinding(Binding b) { DummyDO d = new DummyDO(); BindingOperations.SetBinding(d, DummyDO.ValueProperty, b); return d.Value; } ... Binding b = new Binding("Foo.Bar.Baz") { Source = dataContext }; object value = EvalBinding(b); Not very elegant, but it works...

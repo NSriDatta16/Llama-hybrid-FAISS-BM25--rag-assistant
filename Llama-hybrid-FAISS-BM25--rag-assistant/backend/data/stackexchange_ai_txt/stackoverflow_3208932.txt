@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3208932
-[parent_id]: 3204871
-[tags]: 
-I find Boost iterators elegants, although they can be a bit verbose (range-based algorithms would make this better). In this case transform iterators can do the job: #include //... int totalSize = std::accumulate( boost::make_transform_iterator(vf.begin(), std::mem_fn(&Foo::size)), boost::make_transform_iterator(vf.end(), std::mem_fn(&Foo::size)),0); Edit: replaced " boost::bind(&Foo::size,_1) " by " std::mem_fn(&Foo::size) " Edit: I just found that the Boost.Range library has been updated to introduce range algorithms! Here is a new version of the same solution: #include // numeric.hpp needs it (a bug?) #include // accumulate #include // transformed //... int totalSize = boost::accumulate( vf | boost::adaptors::transformed(std::mem_fn(Foo::size)), 0); Note: the performances are approximately the same (see my comment): internally, transformed uses transorm_iterator .

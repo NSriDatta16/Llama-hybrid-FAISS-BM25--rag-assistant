@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4760706
-[parent_id]: 4758674
-[tags]: 
-The linker's /delayload option only works for DLLs that contain functions compiled to native machine code. The linker already told you that you don't have any. The likely scenario here is that your DLL actually contains IL, not machine code. Which will happen when you compile the source code with /clr in effect and haven't used #pragma managed to turn off IL generation. IL code needs to be converted to machine code by the jitter. Your DLL is going to get loaded dynamically, same as /delayload, as soon as the jitter needs type info from the assembly's metadata to generate machine code. To avoid the dependency on the DLL, you'd have to carefully craft your code so the jitter never needs to load types from your assembly. Which is a different problem from avoiding executing a delay-loaded function. The exception's InnerException's stack trace should give you a strong hint how that happened.

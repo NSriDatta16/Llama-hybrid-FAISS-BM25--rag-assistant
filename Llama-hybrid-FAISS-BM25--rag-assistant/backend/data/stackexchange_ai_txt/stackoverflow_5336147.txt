@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5336147
-[parent_id]: 
-[tags]: 
-Python 2.6: How to access base class descriptor field hidden by derived class?
-
-I have a descriptor storing data in host object's dictionary. And I have fields of this descriptor in class hierarchy with the same name: class ADescriptor(object): def __init__(self, keyname='descr'): self.keyname = keyname def __get__(self, obj, objtype): return getattr(obj, self.keyname, 8192 ) def __set__(self, obj, val): setattr(obj, self.keyname, val) class A(object): f = ADescriptor('keyA') class B(A): f = ADescriptor('keyB') b = B() b.f = 'b' print super(B,b).f super(B,b).f = 'a' Last line doesn't work: super(B,b).f = 'a' Why get works and analogous set doesn't? Can I set A's f in a more elegant way than A. dict ['f']. set (b,'a')? Corrected: In a form given in my initial post A.f evaluates to keyname-named property of A (missing) or default 8192 - nothing to do with it. That's why I used A. dict ['f'] - to exclude get call. Minor modification was required to let A.f be evaluated into needed ADescriptor instance: def __get__(self, obj, objtype=None): if not obj: #return descriptor itself if no bound object given return self return getattr(obj, self.keyname, 8192 ) In this case A.f.__set__(b,'a') works. But it's still ugly! @BiggAl offered property solution is not good for my needs - I would need to wrap all my descriptors in properies.

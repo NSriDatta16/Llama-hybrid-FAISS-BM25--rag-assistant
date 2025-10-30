@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5397705
-[parent_id]: 5397158
-[tags]: 
-You've called DragAcceptFiles for the ListView, so Windows sends the WM_DROPFILES to your ListView and not to your Form. You have to catch the WM_DROPFILES message from the ListView. private FOrgListViewWndProc: TWndMethod; procedure ListViewWndProc(var Msg: TMessage); // ... end; procedure TForm1.FormCreate(Sender: TObject); begin // Redirect the ListView's WindowProc to ListViewWndProc FOrgListViewWndProc := ListView1.WindowProc; ListView1.WindowProc := ListViewWndProc; DragAcceptFiles(ListView1.Handle, True); end; procedure TForm1.ListViewWndProc(var Msg: TMessage); begin // Catch the WM_DROPFILES message, and call the original ListView WindowProc // for all other messages. case Msg.Msg of WM_DROPFILES: DropFiles(Msg); else if Assigned(FOrgListViewWndProc) then FOrgListViewWndProc(Msg); end; end;

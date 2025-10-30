@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 17762
-[parent_id]: 17629
-[tags]: 
-There are some suggestions which I think can improve CNN performance: Input size is (6, 3) so it is not preferable to use MaxPooling layers. Use padding = 'same' in all the convolution layers which output convolved image of the same dimension as input. Use Relu or LeakyRelu as activation function. Use Adam optimizer and tune the learning rate. Convert some of the Dense layers to 1x1 Convolution with no. of filters = no. of units in dense layer as suggested by sh37211 e.g. no_of_filters = [32, 64, 64, 32] kernel_size = [3, 3, 3, 1] input = Input(shape = (6,3,3), name = "input") layer_output = [input] for i in range(4): convolution = Convolution2D(no_of_filters[i], kernel_size[i], kernel_size[i], padding = 'same')(layer_output[-1]) activation = LeakyReLU()(convolution) layer_output.append(activation) flatten = Flatten()(layer_output[-1]) flatten_dropout = Dropout(0.5)(flatten) fc = Dense(output_dim = 13) activation = LeakyReLU()(fc) layer_output.append(activation) fc = Dense(output_dim = 1, activation = 'tanh') model.compile(loss = 'mean_squared_error',optimizer = 'adam')

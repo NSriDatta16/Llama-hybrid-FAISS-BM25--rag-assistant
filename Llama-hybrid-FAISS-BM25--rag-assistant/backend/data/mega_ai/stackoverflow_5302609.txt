@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5302609
-[parent_id]: 
-[tags]: 
-Java TCP/IP Socket Performance Problem
-
-Our application is reading data very fast over TCP/IP sockets in Java. We are using the NIO library with a non-blocking Sockets and a Selector to indicate readiness to read. On average, the overall processing times for reading and handling the read data is sub-millisecond. However we frequently see spikes of 10-20 milliseconds. (running on Linux). Using tcpdump we can see the time difference between tcpdump's reading of 2 discreet messages, and compare that with our applications time. We see tcpdump seems to have no delay, whereas the application can show 20 milliseconds. We are pretty sure this is not GC, because the GC log shows virtually no Full GC, and in JDK 6 (from what I understand) the default GC is parallel, so it should not be pausing the application threads (unless doing Full GC). It looks almost as if there is some delay for Java's Selector.select(0) method to return the readiness to read, because at the TCP layer, the data is already available to be read (and tcpdump is reading it). Additional Info: at peak load we are processing about 6,000 x 150 bytes avg per message, or about 900 MB per second.

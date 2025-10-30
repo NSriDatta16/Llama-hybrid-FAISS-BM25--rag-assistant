@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4686596
-[parent_id]: 4686538
-[tags]: 
-The way it's implemented at the moment, you won't be able to delete the memory that you allocated for those objects. In general, it takes some extra effort to perform memory cleanup when you have containers of pointers to dynamically allocated memory. Here's one way to do it: // Assume there's a predicate function called ShouldRemove(int value); list my_list; // initialization... for (list ::iterator itr = my_list.begin(); itr != my_list.end(); ) { if (ShouldRemove(**itr)) { delete *itr; itr = my_list.erase(itr); } else { ++itr; } } But as Noah Roberts pointed out, this is all much easier to deal with if you store your pointers as smart pointers that clean up after themselves.

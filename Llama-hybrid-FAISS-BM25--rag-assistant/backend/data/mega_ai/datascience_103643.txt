@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 103643
-[parent_id]: 103641
-[tags]: 
-The term 'vanishing gradients' generally refers to gradients becoming smaller as the loss is backpropagated through a neural network causing the model's weights to not be updated. Your problem is simply that the gradients are not stored in the computational graph since you are converting your tensors to numpy arrays and back. This can be easily solved by performing the euclidean distance calculation in native pytorch using torch.cdist : from sklearn.metrics.pairwise import euclidean_distances as ED import torch t1, t2 = torch.rand(4, 4), torch.rand(4, 4) distance = ED(t1.numpy(), t2.numpy()) print(distance) #[[0.7804495 0.5267299 0.6090318 0.8182413 ] # [0.6431006 0.33567402 0.65980077 0.7535121 ] # [0.5864658 0.7310724 0.87721896 0.53175294] # [0.41663957 0.25538144 0.20699821 0.7687439 ]] distance = torch.cdist(t1, t2) print(distance) #tensor([[0.7804, 0.5267, 0.6090, 0.8182], # [0.6431, 0.3357, 0.6598, 0.7535], # [0.5865, 0.7311, 0.8772, 0.5318], # [0.4166, 0.2554, 0.2070, 0.7687]])

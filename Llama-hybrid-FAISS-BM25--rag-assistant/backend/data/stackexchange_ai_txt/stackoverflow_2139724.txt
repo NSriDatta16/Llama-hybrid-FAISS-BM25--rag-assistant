@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2139724
-[parent_id]: 
-[tags]: 
-Design options for a C++ thread-safe object cache
-
-I'm in the process of writing a template library for data-caching in C++ where concurrent read can be done and concurrent write too, but not for the same key. The pattern can be explained with the following environment: A mutex for the cache write. A mutex for each key in the cache. This way if a thread requests a key from the cache and is not present can start a locked calculation for that unique key. In the meantime other threads can retrieve or calculate data for other keys but a thread that tries to access the first key get locked-wait. The main constraints are: Never calculate the value for a key at the same time. Calculating the value for 2 different keys can be done concurrently. Data-retrieval must not lock other threads from retrieve data from other keys. My other constraints but already resolved are: fixed (known at compile time) maximum cache size with MRU-based ( most recently used ) thrashing. retrieval by reference ( implicate mutexed shared counting ) I'm not sure using 1 mutex for each key is the right way to implement this but i didn't find any other substantially different way. Do you know of other patterns to implements this or do you find this a suitable solution? I don't like the idea of having about 100 mutexs. ( the cache size is around 100 keys )

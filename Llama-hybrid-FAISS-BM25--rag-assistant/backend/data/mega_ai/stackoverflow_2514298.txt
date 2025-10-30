@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2514298
-[parent_id]: 2513988
-[tags]: 
-Loop parallelization for stl iterators only works since OpenMP 3.0, and only for random access iterators (e.g. vector and deque ). You should be able to do something like this: #pragma omp parallel { for (std::set ::const_iterator i = s.begin(); i != s.end(); ++i) { #pragma omp single nowait { operate(*i); } } } Overhead is quite big though because each thread iterates over the whole sequence (but only executes operate on some of it). Your method using an int i is more efficient. As an alternative take a look at GCC's parallel implementation of std::for_each . See my comment. EDIT : The STL Parallism TS , which will most likely be part of C++17, might be a good option in the future for iterating over standard containers.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2712898
-[parent_id]: 
-[tags]: 
-Clojure warning/error on tail call optimization failure
-
-In Scala 2.8.x, a new annotation ( @tailrec ) has been added that gives a compile-time error if the compiler cannot perform a tail-call optimization on the annotated method. Is there some similar facility in Clojure with respect to loop/recur ? EDIT: After reading the first answer to my question (thanks, Bozhidar Batsov) and further searching in the Clojure docs, I came across this: (recur exprs*) Evaluates the exprs in order, then, in parallel, rebinds the bindings of the recursion point to the values of the exprs. If the recursion point was a fn method, then it rebinds the params. If the recursion point was a loop, then it rebinds the loop bindings. Execution then jumps back to the recursion point. The recur expression must match the arity of the recursion point exactly. In particular, if the recursion point was the top of a variadic fn method, there is no gathering of rest args - a single seq (or null) should be passed. recur in other than a tail position is an error . Note that recur is the only non-stack-consuming looping construct in Clojure . There is no tail-call optimization and the use of self-calls for looping of unknown bounds is discouraged. recur is functional and its use in tail-position is verified by the compiler [emphasis is mine]. (def factorial (fn [n] (loop [cnt n acc 1] (if (zero? cnt) acc (recur (dec cnt) (* acc cnt))))))

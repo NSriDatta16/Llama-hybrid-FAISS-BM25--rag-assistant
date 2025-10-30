@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 441027
-[parent_id]: 440161
-[tags]: 
-One way you might be able to organize the code is to use classes in both the app and the dll, but keep the interface between the two as extern "C" functions. This is the way I have done it with C++ dlls used by C# assemblies. The exported DLL functions are used to manipulate instances accessible via static class* Instance() methods like this: __declspec(dllexport) void PrintSomething() { (A::Instance())->PrintSometing(); } For multiple instances of objects, have a dll function create the instance and return the identifier, which can then be passed to the Instance() method to use the specific object needed. If you need inheritance between the app and the dll, create a class on the app side that wraps the exported dll functions and derive your other classes from that. Organizing your code like this will keep the DLL interface simple and portable between both compilers and languages.

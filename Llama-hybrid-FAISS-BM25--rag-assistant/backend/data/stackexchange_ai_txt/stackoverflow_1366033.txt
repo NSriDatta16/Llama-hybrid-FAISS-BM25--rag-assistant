@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1366033
-[parent_id]: 1366020
-[tags]: 
-... FROM tblOrganisation LEFT OUTER JOIN tblSubGroup ON tblOrganisation.SubGroupID = tblSubGroup.SubGroupID --Need to change WHERE clause AND tblSubGroup.RAOID = @RAOID ... The original WHERE clause is changing the OUTER JOIN into an INNER JOIN, so you need to filter there. Also, some other points: Why join on tblSubGroup? It is not used for ouput. Unless you are checking for this with CASE Is tblOrganisation.Name null or empty string? ISNULL(NULLIF(tblOrganisation.Name, ''), 'No SubSource for this RAO') AS ORGID Try this, this may be more what you want... DECLARE @RAOID INT, @ORGID INT SET @ORGID = 28 SET @RAOID = (SELECT RAOID FROM tblOrganisation WHERE ORGID = @ORGID) PRINT @RAOID IF @RAOID IS NOT NULL BEGIN SELECT ISNULL(tblSubGroup.ORGID), 'No ORGID') AS ORGID, ISNULL(NULLIF(tblSubGroup.Name, ''), 'No SubSource for this RAO') AS SUBSOURCENAME FROM tblOrganisation LEFT OUTER JOIN tblSubGroup ON tblOrganisation.SubGroupID = tblSubGroup.SubGroupID AND tblSubGroup.RAOID = @RAOID END However, I'm still not sure what you want...

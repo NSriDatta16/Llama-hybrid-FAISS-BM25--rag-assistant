@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5424513
-[parent_id]: 
-[tags]: 
-How can I prevent UpdateSource on calculated bound textboxes as data loads?
-
-As users enter numbers into 3 text boxes I calculate the average in a 4th text box. The CalculateAverage method is called from the TextChanged event of the first 3 text boxes. All text boxes are bound. (Note: I know calculated values should not be stored in a database, but I'm not able to change this.) I'm using WPF 4 and Entity Framework 4. My problem is that the average text box always has EntityState.Modified. This is because loading data or navigating records causes the TextChanged event to call CalculateAverage. Even though the user has not made changes and the CurrentValue (of average) matches the OriginalValue the binding mechanism now considers this record to be "dirty". I'm wondering if there is a cleaner solution than the one I've implemented. My fix is to set a flag during data load and during record navigation. This means I had to add an OnRecordChanging event to set the _changingRecords flag and an OnRecordChanged event to un-set it. At the beginning of CalculateAverage I have: if (_loadingData || _changingRecords) return; to bail out of CalculateAverage and prevent an update to the average field. Is there a cleaner approach to avoiding this issue?

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5231406
-[parent_id]: 
-[tags]: 
-How to calculate the weighted average over a cell-array of arrays?
-
-In generalisation of my previous question , how can a weighted average over cell elements (that are and shall remain arrays themselves) be performed? I'd start by modifying gnovice's answer like this: dim = ndims(c{1}); %# Get the number of dimensions for your arrays M = cat(dim+1,c{:}); %# Convert to a (dim+1)-dimensional matrix meanArray = sum(M.*weigth,dim+1)./sum(weigth,dim+1); %# Get the weighted mean across arrays And before that make sure weight has the correct shape. The three cases that I think need to be taken care of are weight = 1 (or any constant) => return the usual mean value numel(weight) == length(c) => weight is per cell-element c{n} (but equal for each array element for fixed n) numel(weight) == numel(cell2mat(c)) => each array-element has its own weight... Case one is easy, and case 3 unlikely to happen so at the moment I'm interested in case 2: How can I transform weight into a array such that M.*weight has the correct dimensions in the sum above? Of course an answer that shows another way to obtain a weighted averaged is appreciated as well. edit In fact, case 3 is even more trivial (what a tautology, apologies) than case 1 if weight has the same structure as c. Here's an example of what I mean for case 2: c = { [1 2 3; 1 2 3], [4 8 3; 4 2 6] }; weight = [ 2, 1 ]; should return meanArray = [ 2 4 3; 2 2 4 ] (e.g. for the first element (2*1 + 1*4)/(2+1) = 2)

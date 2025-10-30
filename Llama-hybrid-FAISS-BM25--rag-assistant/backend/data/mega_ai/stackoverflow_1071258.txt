@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1071258
-[parent_id]: 
-[tags]: 
-C# 4.0, detect if a method is missing
-
-I have a situation where i want to add LinePragmas to CodeDom objects. But some code dom objects have the LinePragma property and some don't. So I'm wondering if it's possible to use the dynamic keyword to detect if the property exists on the object (without throwing an exception) and if it does then add the pragma. Here is my current method: public static T SetSource (this T codeObject, INode sourceNode) where T : CodeObject { codeObject.UserData["Node"] = sourceNode.Source; dynamic dynamicCodeObject = codeObject; // How can I not throw an exception here? if (dynamicCodeObject.LinePragma != null) { dynamicCodeObject.LinePragma = new CodeLinePragma( sourceNode.Source.Path.AbsoluteUri, sourceNode.Source.StartLine); } return codeObject; } UPDATE: The solution I went with was to add an extension method called Exists(). I wrote a blog post about it here: Member Exists Dynamic C# 4.0 The jist was to create an extension method that returns an object that implements DynamicObject's TryGetMember. It uses reflection to then return true or false. Which allows you to write code like this: object instance = new { Foo = "Hello World!" }; if (instance.Reflection().Exists().Foo) { string value = instance.Reflection().Call().Foo; Console.WriteLine(value); }

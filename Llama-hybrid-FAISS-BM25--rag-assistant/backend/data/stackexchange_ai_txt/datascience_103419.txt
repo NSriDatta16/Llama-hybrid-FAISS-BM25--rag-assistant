@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 103419
-[parent_id]: 
-[tags]: 
-ColumnTransformer worse performance than sklearn pipeline
-
-I have an (unbalanced , binary data) pipeline model consisting of two pipelines (preprocessing and the actual model). Now I wanted to include SimpleImputer into my preprocessing pipeline and because I don't want to apply it to all columns used ColumnTransformer but now I see that the performance with ColumnTransformer is a lot worse than with the sklearn pipeline (AUC before around 0.93 and with ColumnTransformer it's around 0.7). I filled the nan values before the pipeline to check if the performance would be better then (as the SimpleImputer would not do anything then) but even without any nan values in the data the performance stays this bad. I have part of the code below. Does anyone know what's happening or what I can change? from sklearn.pipeline import Pipeline as pipeline from imblearn.pipeline import Pipeline as pipeline_imb from sklearn.compose import ColumnTransformer #option with ColumnTransformer (performs a lot worse) preproc = ColumnTransformer([ ('imputer',SimpleImputer(strategy = 'mean'),['col1','col2','col3']) ]) #option with sklearn pipeline (performs better) preproc = pipeline([ ('SimpleImputer', SimpleImputer(strategy = 'mean')), ]) modelpipe = pipeline_imb([ ('undersampling',RandomUnderSampler()), ('xgboost', xgb.XGBClassifier(**params, n_jobs=-1)) ]) model = pipeline([('preproc', preproc), ('modelpipe', modelpipe)]) so only exchanging the two preproc makes such a huge performance difference. Why is this?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3319116
-[parent_id]: 3319030
-[tags]: 
-Here's an excellent MSDN article covering this topic in both directions: http://msdn.microsoft.com/en-us/library/42zy2z41.aspx And here's the Marshal class: http://msdn.microsoft.com/en-us/library/atxe881w.aspx With this, I would suggest defining various managed code methods that take the different types of native strings, converts them into a managed string, then compares them. Unfortunately, I see no way to get around permutating the different native string types. They are literally different data types, even though they both represent what we call a string. And if it messes up the conversion, you can get into some dangerous territory. Also, I would drop std::string out of the running, since you can easily call c_str() to get a const char * out. Same for std::wstring and wchar_t . Here's an example of one: using namespace System::Runtime::InteropServices; public static int NativeCompare(System::String ^ s1, char * s2) { System::String ms2 = Marshal::PtrToStringAnsi((IntPtr)s2); return s1.CompareTo(ms2); }

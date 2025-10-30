@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 247669
-[parent_id]: 247471
-[tags]: 
-This is actually going to be pretty difficult to get working. On Unix/Linux you can have shared objects and applications import symbols from each other, but on Windows you can't have a DLL import symbols from the application that loads it: the Windows PE executable format just doesn't support that idiom. I know that the Cygwin project have some sort of work-around to address this problem, but I don't believe that it's trivial. Unless you want to do lots of PE-related hacking you probably don't want to go there. An easier solution might be to just have some sort of initializer method exported from the DLL: typedef int (*func_ptr)(); void init_library(func_ptr func); The application must call this at start-up, passing in the address of the function you want to share. Not exactly elegant, but it should work okay.

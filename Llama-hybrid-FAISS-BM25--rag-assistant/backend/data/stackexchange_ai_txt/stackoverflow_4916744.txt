@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4916744
-[parent_id]: 4913292
-[tags]: 
-This is not an infinite loop, it is good practice when dealing with a TAS (test and set) algorithm. What the loop does is (a) read from memory (should be volatile semantics) (b) compute a new value (c) write the new value if the old value has not in the meantime changed . In database land this is known as optimistic locking. It leverages the fact that most concurrent updates to shared memory are uncontended, and in that case, this is the cheapest possible way to do it. In fact, this is basically what an unbiased Lock will do in the uncontended case. It will read the value of the lock, and if it is unlocked, it will do a CAS of the thread ID and if that succeeds, the lock is now held. If it fails, someone else got the lock first. Locks though deal with the failure case in a much more sophisticated way than merely retrying the op over and over again. They'll keep reading it for a little while incase the lock is quickly unlocked (spin-locking) then usually go to sleep for bit to let other threads in until their turn (exponential back-off).

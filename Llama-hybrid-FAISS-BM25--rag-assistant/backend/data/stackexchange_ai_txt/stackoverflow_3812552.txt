@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3812552
-[parent_id]: 3812280
-[tags]: 
-Disclaimer: This isn't a solution/workaround use Tatu's answer for that, this is just a description of the problem and what's going on to cause the weird behavior for those who are curious. The root of the problem is here, the regex that jQuery uses to identify an HTML Fragment : /^[^ )[^>]*$|^#([\w-]+)$/ Which does match your selector: body strong:contains(" ") You can try it out : alert(/^[^ )[^>]*$|^#([\w-]+)$/.test('body strong:contains(" ")​​​'));​ So it thinks it's an HTML fragment..so overall these are currently equivalent: $('body strong:contains(" ")'); $(' '); Seeing the second is a clearer illustration that it's a document fragment...which has no parent. It takes the 2nd position in the match array, which you can see is just , again try it out : alert(/^[^ )[^>]*$|^#([\w-]+)$/.exec('body strong:contains(" ")')[1]);​ This results in you ultimately ending up at this code path in jQuery's $() , building a fragment. So in short yes , I'd consider this a jQuery bug.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3974265
-[parent_id]: 3933643
-[tags]: 
-I almost hate to suggest this, but since the approach that you settled on was pretty lousy then the one I'm going to show here is pretty good in comparison. Forgive the sarcasm, but when you have this many users telling you that your approach in general is wrong you ought to take that into consideration. Somewhere you are probably running a SQL like this: SELECT MAX(DENORMALIZED_FIELD) INTO BADLY_NAMED_VARIABLE FROM POORLY_ORGANIZED_TABLE WHERE DENORMALIZED_FIELD LIKE 'ABC-XYZ%'; Then later you're probably split the variable using SUBSTR , parse the second part into a NUMBER , increment it, and build a new variable with the new code. What you can do is add the FOR UPDATE clause to the SELECT statement, placing a lock on the records in question. Sure, you're not actually updating them, but by your definition you have to serialize the operation. This is a non-performant, unscalable, and dirty way to get what you want, but it should work. Check the Oracle docs to see all the implications.

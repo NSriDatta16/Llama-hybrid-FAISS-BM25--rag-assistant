@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 399412
-[parent_id]: 
-[tags]: 
-Isn't kernel ridge regression supposed to be the mean of gaussian processes?
-
-I read a few times that the mean prediction of a GP should be equivalent to KRR. I tested this empirically and found (dataset is y=2x + gaussian noise): Two explanations for this come to mind: GP is bayesian, so trains using log marginal likelihood, which is sometimes called bayesian's occam razor . This would however contradict the common saying (KRR \= GP mean) GP can train its hyperparameters (lengthscale and variance) by gradient descent, whereas the sklearn code I'm using is only doing a gridsearch on krr's hyperparameters (can we can krr's hyperparameters --regularization term alpha and lengthscale-- by gradient descent?), which could make GP better empirically Are these right? Or is there something else going on here? from sklearn.kernel_ridge import KernelRidge from sklearn.model_selection import GridSearchCV from sklearn.pipeline import make_pipeline import matplotlib.pyplot as plt import numpy as np np.random.seed(100) # Make data. X = np.arange(-10,10,.25)[:,None] Y = 2*X + np.random.randn(X.shape[0],1)*5 plt.scatter(X,Y, c='green') krbf = GPy.kern.RBF(1) m = GPy.models.GPRegression(X,Y,krbf) m.optimize() plt.plot(X,m.predict(X)[0], label='gp') kr = GridSearchCV(KernelRidge(kernel='rbf', gamma=0.1), cv=5, param_grid={"alpha": [1e0, 0.1, 1e-2, 1e-3], "gamma": np.array([1,5,10,15,20])}) kr.fit(X,Y) plt.plot(X,rr.predict(X), label='kr') plt.legend() plt.show()

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2858095
-[parent_id]: 2858024
-[tags]: 
-Your writer is causing this to be written out, since the Encoding property returns the UTF-16 encoding. Instead of using a StringWriter (which is UTF-16 in memory) you could initialize an XmlTextWriter instance to use UTF-8 with a MemoryStream as backing store. Edit: Another way to work around the issue is to inherit from StringWriter and override the Encoding property to return the encoding you like (e.g. UTF8 in your case). This idea is from a blog post written by Robert McLaws . public class UTF8StringWriter: StringWriter { public UTF8StringWriter() {} public UTF8StringWriter(IFormatProvider formatProvider): base(formatProvider) {} public UTF8StringWriter(StringBuilder sb): base(sb) {} public UTF8StringWriter(StringBuilder sb, IFormatProvider formatProvider): base(sb, formatProvider) {} public override Encoding Encoding { get { return Encoding.UTF8; } } } You're not alone with this problem... see for instance the MSDN community comment (on the bottom) or the following blog post .

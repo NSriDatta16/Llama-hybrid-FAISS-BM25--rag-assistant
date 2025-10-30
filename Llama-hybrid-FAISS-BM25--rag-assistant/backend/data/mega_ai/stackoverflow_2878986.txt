@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2878986
-[parent_id]: 2878969
-[tags]: 
-GetProperties() returns an array of PropertyInfo objects. Your call to p.GetType() is always going to return typeof(PropertyInfo) - never the "view" type you've passed in. You probably want this instead: from p in m.Value.GetType().GetProperties() where p.PropertyType.Equals(view) select p Edit As Robert pointed out, your logic to determine if the above query returns any properties is also wrong. An easy way around that is to see if anything came back from the subquery: var module = from m in Modules where ( from p in m.Value.GetType().GetProperties() where p.PropertyType.Equals(view) select p ).Any() select m Keep in mind that that query might return more than one module. You will probably want to return .First() from the results.

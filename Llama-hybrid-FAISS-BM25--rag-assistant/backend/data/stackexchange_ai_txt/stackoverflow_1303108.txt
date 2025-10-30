@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1303108
-[parent_id]: 1302643
-[tags]: 
-I notice that you seem to be getting null back from the cache whenever that item hasn't been accessed during the previous 5 loop iterations (ie, 5 seconds). Could this be related to your 5 second expiry time? It seems unlikely, but maybe you have a race condition and the items are dropping out of the cache between the Contains check and the GetData retrieval. Try this change and see if it makes any difference to the output: while (true) { System.Threading.Thread.Sleep(1000); var key = new Random().Next(3).ToString(); string value; lock (cache) { value = (string)cache.GetData(key); if (value == null) { value = key; cache.Add(key, value, CacheItemPriority.Normal, null, new SlidingTime(TimeSpan.FromSeconds(5))); } } Console.WriteLine("{0} --> '{1}'", key, value); }

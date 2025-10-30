@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3519917
-[parent_id]: 3519853
-[tags]: 
-What you ask for is possible, it's also unlikely to be a good solution to your problem. Effectively the if/else if/else chain is ugly, the first solution that comes to mind will therefore to use a construct that will lift this, an associative container comes to mind and the default one is obviously std::unordered_map . Thinking on the type of this container, you will realize that you need to use the typename as the key and associate it to a functor object... However there are much more elegant constructs for this. The first of all will be of course the use of a virtual method. class Base { public: void execute() const { this->executeImpl(); } private: virtual void executeImpl() const { /* default impl */ } }; class Derived: public Base { virtual void executeImpl() const { /* another impl */ } }; It's the OO way of dealing with this type of requirement. Finally, if you find yourself willing to add many different operations on your hierarchy, I will suggest the use of a well-known design pattern: Visitor. There is a variation called Acyclic Visitor which helps dealing with dependencies.

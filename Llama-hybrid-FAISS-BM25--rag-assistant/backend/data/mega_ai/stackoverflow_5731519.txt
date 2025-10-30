@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5731519
-[parent_id]: 5723309
-[tags]: 
-You return a newly allocated double . Do you delete it somewhere? Why are you returning a pointer to a newly allocated double ? Why not just return a double ? It isn't a big deal to return an eight-byte temporary value, and the caller can decide what it wants to do with it (including allocating a new double on the heap if it likes). Assuming the values aren't large, I'd much rather return a temporary. Having the new closer conceptually to the actual use makes the memory management easier. Moreover, allocating large numbers of very small blocks can lead to inefficient heap use and heap fragmentation, so that the program might run out of memory when it wouldn't otherwise, and might not be able to allocate a large chunk even if it looks like there's plenty left. This may or may not matter (and the extra time needed to allocate memory may or may not matter, especially in a function whose running time is probably dominated by I/O). This is likely micro-optimization, but if there is no good reason for such small allocations you may as well get in the habit of not using them.

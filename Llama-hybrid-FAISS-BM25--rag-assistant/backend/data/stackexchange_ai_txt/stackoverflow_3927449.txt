@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3927449
-[parent_id]: 3927233
-[tags]: 
-Generally using clock time on a heavy loaded system like this with a resolution under a second is a bad idea anyhow. Threads will take their timestamp and then be descheduled in the middle of the operation, so you will see things arriving out of order. Three characters left to encode things uniquely is not much. Try at least to use some different encoding such as base64. If you use gcc as a compiler you have thread local storage (TLS) as an extension that is quite efficient. Just prefix your static variable with __thread (or so). If you are restricted to phtreads, there are means to get thread specific keys, too, pthread_get_key . But better would be to have the information as long as possible on the stack of the thread. To obtain a per thread counter that makes a serial number for your request use your hhmmss timestamp as so far as much bits that you need to identify your threads the last bits for the per thread serial number as above that should only wrap round after more than a second You could even be cheating and yield a thread that fires too many requests within the same second.

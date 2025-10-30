@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4840193
-[parent_id]: 3681531
-[tags]: 
-Drawing on Uriptical's answer, I found the relationships to work but named routes still did not. I'm still pretty new at rails 3 but I found a simple solution using eval. For instance, in my project, the polymorphic parents (represented in my app as the mongoid objects Product and Category) are defined as @imagable using a modification of find_comentable and the child being edited is referred to as @image. a url such as product_image_path(@imagable, @image) which does GET => products/:product_id/images/ can be replaced with: send("#{@imagable.class.name.downcase}_image_url", @imagable, image ) This works for all named paths. For instance: link_to 'Edit', send("edit_#{@imagable.class.name.downcase}_image_path", @imagable, image ) link_to 'Destroy', send("#{@imagable.class.name.downcase}_image_url", @imagable, image), :confirm => 'Are you sure?', :method => :delete The downside to this is it leaves sends all over your views and in controllers wherever you have redirects. Is there a more elegant solution to do this via routes? * replaced eval with send

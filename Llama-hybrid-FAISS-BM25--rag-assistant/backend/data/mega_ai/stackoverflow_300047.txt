@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 300047
-[parent_id]: 
-[tags]: 
-Why is fuse not using the class supplied in file_class
-
-I have a python fuse project based on the Xmp example in the fuse documentation. I have included a small piece of the code to show how this works. For some reason get_file does get called and the class gets created, but instead of fuse calling .read() on the class from get_file (file_class) fuse keeps calling Dstorage.read() which defeats the purpose in moving the read function out of that class. class Dstorage(Fuse, Distributor): def get_file(self, server, path, flags, *mode): pass # This does some work and passes back an instance of # a class very similar to XmpFile def main(self, *a, **kw): self.file_class = self.get_file return Fuse.main(self, *a, **kw) I have my code hosted on launchpad, you can download it with this command. bzr co https://code.launchpad.net/~asa-ayers/+junk/dstorage bzr branch lp:~asa-ayers/dstorage/trunk solution: I used a proxy class that subclasses the one I needed and in the constructor I get the instance of the class I need and overwrite all of the proxy's methods to simply call the instance methods.

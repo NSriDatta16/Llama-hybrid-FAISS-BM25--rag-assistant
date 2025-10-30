@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 287788
-[parent_id]: 284826
-[tags]: 
-The trailing variable is there because mem(Var,[Var|_]) binds the unbound Coloring variable to [Var|_] . One way to avoid it is to accumulate the map coloring e.g (very quick and extremely dirty): col(Colors,Map,Coloring) :- check(Colors,Map,[],Coloring). check(Colors,[],Coloring,Coloring). check(Colors,[Country1:Country2 | T],[],L) :- member(Color1,Colors), member(Color2,Colors), Color1 \== Color2, check(Colors,T,[Country1:Color1,Country2:Color2],L). check(Colors,[Country1:Country2 | T],Coloring,L) :- member(Country1:Color1,Coloring), member(Country2:Color2,Coloring),!, check(Colors,T,Coloring,L). check(Colors,[Country1:Country2 | T],Coloring,L) :- member(Country1:Color1,Coloring),!, member(Color2,Colors), not(member(_:Color2,Coloring)), check(Colors,T,[Country2:Color2|Coloring],L). check(Colors,[Country1:Country2 | T],Coloring,L) :- member(Country2:Color2,Coloring),!, member(Color1,Colors), not(member(_:Color1,Coloring)), check(Colors,T,[Country1:Color1|Coloring],L). Its a much more 'procedural' approach than yours though :-(. There's probably a more elegant way...

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4330437
-[parent_id]: 4226239
-[tags]: 
-@Pacu, Don't use a timer! You need to be looking at the gesture state. The UIGestureRecognizer sends you info about which part of the gesture you are getting. Gestures aren't a single event. Think about a pinch gesture... it doesn't just happen once, it starts, changes position, and can be cancelled or fail or end. Each time one of those things happens your callback gets run. Just ignoring events that happen close together will USUALLY work, but for instance a swipe gesture could last longer than your time window. switch (sender.state) { case UIGestureRecognizerStateBegan: self.dragging = [self objectToRotateOrPinch:sender]; break; case UIGestureRecognizerStateEnded: self.dragging = nil; break; case UIGestureRecognizerStateCancelled: self.dragging = nil; break; case UIGestureRecognizerStateFailed: self.dragging = nil; break; case UIGestureRecognizerStateChanged: // rotate or pinch break; default: break; } If all you care about is when a swipe has happened, you'll want to only react when the state == UIGestureRecognizerStateEnded.

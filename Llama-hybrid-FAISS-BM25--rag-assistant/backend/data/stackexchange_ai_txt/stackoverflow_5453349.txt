@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5453349
-[parent_id]: 
-[tags]: 
-Is this valid code to create a NIB-instantiated singleton?
-
-Assume that I instantiate an object of class MyGreatClass in my NIB (as usual by simply dragging an "Object" to the NIB and settings its class to MyGreatClass). I want access to that instance anywhere in my codebase, without introducing coupling, i.e. without passing objects around like crazy, and without having an outlet to it in, say, [NSApp delegate]. (The latter would make AppDelegate terribly bulky with time.) I ask: Is the following considered a good code to accomplish this? //imports static MyGreatClass *theInstance = nil; @implementation MyGreatClass + (MyGreatClass *)sharedInstance { NSAssert(theInstance != nil, @"instance should have been loaded from NIB"); return theInstance; } - (id)init //waking up from NIB will call this { if (!theInstance) theInstance = self; return theInstance; } // ... If this work as expected, I would after the app is loaded be able to access my instance via sharedInstance. What do you think? UPDATE: Hmm, on the second thought, the above init method maybe overkill. This is way simpler to think about: - (id)init { NSAssert(!theInstance, @"instance shouldn't exist yet because only " @"the NIB-awaking process should call this method"); theInstance = self; return theInstance; } Again, what do you think?

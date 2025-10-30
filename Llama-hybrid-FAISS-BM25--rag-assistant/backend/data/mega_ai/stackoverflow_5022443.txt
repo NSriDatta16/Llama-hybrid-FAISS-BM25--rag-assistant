@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5022443
-[parent_id]: 5021557
-[tags]: 
-Since these two inserts are executed independently, another program running concurrently might see the database in a state where the first insert is done but the second isn't. Whether this is a problem or not depends on the application logic. In your case it's hard to tell without additional information. Probably not. A financial transactions involving two accounts is an example where this is a problem: you don't want the sum of all account balances to be wrong at any time. If you think you need this, you can make the operation atomic at the cost of performance: another program will either see the database before the first insert, or after the second insert. It works like this: $result = FALSE; if (mysql_query('BEGIN')) { if (mysql_query($query1) && mysql_query($query2)) $result = mysql_query('COMMIT'); // both queries looked OK, save else mysql_query('ROLLBACK'); // problems with queries, no changes } The storage engine has to support transactions, i.e., it has to be InnoDB . Otherwise this will silently not work.

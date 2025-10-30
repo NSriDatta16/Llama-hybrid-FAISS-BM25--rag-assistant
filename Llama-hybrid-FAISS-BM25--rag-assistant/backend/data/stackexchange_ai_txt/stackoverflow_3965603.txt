@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3965603
-[parent_id]: 2366093
-[tags]: 
-Your CNAME records must be already pointing to your S3 bucket. Your S3 bucket needs to also be named custom.domain.com Verify you are able to access your files from custom.domain.com in your browser. Once that's done, the following snippet I wrote will print the URL's to all the files within a key: import sys import boto.s3 from boto.s3.connection import VHostCallingFormat from boto.s3.connection import S3Connection def main(): access_key = " " secret_key = " " bucket = "custom.domain.com" # assuming you have your files organized with keys key_prefix = "css" key_prefix = key_prefix + "/" conn = S3Connection(access_key, secret_key, calling_format=VHostCallingFormat()) bucket = conn.get_bucket(bucket) # get all the keys with the prefix 'css/' inside said bucket keys = bucket.get_all_keys(prefix=key_prefix) for k in keys: print k.generate_url(3600, query_auth=False, force_http=True) # output: # http://custom.domain.com/css/ie.css # http://custom.domain.com/css/print.css # http://custom.domain.com/css/screen.css # http://custom.domain.com/css/style.min.css if __name__ == '__main__': main()

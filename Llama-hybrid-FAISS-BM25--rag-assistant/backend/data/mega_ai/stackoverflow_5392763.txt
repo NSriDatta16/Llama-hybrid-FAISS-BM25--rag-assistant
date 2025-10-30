@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5392763
-[parent_id]: 5392657
-[tags]: 
-Yes, _PyString_Resize does realloc - after all, this is what you asked it to do :-) If you want to save the reallocation, perhaps you can read into a buffer on the stack and then just create the string object from it. Something like (not compiled & tested, so treat it as pseudocode): char cbuf[BUFFER_SIZE]; int sz = read(cbuf, BUFFER_SIZE); PyObject * buffer = PyString_FromStringAndSize(cbuf, sz); Also, note the warning above the implementation of _PyString_Resize (it's in Objects/stringobject.c ): The following function breaks the notion that strings are immutable: it changes the size of a string. We get away with this only if there is only one module referencing the object. You can also think of itas creating a new string object and destroying the old one, only more efficiently. In any case, don't use this if the string may already be known to some other part of the code...

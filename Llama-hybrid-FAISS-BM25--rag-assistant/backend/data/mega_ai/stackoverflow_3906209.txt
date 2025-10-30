@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3906209
-[parent_id]: 3904148
-[tags]: 
-The other suggestions seem to be adding a bit of overhead to your application (by loading and querying the User model for each request). Have you considered simply updating the stale session data when updates occur to your User model? Session->read('Auth.User.id'); // populate form if (!$this->data) { $this->data = $this->User->read($userId, null); return; } // update user $saved = $this->User->save($this->data); if ($saved) { $user = $this->User->read(null, $this->User->id); $this->Session->write('Auth.User', $user['User']); // update session $this->Session->setFlash('Account details have been updated'); return $this->redirect(array('action' => 'profile')); } $this->Session->setFlash('Please correct the validation errors below'); } } ?> This means the data you need will be gathered each request without any additional queries (either from disk if using php or cake session storage, or in a single session query if using database storage).

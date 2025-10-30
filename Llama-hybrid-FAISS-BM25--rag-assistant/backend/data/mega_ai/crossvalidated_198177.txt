@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 198177
-[parent_id]: 161131
-[tags]: 
-This answer is in response to the specific questions around steps 2 and 3. Regarding step 2, yes, $C^{k+1}_v$ is again a complete time series. In fact it extends the original time series (i.e. the one being decomposed) by pre- and post-padding, since the low-pass filter in step 3 needs that padding to avoid truncating the original series. Regarding step 3, yes, the filter smooths the series four times during any given run of the inner loop. If you're feeling adventurous... You can look at the source code itself. From the R shell, just type $ stl and you will see that R's stl function is really just a wrapper around a Fortran subroutine: z The STL docs say that the Fortran function lives at "netlib": stl: http://www.netlib.org/a/stl loess: http://www.netlib.org/a/loess In stl you'll find the fts subroutine, which has the moving average calls: subroutine fts(x,n,np,trend,work) integer n, np real x(n), trend(n), work(n) call ma(x,n,np,trend) call ma(trend,n-np+1,np,work) call ma(work,n-2*np+2,3,trend) return end That way you can get as down-in-the-weeds as you'd like.

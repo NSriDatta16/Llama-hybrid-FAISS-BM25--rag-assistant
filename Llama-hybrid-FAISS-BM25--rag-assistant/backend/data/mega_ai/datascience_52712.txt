@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 52712
-[parent_id]: 
-[tags]: 
-Fixed: Keras Neural Network on handwritten digits labeling: Model reads the surrounding space instead of digit
-
-Our assignment consists of labeling handwritten numbers, ranging from 0 to 9. We build a Convolutional Neural Network that achieves a good accuracy on our labeled testset. We now want to use this model to predict the numbers on our unlabeled dataset, called Z. When printing out the predictions, it seems that the model predicts the number 0 way too often and that it scores a very low accuracy. We have: X_train of float64 and shape(42000, 28, 28, 1) Y_train of float32 and shape(42000, 10) X_test of float64 and shape(28000, 28, 28, 1) Z_test(the unlabeled set) of floats64 and shape(15000, 28, 28, 1) When printing out the digits I saw that our train and test datasets look like this: Our unlabeled dataset, Z, looks like this: Our code looks like this: Y_train = train["label"] X_train = train.drop(labels = ["label"],axis = 1) X_train = X_train / 255.0 X_test = test / 255.0 X_train = X_train.values.reshape(-1,28,28,1) X_test = X_test.values.reshape(-1,28,28,1) Y_train = to_categorical(Y_train, num_classes = 10) Z_test = unlabeleddata / 255.0 Z_test2 = Z_test.reshape(-1,28,28,1) Is there a solution to fix this problem? Thanks! Edit: The problem was fixed with this code: Z_test = unlabeleddata - 255.0 Z_test = unlabeleddata / 255.0 Z_test = Z_test - 1 Z_test = np.absolute(Z_test) Z_test2 = Z_test.reshape(-1,28,28,1)

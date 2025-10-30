@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5191323
-[parent_id]: 5189075
-[tags]: 
-In theory, using MyActorLogic , armed with a simple mutable map, from multiple threads, may lead to concurrent modification exception (when one thread is traversing the map, whilst another's modifying it). You could do the following to avoid problems : Put the map into the actor (as a private member). In Akka , you're not working with the Actor instance directly (but rather accessing it through a proxy - ActorRef ). In this case, safe access to the map will not only be guaranteed by the actor, that always processes one message at a time - other threads won't be able to access private members even through reflection. You can make update/retrieval methods of MyActorLogic thread-safe (e.g., making them synchronized ) You can use old-good ConcurrentHashMap Instead of val map:mutable.Map you can use var map:immutable.Map . Thus, multiple threads accessing map may occasionally work with a stale data, but there will be no concurrent modifications (copy-on-write approach). Just for the note, true singleton would be: object MyActorLogic{ val map:Map[String, Object] = Map() ...

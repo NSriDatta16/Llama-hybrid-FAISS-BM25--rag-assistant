@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4429169
-[parent_id]: 587442
-[tags]: 
-This isn't particularly elegant, but you can use the FileMerge application that comes with Mac OS X developer tools to compare the contents of zip files using a custom filter. Create a script ~/bin/zip_filemerge_filter.bash with contents: #!/bin/bash ## # List the size, CR-32 checksum, and file path of each file in a zip archive, # sorted in order by file path. ## unzip -v -l "${1}" | cut -c 1-9,59-,49-57 | sort -k3 exit $? Make the script executable ( chmod +x ~/bin/zip_filemerge_filter.bash ). Open FileMerge, open the Preferences, and go to the "Filters" tab. Add an item to the list with: Extension:"zip", Filter:"~/bin/zip_filemerge_filter.bash $(FILE)", Display: Filtered, Apply*: No. (I've also added the filer for .jar and .war files.) Then use FileMerge (or the command line "opendiff" wrapper) to compare two .zip files. This won't let you diff the contents of files within the zip archives, but will let you quickly see which files appear within one only archive and which files exist in both but have different content (i.e. different size and/or checksum).

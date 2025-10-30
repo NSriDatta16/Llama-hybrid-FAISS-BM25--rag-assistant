@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2016318
-[parent_id]: 
-[tags]: 
-php sqlsrv_fetch_object performance
-
-Greetings! I am attempting to solve a few performance issues which are cropping up on our site. As part of this effort I have begun profiling our most trafficed pages according to GA. Essentially I have determined, as I originally suspected, the majority of time spent is in database related traffic... makes sense. Unfortunately, when looking closer, what I found DOESN'T make quite as much sense. For example, this particular call, MyAlganon_Model_Library_Item::fetchItemTooltipsByItemIdArray() takes 580.41ms to return on my staging platform. Upon diving into it 47.27ms of that time is spent on sqlsrv_query() while 533.12ms of it is spent in a fetchAll() function that simply loops doing sqlsrv_fetch_object: $row = sqlsrv_fetch_object($this->query); while ($row) { $results[] = $row; $row = sqlsrv_fetch_object($this->query); } return $results; Looks like, on this particular page, there are 742 rows in the result set. Maybe it's just a matter of me not having a realistic handle on how long it takes to generate an StdClass object? Does 533.12ms seem like a normal time to iterate across 742 results and turn them into an array of objects?

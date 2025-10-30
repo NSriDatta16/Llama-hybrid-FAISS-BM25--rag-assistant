@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3717903
-[parent_id]: 3717772
-[tags]: 
-Your fundamental problem is that grep works one line at a time - so it cannot find a SELECT statement spread across lines. Your second problem is that the regex you are using doesn't deal with the complexity of what can appear between SELECT and FROM - in particular, it omits commas, full stops (periods) and blanks, but also quotes and anything that can be inside a quoted string. I would likely go with a Perl-based solution, having Perl read 'paragraphs' at a time and applying a regex to that. The downside is having to deal with the recursive search - there are modules to do that, of course, including the core module File::Find . In outline, for a single file: $/ = "\n\n"; # Paragraphs while (<>) { if ($_ =~ m/SELECT.*customerName.*FROM/mi) { printf file name go to next file } } That needs to be wrapped into a sub that is then invoked by the methods of File::Find.

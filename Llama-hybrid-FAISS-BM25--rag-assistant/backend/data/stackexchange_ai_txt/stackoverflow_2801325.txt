@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2801325
-[parent_id]: 2801225
-[tags]: 
-Oracle does this check. The following code does not compile, since function_public has the pragma RNDS , and it calls function_private which reads a table. PLS-00452: Subprogram 'FUNCTION_PUBLIC' violates its associated pragma Remove the SELECT from function_private and it works. CREATE OR REPLACE PACKAGE pragma_test AS FUNCTION function_public RETURN VARCHAR2; PRAGMA RESTRICT_REFERENCES( function_public, RNDS ); END pragma_test; CREATE OR REPLACE PACKAGE BODY pragma_test AS FUNCTION function_private RETURN VARCHAR2 IS v_return dual.dummy%TYPE; BEGIN SELECT dummy INTO v_return FROM dual; RETURN v_return; END; -- FUNCTION function_public RETURN VARCHAR2 IS v_return dual.dummy%TYPE; BEGIN RETURN function_private; END; END pragma_test;

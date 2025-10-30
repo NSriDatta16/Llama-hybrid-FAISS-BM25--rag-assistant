@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2914523
-[parent_id]: 2914183
-[tags]: 
-Might as well take my comments and make a proper answer out of it. I'll illustrate exactly why your sample code failed. use warnings; my $self = { _name => $name, _runs => (), _times => [], }; bless ($self, $class); use Data::Dump::Streamer; DumpLex $self; __END__ Odd number of elements in anonymous hash at … $self = bless( { _name => undef, _runs => '_times', "ARRAY(0x88dcb8)" => undef, }, '…' ); All the elements in the list form the key/value pairs for the hash whose reference is going to be bless ed. () is an empty list, so what you're really expressing is the list '_name', $name, '_runs', '_times', [] . You can see that _times moves up to become a value, and the reference [] is stringified as hash key. You get the warning because there's no value left for it; this will be automatically coerced to undef . (Always always enable the warnings pragma.) Now for the guts part: hash values must be a scalar value. Arrays and hashes aren't; but references to them are. Thus: my $self = { _name => $name, _runs => {}, _times => [], };

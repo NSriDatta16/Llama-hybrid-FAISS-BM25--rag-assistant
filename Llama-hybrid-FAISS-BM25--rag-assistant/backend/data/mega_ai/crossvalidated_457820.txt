@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 457820
-[parent_id]: 
-[tags]: 
-Ratio Estimator as WLS
-
-Apologies in advance for whatever rules this post breaks. I'm looking at a problem where we're currently using a ratio estimator for a certain survey. $$r = \dfrac{\sum_i{y_i}}{\sum_i{x_i}}$$ This is supposed to be equivalent to a WLS model with no intercept weighted to the reciprocal of x, which is good because I want to add in more explanatory variables while maintaining continuity with the current process. I can follow along with the derivation for why they're the same. n So far, so good. The problem is when there are data points with $x=0$ . Obviously lm throws an error if you pass inf in as a weight, but I figure that the weight should be irrelevant at 0 in any case. If we're trying to minimise $$ \sum_{i=1}^n w_i(y_i-bx_i)^2$$ then at $x_i=0$ changing $b$ won't alter the weighted sum of squares so it matters not what the weight is there. Or to put it another way, if we're forcing the line through the origin then points where $x=0$ have no leverage. n Is there some weight I can put in here that will give me the same value? Changing the value at zero seems to have no effect. coef(lm(y ~ 0 + x, weights = ifelse(x==0,100,1/x))) 0.4320292 I think the references I've seen have just asserted the two approaches are equivalent, but adding in points at $x=0$ changes the ratio estimator without altering the WLS estimate. Is it only true for $x>0$ ? Is one approach to be preferred? Does anyone know of any references that mention this?

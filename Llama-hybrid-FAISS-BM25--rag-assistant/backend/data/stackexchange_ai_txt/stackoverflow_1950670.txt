@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1950670
-[parent_id]: 1950489
-[tags]: 
-There is one downside to redundantly including header files that would otherwise have been included directly: it forces the compiler to reopen and reparse them. For example, in a.h: #ifndef __A_H #define __A_H // whatever #endif b.h: #ifndef __B_H #define __B_H #include "a.h" // whatever #endif c.cpp: #include "a.h" #include "b.h" //whatever a.h has to be opened and read twice -- although the #ifndef will make the preproc ignore a.h's contents in the second inclusion, it still has to at least load the file from disk and read its bytes from the #ifndef to the #endif . This can slow down compilation. It will not break your build or anything though, it'll just be an annoyance in really large projects, where compiles can take many minutes. If you use #pragma once in your headers, there's a good chance an aware compiler will cache the filenames at a higher level, and ignore the second inclusion of a.h altogether. That too can speed up builds.

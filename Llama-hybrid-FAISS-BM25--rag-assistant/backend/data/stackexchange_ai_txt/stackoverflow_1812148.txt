@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1812148
-[parent_id]: 
-[tags]: 
-Dojo DnD Move Node Programmatically
-
-I would like to know if there is a way to move the node programmatically in dojo Dnd? The reason is I would like to revert the changes to the drag and drop when the web service call triggered a failed save on the database. Here is what I have so far. In my code, the node Id seems to be unrecognized by the dojo.dnd.Container.DelItem. I cannot just use the selected item on the target because this is a asynchronous webservice function callback. So the user may be selecting another node on the container when this is called. function OnMoveWSComplete(strResult) { var resultObj = eval('(' + strResult + ')'); var sourceContainer = eval('(' + objResult.sourceContainerId + ')'); var targetContainer = eval('(' + objResult.targetContainerId + ')'); var targetNodes = targetContainer.getAllNodes(); for (var iNode = 0; iNode EDIT : Solution (Thanks Eugene Lazutkin) [2009/11/30]: /** * Move one node from one container to the other */ function moveNode(nodeId, sourceContainer, targetContainer) { var node = dojo.byId(nodeId); // Save the data var saveData = sourceContainer.map[nodeId].data; // Do the move sourceContainer.parent.removeChild(node); targetContainer.parent.appendChild(node); // Sync the DOM object → map sourceContainer.sync(); targetContainer.sync(); // Restore data for recreation of data targetContainer.map[nodeId].data = saveData; }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4783234
-[parent_id]: 4783132
-[tags]: 
-Apart the fact that your add function should read: void Menu::add(std::string option, CalendarPtr ptr) // what doesn't work obviously { // adding string to vector options_strings.push_back(option); // Just binding the latest entry of the string to the function-pointer int index = options_strings.size(); // TRYING to add function-pointer to map options_map.insert(std::pair (index, ptr)); } I would recommend to implement a delegate (such as The Impossibly Fast C++ Delegates ) for this. Function calls through member function pointers are very slow, and the delegate version would be much more elegant, and very fast. Update First: you don't actually have to use options_strings , you know that? You could just use std::map options_map; to map strings to member function pointers. Update 2: So once you recover your CalendarPtr , you call it like this: void CallIndex(Calendar* calendar, int index) { CalendarPtr pfunc = options_map[index].second; (*calendar).*pfunc(); } But you may want to avoid syntax errors when calling a member function using a pointer-to-member-function .

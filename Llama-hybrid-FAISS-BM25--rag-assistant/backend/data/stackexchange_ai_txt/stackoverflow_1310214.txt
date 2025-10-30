@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1310214
-[parent_id]: 
-[tags]: 
-Register an object creator in object factory
-
-I have the convenient object factory template that creates objects by their type id names. The implementation is pretty obvious: ObjectFactory contains the map from std::string to object creator function. Then all objects to be created shall be registered in this factory. I use the following macro to do that: #define REGISTER_CLASS(className, interfaceName) \ class className; \ static RegisterClass regInFactory##className; \ class className : public interfaceName where RegisterClass is template struct RegisterClass { RegisterClass() { ObjectFactory ::GetInstance().Register (); } }; Usage class IFoo { public: virtual Do() = 0; virtual ~IFoo() {} } REGISTER_CLASS(Foo, IFoo) { virtual Do() { /* do something */ } } REGISTER_CLASS(Bar, IFoo) { virtual Do() { /* do something else */ } } Classes are defined and registered in factory simultaneously. The problem is that regInFactory... static objects are defined in .h files, so they will be added to every translation unit. The same object creator will be registered several times, and, more important, there will be a lot of redundant objects with static storage duration. Is there any way to do such elegant registration (not to copy/paste class and interface names), but do not spread redundant static objects around the globe? If a good solution needs some VC++ specific extensions (not conforming to C++ standard), I will be OK with that.

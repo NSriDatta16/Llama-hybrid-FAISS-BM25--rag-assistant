@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1891479
-[parent_id]: 1890605
-[tags]: 
-I finally found an article which talks about this. Libor Tinka casually mentions this before going on to show his extensive set of filters which way outperform GDI+ scaling: http://www.codeproject.com/KB/GDI-plus/imgresizoutperfgdiplus.aspx From his advice, it sounds like it is doing exactly what we suspected: it is pulling averaging detail from surrounding pixels beyond the edge of the image. This seems like a flaw in the algorithm to me, but that is open to debate. To solve this, there is an ImageAttributes class where you can specify that the pixels beyond are simply mirror images of the pixels within. Setting this seems to completely remove the ringing: using (ImageAttributes wrapMode = new ImageAttributes()) { wrapMode.SetWrapMode(WrapMode.TileFlipXY); g.DrawImage(input, rect, 0, 0, input.Width, input.Height, GraphicsUnit.Pixel, wrapMode); } Huge thanks to both Libor Tinka for the solution, and to Mark Ransom for helping me think through this and for giving me the term "ringing" which was what made Libor Tinka's solution even show up in my searches.

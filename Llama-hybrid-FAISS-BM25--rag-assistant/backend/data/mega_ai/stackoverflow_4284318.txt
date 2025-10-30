@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4284318
-[parent_id]: 
-[tags]: 
-How do i determine the correct filesystem path
-
-I am working on an application that has to download some external resources and make them accessible through a public/static directory in Ring. But.. I have a problem saving the resources into a static directory in my application, when developing I use the ring-jetty-adapter ; the test & production servers are running Tomcat. I added :web-content "public" to my leiningen project and added the public directory in the root of the project, then I have a download function using http-agent and duck-streams: (defn download [file-name url] (h/http-agent url :handler (fn [agnt] (let [fname file-name] (with-open [w (d/writer fname)] (d/copy (h/stream agnt) w)))))) If I am booting Jetty from the REPL and use savepath: "public/my.file" , the downloaded file is placed correctly in the public directory. But when I deploy it using a .war file to Tomcat, it looks for a public directory in the Tomcat root directory, and not under the application context path. I tried to add a middleware wrapper to determine the context path and from there build the correct save path, but I cannot find any way to access the HttpServlet or a way to determine if the application is running in the adapter or if it is deployed under a specific context. Here the wrapper: (defn wrap-context-info [handler] (fn [req] (let [resp (handler req)] (assoc resp :servlet (:servlet req) :req (:servlet-request req))))) both :servlet and :req are nil .

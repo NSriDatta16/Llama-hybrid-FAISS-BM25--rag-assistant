@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3146638
-[parent_id]: 3146496
-[tags]: 
-Anything you write to the memory within a MAP_SHARED mapping of a file is considered as being written to the file at that time, as surely as if you had used write() . msync() in this sense is completely analagous to fsync() - it merely ensures that changes you have already made to the file are actually pushed out to permanent storage. You can't change this - it's how mmap() is defined to work. In general, the safe way to do this is to write a complete consistent copy of the data to a temporary file, sync the temporary file, then atomically rename it over the prior checkpoint file. This is the only way to ensure that a crash between checkpoints doesn't leave you with an inconsistent file. Any solution that does less copying is going to require both a more complicated transaction-log style file format, and be more intrusive to the rest of your application (requiring specific hooks to be invoked in each place that the in-memory state is changed).

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1691007
-[parent_id]: 
-[tags]: 
-What's the right way to overload operator== for a class hierarchy?
-
-Suppose I have the following class hierarchy: class A { int foo; virtual ~A() = 0; }; A::~A() {} class B : public A { int bar; }; class C : public A { int baz; }; What's the right way to overload operator== for these classes? If I make them all free functions, then B and C can't leverage A's version without casting. It would also prevent someone from doing a deep comparison having only references to A. If I make them virtual member functions, then a derived version might look like this: bool B::operator==(const A& rhs) const { const B* ptr = dynamic_cast (&rhs); if (ptr != 0) { return (bar == ptr->bar) && (A::operator==(*this, rhs)); } else { return false; } } Again, I still have to cast (and it feels wrong). Is there a preferred way to do this? Update: There are only two answers so far, but it looks like the right way is analogous to the assignment operator: Make non-leaf classes abstract Protected non-virtual in the non-leaf classes Public non-virtual in the leaf classes Any user attempt to compare two objects of different types will not compile because the base function is protected, and the leaf classes can leverage the parent's version to compare that part of the data.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3372534
-[parent_id]: 3372139
-[tags]: 
-As others have mentioned here, your assumption that many small allocations is better for fragmentation than fewer large allocations is not correct. If fragmentation is a big concern, one of the best tools that you can use is pooled memory. You say in the question that the "subobject is always of the same size." If this is true, there's a big opportunity for you to greatly reduce your number of allocations and heap fragmentation. Just create your own allocator object that hands out blocks of memory of sizeof(SubObject) . Your outer object will store a pointer to the subobject, which was allocated with your allocator. When it wants to deallocate, it hands the memory back to the allocator object. The allocator object, instead of calling delete , will save the memory block and hand it out the next time it's asked for an allocation. The allocator object will store a list of such blocks and recycle them. This will reduce the number of heap allocations that you do tremendously.

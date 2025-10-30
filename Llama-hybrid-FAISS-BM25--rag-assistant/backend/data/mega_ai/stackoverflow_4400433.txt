@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4400433
-[parent_id]: 
-[tags]: 
-Ado.net ExecuteScalar() returning null
-
-I am executing a stored procedure in c# (through vs2008) using ado.net with an ExecuteScalar command. The stored proc returns the pkey of the new record entered, but ExecuteScalar is returning null. I look in the database and a record has indeed been added. I could use an output parameter to get the value, but then I won't know why this didn't work. When I execute the sp in ssms, the pkey is returned. What am I doing wrong? Here is the C# code: public int SaveNewPerson(EPerson ePerson) { int newPersonPkey; SqlConnection cn = new SqlConnection(cnn.PersonData); using (cn) { try { SqlCommand cmd = new SqlCommand(); cmd.Connection = cn; cmd.CommandType = CommandType.StoredProcedure; cmd.CommandText = "People.dbo.AddNewPerson"; cmd.Parameters.Add("@LastName", SqlDbType.VarChar, 150).Value = ePerson.LastName; cmd.Parameters.Add("@FirstName", SqlDbType.VarChar, 150).Value = ePerson.FirstName; cn.Open(); object result = cmd.ExecuteScalar(); newPersonPkey = int.Parse(result.ToString()); cn.Close(); } catch (Exception e) { // call error method throw new Exception(e.Message + " save new Person error "); } } return newPersonPkey; } And this is the sp: PROCEDURE [dbo].[AddNewPerson] @FirstName varchar(50) ,@LastName varchar(50) AS BEGIN SET NOCOUNT ON; INSERT INTO [People].[dbo].[Persons] ( [FirstName] ,[LastName] ) VALUES ( @FirstName ,@LastName ) declare @persons_PKey int set @persons_PKey = @@IDENTITY return @persons_PKey end

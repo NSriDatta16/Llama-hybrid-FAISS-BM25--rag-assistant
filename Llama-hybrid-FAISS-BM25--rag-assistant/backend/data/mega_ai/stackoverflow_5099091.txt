@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5099091
-[parent_id]: 4618667
-[tags]: 
-Try something like this public IPagedList Find(int pageIndex, int pageSize) { Client clientAlias = null; var query = Session.QueryOver (() => clientAlias) .Select( Projections.Distinct( Projections.ProjectionList() .Add(Projections.Property (x => x.Id).As("Id")) .Add(Projections.Property (x => x.Name).As("Name")) .Add(Projections.Property (x => x.Surname).As("Surname")) .Add(Projections.Property (x => x.GivenName).As("GivenName")) .Add(Projections.Property (x => x.EmailAddress).As("EmailAddress")) .Add(Projections.Property (x => x.MobilePhone).As("MobilePhone")) ) ) .TransformUsing(Transformers.AliasToBean ()) .OrderBy(() => clientAlias.Surname).Asc .ThenBy(() => clientAlias.GivenName).Asc; var count = query .ToRowCountQuery() .FutureValue (); return query .Take(pageSize) .Skip(Pagination.FirstResult(pageIndex, pageSize)) .List () .ToPagedList(pageIndex, pageSize, count.Value); }

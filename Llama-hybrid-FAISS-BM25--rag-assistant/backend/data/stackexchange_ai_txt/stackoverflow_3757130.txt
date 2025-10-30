@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3757130
-[parent_id]: 
-[tags]: 
-Most elegant way to serialize an object with byte[] members to an XDocument?
-
-I have a serialization utility that serializes an object to an XDocument. It works quite well : public static class SerializationUtil { public static T Deserialize (XDocument doc) { XmlSerializer xmlSerializer = new XmlSerializer(typeof(T)); using (var reader = doc.Root.CreateReader()) { return (T)xmlSerializer.Deserialize(reader); } } public static XDocument Serialize (T value) { XmlSerializer xmlSerializer = new XmlSerializer(typeof(T)); XDocument doc = new XDocument(z); using (var writer = doc.CreateWriter()) { xmlSerializer.Serialize(writer, value); } return doc; } Been using it quite happily and suddenly I get : There was an error generating the XML document. The inner exception is : This XmlWriter does not support base64 encoded data. Turns out that the XDocument.CreateWriter() instance method gives you a writer of type System.Xml.XmlWellFormedWriter , and that that writer can't write base64 encoded data (my object contains a byte[]). MSDN doesn't even seem to mention this class - but I can't seem to create any other type of writer from XDocument . I could just serialize to a string, but i was trying to be clever and avoid using any hacks. Any way to serialize to XDocument when base64 is needed for certain fields.

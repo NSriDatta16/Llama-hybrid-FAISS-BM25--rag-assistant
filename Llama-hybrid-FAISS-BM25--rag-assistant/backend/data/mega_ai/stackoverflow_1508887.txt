@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1508887
-[parent_id]: 1508472
-[tags]: 
-Have you tried the Stream.fromIterator method? It produces a stream containing the elements of the given iterator :). An example would be: val iter = List(1,2,3,4).elements // just a simple iterator val str = Stream.fromIterator(iter) str.partition(_ >= 3) Hope it helps (and it is the thing you had in mind). EDIT: Just an example to show that this is lazy (and memoised - as all Stream s are). scala> val iter = new Iterator[Int] { | var lst = List(1,2,3,4) | def hasNext() = !lst.isEmpty | def next() = { val x = lst.head; println(x); lst = lst.tail; x } | } scala> val stream = Stream.fromIterator(iter) 1 stream: Stream[Int] = Stream(1, ?) scala> stream.partition(_ >= 2) 2 3 4 res1: (Iterable[Int], Iterable[Int]) = (ArrayBuffer(2, 3, 4),ArrayBuffer(1)) scala> stream.partition(_ >= 3) res2: (Iterable[Int], Iterable[Int]) = (ArrayBuffer(3, 4),ArrayBuffer(1, 2)) NB: left some output out as it was quite verbose. -- Flaviu Cipcigan

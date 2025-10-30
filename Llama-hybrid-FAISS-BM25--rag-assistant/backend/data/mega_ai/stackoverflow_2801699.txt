@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2801699
-[parent_id]: 2801655
-[tags]: 
-Doctrine will have hydrated your results into objects corresponding to the models in your query. In your case these will be Locatie and Organisatie . You should therefore be able to access the data as follows: Locatie->naam; ?> Organisatie->naam; ?> If you have the above method in eg the Locatie table class and use self::create("l") to create your method, the object you use in the view won't need the ->Locatie part. Edit : table method example: class LocatieTable extends Doctrine_Table { public function getLocaties() { $q = self::createQuery("l") ->select('l.naam, o.naam, l.straat, l.huisnummer, l.plaats, l.postcode, l.telefoon, l.opmerking') ->leftJoin('l.Organisatie o') ->execute(); return $q; } } You should be able to find this class (probably empty) already auto-generated in lib/model/doctrine/LocatieTable.class.php . Now call it with: $this->q = Doctrine::getTable("Locatie")->getLocaties();

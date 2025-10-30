@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4901817
-[parent_id]: 4901483
-[tags]: 
-So you are using django's linebreaks filter in a jinja2 template? In that case, I would assume that the way django marks a string safe may not be compatible with jinja2, therefore escaping the tags added by django (if autoescape is active). What if you added the safe filter from jinja2 to the end? {{ my_variable|escape|linebreaks|safe }} Otherwise, there is an example for a custom filter in jinja2 documentation that seems to be similar to django's linebreaks. http://jinja.pocoo.org/docs/api/#custom-filters import re from jinja2 import evalcontextfilter, Markup, escape _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}') @evalcontextfilter def nl2br(eval_ctx, value): result = u'\n\n'.join(u' %s ' % p.replace('\n', ' \n') for p in _paragraph_re.split(escape(value))) if eval_ctx.autoescape: result = Markup(result) return result

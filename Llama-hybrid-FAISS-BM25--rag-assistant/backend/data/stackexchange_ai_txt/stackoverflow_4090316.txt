@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4090316
-[parent_id]: 4089975
-[tags]: 
-In the case the predicate is the comparison function of the map you're best off with std::map<>::lower_bound() and std::map<>::upper_bound() . Get the iterator pointing at the relevant bound and use that with std::accumulate() from . Because you're working with an associative container you'll need to adapt while taking the average, so that you work with the second value and not with a std::pair<> . If your predicate might change to something else then you can use std::partition() : // tmp container: should be fast with std::distance() typedef std::vector seq; seq tmp(dict.size()); seq::iterator end(std::partition(dict.begin(), dict.end(), tmp.begin(), std::bind2nd(std::tmp(), UPPER_BOUND))); // std::vector works well with std::distance() seq::difference_type new_count = std::distance(tmp.begin(), end); double lower_avg = std::accumulate(tmp.begin(), end, 0.0) / new_count; seq::difference_type new_count = std::distance(end, tmp.end()); double higher_avg = std::accumulate(tmp.begin(), end, 0.0) / new_count; You'll need the , , , and headers here.

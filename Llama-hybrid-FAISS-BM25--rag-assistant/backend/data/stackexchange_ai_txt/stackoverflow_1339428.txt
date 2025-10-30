@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1339428
-[parent_id]: 
-[tags]: 
-Constant reference to temporary object
-
-Let's say there is a function like void SendToTheWorld(const Foo& f); and I need to preprocess Foo object before sending X PreprocessFoo(const Foo& f) { if (something) { // create new object (very expensive). return Foo(); } // return original object (cannot be copied) return f; } Usage Foo foo; SendToTheWorld(PreprocessFoo(foo)); So X PreprocessFoo() function should be able to return original object or copy/modify and than return new one. I cannot return const Foo& as it may refer a temporary object. Also I don't like to create Foo on the heap. Perfectly, X should be some kind of union of const Foo& and Foo that may be treated as const Foo& . Any idea how to do that in more elegant way? My current solution: Foo PreprocessFoo(const Foo& f) { // create new object (very expensive). return Foo(); } Usage: Foo foo; if (something) { SendToTheWorld(PreprocessFoo(foo)); } else { SendToTheWorld(foo); }

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3549824
-[parent_id]: 
-[tags]: 
-Programmatically ship and comment single item of an order in Magento
-
-I know there is a way to programmatically invoice, ship, and set state on an order ( http://www.magentocommerce.com/boards/viewthread/74072/ ), but I actually need to drill down even deeper to the item level of an order. We have a situation where, depending on item type, two different items can be processed in two different locations (from the same order). I can go into the Magento back-end and "ship" one item without "shipping" the other and append comments to that one item, but I'm looking for a way to do this programmatically. Thank you in advance for your help! Update: Here is the code I ended up using to accomplish this: $client = new SoapClient('http://somesite.domain/magento/index.php/api/?wsdl'); $session = $client->login('username', 'password'); function extract_item_id($items, $sku ){ foreach($items as $item ){ if ($item["sku"]==$sku) { return $item["item_id"]; } } } $orderNum = "200000052"; $oderInfo = $client->call($session, "sales_order.info", $orderNum ); $item_id = extract_item_id($oderInfo["items"], "someSKU") ; $itemsQty = array( $item_id => "1" ); $shipment = array( $orderNum, $itemsQty, "Comment associated with item shipped.", true, true ); var_dump($shipment); $nship = $client->call($session, 'sales_order_shipment.create', $shipment);

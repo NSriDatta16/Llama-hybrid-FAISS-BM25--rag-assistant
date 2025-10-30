@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3801491
-[parent_id]: 3799125
-[tags]: 
-As far as I know there is (unfortunately) no way to do what you described without resorting to raw SQL. That said there is a way to calculate the average the way you describe if you are willing to denormalize your data a bit. For instance you can add a new column called average_field that is automatically set to the appropriate value on save() . You can either override save() or tap a signal to do this automatically. For e.g. class A(models.Model): name = models.CharField(max_length=64, null=False) value = models.IntegerField() average_field = models.IntegerField(default = 0) def _get_average_field(self): # Trying to match the case statement's syntax. # You can also do 0 0 and self.value 50 and self.value Once you do this your querying becomes very easy. A.objects.filter(...).aggregate(avg = Avg('average_field'))

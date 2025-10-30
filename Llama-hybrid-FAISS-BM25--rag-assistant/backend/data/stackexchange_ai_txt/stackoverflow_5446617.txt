@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5446617
-[parent_id]: 5446226
-[tags]: 
-Ok, I've managed to get it working, but I'm not sure if it's the best or most elegant way. First, I added "my_loader" to application/config/autoload.php on the libraries section. Then I checked what $this->load was inside a controller and it was CI_Loader instance, so in MY_Loader class' constructor I made a CI reference and replaced it's load property with a reference to MY_Loader: $CI->load = $this; . The final MY_Loader class is this: class MY_Loader extends CI_Loader { function __construct() { parent::__construct(); $CI =& get_instance(); $CI->load = $this; } function database($params = '', $return = FALSE, $active_record = NULL) { parent::database($params, $return, $active_record); // bootstrap doctrine require_once APPPATH . DIRECTORY_SEPARATOR . 'hooks' . DIRECTORY_SEPARATOR . 'doctrine' . EXT; bootstrap_doctrine(); } } Please, if you come with a better/smarter solution, post an answer. Thanks.

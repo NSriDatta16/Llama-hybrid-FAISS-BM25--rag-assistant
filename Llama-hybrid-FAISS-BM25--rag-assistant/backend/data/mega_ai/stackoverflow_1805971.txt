@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1805971
-[parent_id]: 1799605
-[tags]: 
-I've decided to solve this using a transaction-log. Each clients saves all changes to the tree to a transaction-log (in addition to the local db of the tree which it also keeps), which it periodically syncs with the server. The log is just a list of entries with file->datablock-id's and a timestamp. When the log has been sent to the server it is removed from the client. Before uploading the log it also asks for logs written by other clients to the same tree. These logs are then merged into the local tree. The log itself will be stored on the server using Azure Blob Storage. The server can periodically remove old entries from the log (if it grows to big). This way the clients efficiently can communicate its' changes with each other while the server doesn't have to any expensive processing on each request.

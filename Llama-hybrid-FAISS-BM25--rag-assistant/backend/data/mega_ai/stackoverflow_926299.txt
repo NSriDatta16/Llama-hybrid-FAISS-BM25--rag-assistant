@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 926299
-[parent_id]: 
-[tags]: 
-Qt conflicting with GLee
-
-I'm adding OpenGL support to a game that is based on Qt 3 (office politics). The basics (QGLWidget, etc) work fine. To get to OpenGL extensions, I arbitrarily chose GLee (it compiled out of the box, GLew didn't). GLee.h and qgl.h don't play nicely together. AFAICT, each must be included before the other. I yanked the preprocessing checks [that make sure it's included first] out of GLee.h, inserted the preprocessing directives it uses before including the OpenGL headers, then included qgl.h first. On linux, it boils down to: #define __glext_h_ /* prevent glext.h from being included */ #define __glxext_h_ /* prevent glxext.h from being included */ #define GLX_GLXEXT_PROTOTYPES #include #include "GLee.h" // my hacked version That builds (no idea whether my code will actually run yet...this question's pre-emptive [i.e. I'm procrastinating]), but it seems like a horrible kludge. Googling has turned up a lot of people asking this basic question (though most of them haven't bothered figuring out the bogus compiler errors so they can see the root problem), but I haven't seen any actual answers. Is there a better (more elegant, portable, robust, etc) way to do this?

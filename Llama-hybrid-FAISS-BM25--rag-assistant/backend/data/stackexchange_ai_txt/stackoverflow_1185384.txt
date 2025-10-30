@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1185384
-[parent_id]: 1185021
-[tags]: 
-I took a look at the Qt source (v4.5, though I don't expect much difference between v4.4 and v4.5) for QAbstractItemView and QTreeView, and I don't think they support incremental lazy loading of child nodes. QAbstractItemView has no notion of trees, so it only calls fetchMore() on the top most index. It calls fetchMore() when: Geometry is updated The scroll bars are moved Rows are inserted The current item is changed as a result of an autoscrolling drag & drop operation QTreeView additionally calls fetchMore() when: An item is expanded (this is essentially the only time it calls fetchMore() with a non-root index) The view's layout needs to be relaid, such as with expandAll() and collapseAll() I think the best solution would be to subclass QTreeView to make it call fetchMore() in the appropriate places and with the appropriate indices.

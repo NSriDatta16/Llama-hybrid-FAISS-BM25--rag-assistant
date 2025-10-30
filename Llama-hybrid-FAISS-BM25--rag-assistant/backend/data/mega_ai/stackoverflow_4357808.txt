@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4357808
-[parent_id]: 4356083
-[tags]: 
-Delegation would definitely be a good route to follow. I would make a DataAgentDelegate protocol which contains an @required method called something like -(void)dataFetchComplete . It would all be implemented as follows: In DataAgent.h @interface DataAgent : NSObject { id delegate; } @property (nonatomic, retain) id delegate; In DataAgent.m - (void) fetchingComplete { if (delegate != nil) { [delegate dataFetchComplete]; } } In MovieView.h @interface MovieView : NSObject { //... } In MovieView.m - (void) startDataFetch { DataAgent *dataAgent = [[DataAgent alloc] init]; dataAgent.delegate = self; [dataAgent startFetching]; } - (void) dataFetchComplete { //render fetched assets in view } I can't think of any specific example programs for this, but it's a very common thing to do. Delegation comes in really handy when you're dealing with asynchronous events. I hope this helps!

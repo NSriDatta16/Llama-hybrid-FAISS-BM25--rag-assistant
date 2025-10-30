@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4400045
-[parent_id]: 4319459
-[tags]: 
-There's a known problem with prstat -m on Solaris in the way cpu usage figures are calculated - the value you see has been averaged over all threads (LWPs) in a process, and hence is far far too low for heavily multithreaded processes - such as your Java app servers, which can have hundreds of threads each (see your NLWP). Less than a dozen of them are probably CPU hogs hence the CPU usage by java looks "low". You'd need to call it with prstat -Lm to get the per-LWP (thread) breakdown to see that effect. Reference: http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6780169 Without further performance monitoring data it's hard to give non-speculative explanations of what you've seen there. I assume lock contention within java. One particular workload that can cause this is heavily multithreaded memory mapped I/O, they'll all pile up on the process address space lock. But it could be a purely java userside lock of course. A plockstat on one of the java processes, and/or simple dtrace profiling would be helpful.

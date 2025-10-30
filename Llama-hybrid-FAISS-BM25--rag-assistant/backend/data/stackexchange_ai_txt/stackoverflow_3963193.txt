@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3963193
-[parent_id]: 3960680
-[tags]: 
-Losing messages is normal with UDP - the transport layer does not guarantee order or delivery of datagrams. If you want them in order and/or always delivered, switch to TCP or implement sequencing and/or ack/timeout/retransmission yourself. To your example - the large messages are larger then normal ethernet MTU of 1500 minus eight bytes of UDP header (unless you are using jumbo frames) and thus will be fragmented by the sender. This puts more load onto both sender and receiver, but more on the receiver since it needs to keep fragments in kernel memory until the full datagram arrives. I doubt you are overflowing the receive buffer with 36030 bytes, but then I never do networking on Windows, so you better check the value of SO_RECVBUF socket option on the receiver as @Len suggests. Also check the output of netstat -s to see the dropped packet counts.

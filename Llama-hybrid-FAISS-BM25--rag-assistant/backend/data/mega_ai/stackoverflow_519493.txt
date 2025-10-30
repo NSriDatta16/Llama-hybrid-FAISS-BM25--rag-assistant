@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 519493
-[parent_id]: 459608
-[tags]: 
-We use SQLAlchemy with web.py and use hooks to create and close db connections per request. SQLAlchemy handles pooling, so not every connection is a tcp connection. The thread local storage you want to use is web.ctx ie. any time you access web.ctx you only see properties set by that thread. Our code looks something like this: def sa_load_hook(): web.ctx.sadb = Session() def sa_unload_hook(): web.ctx.sadb.close() web.loadhooks['sasession'] = sa_load_hook web.unloadhooks['sasession'] = sa_unload_hook Replace Session with your db connection function and it should work fine for you.

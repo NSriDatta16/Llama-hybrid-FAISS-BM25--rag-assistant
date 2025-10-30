@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1429645
-[parent_id]: 
-[tags]: 
-How to cast sockaddr_storage and avoid breaking strict-aliasing rules
-
-I'm using Beej's Guide to Networking and came across an aliasing issue. He proposes a function to return either the IPv4 or IPv6 address of a particular struct: 1 void *get_in_addr( struct sockaddr *sa ) 2 { 3 if (sa->sa_family == AF_INET) 4 return &(((struct sockaddr_in*)sa)->sin_addr); 5 else 6 return &(((struct sockaddr_in6*)sa)->sin6_addr); 7 } This causes GCC to spit out a strict-aliasing error for sa on line 3. As I understand it, it is because I call this function like so: struct sockaddr_storage their_addr; ... inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), connection_name, sizeof connection_name); I'm guessing the aliasing has to do with the fact that the their_addr variable is of type sockaddr_storage and another pointer of a differing type points to the same memory. Is the best way to get around this sticking sockaddr_storage , sockaddr_in , and sockaddr_in6 into a union? It seems like this should be well worn territory in networking, I just can't find any good examples with best practices. Also, if anyone can explain exactly where the aliasing issue takes place, I'd much appreciate it.

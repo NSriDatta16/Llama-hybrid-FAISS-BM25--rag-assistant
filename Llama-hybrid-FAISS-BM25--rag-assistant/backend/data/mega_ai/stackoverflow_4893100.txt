@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4893100
-[parent_id]: 4882271
-[tags]: 
-You've got a good eye for multithreading if you were able to determine that this is safe for up to two threads only. Don't let people discourage you from studying lock-free techniques. You could use InterlockedExchange instead of increment, which would remove the possible deadlock with >=2 threads. However, this algorithm is not lock-free programming at all, rather you are implementing your own lock. Of course this means you will run into many issues of performance and correctness that have already been solved by the library locking classes ( Monitor and friends). Here's what it would look like with Interlocked::Exchange // try to acquire lock while (0 != Interlocked::Exchange(Settings::canchange, 1)) { Thread::Sleep(50); } MemoryBarrierAcquire(); // update shared variables // flush cached writes MemoryBarrierRelease(); // unlock Settings::canchange = 0;

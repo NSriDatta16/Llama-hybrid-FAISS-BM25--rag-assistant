@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2614290
-[parent_id]: 2614113
-[tags]: 
-My exception classes generally don't have anything but the constructor and look along these lines: class MyEx: public std::runtime_error { public: MyEx(const std::string& msg, int line): std::runtime_error(msg + " on line " + boost::lexical_cast (line)) {} }; An arbitrary example, but it is the base class that handles managing the what() message. But if you want to, you can also only assign the base part of the exception object, after you've put together the message in the constructor body. #include #include #include class MyEx: public std::runtime_error { public: MyEx(const std::string& msg, int line): std::runtime_error("") { std::stringstream ss; ss (*this) = std::runtime_error(ss.str()); } }; #include int main() { try { throw MyEx("Evil code", __LINE__); } catch (const std::exception& e) { std::cout However, regarding the boost's guidelines, perhaps you should pay attention to the point that numeric data (positions and lines) might best be made available as numbers through other methods. The guidelines say to worry less about the what() message.

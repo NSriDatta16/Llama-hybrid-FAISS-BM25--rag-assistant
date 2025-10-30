@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2410716
-[parent_id]: 2409597
-[tags]: 
-First, you want to get the lowest storage id for the product(s). SELECT idproduct, MIN(idstorage) idstorage FROM product_storage WHERE quantity>0 AND idproduct IN (#, #, ...) GROUP BY idstorage idstorage, idproduct, added, quantity, price Then you can join on that query and the product_storage table (again), using the min storage ID, to get your product info with the correct pricing info. SELECT idproduct, name, description, tax, ps.price, ps.quantity, FROM product AS p JOIN (SELECT idproduct, MIN(idstorage) idstorage FROM product_storage WHERE quantity>0 AND idproduct IN (#, #, ...) GROUP BY idstorage) AS min_id ON p.idproduct=min_id.idproduct RIGHT JOIN product_storage AS ps ON ps.idstorage=min_id.idstorage WHERE idproduct IN (#, #, ...)

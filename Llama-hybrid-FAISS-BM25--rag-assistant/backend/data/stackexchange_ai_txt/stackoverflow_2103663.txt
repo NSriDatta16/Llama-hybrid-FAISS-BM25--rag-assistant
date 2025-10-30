@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2103663
-[parent_id]: 1972933
-[tags]: 
-I suggest you another possible solution. Perhaps less elegant, but easier! public class MyBean { @Size(min=6, max=50) private String pass; private String passVerify; @NotNull private LocalDate passExpiry; @NotNull private LocalDate dateOfJoining; @AssertTrue(message = "Fields `pass` and `passVerify` should be equal") // Any method name is ok als long it begins with `is` private boolean isValidPass() { //return pass == null && passVerify == null || pass.equals(passVerify); // Since Java 7: return Objects.equals(pass, passVerify); } @AssertTrue(message = "Field `passExpiry` should be later than `dateOfJoining`") // Other rules can also be validated in other methods private boolean isPassExpiryAfterDateOfJoining() { return dateOfJoining.isBefore(passExpiry); } } The isValid() and isPassExpiryAfterDateOfJoining() methods are invoked automatically by the validator. The property paths reported in the ConstraintViolation s will be extracted from the method names: valid and passExpiryAfterDateOfJoining .

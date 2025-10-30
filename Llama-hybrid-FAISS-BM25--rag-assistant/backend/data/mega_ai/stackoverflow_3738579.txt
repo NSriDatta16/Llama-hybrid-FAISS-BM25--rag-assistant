@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3738579
-[parent_id]: 3738362
-[tags]: 
-There are so many factors to consider that it's impossible to give a clear answer. The amount of memory on the machine, how fragmented it is, how fragmented it may become, etc. My suggestion is to just choose one and use it. If it causes problems switch. Chances are you aren't going to hit those edge cases anyway. If you are truly worried, then you could probably implement a sort of pseudo PIMPL: template class VectorDeque { private: enum TYPE { NONE, DEQUE, VECTOR }; std::deque m_d; std::vector m_v; TYPE m_type; ... public: void resize(size_t n) { switch(m_type) { case NONE: try { m_v.resize(n); m_type = VECTOR; } catch(std::bad_alloc &ba) { m_d.resize(n); m_type = DEQUE; } break; } } }; But this seems like total overkill. Have you done any benchmarking or tests? Do you have any reason to believe that memory allocations will fail or that deques will be too slow?

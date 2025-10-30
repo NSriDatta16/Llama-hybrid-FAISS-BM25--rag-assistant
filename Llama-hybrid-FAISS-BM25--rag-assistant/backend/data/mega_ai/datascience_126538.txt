@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 126538
-[parent_id]: 
-[tags]: 
-Annotated Transformer - Why x + DropOut(Sublayer(LayerNorm(x)))?
-
-Please clarify if the Annotated Transformer Encoder LayerNorm implementation is correct. Transformer paper says the output of the sub layer is LayerNorm(x + Dropout(SubLayer(x))) . LayerNorm should be applied after the DropOut(SubLayer(x)) as per the paper: However, the Annotated Transformer implementation does x + DropOut(SubLayer(LayerNorm(x))) where LayerNorm is applied before Sublayer , which is the other way around. class SublayerConnection(nn.Module): """ A residual connection followed by a layer norm. Note for code simplicity the norm is first as opposed to last. """ def __init__(self, size, dropout): super(SublayerConnection, self).__init__() self.norm = LayerNorm(size) self.dropout = nn.Dropout(dropout) def forward(self, x, sublayer): "Apply residual connection to any sublayer with the same size." return x + self.dropout(sublayer(self.norm(x))) #

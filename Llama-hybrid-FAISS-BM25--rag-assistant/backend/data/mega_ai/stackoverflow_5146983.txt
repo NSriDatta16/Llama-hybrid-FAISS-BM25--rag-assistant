@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5146983
-[parent_id]: 5144036
-[tags]: 
-Are you at liberty to change the schema? I think the problem would go away if you could use a composite primary key: name text not null, number integer not null, primary key (name, number) It then becomes the duty of the display layer to display Fred #0 as "Fred", Fred #1 as "Fred (1)", &c. If you like, you can create a view for this duty. Here's the data: => select * from foo; name | number --------+-------- Fred | 0 Fred | 1 Barney | 0 Betty | 0 Betty | 1 Betty | 2 (6 rows) The view: create or replace view foo_view as select *, case when number = 0 then name else name || ' (' || number || ')' end as name_and_number from foo; And the result: => select * from foo_view; name | number | name_and_number --------+--------+----------------- Fred | 0 | Fred Fred | 1 | Fred (1) Barney | 0 | Barney Betty | 0 | Betty Betty | 1 | Betty (1) Betty | 2 | Betty (2) (6 rows)

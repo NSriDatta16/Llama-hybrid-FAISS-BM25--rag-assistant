@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3851477
-[parent_id]: 
-[tags]: 
-Coldfusion cfchart stacked order
-
-I have a couple of queries which pull data for use in a graph. SELECT organisationName, count(messageID)*1000/listSize as msgCount FROM clusterReferrals WHERE datecreated>#refRateStartDate# AND refTypeID=3 GROUP BY organisationName, listSize SELECT organisationName, count(messageID)*1000/listSize as msgCount FROM clusterReferrals WHERE datecreated>#refRateStartDate# AND refTypeID<>3 GROUP BY organisationName, listSize The graph code is this gives me the following graph How do I get the data displayed sorted by the total of the stacked elements? @ Ben That got me on the right track, I didnt previously know QOQ could combine 2 completely different queries SELECT organisationName, count(messageID)*1000/listSize as privateRate FROM allReferrals WHERE datecreated>#refRateStartDate# AND refTypeID=3 GROUP BY organisationName, listSize SELECT organisationName, count(messageID)*1000/listSize as nhsRate FROM allReferrals WHERE datecreated>#refRateStartDate# AND refTypeID<>3 GROUP BY organisationName, listSize select clusterPrivateReferrals.privateRate, clusterNHSReferrals.nhsRate, clusterPrivateReferrals.organisationName, (clusterPrivateReferrals.privateRate + clusterNHSReferrals.nhsRate) as totalRate from clusterPrivateReferrals, clusterNHSReferrals WHERE clusterNHSReferrals.organisationName = clusterPrivateReferrals.organisationName order by totalRate desc

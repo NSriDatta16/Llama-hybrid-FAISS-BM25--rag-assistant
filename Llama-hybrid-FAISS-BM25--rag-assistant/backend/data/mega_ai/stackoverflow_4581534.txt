@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4581534
-[parent_id]: 
-[tags]: 
-Large scale storage for incrementally-appended documents?
-
-I need to store hundreds of thousands (right now, potentially many millions) of documents that start out empty and are appended to frequently, but never updated otherwise or deleted. These documents are not interrelated in any way, and just need to be accessed by some unique ID. Read accesses are some subset of the document, which almost always starts midway through at some indexed location (e.g. "document #4324319, save #53 to the end"). These documents start very small, at several KB. They typically reach a final size around 500KB, but many reach 10MB or more. I'm currently using MySQL (InnoDB) to store these documents. Each of the incremental saves is just dumped into one big table with the document ID it belongs to, so reading part of a document looks like "select * from saves where document_id=14 and save_id > 53 order by save_id", then manually concatenating it all together in code. Ideally, I'd like the storage solution to be easily horizontally scalable, with redundancy across servers (e.g. each document stored on at least 3 nodes) with easy recovery of crashed servers. I've looked at CouchDB and MongoDB as possible replacements for MySQL, but I'm not sure that either of them make a whole lot of sense for this particular application, though I'm open to being convinced. Any input on a good storage solution?

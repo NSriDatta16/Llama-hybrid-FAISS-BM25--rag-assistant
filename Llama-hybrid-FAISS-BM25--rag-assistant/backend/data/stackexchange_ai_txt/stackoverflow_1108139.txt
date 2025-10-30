@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1108139
-[parent_id]: 1108050
-[tags]: 
-It's worth noting that in the first case they're only functionally equivalent when you're doing nothing within the catch block. Otherwise, consider this: try { foo(); } catch (IOException) { throw new ArgumentException(); // Bubbles up to caller } catch (ArgumentException) { Console.WriteLine("Caught"); } vs try { try { foo(); } catch (IOException) { throw new ArgumentException(); // Caught by other handler } } catch (ArgumentException) { Console.WriteLine("Caught"); } Now in this case the difference is obvious, but if the catch block calls some arbitrary method, how is the JIT meant to know what might be thrown? Best to be cautious. That leaves us with the option of the JIT performing optimisations for empty catch blocks - a practice which is strongly discouraged in the first place. I don't want the JIT to spend time trying to detect bad code and make it run very slightly faster - if indeed there's any performance difference in the first place.

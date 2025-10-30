@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1298085
-[parent_id]: 1295996
-[tags]: 
-UPDATE: Now that I go to check this properly it doesn't work. Trying to set the process group fails with this error; EPERM "The effective user ID of the requested process is different from that of the caller and the process is not a descendant of the calling process." There is a more recent thread on this issue but no easy solution as far as I can tell http://www.omnigroup.com/mailman/archive/macosx-dev/2009-March/062164.html I've tried a suggestion by Robert Pointon on Cocoadev in my app. I haven't got around to testing it yet though. http://www.cocoadev.com/index.pl?NSTaskTermination The idea is to set the process group of the task to be the same as that of the process that launches the task (note: the code below is basically lifted from the thread above). pid_t group = setsid(); if (group == -1) { group = getpgrp(); } [task launch]; if (setpgid([task processIdentifier], group) == -1) { NSLog(@"unable to put task into same group as self"); [task terminate]; } else { // handle running task }

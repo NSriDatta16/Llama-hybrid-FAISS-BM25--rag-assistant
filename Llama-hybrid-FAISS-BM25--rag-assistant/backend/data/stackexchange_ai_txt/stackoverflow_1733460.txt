@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1733460
-[parent_id]: 
-[tags]: 
-MySQL integer unsigned arithmetic problems?
-
-Does MySQL (5.0.45) like to do strange internal typecasts with unsigned maths? I am storing integers unsigned but when selecting basic arithmetic I get outrageous numbers: mysql> create table tt ( a integer unsigned , b integer unsigned , c float ); Query OK, 0 rows affected (0.41 sec) mysql> insert into tt values (215731,216774,1.58085); Query OK, 1 row affected (0.00 sec) mysql> select a,b,c from tt; +--------+--------+---------+ | a | b | c | +--------+--------+---------+ | 215731 | 216774 | 1.58085 | +--------+--------+---------+ 1 row in set (0.02 sec) mysql> select (a-b)/c from tt; +---------------------+ | (a-b)/c | +---------------------+ | 1.1668876878652e+19 | +---------------------+ 1 row in set (0.00 sec) mysql> -- WHAT? mysql> select a-b from tt; +----------------------+ | a-b | +----------------------+ | 18446744073709550573 | +----------------------+ 1 row in set (0.02 sec) I assume this has to do with the fact that the subtraction is negative and thus it is trying to map the results into an unsigned and overflowing? I can solve this apparently by changing everything to signed, but I'd prefer to have a little more positive space with my 32-bit integers. I have not run into this before on MySQL and I'm pretty certain I've done lots with unsigned MySQL arithmetic; is this a common problem?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 638037
-[parent_id]: 637855
-[tags]: 
-Ok, I should have thought of this earlier. Both XmlTextReader (which gives us the Encoding) and XmlReader.Create (which allows us to specify encoding) accepts a Stream. So how about first opening a FileStream and then use this with both XmlTextReader and XmlReader, like this: using (var txtreader = new FileStream(filepath, FileMode.Open)) { using (var xmlreader = new XmlTextReader(txtreader)) { // Read in the encoding info xmlreader.MoveToContent(); var encoding = xmlreader.Encoding; // Rewind to the beginning txtreader.Seek(0, SeekOrigin.Begin); var settings = new XmlReaderSettings { NameTable = new NameTable() }; var xmlns = new XmlNamespaceManager(settings.NameTable); var context = new XmlParserContext(null, xmlns, "", XmlSpace.Default, encoding); using (var reader = XmlReader.Create(txtreader, settings, context)) { return XElement.Load(reader); } } } This works like a charm. Reading XML files in an encoding independent way should have been more elegant but at least I'm getting away with only one file open.

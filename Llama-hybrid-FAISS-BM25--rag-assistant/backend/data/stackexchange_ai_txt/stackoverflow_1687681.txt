@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1687681
-[parent_id]: 1680500
-[tags]: 
-As node_page_default() calls db_rewrite_sql() on the query, you might try implementing hook_db_rewrite_sql() in a custom module to add your additional restriction. I do not recommend this , as you'd need to somehow recognize the original query in your hook implementation, and this would be fragile - other modules might rewrite it also, and it could change anytime with an update, thus breaking your change. Alternatively, you could create your own version of node_page_default() by copying it to a custom module, modifying it as you need (don't forget to rename) and then implement hook_menu_alter() to swap the original page callback to node_page_default on the 'node' path with your customized version. (You could also register your own frontpage path using your customized callback via hook_menu() and adjust your frontpage setting to point to that one.) But in case you already use the views module in your site, I'd recommend saving all this work and just enabling the provided override for the frontpage view, adjusting its filter settings accordingly.

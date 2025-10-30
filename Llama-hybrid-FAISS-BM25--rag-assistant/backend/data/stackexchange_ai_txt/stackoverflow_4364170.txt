@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4364170
-[parent_id]: 4362751
-[tags]: 
-If you don't want the parameter to be shown in the address bar you will need to persist it somewhere on the server between the redirects. A good place to achieve this is TempData . Here's an example: public ActionResult Index() { TempData["nickname"] = Person.nickname; return RedirectToAction("profile", "person"); } And now on the Profile action you are redirecting to fetch it from TempData : public ActionResult Profile() { var nickname = TempData["nickname"] as string; if (nickname == null) { // nickname was not found in TempData. // this usually means that the user directly // navigated to /person/profile without passing // through the other action which would store // the nickname in TempData throw new HttpException(404); } return View(); } Under the covers TempData uses Session for storage but it will be automatically evicted after the redirect, so the value could be used only once which is what you need: store, redirect, fetch.

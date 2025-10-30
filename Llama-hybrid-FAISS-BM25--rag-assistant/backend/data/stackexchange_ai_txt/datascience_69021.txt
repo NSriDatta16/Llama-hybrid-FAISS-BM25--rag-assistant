@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 69021
-[parent_id]: 
-[tags]: 
-Training pipelines where featurization/NLP is more expensive than backprop
-
-I'm working on a document classification project and I'm using a neural net in tensorflow, where the features are 300-dimensional word embeddings, either from fastext or word2vec (yes I know that there are newer better embeddings -- this is for backwards compatibility). Each of the documents is very long -- 3000+ tokens. Featurization involves tokenizing the document, embedding it, and stacking the embeddings into an array of dimension batchsize, max_doc_length, features . It takes more than 5x as long to make a batchfile (on a CPU) as it does to do one iteration of backprop (also on a CPU). My problem would be worse on a GPU, if backprop went faster. My batches are almost 1GB in size, so I'd use almost a whole TB if I were to write everything to disk before starting backprop. That's too much, especially given that I want to try different featurization strategies. So, what are some good solutions to this problem? Are there software packages that are designed to solve this problem? Right now I've got two processes going in parallel -- one that makes batches and saves them to the disk (in parallel) and the other which loads them, uses them for backprop, then deletes them. It feels sort of janky, and I can't be the first person who has faced this issue. Suggestions appreciated!

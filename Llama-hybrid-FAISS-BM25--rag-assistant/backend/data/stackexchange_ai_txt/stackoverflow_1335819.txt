@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1335819
-[parent_id]: 
-[tags]: 
-MySQL SELECT runs forever when join is changed
-
-I have the following SQL code: select val.PersonNo, val.event_time, clg.number_dialed from vicidial_agent_log val join call_log clg on date_add('1970-01-01 02:00:00', interval clg.uniqueid second) = val.event_time order by val.event_time desc limit 100; which executes and returns rows in less than 1 second. However, if I change the straight join to a left outer : select val.PersonNo, val.event_time, clg.number_dialed from vicidial_agent_log val left outer join call_log clg on date_add('1970-01-01 02:00:00', interval clg.uniqueid second) = val.event_time order by val.event_time desc limit 100; the query runs forever and uses ~100% of the server's CPU. I ran explain on both queries and the first hits the event_time index on vicidial_agent_log , while the second ignores all indexes. There is an index on call_log.uniqueid . vicidial_agent_log contains ~41,000 rows, call_log contains ~43,000. So my question is - why is MySQL not hitting the indexes I've defined, is there any way to force it to do so, and if not, how can I make this query run at an acceptable speed? edit Full solution: select val.PersonNo, val.event_time, cl.number_dialed from vicidial_agent_log val left outer join (select date_add('1970-01-01 02:00:00', interval clg.uniqueid second) as 'converted_date', number_dialed from call_log clg) cl ON cl.converted_date = val.event_time order by val.event_time desc limit 100;

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5471506
-[parent_id]: 
-[tags]: 
-Counting and appending filtered related objects in Django
-
-I am trying to count the number of objects with have a foreign key relationship to another object, and which have the flag deleted=0. User 's have a foreignkey relationship to Accounts in the models: class Account(models.Model): ... def __unicode__(self): return self.organisation class User(models.Model): ... account = models.ForeignKey("Account", null=True, blank=True) deleted = models.BooleanField(blank=False) In the views , for each account I would like to show the number of users who are attached to the account, which also have deleted=0. Here's the best I could do: @login_required def accounts(request): try: accounts = Account.objects.all().filter(deleted=0) users = User.objects.all().filter(deleted=0) except: raise Http404 account_users = {'a':'a'} for account in accounts: account_users[account.id] = User.objects.all().filter(deleted=0).filter(account = account.id) variables = RequestContext(request, { 'accounts':accounts, 'users':users, 'account_users':account_users, }) return render_to_response('accounts/accounts.html', variables) In the above, I'm using a dictionary which contains account.id => non-deleted user count . The problem with this is I can't iterate over the dictionary key in the template... Thanks for any help.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3165550
-[parent_id]: 3164800
-[tags]: 
-Your observer waits for a shipment to get saved, then saves a shipment, which causes it to receive another event (yadda yadda ad nauseum). You will need a way to either escape the loop or not have to save a shipment. Can you move your event onto sales_order_shipment_save_before and then allow the normal shipment saving to take effect, or do you need the shipment to already have been saved to do your part of the logic? If so, change the following line on your observer so that Magento uses it as a singleton: singleton // changed from model Then, create a variable in your class to track whether you've recursed yet. If so, then just return. Alternatively, you could check to see if there are any tracking numbers already on the shipment and only save if there are not (and you add one). That will kill the recursion as well. Let me know if one of those works for you. Thanks, Joe

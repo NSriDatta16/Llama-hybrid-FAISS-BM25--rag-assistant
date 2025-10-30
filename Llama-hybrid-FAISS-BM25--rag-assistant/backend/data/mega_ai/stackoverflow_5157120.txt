@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5157120
-[parent_id]: 
-[tags]: 
-phpunit doesn't throw exception
-
-phpunit test: public function testSizeOver64K() { try { $this->login(); $scriptname = 'test script4'; $this->fixture->installScript($scriptname, $this->scripts[$scriptname]); } catch (Exception $expected) { return; } $this->fail('An expected exception has not been raised.'); } Functions methods it calls function installScript($scriptname, $script, $makeactive = false) { $this->cmdPutScript($scriptname, $script); if ($makeactive) $this->cmdSetActive($scriptname); return true; } private function cmdPutScript($scriptname, $scriptdata) { if (self::STATE_TRANSACTION != $this->state) { $msg = 'Not currently in TRANSACTION state'; $code = 1; throw new Exception($msg, $code); } $stringLength = $this->getLineLength($scriptdata); $this->doCmd(sprintf("PUTSCRIPT \"%s\" {%d+}\r\n%s", $scriptname, $stringLength, $scriptdata)); return true; } private function getLineLength($string) { if (extension_loaded('mbstring') || @dl(PHP_SHLIB_PREFIX.'mbstring.'.PHP_SHLIB_SUFFIX)) { $lenght = mb_strlen($string,'8bit'); if ( $lenght > 65536 ) { $msg = "Script is over 64K"; throw new Exception($msg); } return $lenght; } else { $lenght = strlen($string); if ( $lenght > 65536 ) { $msg = "Script is over 64K"; throw new Exception($msg); } return $lenght; } } Can someone give tips why phpunit doesnt catch the exception?

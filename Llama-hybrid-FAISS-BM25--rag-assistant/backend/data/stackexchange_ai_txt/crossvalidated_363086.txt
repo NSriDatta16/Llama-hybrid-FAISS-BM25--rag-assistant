@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 363086
-[parent_id]: 
-[tags]: 
-How do we train variational autoencoders in practice?
-
-I learnt that the objective function of a VAE is given by the RHS of the equation $$\ln p(x_n)-KL(q(z|x_n)\Vert p(z|x_n)) = \Bbb E_{z \sim q(z|x_n)}(\ln p(x_n|z))-KL(q(z|x_n) \Vert p(z))$$ in which $x_n$ is a training example. $p(z|x_n)$ is the posterior distribution, $p(z)$ is the prior over latent variable $z$. $q(z|x_n)$ is the model distribution (which is usually made gaussian) that is used to approximate the posterior. Based on the objective function, I thought a VAE is trained by using SGD. Given a training example $x_n$, we can update the model parameter $\theta$ by $$\frac{\partial}{\partial_\theta}(\Bbb E_{z \sim q(z|x_n)}(\ln p(x_n|z))-KL(q(z|x_n) \Vert p(z)))$$ But I think this training process will be very slow. For each training example, we need to sample from the distribution $q(z|x_n)$. As a result, the optimization of both decoder $p(x_n|z)$ and encoder $q(z|x_n)$ will be entangled because of the expectation $\Bbb E_{z \sim q(z|x_n)}(\ln p(x_n|z))$. In practice, can we optimize this objective function instead? $$\ln p(x_n|z))-KL(q(z|x_n) \Vert p(z))$$ which means we only sample from $q(z|x_n)$ once, and thus we have only one reconstruction $x$. Given this objective, we can optimize encoder (the KL divergence) and decoder (the log likelihood) separately.

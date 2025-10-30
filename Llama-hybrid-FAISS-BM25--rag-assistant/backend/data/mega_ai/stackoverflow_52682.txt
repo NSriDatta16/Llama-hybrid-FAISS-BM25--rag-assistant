@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 52682
-[parent_id]: 52353
-[tags]: 
-You can use the java.lang.instrument package . Compile and put this class in a JAR: import java.lang.instrument.Instrumentation; public class ObjectSizeFetcher { private static Instrumentation instrumentation; public static void premain(String args, Instrumentation inst) { instrumentation = inst; } public static long getObjectSize(Object o) { return instrumentation.getObjectSize(o); } } Add the following to your MANIFEST.MF : Premain-Class: ObjectSizeFetcher Use the getObjectSize() method: public class C { private int x; private int y; public static void main(String [] args) { System.out.println(ObjectSizeFetcher.getObjectSize(new C())); } } Invoke with: java -javaagent:ObjectSizeFetcherAgent.jar C

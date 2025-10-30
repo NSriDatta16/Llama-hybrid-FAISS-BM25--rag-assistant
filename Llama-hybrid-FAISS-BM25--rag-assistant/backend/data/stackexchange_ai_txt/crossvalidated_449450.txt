@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 449450
-[parent_id]: 
-[tags]: 
-Bayesian Multiple Regression
-
-I am trying to fit a model that has multiple parameters to experimental data. I can do this pretty easily only considering one parameter, but when I have multiple, I am having trouble. Here is my code: def model_a(x,params): y = params[0] + x*params[1] + params[2]*x**2 return y def model_b(x,params): y = params[0]*(np.exp(-0.5*(x-params[1])**2/params[2]**2)) return y def log_likelihood(x,y,sigma,params,bool_mod): log_like = np.zeros(len(params[0])) if bool_mod == True: for xx,yy,ss in zip(x,y,sigma): log_like += -0.5*((((model_a(xx,params))-yy)**2)/(ss**2)) else: for xx,yy,ss in zip(x,y,sigma): log_like += -0.5*((((model_b(xx,params))-yy)**2)/(ss**2)) return log_like def post(x,y,sigma,bool_mod,n): params = [np.random.uniform(-2,2,n),np.random.uniform(-20,30,n),np.random.uniform(0,1,n)] log_like = log_likelihood(x,y,sigma,params,bool_mod) norm = np.trapz(log_like,params) return params, log_like, norm params, log_like, norm = post(x,y,sigma_y,True,1000) best_index = np.argmax(log_like) print(params[0][best_index],params[1][best_index],params[2][best_index]) So, I'm not sure if this is the right way to approach a multiple variable regression. Mainly, I'm having doubts whether I should define my parameters as random numbers.

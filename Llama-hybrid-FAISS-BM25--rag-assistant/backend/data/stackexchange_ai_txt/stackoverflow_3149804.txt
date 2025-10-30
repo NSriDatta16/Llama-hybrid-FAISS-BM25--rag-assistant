@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3149804
-[parent_id]: 
-[tags]: 
-Generic type parameter constraint based on other type parameter in the same definition
-
-I have type hierarchy defined like this: interface IMyClass { } interface IBase1 { } interface IBase2 { } interface IMyDerived1 : IBase1 { } class Base1 : IBase1 where U : IBase2 { } class Base2 : IBase2 where U : IBase1 { } class Derived1 : Base1 , IMyDerived1 where T : IMyClass where U : IBase2 { } class Derived2 : Base2 where T : IMyClass where U : IMyDerived1 { } but Visual Studio 2008 (.net 3.5 SP1) says that parameter U in parent specifier of Derived2 (marked with *) is not convertible to IBase1 . Is this solvable? EDIT: It indeed looks like generics overuse but allows Base1,2 and Derived1,2 to apply operations on supplied types without a casts. Something like this: class MyClass : IMyClass {} class MySpecific1 : Derived1 { // use inherited properties and methods of type MyClass here // use properties of MySpecific2 returning MyClass without casts } class MySpecific2 : Derived2 { // use inherited properties and methods of type MyClass here // use properties of MySpecific1 returning MyClass without casts } Probably this can be solved more elegantly with variance in .net4 but I'm stuck with 3.5 for now.

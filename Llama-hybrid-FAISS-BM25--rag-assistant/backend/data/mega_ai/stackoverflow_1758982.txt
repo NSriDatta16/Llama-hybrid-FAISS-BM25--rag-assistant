@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1758982
-[parent_id]: 1757689
-[tags]: 
-It sounds like your concern is that you don't want to pay the time- or memory- cost to spin up the rails stack every time your task needs to be run? If you plan on keeping the daemon running full-time, as you say, you can just daemonize a process that has loaded your rails stack and will only have to pay that memory- or time-related penalty for loading the stack one time, when the daemon starts up. Async_worker is a good example of this sort of pattern: It uses beanstalk to pass messages to one or more worker processes that are each just daemons that have loaded the full rails stack. One thing you have to pay attention to when doing this is that you'll need to restart your daemonized processes upon a deploy so they can reload your updated rails stack. I'm using this for a url-shortener app (the single async worker process I have running sits around waiting to save referral data after the visitor gets redirected), and it works well, I just have an after:deploy capistrano task that restarts any async worker(s).

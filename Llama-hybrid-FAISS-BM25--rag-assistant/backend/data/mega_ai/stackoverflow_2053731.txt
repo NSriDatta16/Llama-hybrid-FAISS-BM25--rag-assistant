@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2053731
-[parent_id]: 
-[tags]: 
-Is this a safe version of double-checked locking?
-
-Here's an idea I just came up with for a safe, efficient way of handling Singleton synchronization issues. It's basically double-checked locking, but with a twist that involves thread-local storage. In Java/C#/D-style pseudocode, assuming __thread denotes thread-local storage for static variables: class MySingleton { __thread static bool isInitialized; static MySingleton instance; static MySingleton getInstance() { if(!isInitialized) { synchronized { isInitialized = true; if(instance is null) { instance = new MySingleton(); } } } return instance; } } This is guaranteed to only enter the synchronized block once per thread throughout the entire life of the program. From that point forward, we get a simple check of a thread-local bool to see whether we've already entered the synchronized block and verified that the object is initialized from this thread.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 352530
-[parent_id]: 352389
-[tags]: 
-There are three types of average, and what you are originally using is the mean - the sum of all the values divided by the number of values. You might find it more useful to get the mode - the most frequently occuring value: select name, (select top 1 h.run_duration from sysjobhistory h where h.step_id = 0 and h.job_id = j.job_id group by h.run_duration order by count(*) desc) run_duration from sysjobs j If you did want to get rid of any values outside the original standard deviation, you could find the average and the standard deviation in a subquery, eliminate those values which are outside the range : average +- standard deviation, then do a further average of the remaining values, but you start running the risk of having meaningless values: select oh.job_id, avg(oh.run_duration) from sysjobhistory oh inner join (select job_id, avg(h.run_duration) avgduration, stdev(h.run_duration) stdev_duration from sysjobhistory h group by job_id) as m on m.job_id = oh.job_id where oh.step_id = 0 and abs(oh.run_duration - m.avgduration)

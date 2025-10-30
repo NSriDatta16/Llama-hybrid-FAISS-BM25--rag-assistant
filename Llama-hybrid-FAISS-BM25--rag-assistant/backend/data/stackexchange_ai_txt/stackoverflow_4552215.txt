@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4552215
-[parent_id]: 4549375
-[tags]: 
-InnoDB has the same 64K limit for row size. It also limits row sizes to half the page size, but that does not include varbinary, varchar, blob, or text columns. By default, InnoDB's page size is 16K, so that's where you end up with the 8K limit. But you should be fine for the conversion since your columns are varchar. However, if you are not using the InnoDB Plugin, the row storage format used (" compact ") may be inefficient, as the varchar content beyond 768 bytes is stored in supplemental 16K pages, and those 4 extra pages in your case (ceil(60/16)) may be stored anywhere in the InnoDB pool (not a problem if your dataset fits in the InnoDB buffer pool). I would use the InnoDB Plugin's Dynamic row format. Be aware that the conversion of large tables takes a long time. Try converting a backup on your development machine first.

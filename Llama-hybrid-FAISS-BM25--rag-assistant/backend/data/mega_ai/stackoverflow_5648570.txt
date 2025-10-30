@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5648570
-[parent_id]: 5648279
-[tags]: 
-You can do this using raw sql: def my_custom_sql(m): from django.db import connection, transaction cursor = connection.cursor() # Data retrieval operation - no commit required command = """SELECT * FROM tX INNER JOIN tY ON (tX.n=tY.n AND tY.m=%s)""" cursor.execute(command % str(m)) rows = cursor.fetchall() return rows using the ORM, i think you can do this using values_list and the in filter: class X(models.Model): n = models.IntegerField() class Y(models.Model): n = models.IntegerField() m = models.IntegerField() xs = X.objects.filter(n__in=Y.objects.filter(m=m).values_list('n')).distinct() edit: As noted in the comments this method will hit the db a lot

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 181166
-[parent_id]: 
-[tags]: 
-Non-negative forecasts with missing data and clustering
-
-I have a data set of deposits and withdrawals from bank locations, so each record includes a bank identifier, date stamp, number of deposits, and number of withdrawals. I have included reproducible code below. Note that I have hundreds of days for each of thousands of agents. I have a few questions: I would like to use the forecast package, but I'd like it to take into account day of week patterns and month of year seasonality. The one worry I have about using the "frequency" flag is that I have some randomly missing days for each agent. How should I best deal with this? Deposits and withdrawals cannot be negative so all of the data is non-negative. Can I force the forecast to be non-negative? I know I can use the lambda=0 flag, but this only works when everything is strictly positive (but not applicable in this case because deposits and withdrawals can be zero) Is there anything I can do to increase predictive accuracy by "clustering" banks? Right now, I'm only using a particular bank's data, but given that I have data from thousands of more banks, perhaps I can take advantage of this? library(lubridate) library(dplyr) library(forecast) Date = c(today()-1, today()-3, today()-4, today()-5) %>% as.POSIXct D = c(10,3,4,3) W = c(13,2,4,4) Bank = c(rep(1,4), rep(2,4)) A = cbind(Date,D,W) %>% as.data.frame A$Date = A$Date %>% as.POSIXct(origin="1970-01-01") B = A B$D = B$D - 1 B$W = B$W + 3 A = A %>% rbind(B) A = A %>% cbind(Bank,.)

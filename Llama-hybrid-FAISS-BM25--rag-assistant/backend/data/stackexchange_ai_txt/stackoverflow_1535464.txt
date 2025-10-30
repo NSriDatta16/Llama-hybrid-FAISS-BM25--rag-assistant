@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1535464
-[parent_id]: 1530758
-[tags]: 
-If you wanted to avoid writing your own custom model binder, one thing you could resort to is a "pseudo-property" of sorts, to trick the DefaultModelBinder into doing what you want. For example, public class SomeEntity { private List _Things; public IEnumerable Things { get { return _Things; } } public string MvcThings { set { _Things = value .Split(',') .Select(e => int.Parse(e.Trim())) .ToList(); } get { return String.Join(", ", _Things.Select(e => e.ToString()).ToArray()); } } } You can then refer to MvcThings (as a comma-separated string) in your HTML form field and your action method parameter. Your model, on the other hand, can work with its preferred IEnumerable . Note that my particular LINQ may not be the most terribly elegant, but this should give you the idea. You would also want to watch out for an exception on the int.Parse, but this can be further validated/refined as needed. Good luck!

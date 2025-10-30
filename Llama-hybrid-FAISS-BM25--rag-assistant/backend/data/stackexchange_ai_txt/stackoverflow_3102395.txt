@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3102395
-[parent_id]: 3102009
-[tags]: 
-We have a util class containing a static session that is only initialised once. Retrieval of the session is used by every DAO in the system via a static method getBoundSession(). The application runs 24/7. Is this a common design? Not it's not. The most common pattern in a multi-user client/server application is session-per-request and a session-per-application approach in a multi-user application is not only an anti-pattern, it's totally wrong: A Session is not thread-safe. You should rollback a transaction and close the Session after an Hibernate exception if you want to keep object state and database in sync. The Session will grow indefinitely if keep it open too long. You really need to read the whole Chapter 11. Transactions and Concurrency . On the flip side I can't find a way to achieve the above benefits (particularly the first) with a different design. Either use the OSIV (Open Session In View) pattern or load explicitely what you need per flow. And if you want to benefit from global caching, use the second level cache.

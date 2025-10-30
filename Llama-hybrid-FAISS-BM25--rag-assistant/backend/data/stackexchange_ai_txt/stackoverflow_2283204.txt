@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2283204
-[parent_id]: 2277463
-[tags]: 
-Like applets, JNLP (webstart) runs at client machine, not at server machine. The client downloads the program from a webpage and runs it at local machine. Any references in java.io stuff will point to the local disk file system (there where the code runs), not the remote disk file system (there where the code is been downloaded from) as you seem to expect. You have 2 options: Pack the image in the JAR and use ClassLoader#getResourceAsStream() instead to obtain an InputStream from it. ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); BufferedImage image = ImageIO.read(classLoader.getResourceAsStream("add2.png")); Put the image in public location in the webserver, so that you can access it by URL (is only a tad slower than having in classpath). BufferedImage image = ImageIO.read(new URL("http://example.com/add2.png")); That said, regardless of all, using relative paths instead of absolute paths in java.io stuff is a bad idea. Never do this. It will be dependent on the current working directory, which you have no control over.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1262733
-[parent_id]: 1262406
-[tags]: 
-From StgCreateStorage's signature and documentation, I don't think you're supposed to be creating a buffer like that for it, you just need a reference to a pointer so that StgCreateStorage can set the value to the created object. (void**) can be interperated as ref object where object == (void*) I think the key problem here that is causing the access violation is that riid is REFID which is a typedef for (IID*) and thus should be ref Guid , the pinvoke should be able to handle this using: [DllImport("ole32.dll")] public static extern UInt32 StgCreateStorageEx( [MarshalAs(UnmanagedType.LPWStr), In] string pwcsName, int grfMode, int stgfmt, uint grfAttrs, [In] IntPtr pStgOptions, [In] IntPtr reserved2, [In] ref Guid riid, [MarshalAs(UnmanagedType.IUnknown), Out] out object ppObjectOpen);

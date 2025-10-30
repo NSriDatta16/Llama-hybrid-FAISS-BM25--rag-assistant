@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2002798
-[parent_id]: 1422012
-[tags]: 
-jorel: In addition to the initial issue of defining the realm/KDC, the NamingException you're getting is described on in the error message---your LDAP server "blah.xxx.com" doesn't allow anonymous binds, and tomcat is trying to run a search without binding. If you want LDAP to be searched using the user's credentials, then the problem is that it isn't forwarding the credentials along to LDAP. I'm not yet familiar with how this stuff works inside Java, but there's a couple possible causes: Tomcat isn't requesting a ticket which can be forwarded/delegated. The client isn't providing such a ticket. See: http://publib.boulder.ibm.com/infocenter/ltscnnct/v2r0/index.jsp?topic=/com.ibm.connections.25.help/t_install_kerb_edit_browsers.html for the relevant browser config. Tomcat isn't trying to do a SASL bind to the LDAP server using the properly requested/given ticket. If you're trying to search using the connectionName DN as a bindDN, then check for failures on the LDAP server---i.e. "Invalid credentials" (user/pass incorrect) or ACL issues.

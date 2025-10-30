@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3629778
-[parent_id]: 3629348
-[tags]: 
-For this kind of problems you can always try the following solutions: 1) optimize the query: look at the query plan, create some indexes, defrag the existing ones, run the query when the server is free, etc 2) create a cache table. To populate the cache table chose one of the following strategies: 1) use triggers on the tables that affects the result and on insert,update,delete refresh the cache table. The trigger should run very, very, very fast. Other condition is to not block any records ( otherwise you will end up in a deadlock if the server is busy ) 2) populate the cache table with a job once per day/hour/etc 3) one solution that I like is to populate the cache by a SP when the result is needed ( ex: when the report is requested by the user ) and to use some logic to serialize the process ( only one user at one time can generate the cache ) plus some optimization to not recompute the same rows next time ( ex: if no row was added for the yesterday, and in cache I have the result for yesterday, I don't recalculate that value - calculate only the new values from the last run )

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2500389
-[parent_id]: 2493841
-[tags]: 
-Well, those pragmas just prioritize the tasks on your system, they don't guarantee any kind of mutual-exclusion on those variables. There may be some systems where that is enough. However, most Ada implementations these days map Ada tasks to OS threads, and most consumer PC's these days have multiple processors and can spilt their threads among them. There's nothing stopping the OS from scheduling the next lower-priority thread on your second processor while the highest priority thread is running. This kind of behavior in a program is called a "race condition". If you want mutual-exlusion on those variables, you need to implement that. Either give control of the variables to one task and use rendezvous to modify them from other tasks, or look into putting them into protected objects . I'd suggest the latter, as rendezvous can be much more difficult to get right. However, if you want to order the calls in a specific way, a master controller task calling rendezvous on the other tasks might be the way to go.

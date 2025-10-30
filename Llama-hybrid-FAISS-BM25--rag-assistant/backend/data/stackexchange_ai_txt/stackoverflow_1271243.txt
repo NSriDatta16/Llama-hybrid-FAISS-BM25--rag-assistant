@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1271243
-[parent_id]: 1271220
-[tags]: 
-It appears that you probably want to use GetWindowLongPtr instead, and change the return value to a long . This method uses a different return type of LONG_PTR, which sounds like what you are looking for. GetWindowLong http://msdn.microsoft.com/en-us/library/ms633584(VS.85).aspx LONG GetWindowLong( HWND hWnd, int nIndex ); GetWindowLongPtr http://msdn.microsoft.com/en-us/library/ms633585(VS.85).aspx LONG_PTR GetWindowLongPtr( HWND hWnd, int nIndex ); According to MSDN if you are running 64-bit Windows you need to use GetWindowLongPtr , because GetWindowLong only uses a 32-bit LONG, which would give you negative values after it reached the end of the 32-bit LONG. Plus it sounds like GetWindowLong has been superseded by GetWindowLongPtr , so it is probably the right way to go for future development. This is the import you should use to return the value from GetWindowLongPtr . [DllImport("user32.dll")] static extern long GetWindowLongPtr(IntPtr hWnd, int nIndex); .NET uses 64-bit long s regardless of the platform.

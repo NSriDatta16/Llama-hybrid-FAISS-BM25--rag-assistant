@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2647174
-[parent_id]: 2646478
-[tags]: 
-You are getting a segmentation fault which means that your program is attempting to access a memory address that has not been assigned to its process. The array a is a local variable and thus allocated memory from the stack. As unwind pointed out a requires 120 Mbytes of storage. This is almost certainly larger than the stack space that the OS has allocated to your process. As soon as the for loop walks off the end of the stack you get a segmentation fault. In Linux the stack size is controlled by the OS not the compiler so try the following:- $ ulimit -a In the response you should see a line something like this:- stack size (kbytes) (-s) 10240 This means that each process gets 10Mbyte of storage, nowhere near enough for your large array. You can adjust the stack size with a ulimit -s command but I suspect it will not allow you to select a 120Mbyte stack size! The simplest solution is to make a a global variable instead of an local variable.

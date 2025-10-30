@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5408792
-[parent_id]: 4062518
-[tags]: 
-Here is another example of how to do it, inspired by Simon's code, but a bit shorter and a bit less hacky: # application_controller.rb class ApplicationController :html) # ... end and somewhere in an autoload_path or explicitly required: # extension_fallback_resolver.rb class ExtensionFallbackResolver :html) def initialize(path, format_fallbacks = {}) super(path) @format_fallbacks = format_fallbacks end private def find_templates(name, prefix, partial, details) fallback_details = details.dup fallback_details[:formats] = Array(format_fallbacks[details[:formats].first]) path = build_path(name, prefix, partial, details) query(path, EXTENSION_ORDER.map { |ext| fallback_details[ext] }, details[:formats]) end end The above is still a hack because it is using a private API, but possibly less fragile as Simon's original proposal. Note that you need to take care of the layout seperately. You will need to implement a method that chooses the layout based on the user agent or something similar. The will only take care of the fallback for the normal templates.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2712377
-[parent_id]: 
-[tags]: 
-How to 'hide' spurious "declared but never used" warnings?
-
-I'm using the Borland (AKA "Embarcodegearland") C++Builder 2007 compiler which has a minor bug that certain static const items from system header files can cause spurious "xyzzy is declared but never used" warnings. I'm trying to get my code 100% warning free, so want a way of masking these particular warnings (note - but not by simply turning off the warning!) Also, I can't modify the header files. I need a way of 'faking' the use of the items, preferably without even knowing their type. As an example, adding this function to my .cpp modules fixes warnings for these four items, but it seems a bit 'ad-hoc'. Is there a better and preferably self-documenting way of doing this? static int fakeUse() { return OneHour + OneMinute + OneSecond + OneMillisecond; } EDIT: Alex suggested something like this: #pragma option push #pragma warn -8080 #include "dateutils.hpp" #pragma option pop ...which sadly doesn't work because the warning status isn't managed cleverly by the compiler, so messages are still shown. EDIT #2: AshleysBrain has a good suggestion. I've implemented it by building a "dateutils_fix.hpp" header file like this: #ifndef DATEUTILS_FIXH #define DATEUTILS_FIXH #include static void FIX_DATEUTIL_WARNINGS() { UNREFERENCED(OneHour); UNREFERENCED(OneMinute); UNREFERENCED(OneSecond); UNREFERENCED(OneMillisecond); } #endif ... and then #including this header instead of dateutils.hpp in my own code.

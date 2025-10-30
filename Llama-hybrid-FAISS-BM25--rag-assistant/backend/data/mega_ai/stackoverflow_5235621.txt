@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5235621
-[parent_id]: 5235518
-[tags]: 
-We use the build in diagnostics that writes to Azure Table storage. Anytime we need a message written to a log, it's just a "Trace.WriteLine(...)". Since the logs are written to Azure Table Storage, we have a process that will download the log messages, and remove them from the table storage. This works well for us, but I think it probably depends on the application. http://msdn.microsoft.com/en-us/library/gg433048.aspx Hope it helps! [Update] public void GetLogs() { int cnt = 0; bool foundRows = false; var entities = context.LogTable; while (1 == 1) { foreach (var en in entities) { processLogRow(en); context.DeleteObject(en); cnt++; try { if (cnt % 100 == 0) { foundRows = true; context.SaveChanges(SaveChangesOptions.Batch); } } catch (Exception ex) { Console.WriteLine("Exception deleting batch. {0}", ex.Message); } } if (!foundRows) break; else { context.SaveChanges(SaveChangesOptions.Batch); } foundRows = false; } Console.WriteLine("Done! Total Deleted: {0}", cnt); }

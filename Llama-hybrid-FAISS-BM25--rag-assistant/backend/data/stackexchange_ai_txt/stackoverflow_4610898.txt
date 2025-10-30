@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4610898
-[parent_id]: 4610856
-[tags]: 
-Here's a solution that's going to enumerate the list twice, but it won't check the condition the second time, so it should be faster: var a = someList.TakeWhile(x => !CheckCondition(x)).ToList(); var b = someList.Skip(a.Count).ToList(); If someList implements IList , each item will actually be enumerated only once, so there won't be any penalty. I thought Skip was optimized for the case of IList , but apparently it's not... However you could easily implement your own Skip method that uses this optimization (see Jon Skeet's article about this) It would actually be more elegant if there was a TakeUntil method... we can easily create it: public static IEnumerable TakeUntil (this IEnumerable source, Func predicate) { foreach(var item in source) { if (predicate(item)) break; yield return item; } } With this method, the code becomes: var a = someList.TakeUntil(CheckCondition).ToList(); var b = someList.Skip(a.Count).ToList();

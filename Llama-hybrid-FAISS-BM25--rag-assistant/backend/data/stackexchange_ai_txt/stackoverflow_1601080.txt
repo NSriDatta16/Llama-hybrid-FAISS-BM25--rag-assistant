@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1601080
-[parent_id]: 
-[tags]: 
-Writing a maintainable commit method
-
-I have a ViewModel that encapsulates some properties that are being edited in an options dialog. I can't actually save them to the settings until they hit the Ok button, which will end up calling Commit on this particular ViewModel. A single property in my ViewModel looks like this: public bool SomeProperty { get { return m_SomeProperty; } set { if (m_SomeProperty != value) { m_SomeProperty = value; NotifyPropertyChanged("SomeProperty"); } } } private bool m_SomeProperty = Properties.Settings.Default.SomeProperty; So the normal implementation for Commit would be to do this: public void Commit() { Properties.Settings.Default.SomeProperty = m_SomeProperty; // Add other properties here... } This isn't so bad, but the reason I don't like this is that if you add a new property, you have to add code for it in two places. I try to avoid that when possible. At first I thought I could declare a private event called OnCommit and have the Commit method raise that event, and have the code for each property add an event handler for the event and do the writing to the settings there, but I don't know how to do that without adding the event handlers in the constructor anyway, which doesn't help the situation. Any ideas? Does anyone have an elegant way to do what I'm trying to do? EDIT : Thanks to sixlettervariables for the answer. I took that idea and incorporated it into SoapBox Core and open sourced the result. Check out the Options Dialog to see how it works.

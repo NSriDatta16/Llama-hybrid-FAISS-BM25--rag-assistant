@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1949117
-[parent_id]: 
-[tags]: 
-Upcasting pointer reference
-
-I have the following contrived example (coming from real code): template class Base { public: Base(int a):x(a) {} Base(Base * &other) { } virtual ~Base() {} private: int x; }; template class Derived:public Base { public: Derived(int x):Base (x) {} Derived(Derived * &other): Base (other) {} }; int main() { Derived *x=new Derived (1); Derived y(x); } When I try to compile this, I get: 1X.cc: In constructor ‘Derived ::Derived(Derived *&) [with T = int]’: 1X.cc:27: instantiated from here 1X.cc:20: error: invalid conversion from ‘Derived *’ to ‘int’ 1X.cc:20: error: initializing argument 1 of ‘Base ::Base(int) [with T = int]’ 1) Clearly gcc is being confused by the constructors. If I remove the reference from the constructors, then the code compiles. So my assumption is that something goes wrong with up-casting pointer references. Can someone tell me what is going on here? 2) A slightly unrelated question. If I were to do something horrendous like "delete other" in the constructor (bear with me), what happens when someone passes me a pointer to something on the stack ? E.g. Derived x(2); Derived y(x); where Derived(Derived *& other) { delete other;} How can I make sure that pointer is legitimately pointing to something on the heap?

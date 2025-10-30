@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5572752
-[parent_id]: 5572257
-[tags]: 
-Attributes do not support constructor injection as they are created by the .NET Framework and are not under control of Ninject. If you really want to use a FilterAttribute (which I do not recommend) you'll have to use property injection. Instead continue what you just began. You need a filter implementing IAuthorizationFilter (not derived from FilterAttribute, just remove it from your code above) and additionally an ordinary attribute to mark the controllers/actions. Then change the binding: this.BindFilter (FilterScope.Controller, 0).WhenControllerHas (); See: https://github.com/ninject/ninject.web.mvc/wiki/MVC3 The problem with you current implementation is that it is found once as filter attribute and once added as normal filter. One for these instances will have the repo injected an the the repo is null for the other one. NOTE: you can derive from an existing FilterAttribute if this simplifies your implementation. But do not use it as a attribute in this case but use it as an ordinary filter.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4509766
-[parent_id]: 4509570
-[tags]: 
-TCP works as a layer on top of other layers: IP and Ethernet. IP allows data fragmentation, and Ethernet allows some data to get lost over the wire. That leads to data loss, and it's reflected on your calls to recv. When you call recv , the underlaying operating system will try to read as much data as it can up to the size you specified, but might return the call having read less bytes, even one single byte. You need to create some protocol of your own to keep reading data up to finishing your data piece. For example, you can use "\n" as a delimiter. This code can be improved, but I hope will get you the idea: void get_all_buf(int sock, std::string & inStr) { int n = 1, total = 0, found = 0; char c; char temp[1024*1024]; // Keep reading up to a '\n' while (!found) { n = recv(sock, &temp[total], sizeof(temp) - total - 1, 0); if (n == -1) { /* Error, check 'errno' for more details */ break; } total += n; temp[total] = '\0'; found = (strchr(temp, '\n') != 0); } inStr = temp; }

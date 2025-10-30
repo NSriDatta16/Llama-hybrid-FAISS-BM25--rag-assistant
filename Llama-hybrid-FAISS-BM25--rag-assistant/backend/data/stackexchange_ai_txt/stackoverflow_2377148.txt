@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2377148
-[parent_id]: 2293647
-[tags]: 
-I wasn't able to find the answer to this, so I'm stripping the unwanted package elements out after processing. This function takes the original XML file, the element name to check, its attribute to check, the pattern (or list of words) you'd like to KEEP, and a destination filepath for the new file. from lxml import etree def keep(self, xmlfile, elem_name, attr_name, pattern, dst): try: rep = re.compile(pattern) except TypeError: # Create regex pattern if a list is given. # TypeError: unhashable type: 'list' rep = re.compile("|".join(pattern)) dom = etree.parse(xmlfile) for node in dom.findall('//%s' % elem_name): if not rep.search(node.get(attr_name)): node.getparent().remove(node) dom.write(dst) To solve my problem, I'm calling it like this: keep('coverage.xml', 'package', 'name', 'ae|tests', 'wanted-coverage.xml')

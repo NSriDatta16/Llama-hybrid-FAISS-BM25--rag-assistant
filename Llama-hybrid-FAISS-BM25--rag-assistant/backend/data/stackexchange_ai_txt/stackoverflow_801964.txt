@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 801964
-[parent_id]: 801954
-[tags]: 
-The problem is this definition: struct particle particles[]; It's not reserving any memory, just defining an empty array. You need to put something in those square brackets. It's a wonder all your writing to various positions in this array haven't caused segfault crashes ... You could try with max_particles , although I'm not sure using a variable (albeit a const one) is legal in a C definition. The classic solution is to use the preprocessor, like so: #define MAX_PARTICLES 50 struct particle particles[MAX_PARTICLES]; And then use MAX_PARTICLES in the various loops. I suggest instead putting the literal in the brackets: struct particle particles[50]; And then writing loops like this: for(i = 0; i That is a compile-time division, so it's not costing you anything, and you're re-using the definition itself to provide the number of elements in the array, which (IMO) is elegant. You could of course go some middle way and define a new macro, like so: #define MAX_PARTICLES (sizeof particles / sizeof *particles)

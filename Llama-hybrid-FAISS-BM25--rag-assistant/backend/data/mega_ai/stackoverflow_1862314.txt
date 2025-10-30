@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1862314
-[parent_id]: 
-[tags]: 
-String.comparison performance (with trim)
-
-I need to do alot of high-performance case-insensitive string comparisons and realized that my way of doing it .ToLower().Trim() was really stupid due do all the new strings being allocated So I digged around a little and this way seems preferable: String.Compare(txt1,txt2, StringComparison.OrdinalIgnoreCase) The only problem here is that I want to ignore leading or trailing spaces, ie Trim() but if I use Trim I have the same problem with string allocations. I guess I could check each string and see if it StartsWith(" ") or EndsWith(" ") and only then Trim. Either that or figure out the index,length for each string and pass to string.Compare override public static int Compare ( string strA, int indexA, string strB, int indexB, int length, StringComparison comparisonType ) but that seems rather messy and I probably have to to use some integers if I dont make a really big if-else statement for every combination of trailing and leading blanks on both strings... so any ideas of an elegant solution? Here's my current proposal: public bool IsEqual(string a, string b) { return (string.Compare(a, b, StringComparison.OrdinalIgnoreCase) == 0); } public bool IsTrimEqual(string a, string b) { if (Math.Abs(a.Length- b.Length) > 2 ) // if length differs by more than 2, cant be equal { return false; } else if (IsEqual(a,b)) { return true; } else { return (string.Compare(a.Trim(), b.Trim(), StringComparison.OrdinalIgnoreCase) == 0); } }

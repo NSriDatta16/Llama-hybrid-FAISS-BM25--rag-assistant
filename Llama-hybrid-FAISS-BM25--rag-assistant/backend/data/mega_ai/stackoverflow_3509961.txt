@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3509961
-[parent_id]: 
-[tags]: 
-Passing subclasses to imported library
-
-I have library which returns collections of some semi-abstract objects. class Item1(object): pass class Item2(object): pass class Collection1(object): pass class Provider(object): def retrieve_collection(self): col = Collection1() col.add(Item1()) col.add(Item2()) return col It just populates attributes of the objects, and these item/collection classes are intended to be subclassed in caller code. So there would be some script from mylib import Provider, Item1 class MyItem(Item1): pass provider = Provider() col = provider.retrieve_collection() And the question is, what is elegant and pythonic solution to pass MyItem (and any other subclasses) to Provider? I can pass it as Provider(item1=MyItem) , store it as self.item1 , and then instantiate it as self.item1() instead of Item1() , but this seems fugly. Plus I'll have horrible, long constructor calls all over client code. Other option would be to override classes on module level, like mylib.Item1 = MyItem , but this can lead to many unexpected and hard to debug problems. Besides, there could be several different provider classes which use same item base classes, but which would require different subclasses from client. Maybe some form of classes registry and factories instead of actual classes? So Item1() would try to figure which class to instantiate based on some context, but I'm not sure how that would work.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3481001
-[parent_id]: 
-[tags]: 
-DQL statement for many to many relationship
-
-I'm confused about how DQL works, and really need some help here. I have three tables, called "Band", "Agent", and "BandAgent". BandAgent is the middle table for a Many-to-many relationship, containing agent_id and band_id. How can I retrieve all Agents related to a specific band_id using a DQL statement? EDIT This code works, but I don't know if it is the right way to do it. Echos to the screen all associated Agents related to a Band by BandID: //$band is a Band Table Row $bandAgentTable = Doctrine_Core::getTable('BandAgent'); $agentTable = Doctrine_Core::getTable('Agent'); $bandAgentTable = $bandAgentTable->findByBandId($band->getId()); foreach ($bandAgentTable as $bandAgent) { $agent = $agentTable->findById($bandAgent['agent_id']); echo $agent[0]['name']; } EDIT 2 I ended up reading a heck of a lot about Doctrine, and ended up moving away from Magic Finders. The following code is what I ended up doing for my Many-to-Many issue, if anyone is interested: public function getRelatedAgents() { $q = Doctrine_Query::create() ->from('Band b') ->leftJoin('b.Agents a') ->where('b.id = ?', $this->getId()); $bands = $q->fetchArray(); return $bands[0]['Agents']; }

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2707200
-[parent_id]: 
-[tags]: 
-Test MVC using moq
-
-I am new to moq and I was trying to test a controller (MVC) behaviour that when the view raises a certain event, controller calls a certain function on model, here are the classes - public class Model { public void CalculateAverage() { ... } ... } public class View { public event EventHandler CalculateAverage; private void RaiseCalculateAverage() { if (CalculateAverage != null) { CalculateAverage(this, EventArgs.Empty); } } ... } public class Controller { private Model model; private View view; public Controller(Model model, View view) { this.model = model this.view = view; view.CalculaeAverage += view_CalculateAverage; } priavate void view_CalculateAverage(object sender, EventArgs args) { model.CalculateAverage(); } } and the test - [Test] public void ModelCalculateAverageCalled() { Mock modelMock = new Mock (); Mock viewMock = new Mock (); Controller controller = new Controller(modelMock.Object, viewMock.Object); viewMock.Raise(x => x.CalculateAverage += null, new EventArgs.Empty); modelMock.Verify(x => x.CalculateAverage()); //never comes here, test fails in above line and exits Assert.True(true); } The issue is that the test is failing in the second last line with "Invocation was not performed on the mock: x => x.CalculateAverage()". Another thing I noticed is that the test terminates on this second last line and the last line is never executed. Am I doing everything correct?

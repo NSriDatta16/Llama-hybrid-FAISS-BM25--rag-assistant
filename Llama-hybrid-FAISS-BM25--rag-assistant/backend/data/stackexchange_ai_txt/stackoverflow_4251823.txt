@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4251823
-[parent_id]: 
-[tags]: 
-Parallelized Regex Matching in a DFS Environment Using pthreads
-
-I'm trying to parallelize grep for a University project. I'm working off the assumption that throwing more threads at the actual regular expression matching would be inefficient: they would process data faster than it could be read from disk. However, I'm working on an MPI cluster that uses the Lustre DFS system, which allows me to stripe data across multiple storage pools. I was hoping to somehow utilize this by taking advantage of multiple disks, diminishing the bottleneck created by hard disk I/O. After some initial testing, I'm unable to find a solution that will maximize the DFS. I've tried: A large, single file, striped across multiple OST's. Each thread reads chunks of data the size of the stripe size (eg stripe size/OST == thread read size). My intention was that each thread reads data from a different OST (except in overlap/border cases). Multiple, smaller files, each striped to it's own OST. Each thread reads a full file, but each file is located on a different OST. Each case provided little, if no speedup. I was hoping to gain a reasonable speedup (a maximum of 2x overall would have been nice). Should I be worried about I/O bottlenecks? How do I take advantage of a DFS when writing C code? I've tried to read data from offsets that match up with stripe size as well as from files that lie on different OST's and (I assume), different disks. Is there a way to implement a scalable, parallel grep/regex matcher?

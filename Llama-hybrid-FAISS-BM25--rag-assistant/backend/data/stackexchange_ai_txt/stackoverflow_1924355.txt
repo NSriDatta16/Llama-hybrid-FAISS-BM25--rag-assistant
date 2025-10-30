@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1924355
-[parent_id]: 1924129
-[tags]: 
-Just to add a little what others have posted, if you want to really just make one change, consider a static factory: public interface IFileStorage { void Store(); //parameters if needed } public class FileStorage : IFileStorage { public void Store(){} } public class DatabaseStorage : IFileStorage { public void Store(){} } Then, have an enum that you will map to the concrete classes: public enum FileStorageTypes { Database, FileSystem } and finally the factory: public static class StorageFactory { public static IFileStorage GetStorage(FileStorageTypes types) { switch(types) { case FileStorageTypes.Database: return new DatabaseStorage(); case FileStorageTypes.FileSystem: return new FileStorage(); } } } Then, if you have somewhere in your code that you need to do some storage work: public void DoStorage(IFileStorage storage) { storage.Store(); } You can just call this method: DoStorage(StorageFactory.GetStorage(FileStorageTypes.Database)); and easily swap it out if needed.

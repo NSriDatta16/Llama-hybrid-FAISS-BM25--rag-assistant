@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2486439
-[parent_id]: 2486415
-[tags]: 
-Your normalized approach makes a lot of sense, the denormalized one doesn't. In my experience (Telco Performance Management, hundreds of thousands of datapoints per 1/4 hour) we would do the following: Table: pictures id* | picture | userID | avg_rating | rating_count Table: ratings id* | pictureID | userID | rating For the telco the pictures rating would be re-calculated once daily, you should do it periodical (e.g. hourly )or every time you insert (re-calc for the picture rated, not the entire table). This depends on the amounts of ratings you get. In the telco we also keep the rating-date in what is your 'pictures' table and a 1/4h timestamp in the ratings table, but I don't think you need that level of detail. The 'denormalization' is to move a calculateable fact (count (rating) and avg(rating)) to the pictures table. This saves CPU cycles, but costs more storage.

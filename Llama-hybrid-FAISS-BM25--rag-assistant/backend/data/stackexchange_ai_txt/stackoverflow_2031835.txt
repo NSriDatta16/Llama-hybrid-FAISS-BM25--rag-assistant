@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2031835
-[parent_id]: 2031684
-[tags]: 
-I would advise you to make a slight alteration to your data. You do not have a record that says that A is the root of the hierarchy. Adding that: INSERT INTO #TMP(Name, MemberName) VALUES (NULL, 'A') greatly simplifies things (also, typically, the adjacency list would be represented 'the other way around': a column Name , and a column ParentName which would correspond to your MemberName , Name columns respectively. With that setup you can use a common table expression to do the job: WITH Node (Name, ParentName) AS ( SELECT Name, ParentName FROM Tab WHERE ParentName IS NULL UNION ALL SELECT Tab.Name, Tab.ParentName FROM Tab INNER JOIN Node ON ParentName = Node.Name ) SELECT Name, ParentName FROM Node Unfortunately, common table expressions are supported in MS SQL 2005 and up as pointed out by Hogan.

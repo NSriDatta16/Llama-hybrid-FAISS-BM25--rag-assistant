@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 597528
-[parent_id]: 495618
-[tags]: 
-This library is good: NDepend.Helpers.FileDirectoryPath . EDIT: This is what I came up with: [Reflection.Assembly]::LoadFrom("path\to\NDepend.Helpers.FileDirectoryPath.dll") | out-null Function NormalizePath ($path) { if (-not $path.StartsWith('.\')) # FilePathRelative requires relative paths to begin with '.' { $path = ".\$path" } if ($path -eq '.\.') # FilePathRelative can't deal with this case { $result = '.' } else { $relPath = New-Object NDepend.Helpers.FileDirectoryPath.FilePathRelative($path) $result = $relPath.Path } if ($result.StartsWith('.\')) # remove '.\'. { $result = $result.SubString(2) } $result } Call it like this: > NormalizePath "fred\frog\..\frag" fred\frag Note that this snippet requires the path to the DLL. There is a trick you can use to find the folder containing the currently executing script, but in my case I had an environment variable I could use, so I just used that.

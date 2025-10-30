@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2777768
-[parent_id]: 2777686
-[tags]: 
-Running your second version in GHCi: > length [1..1000000] *** Exception: stack overflow So to answer your question: Yes, it does suffer from that problem, just as you expect. However, GHC is smarter than the average compiler; if you compile with optimizations turned out, it'll fix the code for you and make it work in constant space. More generally, there are ways to force strictness at specific points in Haskell code, preventing the building of deeply nested thunks. A usual example is foldl vs. foldl' : len1 = foldl (\x _ -> x + 1) 0 len2 = foldl' (\x _ -> x + 1) 0 Both functions are left folds that do the "same" thing, except that foldl is lazy while foldl' is strict. The result is that len1 dies with a stack overflow in GHCi, while len2 works correctly.

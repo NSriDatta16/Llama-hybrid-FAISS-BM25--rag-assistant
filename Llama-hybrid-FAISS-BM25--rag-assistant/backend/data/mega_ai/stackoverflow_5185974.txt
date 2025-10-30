@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5185974
-[parent_id]: 5185803
-[tags]: 
-I am having a little trouble understanding your question, however if you want to pass a variable number of parameters to a stored procedure there are two ways I can think of that you can do it, which require SQL Server 2005 and SQL Server 2008 respectively. The first leverages XML. Have your procedure take a varchar(max) argument and then you can easily split it out. For example, if you comma separate what you want, you could: DECLARE @xml xml SET @xml = cast(' '+replace(@yourArg,',',' ')+' ' as xml) SELECT N.value('.','varchar(max)') AS myArgName FROM @xml.nodes('x') AS T(N) Also, you could leverage table valued variables and select your inputs into a table and pass that to the stored procedure. See http://www.sqlteam.com/article/sql-server-2008-table-valued-parameters for an example.

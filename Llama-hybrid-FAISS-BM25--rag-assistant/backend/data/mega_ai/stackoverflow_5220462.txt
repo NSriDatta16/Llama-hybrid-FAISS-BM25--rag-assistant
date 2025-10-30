@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5220462
-[parent_id]: 5220431
-[tags]: 
-You can use ROWLOCK, UPDLOCK, READPAST to use a table as a queue (which is what you are doing) SQL Server Process Queue Race Condition DECLARE @tblTempRow TABLE(intUserID int, intBlobID int) --no rollback needed now. will automatically roll back SET XACT_ABORT ON -- to span select and delete BEGIN TRANSACTION -- Get the next match and remember in temp table. I want to prevent that other processes return the same row. INSERT INTO @tblTempRow(intUserID, intBlobID) SELECT TOP 1 intUserID, intBlobID --for hints, see link above FROM Schedule WITH (ROWLOCK, READPAST, UPDLOCK) WHERE intScheduleType = @intScheduleType -- Delete if requested. IF(@intDeleteAfterGet = 1) BEGIN DELETE Schedule S WHERE --yes, more elegant EXISTS (SELECT * FROM @tblTempRow T WHERE S.intUserID = T.intUserID AND S.intBlobID = T.intBlobID) AND S.intScheduleType = @intScheduleType END COMMIT TRANSACTION -- Return the temp table. SELECT intUserID, @intScheduleType, intBlobID FROM @tblTempRow

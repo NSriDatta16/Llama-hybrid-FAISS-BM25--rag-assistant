@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 602101
-[parent_id]: 602079
-[tags]: 
-This is how I would do it, form the top of my head Serialization Serialize each object individually Assign each object a unique key When an object holds a reference to another object, put the unique key for that object in the objects place in the serialization. (I would use an UUID converted to binary) Save each object into a file/database/storage using the unique key Unserialization Start form an arbitrary object (usually the root i suspect) unserialize it and put it in a map with it's unique key as index and return it When you step on an object key in the serialization stream, first check if it's already unserialized by looking up it's unique key in the map and if it is just grab it from there, if not put a lazy loading proxy (which repeats these two steps for that object) instead of the real object which has hooks to load the right object when you need it. Edit , you might need to use two-pass serialization and unserialization if you have circular references in there, it complicates things a bit - but not that much.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3224607
-[parent_id]: 3223112
-[tags]: 
-Whould it be better to let the DAO be a @Stateless Session Bean, or an @ApplicationScoped Bean? What about @Singleton? What are the differences between these options related to a DAO? I would NOT use Stateless Session Beans for DAOs: EJBs are pooled by the container so if you have N instances per pool and thousands of tables, you're just going to waste resources (not even to mention the cost at deploy time). Implementing DAOs as SLSB would encourage EJB chaining which is not a good practice from a scalability point of view. I would not tie the DAO layer to the EJB API. The @Singleton introduced in EJB 3.1 could make things a bit better but I would still not implement DAOs as EJBs. I would rather use CDI (and maybe a custom stereotype, see this article for example). Or I wouldn't use DAOs at all. JPA's entity manager is an implementation of the Domain Store pattern and wrapping access to a Domain Store in a DAO doesn't add much value.

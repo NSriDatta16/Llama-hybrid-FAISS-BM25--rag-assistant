@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5283772
-[parent_id]: 5283386
-[tags]: 
-Don't "cut the buffer at the first \0", ReadFile doesn't return a zero-terminated string. It reads raw bytes. You have to pay attention to the value returned through the lpNumberOfBytesRead argument. It will be equal to the nNumberOfBytesToRead value you pass unless you've reached the end of the file. Now you know how many valid bytes are in the buffer. Search them for the first '\r' or '\n' byte to find the line terminator. Copy the range of bytes to a string buffer supplied by the caller and return. The next time you read a line, start where you left off previously, past the line terminator. When you don't find the line terminator then you have to copy the bytes in the buffer and call ReadFile() again to read more bytes. That makes the code a bit tricky to get right, excellent exercise otherwise.

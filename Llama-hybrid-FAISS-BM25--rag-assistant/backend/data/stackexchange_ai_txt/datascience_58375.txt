@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 58375
-[parent_id]: 58351
-[tags]: 
-I just changed the User-agent in the for loop so that now the request line in the loop is: r = requests.get(df.iloc[i,1], headers=headers) with headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/XXX.XX (KHTML, like Gecko) Chrome/XX.X.XXXX.XXX Safari/XXX.XX'} and this solved the error. I also added a r.raise_for_status() to check the status before using the r.content Final code: import pandas as pd from PIL import Image import requests from io import BytesIO df = pd.DataFrame({'project_id':["1", "2"], 'image_url':['http://www.personal.psu.edu/dqc5255/gl-29.jpg', 'https://www.iprotego.com/wp-content/uploads/google.jpg']}) pictures = [None] * 2 df.insert(2, "pictures", pictures, True) headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/xxx.xx (KHTML, like Gecko) Chrome/xx.x.xxxx.xxx Safari/xxx.xx'} for i in range(2): r = requests.get(df.iloc[i,1], headers=headers) r.raise_for_status() df.iloc[i,2] = Image.open(BytesIO(r.content)) df ````

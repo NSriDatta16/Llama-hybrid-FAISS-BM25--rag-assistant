@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1531944
-[parent_id]: 1524095
-[tags]: 
-I would recommend against NO WAIT, and rather, specify a low LOCK TIMEOUT (10-30s). If the target table is only locked temporarily (small update, say for 1 second), your second app will timeout immediately. If you have a 10s timeout, the second app would simply wait for the first app to COMMIT or ROLLBACK (1 sec) then move forward. Also consider there's a bit of a "first come, first served" policy when it comes to handing out locks - if the second app "gives up", a third app could get in and grab the locks needed by the second. It's possible that the second app experiences lock starvation because it keeps giving up. If you are experiencing ongoing concurrency issues, consider lock monitoring to get a handle on how the database is being accessed. There's lots of useful statistics (such as average lock-wait time, etc.) that can help you tune your parameters and application behaviour. DB2 V9.7 Infocenter - Database Monitoring

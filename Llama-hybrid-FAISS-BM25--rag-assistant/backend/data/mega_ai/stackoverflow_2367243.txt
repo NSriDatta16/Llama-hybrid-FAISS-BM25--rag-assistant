@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2367243
-[parent_id]: 2365527
-[tags]: 
-To answer the question whether there is a library function for encapsulating this pattern - there isn't a function exactly for this, but there is a function that allows you to generate sequence from some state called Seq.unfold . You can use it to implement the functionality above like this: new StreamReader(filePath) |> Seq.unfold (fun sr -> match sr.ReadLine() with | null -> sr.Dispose(); None | str -> Some(str, sr)) The sr value represents the stream reader and is passed as the state. As long as it gives you non-null values, you can return Some containing an element to generate and the state (which could change if you wanted). When it reads null , we dispose it and return None to end the sequence. This isn't a direct equivalent, because it doesn't properly dispose StreamReader when an exception is thrown. In this case, I would definitely use sequence expression (which is more elegant and more readable in most of the cases), but it's useful to know that it could be also written using a higher-order function.

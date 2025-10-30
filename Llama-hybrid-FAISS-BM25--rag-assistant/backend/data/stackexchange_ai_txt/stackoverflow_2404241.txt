@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2404241
-[parent_id]: 
-[tags]: 
-Switch/case without break inside DllMain
-
-I have a Dllmain that allocates Thread local storage when a thread attaches to this DLL. Code as below: BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) { LPVOID lpvData; BOOL fIgnore; switch (ul_reason_for_call) { case DLL_PROCESS_ATTACH: onProcessAttachDLL(); // Allocate a TLS index. if ((dwTlsIndex = TlsAlloc()) == TLS_OUT_OF_INDEXES) return FALSE; // how can it jump to next case??? case DLL_THREAD_ATTACH: // Initialize the TLS index for this thread. lpvData = (LPVOID) LocalAlloc(LPTR, MAX_BUFFER_SIZE); if (lpvData != NULL) fIgnore = TlsSetValue(dwTlsIndex, lpvData); break; ... } I know that for the main thread, the DLL_THREAD_ATTACH is not entered, as per Microsoft Documentation. However, the above code worked. I am using VC2005. When I entered the debugger, I saw that after it entered DLL_THREAD_ATTACH case when ul_reason_for_call = 1! How can that happen? If I add `break' at the end of DLL_PROCESS_ATTACH block, the DLL failed to work. How can this happen?

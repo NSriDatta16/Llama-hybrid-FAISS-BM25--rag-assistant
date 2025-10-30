@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4474506
-[parent_id]: 
-[tags]: 
-Storing Open Hours/Holidays
-
-What kind of SQL schema would you suggest for storing hours and holidays, and what kind of query to check if a restaurant is open? Right now I have this: CREATE TABLE hours ( "restaurant" integer NOT NULL REFERENCES restaurants ON DELETE CASCADE, "dow" integer NOT NULL, "open" time NOT NULL, "close" time NOT NULL ); CREATE FUNCTION is_open(r integer) RETURNS boolean AS $$ DECLARE h record; t time; BEGIN SELECT open, close INTO h FROM hours WHERE restaurant = r AND dow = EXTRACT(dow FROM now()); IF NOT FOUND THEN RETURN false; END IF; t := current_time; IF h.close h.open); ELSE RETURN (t > h.open AND t But that doesn't really work, because, for instance, a restaurant might be open until 2:00 am, at which point I would need to check for the previous dow . To make matters a little more complicated, I have to deal with holidays: CREATE TABLE holidays ( "restaurant" integer NOT NULL REFERENCES restauraunts ON DELETE CASCADE, "day" date NOT NULL ); Which has the same problem - if a restaurant is open from 15:30 to 2:00, that means they are also closed for the block from midnight to two. I haven't been able to wrap my head around finding a clean, elegant solution for this (several messy ones have come and gone). I need to go take a walk and come back to it - in the mean time, I figured I would let you guys take a crack at it.

@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 113208
-[parent_id]: 113200
-[tags]: 
-My recommendations is to OneHotEncode this variable, to finally obtain something like this: ID_Parent SumDollars ConcatenatedFruit_Apple ConcatenatedFruit_Banana ConcatenatedFruit_Lime ConcatenatedFruit_Orange Etc StartDate CompletionDate AA 500 1 0 0 0 ... 1/1/2020 2/15/2020 AB 3000 1 1 0 0 ... 1/1/2020 5/15/2020 AB 9000 1 0 1 1 ... 5/1/2020 3/20/2020 Moreover, if you OneHotEncoded this way, random forest can deal perfectly with this categorical feature. Here I provide you one code that will do what I commented: import pandas as pd df = pd.DataFrame({'id': [0, 1, 2], 'class': ['2 3', '1 3', '3 5']}) df['class'] = df['class'].apply(lambda x: x.split(' ')) df_long = df.explode('class') df_one_hot_encoded = pd.concat([df, pd.get_dummies(df_long['class'],prefix='class', prefix_sep='_')], axis=1) df_one_hot_encoded_compact = df_one_hot_encoded.groupby('id').max().reset_index() I've extracted it from here (answered by OmaymaS )

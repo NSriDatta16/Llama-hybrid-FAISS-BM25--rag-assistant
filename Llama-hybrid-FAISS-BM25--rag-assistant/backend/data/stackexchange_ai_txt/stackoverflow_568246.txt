@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 568246
-[parent_id]: 566061
-[tags]: 
-I am sure that you will love this. I recently find out about Dense_Rank() function, which is for "ranking within the partition of a result set" according to MSDN Check out the code below and how "CommentID" is sorted. As far as I understand, you are trying to partition your result set by ParentCommentID. Pay attention to "denserank" column. with Replies (CommentID, ParentCommentID, Level) as ( select c.CommentID, c.ParentCommentID, 1 as Level from Comment c where ParentCommentID is null and CommentID = 1 union all select c.CommentID, c.ParentCommentID, r.Level + 1 as Level from Comment c inner join Replies r on c.ParentCommentID = r.CommentID ) select *, denserank = dense_rank() over (partition by ParentCommentID order by CommentID) from Replies order by denserank Result below

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4857413
-[parent_id]: 
-[tags]: 
-LINQ (to objects) , running several queries over the same IEnumerable?
-
-Is it somehow possible to chain together several LINQ queries on the same IEnumerable ? Some background, I've some files, 20-50Gb in size, they will not fit in memory. Some code parses messages from such a file, and basically does : public IEnumerable ReadRecordsFromStream(Stream inStream) { Record msg; while ((msg = ReadRecord(inStream)) != null) { yield return msg; } } This allow me to perform interesting queries on the records. e.g. find the average duration of a Record var records = ReadRecordsFromStream(stream); var avg = records.Average(x => x.Duration); Or perhaps the number of records per hour/minute var x = from t in records group t by t.Time.Hour + ":" + t.Time.Minute into g select new { Period = g.Key, Frequency = g.Count() }; And there's a a dozen or so more queries I'd like to run to pull relevant info out of these records. Some of the simple queries can certainly be combined in a single query, but this seem to get unmanegable quite fast. Now, each time I run these queries, I have to read the file from the beginning again, all records reparsed - parsing a 20Gb file 20 times takes time, and is a waste. What can I do to be able to do just one pass over the file, but run several linq queries against it ?

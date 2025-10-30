@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2815943
-[parent_id]: 
-[tags]: 
-GetIpAddrTable() leaks memory. How to resolve that?
-
-On my Windows 7 box, this simple program causes the memory use of the application to creep up continuously, with no upper bound. I've stripped out everything non-essential, and it seems clear that the culprit is the Microsoft Iphlpapi function "GetIpAddrTable()". On each call, it leaks some memory. In a loop (e.g. checking for changes to the network interface list), it is unsustainable. There seems to be no async notification API which could do this job, so now I'm faced with possibly having to isolate this logic into a separate process and recycle the process periodically -- an ugly solution. Any ideas? // IphlpLeak.cpp - demonstrates that GetIpAddrTable leaks memory internally: run this and watch // the memory use of the app climb up continuously with no upper bound. #include #include #include #include #pragma comment(lib,"Iphlpapi.lib") void testLeak() { static unsigned char buf[16384]; DWORD dwSize(sizeof(buf)); if (GetIpAddrTable((PMIB_IPADDRTABLE)buf, &dwSize, false) == ERROR_INSUFFICIENT_BUFFER) { assert(0); // we never hit this branch. return; } } int main(int argc, char* argv[]) { for ( int i = 0; true; i++ ) { testLeak(); printf("i=%d\n",i); Sleep(1000); } return 0; }

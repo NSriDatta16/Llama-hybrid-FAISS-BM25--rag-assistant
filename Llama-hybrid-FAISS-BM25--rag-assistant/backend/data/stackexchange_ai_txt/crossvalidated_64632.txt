@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 64632
-[parent_id]: 
-[tags]: 
-Problems with Implementing SVM in CVX - lagrange variables alpha are not what I expected
-
-I am implementing the dual problem SVM in CVX with soft margin, and a polynomial Kernel. I have read through the theory and know that for data points crossing the margin, I should get alpha = C (1 in my case), and moreover, if I have a relatively separable data set, I should get most of the alphas = 0. However what i get is a vector of 1.0e-03 * 0.0012 0.0044 0.0016 0.0051 0.0059 0.0009 0.0025 0.0061 0.0031 0.0006 0.0011 0.0065 0.0062 0.0110 0.0169 0.0006 0.0209 0.0028 0.0080 0.0066 0.0024 0.0085 this. Basically, I cannot distinguish which alphas are 0 and which are not, and moreover, I cannot find any alphas that are equal to C (1 in my case), and I know for a fact that my data is not completely separable. If anyone has implemented the dual soft-margin SVM problem in CVX please help. Thank you so much! Per the suggestion below, I have added my code. % parameters C = 100; m = size(X,1); n = size(Y,2); % define Kernel matrix Q = zeros(m,m); for i = 1:size(Q,1) for j = 1:size(Q,2) % polynomial kernel degree 2 Q(i,j) = Y(i).*Y(j).*(2 + 50.*(X(i,:)*X(j,:)').^2); % original kernel % Q(i,j) = Y(i).*Y(j).*(X(i,:)*X(j,:)'); end end % train svm using cvx cvx_begin variables alpha(m); minimize (0.5.*quad_form(alpha,Q) - ones(m,1)'*alpha); subject to alpha >= 0; alpha

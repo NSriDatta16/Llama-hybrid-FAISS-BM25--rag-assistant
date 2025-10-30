@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2579286
-[parent_id]: 2579170
-[tags]: 
-I found it! The line above my FocalPoint line involved setting Agent.Focus ; so I traced the line of UTBot -> UDKBot -> AIController -> Controller and finally the Controller class has a Focus member: var BasedPosition FocalPosition; // position controlled pawn is looking at var Actor Focus; // actor being looked at So, FocalPoint was renamed to FocalPosition . It's not over yet! Apparently FocalPoint used to be a vector and now FocalPosition is a BasedPosition. So my code still didn't work because it was trying to assign a vector to a BasedPosition; the compiler complained with Error, Type mismatch in '=' . BasedPosition is a struct in Actor and has a vector member Position , so I will assume that's the correct variable to assign to. I changed my line of code from Agent.FocalPoint = ObjectOfAttention.Location; to Agent.FocalPosition.Position = ObjectOfAttention.Location; I haven't tested it (still working on other compiler errors) but it compiles fine now. Hopefully this is the correct solution.

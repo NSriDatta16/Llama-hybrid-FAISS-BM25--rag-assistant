@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1476999
-[parent_id]: 1470654
-[tags]: 
-Here is the solution I employed, using Boost.Preprocessor: #include #include #include #define BEGIN_NS(r, _, elem) namespace elem { #define CLOSE_NS(z, n, _) } #define APPEND_NS(r, _, elem) elem:: #define CREATE_ID(ns_list, name) \ \ BOOST_PP_SEQ_FOR_EACH(BEGIN_NS, ~, ns_list) \ struct name; \ BOOST_PP_REPEAT(BOOST_PP_SEQ_SIZE(ns_list), CLOSE_NS, ~) \ \ template<> \ const char * devs::type_to_string ::value = #name; which must be used outside any namespace like this: CREATE_ID((bar) (bar2), baz) It seems strange that I had to define a macro only to repeat n times the character '}', if anyone has a more elegant way to do so, feel free to post a comment!

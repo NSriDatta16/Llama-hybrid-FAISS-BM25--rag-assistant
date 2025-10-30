@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3125281
-[parent_id]: 3125237
-[tags]: 
-If you are using sql 2005 or newer, you can use the EXCEPT operator to find the news items that contain all the required categories. Or more precisely, find the news items where are no names in the list of categories that were not found in the set of news item category names. select NI.NewsID, NI.Post from NewsItem NI where (@pCategories = '' or NOT EXISTS (select EntityNameColumn FROM BuildStringTable(@pCategories) EXCEPT Select CategoryName FROM NewsItem ni join NewsItemCategories nic ON ni.NewsID=nic.NewsID join Category c ON c.CategoryID = nic.CategoryID WHERE ni.NewsID=NI.NewsID)) To do this without the EXCEPT operator looks like this: where (@pCategories = '' or NOT EXISTS (select EntityNameColumn FROM BuildStringTable(@pCategories) ct LEFT OUTER JOIN (Select CategoryName FROM NewsItem ni join NewsItemCategories nic ON ni.NewsID=nic.NewsID join Category c ON c.CategoryID = nic.CategoryID WHERE ni.NewsID=NI.NewsID) nicn WHERE nicn.CategoryName IS NULL)

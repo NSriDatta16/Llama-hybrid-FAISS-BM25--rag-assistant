@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3825250
-[parent_id]: 3824703
-[tags]: 
-I don't have STL data to test with but how about something like this?... #include #pragma pack(push, 1) struct stl_hdr { unsigned int header[80]; unsigned int triangle_cnt; }; struct triangle { float norm; float v1; float v2; float v3; short attr_cnt; }; #pragma pack(pop) using namespace std; int main(int argc, char* argv[]) { ifstream file(argv[1], ios::in | ios::binary); if (file.is_open()) { stl_hdr hdr; file.read((char*)&hdr, sizeof(hdr)); triangle* tris = new triangle[hdr.triangle_cnt]; file.read((char*)tris, hdr.triangle_cnt * sizeof(triangle)); file.close(); } return 0; } I created two structs based on Wikipedia's description of the STL format . The code above makes the same assumption that your code did...the attribute count is zero. And I left out error handling / cleanup.

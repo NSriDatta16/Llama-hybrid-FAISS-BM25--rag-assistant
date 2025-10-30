@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2444325
-[parent_id]: 2440411
-[tags]: 
-Since no one has ventured an answer I'm guessing there isn't an elegant solution, that said: Global cursors persist for the duration of the connection and can be accessed from any SQL or stored proc so you could execute this once on the connection: DECLARE KludgeKursor CURSOR GLOBAL STATIC FOR SELECT StartDate = '2010-01-01', EndDate = '2010-04-30' OPEN KludgeKursor and in your stored procedures: --get the values DECLARE @StartDate datetime, @EndDate datetime FETCH FIRST FROM GLOBAL KludgeKursor INTO @StartDate, @EndDate --go crazy SELECT @StartDate, @EndDate Each connection would only see their own values, so the same stored procs can be used for different connection/values. The global cursor is automatically deallocated when the connection ends

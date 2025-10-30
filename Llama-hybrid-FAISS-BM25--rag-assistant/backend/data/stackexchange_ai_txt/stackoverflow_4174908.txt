@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4174908
-[parent_id]: 4174601
-[tags]: 
-That's not what /EH does, it merely controls what unwind handlers are emitted. /EHsc ensures that destructors are called when C++ exceptions might be raised, /EHa ensures that they're called for any exceptions, including SEH. Omitting /EH is what you want to cut down on handler overhead, the compiler omits the exception filters that get the destructors called on stack-allocated objects. Change the destructor to this: ~CompilerFlagsTestExceptionConstructor() { assert(!"Something is wrong with /EH"); } If you want the look for unwanted try/catch code then you'll need to pay attention to warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc

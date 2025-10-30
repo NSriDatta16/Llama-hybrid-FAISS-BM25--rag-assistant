@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 623465
-[parent_id]: 
-[tags]: 
-Why does the mean AURPC go down the more examples one uses?
-
-In the discussion of this question , the following new one arose: Why is the mean AURPRC higher the fewer examples are used? Here is a minimal (Python) code example showing the effect: import numpy as np from sklearn.metrics import average_precision_score def auprc(scores_of_negatives, scores_of_positives): y_true = np.concatenate( (np.full(scores_of_negatives.size, 0), np.full(scores_of_positives.size, 1)) ) y_scores = np.concatenate((scores_of_negatives, scores_of_positives)) return average_precision_score(y_true, y_scores) a_neg, b_neg = 0.3, 1.3 a_pos, b_pos = 2.0, 0.9 for n in [1, 2, 4, 8, 16, 32, 64, 128, 256]: auprcs = [] for _ in range(10000): auprcs.append(auprc( np.random.beta(a_neg, b_neg, n), np.random.beta(a_pos, b_pos, n) )) print(n, np.mean(auprcs)) Output: 1 0.95795 2 0.9387583333333334 4 0.9231154166666665 8 0.9127574443265069 16 0.9044083984271667 32 0.8996982152618184 64 0.8967667717732809 128 0.895994038020052 256 0.8949927372666804

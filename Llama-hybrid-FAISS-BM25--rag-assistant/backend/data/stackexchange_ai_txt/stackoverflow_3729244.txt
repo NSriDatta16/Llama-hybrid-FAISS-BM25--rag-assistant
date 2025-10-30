@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3729244
-[parent_id]: 3729228
-[tags]: 
-I don't really know, nor care to look. Just leave it to the destructors, the standard file streams will close the files during destruction if needed. EDIT: On lifetimes of objects and guaranteed destruction... To follow up the second comment to Ben Voigt that I wrote, this is a small test on object lifetimes: #include #include #include struct test { std::string name; test( std::string const & name ) : name(name) { std::cout And the result of the execution: test 1 test 2 test 3 ~test 3 ~test 1 test 1 test 3 ~test 2 It can be seen that during the first execution the construction of the objects in foo occurs in the same order as the code., but when the function exits only the objects with auto storage get destroyed, with the object with static storage outliving the function execution. In the second call to foo , the auto objects get recreated, while the static object doesn't, as expected, since it was created in a previous call. Because foo calls exit() in the second call, the auto objects in foo don't get destructed. On the other hand, the static object is correctly destructed.

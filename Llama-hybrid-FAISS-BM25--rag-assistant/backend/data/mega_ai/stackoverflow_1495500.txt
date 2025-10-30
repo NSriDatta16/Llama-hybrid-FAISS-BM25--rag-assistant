@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1495500
-[parent_id]: 1493977
-[tags]: 
-It looks to me like you're using a relationship between your Product and Region classes. If so, then somewhere, (the .dbml file for auto-generated LINQ-to-SQL), there exists a mapping that defines the relationship: [Table(Name = "Product")] public partial class Product { ... private EntitySet _Regions; [Association(Storage = "_Regions")] public EntitySet Regions { get { return this._Regions; } set { this._Regions.Assign(value); } } ... } You could put some logic in the accessor here, for example: public IEnumerable Regions { get { return this._Regions.Where(r => !r.isDeleted); } set { this._Regions.Assign(value); } } This way every access through product.Regions will return your filtered Enumerable.

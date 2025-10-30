@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2097396
-[parent_id]: 2096891
-[tags]: 
-You should never use findById since it'll bypass the id-based 2nd-level cache and only use the query cache, which is a lot more volatile. Use get() instead. Having said that, there's two ways to do this. One is to use get(): def shopCategoryPage = ShopCategoryPage.findByProcedureAndCategory( ProductProcedure.get(params.procedureId), ProductCategory.get(params.categoryId)) (use the appropriate param name for the two ids) or using an HQL query (or a criteria query) to fetch the instance in one query instead of 3: def shopCategoryPage = ShopCategoryPage.executeQuery( 'from ShopCategoryPage p where p.procedure.id=:procedureId and p.category=:categoryId', [procedureId: params.procedureId.toLong(), categoryId: params.categoryId.toLong()])[0]

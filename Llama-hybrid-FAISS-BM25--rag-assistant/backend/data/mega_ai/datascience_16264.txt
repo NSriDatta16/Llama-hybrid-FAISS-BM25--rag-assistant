@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 16264
-[parent_id]: 16229
-[tags]: 
-I am trying to figure out the same problem as well. I don't have the full solution but maybe we can help each other out. If you do: names =[n.name for n in tf.get_default_graph().as_graph_def().node] This will give you a list of all the names of the nodes in the graph. For Rnn the out put for names should look some what like this . 'RNN/Shape', 'RNN/strided_slice/stack', 'RNN/strided_slice/stack_1', . . . 'RNN/transpose' . Then you can use get_operation_by_name to get the operation you want to look at. rnn_transpose=tf.get_default_graph().get_operation_by_name('RNN/transpose').outputs[0] From that you can run the eval() with your regular sess and feed_dict rnn_transpose.eval(session=sess,feed_dict =feed_dict) The problem here is now we have to find which operations in the graph correspond to the proper gate operations.

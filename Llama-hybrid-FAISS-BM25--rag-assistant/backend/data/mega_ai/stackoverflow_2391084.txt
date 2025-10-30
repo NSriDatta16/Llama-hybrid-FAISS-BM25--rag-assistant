@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2391084
-[parent_id]: 2358010
-[tags]: 
-I've spent over 10 hours on this. For the moment I believe I have a partial solution . But I'm not sure why this solution works... It seems that Magento requires a redirect in order to complete the add to cart process. So instead of header('Content-Type: application/json',true); ob_end_clean(); echo json_encode($result); exit(); I store my JSON in the session and redirect to a new cart action: $this->_getSession()->setCartJsonResult(json_encode($result)); $this->_redirect('checkout/cart/postajaxadd'); That action then dumps the JSON data public function postajaxaddAction() { $session = $this->_getSession(); header('Content-Type: application/json',true); ob_end_clean(); echo $this->_getSession()->getCartJsonResult(); exit(); } This still fails sometimes ; however now my JavaScript code does not get the JSON data it was expecting and is able to repeat the request. The second request is successful more often than the first... However there are still cases when the AJAX requests fail no matter what.

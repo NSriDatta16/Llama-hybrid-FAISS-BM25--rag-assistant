@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5035086
-[parent_id]: 
-[tags]: 
-Clojure: Generating functions from template
-
-I have the following code for a generic conversion library: (defn using-format [format] {:format format}) (defn- parse-date [str format] (.parse (java.text.SimpleDateFormat. format) str)) (defn string-to-date ([str] (string-to-date str (using-format "yyyy-MM-dd"))) ([str conversion-params] (parse-date str (:format (merge (using-format "yyyy-MM-dd") conversion-params))))) I need to be able to call it like this: (string-to-date "2011-02-17") (string-to-date "2/17/2011" (using-format "M/d/yyyy")) (string-to-date "2/17/2011" {}) The third case is somewhat problematic: the map does not necessarily contain the key :format which is critical for the function. That's why the merge with default value. I need to have a dozen of similar functions for conversions between all other types. Is there a more elegant way that would not require me to copy-paste, use merge etc. in every single function? Ideally, looking for something like this (macro?): (defn string-to-date (wrap (fn [str conversion-params] (parse-date str (:format conversion-params))) ; implementation {:format "yyyy-MM-dd"})) ; default conversion-params ... that would produce an overloaded function (unary and binary), with binary having a merge like in the first example.

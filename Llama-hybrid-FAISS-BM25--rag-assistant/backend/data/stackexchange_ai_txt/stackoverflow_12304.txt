@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 12304
-[parent_id]: 
-[tags]: 
-Why do Sql Server 2005 maintenance plans use the wrong database for dbcc checkdb?
-
-This is a problem I have seen other people besides myself having, and I haven't found a good explanation. Let's say you have a maintenance plan with a task to check the database, something like this: USE [MyDb] GO DBCC CHECKDB with no_infomsgs, all_errormsgs If you go look in your logs after the task executes, you might see something like this: 08/15/2008 06:00:22,spid55,Unknown,DBCC CHECKDB (mssqlsystemresource) executed by NT AUTHORITY\SYSTEM found 0 errors and repaired 0 errors. Elapsed time: 0 hours 0 minutes 0 seconds. 08/15/2008 06:00:21,spid55,Unknown,DBCC CHECKDB (master) executed by NT AUTHORITY\SYSTEM found 0 errors and repaired 0 errors. Elapsed time: 0 hours 0 minutes 0 seconds. Instead of checking MyDb, it checked master and msssqlsystemresource. Why? My workaround is to create a Sql Server Agent Job with this: dbcc checkdb ('MyDb') with no_infomsgs, all_errormsgs; That always works fine. 08/15/2008 04:26:04,spid54,Unknown,DBCC CHECKDB (MyDb) WITH all_errormsgs no_infomsgs executed by NT AUTHORITY\SYSTEM found 0 errors and repaired 0 errors. Elapsed time: 0 hours 26 minutes 3 seconds.

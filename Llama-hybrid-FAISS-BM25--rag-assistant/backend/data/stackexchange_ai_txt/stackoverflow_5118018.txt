@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5118018
-[parent_id]: 5116712
-[tags]: 
-As Robert explains, if you want to call WaitAll , you'll have to cast the elements sequence to the base type Task and then convert it to an array. You can define your extension member for Task to make the tas simpler: type System.Threading.Tasks.Task with static member WaitAll(ts) = Task.WaitAll [| for t in ts -> t :> Task |] I'm using array comprehension and cast instead of Seq.cast because Seq.cast takes untyped IEnumerable - so F# infers better type for the extension method. Another option is not to call WaitAll at all - if you don't do it, the Result properties will block until a task completes. This means that you'll block the thread anyway (there may be a bit larger number of blockings, but I'm not sure if it affects performance too much). If you use List.map to collect all results, the behavior would be almost the same.

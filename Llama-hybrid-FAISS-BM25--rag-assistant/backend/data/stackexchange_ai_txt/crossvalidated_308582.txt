@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 308582
-[parent_id]: 
-[tags]: 
-How to interpret LIME results?
-
-LIME is a recent method that claims to help explaining individual predictions from classifiers agnostically. See e.g. arxiv or its implementation on github for details. I am trying to understand what exactly it outputs. For that, I am using a trivial example: logistic regression. Consider the following set of events: data = [] for t in range(100000): a = 1 - 2*numpy.random.random() # U(-1, 1) b = 1 - 2*numpy.random.random() # U(-1, 1) noise = numpy.random.logistic() c = int(a + b + noise > 0) # the target data.append([a, b, c]) data = numpy.array(data) x = data[:, :-1] y = data[:, -1] This is a latent logistic process with parameters $a_0 = 0$, $a_1 = a_2 = 1$, of which logistic regression assymptotically fits. Let us fit the data using logistic regression: classifier = sklearn.linear_model.LogisticRegression(C=1e10) # C=inf => no regularization classifier.fit(x, y) print(classifier.coef_) # [[ 0.99092809 1.00551462]] Now, lets apply LIME to it: explainer = lime.lime_tabular.LimeTabularExplainer(x, feature_names=['a', 'b']) instance = numpy.array([1, 1]) explanation = explainer.explain_instance(instance, classifier.predict_proba, num_samples=100000) print(explanation.as_list()) The result I get is something like this: [ ('a > 0.50', 0.2216), ('b > 0.50', 0.2170) ] the question is: what is this supposed to mean?

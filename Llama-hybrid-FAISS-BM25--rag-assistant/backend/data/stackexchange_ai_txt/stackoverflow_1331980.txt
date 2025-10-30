@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1331980
-[parent_id]: 1331454
-[tags]: 
-What is the way to check the status of the first (or both) programs? There is no such way, at least, not as you have constructed things. You may have to manage sub-processes yourself via fork(), exec() and waitpid() if you must know these things. Here is roughly what is happening in your code fragment. perl 's system() spawns a shell, and perl *wait()*s for that subprocess to terminate. The shell sets up a pipeline: a subshell *exec()*s grep on the read-end of the pipe a subshell fails to locate crontab1 anywhere in $PATH , and *exit()*s 127 (on my system, that is, where 127 is the shell indicating failure to find a program to run). grep detects end-of-file on its input and, having matched nothing, *exit()*s 1. The shell *exit()*s with the exit code of the last process in the pipeline, which, again, is 1. perl detects the shell's exit code of 1, which is encoded in $? as 256. (256 >> 8 == 1)

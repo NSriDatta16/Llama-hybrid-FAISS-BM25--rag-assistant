@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3802316
-[parent_id]: 3802244
-[tags]: 
-You could use something like Detours to do API-level hooking of Win32 APIs like TerminateThread . I'm not seeing why you need to do this, though. It sounds like you need to clear the thread's associated cache when the thread dies so you can re-use that slot if another thread with the same ID comes along. Is this correct? If so, couldn't you just clear the cache association in DllMain when you get the DLL_THREAD_ATTACH event? This is essentially your new thread notification. At this point, you know you have a new thread, so isn't it safe to clear the existing associated cache? The other alternative that might work is thread-local storage (TLS). You can use Win32 APIs like TlsAlloc / TlsSetValue to store thread-specific information. You could also define a variable with __declspec(thread) to have the compiler manage the TLS for you. This way, each thread maintains its own cache. The code remains the same for each thread, but the data accesses are relative to the thread.

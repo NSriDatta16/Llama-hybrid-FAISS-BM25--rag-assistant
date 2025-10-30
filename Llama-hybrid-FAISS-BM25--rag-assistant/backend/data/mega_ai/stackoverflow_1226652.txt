@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1226652
-[parent_id]: 
-[tags]: 
-Thread-local singletons
-
-I would like to create a singleton class that is instantiated once in each thread where it is used. I would like to store the instance pointers in TLS slots. I have come up with the following solution but I am not sure whether there are any special considerations with multithreaded access to the singelton factory when thread local storage is involved. Maybe there is also a better solution to implement thread local singletons. class ThreadLocalSingleton { static DWORD tlsIndex; public: static ThreadLocalSingleton *getInstance() { ThreadLocalSingleton *instance = static_cast (TlsGetValue(tlsIndex)); if (!instance) { instance = new ThreadLocalSingleton(); TlsSetValue(tlsIndex, instance); } return instance; } }; DWORD ThreadLocalSingleton::tlsIndex = TlsAlloc(); The Tls*-functions are of course win32 specific but portability is not the main issue here. Your thoughts concerning other platforms would still be valuable. Major Edit : I had originally asked about using double-checked locking in this scenario. However as DavidK pointed out, the singletons are to be created on a per thread basis anyway. The two remaining questions are: is it appropriate to reply on TlsGetValue/TlsSetValue to ensure that each thread gets one instance and that the instance is created only once for each thread? Is it possible to register a callback that allows me to clean up an instance that was associated with a particular thread when that thread finishes?

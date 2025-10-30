@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1341702
-[parent_id]: 1336767
-[tags]: 
-As Robert Kern noted, you want the C nextafter( ) function, or the IEEE754 nextUp( ) and nextDown( ) functions, though those two are not widely implemented just yet. If you want to avoid nextafter for some reason, you can do: double next = x + scalbn(1.0, ilogb(x) - 52); This adds 2^(exponent of x - 52) to x, which is exactly one unit in the last place (ULP). If you don't have the usual cmath functions available: double x = 1.0; uint64_t rep; assert(sizeof x == sizeof rep); memcpy(&rep, &x, sizeof x); rep += 1; memcpy(&x, &rep, sizeof x); This adds one to the significand of x by operating on the bitwise-representation of the floating-point value; if the next value is in the next binade, this will carry into the exponent, returning the correct value. If you want it to work for negative values, you'll need to tweak that.

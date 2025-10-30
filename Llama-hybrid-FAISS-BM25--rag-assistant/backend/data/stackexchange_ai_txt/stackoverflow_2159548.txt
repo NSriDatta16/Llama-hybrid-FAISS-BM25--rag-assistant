@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2159548
-[parent_id]: 2159498
-[tags]: 
-temp is allocated in the space used for objects with "automatic storage duration" - this is usually on a runtime stack, but you don't really need to know the details. The space is deallocated when the block in which it was allocated is exited (in your case, when you hit the return ). The line *hallocp = temp; does indeed copy the value of temp into the memory that hallocp is pointing at, which is hallocbuf[0] . The problem is that temp is just a pointer itself - and it's not pointing at anything. This is called a "dangling pointer". This means that when you try to access what it's pointing at, you have an error. That happens in these lines: temp->size = 0; temp->first = NULL; temp->last = NULL; temp->current = NULL; You can't have your structs sit in the memory allocated for hallocbuf , because it doesn't have room for structs - it's just an array of pointers, not an array of structs.

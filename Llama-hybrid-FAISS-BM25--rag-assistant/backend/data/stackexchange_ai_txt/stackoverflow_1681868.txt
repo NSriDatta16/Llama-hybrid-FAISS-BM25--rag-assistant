@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1681868
-[parent_id]: 
-[tags]: 
-Hooking LoadLibrary API call
-
-I want to load a different version of a DLL than is present in the working directory of the application. For this I need to hook the LoadLibrary call so that when the application makes a call to load the DLL I can substitute it with the newer version of that DLL transparently. I tried using NCodeHook and have the following code in my DLL which I inject into the application using NInjectLib but it crashes while loading kernel32.dll. Can anybody please tell me if this is the correct way of injecting the call or are there any other alternatives. // CodeHook.cpp : Defines the entry point for the DLL application. // #include "stdafx.h" #include #include "CodeHook.h" #ifdef _MANAGED #pragma managed(push, off) #endif typedef HMODULE (WINAPI *LoadLibraryFPtr)(LPCTSTR dllName); #pragma data_seg("SHARED") LoadLibraryFPtr origFunc = NULL; #pragma data_seg() #pragma comment(linker, "/section:SHARED,RWS") HMODULE WINAPI LoadLibraryHook(LPCTSTR dllName) { if (origFunc != NULL) { return origFunc(dllName); } } BOOL APIENTRY DllMain( HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved ) { return TRUE; } CODEHOOK_API void Initialize (void) { NCodeHookIA32 nch; origFunc = nch.createHookByName("kernel32.dll", "LoadLibrary", LoadLibraryHook); } #ifdef _MANAGED #pragma managed(pop) #endif

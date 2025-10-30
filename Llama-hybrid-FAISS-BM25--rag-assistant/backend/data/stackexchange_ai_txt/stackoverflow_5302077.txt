@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5302077
-[parent_id]: 5271244
-[tags]: 
-Since you have multiple classes mapped to the same root element name, you need to pass the type you wish to unmarshal as a parameter to the unmarshal operation. This will mean transforming to an intermediate representation such as: DOM, byte[], String, etc: private S transform(final Templates template, final Class resultClass, final T data) throws JAXBException, TransformerException { Transformer transformer = template.newTransformer(); final JAXBSource jaxbSource = new JAXBSource(getCachedJAXBContext(data.getClass()), data); final Result result = new DOMResult(); transformer.transform(jaxbSource, result); return (S) getCachedJAXBContext(resultClass).createUnmarshaller().unmarshal(new DOMSource(result.getNode()), resultClass).getValue(); } For more information: http://bdoughan.blogspot.com/2011/03/handling-duplicate-xmlrootelement.html

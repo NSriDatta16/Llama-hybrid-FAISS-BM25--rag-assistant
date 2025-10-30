@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2736927
-[parent_id]: 
-[tags]: 
-Zend_Db_Select: regrouping conditions in where clause
-
-I would like to do something like this: $select = $myTbl->select() ->from('download_log') ->joinLeft(...... etc........ ->joinLeft(...... etc........ ->joinLeft(...... etc........); //Filter all configured bots (Google, Yahoo, etc.) if(isset($this->_config->statistics->bots)){ $bots = explode(',',$this->_config->statistics->bots); foreach ($bots as $bot){ $select = $select->where("user_agent NOT LIKE '%$bot%'"); } } $select = $select->where("download_log.download_log_ts BETWEEN '".$start_date." 00:00:00' AND '".$end_date." 23:59:59'"); But the outputed query is not correct because of the orWhere clauses are not grouped together in a unique AND clause. I would like to know if it is possible to regrouped those NOT LIKE clauses in a pair of parentheres. My current alternative is the following: //Filter all configured bots (Google, Yahoo, etc.) if(isset($this->_config->statistics->bots)){ $bots = explode(',',$this->_config->statistics->bots); foreach ($bots as $bot){ $stmt .= "user_agent NOT LIKE '%$bot%' AND "; } $stmt = substr($stmt,0,strlen($stmt)-4); //remove the last OR $select = $select->where("($stmt)"); } Thanks!

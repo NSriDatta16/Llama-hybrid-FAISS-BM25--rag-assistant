@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3897948
-[parent_id]: 3895995
-[tags]: 
-THis sounds like an ideal situation for OpenGL display lists. The way you use them is to first ask OpenGL for a display list id to use: GLuint draw_id = glGenLists(1); (You can ask for several consecutive ids at a time, but in this case we are only asking for 1) Then, first time through your draw routine, call glNewList: glNewList(draw_id, GL_COMPILE); glEndList(); Note that this will not actually render your shape (you can use GL_COMPILE_AND_EXECUTE in glNewList, which will render your shape, but that is generally discouraged) Now, whenever you need to draw your object: glCallList(draw_id); And finally, when you are done with it, you can use glDeleteLists. Display lists can actually speed up rendering, as some optimizations can be done, and all function call overhead is removed. Now, technically, OpenGL display lists have been deprecated (not removed, however!) in OpenGL 3.0 and above (along with glTranslate, glVertex glBegin... grrr), but they should still work for the foreseeable future. To be future proof, you should use vertex arrays, but that is a fair bit more complicated.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 920958
-[parent_id]: 920776
-[tags]: 
-I'm going to make the guess that you want the curve to smoothly move between two years if there is a gap, so if more than one year is missing you don't want to just average the two closest years. Here's what I would probably use: SELECT NUM.number AS year, COALESCE(YC.val, YC_BOT.val + ((NUM.number - YC_BOT.yr) * ((YC_TOP.val - YC_BOT.val)/(YC_TOP.yr - YC_BOT.yr)))) FROM dbo.Numbers NUM LEFT OUTER JOIN dbo.Yield_Curve YC ON YC.yr = NUM.number LEFT OUTER JOIN dbo.Yield_Curve YC_TOP ON YC.yr IS NULL AND -- Only join if we couldn't find a current year value YC_TOP.yr > NUM.number LEFT OUTER JOIN dbo.Yield_Curve YC_TOP2 ON YC_TOP2.yr > NUM.number AND YC_TOP2.yr YC_BOT.yr WHERE YC_TOP2.yr IS NULL AND YC_BOT2.yr IS NULL AND NUM.number BETWEEN @low_yr AND @high_yr You could rewrite this using a CTE instead of the Numbers table (just a table of consecutive numbers). You could also use NOT EXISTS or subqueries with MIN and MAX instead of the LEFT OUTER JOINs on YC_BOT2 and YC_TOP2 if you wanted to do that. Some people find this method confusing.

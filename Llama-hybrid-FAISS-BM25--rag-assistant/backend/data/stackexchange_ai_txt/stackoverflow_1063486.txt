@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1063486
-[parent_id]: 553003
-[tags]: 
-You need 2 parts. The view selection formula: SELECT isnotyet7daysOld = @True and an agent (or two) which run on schedule and on "when documents have been created or changed". The agent looks like this (both) minDate := @Adjust(@Today;0;0;-7;0;0;0); REM "There are no future documents"; tmpResult := @if(minDate For adjust you need 0 not null; null happens to work since there is no field or variable with the name null and @Formula is forgiving and makes the missing value 0. The trick here : you compute the value that the field isnotyet7daysOld should have for the selected documents (that would be the changed ones for the onChange agent or all on the scheduled agent) and then select to change only those where the result doesn't match. This way you minimize document updates. Also documents that get saved are updated directly. If you now add a hidden computed-when-composed field isnotyet7daysOld with @True as field value you capture all your document reliably. And you need to run the scheduled agent only once a night (0:01).

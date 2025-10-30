@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1278524
-[parent_id]: 
-[tags]: 
-String matching in Oracle 10g where either side can have wildcards
-
-Test case schema and data follow as: create table tmp ( vals varchar(8), mask varchar(8) ); insert into tmp values ('12345678',' '); insert into tmp values ('12_45678',' _ '); insert into tmp values ('12345678',' _ '); insert into tmp values ('92345678',' '); insert into tmp values ('92345678',' _ '); Ignoring the mask column for now and assuming the specialmatch function exists: select VALS from tmp where specialmatch(vals,'12345678'); Should produce: VALS 12345678 12_45678 12345678 Next, select VALS from tmp where specialmatch(vals,'92345678'); Should produce: VALS 92345678 92345678 Next, select VALS from tmp where specialmatch(vals,'_2345678'); Should produce: VALS 12345678 12_45678 12345678 92345678 92345678 Next, select VALS from tmp where specialmatch(vals,'12945678'); Should produce: VALS 12_45678 Any ideas on how to make the special match function? My naive approach is to write a special string compare udf (psuedo code): bool function specialmatch(str1,str2) DETERMINISITC { return false if either are null; for each char1,char2 of str1,str2 { if (char1<>char2 && char1<>'_' && char2<>'_') return false; } return true; } Also prior to doing the match the mask needs to be overlaid on the val. Ex: val='1_345678', mask=' _ _' => 1_34567_ and would match 12345678 and 19345679 but not 92345678. But how can this be done to leverage indexes, optimizer, etc...

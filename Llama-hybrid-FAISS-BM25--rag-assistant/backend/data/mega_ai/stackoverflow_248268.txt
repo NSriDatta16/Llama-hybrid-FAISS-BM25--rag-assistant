@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 248268
-[parent_id]: 106298
-[tags]: 
-Many operating systems dynamically expand the stack as you use more of it. When you start writing to a memory address that's just beyond the stack, the OS assumes your stack has just grown a bit more and allocates it an extra page (usually 4096Kib on x86 - exactly 1024 ints). The problem is, on the x86 (and some other architectures) the stack grows downwards but C arrays grow upwards . This means if you access the start of a large array, you'll be accessing memory that's more than a page away from the edge of the stack. If you initialise your array to 0 starting from the end of the array (that's right, make a for loop to do it), the errors might go away. If they do, this is indeed the problem. You might be able to find some OS API functions to force stack allocation, or compiler pragmas/flags. I'm not sure about how this can be done portably, except of course for using malloc() and free()!

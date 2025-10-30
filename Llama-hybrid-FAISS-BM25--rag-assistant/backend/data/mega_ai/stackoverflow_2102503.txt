@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2102503
-[parent_id]: 
-[tags]: 
-structure definition conflict between XS module and perl build
-
-On OpenSolaris ($^O eq 'solaris', vers. 2.11), I'm trying to build an XS module which uses the XPGv4v2/Single Unix Spec. understanding of struct msghdr , specifically for "ancillary data" interrogation. However, the native perl (v5.8.4) was built without the requisite defines, and so the struct msghdr visible within my XS file is the older, BSD kind:: #include "EXTERN.h" #include "perl.h" /* older, "msg_accrights"-style msghdr now visible */ #include "XSUB.h" .... struct msghdr m; m.msg_control = buf; /* ERROR, structure has no member named "msg_control" */ .... Supplying the "right" #define s ( _XOPEN_SOURCE and _XOPEN_SOURCE_EXTENDED ) breaks the build, since it changes a great many things that perl was expecting. Is there an elegant way I can have the XS module use the structure definition I'd like?

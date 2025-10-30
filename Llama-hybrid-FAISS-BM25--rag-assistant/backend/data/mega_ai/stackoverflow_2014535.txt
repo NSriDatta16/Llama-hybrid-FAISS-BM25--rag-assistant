@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2014535
-[parent_id]: 2013944
-[tags]: 
-Oracle's INITCAP function won't do what's wanted here because it changes the first character of each word in the string to uppercase, all other characters are lowercased. Here's a PL/SQL function for Oracle which upcases the first character of a sentence and lowercases the rest: CREATE OR REPLACE FUNCTION UPCASE_SENTENCES(strText IN VARCHAR2) RETURN VARCHAR2 IS strResult VARCHAR2(32767); bUpcase_next BOOLEAN := TRUE; i NUMBER; thisC VARCHAR2(1); FUNCTION isWhitespace(strC IN VARCHAR2) RETURN BOOLEAN IS BEGIN IF ASCII(strC) 126 THEN RETURN TRUE; ELSE RETURN FALSE; END IF; END isWhitespace; BEGIN FOR i IN 1..LENGTH(strText) LOOP thisC := SUBSTR(strText, i, 1); IF bUpcase_next AND NOT isWhitespace(thisC) THEN strResult := strResult || UPPER(thisC); bUpcase_next := FALSE; ELSE strResult := strResult || LOWER(thisC); IF thisC IN ('.', '?', '!') THEN bUpcase_next := TRUE; END IF; END IF; END LOOP; RETURN strResult; END UPCASE_SENTENCES; I hope this helps.

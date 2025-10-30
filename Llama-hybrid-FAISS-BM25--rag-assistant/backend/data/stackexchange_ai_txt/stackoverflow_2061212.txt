@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2061212
-[parent_id]: 1682944
-[tags]: 
-It is in the registry just not necessarily in the place you are expecting (it is in the SAM). From what I can tell all that setting does is enable or disable the guest account, so, well, just enable or disable the account. You didn't say what you programming language you are using, so here is some simple C code to enable an account, if you need anything else I am sure there is plenty around via google. #include #pragma comment(lib, "Netapi32.lib") BOOL EnableUser(LPCWSTR lpUserName, BOOL bEnable) { BOOL bRet = FALSE; DWORD dwLevel = 1008; LPUSER_INFO_1 ui1; USER_INFO_1008 ui1008; NET_API_STATUS nStatus; nStatus = NetUserGetInfo(NULL, lpUserName, 1, (LPBYTE*)&ui1); if(nStatus == NERR_Success) { ui1008.usri1008_flags = ui1->usri1_flags; if(bEnable) { ui1008.usri1008_flags &= ~UF_ACCOUNTDISABLE; } else { ui1008.usri1008_flags |= UF_ACCOUNTDISABLE; } nStatus = NetUserSetInfo(NULL, lpUserName, dwLevel, (LPBYTE)&ui1008, NULL); NetApiBufferFree(ui1); if(nStatus == NERR_Success) { bRet = TRUE; } } return bRet; }

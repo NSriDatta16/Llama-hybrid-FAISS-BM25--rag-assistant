@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3260139
-[parent_id]: 3258299
-[tags]: 
-or the informat approach: /* generate a fake data set */ data trials; array trial(100) $2.; array t(4) $2. _temporary_ ("A'","B'","C'","D'"); do i = 1 to 100; j=ceil(ranuni(112233)*4); trial[i] = t[j]; end; drop i j ; run; proc print noobs; var trial1-trial10; run; /* create a 'recoding' format */ proc format; invalue trials (upcase) "A'","B'"=0 "C'","D'"=1 other=.; run; /* convert the values */ data newtrials; set trials; array trial(*) $2. trial1-trial100; array rtrial(100); do i = 1 to 100; rtrial[i]=input(trial[i], trials.); end; drop i trial:; run; proc print noobs; var rtrial1-rtrial10; run; which produces this output: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: trial1 trial2 trial3 trial4 trial5 trial6 trial7 trial8 trial9 trial10 D' D' B' A' A' D' A' B' C' D' ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: rtrial1 rtrial2 rtrial3 rtrial4 rtrial5 rtrial6 rtrial7 rtrial8 rtrial9 rtrial10 1 1 0 0 0 1 0 0 1 1

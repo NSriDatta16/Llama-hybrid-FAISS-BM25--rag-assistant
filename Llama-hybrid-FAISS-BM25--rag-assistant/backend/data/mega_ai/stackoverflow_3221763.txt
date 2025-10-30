@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3221763
-[parent_id]: 3221662
-[tags]: 
-well, here is my first whack at it: def show_contact_status(contact, method, contact_class) if @contact_method = contact_class.for_contact(contact, method).first @contact_method.formatted_status_message else "no status" end end And then in your models, you would add a named scope: named_scope :for_contact, lambda {|contact, method| {:conditions => {:contact_id => contact.id, :email_id => method.id}} } and then a formatted_status_message method in your ContactEmail model: def formatted_status_message "#{self.status.to_s} (#{self.date_sent.to_s(:long)}" end And in your other models: def formatted_status_message "sent #{self.date_sent_to_s(:long)}" end and you would call the method for email: show_contact_status(contact, method, ContactEmail) I tried to move as much as possible to the model layer and leverage that, instead of metaprogramming in this case.

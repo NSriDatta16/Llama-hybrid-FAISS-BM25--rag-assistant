@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 169564
-[parent_id]: 
-[tags]: 
-Arimax Prediction : Using Forecast Package
-
-The arimax function in the TSA package is to my knowledge the only R package that will fit a transfer function for intervention models. It lacks a predict function though which is sometimes needed. Is the following a work-around for this issue, leveraging the excellent forecast package? Will the predictive intervals be correct? In my example, the std errors are "close" for the components. Use the forecast package arima function to determine the pre-intervention noise series and add any outlier adjustment. Fit the same model in arimax but add the transfer function Take the fitted values for the transfer function (coefficients from arimax ) and add them as xreg in arima . Forecast with arima library(TSA) library(forecast) data(airmiles) air.m1 air.m1 Output: Coefficients: ma1 intercept I911-AR1 I911-MA0 0.5197 17.5172 0.5521 -0.4937 s.e. 0.0798 0.0165 0.2273 0.1103 sigma^2 estimated as 0.01223: log likelihood=88.33 AIC=-168.65 AICc=-168.09 BIC=-155.02 This is the filter, extended out 5 more periods that the data tf Output: Coefficients: ma1 intercept tf[1:(length(tf) - 5)] 0.5197 17.5173 1.0000 s.e. 0.0792 0.0159 0.2183 sigma^2 estimated as 0.01223: log likelihood=88.33 AIC=-168.65 AICc=-168.28 BIC=-157.74 Then to Predict predict(forecast.arima,n.ahead = 5, newxreg=tf[114:length(tf)])

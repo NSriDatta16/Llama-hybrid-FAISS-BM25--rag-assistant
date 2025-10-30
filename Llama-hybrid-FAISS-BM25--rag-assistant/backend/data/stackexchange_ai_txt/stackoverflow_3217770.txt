@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3217770
-[parent_id]: 3217645
-[tags]: 
-Since it's user-specific data, you can't use GAE's memcache for this. It's an application wide cache. I'd just store it in the session scope. HttpSession session = request.getSession(); List horses = (List ) session.getAttribute("horses"); if (horses == null) { horses = database.getHorses(); session.setAttribute("horses", horses); } That said, try to avoid using scriptlets as much as possible. The above can perfectly be done in a Servlet class and you can display them using JSTL c:forEach as follows: ${horse.name} Capturing generated page content can't be done by simply calling PrintWriter#toString() . The StringBuilder idea is funny, but it's really not worth it. Caching dynamic content has very little benefits for the purposes as you mention. Best what you in this case can do with regard to page caching is just to leverage the webbrowser's default task to cache GET requests. See also How to avoid Java code in JSP? How to capture dynamically generated content?

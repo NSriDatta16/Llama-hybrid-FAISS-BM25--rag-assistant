@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4014303
-[parent_id]: 
-[tags]: 
-How to use java.sql.Timestamp as real java.util.Date with JPA
-
-I have a problem about the management of dates with milliseconds. I understand the need to use the TIMESTAMP to store milliseconds: @Temporal(TIMESTAMP) @Column(name="DATE_COLUMN", nullable = false) @Override public java.util.Date getDate() { return this.date; } But if I can't compare this date to another instance of java.util.Date, unless I pay attention to the order of equals() call, because this.date instance is a java.sql.Timestamp. How to get a java.util.Date from JPA ? Because the date that comes from JPA, even if the method signature is a java.util.Date is actually an instance of java.sql.Timestamp. java.util.Date newDate = new Date(this.date.getTime()); this.date.equals(newDate) == false newDate.equals(this.date) == true I've try to modify my method in the persistence class: @Override public Date getDate() { return this.date == null ? null : new Date(this.date.getTime()); } It's working, but it's not efficient with lots of data. There are other options : I could modify the design of my persistence class, using @PostLoad in order to create a java.util.Date from the persited date after I retrieve it. I wonder if I can not get a result using a ClassTransformer ? Have you ever been confronted with this problem? What I do not correctly? What is the best way to handle this problem?

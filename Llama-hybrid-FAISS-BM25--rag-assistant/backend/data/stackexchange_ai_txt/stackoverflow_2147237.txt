@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2147237
-[parent_id]: 2123113
-[tags]: 
-Yes, there is a more elegant way. If you're using the ActiveRecord templates, and the Category and BlogPost tables have a foreign key relationship to the BlogToCategory table then your generated Category and BlogPost classes will each have an IQueryable property representing that relationship: IQueryable BlogToCategories {...} What you want is an IQueryable BlogPosts property on your Category class. Create a partial class for the Category, and add the IQueryable property: public IQueryable BlogPosts { get { var repo = BlogPost.GetRepo(); return from items in repo.GetAll() join linkItems in BlogToCategories on items.CatID equals linkItems.CategoryID select items; } } Now you can just call cat.BlogPosts.ToList() - the ToList() should be available, are you sure have included the namespace containing the extension methods?

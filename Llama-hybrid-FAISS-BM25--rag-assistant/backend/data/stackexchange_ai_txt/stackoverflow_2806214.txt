@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2806214
-[parent_id]: 2806039
-[tags]: 
-It seems like you need to separate the factory out from the created object. public interface TextTransformer { public T fromText(String text); public String toText(T source); } You can register TextTransformer classes however you like: public class FooTextTransformer implements TextTransformer { public Foo fromText(String text) { return ...; } public String toText(Foo source) { return ...; } } If you want FooTextTransformer to be a singleton, you can use a container like Spring to enforce that. Google has initiated a project to remove all manually enforced singletons from their codebase, but if you want to do an old-fashioned singleton, you could use a utility class: public class TextTransformers { public static final FooTextTransformer FOO = new FooTextTransformer(); ... public static final BarTextTransformer BAR = new BarTextTransformer(); } In your client code: Foo foo = TextTransformers.FOO.fromText(...); ... foo.setSomething(...); ... String text = TextTransformers.FOO.toText(foo); This is just one approach off the top of my head.

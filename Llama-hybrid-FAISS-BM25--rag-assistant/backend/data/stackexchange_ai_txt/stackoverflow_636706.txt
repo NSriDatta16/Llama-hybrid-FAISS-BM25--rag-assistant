@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 636706
-[parent_id]: 636675
-[tags]: 
-The simplest approach: when syncing, transfer all records where updated_at >= @last_sync_at . Down side: this approach doesn't tolerate clock skew very well at all. It is probably safer to keep a version number column that is incremented each time a row is updated (so that clock skew doesn't foul your sync process) and a last-synced version number (so that potentially conflicting changes can be identified). To make this bandwidth-efficient, keep a cache in each database of the last version sent to each replication peer so that only modified rows need to be transmitted. If this is going to be a star topology, the leaves can use a simplified schema where the last synced version is stored in each table. Some form of soft-deletes are required in order to support sync of deletes, however this can be in the form of a "tombstone" record which contains only the key of the deleted row. Tombstones can only be safely deleted once you are sure that all replicas have processed them, otherwise it is possible for a straggling replica to resurrect a record you thought was deleted.

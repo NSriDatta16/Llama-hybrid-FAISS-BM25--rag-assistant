@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 444011
-[parent_id]: 429508
-[tags]: 
-Another method is to raise and handle a user-defined exception: DECLARE l_selected APEX_APPLICATION_GLOBAL.VC_ARR2; duplicate_org_county EXCEPTION; ...snip... BEGIN -- get the list ids l_selected := APEX_UTIL.STRING_TO_TABLE(:P4_SELECT_LIST); -- process each in a nice loop FOR i IN 1..l_selected.count LOOP BEGIN -- do some data checking stuff... -- here we will look for duplicate entries, so we can noop if duplicate is found BEGIN SELECT county_id INTO v_dup_check FROM org_county_accountable WHERE organization_id = :P4_ID AND county_id = v_county_id; RAISE duplicate_org_county; EXCEPTION WHEN NO_DATA_FOUND THEN dbms_output.put_line('no dups found, proceeding'); END; -- here we have code we only want to execute if there are no dupes already EXCEPTION WHEN duplicate_org_county THEN NULL; END; END LOOP; END; I wouldn't normally do this, but if there were half a dozen reasons to jump to the next record, this might be preferable to multiple nested IFs.

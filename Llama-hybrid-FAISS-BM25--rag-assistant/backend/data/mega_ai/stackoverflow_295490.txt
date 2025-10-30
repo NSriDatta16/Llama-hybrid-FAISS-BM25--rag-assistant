@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 295490
-[parent_id]: 294779
-[tags]: 
-I'd either use INTERN or (possibly, you'd have to profile to be 100% sure it's helpful) a helper function that does the string concatenation and the initial find, then caches the result in a hashtable (keyed off the original symbol). That may be faster than a pure INTERN/CONCATENATE solution, would potentially generate less transient garbage, but would probalby end up using more long-term storage. Something along the lines of: (defvar *symbol-function-map* (make-hash-table)) (defun lookup-symbol (symbol) (or (gethash symbol *symbol-function-map*) (let ((function-name (intern (concatenate 'string "setup_" (symbol-name symbol))))) (setf (gethash symbol *symbol-function-map*) (symbol-function function-name))))) If you require the name of the function, rather than the function itself, leave out the call to SYMBOL-FUNCTION.

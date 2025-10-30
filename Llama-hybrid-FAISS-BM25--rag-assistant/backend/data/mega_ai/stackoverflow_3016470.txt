@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3016470
-[parent_id]: 2965263
-[tags]: 
-You can do either this: from p in People where p.Id == 190 from t in p.TitlesActedIn select new { Name = t.Name } But note that this requires you not specify the Id, this translates to: /People(190)/TitlesActedIn?$select=Name If you need to filter based on non-key properties, you need to do something like: from p in People where p.Name == "Morgan Freeman" select new Person { TitlesActedIn = p.TitlesActedIn } This translates to: /People?$filter=Name eq 'Morgan Freeman'&$expand=TitlesActedIn You could also just ask for the names of those titles, but LinqPad doesn't seem to have a way to do that, due to the type of properties it generates. It would look like: from p in People where p.Name == "Morgan Freeman" select new Person { TitlesActedIn = p.TitlesActedIn.Select(t => new Title { Name = t.Name }) } Which would translate to: /People?$filter=Name eq 'Morgan Freeman'&$expand=TitlesActedIn&$select=TitlesActedIn/Name Thanks, Vitek Karas [MSFT]

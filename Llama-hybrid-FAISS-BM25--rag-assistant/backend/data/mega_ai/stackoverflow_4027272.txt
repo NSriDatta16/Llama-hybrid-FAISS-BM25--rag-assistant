@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4027272
-[parent_id]: 4027102
-[tags]: 
-You could check for an existing organization and use it, or create one if none exists: Factory.define :membership do |membership| membership.user { Factory(:user) } membership.organization { Organization.first || Factory(:organization) } end FactoryGirl 4+ update: Factory.define do factory :membership do user { create(:user) } organization { Organization.first || create(:organization) } end end Another approach is to use unique identifiers (e.g.: names) for each factory that you want to reuse, then use initialize_with to generate it: factory :organization_1 do ignore { organization_name 'Sample Organization 1' } name { organization_name } initialize_with { Organization.find_or_create_by_name(organization_name) } end Now any reference to :organization_1 will always retrieve the same Organization . Obviously, you must use distinct names for this to work.

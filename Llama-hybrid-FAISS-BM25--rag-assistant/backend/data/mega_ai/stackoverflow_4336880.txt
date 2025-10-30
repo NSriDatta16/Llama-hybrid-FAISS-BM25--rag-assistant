@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4336880
-[parent_id]: 4336492
-[tags]: 
-Changing the first OpenMP loop from 1000000 to 2000000 will cause the same error. This indicates that the out of memory problem is with OpenMP stack limit. Try setting the OpenMP stack limit to unlimit in bash with ulimit -s unlimited You can also change the OpenMP environment variable OMP_STACKSIZE and setting it to 100MB or more. UPDATE 1: I change the first loop to { std::vector > nts(100); #pragma omp for schedule(static) ordered for(int begin = 0; begin Then, I get a memory error at i=1574803 on the Main thread. UPDATE 2: If you are using the Intel compiler, you can add the following to the top of your code and it will solve the problem (providing you have enough memory for the extra overhead). std::cout UPDATE 3: For completeness, like mentioned by another member, if you are performing some numerical computation, it is best to preallocate everything in a single new float[1000000] instead of using OpenMP to do 1000000 allocations. This applies to allocating objects as well.

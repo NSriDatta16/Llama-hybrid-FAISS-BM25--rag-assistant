@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4768793
-[parent_id]: 4645558
-[tags]: 
-Actually solution 3 is easier than it sounds. All other solutions are kind of patch and will break with time. Create a .net class which will encapsulate all access to the legacy code. Make it IDisposable. Change all the global variables to reside in a class named 'Context' Have all the C++ interfaces get the context object and pass it around as the first argument. This is probably the longest stage and you can avoid it using the "thread-local-storage" method suggested by someone else, but I would vote against that solution: if your library has any working threads which it runs, the "thread-local-storage" solution will break. Just add the context object where it is needed. Use the context object to access all global data. Have the context object created from .net ctor (by p/invoking a new create_context function) and deleted by the .net Dispose() method. Enjoy.

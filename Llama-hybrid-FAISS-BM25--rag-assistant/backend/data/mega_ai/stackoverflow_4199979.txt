@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4199979
-[parent_id]: 4199950
-[tags]: 
-C-style casts, such as (int*) are equivalent to C++ const_cast in their ability to cast away constness, so you can side-step const-correctness by using them, although such use is unrecommended (can lead to undefined behaviour). int main() { const int x = 1; (int&)x = 2; std::cout On my system, the above writes 1 to stdout. You might experience different behaviour. On the other hand... void foo(const int& x) { (int&)x = 2; } int main() { int x = 1; foo(x); std::cout This writes 2 for me. The difference is that the const used in foo is const as a type qualifier, while in the main in the first example it was used as a storage class. It's not always easy to see whether a variable was declared with const as a storage class, so it's best not to rely on a const_cast or C-style cast to cast away const. It's best just to use static_cast in most situations as this will warn you at compile time of any suspect behaviour in the form of a compile error.

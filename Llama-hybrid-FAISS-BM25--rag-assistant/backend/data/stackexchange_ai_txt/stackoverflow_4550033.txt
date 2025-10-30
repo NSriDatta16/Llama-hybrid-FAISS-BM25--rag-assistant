@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4550033
-[parent_id]: 4478216
-[tags]: 
-I'm late to the party, but have you considered using the System.Runtime.MemoryFailPoint class? It does a bunch of stuff to ensure that the requested allocation would succeed and throws InsufficientMemoryException if it fails; you can catch this and stop your transfer. You can probably predict an average size of incoming frames and try to allocate 3 or 4 of them, then stop acquisition when a failure is made. Maybe something like this? const int AverageFrameSize = 10 * 1024 * 1024 // 10MB void Image_OnAcquired(...) { try { var memoryCheck = new MemoryFailPoint(AverageFrameSize * 3); } catch (InsufficientMemoryException ex) { _camera.StopAcquisition(); StartWaitingForFreeMemory(); return; } // if you get here, there's enough memory for at least a few // more frames } I doubt it'd be 100% foolproof, but it's a start. It's definitely more reliable than the performance counter for reasons that are explained in the other answers.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4711301
-[parent_id]: 4662080
-[tags]: 
-I ended up doing my own before filter on my controller that checks the subdomain and compares it against the subdomains on which the user is allowed to login. #application_controller.rb def check_account_id account ||= Account.find(current_user.account_id) account.domains.each do |domain| if domain.name == request.subdomain return true end end flash[:error] = "You must be logged in to access this subdomain" sign_out current_user redirect_to new_user_session_path end and in my object controller #myobjects_contoller.rb before_filter: check_account_id before_filter: authenticate_user! .... Not sure if this the most elegant way but it does work. It would be nice though if there was a way to let devise know about allowed subdomains. Perhaps this is a potential feature request.

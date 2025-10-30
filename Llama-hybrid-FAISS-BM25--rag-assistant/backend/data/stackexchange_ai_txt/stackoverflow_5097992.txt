@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5097992
-[parent_id]: 5097568
-[tags]: 
-Just wrap whatever you want to store the cars in with a typehinted API: class Cars implements IteratorAggregate { protected $storage; public function __construct(SplObjectStorage $storage) { $this->storage = $storage; } public function addCar(Car $car) { $this->storage->attach($car); } public function removeCar(Car $car) { $this->storage->detach($car); } public function getIterator() { return clone $this->storage; } // … } Whether you use SplObjectStorage or ArrayObject or a plain array for $storage is up to you. It's the wrapper that's taking care of that nothing but Cars get into it. Full working example on codepad If you prefer to use array notation, e.g. square brackets, implement ArrayAccess . class Cars implements IteratorAggregate, ArrayAccess { // … public function offsetSet($offset, $value) { if($value instanceof Car) { $this->storage[$offset] = $value; } else { throw … } } } Full working example at codepad

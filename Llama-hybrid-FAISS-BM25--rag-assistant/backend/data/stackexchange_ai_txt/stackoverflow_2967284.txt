@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2967284
-[parent_id]: 2918057
-[tags]: 
-This can be done with just one line of code in your configuration. Assuming you have this: Entities: - Customer - Order And have a generic repository model like this: Repository : IRepository And have a app services that look like: public AppService(IRepository custRepo, IRepository orderRepo) You would have something like this. Notice the bit about using the scanner to hook up your custom repositories. public class SmRegistry : Registry { public SmRegistry() { For(typeof (IRepository<>)) .Use(typeof (Repository<>)); //using this will find any custom repos, like CustomerRepository : Repository //Scan(scanner => // { // scanner.TheCallingAssembly(); // scanner.ConnectImplementationsToTypesClosing(typeof (IRepository<>)); // }); } } Assuming your Repositories are defined in some other assembly from your application, you can use Registries to hook it all together. Check out this post: http://blog.coreycoogan.com/2010/05/24/using-structuremap-to-configure-applications-and-components/

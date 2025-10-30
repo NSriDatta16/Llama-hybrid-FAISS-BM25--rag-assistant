@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1378550
-[parent_id]: 
-[tags]: 
-Pattern for closing the state of a ServiceClient
-
-I want to ensure that a WCF-ServiceClient State will be closed after using the service. I implemented the following Code to ensure that: public static class ServiceClientFactory { public static ServiceClientHost CreateInstance () where T : class, ICommunicationObject, new() { return new ServiceClientHost (); } } public class ServiceClientHost : IDisposable where T : class, ICommunicationObject, new() { private bool disposed; public ServiceClientHost() { Client = new T(); } ~ServiceClientHost() { Dispose(false); } public T Client { get; private set; } public void Dispose() { Dispose(true); GC.SuppressFinalize(this); } protected virtual void Dispose(bool disposeManagedResources) { if(!disposed) { if(disposeManagedResources) { Client.Close(); Client = null; } disposed = true; } } } usage: using (var host = ServiceClientFactory.CreateInstance ()) { host.Client.DoSomething(); } I was wondering if there is a better/elegant solution than mine? Thanks for any hints!

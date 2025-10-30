@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 432749
-[parent_id]: 398865
-[tags]: 
-It is some time ago that this question was asked, but I now also came across this problem and first implemented the inverse like you did. However, this is apparently numerical extremely unstable. Following Gaussian Processes for Machine Learning I did a more stable implementation, where I first decompose the approximate co-variance matrix in a symmetric way as $K_{nm}K_{mm}^{-1}K_{mn}=K_{nm}(L_{mm}L_{mm}^T)^{-1}K_{mn}=K_{nm}(L_{mm}^T)^{-1} L_{mm}^{-1}K_{mn}=\bar{K}_{nm}\bar{K}_{mn}$ where I used the Cholesky decomposition $K_{mm}=L_{mm}L_{mm}^T$ and inverted it to form the intermediate $\bar{K}_{nm}=L_{mm}^{-1}K_{mn}$ , but you can also use an eigen decomposition to construct a similar intermediate. Afterwards I could use the matrix inversion lemma to get $(\hat{K}_{nm}\hat{K}_{mn}+\sigma^2I)^{-1}=\sigma^{-2}I-\sigma^{-2}\hat{K}_{nm}(\sigma^2I+\hat{K}_{mn}\hat{K}_{nm})^{-1}\hat{K}_{mn}$ which is at least for my cases numerical more stable. Still, for co-variance matrices with large condition number this still might be not so robust.

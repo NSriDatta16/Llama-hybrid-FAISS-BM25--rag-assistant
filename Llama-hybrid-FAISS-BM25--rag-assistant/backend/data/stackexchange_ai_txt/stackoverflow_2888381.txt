@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2888381
-[parent_id]: 2887928
-[tags]: 
-Basically, the way memcache distributed storage works, is that you tell it about all its servers. Then when you ask for a key (either to be stored or fetched), it creates a hash of that key. That hash then goes through an algorithm to determine which server in the pool it should go to (this is all done at the client). If you remove offline servers from the pool, that hash calculation will be different, and your entire store may be compromised (the data will still be there, but you might not be able to access it). The status flag lets you handle a server fail (one that didn't just happen) in a sizable application. So, what you can do is have a configuration file for your application that lists all the servers and its status. Then, if you need to take one of the servers offline for a few minutes (or few hours), you can set that server's status flag to false. That way, php won't try to look for it (and hit a timeout), but the hash mapping will stay the same (So everything else will still be accessible). Make sense?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3665475
-[parent_id]: 3665239
-[tags]: 
-Here is a solution to the problem using a CTE. It isn’t particularly elegant, but it gets the job done. DECLARE @set TABLE (Element INT); INSERT INTO @set(Element) VALUES (1); INSERT INTO @set(Element) VALUES (2); INSERT INTO @set(Element) VALUES (3); INSERT INTO @set(Element) VALUES (4); INSERT INTO @set(Element) VALUES (5); INSERT INTO @set(Element) VALUES (6); ;WITH array (Element1, Element2, Row) AS ( SELECT t.Element , t2.Element , ROW_NUMBER() OVER(ORDER BY t.Element) FROM @set AS t CROSS JOIN @set AS t2 WHERE t.Element <> t2.Element ) SELECT a.Element1 , a.Element2 , '{' + CONVERT(VARCHAR(5),a.Element1) + ',' + CONVERT(VARCHAR(5),a.Element2) + '}' AS 'Subset' FROM array AS a WHERE NOT EXISTS (SELECT * FROM array AS sa WHERE sa.Element1 = a.Element2 AND sa.Element2 = a.Element1 AND sa.Row

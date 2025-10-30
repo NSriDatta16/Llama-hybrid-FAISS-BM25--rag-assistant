@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 476925
-[parent_id]: 
-[tags]: 
-Shapley values do not add up to prediction
-
-I am building a RF model to predict cervical cancer from biopsies ( data ). I am then trying to explain the predictions using Shapley values. To do this I use the mli library in R. I am facing however two issues: The predicted probabilities from the Random Forest and the Shapley values differ. I guess this can be attributed to MC sampling but it is nevertheless a bit worrying. the real issue : when I get the Shapley values for a given prediction, the sum of the contributions + average class probability does not add up to the final prediction . This is not supposed to happen from what the package link states as the Efficiency property of these values. I have tried to de-transform it assuming that the formula uses a log-odds transformation under the hood, but nothing sensible is coming out. Any ideas? Code for reproduction (download the dataset from this link ): library(iml) library(randomForest) testdf $new(model=testmod, data = cervical %>% select(-Biopsy), y = as.factor(cervical$ Biopsy), type="prob") shapley $new(predictor, x.interest = (cervical %>% select(-Biopsy))[1, ], sample.size = 100) shapley$ plot() shapley $y.hat.interest shapley$ y.hat.average shapley$results %>% filter(class==1) %>% summarise(sum(phi)) #should be equal to the difference between y.hat.interest and y.hat.average

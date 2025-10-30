@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 941154
-[parent_id]: 939689
-[tags]: 
-Write an Criteria query and use the setFetchMode method to change the fetching behavior for the parent and createCriteria method to additionally query the collection. Criteria c = session.createCriteria(SomeClass.class).add(Restrictions.idEq(id)); if (parents) { c.setFetchMode("parents", FetchMode.EAGER); } if (historicalData) { c.createCriteria("collection", Criteria.LEFT_JOIN) .add(Restriction.lt("date", date)) .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); } return c.uniqueResult(); ...this is assuming the default setting is LAZY (as per Hibernate default). It is no option in Hibernate to leave properties null that do have a value (in this case a many-to-one association. The field will hold a proxy that can be used to lazily load the referred object. If the code never touches the object, it will not get loaded. The same is true for the collection: if not fetched, it will hold a collection-proxy (a hibernate class that implements a collection interface), which will only load the contents when invoked.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3613202
-[parent_id]: 3612731
-[tags]: 
-Did you create a custom imageview class to handle the touches? If not, those methods will not work as you want them to. What you have to do is create a custom subclass of a UIImageView, and then use delegation to communicate back to the scrollview what happened: Ex: MyImageView.h @protocol MyImageViewDelegate - (void)imageTouched:(UIImage *)img; @end @interface MyImageView : UIImageView { id *MyImageViewDelegate* delegate; } @property (nonatomic, assign) id *MyImageViewDelegate* delegate; @end (replace *'s with 's respectively, the code box thinks its html and tries to render it) And MyImageView.m @implementation MyImageView @synthesize delegate; - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { } - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event { [delegate imageTouched:self.image]; } - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event { } @end When you alloc/init a MyImageView make sure to set the delegate to the scrollview. Then on the scrollview page, put the imageTouched: method, and handle the popup there.

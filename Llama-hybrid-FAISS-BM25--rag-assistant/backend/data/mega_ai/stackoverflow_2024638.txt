@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2024638
-[parent_id]: 1994339
-[tags]: 
-What about doing your expansion in the shell instead of in make? MY_VAR = $$(ls *.foo) define MY_VAR2 @echo $(1) $(MY_VAR) endef foo: create_files $(call MY_VAR2, ls) @rm -f *.foo create_files: @touch foo.foo @touch bar.foo The double-$ will allow the shell to expand the file search part. I can't help but agree with the other posts about there being a more elegant way to do this, but this is an option for you. Works for your second example too: MY_VAR = $(wildcard *.foo) TEST_VAR = $$(ls *.foo) define MY_VAR2 @touch foo.foo @touch bar.foo @echo "MY_VAR" $(1) $(MY_VAR) @echo "TEST_VAR" $(1) $(TEST_VAR) endef foo: $(call MY_VAR2, ls) @rm -f *.foo

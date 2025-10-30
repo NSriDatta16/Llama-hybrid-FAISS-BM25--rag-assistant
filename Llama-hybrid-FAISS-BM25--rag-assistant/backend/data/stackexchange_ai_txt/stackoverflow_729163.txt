@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 729163
-[parent_id]: 729088
-[tags]: 
-Your realloc is likely failing because you're not reserving a byte for the trailing NUL ('\0') character in strings -- adding a +1 to your realloc size: if(strlen(frags[i+1]) > strlen(frags[i])) frags[i] = realloc(frags[i], (strlen(frags[i+1]) + 1)*sizeof(char)); strcpy(frags[i], frags[i+1]); will fix that bug. The specific error you're getting is likely because one of your strings is length 0, and realloc(foo, 0) simply gives you that error on your system, or because you're writing the trailing '\0' in unallocated memory and overwriting something else important, causing corruption. Simply rearranging pointers (frags[i] = frags[i+1], or using memmove()) is easier, quicker and stops you wasting memory, though.

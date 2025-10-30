@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1144838
-[parent_id]: 1144768
-[tags]: 
-Nothing quite that straightforward. The easiest solution is probably to make an in-memory CGContext with a known pixel format, draw the image into that context, then read/modify the pixels in the known-format buffer. I don't think CG supports a color space with a separate saturation channel, so you'll have to either convert from RGB to HSV or HSL, or do the calculations directly in the RGB space. One way to do the calculation directly in RGB might be something like this: average = (R + G + B) / 3; red_delta = (R - average) * 11 / 10; green_delta = (G - average) * 11 / 10; blue_delta = (B - average) * 11 / 10; R = average + red_delta; G = average + green_delta; B = average + blue_delta; // clip R,G,B to be in 0-255 range This will move the channels that are away from the mean about 10% further away. This is almost like increasing the saturation, though it'll give hue shifts for some colors.

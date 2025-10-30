@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3364440
-[parent_id]: 3364213
-[tags]: 
-You could have a look at strace netstat -anlp which shows that you can look in /proc/net/udp to find a list of all sockets, like so: sl local_address rem_address st tx_queue rx_queue tr tm->when retrnsmt uid timeout inode 53: 0100007F:0035 00000000:0000 07 00000000:00000000 00:00000000 00000000 103 0 11075 2 ffff1231230f90c0 This shows how "some process" is listening at UDP port 53 (for the slow reader, 0x0035 == 53 and 0x0100007F is localhost) The inode (11075) is the link to the fd. Looking in /proc/ /fd/ we see: ... lrwx------ 1 bind bind 64 2010-07-20 06:26 513 -> socket:[11075] ... So the fd is 513. I'm not suggesting that you follow this route, but I think it is at least one way to obtain what you asked for.

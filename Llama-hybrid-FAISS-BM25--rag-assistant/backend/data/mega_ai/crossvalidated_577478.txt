@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 577478
-[parent_id]: 576989
-[tags]: 
-This is not a problem with LSTM, it is a problem with your target variable. If this is the S&P 500 index, you are trying to predict a largely unpredictable time series. Your best bet is a random walk model for the logarithm of the index, $y_t=y_{t-1}+\varepsilon_t$ where $y_t:=\log(x_t)$ with $x_t$ being the index value at time $t$ . (You could add a drift term to the random walk, but that would not make a big difference for one-day-ahead forecasting.) An optimal point forecast under square loss is $\hat y_{t+1|t}=y_t$ which lags the actual, unknown value $y_{t+1}$ by one day. Your LSTM is trying to approximate this underlying reality. (LSTM may beat the random walk model in sample or even on a test sample if you retune the model and let it predict the same test sample multiple times and then pick the best case. However, it is not likely to beat the random walk model truly our of sample where it only gets one go at it without retuning.)

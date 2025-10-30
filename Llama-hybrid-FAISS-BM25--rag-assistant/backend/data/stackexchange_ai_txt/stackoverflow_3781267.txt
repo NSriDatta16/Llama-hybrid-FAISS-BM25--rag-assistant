@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3781267
-[parent_id]: 3781056
-[tags]: 
-The basic test of whether NHibernate can work with a Linq statement is whether you can serialize that statement's expression tree, then deserialize it in a different process and get the right answer. That means no external closures; the lambda must work only with what it creates or is given as a parameter. Linq2NH 1.0, IIRC, also chokes when using members of the class that are not mapped, so if, for instance, you have a read-only calculated property like a special weighted or rolling average, you must map it to a DB column in order to reference it in the lambda (or recreate the logic in the lambda). This is because the expression tree will eventually be boiled down into SQL (through one of NH's intermediates; in 2.x it's ICriteria, in 3.x it's HQL) and if NH cannot take an expression and convert it 1:1 into a SQL expression that will evaluate successfully, it's just not going to work. There is one special case: Linq2NH, IIRC, is smart enough to turn an IList.Contains() expression into an IN clause. The list must be defined within the lambda (like new[]{"1","2"}.Contains(m.ID) ).

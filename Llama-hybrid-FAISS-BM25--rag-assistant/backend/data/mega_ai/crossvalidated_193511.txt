@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 193511
-[parent_id]: 
-[tags]: 
-xgboost binary logistic regression
-
-I am having problems running logistic regression with xgboost that can be summarized on the following example. Lets assume I have a very simple dataframe with two predictors and one target variable: df= pd.DataFrame({'X1' : pd.Series([1,0,0,1]), 'X2' : pd.Series([0,1,1,0]), 'Y' : pd.Series([0,1,1,0], )}) we can clearly see that when X1 =1 and X2=0, Y is 0 and when X1=0 and X2=1, Y is 1. My idea is to build a model that outputs the probability that an observation belongs to each one of the classes, so if I run xgboost trying to predict two new observations (1,0) and (0,1) like so: X = df[['X1','X2']].values y = df['Y'].values params = {'objective': 'binary:logistic', 'num_class': 2 } clf1 = xgb.train(params=params, dtrain=xgb.DMatrix(X, y), num_boost_round=100) clf1.predict(xgb.DMatrix(test.values)) the output is: array([[ 0.5, 0.5], [ 0.5, 0.5]], dtype=float32) which, I imagine, means that for the first observation, there is 50% chance it belonging to each one of the classes. I'd like to know why wont the algorithm output a proper (1,0) or something closer to that if the relationship between the variables is clear. FYI, I did try with more data (Im only using 4 rows for simplicity) and the behavior is almost the same; what I do notice is that, not only the probabilities do not sum to 1, they are often very small like so: array([[ 0.00356463, 0.00277259], [ 0.00315137, 0.00268578], [ 0.00453343, 0.00157113],

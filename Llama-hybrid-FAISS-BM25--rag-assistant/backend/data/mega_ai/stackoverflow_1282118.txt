@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1282118
-[parent_id]: 
-[tags]: 
-Winpcap - Having troubles sending data
-
-I'm using Tamir's SharpPCap to try to send data to my msn. Currently, for testing purposes, my idea is to wait for any msg received by mymsn@msn.com and then send the packet itself again, that is, make any message appear repeated forever on my msn. I thought this had to work, as I am simply getting the packet itself I receive, and resending it again. For some reason nothing appears on my msn, although I will see printed in the console a lot of "caught data, resending it". Any ideas? Thanks class Program { static PcapDevice device; static void Main(string[] args) { device = SharpPcap.GetAllDevices()[0]; device.PcapOnPacketArrival += new SharpPcap.PacketArrivalEvent(device_PcapOnPacketArrival2); device.PcapOpen(true, 1000); device.PcapStartCapture(); Console.ReadKey(); } static void device_PcapOnPacketArrival2(object sender, Packet packet) { TCPPacket tcpPacket = packet as TCPPacket; if (tcpPacket == null) { return; } string data = Encoding.Default.GetString(tcpPacket.Data); if (!data.StartsWith("MSG mymsn@msn.com")) { return; } Console.WriteLine("caught data, resending it"); device.PcapSendPacket(tcpPacket); } }

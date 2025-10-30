@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3583774
-[parent_id]: 3583667
-[tags]: 
-By setting the Parent, you have a circular reference. PHP will try to serialize the composite, all of it's nodes and the nodes in turn will try to serialize the composite.. boom! You can use the magic __sleep and __wakeup() methods to remove (or do whatever to the) the parent reference when serializing. EDIT: See if adding these to Composite fixes the issue: public function __sleep() { $this->children = iterator_to_array($this->children); return array('parent', 'children'); } public function __wakeup() { $storage = new SplObjectStorage; array_map(array($storage, 'attach'), $this->children); $this->children = $storage; }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2519616
-[parent_id]: 2519580
-[tags]: 
-Strings are immutable in Python, so the implementation can decide whether to intern (that's a term often associated with C#, meaning that some strings are stored in a pool) strings or not. In your example, you're dynamically creating strings. CPython does not always look into the pool to detect whether the string is already there - it also doesn't make sense because you first have to reserve memory in order to create the string, and then compare it to the pool content (inefficient for long strings). But for strings of length 1, CPython does look into the pool (cf. "stringobject.c"): static PyStringObject *characters[UCHAR_MAX + 1]; ... PyObject * PyString_FromStringAndSize(const char *str, Py_ssize_t size) { ... if (size == 1 && str != NULL && (op = characters[*str & UCHAR_MAX]) != NULL) { #ifdef COUNT_ALLOCS one_strings++; #endif Py_INCREF(op); return (PyObject *)op; } ... So: a = str(num) b = str(num) print a is b # But when using constant strings directly in your code, CPython uses the same string instance: a = "text" b = "text" print a is b #

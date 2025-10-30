@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5621757
-[parent_id]: 5621203
-[tags]: 
-You don't have optimisation turned on, so the compiler is generating really bad code. The primary storage for all your values is in the stack frame, and values are loaded into registers only long enough to do the calculations. The code actually breaks down into: pushl %ebp movl %esp, %ebp subl $32, %esp Standard function prologue, setting up a new stack frame, and reserving 50 bytes for the stack frame. movl $0, -4(%ebp) movl $1, -24(%ebp) movl $2, -20(%ebp) movl $3, -16(%ebp) movl $4, -12(%ebp) movl $6, -8(%ebp) Fill the stack frame with dummy values (presumably as a debugging aid). movl 8(%ebp), %eax addl $1, %eax movl %eax, -4(%ebp) Read the parameter c out of the stack frame, add one to it, store it into a (different) stack slot. movl -4(%ebp), %eax leave ret Read the value back out of the stack slot and return it. If you compile this with optimisation, you'll see most of the code vanish. If you use -fomit-frame-pointer -Os , you should end up with this: max: movl 4(%esp), %eax incl %eax ret

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1026062
-[parent_id]: 1026042
-[tags]: 
-If what you need is some sort of "circular" array of points, then your solution is ok. However, to me, it looks just like hiding missusage of indexing operator behind some "safe" logic, so I would be against your proposed solution. If don't want to allow index overflow, then you could check and throw an exception. quint16 curvePoint::operator[](size_t index) { if( index >= dimensions) { throw std::overflow_error(); } return point[ index ]; } If you want to have less overhead, you could avoid exception, by using debug time assertions (assume that the provided index is always valid): quint16 curvePoint::operator[](size_t index) { assert( index However, I suggest that, instead of using point and dimension members, use a std::vector for point storage. It already has an index based access that you could use: quint16 curvePoint::operator[](size_t index) { // points is declared as std::vector points; return points[ index ]; }

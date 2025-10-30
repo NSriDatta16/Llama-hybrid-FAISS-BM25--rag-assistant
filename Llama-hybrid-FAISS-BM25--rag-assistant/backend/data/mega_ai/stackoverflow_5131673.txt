@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5131673
-[parent_id]: 5131459
-[tags]: 
-Roberto's suggestion is a good one; it will help diagnose where the error is occurring (i.e. whether it's uWSGI or Cherokee). I've also recently fought to get uWSGI and Cherokee to work together. I ended up configuring the uWSGI source in Cherokee manually: In Cherokee Admin, under the "Sources" tab, add a new source with nickname "uWSGI Source" and socket "/tmp/foo.sock" Change the type to "Local Interpreter" In the interpreter field, enter: /usr/local/bin/uwsgi -x /path/to/uwsgiconfig.xml In rule management for the virtual server, click to add a new behaviour rule. Choose a manual configuration of type "Directory" with a path of "/" Set the handler to "uWSGI" Scroll to the bottom and set "Round Robin" for the balancer Add the "uWSGI Source" information source Save changes and restart Cherokee In my uWSGI config file I have something like this (adapted to your example): /srv/mobile-site/app/ /srv/mobile-site/app/mobilecms.py app /tmp/foo.sock 666 1 Note that the Cherokee uWSGI wizard doesn't accept this as a valid configuration file (hence the manual configuration).

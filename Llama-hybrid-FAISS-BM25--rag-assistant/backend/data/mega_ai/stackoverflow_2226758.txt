@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2226758
-[parent_id]: 2133776
-[tags]: 
-I was able to solve this issue today. It turns out that the codebehind was setting the CacheControl property of the response to HttpCacheability.NoCache . Removing that line of code solved the issue. The other half of the fix was correctly registering the mime type and file extension with a ProgId. I stripped down the response to just content-disposition: attachment; filename=xxx and a binary write of the string data. IE correctly displayed the Open or Save dialog box, even though the mime sniff reported the file as text/html (which really should have been text/plain). I added back the content type header and retested, then the nosniff option and retested and finally the cache control. In between each test, I rebooted the VM to ensure it was a pristine testing environment (ie, nothing cached or preloaded). Only the cache control line affected the behavior in a negative fashion.

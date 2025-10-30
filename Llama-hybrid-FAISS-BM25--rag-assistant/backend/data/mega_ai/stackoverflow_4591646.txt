@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4591646
-[parent_id]: 4591612
-[tags]: 
-Your XQuery is not correct, I believe - try this instead: SELECT Root.Obj.value('(FooProperty1)[1]', 'INT') AS [fooProperty1], Root.Obj.value('(FooProperty2)[1]', 'INT') AS [fooProperty2] FROM @xml.nodes('/ROOT/Object') AS Root(Obj) The @xml.nodes() defines XML fragments - one for each entry in the XPath - and you need to assign it a two-identifier alias for a pseudo-table with a single column (format: Root(Obj) ). That single column of that pseudo-table is the XML fragment your XPath query selected from the XML document. Based on that alias, you can then reach into those XML fragments and pull out the various properties. Update: for your second XML, with the XML attributes, use this instead: SELECT Root.Obj.value('(@FooProperty1)[1]', 'INT') AS [fooProperty1], Root.Obj.value('(@FooProperty2)[1]', 'INT') AS [fooProperty2] FROM @xml.nodes('/ROOT/Object') AS Root(Obj) By specifying @FooProperty1 you're grabbing the XML attribute instead of the XML sub-element from that / node you're currently looking at.

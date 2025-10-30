@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3539240
-[parent_id]: 
-[tags]: 
-Google App Engine: how to parallelize downloads using TaskQueue or Async Urlfetch?
-
-My Gae application retrieves JSON data from a third party site; given an ID representing the item to download , the item's data on this site is organized in multiple pages so my code has to download chunks of data, page after page, until the data of the last available page is retrieved. My simplified code looks like this: class FetchData(webapp.RequestHandler): def get(self): ... data_list = [] page = 1 while True: fetched_data= urlfetch.fetch('http://www.foo.com/getdata?id=xxx&result=JSON&page=%s' % page) data_chunk = fetched_data["data"] data_list = data_list + data_chunk if len(data_list) == int(fetched_data["total_pages"]): break else: page = page +1 ... doRender('dataview.htm',{'data_list':data_list} ) The data_list results is an ordered list where the first item has data of page number 1 and the last item has data of the latest page; this data_list , once retrieved, is rendered in a view. This approach works 99% of times but sometimes, due to the 30 seconds limit imposed by Google App Engine, on items with many pages i get the dreaded DeadlineExceededError . I would like to know if using TaskQueue | Deferred | AsyncUrlfetch I could improve this algorithm parallelizing in some way the N urlfetch calls.

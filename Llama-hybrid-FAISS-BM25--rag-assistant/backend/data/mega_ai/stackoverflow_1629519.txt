@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1629519
-[parent_id]: 1629501
-[tags]: 
-Looks pretty standard to me. This of course assumes that: JsonView is thread safe - which I think it is Your implementation of UserService is also thread safe Normally with this style of service singleton they are unless you have done something like keeping state in a member of UserServiceImpl From what I can see in GenericCRUDDAO I'd pay close attention to the member session . If GenericCRUDDAO are singleton (one per domain object by the look of it) then you are going to run in to a bit of bother there. The implementation of getSession() could actually be shorted to: public Session getSession() { return ((SessionFactory) sessionFactory).getCurrentSession(); } This should be thread safe, assuming that the sessionFactory is using thread local sessions.

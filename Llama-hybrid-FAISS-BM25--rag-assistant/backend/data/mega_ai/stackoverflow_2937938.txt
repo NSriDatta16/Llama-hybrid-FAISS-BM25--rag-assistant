@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2937938
-[parent_id]: 602104
-[tags]: 
-This blog answered the question for me; http://weblogs.asp.net/jeff/archive/2009/07/01/304-your-images-from-a-database.aspx Basically, you need to read the request header, compare the last modified dates and return 304 if they match, otherwise return the image (with a 200 status) and set the cache headers appropriately. Code snippet from the blog: public ActionResult Image(int id) { var image = _imageRepository.Get(id); if (image == null) throw new HttpException(404, "Image not found"); if (!String.IsNullOrEmpty(Request.Headers["If-Modified-Since"])) { CultureInfo provider = CultureInfo.InvariantCulture; var lastMod = DateTime.ParseExact(Request.Headers["If-Modified-Since"], "r", provider).ToLocalTime(); if (lastMod == image.TimeStamp.AddMilliseconds(-image.TimeStamp.Millisecond)) { Response.StatusCode = 304; Response.StatusDescription = "Not Modified"; return Content(String.Empty); } } var stream = new MemoryStream(image.GetImage()); Response.Cache.SetCacheability(HttpCacheability.Public); Response.Cache.SetLastModified(image.TimeStamp); return File(stream, image.MimeType); }

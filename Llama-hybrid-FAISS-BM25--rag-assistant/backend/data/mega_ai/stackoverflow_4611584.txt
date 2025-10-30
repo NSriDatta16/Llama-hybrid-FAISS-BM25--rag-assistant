@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4611584
-[parent_id]: 4601309
-[tags]: 
-The List ID in the query string on AccessDenied.aspx can in fact be unrelated to the actual error. The relevant code was something like try { throw new AccessDeniedException(); } catch (Exception ex) {} storageList = _RootWeb.GetList(ListUrl); If CatchAccessDeniedException is not disabled, SharePoint will see the exception despite the catch and abort the thread. Since this is controlled on another thread, it's not synchronous and the code continues to run long enough that the thread aborts in the middle of accessing the list. Both parts of the error message are technically correct - There was an AccessDeniedException, and the last operation was trying to open the list - but there is no actual connection between the two. The actual problem turned out to be service account permissions on mysites, which naturally never appeared in any logs or error messages.

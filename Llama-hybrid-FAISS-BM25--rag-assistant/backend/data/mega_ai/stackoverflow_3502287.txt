@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3502287
-[parent_id]: 3501890
-[tags]: 
-What you are asking for, essentially, is called Virtual Construction , ie the ability the build an object whose type is only known at runtime. Of course C++ doesn't allow constructors to be virtual, so this requires a bit of trickery. The common OO-approach is to use the Prototype pattern: class Chip { public: virtual Chip* clone() const = 0; }; class ChipA: public Chip { public: virtual ChipA* clone() const { return new ChipA(*this); } }; And then instantiate a map of these prototypes and use it to build your objects ( std::map ). Typically, the map is instantiated as a singleton. The other approach, as has been illustrated so far, is similar and consists in registering directly methods rather than an object. It might or might not be your personal preference, but it's generally slightly faster (not much, you just avoid a virtual dispatch) and the memory is easier to handle (you don't have to do delete on pointers to functions). What you should pay attention however is the memory management aspect. You don't want to go leaking so make sure to use RAII idioms.

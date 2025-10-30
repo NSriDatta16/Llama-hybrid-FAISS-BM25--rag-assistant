@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 934127
-[parent_id]: 
-[tags]: 
-GNU make with many target directories
-
-I have to integrate the generation of many HTML files in an existing Makefile . The problem is that the HTML files need to reside in many different directories. My idea is to write an implicit rule that converts the source file (*.st) to the corresponding html file %.html: %.st $(HPC) -o $@ $ and a rule that depends on all html files all: $(html) If the HTML file is not in the builddir, make doesn't find the implicit rule: *** No rule to make target . If I change the implicit rule like so $(rootdir)/build/doc/2009/06/01/%.html: %.st $(HPC) -o $@ $ it's found, but then I have to have an implicit rule for nearly every file in the project. According to Implicit Rule Search Algorithm in the GNU make manual, rule search works like this: Split the entire target name t into a directory part, called d , and the rest, called n . For example, if t is src/foo.o , then d is src/ , and n is foo.o . Make a list of all the pattern rules one of whose targets matches t or n . If the target pattern contains a slash, it is matched against t ; otherwise, against n . Why is the implicit rule not found, and what would be the most elegant solution, assuming GNU make is used? Here is a stripped down version of my Makefile : rootdir = /home/user/project/doc HPC = /usr/local/bin/hpc html = $(rootdir)/build/doc/2009/06/01/some.html %.html: %.st $(HPC) -o $@ $

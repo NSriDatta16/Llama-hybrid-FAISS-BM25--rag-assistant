@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2969537
-[parent_id]: 2969450
-[tags]: 
-MVC doesn't cache the results. IE does. So you have to tell IE not to do it. Here's how I do it. First, an attribute: [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)] public sealed class CacheControlAttribute : ActionFilterAttribute { public CacheControlAttribute(HttpCacheability cacheability) { this._cacheability = cacheability; } public HttpCacheability Cacheability { get { return this._cacheability; } } private HttpCacheability _cacheability; public override void OnActionExecuted(ActionExecutedContext filterContext) { HttpCachePolicyBase cache = filterContext.HttpContext.Response.Cache; cache.SetCacheability(_cacheability); } } Next, an action: [CacheControl(HttpCacheability.NoCache), HttpGet] public JsonResult MyAction()

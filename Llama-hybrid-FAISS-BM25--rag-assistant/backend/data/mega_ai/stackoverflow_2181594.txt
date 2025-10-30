@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2181594
-[parent_id]: 
-[tags]: 
-Select mutex or dummy mutex at runtime
-
-I have a class that is shared between several projects, some uses of it are single-threaded and some are multi-threaded. The single-threaded users don't want the overhead of mutex locking, and the multi-threaded users don't want to do their own locking and want to be able to optionally run in "single-threaded mode." So I would like to be able to select between real and "dummy" mutexes at runtime. Ideally, I would have a shared_ptr and assign either a real or fake mutex object. I would then "lock" this without regard to what's in it. unique_lock guard(*mutex); ... critical section ... Now there is a signals2::dummy_mutex but it does not share a common base class with boost::mutex . So, what's an elegant way to select between a real mutex and a dummy mutex (either the one in signals2 or something else) without making the lock/guard code more complicated than the example above? And, before you point out the alternatives: I could select an implementation at compile time, but preprocessor macros are ugly and maintaining project configurations is painful for us. Users of the class in a multi-threaded environment do not want to take on the responsibility of locking the use of the class rather than having the class do its own locking internally. There are too many APIs and existing usages involved for a "thread-safe wrapper" to be a practical solution.

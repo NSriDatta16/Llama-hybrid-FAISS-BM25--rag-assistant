@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2081822
-[parent_id]: 
-[tags]: 
-How can I catch Perl warnings into Log4perl logs?
-
-Log4perl is a great tool for logging. The warnings pragma is also an essential tool. However, when Perl scripts are running as daemons, the Perl warnings, are printed into STDERR where nobody can see them, and not into the Log4perl log file of the relevant program. Is there a way to catch Perl warnings into the Log4perl log? For example, this code will log just fine to the log file, but in case this is run as a daemon, the Perl warnings will be not be included in the log: #!/usr/bin/env perl use strict; use warnings; use Log::Log4perl qw(get_logger); # Define configuration my $conf = q( log4perl.logger = DEBUG, FileApp log4perl.appender.FileApp = Log::Log4perl::Appender::File log4perl.appender.FileApp.filename = test.log log4perl.appender.FileApp.layout = PatternLayout ); # Initialize logging behaviour Log::Log4perl->init( \$conf ); # Obtain a logger instance my $logger = get_logger("Foo::Bar"); $logger->error("Oh my, an error!"); $SIG{__WARN__} = sub { #local $Log::Log4perl::caller_depth = $Log::Log4perl::caller_depth + 1; $logger->warn("WARN @_"); }; my $foo = 100; my $foo = 44; This still prints out to STDERR: "my" variable $foo masks earlier declaration in same scope at log.pl line 27. And the log file does not catch this warning.

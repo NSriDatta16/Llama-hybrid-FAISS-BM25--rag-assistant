@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2763905
-[parent_id]: 2762668
-[tags]: 
-I expect that you do this to prevent the data retrieval is done more than once, perhaps because the amount of data is high, which might have impact on your server when multiple users trigger that retrieval. A lock like this just on the Cache.Insert itself is useless, because this method is thread-safe. A lock like this can be useful to prevent double data retrieval, but in that case you should consider using a double checked lock: var data = HttpContext.Current.Cache["key"]; if (data == null) { lock (_syncRoot) { // Here, check again for null after the lock. var data = HttpContext.Current.Cache["key"]; if (data == null) { var data = [RETRIEVE DATA] HttpContext.Current.Cache.Insert("key", data, null, ...); } } return data; But to your main question. Apart from the risk of locking for a too long period of time, causing large delays in your web application, there is nothing to worry about :-). A lock around a Cache.Insert by itself, will do you no harm.

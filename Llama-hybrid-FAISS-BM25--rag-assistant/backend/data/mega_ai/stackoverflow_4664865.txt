@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4664865
-[parent_id]: 4664666
-[tags]: 
-I think your second bullet point is dubious: There are a lot of orders so it is better to have a field "active" instead of listing them based on time queries. It probably is better to have an end time for the 'order' and then query for active orders by looking for current time before end time. The active field will give you lousy selectivity if you index it (a bitmap index might be better). Additionally, you have to update the rows to change them from active to inactive - and you could do things with active orders past their deadline because the active flag did not get changed in time. Yes, you would have to poll for active flags that should be inactive - using precious DBMS query bandwidth. No, it can't change the field automatically. The UPDATE necessary is worse than just selecting. Yes, you need something like an end timestamp. Moving old orders to secondary storage (something other than the main table, not necessarily outside the DBMS, let alone on tape) is quite probably a good idea. It is also not time critical; you can do it at any time after the order has ceased to be interesting.

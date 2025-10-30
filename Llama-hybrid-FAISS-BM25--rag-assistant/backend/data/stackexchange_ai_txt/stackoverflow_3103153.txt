@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3103153
-[parent_id]: 
-[tags]: 
-Overloaded virtual function call resolution
-
-Please consider the following code: class Abase{}; class A1:public Abase{}; class A2:public A1{}; //etc class Bbase{ public: virtual void f(Abase* a); virtual void f(A1* a); virtual void f(A2* a); }; class B1:public Bbase{ public: void f(A1* a); }; class B2:public Bbase{ public: void f(A2* a); }; int main(){ A1* a1=new A1(); A2* a2=new A2(); Bbase* b1=new B1(); Bbase* b2=new B2(); b1->f(a1); // calls B1::f(A1*), ok b2->f(a2); // calls B2::f(A2*), ok b2->f(a1); // calls Bbase::f(A1*), ok b1->f(a2); // calls Bbase::f(A2*), no- want B1::f(A1*)! } I'm interested to know why C++ chooses to resolve the function call on the last line by upcasting the this pointer of the object to the base class, rather than upcasting the argument of f() ? Is there any way that I can get the behaviour I want?

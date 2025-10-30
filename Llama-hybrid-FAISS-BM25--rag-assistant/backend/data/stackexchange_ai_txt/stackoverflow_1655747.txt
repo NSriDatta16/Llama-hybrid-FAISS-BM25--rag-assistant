@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1655747
-[parent_id]: 1655348
-[tags]: 
-Add a primary key. Seriously, every table should have one. It can be an identity and you can ignore it, but make sure that every single table has a primary key defined. Imagine that you have a table like: create table T ( id int identity, colA varchar(30) not null, colB varchar(30) not null ) Then you can say something like: delete T from T t1 where exists (select null from T t2 where t2.colA = t1.colA and t2.colB = t1.colB and t2.id <> t1.id) Another trick is to select out the distinct records with the minimum id, and keep those: delete T where id not in (select min(id) from T group by colA, colB) (Sorry, I haven't tested these, but one of these ideas could lead you to your solution.) Note that if you don't have a primary key, the only other way to do this is to leverage a pseudo-column like ROWID -- but I'm not sure if SQL Server 2008 offers that idea.

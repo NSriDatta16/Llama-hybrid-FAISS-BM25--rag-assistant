@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 168604
-[parent_id]: 168528
-[tags]: 
-If I am understanding the problem correctly you need to declare an unmanaged callback function in your C++/CLI assembly that acts as the bridge between your C library and managed delegate. #pragma managed public delegate string InvalidStringFilter(int lineNumber, string text); ... static InvalidStringFilter sFilter; public IList DoListProcessing(IList listToProcess, InvalidStringFilter filter) { // Managed code goes here, translate parameters etc. SFilter = filter; } #pragma unmanaged void StringCallback(???) { sFilter(????); } // This should be the only function that actually touches the C-library directly std::vector ProcessList(std::vector list, StringCallback); As written this code is clearly not thread-safe. If you need thread safety then some other mechanism would be needed to look up the correct managed delegate in the callback, either a ThreadStatic, or perhaps the callback gets passed a user supplied variable you could use.

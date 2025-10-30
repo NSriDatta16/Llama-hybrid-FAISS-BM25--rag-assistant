@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1048383
-[parent_id]: 1048284
-[tags]: 
-You should definitely start working on a cache system. There are at least 3 ways you can follow. You can also combine them to get more efficiency. Database caching Create a relationship table to hold the ID relationships between the user and the subscribers so that you don't need to calculate them on the fly. Model Caching Expensive queries can be cached. def find_subscribers Rails.cache.fetch("find_subscribers_#{current_user}") do # run the query end end View Caching You can also cache view fragments to prevent expensive elaborations. You might want to start with: Rockstar Memcaching Scaling Rails Videos EDIT: You query can be optimized. ActiveRecord::Base.connection.execute("SELECT count(*) as c FROM subscribers_users WHERE user_id = #{other_user.id} AND subscriber_id = #{self.id}") can become counters = SubscribersUser.count(:conditions => { :subscriber_id => self.id }, :group => "user_id") The query will return a Hash where the key is the user_id and the value the result of count. Then you can iterate the hash instead of running a query for any record in the view.

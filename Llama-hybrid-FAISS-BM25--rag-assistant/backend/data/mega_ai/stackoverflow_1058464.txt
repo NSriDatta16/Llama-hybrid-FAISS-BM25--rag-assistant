@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1058464
-[parent_id]: 1057867
-[tags]: 
-The more interesting question would be how to do such a thing on the server, for example to make the following query translate to LINQ to SQL. var q = from single in Enumerable.Range(1, 1) let xs = sourceSequence select new { Aggregate1 = xs.Sum(), Aggregate2 = xs.Average(), // etc }; But there's no point trying to cram it into one query if you're using LINQ to Objects. Just write the aggregates separately: var aggregate1 = xs.Sum(); var aggregate2 = xs.Average(); // etc In other words: var xs = from a in listOfAs from b in a.Bs select new { A=a, B=b }; var average1 = xs.Average(x => (x.B.Completed - x.A.Created).TotalSeconds); var average2 = xs.Average(x => (x.B.Completed - x.B.Created).TotalSeconds); Did I understand right? Edit: David B answered similarly. I forgot to convert the TimeSpan to a simple numeric type supported by the Average method. Use TotalMilliseconds/Seconds/Minutes or whatever scale is appropriate.

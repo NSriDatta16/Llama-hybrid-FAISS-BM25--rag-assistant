@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 124293
-[parent_id]: 
-[tags]: 
-Distinguishing diffusion from white noise
-
-I have a time series that looks like this: This comes from an experiment, and I know the following: Originally, for $t After a certain point, for $t > s$, the time series become a random walk: $x_t \sim \mathcal{N}(x_{t-1}, \sigma_{late})$ From knowing my system, I can put rough bounds on $\sigma_{early}, \sigma_{late}, v$ and I know for certain that $ \sigma_{late} > \sigma_{early} $. I model the latter fact by defining $\sigma_{late} = K\sigma_{early}$ where $K > 1$. I would like to find $s$, the switchpoint, and $v$, the velocity. My first thought was to use pymc. Here's my code: s = DiscreteUniform('s', 0, len(data)) v = Uniform('v', 1,8) # Picked this range by eye @stochastic def early_std(value = 1.0): if value This does not work. If you look at the data I posted, the red line is drawn with the mean $v$ and should extend until the mode of $s$. By eye, it's fairly obvious that $s$ should lie somewhere around $s \approx 120$, but my program puts it at about $s \approx 40$. Here are the plots of the relevant parameters: As a side note, I'm a bit puzzled with the fact that $\sigma_{late} Am I doing this correctly? Because I can find $s$ pretty well by eye, it would seem that finding $s$ shouldn't be that hard, and yet it has been. Is there something obviously wrong with my program? Is there another, non-Bayesian method for finding $s$?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4882959
-[parent_id]: 4882877
-[tags]: 
-You can query the database directly, no need to use an actual ActiveRecord object. For example: ActiveRecord::Base.connection.execute "SELECT DAYOFWEEK(sent_at) as day, AVG(value) as average FROM entries WHERE user_id = #{user.id} GROUP BY DAYOFWEEK(sent_at);" This will give you a MySql::Result or MySql2::Result that you can then use each or all on this enumerable, to view your results. As for caching, I would recommend using memcached, but any other rails caching strategy will work as well. The nice benefit of memcached is that you can have your cache expire after a certain amount of time. For example: result = Rails.cache.fetch('user/#{user.id}/averages', :expires_in => 1.day) do # Your sql query and results go here end This would put your results into memcached for one day under the key 'user//averages'. For example if you were user with id 10 your averages would be in memcached under 'user/10/average' and the next time you went to perform this query (within the same day) the cached version would be used instead of actually hitting the database.

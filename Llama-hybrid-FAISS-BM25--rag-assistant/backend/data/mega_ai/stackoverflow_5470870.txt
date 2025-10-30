@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5470870
-[parent_id]: 5470577
-[tags]: 
-If I understand the question correctly, you want a way to add a parameter to a URL or replace its value with a new value if it already exists. Here's a function that does so safely in all manner of URLs: function url_with_parameter($url, $name, $value) { if(strpos($url, '?') === false) { if (strpos($url, '#') === false) { // No query and no fragment -- append a new query to the url $newurl = $url.'?'.$name.'='.$value; } else { // No query with fragment -- insert query before existing fragment $newurl = str_replace('#', '?'.$name.'='.$value.'#', $url); } } else { if (strpos($url, $name.'=') === false) { // With query, param does not exist -- insert at beginning of query $newurl = str_replace('?', '?'.$name.'='.$value.'&', $url); } else { // With query, param exists -- replace it $parsed = parse_url($url, PHP_URL_QUERY); parse_str($parsed, $vars); $newurl = str_replace($name.'='.$vars[$name], $name.'='.$value, $url); } } return $newurl; } Remember to call urlencode before using the output of this function to make a link.

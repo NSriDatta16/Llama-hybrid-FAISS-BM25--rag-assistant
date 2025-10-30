@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4937519
-[parent_id]: 4930940
-[tags]: 
-It's a good idea to check not just the link log, but also compile logs for each shader and compile/link result: glGetShaderInfoLog(...) glGetShaderiv(...,GL_COMPILE_STATUS,...) glGetProgramiv(...,GL_LINK_STATUS,...) Make sure the results are positive and the logs are empty (or good). The diffuse term is calculated incorrectly in your example. It should have the following value: float DiffuseTerm = max(0.0, dot(normalized_normal,normalized_lightDir) ); You don't need clamp() as the dot() result of normalized vectors can't exceed 1. If you made sure the shader program is linked correctly, activated it on a draw and the result is still weird, try to select different components of your final color equation to find out the wrong one: gl_FragColor = DiffuseColor; //can't be grayscale gl_FragColor = vec4(DiffuseTerm); //should be diffuse grayscale BTW, glColor3f should have nothing to do with your shader as you don't use gl_Color inside. If the result changes when you call it - that would mean the shader activation failed (it didn't link or wasn't used at all). Good Luck!

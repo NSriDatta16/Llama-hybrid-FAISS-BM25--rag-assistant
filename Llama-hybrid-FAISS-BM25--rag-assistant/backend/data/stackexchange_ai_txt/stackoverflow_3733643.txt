@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3733643
-[parent_id]: 3733060
-[tags]: 
-The problem is that spawn needs the command and its arguments passed to it as multiple Tcl arguments, just like the standard Tcl exec command. The fix is to do this directly: spawn ssh -l $OMC_Usr $OMC_IP Or, if you prefer (and you've got Tcl 8.5): set cmd "ssh -l $OMC_Usr $OMC_IP" spawn {*}$cmd Or, if you've got 8.4 or before: eval spawn [lrange $cmd 0 end] But don't do this: eval spawn $cmd because that will break unexpectedly if you have a Tcl metacharacter in the username (or IP address, but that's very unlikely). Of course, the real fix is to set up an RSA keypair and use ssh-agent to manage it. Like that, you won't need to pass passwords on any command line; that's important because the command line of a process is public information about the process. Really. You can find it out with something trivial like ps -efww (or the equivalent for your OS). Environment variables are just as insecure too; there's an option to ps to show them too.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5054461
-[parent_id]: 5050066
-[tags]: 
-If you find yourself stuck and simply must access a private/protected property to enable thorough testing, at least place the code that enables access in your test or testing framework. Embedding testing-only code in production code a) complicates the design, b) adds more code that must be tested, and c) means the code runs differently in production. You can use Ken's subclass method for protected properties, but if you need to access private and are on PHP 5.3.2+ you can use reflection. function test__Construction_Should_Properly_Set_Tables() { $cv = new CVObject( array( 'tables' => $this->standardTableDef ) ); $tables = self::getPrivate($cv, 'tables'); $this->assertEqual( $tables, $this->standardTableDef ); } static function getPrivate($object, $property) { $reflector = new ReflectionProperty(get_class($object), $property); $reflector->setAccessible(true); return $reflector->getValue($object); } Note that getPrivate() won't work as written for properties inherited from superclasses, but it's not too hard to loop up the hierarchy to find the declaring class.

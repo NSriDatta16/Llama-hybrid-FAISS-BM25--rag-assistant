@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1071294
-[parent_id]: 1071191
-[tags]: 
-The "regex magic" you need is just sub (which does a substitution): def encode_string_with_links(unencoded_string): return URL_REGEX.sub(r' \1 ', unencoded_string) URL_REGEX could be something like: URL_REGEX = re.compile(r'''((?:mailto:|ftp://|http://)[^ <>'"{}|\\^`[\]]*)''') This is a pretty loose regex for URLs: it allows mailto, http and ftp schemes, and after that pretty much just keeps going until it runs into an "unsafe" character (except percent, which you want to allow for escapes). You could make it more strict if you need to. For example, you could require that percents are followed by a valid hex escape, or only allow one pound sign (for the fragment) or enforce the order between query parameters and fragments. This should be enough to get you started, though.

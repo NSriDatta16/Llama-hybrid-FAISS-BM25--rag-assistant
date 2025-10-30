@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 188216
-[parent_id]: 188138
-[tags]: 
-mod_deflate and php's gzhandler both are based on zlib, so in that sense there is little difference to a browser how the content is being compressed. in response to your first concern, you can set module specific .htaccess info like this: # stuff in response to your second concern, you can detect for browser support in PHP: if (strstr($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') ) { ob_start('ob_gzhandler'); header("Content-Encoding: gzip"); // etc... } here's some untested .htaccess that should be able to handle negotiation of compressed vs uncompressed .js files: ( source ) ForceType text/javascript Header set Content-Encoding: gzip RewriteEngine On RewriteCond %{HTTP_USER_AGENT} !".*Safari.*" RewriteCond %{HTTP:Accept-Encoding} gzip RewriteCond %{REQUEST_FILENAME}.gz -f RewriteRule (.*)\.js$ $1\.js.gz [L] ForceType text/javascript

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1817765
-[parent_id]: 1780879
-[tags]: 
-You can leverage the Hash extensions in ActiveSupport. Then you just need to parse your document in Nokogiri and then convert the nodeset result into a hash. This method will preserve attribute typing (eg integers, dates, arrays). (Of course if you're using Rails you don't have to require/include active support or nokogiri if you have it in your environment. I'm assuming a pure Ruby implementation here.) require 'rubygems' require 'nokogiri' require 'activesupport' include ActiveSupport::CoreExtensions::Hash doc = Nokogiri::XML.parse(File.read('yourdoc.xml')) my_hash = doc.search('//story').map{ |e| Hash.from_xml(e.to_xml)['story'] } This will produce an array of hashes (one for each story node), and preserve the typing based on the attributes, as demonstrated below: my_hash.first['name'] => "Receivable index listing will allow selection viewing" my_hash.first['id'] => 16376 my_hash.first['id'].class => Fixnum my_hash.first['created_at'].class => Time

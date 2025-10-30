@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1033917
-[parent_id]: 1033703
-[tags]: 
-you might want to subclass your InternalFrameUI. I see in BasicInteralFrameUI.BorderListener.mouseDragged(event) (line 885 in version 1.129) a call to getDesktopManager().dragFrame(frame, newX, newY); You could extend BasicInternalFrameUI to return a custom DesktopManager (extension of DefaultDesktopManager ), where in dragFrame() you test the identity of your frame and adjust the axis. edit: thinking about it, you are right - it is too complex. as the UI for the internal frame defers to the DesktopManager of the JDesktopPane , you can set it there. here is a poc: public Demo() { JFrame frame = new JFrame(); frame.setSize(300,300); JDesktopPane df = new JDesktopPane(); DesktopManager dm = df.getDesktopManager(); df.setDesktopManager(new DefaultDesktopManager(){ public void dragFrame(JComponent f, int newX, int newY) { super.dragFrame(f, newX, 5); } }); JInternalFrame jif = new JInternalFrame("test "); jif.setLocation(5, 5); jif.setSize(150,100); jif.setVisible(true); df.add(jif); frame.setContentPane(df); frame.setVisible(true); }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5260941
-[parent_id]: 5260736
-[tags]: 
-I would do this via DI. You can use either a third-party DI container or your own code. Either way, you want to set the organization ID on a per-request basis. So you'll be creating a unit of work and injecting that in your controller. For the sake of simplicity, let's pretend that your unit of work is the _repository field in your sample code, even though most real-world apps are more complex. You add a constructor parameter to the controller: public FooController(IFooRepository repository) { this._repository = repository; } ...and an organization ID on FooRepository : public class FooRepository: IFooRepository { public FooRepository(long organizationId) { this._organizationId = organizationId; } } Now in either your DI container setup or a MVC controller factory, you set this all up: builder.Register(c => new FooRepository(GetOrgIdForCurrentUser()).As (); builder.Register(c => new FooController(c.Resolve ());

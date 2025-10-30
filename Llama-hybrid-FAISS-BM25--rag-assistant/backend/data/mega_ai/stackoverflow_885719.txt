@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 885719
-[parent_id]: 885711
-[tags]: 
-The usual technique is fixed-block allocation. See: Lea , Robinson , Knowlton , Grunwald . Edit: fixed block allocation can indeed leave gaps if there are frequent allocations and deallocations. One on project I worked with where a class might allocate many subobjects of different sizes but had to keep them contiguous, we used a simple memory pool: allocate all the memory needed for all the object's contents at once, and then use placement new to lay them out inside that. If you don't know in advance how large the object's contents will be, you can write a pooling allocator that allocates memory sequentially; ie, it guarantees Foo *a = new Foo(); Bar *b = new Bar; b == ((byte *)(a)) + sizeof(Foo); This will ensure that all allocations occuring within an object's constructor are contiguous. You'll get big, ragged gaps when the objects are deallocated, so we had to defragment every so often; even so the net speed gain was significant.

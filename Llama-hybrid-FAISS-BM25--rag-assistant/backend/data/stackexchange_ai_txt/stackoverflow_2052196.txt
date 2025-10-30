@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2052196
-[parent_id]: 2048540
-[tags]: 
-Here you go: program CallDotNetFromDelphiWin32; {$APPTYPE CONSOLE} uses Variants, JclDotNet, mscorlib_TLB, SysUtils; var Host: TJclClrHost; Obj: OleVariant; begin try Host := TJclClrHost.Create; Host.Start; WriteLn('CLRVersion = ' + Host.CorVersion); Obj := Host.DefaultAppDomain.CreateInstance('DelphiNET', 'DelphiNET.NETAdder').UnWrap; WriteLn('2 + 3 = ' + IntToStr(Obj.Add3(2))); Host.Stop; except on E: Exception do Writeln(E.Classname, ': ', E.Message); end; end. Note: Assumes that the DelphiNET.NETAdder type and the Add3 method in DelphiNet.dll is ComVisible . Thanks to Robert . Update : When using reflection you do not need the ComVisible attribute. Next example even works without being ComVisible. Assm := Host.DefaultAppDomain.Load_2('NetAddr'); T := Assm.GetType_2('DelphiNET.NETAdder'); Obj := T.InvokeMember_3('ctor', BindingFlags_CreateInstance, nil, null, nil); Params := VarArrayOf([2]); WriteLn('2 + 3 = ' + IntToStr(T.InvokeMember_3('Add3', BindingFlags_InvokeMethod, nil, Obj, PSafeArray(VarArrayAsPSafeArray(Params)))));

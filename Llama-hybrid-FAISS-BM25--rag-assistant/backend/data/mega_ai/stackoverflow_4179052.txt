@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4179052
-[parent_id]: 
-[tags]: 
-Why executing interactive process with redirected input/output streams causes application being stopped?
-
-I have a console Java program that executes sh -i in a separate process and copies the data between the processes' input/output stream and corresponding System streams: import java.io.IOException; import java.io.InputStream; import java.io.OutputStream; class StreamCopier implements Runnable { private InputStream in; private OutputStream out; public StreamCopier(InputStream in, OutputStream out) { this.in = in; this.out = out; } public void run() { try { int n = 0; byte[] buffer = new byte[4096]; while (-1 != (n = in.read(buffer))) { out.write(buffer, 0, n); out.flush(); } } catch (IOException e) { System.out.println(e); } } } public class Test { public static void main(String[] args) throws IOException, InterruptedException { Process process = Runtime.getRuntime().exec("sh -i"); new Thread(new StreamCopier( process.getInputStream(), System.out)).start(); new Thread(new StreamCopier( process.getErrorStream(), System.err)).start(); new Thread(new StreamCopier( System.in, process.getOutputStream())).start(); process.waitFor(); } } Running it under Linux results in the following: $ [1]+ Stopped java -cp . Test Could anyone clarify why is the application stopped and how to avoid it? This is related to my question on copying streams , but I think this particular issue deserves separate attention.

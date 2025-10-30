@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1272888
-[parent_id]: 
-[tags]: 
-ruby on rails average per day
-
-I'm trying to generate a report for the average number of calls a person makes per-day. The following generates the correct list, but if a user didn't make any calls a certain day it doesn't show up. Very much like this problem Going through the above link, i have this code: from_date = Time.now.at_beginning_of_month.to_s(:db) to_date = Time.now.tomorrow.to_s(:db) ave_calls = @current_user.calls.average(:num_of_calls, group => "DATE(calls.start_time_stamp)", :conditions => ["calls.created_at BETWEEN ? AND ?",from_date, to_date]) call_aves = (Time.now.at_beginning_of_month..Time.now.tomorrow).map{|dt| [dt, ave_calls[dt.strftime "%Y-%m-%d"] || 0]} At first, I just stuck call_aves into the value for Open Flash Charts, and it broke it, kind've looked like it went into an infinite loop. So I went into my debugger to see what was happening. irb(# ):008:0> call_aves[0] => [Sat Aug 01 00:00:00 -0400 2009, 0] As I go up in the array, i notice it's only incrementing by seconds, not by days. For example: irb(# ):009:0> call_aves[30] => [Sat Aug 01 00:00:30 -0400 2009, 0] How do I get this to go up by the day, not the second?

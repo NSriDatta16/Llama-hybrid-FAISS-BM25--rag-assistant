@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5038123
-[parent_id]: 1866456
-[tags]: 
-I just ran into the same problem. JUnit's assertEquals() on collections returned by Hibernate will fail when Hibernate replaces your list with its PersistentBag class, because that class improperly implements equals(). Here's code from Hibernate 3.5.1-Final PersistentBag class: /** * Bag does not respect the collection API and do an * JVM instance comparison to do the equals. * The semantic is broken not to have to initialize a * collection for a simple equals() operation. * @see java.lang.Object#equals(java.lang.Object) */ public boolean equals(Object obj) { return super.equals(obj); } From reading their comment, it seems like they do this for performance/efficiency reasons. But it makes unit testing hard, if you have an object that contains a list. My solution will be writing an areEqualNonNullLists(listA, listB) method and put it in the eqauls() method of my object that contains a list. public static boolean areEqualNonNullLists(List thisList, List thatList) { if(thisList.size() != thatList.size()) return false; for(int i=0; i I wonder if there's a more elegant, generic solution.

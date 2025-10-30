@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5119778
-[parent_id]: 5119263
-[tags]: 
-I've run into problems before when I'm executing .Invoke on a background thread while my main thread is still busy - this gives the impression that the app is hung, because the .Invoke just sits there, waiting for the main thread to respond that it's paying attention. Possible causes: Your main thread is blocked waiting for something Your main form currently had a modal dialog up, so it's not listening to new requests Your main thread is spinning, either continually checking if something is finished or doing new work. In my case, the main thread spent the first minute spinning up background threads in a tight loop, so it wasn't listening for any .Invoke requests from background threads. When you attach the debugger, pay special attention to what your main control MessagePump thread is doing - I suspect its lack of attention is the cause of your trouble. If you identify that it's a tight loop in your main thread that's not responding, try inserting a .DoEvents in the loop, which will pause execution and force the main thread to empty the message pump and route any outstanding requests.

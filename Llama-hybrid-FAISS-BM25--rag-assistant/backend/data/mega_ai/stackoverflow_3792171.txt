@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3792171
-[parent_id]: 2944098
-[tags]: 
-object_getInstanceVariable() only copies a pointer-worth of data at the start of the ivar's offset. That's all the storage you give it, after all, with that final void ** argument. When you know you have more than a pointer-worth of data, as in this case, you can use ivar_getOffset() to find where the data starts then copy out as many bytes as you need: Ivar iv = object_getInstanceVariable(obj, [columnName UTF8String], NULL); ptrdiff_t offset = ivar_getOffset(iv); CGPoint point = *(CGPoint *)((char *)obj + offset); In this case, dereferencing a CGPoint * causes sizeof(CGPoint) bytes to be copied from the referenced address; in the general case, you could memcopy() or bcopy() data from the computed address into an appropriately sized buffer. The next problem would be computing the correct size at runtime…

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1755953
-[parent_id]: 
-[tags]: 
-Most efficient way to create and write multiple 10 KB text files?
-
-We're using the following approach to writing out text files: public void WriteFile(string filePath, string contents) { if (string.IsNullOrEmpty(filePath)) { throw new ArgumentNullException("filePath"); } if (contents == null) { throw new ArgumentNullException("contents"); } if (File.Exists(filePath)) { throw new InvalidOperationException(string.Format("The file '{0}' already exists", filePath)); } StreamWriter sw = File.CreateText(filePath); // slow sw.Write(contents); sw.Close(); // slow } We are calling this function a large number of times, so performance is key. The two lines commented slow are where our application is spending most of its time. The parameter contents contains, on average, about 10 KB of text. Are there any other approaches in .NET or using the Win32 API that are known to have significantly better performance? We have already tried the following: TextWriter tw = new StreamWriter(filePath); tw.Write(contents); tw.Close(); But have found the performance to be similar to our initial approach. Edit Based on suggestions we also tried: File.WriteAllText(filePath, contents); However the performance of this is similar to the other approached listed above.

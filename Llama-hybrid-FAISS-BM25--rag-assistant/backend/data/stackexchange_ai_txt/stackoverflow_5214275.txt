@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5214275
-[parent_id]: 5214009
-[tags]: 
-Typically templates are defined in a header file instead of in a cc file. With the setup you have, the compiler cannot find / compile the implementation of the template. You will need to change the organization of the code so that the template implementation is available: //file: simple.hh template T double_it (T a) { return (2 * a); } //file: simple.i %module "simple" %{ #include "simple.hh" %} %include "simple.hh" // include it directly into here %template(int_double_it) double_it ; %template(float_double_it) double_it ; #file: setup.py from distutils.core import setup, Extension simple_module = Extension('_simple', sources=['simple.i', 'simple.hh'], swig_opts=['-c++'], ) setup (name = 'simple', ext_modules = [simple_module], py_modules = ["simple"], ) I appreciate that your example is simplified, but it illustrates the point. You do not have to %include the implementation directly (but you do need to #include it), but you do have to provide some implementation to the SWIG compiler, even if it is a simplified version. The above should get you going.

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 542106
-[parent_id]: 
-[tags]: 
-Difference in fitting to right censored data between MLE and Bayesian method
-
-I am fitting a Weibull curve to right censored data. I am doing it by general MLE method using Survival::survreg() as well as Bayesian method using brms::brm. I am pretty sure that I am getting the model right. In the results, I am getting similar shape parameter for the Weibull curve for both methods, but the Scale parameter is always (in different datasets) smaller in the Bayesian method. Take this code for instance, that creates a distribution based on a shape and scale and then fits to them with both methods: rweibull_cens d df_fit % rename(scale = estimate) %>% exp() %>% round(3) shape % rename(shape = estimate) %>% exp() %>% .^-1 %>% round(3) d %>% mutate(censor = if_else(censor == 0, 1, 0)) %>% brm(time | cens(censor) ~ 1, data = ., family = "weibull", cores = 4) -> bfit print(bfit, digits = 3) report = summary(bfit) bayes_shape = round(report $spec_pars$ Estimate,3) bayes_intercept = round(report $fixed$ Estimate,3) bayes_scale = round(exp(bayes_intercept),3) print(paste("n =", n)) print(paste("Bayes Shape = ",bayes_shape)) print(paste("Shape = ",shape)) print(paste("Bayes Scale = ",bayes_scale)) print(paste("Scale = ",scale)) I was wondering if anyone can help me why this behavior happens. Thanks

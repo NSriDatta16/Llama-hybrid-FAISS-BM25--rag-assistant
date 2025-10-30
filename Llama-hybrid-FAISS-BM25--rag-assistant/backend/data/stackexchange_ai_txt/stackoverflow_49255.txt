@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 49255
-[parent_id]: 49252
-[tags]: 
-Don't do it! Trying to create identifiers that are not valid in your language is not a good idea. If you really want to set variables like that, use attribute macros: attr_writer :bar attr_reader :baz attr_accessor :foo Okay, now that you have been warned, here's how to do it. Just return another instance of the same class every time you get a regular accessor, and collect the needed information as you go. class SillySetter def initialize path=nil @path = path end def method_missing name,value=nil new_path = @path ? "#{@path}.#{name}" : name if name.to_s[-1] == ?= puts "setting #{new_path} #{value}" else return self.class.new(path=new_path) end end end s = SillySetter.new s.foo = 5 # -> setting foo= 5 s.foo.bar.baz = 4 # -> setting foo.bar.baz= 4 I didn't want to encourage ruby sillyness, but I just couldn't help myself!

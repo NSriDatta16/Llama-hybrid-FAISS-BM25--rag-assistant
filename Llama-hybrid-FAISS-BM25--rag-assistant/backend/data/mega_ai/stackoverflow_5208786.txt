@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5208786
-[parent_id]: 
-[tags]: 
-Python and multiprocessing... how to call a function in the main process?
-
-I would like to implement an async callback style function in python... This is what I came up with but I am not sure how to actually return to the main process and call the function. funcs = {} def runCallback(uniqueId): ''' I want this to be run in the main process. ''' funcs[uniqueId]() def someFunc(delay, uniqueId): ''' This function runs in a seperate process and just sleeps. ''' time.sleep(delay) ### HERE I WANT TO CALL runCallback IN THE MAIN PROCESS ### # This does not work... It calls runCallback in the separate process: runCallback(uniqueId) def setupCallback(func, delay): uniqueId = id(func) funcs[uniqueId] = func proc = multiprocessing.Process(target=func, args=(delay, uniqueId)) proc.start() return unqiueId Here is how I want it to work: def aFunc(): return None setupCallback(aFunc, 10) ### some code that gets run before aFunc is called ### ### aFunc runs 10s later ### There is a gotcha here, because I want this to be a bit more complex. Basically when the code in the main process is done running... I want to examine the funcs dict and then run any of the callbacks that have not yet run. This means that runCallback also needs to remove entries from the funcs dict... the funcs dict is not shared with the seperate processes, so I think runCallback needs to be called in the main process???

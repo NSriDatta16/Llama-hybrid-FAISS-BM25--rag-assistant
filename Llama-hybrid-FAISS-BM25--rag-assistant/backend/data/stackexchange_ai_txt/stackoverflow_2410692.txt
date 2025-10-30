@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2410692
-[parent_id]: 2409837
-[tags]: 
-Assuming a single instance application for CPU usage and Memory (Process Working Set) you could do something like the following: public static void Main(string[] args) { string processName = Process.GetCurrentProcess().ProcessName; int processorCount = Environment.ProcessorCount; // Simulate process usage for (int i = 0; i { while (true) { Console.WriteLine("Busy..."); } }); t.IsBackground = true; t.Start(); } var cpu = new PerformanceCounter("Process", "% Processor Time"); cpu.InstanceName = processName; cpu.NextValue(); var ram = new PerformanceCounter("Process", "Working Set"); ram.InstanceName = processName; float memUsage = (ram.NextValue() / 1024) / 1024; Console.WriteLine("Memory Usage: {0}MB", memUsage); float cpuUsage = cpu.NextValue() / (float)processorCount; Console.WriteLine("CPU Usage: {0}%", cpuUsage); } For the CPU usage perf counter the first call to NextValue returns 0 so only the second call is used to display the value. The reported usage is the sum for all machine processors so the average is calculated before being displayed.

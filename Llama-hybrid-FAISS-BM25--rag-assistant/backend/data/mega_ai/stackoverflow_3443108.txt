@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3443108
-[parent_id]: 3443070
-[tags]: 
-You could declare your logging function in your C++ DLL as a function pointer, which defaults to a function printing to stdout, and provide a P/Invoke'able function to set it to a different callback. You can pass a C# method to this function by using Marshal.GetFunctionPointerForDelegate . Example (untested!) C++ DLL (pseudo-code) : delegate void logger(char* msg); logger log = printf; void set_logger(logger l) { log = l; } void test() { log("Hello World!"); } C# program: static extern void set_logger(IntPtr l); static extern void test(); static Action log; static void LogToConsole(IntPtr msg) { Console.WriteLine(Marshal.PtrToStringAnsi(msg)); } static void Main() { log = new Action (LogToConsole); set_logger(Marshal.GetFunctionPointerForDelegate(log)); test(); }

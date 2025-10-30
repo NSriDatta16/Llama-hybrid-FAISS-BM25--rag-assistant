@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1042846
-[parent_id]: 1042580
-[tags]: 
-I would create a table which stores unique views: CREATE TABLE unique_views( page_id number, user_agent varchar2(500), ip_address varchar2(16), access_time date, PRIMARY KEY (page_id, user_agent, ip_address, access_time) ) Now if someone accesses the page and you want to allow one view per user per day, you could do INSERT INTO unique_views (:page_id, :user_agent, :ip_address, trunc(SYSDATE, 'day')) which won't allow duplicate views for the same user during one day. You could then count the views for each page with a simple GROUP BY (example for today's views): SELECT page_id, count(*) page_views FROM unique_views WHERE access_time = trunc(SYSDATE, 'day') GROUP BY page_id

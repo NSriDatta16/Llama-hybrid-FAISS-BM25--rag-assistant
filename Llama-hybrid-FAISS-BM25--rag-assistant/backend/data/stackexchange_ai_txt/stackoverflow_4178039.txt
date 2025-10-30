@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4178039
-[parent_id]: 4178003
-[tags]: 
-I don't know about IDL, but it's certainly possible if you have some higher level types. For instance you could conveniently parallelize array operations. Presumably that's what the "4200000 pts" refers to, although someone decided to make the graphs really hard to read. For comparison, in C (with possible OpenMP parallelization) you might have something like: #pragma omp parallel for for (int i=0; i In a higher level language, such as NumPy, Matlab or C++, it could be just B=B-A . All that said, B=A-A sounds confusingly like B=0 to me. You asked for a parallel operator in a favorite language? Here's a bit of Haskell: import Control.Parallel pmap _ [] = [] pmap f (x:xs) = let rest=pmap f xs in rest `par` (f x):rest parOp op a b = pmap (uncurry op) (zip a b) parAdd = parOp (+) main = do putStrLn$show ([0..300] `parAdd` [500..800]) Yes, it's still a loop. Multitude of operations (not operators) is key to this type of parallelism.

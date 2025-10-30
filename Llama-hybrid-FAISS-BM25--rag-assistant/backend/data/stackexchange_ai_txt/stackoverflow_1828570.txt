@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1828570
-[parent_id]: 1828509
-[tags]: 
-To report only items for 2008 and 2009, use a where clause: where sa.Year == 2008 || sa.Year == 2009 For the rest, I would suggest an enum to classify the "band": public enum Movement { Top, Average, Poor } public static Movement MovementForAnalysis(SalesAnalysis sa) { return sa.NumberOfUnitsSold >= 30000 ? Movement.Top : sa.NumberOfUnitsSold >= 10000 ? Movement.Average : Movement.Poor; } You can then do: var query = from sa in AnaList where sa.Year == 2008 || sa.Year == 2009 group sa by MovementForAnalysis(sa); foreach (var group in query) { Console.WriteLine("{0}: ", group.Key); foreach (var item in group) { Console.WriteLine("{0} / {1} / {2}", item.ProductCode, item.Year, item.NumberOfUnitsSold); } Console.WriteLine(); } That produces the output you were after, modulo ordering and formatting.

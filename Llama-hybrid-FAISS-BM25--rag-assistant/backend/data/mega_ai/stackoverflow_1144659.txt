@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1144659
-[parent_id]: 
-[tags]: 
-Memory leak in removeItemAtPath:error:?
-
-I'm running an app on the iPhone that performs the following action: + (void)performWrite:(NSData *)data { [data retain]; [data writeToFile:@"WriteTest.tst" atomically:YES]; [[NSFileManager defaultManager] removeItemAtPath:@"WriteTest.tst" error:NULL]; [data release]; } When running in Instruments, however, I see a leak in every call to removeItemAtPath:error , with the following trace to the internal leak: 9 MyApplication +[StorageUtil performWrite:] 8 Foundation -[NSFileManager removeItemAtPath:error:] 7 Foundation +[NSFilesystemItemRemoveOperation filesystemItemRemoveOperationWithPath:] 6 Foundation -[NSOperation init] 5 CoreFoundation +[NSObject new] 4 CoreFoundation +[NSObject alloc] This stack trace is provided as the source of both a leak of an NSRecursiveLock, and of an _NSOperationData object. So what I'm wondering is whether or not I'm improperly using the removeItemAtPath:error: method, or whether there's truly a leak. I figured I'd check here before submitting it to Radar. Note that the data argument is properly adhering to the retain/release cycle outside of this method call. I don't believe it is the source of the leak.

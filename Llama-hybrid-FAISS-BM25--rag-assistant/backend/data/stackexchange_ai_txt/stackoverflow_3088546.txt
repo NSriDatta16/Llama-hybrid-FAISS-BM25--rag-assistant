@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3088546
-[parent_id]: 
-[tags]: 
-How to combine intermediate events in a Reactive Framework stream?
-
-I'm still fairly new to Rx and am having a hard time figuring out how to express this (seemingly) simple subscription. I'm looking for something like this: Start: InTransaction.Where(inTransaction => inTransaction) If: ItemChanged or On FlagChanged, let Changed = true End: InTransaction.Where(inTransaction => !inTransaction) All of the above are observables. So upon a transaction starting, I want to start paying attention to change notifications, and no matter how many of them come in, I want to just remember that any have been received. When the transaction ends, I want to call my handler to update the visual state. There's a lot of fun examples online showing how to do this for mouse drags. The only problem I'm having is that I don't want to get every single changed event. I want to just know if any have been hit before the transaction ends. Can anyone help point me on the right track? Update: my current algorithm looks something like this: bool pendingRefresh = false; Observable .Merge( _selectionChanged, _objectManager .PropertiesChanged .Where(objects => objects.Contains(_selectedObject))) .Subscribe(_ => pendingRefresh = true); _actionManager .IsInTransaction.Where(isIn => !isIn) .Throttle(TimeSpan.FromSeconds(0.15)) .Subscribe(_ => { if (pendingRefresh) { pendingRefresh = false; Refresh(); } }); Works fine but I was wondering if I could get away with a single subscription.

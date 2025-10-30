@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 613201
-[parent_id]: 613133
-[tags]: 
-If you're looking to roll your own, I would store the entries in a tree structure. See my answer to another SO question about spell checkers to see what I mean. Rather than tokenize the structure by "." characters, I would just treat each entry as a full string. Any tokenized implementation would still have to do string matching on the full set of characters anyway, so you may as well do it all in one shot. The only differences between this and a regular spell-checking tree are: The matching needs to be done in reverse You have to take into account the wildcards To address point #2, you would simply check for the "*" character at the end of a test. A quick example: Entries: *.fark.com www.cnn.com Tree: m -> o -> c -> . -> k -> r -> a -> f -> . -> * \ -> n -> n -> c -> . -> w -> w -> w Checking www.blog.fark.com would involve tracing through the tree up to the first "*" . Because the traversal ended on a "*" , there is a match. Checking www.cern.com would fail on the second "n" of n,n,c,... Checking dev.www.cnn.com would also fail, since the traversal ends on a character other than "*" .

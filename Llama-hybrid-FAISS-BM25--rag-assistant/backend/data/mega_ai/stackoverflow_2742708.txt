@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2742708
-[parent_id]: 
-[tags]: 
-Socket select() Handling Abrupt Disconnections
-
-I am currently trying to fix a bug in a proxy server I have written relating to the socket select() call. I am using the Poco C++ libraries (using SocketReactor) and the issue is actually in the Poco code which may be a bug but I have yet to receive any confirmation of this from them. What is happening is whenever a connection abruptly terminates the socket select() call is returning immediately which is what I believe it is meant to do? Anyway, it returns all of the disconnected sockets within the readable set of file descriptors but the problem is that an exception "Socket is not connected" is thrown when Poco tries to fire the onReadable event handler which is where I would be putting the code to deal with this. Given that the exception is silently caught and the onReadable event is never fired, the select() call keeps returning immediately resulting in an infinite loop in the SocketReactor. I was considering modifying the Poco code so that rather than catching the exception silently it fires a new event called onDisconnected or something like that so that a cleanup can be performed. My question is, are there any elegant ways of determining whether a socket has closed abnormally using select() calls? I was thinking of using the exception message to determine when this has occured but this seems dirty to me.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2300655
-[parent_id]: 2291059
-[tags]: 
-What you are probably looking for is a TypeConverter . Here is an example of how you can set a List > using a string in attribute syntax in xaml. The Xaml will end up looking something like: The exact syntax of how you want to represent the list of key/value pairs is up to you. Here is the code necessary to do this: public class CustomButton : Button { [TypeConverter(typeof(ListOfStringAndBoolPairsTypeConverter))] public List > Values { get; set; } } public class ListOfStringAndBoolPairsTypeConverter : TypeConverter { public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value) { //TODO: Should add better error handling here. var stringValue = (string)value; var pairs = stringValue.Split(';').Select(ps => ParsePair(ps)); var result = new List >(); result.AddRange(pairs); return result; } private KeyValuePair ParsePair(string pairStringValue) { var splitString = pairStringValue.Split(','); var key = splitString[0]; var value = Boolean.Parse(splitString[1].Trim()); return new KeyValuePair (key, value); } }

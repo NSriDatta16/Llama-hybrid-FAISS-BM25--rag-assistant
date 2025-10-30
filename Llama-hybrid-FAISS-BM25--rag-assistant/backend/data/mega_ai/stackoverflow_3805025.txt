@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3805025
-[parent_id]: 
-[tags]: 
-PyObject_CallFunction Access violation writing location 0x0000000c
-
-I am trying to wrap a c communication library in python and am having some trouble when I attempt to handle large amounts of data. The following code will work for smaller messages but when the message is larger than 400MB I get the following error from the PyObject_CallFunction call: Unhandled exception at 0x1e00d65f in python.exe: 0xC0000005: Access violation writing location 0x0000000c. int request_callback(c_request* req, c_msg* msg, void* client) { PyGILState_STATE gstate; PyObject* callback; PyObject* result; unsigned int request_addr; PyObject* py_request_addr; PyObject* message; gstate = PyGILState_Ensure(); request_addr = (unsigned int)req; py_request_addr = PyInt_FromLong(request_addr); if (PyDict_Contains(request_callback_dict, py_request_addr) == 1) { callback = PyDict_GetItem(request_callback_dict, py_request_addr); message = PyString_FromStringAndSize(msg->data, msg->len); result = PyObject_CallFunction(callback, "O", message); } PyGILState_Release(gstate); return 0; } Any thoughts as to what could cause this. Thanks.

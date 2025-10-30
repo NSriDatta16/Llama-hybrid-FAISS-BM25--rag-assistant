@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4858752
-[parent_id]: 
-[tags]: 
-Limiting user votes in a ruby on rails app
-
-I have an app where users can vote for entries. They are limited to a total number of votes per 24 hours, based on a configuration stored in my Setting model. Here's the code I'm using in my Vote model to check and see if they've hit their limit. def not_voted_too_much? @votes_per_period = find_settings.votes_per_period #how many votes are allowed per period @votes = Vote.find_all_by_user_id(user_id, :order => 'id DESC') @index = @votes_per_period - 1 if @votes.nil? true else if @votes.size Time.now.utc false else true end end end end When that returns, true -- they're allowed to vote. If false -- they can't. Right now, it relies on the records being retrieved in a certain order and that the one it selects is the oldest. This seems to work, but feels fragile to me. I'd like to use :order => 'created_at DESC' , but when I apply a limit to the query (I'd need to only get as many records as votes are allowed for that period), it seems to always pull the oldest records instead of the latest records and I'm not sure how to go about changing the query to pull the latest votes and not the oldest. Any thoughts on the best way to go about this?

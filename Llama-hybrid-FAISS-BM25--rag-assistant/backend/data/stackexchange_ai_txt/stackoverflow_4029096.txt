@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4029096
-[parent_id]: 
-[tags]: 
-CATiledLayer drawInContext called after associated view is gone
-
-I ran into an interesting iOS problem today involving a CATiledLayer. This only happend on the device - not in the simulator. My view draws in its CALayer via the drawLayer: inContext: delegate callback. This layer has a CATiledLayer-derived sublayer, which does its own drawing in an overridden drawInContext: method. Both layers are rendering pdf content via CGContextDrawPDFPage(). (The CALayer draws a low res version, while the CATiledLayer sublayer draws hi-res content over the top.) I ran into a scenario where I would be done with the view - would remove it from its superview and release it. dealloc() is called on the view. Sometime later, the CATiledLayer's drawInContext: method would be called (on a background thread), by the system. It would draw, but on return from the method Springboard would crash, and in doing so, bring down my app as well. I fixed it by setting a flag in the CATiledLayer, telling it not to render anymore, from the view's dealloc method. But I can only imagine there is a more elegant way. How come the CATiledLayer drawInContext: method was still called after the parent layer, and the parent-layer's view were deallocated? What is the correct way to shut down the view so this doesn't happen?

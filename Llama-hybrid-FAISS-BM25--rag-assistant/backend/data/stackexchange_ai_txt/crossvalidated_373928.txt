@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 373928
-[parent_id]: 373659
-[tags]: 
-I found the issue: the randomForest is also bootstrapping (bagging) the observations, and hence one needs to average over the resampled observations, not the initial sample ones. So the averaging is done over the observations that were found in the node on a given bootstrap sample. This is obtained using the keep.inbag=TRUE argument. For this case `i=1, t=1', it shows that (1,1,1,0), i.e. last observation was not drawn in that specific sample, which explains the result! See code: library(randomForest) #> randomForest 4.6-14 #> Type rfNews() to see new features/changes/bug fixes. data(swiss) ## run forest set.seed(111) swiss.rf $node bag [1] 82.8 pred_i_t #> [1] 82.8 Created on 2018-10-26 by the reprex package (v0.2.1)

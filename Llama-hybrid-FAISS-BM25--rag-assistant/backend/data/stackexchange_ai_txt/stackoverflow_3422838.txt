@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3422838
-[parent_id]: 3375283
-[tags]: 
-By the time your update hook fires, the server has the new commits: the question is whether your hook will allow the ref in question to move. What information from the local (sending) repository do you want? For the credentials issue, funnel everyone through a single user. For example, GitHub does it with the git user, which is why their SSH URLs begin with git@github.com:... . Then in ~git/.ssh/authorized_keys , associate a username with each key. Note that the following should be on a single line but is wrapped for presentation purposes. no-agent-forwarding,no-port-forwarding,no-pty,no-X11-forwarding, command="env myuser=gbgcoll /usr/bin/git-shell -c \"${SSH_ORIGINAL_COMMAND:-}\"" ssh-rsa AAAAB... Now to see who's trying to do the update, your hook examines the $myuser environment variable. This doesn't give you each user's Jira credentials. To solve that issue, create a dummy Jira account that has read-only access to everything, and hardcode that Jira account's credentials in your hook. This allows you to verify that a given PR exists.

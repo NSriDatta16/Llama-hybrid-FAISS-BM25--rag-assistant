@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3072206
-[parent_id]: 3072079
-[tags]: 
-Assuming you have staging table, you can capture many keys using the OUTPUT clause So instead of looping, you pick out the "master" rows from staging table and insert, storing new keys in a table variable. You then use this to populate the child table. Something like this: INSERT INTO Master (ModifiedDate, ModifiedBy, foo) OUTPUT Inserted.MasterID, Inserted.ModifiedBy INTO @NewKeys SELECT DISTINCT GETDATE(), 'Robert' FROM StagingTable INSERT INTO Identifiers ( MasterID, Identifier, IdentifierType, ModifiedDate, ModifiedBy ) SELECT N.MasterID, S.Identifier, --this comes from input file S.IdentifierType, --this comes from input file GETDATE(), N.ModifiedBy FROM StagingTable S JOIN @NewKeys N ON S.ModifiedBy = N.ModifiedBy I have to say though: is there mnore to your schema. The master table almost serves no purpose here...

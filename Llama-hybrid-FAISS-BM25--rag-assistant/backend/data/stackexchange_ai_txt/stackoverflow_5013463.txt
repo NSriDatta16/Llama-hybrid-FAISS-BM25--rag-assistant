@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5013463
-[parent_id]: 
-[tags]: 
-C++ Private Nested Abstract Class
-
-So maybe this is a dumb question and I'm over thinking this, but I have the following situation. I am making a "class Shell" which can run abstract "class Action" objects. It is the only class that should create or use these objects. Action objects need access to the Shell to perform specific actions on it, but I'm trying to avoid adding public interfaces for this (no one else should be allowed to do that). I originally had a simple (not so elegant) class Shell { public: bool checkThing(); // etc... private: bool _thing; }; class Action { public: virtual void execute( Shell &s )=0; }; class ChangeAction : public Action { public: void execute( Shell &s ) { // requires friendship or public mutator! s._thing = true; } }; So I considered a nested class Action, but I wanted to make it private (why let anyone else make concrete Actions except the Shell, right?) class Shell { public: bool checkThing(); // etc... private: bool _thing; class Action; }; class Shell::Action { public: virtual void execute( Shell &s )=0; }; class ChangeAction : public Shell::Action { public: void execute( Shell &s ) { // ok now! s._thing = true; } }; But of course I can't inherit from Action any more (that makes sense, it's private). So that doesn't work. So my question, should I just go with the first method and friendship or a public interface? Can I use something similar to the second method to keep that relationship with Actions and the Shell? Do you have a better idea?

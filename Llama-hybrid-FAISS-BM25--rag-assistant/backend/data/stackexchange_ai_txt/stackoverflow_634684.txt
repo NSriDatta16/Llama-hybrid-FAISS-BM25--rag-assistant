@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 634684
-[parent_id]: 
-[tags]: 
-Select elements from a SQL Server based on a list on a text file faster
-
-I'm working on .NET windows application that should do a simple searching function. The application searches for some cards by their serial numbers on a SQLServer database, those serial numbers are imported in a text file and I simply open a StreamReader on the file and start reading lines-as each line contains only one serial. After retrieving the data, I then display them all on a DataGridView. Those serials on the file are not in a certain order (i.e. i can't do Select * from table where serial between( min and max) ); they're totally not related. So without further ado, here's what I've done: DataTable table = new DataTable() StreamReader stream= new StreamReader(fileName); while (!stream.EndOfStream) { string serial = stream.ReadLine(); SqlDataReader reader= GetCardBySerial(serial); table.Load(reader); reader.Close(); } public SqlDataReader GetCardBySerial(string serialNo) { SqlConnection cnn = new SqlConnection(connectionString); SqlCommand cmd = new SqlCommand("Cards_GetCardBySerial", cnn); cmd.CommandType = CommandType.StoredProcedure; cmd.Parameters.Add("@serialNo", SqlDbType.NVarChar).Value = serialNo; cnn.Open(); return cmd.ExecuteReader(CommandBehavior.CloseConnection); } Though this works, but it's very slow to me. What should be done instead to make the search faster?

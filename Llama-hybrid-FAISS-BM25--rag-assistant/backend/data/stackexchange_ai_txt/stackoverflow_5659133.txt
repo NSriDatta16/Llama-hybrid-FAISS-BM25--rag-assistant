@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5659133
-[parent_id]: 5658622
-[tags]: 
-You appear to be a little confused about the nature of PATH and PYTHONPATH . PATH is an environment variable that tells the OS shell where to search for executables. PYTHONPATH is an environment variable that tells the Python interpreter where to search for modules to import. It has nothing to do with subprocess finding executable files. Due to the differences in the underlying implementation, subprocess.Popen will only search the path by default on non-Windows systems (Windows has some system directories it always searches, but that's distinct from PATH processing). The only reliable cross-platform way to scan the path is by passing shell=True to the subprocess call, but that has its own issues (as detailed in the Popen documentation ) However, it appears your main problem is that you are passing a path fragment to Popen rather than a simple file name. As soon as you have a directory separator in there, you're going to disable the PATH search, even on a non-Windows platform (e.g. see the Linux documentation for the exec family of functions ).

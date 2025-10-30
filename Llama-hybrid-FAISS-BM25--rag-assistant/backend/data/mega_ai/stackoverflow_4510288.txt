@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4510288
-[parent_id]: 
-[tags]: 
-Working with huge quantity of float matrices
-
-Ok I'm actually working with in-memory storage of huge quantities of float matrices. These matrices stores statistics data and most of the time, just a few cells contain non-null value. Lets consider this simple problem. An item collects statistics over time. These statistics are stored in single-line format matrix of about 30 float entries. But we also have, for an item, different kind of statistics. Then for an item, we can define this simple structure: struct ItemStatistics { uint64_t item_id; float * statistics_a; ... float * statistics_z; }; While the application (server) is running, I collect a bunch of statistics for thousands of items. We then can define a global structure that stores application statistics for all our items as a map for fast access: typedef std::map StatisticsDb; // item_id statistics This naive representation is not memory consumption efficient because every statistics_x object is a fix sized array of about 30 entries. As, in average, just 5 values are collected, the matrices are most of the time 10% full, sometimes less. Is there a memory efficient way to store those data? Is there a way to avoid malloc overhead for each matrix allocation? (For a million items and 4 kind of statistics, we have about 4 million malloc operations, without taking into account the std::map insert overhead...)

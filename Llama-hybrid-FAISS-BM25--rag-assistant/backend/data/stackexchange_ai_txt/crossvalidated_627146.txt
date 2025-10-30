@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 627146
-[parent_id]: 627138
-[tags]: 
-Looking at the code it seems as though the basic problem here is that the function, by default, chooses the finite difference step size relative to the absolute value of the parameters: in the following code fragment, the parameters have default values .relStep = .Machine$double.eps^(1/3) , minAbsPar = 0 . This code effectively computes a $\Delta x$ factor incr , and a numerator frac that will rescale zeroth, first, and second differences: incr So, when the max(abs(pars)) is 0 and minAbsPar is also 0, the function uses $\Delta x = 0$ ... which will lead to $(f(x+\Delta x) - f(x))/\Delta x = 0/0$ = NaN . You could choose an alternative version of minAbsPar that makes sense for your problem (for reasonably scaled functions, setting minAbsPar = 1 would probably be safe). The optimHess() function in base R uses the ndeps component of the control list (default value is 0.001) to set the step. Users can use the parscale component to change the scale. numDeriv::hessian is another alternative (it uses Richardson extrapolation rather than simple finite differences).

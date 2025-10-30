@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4606551
-[parent_id]: 2594659
-[tags]: 
-bobince 's answer is excellent; do pay very careful attention to XSS vulnerabilities. I would add only one other tidbit that caused me some consternation early on, and is a best practice that you should consider adopting: Do not use primitives or core attribute/function names in your script unless you are purposefully doing so (e.g in the case of overriding). Take this example: 01: $.getJSON('/doSomething.php?r=' + new Date().getTime(),function(json){ 02: var someinfo = ""; 03: $.each(json.somearray, function(i,data){ 04: someinfo = someinfo + data.class + " "; 05: }); ... Mozilla is perfectly fine with the above code; Internet Explorer, however, chokes on the ".class" reference (line 04). This issue can be difficult to identify since the error prevents IE from parsing other javascript on the page; the result is that IE throws an error on all (custom) function calls, rather than just the function where the actual problem is. The solution, as previously mentioned, is to replace ".class" with some other string 04: someinfo = someinfo + data.classification + " "; Happy coding!

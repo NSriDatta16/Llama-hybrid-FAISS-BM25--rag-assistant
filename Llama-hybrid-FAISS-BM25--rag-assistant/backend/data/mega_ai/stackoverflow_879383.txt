@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 879383
-[parent_id]: 566472
-[tags]: 
-I just spent an incredible amount of time debugging a very similar error. Here's what I learned: You have to pass -fprofile-arcs -ftest-coverage when compiling. You have to pass -fprofile-arcs when linking. You can still get weird linker errors when linking. They'll look like this: libname.a(objfile.o):(.ctors+0x0): undefined reference to 'global constructors keyed to long_name_of_file_and_function' This means that gconv's having problem with one of your compiler-generated constructors (in my case, a copy-constructor). Check the function mentioned in the error message, see what kinds of objects it copy-constructs, and see if any of those classes doesn't have a copy constructor. Add one, and the error will go away. Edit: Whether or not you optimize can also affect this. Try turning on / switching off optimizations if you're having problems with it.

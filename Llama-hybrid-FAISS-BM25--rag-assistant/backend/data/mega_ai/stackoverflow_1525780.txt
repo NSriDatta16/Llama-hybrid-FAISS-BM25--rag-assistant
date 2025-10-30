@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1525780
-[parent_id]: 
-[tags]: 
-Oracle CLOB performance
-
-I am running queries against an Oracle 10g with JDBC (using the latest drivers and UCP as DataSource) in order to retrieve CLOBs (avg. 20k characters). However the performance seems to be pretty bad: the batch retrieval of 100 LOBs takes 4s in average. The operation is also neither I/O nor CPU nor network bound judging from my observations. My test setup looks like this: PoolDataSource dataSource = PoolDataSourceFactory.getPoolDataSource(); dataSource.setConnectionFactoryClassName("..."); dataSource.setConnectionPoolName("..."); dataSource.setURL("..."); dataSource.setUser("..."); dataSource.setPassword("..."); dataSource.setConnectionProperty("defaultRowPrefetch", "1000"); dataSource.setConnectionProperty("defaultLobPrefetchSize", "500000"); final LobHandler handler = new OracleLobHandler(); JdbcTemplate j = new JdbcTemplate(dataSource); j.query("SELECT bigClob FROM ...", new RowCallbackHandler() { public void processRow(final ResultSet rs) throws SQLException { String result = handler.getClobAsString(rs, "bigClob"); } }); } I experimented with the fetch sizes but to no avail. Am I doing something wrong? Is there a way to speed up CLOB retrieval when using JDBC?

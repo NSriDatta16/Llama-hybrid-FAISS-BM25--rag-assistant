@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4597565
-[parent_id]: 4597175
-[tags]: 
-From the error I think the headers are getting themselves into a mess. I can't see from the above exactly how it's going wrong, but if you include "cApplication.h" first, that then tries to include "main.h", which then tries to include "cApplication.h" again. In this case, the "#pragma once" or include guards will both prevent "cApplication.h" being included again (and therefore it won't parse the class definition at this point). It'll then continue to parse "main.h" and reach you trying to do "extern cApplication app" without ever touching the definition (which it would get to later once we're done with main.h). You need to simplify the cross-dependency between the header files to stop this recursive inclusion of them. Split out the common library stuff into another header you can include in all the other headers and only try to include things that are absolutely necessary in headers. (i.e. why does D3Ddefs.h include main.h when it only needs windows.h and d3d9.h/d3d9x.h at the most for what it does).

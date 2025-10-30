@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 493025
-[parent_id]: 489081
-[tags]: 
-You would have to define a user-defined aggregate to do this. That has four parts - four functions (search for CREATE AGGREGATE in the IDS 12.10 Info Centre ): Initializer (INIT) Iterator (ITER) Combine (COMBINE) Finalizer (FINAL) That's the official terminology in capitals, and it is moderately intuitive. Think of calculating an average. Initializer: set sum = 0; N = 0 Iterator: set sum += x; N++ Combiner: set sum = sum1 + sum2; set N = N1 + N2 Finalizer: result = sum / N -- with N=0 (zero-divide) checks The combiner is used to combine intermediate results from parallel execution; each parallel execution starts with the iterator and generates intermediate results. When the parallel execution completes, the separate sets of values are combined with the combiner. You can write analogous code in IDS - using stored procedures or C or Java UDRs. See the SO question Show a one to many relationship as 2 columns — 1 unique row (ID & comma separated list) for a string-based GROUP_CONCAT() function implemented in Informix.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1112665
-[parent_id]: 
-[tags]: 
-Safety of Python 'eval' For List Deserialization
-
-Are there any security exploits that could occur in this scenario: eval(repr(unsanitized_user_input), {"__builtins__": None}, {"True":True, "False":False}) where unsanitized_user_input is a str object. The string is user-generated and could be nasty. Assuming our web framework hasn't failed us, it's a real honest-to-god str instance from the Python builtins. If this is dangerous, can we do anything to the input to make it safe? We definitely don't want to execute anything contained in the string. See also: Funny blog post about eval safety Previous Question Blog: Fast deserialization in Python The larger context which is (I believe) not essential to the question is that we have thousands of these: repr([unsanitized_user_input_1, unsanitized_user_input_2, unsanitized_user_input_3, unsanitized_user_input_4, ...]) in some cases nested: repr([[unsanitized_user_input_1, unsanitized_user_input_2], [unsanitized_user_input_3, unsanitized_user_input_4], ...]) which are themselves converted to strings with repr() , put in persistent storage, and eventually read back into memory with eval. Eval deserialized the strings from persistent storage much faster than pickle and simplejson. The interpreter is Python 2.5 so json and ast aren't available. No C modules are allowed and cPickle is not allowed.

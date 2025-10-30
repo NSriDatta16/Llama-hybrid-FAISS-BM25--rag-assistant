@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4317735
-[parent_id]: 1380721
-[tags]: 
-Here is a another way to get the group information: Make sure you add a reference for System.DirectoryServices. DirectoryEntry root = new DirectoryEntry("LDAP://OU=YourOrganizationOU,DC=foo,DC=bar"); DirectoryEntry user = GetObjectBySAM("SomeUserName", root); if (user != null) { foreach (string g in GetMemberOf(user)) { Console.WriteLine(g); } } The following methods get the user entry and return a list of strings which is the groups the user is a member of. public List GetMemberOf(DirectoryEntry de) { List memberof = new List (); foreach (object oMember in de.Properties["memberOf"]) { memberof.Add(oMember.ToString()); } return memberof; } public DirectoryEntry GetObjectBySAM(string sam, DirectoryEntry root) { using (DirectorySearcher searcher = new DirectorySearcher(root, string.Format("(sAMAccountName={0})", sam))) { SearchResult sr = searcher.FindOne(); if (!(sr == null)) return sr.GetDirectoryEntry(); else return null; } }

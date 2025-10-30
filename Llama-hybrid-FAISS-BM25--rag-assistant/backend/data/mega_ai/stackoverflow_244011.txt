@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 244011
-[parent_id]: 243967
-[tags]: 
-What you're trying to do is non-local failure recovery. This is what goto is for. Use it. (actually, this is what exception handling is for -- but if you can't use that, 'goto' or 'setjmp/longjmp' are the next best thing). This pattern, the if(succeeded(..)) pattern, and 'goto cleanup', all 3 are semantically and structurally equivalent. Use whichever one is most common in your code project. There's much value in consistency. I would caution against if(failed(..)) break; on one point in that you're producing a surprising result should you try to nest loops: do{ bool isGood = true; .... some code if(!isGood) break; .... some more code for(....){ if(!isGood) break; // Neither goto cleanup nor if(succeeded(..)) have this surprise, so I'd encourage using one of these two instead.

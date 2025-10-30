@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4695684
-[parent_id]: 4693553
-[tags]: 
-I recommend two queues of thread, with the first handling the I/O calls and the second handling the post-I/O processing, because you are addressing two different problems. For the I/O, I'd create a queue of threads that dump the I/O results into a secondary queue. You can queue up a large number of threads and set a throttle to the number of active ones, using a callback that signals when a thread finishes and launches the next one. You're limiting factor will be memory more than CPU, as running threads hold memory even when blocked (but not-yet-launched thread memory footprint is small). The second queue can make use of ThreadPool or a separate cluster of your own threads. By having separate throttles you can adjust how many of both groups of threads are running, based upon average elapsed time or something like that. If you make the second queue a database table, then you have an easy point at which to split the workload across multiple machines (or the cloud) and accumulate timing statistics.

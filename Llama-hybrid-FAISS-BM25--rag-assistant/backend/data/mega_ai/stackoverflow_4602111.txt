@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4602111
-[parent_id]: 4600541
-[tags]: 
-The only reason I see to split the table is if it should be modelled as subclasses of document. That is, instead of: document - document_id (pk) - type - name - attribute_x - attribute_y - attribute_z - attribute_a - attribute_b - attribute_c - attribute_1 - attribute_2 - attribute_3 You create a table for each subclass of document: document - document_id (pk) - type - name document_type_1 - document_id (pk) references document(document_id) - attribute_x - attribute_y - attribute_z document_type_2 - document_id (pk) references document(document_id) - attribute_a - attribute_b - attribute_c document_type_3 - document_id (pk) references document(document_id) - attribute_1 - attribute_2 - attribute_3 The only class of queries that becomes worse are of the kind "search all attributes of all documents". Almost all other usages become faster on average with the one-table-per-subclass because of the smaller row length (on average more rows will fit in the cache, and each disk read returns more rows).

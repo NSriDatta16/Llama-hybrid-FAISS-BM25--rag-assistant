@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 169880
-[parent_id]: 169625
-[tags]: 
-Here's the basic idea in Perl. Fetch the URL and see what it says in the Content-type header: use LWP::UserAgent; my $ua = LWP::UserAgent->new; my $url = "http://www.example.com/logo.png"; my $response = $ua->head( $url ); my( $class, $type ) = split m|/|, lc $response->content_type; print "It's an image!\n" if $class eq 'image'; If you need to inspect just the URL without accessing it, use a solid library for it rather than trying to handle all the odd situations yourself: use URI; my $url = "http://www.example.com/logo.png"; my $uri = URI->new( $url ); my $last = ( $uri->path_segments )[-1]; my( $extension ) = $last =~ m/\.([^.]+)$/g; print "My extension is $extension\n"; And here's a Mojolicious example: use Mojo::URL; my $url = "http://www.example.com/logo.png"; my( $extension ) = Mojo::URL->new($url)->path->parts->[-1] =~ m/\.([^.]+)$/g; print "My extension is $extension\n"; Good luck, :)

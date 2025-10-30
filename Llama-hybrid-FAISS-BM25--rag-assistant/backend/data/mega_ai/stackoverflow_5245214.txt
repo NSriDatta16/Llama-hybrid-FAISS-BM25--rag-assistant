@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5245214
-[parent_id]: 5245093
-[tags]: 
-How about this: List definedOrder = // define your custom order Arrays.asList("Red", "Green", "Magenta", "Silver"); Comparator comparator = new Comparator (){ @Override public int compare(final Car o1, final Car o2){ // let your comparator look up your car's color in the custom order return Integer.valueOf( definedOrder.indexOf(o1.getColor())) .compareTo( Integer.valueOf( definedOrder.indexOf(o2.getColor()))); } }; In principle, I agree that using an enum is an even better approach, but this version is more flexible as it lets you define different sort orders. Update Guava has this functionality baked into its Ordering class: List colorOrder = ImmutableList.of("red","green","blue","yellow"); final Ordering colorOrdering = Ordering.explicit(colorOrder); Comparator comp = new Comparator () { @Override public int compare(Car o1, Car o2) { return colorOrdering.compare(o1.getColor(),o2.getColor()); } }; This version is a bit less verbose. Update again Java 8 makes the Comparator even less verbose: Comparator carComparator = Comparator.comparing( c -> definedOrder.indexOf(c.getColor()));

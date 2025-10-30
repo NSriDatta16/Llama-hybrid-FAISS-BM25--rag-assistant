@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5609169
-[parent_id]: 
-[tags]: 
-GZip or Deflate compression for asp.net mvc 2 without access to server config
-
-I tried to use the method described here ASP.NET MVC Action Filter - Caching and Compression . At first the results where encouraging as indeed the server started sending GZip encoded files but after further testing, at times, in pages with Html.RenderAction parts the attribute would get called twice gziping the allready gzipped page. Does anyone know a more stable method of serving compressed pages with ASP.NET MVC 2 or any ideas of how to modify the code to be more general? public class CompressFilter : ActionFilterAttribute { public override void OnActionExecuting(FilterExecutingContext filterContext) { HttpRequestBase request = filterContext.HttpContext.Request; string acceptEncoding = request.Headers["Accept-Encoding"]; if (string.IsNullOrEmpty(acceptEncoding)) return; acceptEncoding = acceptEncoding.ToUpperInvariant(); HttpResponseBase response = filterContext.HttpContext.Response; if (acceptEncoding.Contains("GZIP")) { response.AppendHeader("Content-encoding", "gzip"); response.Filter = new GZipStream(response.Filter, CompressionMode.Compress); } else if (acceptEncoding.Contains("DEFLATE")) { response.AppendHeader("Content-encoding", "deflate"); response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress); } } }

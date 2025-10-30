@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2691448
-[parent_id]: 2691325
-[tags]: 
-Well, no, it doesn't get to be mix-mode until you tell the C++/CLI compiler that your legacy DLL was written in unmanaged code. Which should have been noticeable, you should have gotten linker errors from the unmanaged DLL exports. You need to use #pragma managed: #pragma managed(push, off) #include "oldskool.h" #pragma comment(lib, "oldskool.lib") #pragma managed(pop) using namespace System; public ref class Wrapper { private: COldSkool* pUnmanaged; public: Wrapper() { pUnmanaged = new COldSkool; } ~Wrapper() { delete pUnmanaged; pUnmanaged = 0; } !Wrapper() { delete pUnmanaged; } void sampleMethod() { if (!pUnmanaged) throw gcnew ObjectDisposedException("Wrapper"); pUnmanaged->sampleMethod(); } };

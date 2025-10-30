@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2513843
-[parent_id]: 2509295
-[tags]: 
-You're right in that the same session is used for all requests to the same thread. This is because NSB doesn't create new threads for each request. The workaround is to add a custom cache mode and have it cleared when message handling is complete. 1.Extend the thread storage lifecycle and hook it up a a message module public class NServiceBusThreadLocalStorageLifestyle : ThreadLocalStorageLifecycle, IMessageModule { public void HandleBeginMessage(){} public void HandleEndMessage() { EjectAll(); } public void HandleError(){} } 2.Configure your structuremap as follows: For > .LifecycleIs(new NServiceBusThreadLocalStorageLifestyle()) ... Hope this helps!

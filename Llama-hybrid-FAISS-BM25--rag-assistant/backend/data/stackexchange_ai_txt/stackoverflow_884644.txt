@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 884644
-[parent_id]: 883863
-[tags]: 
-I think you're doing it right. This test passes: test "should remove commas from thenumber" do f = Foo.new(:thenumber => "10,000") f.save f = Foo.find(f.id) assert f.thenumber == "10000" end And I used your code. class Foo Now, my schema is set up for thenumber to be a string though, not an integer. Started . Finished in 0.049666 seconds. 1 tests, 1 assertions, 0 failures, 0 errors If you wanted to store this in the db as an integer, then you definitely need to override the setter: def thenumber=(value) self['thenumber'] = value.to_s.gsub(',','').to_i end If you do it your way, with an integer column, it gets truncated by AR.... >> f.thenumber = "10,000" => "10,000" >> f.thenumber => 10 That's a little-known thing with Ruby and integers... it auto-casts by truncating anything that's no longer an integer. irb(main):004:0> i = "155-brian-hogan".to_i => 155 Can be cool for things like /users/155-brian-hogan @user = User.find_by_id(params[:id]) But not so cool for what you're doing. So either change the col to a string and use the filter, or change the setter :) Good luck!

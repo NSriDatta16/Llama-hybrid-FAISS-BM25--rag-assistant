@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4527049
-[parent_id]: 3546289
-[tags]: 
-I believe there is a better solution than rewrite the RegistrationsController. I did exactly the same thing (I just have Organization instead of Company). If you set properly your nested form, at model and view level, everything works like a charm. My User model: class User 'Organization', :foreign_key => :owner_id has_many :organization_memberships has_many :organizations, :through => :organization_memberships # Setup accessible (or protected) attributes for your model attr_accessible :email, :password, :password_confirmation, :remember_me, :name, :username, :owned_organizations_attributes accepts_nested_attributes_for :owned_organizations ... end My Organization Model: class Organization 'User' has_many :organization_memberships has_many :users, :through => :organization_memberships has_many :contracts attr_accessor :plan_name after_create :set_owner_membership, :set_contract ... end My view : 'devise/registrations/new.html.erb' Sign up resource_name, :url => registration_path(resource_name)) do |f| %> params[:plan] %> "devise/shared/links" %>

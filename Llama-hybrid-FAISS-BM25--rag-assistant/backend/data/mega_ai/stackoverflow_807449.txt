@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 807449
-[parent_id]: 
-[tags]: 
-Fluent interfaces / extension methods - Turning a flat list into a navigation tree
-
-I currently have an extension Method which converts an IEnumerable of type Tab into a hierarchical collection of TabNodes. // If Tab has no parent its ParentId is -1 public class Tab { public int TabId { get; set; } public string TabName { get; set; } public int Level { get; set; } public int ParentId { get; set; } } public class TabNode { public TabInfo Tab { get; set; } public IEnumerable ChildNodes { get; set; } public int Depth { get; set; } } For instance, the following would give you a collection of TabNodes who are below a Parent with TabId 32 - the maximum level of depth is 4. IEnumerable tabs = GetTabs(); IEnumerable = tabs.AsNavigationHierarchy(32,4); This is confusing and not very friendly for further refinement. What If I'd like to specify a certain Level instead of a ParentID? What I'd like to do is something like this: IEnumerable = tabs.AsNavigationHierarchy().WithStartLevel(2).WithMaxDepth(5) I'm stuck as how to do this elegantly. Can you help me? This is my current function which is called by my extension methods (based on an article I've found on www.scip.be ). private static IEnumerable CreateHierarchy( IEnumerable tabs, int startTabId, int maxDepth, int depth) { IEnumerable children; children = tabs.Where(i => i.ParentId.Equals(startTabId)); if (children.Count() > 0) { depth++; if ((depth

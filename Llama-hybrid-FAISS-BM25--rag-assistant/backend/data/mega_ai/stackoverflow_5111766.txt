@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5111766
-[parent_id]: 5110816
-[tags]: 
-Unfortunately using flush is a lot more complicated than it seems at first glance. Even the experts in OpenMP have trouble trying to use it correctly. Part of the problem, is that flush with a list is badly defined. Basically it is allowed to move, so if you have a sequence of the form: a = ... #pragma omp flush(a) b = ... #pragma omp flush(b) the flush(a) has to be after the setting of a, but could be moved after the set and flush(b). It just has to occur before the next use of a. In any case, the best way to do what you want, is to use flush without a list and do the flush after every set of a variable that you are interested in and do a flush before the read of every variable you are interested in. The other problem is that you are not handing off correctly. You can't set the flag in the consumer for the producer to generate another number until after the consumer has actually consumed the value produced.

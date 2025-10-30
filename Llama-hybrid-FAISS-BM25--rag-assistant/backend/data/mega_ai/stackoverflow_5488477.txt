@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5488477
-[parent_id]: 5488057
-[tags]: 
-you could do this: enum MyEnum { firstvalue = 0, secondvalue, thirdvalue, // deprecated fourthvalue }; #pragma deprecated(thirdvalue) then when ever the variable is used, the compiler will output the following: warning C4995: 'thirdvalue': name was marked as #pragma deprecated EDIT This looks a bit hacky and i dont have a GCC compiler to confirm (could someone do that for me?) but it should work: enum MyEnum { firstvalue = 0, secondvalue, #ifdef _MSC_VER thirdvalue, #endif fourthvalue = secondvalue + 2 }; #ifdef __GNUC__ __attribute__ ((deprecated)) const MyEnum thirdvalue = MyEnum(secondvalue + 1); #elif defined _MSC_VER #pragma deprecated(thirdvalue) #endif it's a combination of my answer and MSalters' answer

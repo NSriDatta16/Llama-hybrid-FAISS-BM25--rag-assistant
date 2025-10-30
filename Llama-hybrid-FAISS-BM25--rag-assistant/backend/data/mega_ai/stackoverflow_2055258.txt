@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2055258
-[parent_id]: 
-[tags]: 
-Generating SQL "IN" clauses: how to safely handle input + empty value lists?
-
-In my Python code I often find myself doing the following (using DB-API): yValues = pickInterestingValuesOfY() sql = "..." # includes a clause stating that "y must be in yValues" c.execute(sql, yValues) In the end, the SQL being executed could be something as simple as SELECT x FROM table1 WHERE y IN (1,2,3); The issue is that the set of possible values for y (1,2,3) is determined at run-time. I have two concerns: generate valid SQL in the case where yValues is empty ('WHERE y IN ()' is invalid SQL) watch out for sql injection if the values come from an untrusted source To address (2) I must let the DB-API actually insert the yValues into the SQL statement. So I ended up with the following convoluted solution: def inClause(columnName, values): if len(values): placeHolders = ','.join( ['%s'] * len(values) ) sql = "%s IN (%s)" % (columnName, placeHolders) else: sql = "FALSE" return "(%s)" % sql # get a db-api cursor called c c.execute("SELECT x FROM table1 WHERE %s;" % inClause('y', yValues), yValues) which seems to correctly address both concerns above. However, I cannot believe this clunky solution is what it takes. How do you handle such queries? Am I missing a more elegant way to do this? I am not looking for an ORM. (I am using MySQL, so if there is some magic mysql non-standard switch that silently accepts 'WHERE y IN ()' as valid just let me know and concern (1) will be taken care of.)

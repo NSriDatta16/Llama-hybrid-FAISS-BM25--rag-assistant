@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 126532
-[parent_id]: 126524
-[tags]: 
-The last layer should match the dimension of your response. Dense layer can only return 1D whereas conv layers can return 2D., Based on your question, you want to classify all your pixels (binary?) in the images, right? Then you have two options: Dense layer, how you do it, you basically drop your image into a vector, that is why you specify Dense(pixel * pixel, activation='linear') and why then the y_train must be of shape [None, 128*128] (so that the output of the dense layer matches your y_train). Use a Reshape layer to bring the output into the desired shape: model_CNN4 = keras.models.Sequential([ Conv2D(32, (3, 3), input_shape=[pixel, pixel, 3]), BatchNormalization(), LeakyReLU(alpha=0.1), # You can adjust the alpha parameter for the leaky ReLU MaxPooling2D(), Conv2D(64, (2, 2)), BatchNormalization(), LeakyReLU(alpha=0.1), MaxPooling2D(), Conv2D(64, (2, 2)), LeakyReLU(alpha=0.1), Flatten(), Dense(200), BatchNormalization(), LeakyReLU(alpha=0.1), Dense(pixel * pixel, activation='linear'), Reshape([128,128,1]) ])

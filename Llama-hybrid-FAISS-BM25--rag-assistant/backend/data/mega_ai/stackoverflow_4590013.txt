@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4590013
-[parent_id]: 4461638
-[tags]: 
-CALayer and its subclasses are not part of the responder chain, and they do not descend from UIResponder . Therefore, touchesBegan:withEvent: , etc. will never be called on any CALayer subclass. You need to detect the touch on one of the hosting UIView s in the layer hierarchy. Then, you use hitTest: in the touch handlers to detect which layer was touched. It will be easier on you if you create a UIView subclass with a CAShapeLayer as its backing layer like this: @implementation MyShapeView - (CALayer *)layerClass { return [CAShapeLayer class]; } @end Then, add instances of your custom view as subviews to your main view. After that, you can use the UIResponder methods or, even better, a UIGestureRecognizer to handle the dragging. I highly recommend using gesture recognizers if you can target iOS 3.2 or higher. They make event handling much simpler.

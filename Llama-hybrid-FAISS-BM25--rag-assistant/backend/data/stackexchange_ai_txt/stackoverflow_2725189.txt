@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2725189
-[parent_id]: 2724680
-[tags]: 
-To be perfectly honest, if the list being checked is in single-digits size, i'd either loop through checking one-by-one in Perl (the check being your query), or if you are worried about connection/query start overhead, populate them into a temp table and loop over it in the SQL loop, pulling out 1 cvalue at a time into a variable, deleting that value from temp table and running - again - your own one-check query on that variable, inside the loop. Here's Sybase code - hopefully it translates to MySQL easily -- previously, CREATE TABLE #your_temp_table (num int) CREATE TABLE #in_range (num int) DECLARE @seven int -- This is a JOKE! NEVER use a variable name like that!!! WHILE (exists (select 1 from #your_temp_table)) BEGIN SELECT @seven = min(num) from #your_temp_table DELETE #your_temp_table WHERE num = @seven INSERT #in_range SELECT @seven FROM range WHERE @seven BETWEEN min AND max END SELECT num from #in_range DROP TABLE #in_range I have a feeling this could be done a lot more elegantly but this at least works in the abscence of a better solution :)

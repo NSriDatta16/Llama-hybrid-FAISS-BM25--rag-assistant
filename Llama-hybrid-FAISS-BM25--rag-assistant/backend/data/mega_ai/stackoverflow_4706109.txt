@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4706109
-[parent_id]: 4706073
-[tags]: 
-You're not checking that the file exists. Try using this: $file = 'monkey.gif'; if (file_exists($file)) { header('Content-Description: File Transfer'); header('Content-Type: application/octet-stream'); header('Content-Disposition: attachment; filename='.basename($file)); header('Content-Transfer-Encoding: binary'); header('Expires: 0'); header('Cache-Control: must-revalidate, post-check=0, pre-check=0'); header('Pragma: public'); header('Content-Length: ' . filesize($file)); ob_clean(); flush(); readfile($file); exit; }else { echo "File does not exists"; } And see what you get. You should also note that this forces a download as an octet stream, a plain binary file. Some browsers will struggle to understand the exact type of the file. If, for example, you send a GIF with a header of Content-Type: application/octet-stream , then the browser may not treat it like a GIF image. You should add in specific checks to determine what the content type of the file is, and send an appropriate Content-Type header.

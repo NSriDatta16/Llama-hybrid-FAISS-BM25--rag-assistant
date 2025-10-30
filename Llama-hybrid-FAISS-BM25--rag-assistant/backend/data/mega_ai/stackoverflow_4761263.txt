@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4761263
-[parent_id]: 4761198
-[tags]: 
-Something like this: using(WebClient client = new WebClient()) using(Stream stream = client.OpenRead(originGetterURL)) StreamReader reader = new StreamReader(stream) { JObject jObject = Newtonsoft.Json.Linq.JObject.Parse(reader.ReadLine()); string encryptionKey = (string)jObject["key"]; string originURL = (string)jObject["origin_url"]; } As for why using blocks are good, and better than manually calling Dispose... image if any of the code in that using block threw an exception before you hit the lines where you close everything? You'd essentially leak whatever unmanaged resource the IDisposable object is managing under the hood. using ensures that Dispose is called correctly, even in the face of an exception (by essentially injecting the appropriate try/finally block). When possible (i.e., you don't have to preserve the lifetime of some IDisposable across scopes), you should leverage using blocks if for no other reason than they reduce the amount of boilerplate code you have to write in order to ensure your own code is safe and correct.

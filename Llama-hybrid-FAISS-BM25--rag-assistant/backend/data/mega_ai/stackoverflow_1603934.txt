@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1603934
-[parent_id]: 
-[tags]: 
-What could cause a Labwindows/CVI C program to hate the number 2573?
-
-Using Windows So I'm reading from a binary file a list of unsigned int data values. The file contains a number of datasets listed sequentially. Here's the function to read a single dataset from a char* pointing to the start of it: function read_dataset(char* stream, t_dataset *dataset){ //...some init, including setting dataset->size; for(i=0;i size;i++){ dataset->samples[i] = *((unsigned int *) stream); stream += sizeof(unsigned int); } //... } Where read_dataset in such a context as this: //... char buff[10000]; t_dataset* dataset = malloc( sizeof( *dataset) ); unsigned long offset = 0; for(i=0;i Everything goes swimmingly until my loop reads the number 2573. All of a sudden it starts spitting out random and huge numbers. For example, what should be ... 1831 2229 2406 2637 2609 2573 2523 2247 ... becomes ... 1831 2229 2406 2637 2609 0xDB00000A 0xC7000009 0xB2000008 ... If you think those hex numbers look suspicious, you're right. Turns out the hex values for the values that were changed are really familiar: 2573 -> 0xA0D 2523 -> 0x9DB 2247 -> 0x8C7 So apparently this number 2573 causes my stream pointer to gain a byte. This remains until the next dataset is loaded and parsed, and god forbid it contain a number 2573. I have checked a number of spots where this happens, and each one I've checked began on 2573. I admit I'm not so talented in the world of C. What could cause this is completely and entirely opaque to me.

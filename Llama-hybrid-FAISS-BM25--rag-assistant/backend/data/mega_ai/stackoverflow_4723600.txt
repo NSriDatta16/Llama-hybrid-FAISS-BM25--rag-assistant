@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4723600
-[parent_id]: 
-[tags]: 
-Building SQL deployment script
-
-I was wondering if there is any civilized method of assembling SQL deployment scripts out of parts. Like if you've got ten files with stored procedure definitions (it's easier to change and debug them that way), a list of tables with fields and three sets of initial data (for every client). Or from any other set that's more complex and organised. Because changing schema file that is 200k big and grows is very hard. I personally ended up writing some PHP scripts that assembled whole file for me. So, the stored proc file looks like this: -- -- if exists (select * from sys.objects where object_id = OBJECT_ID(N'DepriveUserRight') and type in (N'P', N'PC')) begin drop procedure DepriveUserRight end; go --returns all the object types create procedure DepriveUserRight @UserLogin varchar(50), @RightName varchar(100) as -- declare @RightId int select @RightId = RightID from [Right] where RightName = @RightName exec DepriveUserRightById @UserLogin, @RightId -- go exec DepriveUserRight 'mgr', 'save_login' -- I've also included some semantics, such as type building from a table definition. Tables look like this: addTable('LinkObjectType'); ?> LinkObjectTypeID int not null identity primary key, LinkObjectTypeName varchar(100) not null, LinkObjectTypeData varchar(250) null And the command I execute is php realSchema.sql > bin/realSchema.sql (I use MS SQL, and my application is not Web one, if it matters.)

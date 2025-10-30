@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1744611
-[parent_id]: 1744533
-[tags]: 
-I think that you've diagnosed properly: you never run out of Java heap, so the JVM doesn't garbage collect, and the mapped buffers aren't freed. The fact that you don't have problems when running GC manually seems to confirm this. You could also turn on verbose collection logging as a secondary confirmation. So what can you do? Well, first thing I'd try is to keep the initial JVM heap size small, using the -Xms command-line argument. This can cause problems, if your program is constantly allocating small amounts memory on the Java heap, as it will run GC more frequently. I'd also use the pmap tool (or whatever its equivalent is on Windows) to examine the virtual memory map. It's possible that you're fragmenting the C heap, by allocating variable-sized buffers. If that's the case, then you'll see an every larger virtual map, with gaps between "anon" blocks. And the solution there is to allocate constant-size blocks that are larger than you need.

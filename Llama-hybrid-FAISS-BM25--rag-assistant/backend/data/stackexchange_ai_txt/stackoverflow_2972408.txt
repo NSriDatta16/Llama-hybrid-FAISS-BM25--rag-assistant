@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2972408
-[parent_id]: 2962629
-[tags]: 
-Use WWW::Mechanize , it takes care of encoding (both character encoding and form encoding) automatically and does the right thing if a form element's accept-charset attribute is set appropriately. If it's missing, the form defaults to UTF-8 and thus needs correction. You seem to be in this situation. By the way, your example site's encoding is KOI8-R, not Windows-1251. Working example: use utf8; use WWW::Mechanize qw(); my $message = 'Русский текст'; my $mech = WWW::Mechanize->new( cookie_jar => {}, agent => 'Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/533.9 SUSE/6.0.401.0-2.1 (KHTML, like Gecko)', ); $mech->get('http://zhurnal.lib.ru/cgi-bin/comment?COMMENT=/z/zyx/index_4-1'); $mech->current_form->accept_charset(scalar $mech->response->content_type_charset); $mech->submit_form(with_fields => { TEXT => $message }); HTTP dump (essential parts only): POST /cgi-bin/comment HTTP/1.1 Content-Length: 115 Content-Type: application/x-www-form-urlencoded FILE=%2Fz%2Fzyx%2Findex_4-1&MSGID=&OPERATION=store_new&NAME=&EMAIL=&URL=&TEXT=%F2%D5%D3%D3%CB%C9%CA+%D4%C5%CB%D3%D

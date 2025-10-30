@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 260619
-[parent_id]: 
-[tags]: 
-Why would a tuned SVM model have a lower F1 score than an untuned SVM model?
-
-I have a binary classification problem, with about 500 rows of data and 50 features. Due to the nature of the data, it seems SVM is the best solution to it. But the problem is that for some reason, the un-tuned, out of box implementation via sklearn SVC algorithm performs better according to F1 score than the tuned version: from sklearn import svm from sklearn.metrics import make_scorer from sklearn.metrics import f1_score clf_untuned = svm.SVC(random_state=8) clf_untuned.fit(X_train, y_train) predict_labels(clf_untuned, X_test, y_test) #------ F1 score of 0.8235 ------- parameters = [{'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['rbf', 'linear', 'poly', 'sigmoid'], 'gamma': [1, 0.1, 0.02, 0.001]}] clf_tuned = svm.SVC(random_state=8) f1_scorer = make_scorer(f1_score, pos_label="yes") grid_obj = GridSearchCV(clf, parameters, cv=5, scoring=f1_scorer) grid_obj = grid_obj.fit(X_train, y_train) clf_tuned = grid_obj.best_estimator_ predict_labels(clf_tuned, X_test, y_test) #---- F1 score of 0.8052 ---- I've tried multiple iterations with random splits between train/test, and random seeds, and it's always consistent...the F1 score of the TUNED model somehow is 0.02 or more lower than the UNTUNED/out-of-box model. How can I figure out what's going on?

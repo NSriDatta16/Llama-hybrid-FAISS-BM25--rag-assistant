@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3884360
-[parent_id]: 
-[tags]: 
-Auto redirect / download if image doesn't exist - optimisation
-
-I have a lot of images on my website, they are pulled from an image server onto the main server when requested to save disk space at my hosting server. To achieve this I have an entry in my .htaccess file that basically internally redirects people from /images/image.jpg to download.php which checks to see if the file exists. If the file exists it serves it up (code below) else it'll use CURL to pull in the remote file then redirect to itself header("Location: ".$_SERVER['REQUEST_URI']); so that it then shows the image. Is it inefficient to serve images to the browser in such a manner? Is it faster to let the web server do it naturally? The code for reading and showing the file is below. $file_extension = strtolower(substr(strrchr($filename,"."),1)); header("Pragma: public"); header("Content-Type: image/jpg"); header("Content-length: ".filesize($filename)); header("Content-Transfer-Encoding: binary"); header("Content-Length: ".filesize($filename)); readfile("$filename"); Would I be better off (read: more efficient) NOT using a htaccess redirect but actually modifying my 404 page to check for image specific 404's and then download them? Here is the .htaccess that defines the redirect to download.php ^images/([0-9]+)_([a-z0-9_]+).jpg$ /download.php?id=$1

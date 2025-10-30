@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3719042
-[parent_id]: 
-[tags]: 
-How to use secure encryption of an existing column in SQL Server 2005
-
-I want to encrypt an existing column in SQL Server 2005, using an UPDATE statement, moving the old content into the new encrypted column. So I have 2 choices: Symmetric and Asymmetric. The issue I have is that with a symmetric key, I have to embed the password into an SP in order to read the column like: -- Create key (at some earlier point) create symmetric key sk_user_profile with algorithm = aes_192 encryption by password = 'P@ssword!!'; -- Now encrypt the contents -- open the key so that we can use it open symmetric key sk_user_profile decryption by password = 'P@ssword!!'; UPDATE users SET password_enc = encryptbykey(key_guid('sk_user_profile'), password_plain, 1, user_id) close symmetric key sk_user_profile Now if I want to select the data, I still have to re-open the key with open symmetric key sk_user_profile decryption by password = 'P@ssword!!'; Which is defeating the point isn't it, as I am embedding a plain-text password within a stored procedure. Some questions Is there any way around this - i.e. creating a certificate with this password and then referring to the certificate instead? Would this certificate have to be purchased (like SSL), or can I create my own? Is this method scalable across fail-over clustered databases, i.e. the encryption is not based on the machine, only the password provided. Therefore failover can still read the passwords Thanks for your help

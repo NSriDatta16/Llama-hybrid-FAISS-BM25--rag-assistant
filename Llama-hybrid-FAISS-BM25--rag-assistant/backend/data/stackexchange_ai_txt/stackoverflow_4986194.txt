@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4986194
-[parent_id]: 2185249
-[tags]: 
-I would still give full-text index a try, but you have to prepare text for indexing in a certain way. The idea is to create a separate ndc_suffixes column and populate it with all the suffixes of ndc . That is, for ndc = '1234567890' the ndc_suffixes will be '1234567890 234567890 34567890 ... 890 90 0' . This can be a computed persisted column . Since NDCs are about 10 digits long, ndc_suffixes will take reasonable amount of storage (and it can be moved off to a separate table anyway). Then a full-text prefix search over ndc_suffixes could be used to get substring matches. Also an additional check ndc like '%560%' would likely be necessary to filter out bogus matches, but this one would be run over a significantly reduced set of rows.

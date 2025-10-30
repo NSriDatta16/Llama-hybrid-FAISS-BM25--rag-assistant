@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5110346
-[parent_id]: 4990390
-[tags]: 
-The solution from Zelimir doesn't work in my case (the videos were at the right location but had a size of zero bytes). So i've found another solution: protected void onActivityResult(int requestCode, int resultCode, Intent intent) { super.onActivityResult(requestCode, resultCode, intent); if (resultCode != RESULT_OK) return; try { AssetFileDescriptor videoAsset = getContentResolver().openAssetFileDescriptor(intent.getData(), "r"); FileInputStream fis = videoAsset.createInputStream(); File tmpFile = new File(Environment.getExternalStorageDirectory(),"VideoFile.3gp"); FileOutputStream fos = new FileOutputStream(tmpFile); byte[] buf = new byte[1024]; int len; while ((len = fis.read(buf)) > 0) { fos.write(buf, 0, len); } fis.close(); fos.close(); } catch (IOException io_e) { // TODO: handle error } } The MediaStore.EXTRA_OUTPUT and the Uri aren't necessary in this case.

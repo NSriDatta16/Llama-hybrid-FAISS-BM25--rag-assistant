@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2768439
-[parent_id]: 2766863
-[tags]: 
-Okay - i figured this out. I was executing my named query using the following syntax: IQuery q = session.GetNamedQuery("MyQuery") .SetResultTransformer(Transformers.AliasToBean(typeof(MyDTO))) .SetCacheable(true) .SetCacheRegion("MyCacheRegion"); ( which, I might add, is EXACTLY how the NHibernate docs tell you how to do it.. but I digress ;) ) If you use create a new AliasToBean Transformer for every query, then each query object ( which is the key to the cache ) will be unique and you will never get a cache hit. So, in short, if you do it like the nhib docs say then caching wont work. Instead, create your transformer one time in a static member var and then use that for your query, and caching will work - like this: private static IResultTransformer myTransformer = Transformers.AliasToBean(typeof(MyDTO)) ... IQuery q = session.GetNamedQuery("MyQuery") .SetResultTransformer(myTransformer) .SetCacheable(true) .SetCacheRegion("MyCacheRegion");

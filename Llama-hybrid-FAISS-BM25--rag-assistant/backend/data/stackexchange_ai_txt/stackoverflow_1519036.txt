@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1519036
-[parent_id]: 1306112
-[tags]: 
-I would definitely go with Mike's solution! Much more elegant and more efficient. But I don't see any reason not to use GROUP BY here. That would make it even more elegant and more efficient. I would suggest getting rid of a redundant "COUNT(*) OVER (PARTITION BY 1)", and sum the counts instead. SELECT CardType , COUNT(*) AS TypeCount , SUM(COUNT(*)) OVER () AS TotalCount , COUNT(*) * 1.0 / SUM(COUNT(*)) OVER () AS TypePercent FROM Sales.CreditCard GROUP BY CardType Notes: "PARTITION BY 1" was redundant, so omitted. Taking SUM of CardType-Counts saves us from counting the whole table once again without partitioning. *1.0 is used instead of casting. Query not tested, but it should work..

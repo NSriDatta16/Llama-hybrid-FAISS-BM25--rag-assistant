@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3397441
-[parent_id]: 3397287
-[tags]: 
-If you decide to run the controller on a different thread other than the UI thread you will need to hook the progressChanged event from the controller to a method handler on the UI thread. Once you have done this you will have to marshal the data returned from the processChanged event to the UI thread. Below is an example of how to do the marshaling. private object _lock = new object(); //should have class scope private void DispalyMessage(byte[] bytes) { if (this.InvokeRequired) { lock (_lock) { EventHandler d = new EventHandler(DispalyMessage); this.Invoke(d, new object[] { bytes }); return; } } else { //the bytes data has been marshaled from the controller class thread to the ui thread and can be used at will to populate a memeber of the ui. } } Additionally you might need to modify your controller and add different events which might return something other than a type:byte[]. You can do this by simply be leveraging the generic delegate class which is part of the .net framework or you can leverage the delegate class directly. Here is the Microsoft documentation on delegates. Enjoy!

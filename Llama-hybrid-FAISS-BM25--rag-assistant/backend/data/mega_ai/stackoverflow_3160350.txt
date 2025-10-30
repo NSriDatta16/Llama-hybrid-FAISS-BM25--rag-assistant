@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3160350
-[parent_id]: 
-[tags]: 
-ifort linker undefined reference
-
-I'm compiling a large HPC system written in Fortran using the Intel compiler (ifort). There are about several hundred individual modules and they all compile fine, but the linker throws up this error: phys_grid.o(.text+0x91b2): In function `phys_grid_mp_assign_chunks_': : undefined reference to `_mm_idivrem_epi32' The _mm_idivrem_epi32 seems to be a result of the compiler's automatic vectorization, but if the compiler generated it, why am I getting this error? Do I need to link in some additional library? Update: Using nm , I was able to trace the function to libsvml but linking with that didn't help. Now herein seems to lie the problem: ia32intrin.h declares the function as follows: __m128i __cdecl _mm_idivrem_epi32(__m128i * r, __m128i v1, __m128i v2); //__svml_idivrem4 But from nm 's output, the symbol in the library is __svml_idivrem4 . According to the header file, these are the same functions, but can I tell this to the linker?

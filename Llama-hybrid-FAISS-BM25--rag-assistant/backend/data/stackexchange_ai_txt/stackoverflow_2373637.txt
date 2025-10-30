@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2373637
-[parent_id]: 2373476
-[tags]: 
-I think your confusion lies in this line: void * storage = malloc( 4 ); It looks like you're trying to allocate space for a 4-byte pointer, but that's not what you need to do. Let's break the line into two steps: void * storage; // This allocates 4 bytes for a variable of type "pointer to void" storage = malloc( 4 ); // This allocates 4 _more_ bytes and sets "storage" to their address. I'm assuming that the "magic" code copies data from a variable of type Typename to the memory that was allocated for storage with this effect: memcpy(storage, data_from_a_Typename_variable, sizeof(Typename)); So if sizeof(Typename) is larger than the 4 bytes that were allocated to storage you'll see the heap-corruption error. As the other answers indicate, what you need to do is allocate enough space for a Typename variable, like this: void * storage = malloc(sizeof(Typename)); But, as Liz Albin suggested, you've already allocated space for a Typename in result so it's simpler to pass &result or (void *) &result to the magic function.

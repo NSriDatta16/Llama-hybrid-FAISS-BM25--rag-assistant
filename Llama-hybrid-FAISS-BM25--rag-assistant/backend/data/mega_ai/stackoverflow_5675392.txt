@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5675392
-[parent_id]: 5669287
-[tags]: 
-Assuming you've stuck with a fixed pipeline-style model, view and projection, you can just implement exactly the formula given in the gluUnProject man page . There's no matrix inversion built into GLSL, so ideally you'd so that on the CPU. So you need to supply a uniform of the inverse of your composed modelViewProjection matrix. gl_FragCoord is in window coordinates, so you also need to supply the view dimensions. So, you'd probably end up with something like (coding extemporaneously): vec4 unProjectedPosition = invertedModelViewProjection * vec4( 2.0 * (gl_FragCoord.x - view[0]) / view[2] - 1.0, 2.0 * (gl_FragCoord.y - view[1]) / view[3] - 1.0, 2.0 * gl_FragCoord.z - 1.0, 1.0); If you've implemented your own analogue of the old matrix stack then you're probably fine inverting a matrix. Otherwise, it's possibly a more daunting topic than you had anticipated and you might be better off using MESA's open source implementation (see invert_matrix, the third function in that file), just because it's well tested if nothing else.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 764298
-[parent_id]: 
-[tags]: 
-ASP.NET MVC doesn't call global.asax' EndRequest
-
-I am trying to perform some actions at the end of every request. I changed the Application_Start() that is generated when created new project to make a test: protected void Application_Start() { EndRequest += (s, e) => { Console.Write("fghfgh"); }; RegisterRoutes(RouteTable.Routes); } The lambda won't get called. Any ideas why? edit: I see that they are doing similar thing in SharpArch [ http://code.google.com/p/sharp-architecture/] and it does work there... And no, I don't want to use an HttpModule. edit2: The only workaround I found is to use Application_EndRequest in conjuction with a private static member of global.asax: private static WebSessionStorage wss; protected void Application_Start() { //... wss = new WebSessionStorage(this); //... } protected void Application_EndRequest(object sender, EventArgs e) { wss.EndRequest(sender, e); } wss must be private because it seems like the Application_EndRequest is being called using different instance object (this). That may also be reason of my event (as described at the beginning) not being called.

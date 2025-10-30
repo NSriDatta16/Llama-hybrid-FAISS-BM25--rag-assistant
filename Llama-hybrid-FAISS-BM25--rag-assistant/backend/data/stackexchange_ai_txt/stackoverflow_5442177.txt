@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5442177
-[parent_id]: 5441810
-[tags]: 
-Placing output=AST; in the options section will not produce an actual AST, it only causes ANTLR to create CommonTree tokens instead of CommonToken s (or, in your case, the equivalent C structs). If you use output=AST; , the next step is to put tree operators, or rewrite rules inside your parser rules that give shape to your AST. See this previous Q&A to find out how to create a proper AST. For example, the following grammar (with rewrite rules): options { output=AST; // ... } sql // make VERB the root : VERB fields -> ^(VERB fields) ; fields // omit the comma's from the AST : FIELD (',' FIELD)* -> FIELD+ ; VERB : 'SELECT' | 'UPDATE' | 'INSERT'; FIELD : CHAR+; SPACE : ' ' {$channel=HIDDEN;}; fragment CHAR : 'a'..'z'; will parse the following input: UPDATE field, foo , bar into the following AST:

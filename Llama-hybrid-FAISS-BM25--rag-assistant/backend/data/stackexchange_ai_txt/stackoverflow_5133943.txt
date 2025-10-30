@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5133943
-[parent_id]: 5127855
-[tags]: 
-It's a JSON file, so read it using a JSON parser. That will give you a Unicode string directly, without you having to unescape it. This is going to be much more reliable (as well as simpler), since JSON strings are not the same format as Python strings. (They're pretty similar and both use the \u format, but your current code will fall over badly for other escaped characters, not to mention that it relies on the exact attribute order and whitespace settings of a JSON file, which makes it very fragile indeed.) import json, cgi, codecs with open('chrome.json') as fp: bookmarks= json.load(fp) with codecs.open('chrome.html', 'w', 'utf-8') as fp: fp.write(u' \n') for root in bookmarks[u'roots'].values(): for child in root['children']: fp.write(u' %s ' % ( cgi.escape(child[u'url']), cgi.escape(child[u'name']) )) fp.write(u' ') Note also the use of cgi.escape to HTML-encode any or & characters in the strings.

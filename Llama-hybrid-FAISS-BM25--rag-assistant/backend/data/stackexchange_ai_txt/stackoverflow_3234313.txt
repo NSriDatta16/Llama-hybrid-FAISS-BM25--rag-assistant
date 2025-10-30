@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3234313
-[parent_id]: 3234197
-[tags]: 
-I agree with the comments that a modern DBMS should be able to join any table that they can store. Sometimes you have to tell the database not to try a hash join on gigantic tables; hash joins are very fast, but not for joins where the hash doesn't fit in memory. For PostreSQL, you can disable hash joins with: SET ENABLE_HASHJOIN TO FALSE Having said that, some databases do perform better if you split a query in smaller batches. You can use subqueries to partition a join in batches: select * from ( select * from YourTable1 where CustomerName like 'A%' ) a left join ( select * from YourTable2 where CustomerName like 'A%' ) b on a.CustumerName = b.CustomerName This only helps the database if there is an efficient way to filter. In the example, that would be an index on CustomerName in both tables.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 259355
-[parent_id]: 
-[tags]: 
-How can you flush a write using a file descriptor?
-
-It turns out this whole misunderstanding of the open() versus fopen() stems from a buggy I2C driver in the Linux 2.6.14 kernel on an ARM. Backporting a working bit bashed driver solved the root cause of the problem I was trying to address here. I'm trying to figure out an issue with a serial device driver in Linux (I2C). It appears that by adding timed OS pauses (sleeps) between writes and reads on the device things work ... (much) better. Aside: The nature of I2C is that each byte read or written by the master is acknowledged by the device on the other end of the wire (slave) - the pauses improving things encourage me to think of the driver as working asynchronously - something that I can't reconcile with how the bus works. Anyhoo ... I'd either like to flush the write to be sure (rather than using fixed duration pause), or somehow test that the write/read transaction has completed in an multi-threaded friendly way. The trouble with using fflush(fd); is that it requires 'fd' to be stream pointer (not a file descriptor) i.e. FILE * fd = fopen("filename","r+"); ... // do read and writes fflush(fd); My problem is that I require the use of the ioctl() , which doesn't use a stream pointer. i.e. int fd = open("filename",O_RDWR); ioctl(fd,...); Suggestions?

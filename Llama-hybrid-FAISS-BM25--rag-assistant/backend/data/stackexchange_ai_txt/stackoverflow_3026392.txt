@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3026392
-[parent_id]: 
-[tags]: 
-Invoking a superclass's class methods in Python
-
-I am working on a Flask extension that adds CouchDB support to Flask. To make it easier, I have subclassed couchdb.mapping.Document so the store and load methods can use the current thread-local database. Right now, my code looks like this: class Document(mapping.Document): # rest of the methods omitted for brevity @classmethod def load(cls, id, db=None): return mapping.Document.load(cls, db or g.couch, id) I left out some for brevity, but that's the important part. However, due to the way classmethod works, when I try to call this method, I receive the error message File "flaskext/couchdb.py", line 187, in load return mapping.Document.load(cls, db or g.couch, id) TypeError: load() takes exactly 3 arguments (4 given) I tested replacing the call with mapping.Document.load.im_func(cls, db or g.couch, id) , and it works, but I'm not particularly happy about accessing the internal im_ attributes (even though they are documented). Does anyone have a more elegant way to handle this?

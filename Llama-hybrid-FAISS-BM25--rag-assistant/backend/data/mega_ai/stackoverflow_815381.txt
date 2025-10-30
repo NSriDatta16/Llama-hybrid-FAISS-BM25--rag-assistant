@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 815381
-[parent_id]: 815313
-[tags]: 
-I echo Chris' comment about not using a hash at all (your database engine can hopefully index 140-character fields efficiently). If you did want to use a hash, MD5 would be my first choice as well (16 bytes), followed by SHA-1 (20 bytes). Whatever you do, don't use sum-of-characters. I can't immediately come up with a function that would have more collisions (all anagrams hash the same), plus it's slower! $ python -m timeit -s 'from hashlib import md5' 'd=md5("There once was a man named Michael Finnegan.").digest()' 100000 loops, best of 3: 2.47 usec per loop $ python -m timeit 'd=sum(ord(c) for c in "There once was a man named Michael Finnegan.")' 100000 loops, best of 3: 13.9 usec per loop

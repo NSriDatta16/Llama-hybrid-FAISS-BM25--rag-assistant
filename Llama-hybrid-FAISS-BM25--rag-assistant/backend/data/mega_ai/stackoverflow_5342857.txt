@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5342857
-[parent_id]: 
-[tags]: 
-How to subtract a vector from each row of a matrix?
-
-Possible Duplicate: How can I divide each row of a matrix by a fixed row? I'm looking for an elegant way to subtract the same vector from each row of a matrix. Here is a non elegant way of doing it. a = [1 2 3]; b = rand(7,3); c(:,1) = b(:,1) - a(1); c(:,2) = b(:,2) - a(2); c(:,3) = b(:,3) - a(3); Also, the elegant way can't be slower than this method. I've tried c = b-repmat(a,size(b,1),1); and it seems slower. EDIT: The winner is this method. c(:,1) = b(:,1) - a(1); c(:,2) = b(:,2) - a(2); c(:,3) = b(:,3) - a(3); EDIT: More methods, and tic toc results: n = 1e6; m = 3; iter = 100; a = rand(1,m); b = rand(n,m); tic c = zeros(size(b)); for i = 1:iter c(:,1) = b(:,1) - a(1); c(:,2) = b(:,2) - a(2); c(:,3) = b(:,3) - a(3); end toc tic c = zeros(size(b)); for i = 1:iter c(:,1) = b(:,1) - a(1); c(:,2) = b(:,2) - a(2); c(:,3) = b(:,3) - a(3); end toc tic c = zeros(size(b)); for i = 1:iter for j = 1:3 c(:,j) = b(:,j) - a(j); end end toc tic for i = 1:iter c = b-repmat(a,size(b,1),1); end toc tic for i = 1:iter c = bsxfun(@minus,b,a); end toc tic c = zeros(size(b)); for i = 1:iter for j = 1:size(b,1) c(j,:) = b(j,:) - a; end end toc results Elapsed time is 0.622730 seconds. Elapsed time is 0.627321 seconds. Elapsed time is 0.713384 seconds. Elapsed time is 2.621642 seconds. Elapsed time is 1.323490 seconds. Elapsed time is 17.269901 seconds.

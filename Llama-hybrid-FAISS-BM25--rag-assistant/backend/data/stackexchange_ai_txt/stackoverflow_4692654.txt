@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4692654
-[parent_id]: 
-[tags]: 
-Django search form help want to be able to do partial search as well
-
-I have a search for that looks for an alternate_id for a particular item. This search for can allow alternative if to do multiple searches if there is a comma without spaces. But I want my search form to be able to do a "partial search" as well. So searching for a*,2ndid will give all results a......,2ndid Alternate id is a string. Not an integer. The only reason why I have as __in was because I could perform multiple searches. def search_item(request, client_id = 0): client = None if client_id != 0: try: client = models.Client.objects.get(pk = client_id) except: pass items = None Q_alt_ids = Q() if request.method == 'POST': form = forms.SearchItemForm(request.POST) if form.is_valid(): alternate_id = form.cleaned_data['alternate_id'] items = client.storageitem_set.all() if alternate_id: alternate_ids= alternate_id.lower().split(",") Q_alt_ids = Q(alternative_id__in = alternate_ids) return render_to_response('items.html', {'items':items, 'client':client}, context_instance = RequestContext(request)) else: HttpResponse(client) if client is not None: form = forms.SearchItemForm(initial = {'client':client.pk}) else: form = forms.SearchItemForm() return render_to_response('search_items.html', {'form':form}, context_instance = RequestContext(request))

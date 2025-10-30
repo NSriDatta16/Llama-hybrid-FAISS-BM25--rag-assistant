@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3087217
-[parent_id]: 3087140
-[tags]: 
-One way would be to Set "Results to Text" on the query menu in SSMS then execute the below. It doesn't actually make the change but generates a script for you to review and execute. SET NOCOUNT ON; DECLARE @user_name SYSNAME , @login_name SYSNAME; SELECT @user_name = 'user_name', @login_name = 'login_name' SELECT ' USE ' + QUOTENAME(NAME) + '; CREATE USER ' + QUOTENAME(@user_name) + ' FOR LOGIN ' + QUOTENAME(@login_name) + ' WITH DEFAULT_SCHEMA=[dbo]; EXEC sys.sp_addrolemember ''db_datareader'', ''' + QUOTENAME(@user_name) + '''; EXEC sys.sp_addrolemember ''db_denydatawriter'', ''' + QUOTENAME(@user_name) + '''; GO ' FROM sys.databases WHERE database_id > 4 AND state_desc = 'ONLINE' Or you could look at sys.sp_MSforeachdb as here or Aaron Bertrand's improved version here If you are not seeing all of the characters when you run this, open the Query Options for Text and check the setting for 'Maximum number of characters displayed in each column'. Make sure this is set to a value large enough to display all characters.

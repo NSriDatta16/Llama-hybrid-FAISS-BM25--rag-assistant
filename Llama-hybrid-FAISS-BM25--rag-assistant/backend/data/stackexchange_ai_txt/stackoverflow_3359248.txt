@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3359248
-[parent_id]: 3359055
-[tags]: 
-You need to quote the literal strings. This should work: cursor = mDb.query(DB_CONTACTS_NAME, new String[] {KEY_ID, KEY_LAST_NAME, KEY_FIRST_NAME, KEY_EMAIL_ADDRESS, KEY_ORGANIZATION_NAME, KEY_LABEL, KEY_LABEL_POSITION}, KEY_FIRST_NAME + "='" + first + "' AND " + KEY_LAST_NAME + "='" + last + "'", null, null, null, null ); Otherwise when the SQL interpreter see's first_name=marcus You cannot expect it to know that 'marcus' is not a table name or a variable. On a side note try searching for the last name "Billy" "); drop table contacts;" DO NOT CONSTRUCT SQL QUERIES FROM DATA STRINGS Instead use a query which takes in an argument list. Search the docs for something like String[] myArguments = new String[] {first, last}; cursor = mDb.query("SELECT * FROM contacts WHERE first_name = ? AND last_name = ?;", myArguments); This is much safer. In your version if the 'first' or 'last' variables contain control characters which SQLite interprets as commands then you may break your database system. DO NOT DO IT ... EVER

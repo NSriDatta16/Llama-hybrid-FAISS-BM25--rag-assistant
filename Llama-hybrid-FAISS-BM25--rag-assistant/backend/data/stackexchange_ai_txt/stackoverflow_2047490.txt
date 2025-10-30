@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2047490
-[parent_id]: 2047425
-[tags]: 
-Best practices for lock() are to make sure you lock on a private static object (see here on MSDN for why). I would also highly recommend reading Threading Best Practices before heading down this road. Usually though, performance overhead from lock() is going to be less of a worry than how many threads it's blocking, and how often. You should make sure you understand the profile of your application so that you can minimize the locking behaviour. I would highly recommend that you consider using the ASP.Net Application object for simple data storage and updating, as it already has a dictionary and specific methods available for this kind of synchronized storage. Application has Lock() and Unlock() methods that are built to handle thread blocking and failure recovery for you already, without the AppDomain related issues that you might run into by rolling your own syncronization code. An example would be: Application.Lock(); Application["SomeGlobalCounter"] = (int)Application["SomeGlobalCounter"] + 1; Application.UnLock();

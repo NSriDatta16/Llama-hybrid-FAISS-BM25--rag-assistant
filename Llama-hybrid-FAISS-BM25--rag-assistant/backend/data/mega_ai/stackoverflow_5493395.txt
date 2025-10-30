@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5493395
-[parent_id]: 
-[tags]: 
-OpenProcess handle invalid for ReadProcessMemory
-
-I've made this simple class to open a process and read memory from it: The problem is when I call ReadDWORD with any memory address ReadProcessMemory fails with error code 6: ERROR_INVALID_HANDLE, The handle is invalid . And I can't figure out what I'm doing wrong. If I put the OpenProcess part in the ReadDWORD function it works fine. Is there something wrong with how I store the handle? Why does it become invalid before I use it? Memory.h #ifndef MEMORY_H #define MEMORY_H #include #include #pragma comment(lib, "psapi.lib") #include class Memory { public: Memory(); Memory(DWORD offset); ~Memory(); DWORD ReadDWORD(DWORD addr); private: HANDLE m_hProc; DWORD m_Offset; }; #endif Memory.cpp #include "Memory.h" Memory::Memory() { Memory(0); } Memory::Memory(DWORD offset) { m_hProc = OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, false, 5444); // 5444 is the PID of a process I'm testing this with m_Offset = offset; } Memory::~Memory() { CloseHandle(m_hProc); } DWORD Memory::ReadDWORD(DWORD addr) { // Optional memory offset addr += m_Offset; DWORD value = -1; int result = ReadProcessMemory(m_hProc, (LPVOID)addr, &value, sizeof(DWORD), NULL); if (result == 0) std::cout

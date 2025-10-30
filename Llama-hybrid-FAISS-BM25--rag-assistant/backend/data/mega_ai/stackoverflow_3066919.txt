@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3066919
-[parent_id]: 3066714
-[tags]: 
-They're right. Joining on a CHAR(30) text field - particularly one containing person name data - will be slow, grossly inefficient and incredibly fragile. People do change their names (marriage is the obvious example), and multiple people can have the same name. You want to create appropriate indexes on your tables to support the order you want data to appear in, and forget clustering. Your performance optimisation procedure sounds like a disaster looking for a place to happen. Sorry, but dropping/creating the tables like that is asking for trouble. I would start with a UNIQUE INDEX on customer.id, a UNIQUE INDEX on transaction.ticket_number, and an INDEX (for performance rather than cardinality, so enforcing uniqueness not terribly important) on transactions (id, ticket_number DESC), and take it from there. Data is returned from the transaction table in the order it appears in the index. I would only consider clustering when all other avenues of query optimisation have been exhausted.

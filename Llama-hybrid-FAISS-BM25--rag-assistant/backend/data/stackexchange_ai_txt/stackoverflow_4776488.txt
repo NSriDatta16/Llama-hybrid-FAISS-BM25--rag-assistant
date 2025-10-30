@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4776488
-[parent_id]: 4776329
-[tags]: 
-1. Use NaNs, like floating coprocessors. Pick a value, which may never used as result, to indicate error. # define VALUE_OF_FAIL (-99999) So then: char foo(void) { // If stuff doesn't go okay return VALUE_OF_FAIL; } char bar = foo(); if (bar == VALUE_OF_FAIL) return 1; Again, you have to guarantee that the result of a regular computation will be never be VALUE_OF_FAIL. Pick a number from the periphery of the integer range. You may define more fail codes, but then you should write a function wich checks a variable for fail. 2. Organize your computing code to a class, then add isValid() method: class FooBar { public FooBar() { // constructor this.fail = false; // initialize here... } char foo(void) { // the computation method this.fail = false; // ...or here // If stuff doesn't go okay this.fail = true; // or error code return 0; // any value } bool failed() { return this.fail; } } // outside the class fb = new FooBar(); char bar = fb->foo(); if (fb->failed()) return 1;

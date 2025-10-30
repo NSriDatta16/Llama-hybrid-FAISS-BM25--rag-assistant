@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 534259
-[parent_id]: 534201
-[tags]: 
-I guess what you mean is the -f option, which will give you the percentage of lines covered per function. There is an interesting article about gcov at Dr. Dobb's which might be helpful. If "man gcov" doesn't show the -f flag, check if you have a reasobably recent version of the gcc suite. Edit: to get the percentage of functions not executed you can simply parse through the function coverage output, as 0.00% coverage should be pretty much equivalent to not called. This small script prints the percentage of functions not executed: #!/bin/bash if test -z "$1" then echo "First argument must be function coverage file" else notExecuted=`cat $1 | grep "^0.00%" | wc -l` executed=`cat $1 | grep -v "^0.00%" | wc -l` percentage=$(echo "scale=2; $notExecuted / ($notExecuted + $executed) * 100" |bc) echo $percentage fi

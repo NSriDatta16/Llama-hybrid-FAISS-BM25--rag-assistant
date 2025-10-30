@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 444366
-[parent_id]: 
-[tags]: 
-REINFORCE for VAE Implementation Question
-
-I want to compute the VAE loss through REINFORCE since my model's decoder is a deterministic program and is non-differentiable. The only REINFORCE implementation for VAE I was able to find used the following code. # Reconstruction + KL divergence losses summed over all elements and batch def loss_function(recon_x, x, log_prob, entropy): BCE = F.binary_cross_entropy(recon_x, x.view(-1, 784), reduce=False).sum(-1) # We make the assumption that q(z1,..,zd|x) = q(z1|x)...q(zd|x) log_prob = log_prob.sum(-1) # The Reinforce loss is just log_prob*loss reinforce_loss = torch.sum(log_prob*BCE.detach()) # If the prior on the latent is uniform then the KL is just the entropy of q(z|x) # We add reinforce_loss - reinforce_loss.detach() so we can backpropagate through the encoder with REINFORCE but it doesn't modify the loss. loss = BCE.sum() + reinforce_loss - reinforce_loss.detach() + entropy.sum() return loss Is the author's implementation correct? First of all, adding and subtracting reinforce_loss seems very hacky to me (though perhaps this is correct), and the KL Divergence is simply computed through Entropy(Q) rather than CrossEntropy(Q,P) - Entropy(Q) if P is uniform categorical. Thanks in advance!

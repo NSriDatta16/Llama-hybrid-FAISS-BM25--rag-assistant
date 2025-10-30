@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1395138
-[parent_id]: 1395010
-[tags]: 
-As an alternative, could you create a TickHolder class, and use that as the value in your map? It makes the map slightly more cumbersome to use (getting a value is now map.getValue(key).getTick()), but it lets you keep the ConcurrentHashMap's behavior. public class TickHolder { public PriceTick getTick() { /* returns current value */ public synchronized PriceTick replaceIfNewer (PriceTick pCandidate) { /* does your check */ } } And your put method becomes something like: public void updateTick (PriceTick pTick) { TickHolder value = map.getValue(pTick.getInstrumentId()); if (value != null) { TickHolder newTick = new TickHolder(pTick); value = map.putIfAbsent(pTick.getInstrumentId(), newTick); if (value == null) { value = newTick; } } value.replaceIfNewer(pTick); }

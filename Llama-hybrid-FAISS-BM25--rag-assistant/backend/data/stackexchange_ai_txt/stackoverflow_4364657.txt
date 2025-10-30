@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4364657
-[parent_id]: 
-[tags]: 
-Why the boilerplates when writing new Monad Transformers
-
-This section http://book.realworldhaskell.org/read/monad-transformers.html#id659032 from the book Real World Haskell suggests that when writing a new Monad Transformer, we have to derive instances for MonadState , MonadIO , etc. manually. But I tried the following and it compiled. Why is it not done in the library? Say I have the MaybeT monad transformers: newtype MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) } instance Monad m => Monad (MaybeT m) where -- blah blah instance MonadTrans MaybeT where lift = MaybeT . (liftM Just) Then once we know that t is a MonadTrans and m is a Monad , why can't everything else be automatically derived like this? instance (MonadTrans t, Monad (t m), MonadIO m) => MonadIO (t m) where liftIO = lift . liftIO instance (MonadTrans t, Monad (t m), MonadState s m) => MonadState s (t m) where get = lift get put = lift . put Does the author mean we have to do this manually for each new MonadTrans or I get him wrong? Thank you very much :)

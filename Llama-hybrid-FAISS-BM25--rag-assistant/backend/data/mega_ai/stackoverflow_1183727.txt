@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1183727
-[parent_id]: 1183698
-[tags]: 
-I do not understand why you are filling MemoryStream m one byte at a time, but then writing the sr to the file. At that point, I believe the sr is empty, and MemoryStream m is never used. Below is some code I wrote to do a similar task. It gets a WebResponse in 32K chunks at a time, and dumps it directly to a file. public void GetStream() { // ASSUME: String URL is set to a valid URL. // ASSUME: String Storage is set to valid filename. Stream response = WebRequest.Create(URL).GetResponse().GetResponseStream(); using (FileStream fs = File.Create(Storage)) { Byte[] buffer = new Byte[32*1024]; int read = response.Read(buffer,0,buffer.Length); while (read > 0) { fs.Write(buffer,0,read); read = response.Read(buffer,0,buffer.Length); } } // NOTE: Various Flush and Close of streams and storage not shown here. }

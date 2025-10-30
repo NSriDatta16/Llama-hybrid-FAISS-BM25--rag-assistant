@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1159495
-[parent_id]: 
-[tags]: 
-How do I organize multithreaded access to a graph?
-
-I'm elaborating over a problem which seems hard to me and I'm not expecting a simple solution, but maybe there are proven practices or further reading that might make this easier. I'm pretty sure that the general problem pops up in many applications (for example garbage collection or transactional databases). My application has a graph (a DAG if it matters) which is being traversed by multiple threads simultaneously. Some of these are just trying to find certain nodes or retrieve a subgraph, others may change the graph's structure. The policy I want to implement is that a reading thread will perform its entire operation on a "snapshot" of the graph, i. e. see the structure as it was at a certain point in time. My current plan is to set up something similar to row versioning in transactional DBs, i. e. a reading thread first obtains a current version number and then only visits graph nodes and edges that have this version number or earlier. Writing threads would then put an incremented version number on new elements (changed elements would be cloned first), making them invisible for running readers. A writing thread can then "commit" its new version when it has successfully finished, and readers would "release" their version number, making deleted elements eligible for removal. This strategy is still sketchy and has a number of unsolved issues such as concurrent write access, but generally it seems like a viable road to go.

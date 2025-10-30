@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1667221
-[parent_id]: 1667163
-[tags]: 
-If you provide an explicit value, SQL Server can use statistics of this field to make a "better" query plan decision. Unfortunately (as I've experienced myself recently), if the information contained in the statistics is misleading, sometimes SQL Server just makes the wrong choices. If you want to dig deeper into this issue, I recommend you to check what happens if you use other GUIDs: If it uses a different query plan for different concrete GUIDs, that's an indication that statistics data is used. In that case, you might want to look at sp_updatestats and related commands. EDIT : Have a look at DBCC SHOW_STATISTICS : The "slow" and the "fast" GUID are probably in different buckets in the histogram. I've had a similar problem , which I solved by adding an INDEX table hint to the SQL, which "guides" SQL Server towards finding the "right" query plan. Basically, I've looked at what indices are used during a "fast" query and hard-coded those into the SQL. This is far from an optimal or elegant solution, but I haven't found a better one yet...

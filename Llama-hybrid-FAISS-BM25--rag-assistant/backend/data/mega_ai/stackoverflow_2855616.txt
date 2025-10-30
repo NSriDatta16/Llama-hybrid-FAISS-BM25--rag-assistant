@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2855616
-[parent_id]: 
-[tags]: 
-Unit testing an IExtension for use with WCF Service
-
-I'm trying to develop a extension ( IExtension ) for System.ServiceModel.ObjectContext using TDD. The extension is to be used as storage for a lifetime manager to be used with Windsor Castle. The problem lies in abstracting (mocking) the OperationContext. As it is a static object that gets automatically created during runtime I don't really know how to mock it (without TypeMock - which I don't have). An OperationContext can be newed up if I supply a channel object that implements IChannelFactory, however - that interface is scary complex, and I don't know what stuff I have to implement in a stub to get it working properly. Hosting the service and calling it doesn't populate the OperationContext either... [TestFixtureSetUp] public void FixtureSetup() { _serviceHost = new TypeResolverServiceHost(typeof(AilDataService)); _serviceHost.AddServiceEndpoint(typeof (IAilDataService), new BasicHttpBinding(), SvcUrl); _serviceHost.Open(); var endpointAddress = new EndpointAddress(SvcUrl); _ailDataService = ChannelFactory .CreateChannel(new BasicHttpBinding(), endpointAddress); } [TestFixtureTearDown] public void FixtureCleanup() { _serviceHost.Close(); } [Test] public void Can_Call_Service() { var reply = _ailDataService.GetMovexProductData("169010", new TaskSettings{MovexDatabase = "MVXCDTATST", MovexServer = "SEJULA03"}); Assert.That(reply, Is.Not.Null); // This fails Assert.That(OperationContext.Current!=null); } Any tips?

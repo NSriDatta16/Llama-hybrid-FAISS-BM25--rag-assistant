@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3098202
-[parent_id]: 1836749
-[tags]: 
-Tcp reassembly can be done with JNetPcap . Here is a complete example: final String SOME_PORT = 8888; StringBuilder errbuf = new StringBuilder(); Pcap pcap = Pcap.openOffline("/dir/someFile.pcap", errbuf); //Can be replace with .openLive(...) if (pcap == null) { System.err.printf("Error: "+errbuf.toString()); return; } //Handler that receive Tcp Event one by one AnalyzerListener handler = new AnalyzerListener () { @Override public void processAnalyzerEvent(TcpStreamEvent evt) { JPacket packet = evt.getPacket(); Tcp tcp = new Tcp(); if (packet.hasHeader(tcp)) { //Limiting the analysis to a specific protocol if (tcp.destination() == SOME_PORT || tcp.source() == SOME_PORT) { String data = new String(tcp.getPayload()); System.out.println("Capture data:{"+data+"}"); } } } }; TcpAnalyzer tcpAnalyzer = JRegistry.getAnalyzer(TcpAnalyzer.class); tcpAnalyzer.addTcpStreamListener(handler, null); //Starting the capture pcap.loop(Pcap.LOOP_INFINATE, JRegistry.getAnalyzer(JController.class), null);

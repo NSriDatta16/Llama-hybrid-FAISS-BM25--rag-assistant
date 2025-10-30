@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 409070
-[parent_id]: 
-[tags]: 
-What to do when Breusch-Pagan shows heteroscedasticity but plot looks it might not?
-
-So I'm trying to run a Least-Squares Means with a covariate. However when I run Breusch-Pagan test it shows heteroscedasticity even after either tukey or log2 transformation, however the plots seem fine. Here are the plots. Reproducible codes below in R. Wanted to know what your opinion(s) are on how this data looks and what else I can try? bd = read.csv("https://www.dropbox.com/s/jbtabd372u8675c/hs.csv?dl=1", header=T) bd $tuk = transformTukey(bd$ value, plotit=FALSE) bd $log2 = log2(bd$ value) bd.lm.tuk = lm(tuk ~ group + unspec , data = bd) bd.lm.log2 = lm(log2 ~ group + unspec , data = bd) test.tuk = bptest(bd.lm.tuk) test.log2 = bptest ( bd.lm.log2) bd $fit.log2 = bd.lm.log2$ fitted.values bd $res.log2 = bd.lm.log2$ residuals bd $fit.tuk = bd.lm.tuk$ fitted.values bd $res.tuk = bd.lm.tuk$ residuals glog2 = ggplot(data = bd, aes(y = res.log2, x = fit.log2, fill=group)) + geom_point(aes ( color = group) ) + ggtitle ( paste( "bptest: ", round ( test.log2$p.value, 4), "log2") ) gtuk = ggplot(data = bd, aes(y = res.tuk, x = fit.tuk, fill=group)) + geom_point(aes ( color = group) ) + ggtitle ( paste( "bptest: ", round ( test.tuk$p.value, 4), "tukey") ) grid.arrange ( glog2, gtuk, ncol=1) result = lsmeans::lsmeans(bd.lm.log2, pairwise ~ group, adjust="tukey") r = summary ( result )

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2792456
-[parent_id]: 2789842
-[tags]: 
-You aren't covering the case where the function exits via exception instead of normally. Of course if you can't even construct a zero-length std::string then your program is probably too far gone for recovery, but determining that is beyond the scope of code coverage analysis. EDIT: In order to improve coverage you can mock up a global operator new which fails based on some global flag (or more flexibly, fails on the Nth allocation) which you can set in your test case. e.g. int allocation_failure = 0; void* operator new(size_t requestedbytes) { if (allocation_failure) { if (!--allocation_failure) { throw std::bad_alloc(); } } void* retval = malloc(requestedBytes); if (!retval) { throw std::bad_alloc(); } return retval; } void operator delete(void* p) { if (p) free(p); } Or you could conditionally fail allocations of a particular size, or the Nth allocation of a particular size, etc, to exercise all the possible paths through your code.

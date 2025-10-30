@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1527045
-[parent_id]: 1526177
-[tags]: 
-Is Summary a mapped entity or a bean you're trying to return in your results? It shouldn't be both. You need to pass an entity class into session.createCriteria() . As far as results go, you need to: Have an appropriate setter in your Summary class (or your result bean if it's different). Specify an alias for your projection. Specify an 'aliasToBean' result transformer. Your criteria code will become: summaryList = Criteria.setProjection( Projections.projectionList() .add(Projections.sum("contractDollar"), "contractSum") .add(Projections.groupProperty("department")) ) .setResultTransformer(Transformers.aliasToBean(Summary.class)) .list() ; Your Summary bean will need to have a setContractSum() method in this example.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2861345
-[parent_id]: 2856076
-[tags]: 
-I would guess that this is due to that the client side database storage runs asynchronous as an AJAX call would. This means that it doesn't stops the call chain in order to wait for a result from the invoked method. As a result the javascript engine completes the for-loop before running the globalFunction. To work around this you could perform the db query inside a closure. function getDataForIndicatorAndRegion(indicator_id, region_id, pWedge){ return function (targetWedge) { someSql = "SELECT dataRows.status FROM dataRows WHERE indicator_id = ? AND region_id = ?"; dbInterface.sql(someSql, [indicator_id, region_id], function(transaction, result) { targetWedge.changeColor(randomHex()); }); }(pWedge); } This way you preserve pWedge for each execution. Since the second method is invoking it self and send what pWedge is right now as an argument. EDIT: Updated the code from comments. And made a change to it. The callback function maybe shouldn't be self invoked. If it invoke it self the result of the function is passed as a argument. Also if it doesn't work, try passing the other arguments.

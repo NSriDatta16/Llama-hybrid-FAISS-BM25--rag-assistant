@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 47992
-[parent_id]: 
-[tags]: 
-Reconstructing input image from layers of a CNN
-
-I've been trying to implement neural style transfer as described in this paper here According to the paper, we can visualise the information at different processing stages in the CNN by reconstructing the input image from only knowing the network’s responses in a particular layer. My question is, how exactly does one go about reconstructing image from a single layer? I'm implementing this in pytorch. I've the output from layer conv4_2 stored in a tensor of shape [1,512,50,50] but how do I visualize this? Here's a part of my code, if that helps. vgg = models.vgg19(pretrained=True).features for param in vgg.parameters(): param.requires_grad_(False) device = torch.device("cpu") vgg.to(device) content_img = Image.open("image3.jpg").convert('RGB') style_img = Image.open("image5.jpg").convert('RGB') content_img = transformation(content_img).to(device) style_img = transformation(style_img).to(device) def get_features(image, model): layers = {'0': 'conv1_1', '5': 'conv2_1', '10': 'conv3_1', '19': 'conv4_1', '21': 'conv4_2', '28': 'conv5_1'} x = image features = {} for name, layer in model._modules.items(): x = layer(x) if name in layers: features[layers[name]] = x return features content_img_features = get_features(content_img, vgg) style_img_features = get_features(style_img, vgg) target_content = content_img_features['conv4_2'] How do I reconstruct the image from the output of conv4_2 ?

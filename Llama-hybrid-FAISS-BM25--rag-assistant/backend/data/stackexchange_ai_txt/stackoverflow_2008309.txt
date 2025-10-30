@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2008309
-[parent_id]: 
-[tags]: 
-How to set ConnectionTimeout to 0 in Sql Server 2008?
-
-I set timeout to 0 but the connection close prematuraly, what is wrong with this statement ? Using odbcconn As New OdbcConnection(DataShared.gstrCNN) odbcconn.ConnectionTimeout = 0 odbcconn.Open() Dim OdbcCmd As New OdbcCommand( _ "{ ? = CALL [proc_Cp_GenEstadoCta](" & _ PCOD_EMPR & ", " & _ PPER_ANUAL & "," & _ DataShared.gintCODUSER & " ) }", odbcconn) OdbcCmd.Parameters.Add("@return", OdbcType.Int) OdbcCmd.Parameters("@return").Direction = ParameterDirection.ReturnValue OdbcCmd.ExecuteNonQuery() If CInt(OdbcCmd.Parameters("@return").Value) = 0 Then GenEstadoMovsSaldos = True Else GenEstadoMovsSaldos = False End If End Using The corrected code Using odbcconn As New OdbcConnection(DataShared.gstrCNN) --odbcconn.ConnectionTimeout = 0 odbcconn.Open() Dim OdbcCmd As New OdbcCommand( _ "{ ? = CALL [proc_Cp_GenEstadoCta](" & _ PCOD_EMPR & ", " & _ PPER_ANUAL & "," & _ DataShared.gintCODUSER & " ) }", odbcconn) OdbcCmd.CommandTimeout = 60 OdbcCmd.Parameters.Add("@return", OdbcType.Int) OdbcCmd.Parameters("@return").Direction = ParameterDirection.ReturnValue OdbcCmd.ExecuteNonQuery() If CInt(OdbcCmd.Parameters("@return").Value) = 0 Then GenEstadoMovsSaldos = True Else GenEstadoMovsSaldos = False End If End Using It's working well !

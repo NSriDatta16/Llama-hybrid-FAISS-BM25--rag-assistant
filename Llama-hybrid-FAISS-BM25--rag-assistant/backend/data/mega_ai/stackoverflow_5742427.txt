@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5742427
-[parent_id]: 
-[tags]: 
-Why is RandomAccessFile writeLong implemented with multiple write calls?
-
-While profiling an application I noticed that RandomAccessFile.writeLong was taking a lot of time. I checked the code for this method, and it involves eight calls of the native method write. I wrote an alternative implementation for writeLong using a byte[]. Something like this: RandomAccessFile randomAccessFile = new RandomAccessFile("out.dat", "rwd"); ... byte[] aux = new byte[8]; aux[0] = (byte) ((l >>> 56) & 0xFF); aux[1] = (byte) ((l >>> 48) & 0xFF); aux[2] = (byte) ((l >>> 40) & 0xFF); aux[3] = (byte) ((l >>> 32) & 0xFF); aux[4] = (byte) ((l >>> 24) & 0xFF); aux[5] = (byte) ((l >>> 16) & 0xFF); aux[6] = (byte) ((l >>> 8) & 0xFF); aux[7] = (byte) ((l >>> 0) & 0xFF); randomAccessFile.write(aux); I made a small benchmark and got these results: Using writeLong(): Average time for invocation: 91 ms Using write(byte[]): Average time for invocation: 11 ms Test run on a Linux machine with a Intel(R) CPU T2300 @ 1.66GHz Since native calls have some performance penalty, why is writeLong implemented that way? I know the question should be made to the Sun guys, but I hope someone in here has some hints. Thank you.

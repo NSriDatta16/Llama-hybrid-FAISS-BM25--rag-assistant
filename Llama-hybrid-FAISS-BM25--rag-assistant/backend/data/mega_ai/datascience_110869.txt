@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 110869
-[parent_id]: 
-[tags]: 
-Manual garbage collection throwing KeyErrors using Python inside Azure Function
-
-I have a python script that I push up to an Azure Function App (It's specifically a blob storage trigger). My function app is hitting memory caps every so often, and I thought it might be a good idea to manually garbage collect at the end of my script to see if that would help me from hitting the cap. Here is what I currently have at the end of my script. del blob_data_frame del processed_df if blob_data_frame1: del blob_data_frame1 if blob_data_frame2: del blob_data_frame2 for name in dir(): if not name.startswith(('_', 'blob', 'conn', 'engine_', 'myblob', 'params', 'processed_df', 'result')): del globals()[name] for name in dir(): if not name.startswith(('_', 'blob', 'conn', 'engine_', 'myblob', 'params', 'processed_df', 'result')): del locals()[name] As you can see, the startswith() tuple is getting pretty big. Every time I run the script it will throw a Exception: KeyError: {variable} at me, with another variable I have to add to that tuple. I'm scared that none of the items in dir() can be deleted and this tuple will get huge. Does anyone know why this might be happening? EDIT FOR MORE CLARIFICATION: The error originates from the del globals()[name] line.

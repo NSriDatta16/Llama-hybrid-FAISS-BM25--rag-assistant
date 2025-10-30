@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2409597
-[parent_id]: 
-[tags]: 
-Subquery and selecting oldest rows for multiple foreign keys in MySQL
-
-I have two tables: product (idproduct, name, description, tax) product_storage (idstorage, idproduct, added, quantity, price) for each product it could be different price and oldest are "first-to-sell" for example in storage I have: 1, 1, 2010-01-01, 0, 10.0 2, 1, 2010-01-02, 0, 11.0 3, 1, 2010-01-03, 10, 12.0 4, 2, 2010-01-04, 0, 12.0 5, 2, 2010-01-05, 10, 11.0 6, 2, 2010-01-06, 10, 13.0 7, 3, 2010-01-07, 10, 14.0 8, 3, 2010-01-08, 10, 16.0 9, 3, 2010-01-09, 10, 13.0 and now I need to select all products with current price, which is in the oldest row in product_storage where quantity > 0 for each product: SELECT p.idproduct, p.name, p.tax, (SELECT s.price FROM product_storage s WHERE s.idproduct=p.idproduct AND s.quantity > 0 ORDER BY s.added ASC LIMIT 1) AS price FROM product p; works fine, but it doesn't when I want to calculate price with tax in query: SELECT p.idproduct, p.name, p.tax, (SELECT s.price FROM product_storage s WHERE s.idproduct=p.idproduct AND s.quantity > 0 ORDER BY s.added ASC LIMIT 1) AS price, (price * (1 + tax/100)) AS price_with_tax FROM product p; MySQL says: Unknown column 'price' in 'field list' Update Using subquery as a table almost solves problem (look at answers) - the only question now is how to select oldest rows from product_storage for multiple foreign keys (one and only one for each idproduct). Update 2 Thanks to cmptrgeekken for great solution :))

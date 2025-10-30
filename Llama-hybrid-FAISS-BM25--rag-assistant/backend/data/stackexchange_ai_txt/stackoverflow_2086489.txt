@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2086489
-[parent_id]: 2086368
-[tags]: 
-Really need to see the query plan - one thing of note is you put the clustered index for News on News.ID, but it is not an identity field but the FK for the ItemCategory table, this will result in some fragmentation on the news table over time, so it less than ideal. I suspect the underlying problem is your paging is causing the table to scan. Updated: Those Sort's are costing you 68% of the query execution time from the plan, and that makes sense, one of those sorts at least must be to support the ranking function you are using that is based on news.rank desc, but you have no index that can support that ranking natively. Getting an index in to support that will be interesting, you can try a simple NC index on news.rank first off, SQL may chose to join indexes and avoid the sort, but it will take some experimentation.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2319687
-[parent_id]: 2319521
-[tags]: 
-I don't know about .Net implementation specifically, it might be buffering your data, but UDP datagram is normally limited by the link MTU, which is 1500 on normal ethernet (subtract 20 bytes for IP header and 8 bytes of UDP header.) UDP is explicitly allowed to drop and reorder the datagrams, and there's no flow control as in TCP. Exceeding the socket send buffer on the sender side will have the network stack ignore following send attempts until the buffer space is available again (you need to check the return value of the send() for that.) Edit: I would strongly recommend going with TCP for large file transfers. TCP gives you sequencing (you don't have to keep track of dropped and re-ordered packets.) It has advanced flow control (so fast sender does not overwhelm a slow receiver.) It also does Path MTU discovery (i.e. finds out optimal data packetization and avoids IP fragmentation.) Otherwise you would have to re-implement most of these features yourself.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3472797
-[parent_id]: 3468216
-[tags]: 
-You can create a trigger in Oracle that will log all errors (or pretty much all - NO_DATA_FOUND is not considered an error). In the example below, any error in the schema is recorded in the TRACK_DETAIL table (error in one row, failed SQL in the next). You can make it more sophisticated with a sequence number, date/time etc. create table track_detail (val varchar2(4000)); create or replace procedure track (p_text IN VARCHAR2) IS PRAGMA AUTONOMOUS_TRANSACTION; begin insert into track_detail(val) values (p_text); commit; end; . / create or replace TRIGGER log_err after servererror on schema DECLARE v_temp VARCHAR2(2000) := substr(dbms_utility.format_error_stack,1,2000); v_num NUMBER; v_sql_text ora_name_list_t; begin v_temp := translate(v_temp,'''','"'); track(v_temp); v_num := ora_sql_txt(v_sql_text); v_temp := null; BEGIN FOR i IN 1..v_num LOOP v_temp := v_temp || v_sql_text(i); END LOOP; EXCEPTION WHEN VALUE_ERROR THEN NULL; END; v_temp := translate(v_temp,''''||chr(0)||chr(10),'"'); track(v_temp); end; / Remember to drop (or disable) the trigger when you have finished with it.

@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 424037
-[parent_id]: 423412
-[tags]: 
-Calculating the weight for each label as the inverse frequency, then average up the weights for a given data point is done like so with pandas in Python: from itertools import chain from collections import Counter import pandas as pd def oversample(df, len_mult=2, random_state=0) -> pd.DataFrame: value_counts = Counter(chain(*df[label_col].dropna())) weights = 1 / df[label_col].map( lambda li: sum(map(value_counts.get, li)) / len(li), na_action='ignore' ) # Fill in average weight for rows w/o labels weights.fillna(weights.sum() / weights.count(), inplace=True) extra_df = df.sample( len(df) * (len_mult-1), replace=True, weights=weights, random_state=random_state ) df = pd.concat([df, extra_df]) return df df = pd.DataFrame([['x1', [3,4,5]], ['x2', [0,3]]], columns=['x','y']) oversample(df)

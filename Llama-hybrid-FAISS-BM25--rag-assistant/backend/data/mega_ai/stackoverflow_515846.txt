@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 515846
-[parent_id]: 515429
-[tags]: 
-I don't think you can get exactly what you want by rounding. Rounding a float won't work accurately and dependably: whatever you do, you're going to be trying to apply a decimal rounding to a binary number and that just isn't going to be exact for anything but a power of 2. You can only get accurate database-stored decimal representations of arbitrary sub-integer quantities by using a decimal datatype that's expressly designed for the purpose. These datatypes typically utilise some form of packed-decimal storage (so less efficient than binary) where, for example 2009 is stored as 0x2009 . What happens if you use the CONVERT function? Have you tried querying using something like this? CONVERT(money, your_float_column) Long-term, I think I'd consider adding a column to my table that has the desired type and maintaining its value through post-insert/update triggers, then over time switch all my code to use that column instead. Then I'd hunt down and punish the individuals who thought it was a good idea to store money amounts in a float...

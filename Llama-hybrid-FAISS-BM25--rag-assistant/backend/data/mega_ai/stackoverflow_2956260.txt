@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2956260
-[parent_id]: 2955858
-[tags]: 
-CRT memory leaks detection (without stack trace): // debug_new.h #pragma once #include "crtdbg.h" #ifdef _DEBUG #ifndef DEBUG_NEW #define DEBUG_NEW new( _NORMAL_BLOCK, __FILE__, __LINE__) #endif #endif All .cpp files: #include "debug_new.h" ... // After all other include lines: #ifdef _DEBUG #define new DEBUG_NEW #endif ... Write this once in the program initialization code: _CrtSetDbgFlag( _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF); In MFC, all this is already implemented in MFC headers. You only need to ensure, that every cpp file contains these lines: #ifdef _DEBUG #define new DEBUG_NEW #endif Restrictions: this catches only "new" memory leaks, all leaks, caused by another functions, like malloc, are not caught. Don't make any allocations inside of .h files - they will be printed without source lines, because DEBUG_NEW is defined after all #include lines.

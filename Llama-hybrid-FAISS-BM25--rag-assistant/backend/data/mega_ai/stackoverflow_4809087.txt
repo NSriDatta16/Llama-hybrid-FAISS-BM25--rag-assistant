@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4809087
-[parent_id]: 4804787
-[tags]: 
-I consider this a bug in MonoTouch.Dialog. I've made major changes to BindingContext in my project so I can't point out the exact place to make the fix but this might help: private MemberInfo[] GetMembers(object dataContext) { return dataContext.GetType().GetMembers(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).Where(m => { var methodInfo = m as MethodBase; //Bug 662867: var skip = m.GetCustomAttribute (true) != null; var skip = m.Name == "ToString"; return (methodInfo == null || !methodInfo.IsConstructor && !methodInfo.IsSpecialName) && m.MemberType != MemberTypes.Field && !skip; }).ToArray(); } As you can see in the code above I am doing a specific check for !methodInfo.IsSpecialName which are the Get and Set methods of an Automatic Property. You can use this method to get the members of your object. My project MonoTouch.MVVM which uses my version of MonoTouch.Dialog does not use fields and only properties. If you want to use attributes on fields remove the && m.MemberType != MemberTypes.Field in the code above.

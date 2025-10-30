@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3144235
-[parent_id]: 
-[tags]: 
-JPA/Hibernate Native Queries do not recognize Parameters
-
-I am using Hibernate/JPA to execute native PostGIS queries. The problem with these queries is that they need parameters that are not of the classical X = 'value' form. For example, the following lines crash String queryString = "select * from Cell c where ST_DWithin(c.shape, SetSRID(ST_GeomFromEWKT('POINT(:lon :lat)'),4326), 0.1)"; Query query = Cell.em().createNativeQuery(queryString, Cell.class); query.setParameter("lon", longitude); query.setParameter("lat", latitude); play.exceptions.JavaExecutionException: org.hibernate.QueryParameterException: could not locate named parameter [lon] at play.mvc.ActionInvoker.invoke(ActionInvoker.java:259) at Invocation.HTTP Request(Play!) Caused by: java.lang.IllegalArgumentException: org.hibernate.QueryParameterException: could not locate named parameter [lon] at org.hibernate.ejb.QueryImpl.setParameter(QueryImpl.java:358) The following query works however : String queryString = String.format("select * from Cell c where ST_DWithin(c.shape, SetSRID(ST_GeomFromEWKT('POINT(%f %f)'),4326), 0.1)", longitude, latitude); Query query = Cell.em().createNativeQuery(queryString, Cell.class); (but it is SQL-injection-prone...) Does anyone know how to use setParameter() in this case ?

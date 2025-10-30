@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1851118
-[parent_id]: 1851078
-[tags]: 
-A couple of weird things here: int i = 0; for(i=0;i You don't null terminate the buffer before printing it (as RageZ pointed out). You increment i on each loop repetition, but every time you read 84 chars ( bsize ) into &cha[i] . I think this should mean you're only seeing every 84th character. Also, if I were you I'd be checking the return value of fread every time. It's not guaranteed to always return the number of bytes you're expecting. EDIT: The size of the block you're reading is fine. I got confused for a minute by the typedef. Every time you increment i by 1, it advances the pointer by 84*sizeof(CHR) , as you intended. Still, you can't guarantee that it read the number of bytes that you think it did. If it came up short then you'll be left with junk in the buffer: say it read 60 chars, that leaves 24 junk chars before the insertion point for the next read.

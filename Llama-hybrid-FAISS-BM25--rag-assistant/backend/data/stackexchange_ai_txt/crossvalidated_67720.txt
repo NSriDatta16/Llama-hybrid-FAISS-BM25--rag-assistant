@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 67720
-[parent_id]: 67157
-[tags]: 
-I am using gretl for interval regression now. The gretl can be run from the command line, so it is easy to integrate it in R processing by writing data out, generating the gretl script by cat() , running gretlcli by shell() and reading the gretl result in by read.table() . It is still a long way to go till the implementation of multiple imputation though. Here is an example of gretl integration in R: # write out for gretl #### setwd(dir.data) write.csv(dat.mod, file = "dat.mod.csv", row.names = F) # Script # vrs2 is the list of variable names to be used in a model cat('# EHSIS 2012\n', '# Martins Liberts\n', '# Generated file from R\n', '\n', 'open dat.mod.csv\n', '\n', 'intreg lb ub const ', paste(vrs2, collapse = " "), '\n', '\n', 'yhat1 = $yhat\n', 'yres1 = $uhat\n', '\n', 'matrix b = $coeff\n', 'err = mwrite(b, "coeff.txt")\n', '\n', 'store "ymod.txt" yhat1 yres1\n', file = "rungretl.inp", sep = "") # run gretl #### shell("gretlcli -b rungretl.inp > outgretl.txt", shell = "powershell", flag = NULL) # Read gretl results #### setwd(dir.data) # Regression coefficients coeff

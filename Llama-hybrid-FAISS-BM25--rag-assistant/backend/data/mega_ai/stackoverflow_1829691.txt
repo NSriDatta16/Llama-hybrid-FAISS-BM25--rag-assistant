@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1829691
-[parent_id]: 1829639
-[tags]: 
-The involvement of unordered-map is almost incidental to the problem you're encountering. The real problem is that you're defining hash_value and operator== in every file that includes the header above. You can cure this by either: Defining both those as inline functions Just declaring them in the header If you do the latter (and it's what you'll usually want) you'll move the definitions of those functions into a .cpp file (or whatever extension you use for C++ source files). You'll then compile that file, and link the resulting object with your other code that uses the int128 type. Edit: You can still make your comparison cleaner, something like: bool operator==(int128 const &o1, int128 const &o2) { return o1.storage[0] == o2.storage[0] && o1.storage[1] == o2.storage[1] && o1.storage[2] == o2.storage[2] && o1.storage[3] == o2.storage[3]); }

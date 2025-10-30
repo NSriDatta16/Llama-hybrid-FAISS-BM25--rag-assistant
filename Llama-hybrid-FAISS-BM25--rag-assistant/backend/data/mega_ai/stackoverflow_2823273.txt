@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2823273
-[parent_id]: 2823240
-[tags]: 
-It seems the problem was strlen($matches[0]) returns 0 and 1 for the first and last line, which isn't the 3 I actually wanted as the minimum, so a quick hack was to trim the SQL skip counting the length if it's less than 2 Not the most elegant solution, but it'll always work because tabs are usually in the 4+ count in this code. Here's the fixed code: $sql = ' SELECT blah FROM table WHERE id=1 '; // it's most likely idented SQL, remove any idention $lines = explode("\n", $sql); $space_count = array(); foreach ( $lines as $line ) { preg_match('/^(\t+)/', $line, $matches); if ( strlen($matches[0]) > 1 ) { $space_count[] = strlen($matches[0]); } } $min_tab_count = min($space_count); $place = 0; foreach ( $lines as $line ) { $lines[$place] = preg_replace('/^\t{'. $min_tab_count .'}/', '', $line); $place++; } $sql = implode("\n", $lines); print $sql;

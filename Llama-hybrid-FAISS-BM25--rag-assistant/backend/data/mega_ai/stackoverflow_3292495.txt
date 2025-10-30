@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3292495
-[parent_id]: 
-[tags]: 
-C++ OpenMP variable visibility in parallel tasks
-
-Don't understand, where do I get this wrong. If compiled without openmp support, the code works correctly. But with openmp variables seem to get wrong visibility. I had the following intention. Each thread has its own max_private in which it finds the local maximum. Then a global maximum is found in a critical section. #include #include typedef std::vector Vector; long max(const Vector& a, const Vector& b) { long max = 0; #pragma omp parallel { long max_private = 0; #pragma omp single { for ( Vector::const_iterator a_it = a.begin(); a_it != a.end(); ++a_it) { #pragma omp task { for ( Vector::const_iterator b_it = b.begin(); b_it != b.end(); ++b_it) { if (*a_it + *b_it > max_private) { max_private = *a_it + *b_it; } } } } } #pragma omp critical { std::cout max) { max = max_private; } } } return max; } int main(int argc, char* argv[]) { Vector a(100000); Vector b(10000); for (long i = 0; i I don't want to use parallel for, because latter I'm going to use data structures that don't support random access iterators. I used g++-4.4 compiler.

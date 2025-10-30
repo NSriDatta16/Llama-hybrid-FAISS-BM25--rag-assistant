@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2055602
-[parent_id]: 2055340
-[tags]: 
-A varchar won't take up more space than the string you store in it, aside from the overhead for storing the string length : +------------------------------------------+---------------------------------+ | Value | CHAR(4) Storage Required | VARCHAR(4) Storage Required | +------------+-----------------------------+---------------------------------+ | '' | ' ' 4 bytes | '' 1 byte | | 'ab' | 'ab ' 4 bytes | 'ab' 3 bytes | | 'abcd' | 'abcd' 4 bytes | 'abcd' 5 bytes | | 'abcdefgh' | 'abcd' 4 bytes | 'abcd' 5 bytes | +------------+-----------------------------+---------------------------------+ However, if you really do only require 5 chars, then consider using char(5) if there are no other variable width columns in the table (i.e., varchars, text or blobs). Then you will have fixed length record, which does carry some performance advantages : For MyISAM tables that change frequently, you should try to avoid all variable-length columns (VARCHAR, BLOB, and TEXT). The table uses dynamic row format if it includes even a single variable-length column. See Chapter 13, Storage Engines.

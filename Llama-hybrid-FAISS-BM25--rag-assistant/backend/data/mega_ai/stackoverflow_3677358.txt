@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3677358
-[parent_id]: 3677296
-[tags]: 
-I'd start with an array lookup. char *asciihex[] = { "00", "01", "02", ..., "0F", "10", "11", "12", ..., "1F", ..., "F0", "F1", "F2", ..., "FF" }; and then simply look it up ... SendString(asciihex[val]); Edit Incorporating Dysaster's nibbles idea: void SendString(const char *msg) { static const char nibble[] = {'0', '1', '2', ..., 'F'}; while (*msg) { /* cast to unsigned char before bit operations (thanks RBerteig) */ SendU(nibble[(((unsigned char)*msg)&0xf0)>>4]); /* mask 4 top bits too, in case CHAR_BIT > 8 */ SendU(nibble[((unsigned char)*msg)&0x0f]); msg++; } }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1678951
-[parent_id]: 1678696
-[tags]: 
-There's no particularly great way to do this elegantly. But you can hack at it from a number of directions. If your dataset is about the right size (too big for "order by rand()" but not too big), have sequential id values, and don't generally delete much, you could always do something like this: SELECT MIN(id) as min, MAX(id) as max FROM table Generate some number N of random integers between "min" and "max" (inclusive). Let's call it 50. If you never delete anything from the table, N can probably be 12. If you delete, do some napkin arithmatic and figure out a good number. You can probably err on the high side. SELECT * FROM table WHERE id IN ( ) AND image_id = '' LIMIT 12; Check to make sure you've got at least 12 results. If not, basically repeat and combine. For large sets, this method should work much better than ORDER BY RAND(), especially if your ID sequence isn't very sparse.

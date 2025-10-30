@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2730413
-[parent_id]: 2730305
-[tags]: 
-It certainly sounds like this strategy would work -- dropping the constraints, changing the column out from underneath them (type changes, name remains the same), and then recreating the constraints is fairly elegant. Is the goal to ultimately drop the GUID columns? If so, you won't actually reclaim the space unless the tables are copied or rebuilt, so maybe the following adjustment: ... 4.Script the data change "update table x, set NewPrimaryKey = y where OldPrimaryKey = z 5. Drop the original primarykey to 'oldprimarykey' 6.Rename the 'NewPrimaryKey' column 'PrimaryKey' 7.Script back all the indexes and fkeys (building clustered indexes "rebuilds" tables) 8.For all tables that don't have clustered indexes, do something to make sure they get rebuilt and their space is reclaimed (such build and then drop a clustered index) Needless to say, test it on a dev box before running on Production!

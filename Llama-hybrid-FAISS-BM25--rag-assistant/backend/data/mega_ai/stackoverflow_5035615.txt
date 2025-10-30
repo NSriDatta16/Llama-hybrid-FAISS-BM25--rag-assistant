@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5035615
-[parent_id]: 5013502
-[tags]: 
-I would do it a bit differently than you. The main difference would be the way of storing handlers and picking the right one. In fact I think that chain of responsibility is a bad choice here. Moreover iterating through the ist of handlers may be time consuming (if there are more of them). Dictionary provides O(1) writer retrieval. If I were to guess I'd tell that my pattern is called Strategy. abstract class Writer { abstract string SupportedExtension {get;} abstract void Write(string text, string file); } class WritersHandler { Dictionary _writersByExtension = ... //All writers here public void Init(IEnumerable writers) { foreach ( var writer in writers ) { _writersByExtension.Add( writer.SupportedExtension, writer ); } } public void Write(string text, string file) { Writer w = _writersByExtension.TryGetValue( GetExtension(file) ); if (w == null) { throw new Exception("..."); } w.Write(text, file); } }

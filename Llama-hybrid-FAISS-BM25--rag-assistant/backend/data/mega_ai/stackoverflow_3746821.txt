@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3746821
-[parent_id]: 3746703
-[tags]: 
-Example 12-3 of this C++ threading blog post should give you a reference implementation, but I think you're dangerously close to success on your own. Addressing your specific concerns: It is not illegal to signal when there are no waiters. It's totally legitimate, and you can leverage that fact. (Where did you read this, btw?) pthread_cond_broadcast causes one major problem: the herd of elephants charge, where all n threads awake and start pulling memory between caches even though only one of them can possibly make forward progress. It will work, but it's not as efficient. You can signal from anywhere, even from a thread that never has to deal with the mutex in question. Your pthread_cond_wait calls must release the read mutex; that is the only requirement, and that's the only mutex that ever needs to interact with the condition variable. Following from #3, there is one major problem with your idea: The writer thread must lock both the read and write mutexes. If it does not, what happens when the queue size is 1 and you have a reader and a writer acting at the same time?

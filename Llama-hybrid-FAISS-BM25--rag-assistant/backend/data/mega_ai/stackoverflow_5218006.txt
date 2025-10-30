@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5218006
-[parent_id]: 5217841
-[tags]: 
-If you have successfully re-indexed your tables, then the index fragmentation will be zero (or close to if you have hot tables). You can use this script to check the fragmentation level DECLARE @IndexID int, @TableID int, @IndexName varchar(256) --Enter index name here SELECT @IndexName = ' ' --Enter table name here SET @TableID = OBJECT_ID(' ') SELECT @IndexID = IndID FROM sysindexes WHERE id = @TableID AND name = @IndexName DBCC SHOWCONTIG (@id, @IndexID) What you are looking for in the output is the property called Scan Density . This should be close to 100%. If not, then your re-indexing is not complete/successful If you have lots of tables/indices, this can get tedious, so short-circuit it by auto-generating the script like this: SELECT 'DBCC SHOWCONTIG ' + '(' + CONVERT(varchar(32), si.id) + ',' + CONVERT(varchar(32), si.indid) + ')--' + so.name FROM sysobjects so INNER JOIN sysindexes si ON (so.id = si.id) WHERE ( so.type = 'U' AND si.indid

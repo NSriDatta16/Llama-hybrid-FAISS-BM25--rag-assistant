@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4520420
-[parent_id]: 4226701
-[tags]: 
-Looking at your code, the string you pass back & forth is (11 characters + terminating zero) = 24 bytes in unicode. In COM Automation, BSTR are used wich adds 4 bytes for the leading pointer (32-bit), and you multiply that by 10000, wich is 10000 * 28 = 280000 bytes. It means every millisecond (the timer's value is 1) you will allocate a lot of memory, and in .NET a 280000 bytes chunk will probably be allocated in the large object heap (> 85000 bytes). The result of hitting hard on the LOH is most of the time... problems with memory, as seen here for example: Large Object Heap Fragmentation This is maybe something you should check. One simple thing to test is to reduce the size of your BigMessage. You can also dive in deep with WinDBG: http://blogs.msdn.com/b/tess/archive/2008/08/21/debugging-silverlight-applications-with-windbg-and-sos-dll.aspx and check what's really going on under covers.

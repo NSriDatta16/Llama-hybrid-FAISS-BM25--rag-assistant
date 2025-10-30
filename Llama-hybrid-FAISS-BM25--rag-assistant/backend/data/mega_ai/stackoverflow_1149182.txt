@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1149182
-[parent_id]: 1147511
-[tags]: 
-The JVM Tool INterface (jvmti) has a method named ForceGarbageCollection. You could write some JNI to call it. something like #include "jvmti.h" #include "jni.h" jvmtiEnv *jvmti; JNIEXPORT jint JNICALL Agent_OnLoad(JavaVM *vm, char *options, void *reserved) { (*vm)->GetEnv(vm, (void **)&jvmti, JVMTI_VERSION_1); return JNI_OK; } JNIEXPORT void JNICALL my_managled_function_name_that_is_entirely_too_long_to_be_easy_to_use (JNIEnv *env) { error = (*jvmti)->ForceGarbageCollection(jvmti); // you can trap the error if you want; } BTW, this is a bad idea. I only use this code for debugging (to ensure that certain class, like listeners, have no more reachable references.) My bet is that the VM will gc all possible data before throwing Memory Errors.

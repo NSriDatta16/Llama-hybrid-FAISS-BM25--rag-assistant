@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 677211
-[parent_id]: 
-[tags]: 
-What causes fluctuating execution times when presenting the Renderbuffer? (OpenGL)
-
-This is what happens: The drawGL function is called at the exact end of the frame thanks to a usleep , as suggested. This already maintains a steady framerate. The actual presentation of the renderbuffer takes place with drawGL() . Measuring the time it takes to do this, gives me fluctuating execution times, resulting in a stutter in my animation. This timer uses mach_absolute_time so it's extremely accurate . At the end of my frame, I measure timeDifference . Yes, it's on average 1 millisecond, but it deviates a lot , ranging from 0.8 milliseconds to 1.2 with peaks of up to more than 2 milliseconds. Example: // Every something of a second I call tick -(void)tick { drawGL(); } - (void)drawGL { // startTime using mach_absolute_time; glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderbuffer); [context presentRenderbuffer:GL_RENDERBUFFER_OES]; // endTime using mach_absolute_time; // timeDifference = endTime - startTime; } My understanding is that once the framebuffer has been created, presenting the renderbuffer should always take the same effort, regardless of the complexity of the frame? Is this true? And if not, how can I prevent this? By the way, this is an example for an iPhone app. So we're talking OpenGL ES here, though I don't think it's a platform specific problem. If it is, than what is going on? And shouldn't this be not happening? And again, if so, how can I prevent this from happening?

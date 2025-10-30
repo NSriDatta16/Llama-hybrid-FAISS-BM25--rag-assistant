@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5414566
-[parent_id]: 5412727
-[tags]: 
-It turns out that Ubuntu will acknowledge that the object is there but not play nicely with it until you fix up some of your udev rules. Thanks to http://steve.kargs.net/bacnet/avr-isp-mkii-on-ubuntu-hardy/ which provided files that only needed a little updating. Create new file /etc/udev/avrisp.rules SUBSYSTEM!="usb", ACTION!="add", GOTO="avrisp_end" # Atmel Corp. JTAG ICE mkII ATTR{idVendor}=="03eb", ATTR{idProduct}=="2103", MODE="660", GROUP="dialout" # Atmel Corp. AVRISP mkII ATTR{idVendor}=="03eb", ATTR{idProduct}=="2104", MODE="660", GROUP="dialout" # Atmel Corp. Dragon ATTR{idVendor}=="03eb", ATTR{idProduct}=="2107", MODE="660", GROUP="dialout" LABEL="avrisp_end" Now create a virtual link to the file and give it a rule priority cd /etc/udev/rules.d sudo ln ../avrisp.rules 60-avrisp.rules Check you're in the dialout group groups Restart udev sudo service udev restart Hooray!

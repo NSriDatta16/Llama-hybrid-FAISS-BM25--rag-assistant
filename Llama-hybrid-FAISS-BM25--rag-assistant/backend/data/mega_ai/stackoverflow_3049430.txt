@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3049430
-[parent_id]: 3049354
-[tags]: 
-CurrentProject.Connection is the connection to your Access database. You can verify that by doing this in the Immediate window: Debug.Print CurrentProject.Connection You need to create a new ADODB.Connection object with a connection string which points to your SQL Server instance. Have your ADODB.Command object use that connection. Edit : You can eliminate the ADODB.Command object, and use the Execute method of the connection to return records from your stored procedure. This example uses a stored procedure which expects 3 parameters. Private Sub GetCenterCodes() Dim cnn As ADODB.Connection Dim rs As ADODB.Recordset Set cnn = New ADODB.Connection cnn.ConnectionString = "Provider=SQLOLEDB;Data Source=VM2003\sqlexpress;" _ & "User ID=foo;Password=bar;Initial Catalog=Inventory" cnn.Open Set rs = New ADODB.Recordset Set rs = cnn.Execute("EXEC uspGetCenterCodes 14, 14, 501") Debug.Print rs(0), rs(1), rs(2) rs.Close Set rs = Nothing cnn.Close Set cnn = Nothing End Sub You can find a connection string example which matches your needs at ConnectionStrings.com

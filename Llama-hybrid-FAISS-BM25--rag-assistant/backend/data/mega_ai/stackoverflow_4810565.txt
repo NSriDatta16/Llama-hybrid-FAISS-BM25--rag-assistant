@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4810565
-[parent_id]: 4809996
-[tags]: 
-We use a variant of option A. We actually use Entity Framework so that we can leverage LINQ and such. Entity Framework manages its own connection pooling, so creating and deleting contexts is cheap. We then leverage Dependency Injection to manage the actual creation of the connection, like so: public class MyDao { IFactory _contextFactory; public MyDao(IFactory contextFactory) { _contextFactory = contextFactory; } public Foo GetFooById(int fooId) { using (var context = _contextFactory.Get()) { return context.Foos.Single(f => f.FooId == fooId); } } } This way, if we ever decide that we want to create our contexts using a different connection string, or even something more tricky, we can simply change the dependency-injection bindings in one place, rather than having to find every call to new MyDataContext() .

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3565212
-[parent_id]: 
-[tags]: 
-LINQ to SQL DAL, is this thread safe?
-
-My code is written with C# and the data layer is using LINQ to SQL that fill/load detached object classes. I have recently changed the code to work with multi threads and i'm pretty sure my DAL isn't thread safe. Can you tell me if PopCall() and Count() are thread safe and if not how do i fix them? public class DAL { //read one Call item from database and delete same item from database. public static OCall PopCall() { using (var db = new MyDataContext()) { var fc = (from c in db.Calls where c.Called == false select c).FirstOrDefault(); OCall call = FillOCall(fc); if (fc != null) { db.Calls.DeleteOnSubmit(fc); db.SubmitChanges(); } return call; } } public static int Count() { using (var db = new MyDataContext()) { return (from c in db.Calls select c.ID).Count(); } } private static OCall FillOCall(Model.Call c) { if (c != null) return new OCall { ID = c.ID, Caller = c.Caller, Called = c.Called }; else return null; } } Detached OCall class: public class OCall { public int ID { get; set; } public string Caller { get; set; } public bool Called { get; set; } }

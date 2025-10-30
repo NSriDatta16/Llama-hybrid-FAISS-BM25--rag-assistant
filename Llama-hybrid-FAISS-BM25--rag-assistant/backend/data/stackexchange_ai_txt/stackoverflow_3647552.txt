@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3647552
-[parent_id]: 3647331
-[tags]: 
-The best way to swap two numbers without using any temporary storage or arithmetic operations is to load both variables into registers, and then use the registers the other way around! You can't do that directly from C, but the compiler is probably quite capable of working it out for you (at least, if optimisation is enabled) - if you write simple, obvious code, such as that which KennyTM suggested in his comment. e.g. void swap_tmp(unsigned int *p) { unsigned int tmp; tmp = p[0]; p[0] = p[1]; p[1] = tmp; } compiled with gcc 4.3.2 with the -O2 optimisation flag gives: swap_tmp: pushl %ebp ; (prologue) movl %esp, %ebp ; (prologue) movl 8(%ebp), %eax ; EAX = p movl (%eax), %ecx ; ECX = p[0] movl 4(%eax), %edx ; EDX = p[1] movl %ecx, 4(%eax) ; p[1] = ECX movl %edx, (%eax) ; p[0] = EDX popl %ebp ; (epilogue) ret ; (epilogue)

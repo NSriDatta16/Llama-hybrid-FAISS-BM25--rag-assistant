@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4909655
-[parent_id]: 
-[tags]: 
-Java: privately calling 'run' in 'Runnable' class
-
-I'm writing a Java program involving a multithreaded worker pool of Process es. Each instance of the class Process needs to be able to spawn a single additional thread to do some work. But the thread should by spawned by the instance itself and nobody else. Unfortunately Runnable.run is 'public' so I cannot really enforce this without doing some trick. Here is the trick I plan to use: Implement Runnable in Process Write this into the implementation: Code: class Process implements Runnable { private boolean threadkey = false; public void run() { synchronized(threadkey) { // is someone wrongly calling 'run'? if(!threadkey) return; /* switch off threadkey to make sure it cannot be called meaningfully again */ threadkey = false; } /* continue processing * */ return; } Of course, now all I will need to do when I want to run legitimately is to switch on 'threadkey' (which is private) before making the call. Elegant? Or not? Or is there a better way? Or should I just not bother with enforcing this and write a neat little comment explaining NOT to call 'run'? Do people even call 'run' from within the class that needs to do the 'running'?

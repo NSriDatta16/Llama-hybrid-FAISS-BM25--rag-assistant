@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 520896
-[parent_id]: 520890
-[tags]: 
-If I've understood correctly, you're looking to do a Poisson regression in which the data can be aggregated by year and ethinicity into a contingency table which may look like (using the data you provide) ethnicity year group1 group2 group3 group4 2015 3 0 0 0 2016 0 1 1 1 2017 1 0 0 2 If that is correct, Poisson regression is an excellent way to do this. In fact, Poisson regression is one of the main ways you can analyze contingency tables like this (the other way is logistic regression and I find it strange they won't allow you to use it). You can simply group by year and ethnicity and count the number of rows in each group. This would be the outcome and you can adjust the expected mean by year and group very simply. Using some R code... library(tidyverse) tabl = xtabs(~year + ethnicity, data = df) model_data = tabl %>% as.data.frame() %>% mutate(year = as.numeric(year)) model = glm(Freq ~ year + ethnicity, data = model_data, family = poisson) summary(model) You can add additional predictors quite naturally by adding them to the xtabs formula.

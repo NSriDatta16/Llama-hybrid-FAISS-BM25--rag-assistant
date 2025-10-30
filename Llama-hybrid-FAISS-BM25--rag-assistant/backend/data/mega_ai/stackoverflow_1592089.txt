@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1592089
-[parent_id]: 
-[tags]: 
-Subclass lookup
-
-(I'm developing in Python 3.1, so if there's some shiny new 3.x feature I should know about for this, please let me know!) I've got a class (we'll just call it "Packet") that serves as the parent for a bunch of child classes representing each of a few dozen packet types in a legacy client-server protocol over which I have no control. (The packets often have wildly differing behavior, so I just gave them each their own class to make my life easier.) When receiving a packet, I'll have a simple "dispatch" function that checks the packet header to determine the type, then hands it off to the class that knows how to deal with it. I do not want to maintain the lookup table by hand -- it's inelegant and just asking for trouble. Instead, I'd like the table built at runtime by examining all of the subclasses of Packet, which will have class variables specifying what packet type they correspond to, e.g.: class Login(Packet): type_id = 0x01 I thought, of course, about iterating through object.__subclasses__() , but I've found slightly varying viewpoints on the safety and propriety of using it for things like this, including implications that it is implementation-specific and may not work in places other than CPython, and that it may disappear from CPython in the future. Am I being too paranoid? Is __subclassess__ considered a "real" part of the language now? If not, what's a good "pythonic" way to approach this?

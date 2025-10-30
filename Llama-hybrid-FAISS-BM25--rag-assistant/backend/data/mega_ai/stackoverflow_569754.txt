@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 569754
-[parent_id]: 
-[tags]: 
-How to tell for which object attribute pickle fails?
-
-When you pickle an object that has some attributes which cannot be pickled it will fail with a generic error message like: PicklingError: Can't pickle : attribute lookup __builtin__.instancemethod failed Is there any way to tell which attribute caused the exception? I am using Python 2.5.2. Even though I understand in principle the root cause of the problem (e.g. in the above example having an instance method) it can still be very hard to exactly pinpoint it . In my case I already defined a custom __getstate__ method, but forgot about a critical attribute. This happened in a complicated structure of nested objects, so it took me a while to identify the bad attribute. As requested, here is one simple example were pickle intentionally fails: import cPickle as pickle import new class Test(object): pass def test_func(self): pass test = Test() pickle.dumps(test) print "now with instancemethod..." test.test_meth = new.instancemethod(test_func, test) pickle.dumps(test) This is the output: now with instancemethod... Traceback (most recent call last): File "/home/wilbert/develop/workspace/Playground/src/misc/picklefail.py", line 15, in pickle.dumps(test) File "/home/wilbert/lib/python2.5/copy_reg.py", line 69, in _reduce_ex raise TypeError, "can't pickle %s objects" % base.__name__ TypeError: can't pickle instancemethod objects Unfortunately there is no hint that the attribute test_meth causes the problem.

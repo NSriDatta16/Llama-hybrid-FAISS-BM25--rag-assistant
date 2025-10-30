@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 974554
-[parent_id]: 974123
-[tags]: 
-Thank you all for your suggestions. Problem seems to be almost solved, i think there's not much to be done further. The query advisor suggested 2 useful indexes, one of them being something like: CREATE NONCLUSTERED INDEX [IX_Release_1234] ON [dbo].[Release] ( [ReleaseType] ASC, [SoftwareID] ASC ) INCLUDE ( [ReleaseDate]) WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY] Index tuning cut the execution time to less than 50%. However, another slight improvement (25-30% of previously halved time) was to reorganize the query by first getting the release dates exclusively from Release table and then joining this subquery with Software: select s.SoftwareID, r.ReleaseDate from Software s inner join ( select SoftwareID, min(ReleaseDate) as ReleaseDate from Release where ReleaseType = 'MAJ' group by SoftwareID having min(ReleaseDate) >= @DateFrom and min(ReleaseDate) Now I guess index tuning should be redone :)... Bottom line, use the engine tuning advisor whenever possible and thank you all again.

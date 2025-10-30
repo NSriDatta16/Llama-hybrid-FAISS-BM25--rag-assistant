@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 767250
-[parent_id]: 
-[tags]: 
-Using BitmapFrame for metadata without locking the file
-
-I've found the common way to get image metadata in WPF is to create a BitmapFrame object and inspect the Metadata property on it. However I can't seem to create a BitmapFrame object that fulfills these two requirements: Does not lock the file Does not throw weird, undocumented exceptions when given certain files Using these lines seems to create the BitmapImage reliably: BitmapFrame.Create(new Uri(imageName)); BitmapFrame.Create(new Uri(imageName), BitmapCreateOptions.DelayCreation, BitmapCacheOption.None); However they leave the file locked for an indeterminate amount of time. There is no dispose method on the BitmapFrame as far as I can tell. This keeps the file from being locked: BitmapFrame.Create(new Uri(imageName), BitmapCreateOptions.None, BitmapCacheOption.OnLoad); However on Vista it throws ArgumentException s and InvalidOperationException s on certain files and on Win7 it throws FileFormatException s and IOException s. This makes me think that caching the BitmapFrame is unsupported/untested. Can you get metadata from an image in WPF without leaving a lock on the file for an indeterminate length of time?

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3576692
-[parent_id]: 
-[tags]: 
-Safari doesn't respect Cache-Control HTTP headers?
-
-Using a variety of resources, I've come up with the following django middleware to prevent browser caching for authenticated users: class NoBrowserCachingMiddleware: def add_to_header(self, response, key, value): if response.has_header(key): values = re.split(r'\s*,\s*', response[key]) if not value in values: response[key] = ', '.join(values + [value]) else: response[key] = value def process_response(self, request, response): if hasattr(request, 'user') and request.user.is_authenticated(): response['Expires'] = 0 self.add_to_header(response, 'Cache-Control', 'no-cache') self.add_to_header(response, 'Cache-Control', 'no-store') self.add_to_header(response, 'Cache-Control', 'must-revalidate') self.add_to_header(response, 'Pragma', 'no-cache') #HTTP 1.0 if request.is_ajax(): return response if response.status_code != 200: return response if 'text/html' not in response['Content-Type']: return response # safari back button fix response.content = response.content.replace(' I would like to remove the piece where I have to modify the response content. If I do, however, Safari will display the previous cached page after a logout if the user hits the back button. Is there any way to prevent this using standard HTTP headers? Thanks, Pete

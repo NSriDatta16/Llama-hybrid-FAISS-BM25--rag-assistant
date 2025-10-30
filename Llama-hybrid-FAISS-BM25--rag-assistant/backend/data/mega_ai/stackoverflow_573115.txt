@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 573115
-[parent_id]: 
-[tags]: 
-What is your favourite anti-debugging trick?
-
-At my previous employer we used a third party component which basically was just a DLL and a header file. That particular module handled printing in Win32. However, the company that made the component went bankcrupt so I couldn't report a bug I'd found. So I decided to fix the bug myself and launched the debugger. I was surprised to find anti-debugging code almost everywhere, the usual IsDebuggerPresent , but the thing that caught my attention was this: ; some twiddling with xor ; and data, result in eax jmp eax mov eax, 0x310fac09 ; rest of code here At the first glance I just stepped over the routine which was called twice, then things just went bananas. After a while I realized that the bit twiddling result was always the same, i.e. the jmp eax always jumped right into the mov eax, 0x310fac09 instruction. I dissected the bytes and there it was, 0f31 , the rdtsc instruction which was used to measure the time spent between some calls in the DLL. So my question to SO is: What is your favourite anti-debugging trick?

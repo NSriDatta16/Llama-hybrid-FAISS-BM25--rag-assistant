@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1137510
-[parent_id]: 1137116
-[tags]: 
-This might be offtopic, but just a hint... Be aware, that your function(s)/data structure would probably be thread unsafe for read operations. There is a kind of basic thread safety where read operations do not require synchronization. If you are going to store the sate how much the caller read from your structure it will make the whole concept thread unsafe and a bit unnatural to use. Because nobody assumes a read to be state-full operation. If two threads are going to call it they will either need to synchronize the calls or your data structure might end-up in a race condition. The problem in such a design is that both threads must have access to a common synchronization variable. I would suggest making two overloaded functions. Both are stateless, but one of them should accept a hint iterator, where to start next read/search/retrieval etc. This is e.g. how Allocator in STL is implemented. You can pass to allocator a hint pointer (default 0) so that it quicker finds a new memory chunk. Regards, Ovanes

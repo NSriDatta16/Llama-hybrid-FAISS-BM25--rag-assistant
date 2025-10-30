@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1829949
-[parent_id]: 631598
-[tags]: 
-TL;DR; Unfortunately, there is no built-in solution yet (at time of writting, 2022), hence you are free to use and/or implement whatever fits your situation. Example An alternative is to use the CountDownLatch class. public class DatabaseTest { /** * Data limit */ private static final int DATA_LIMIT = 5; /** * Countdown latch */ private CountDownLatch lock = new CountDownLatch(1); /** * Received data */ private List receiveddata; @Test public void testDataRetrieval() throws Exception { Database db = new MockDatabaseImpl(); db.getData(DATA_LIMIT, new DataCallback() { @Override public void onSuccess(List data) { receiveddata = data; lock.countDown(); } }); lock.await(2000, TimeUnit.MILLISECONDS); assertNotNull(receiveddata); assertEquals(DATA_LIMIT, receiveddata.size()); } } NOTE you can't just used syncronized with a regular object as a lock, as fast callbacks can release the lock before the lock's wait method is called. See this blog post by Joe Walnes. EDIT Removed syncronized blocks around CountDownLatch thanks to comments from @jtahlborn and @Ring

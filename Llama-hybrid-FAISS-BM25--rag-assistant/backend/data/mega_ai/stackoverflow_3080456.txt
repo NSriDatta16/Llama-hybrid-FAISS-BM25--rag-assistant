@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3080456
-[parent_id]: 
-[tags]: 
-serialize object with subitems c#
-
-var store = GetStore(); using (IsolatedStorageFileStream fileStream = store.OpenFile(RootData, FileMode.Create)) { DataContractSerializer serializer = new DataContractSerializer(typeof(List)); serializer.WriteObject(fileStream, rootdatalist); } But this only serializes the rootdatalist, and not the subitems. The rootdatalist has a nodes List property, how do I serialize that, so that I get the list hierarchy serialized? Since it's dbml generated objects the Nodes property of Root is public System.Data.Linq.Table Nodes { get { return this.GetTable (); } } My Datacontext return is: public List GetRootList(Guid userid) { DataLoadOptions loadopts = new DataLoadOptions(); loadopts.LoadWith (s => s.Nodes); this.DataContext.LoadOptions = loadopts; return this.DataContext.Root.Where(s => s.Nodes.Count(n => n.UserId == userid) > 0).ToList(); } the Node entityset looks as follows in my dbml designer [global::System.Data.Linq.Mapping.AssociationAttribute(Name="Root_Node", Storage="_Nodes", ThisKey="Id", OtherKey="RootId")] [global::System.Runtime.Serialization.DataMemberAttribute(Order=5, EmitDefaultValue=false)] public EntitySet Nodes { get { if ((this.serializing && (this._Nodes.HasLoadedOrAssignedValues == false))) { return null; } return this._Nodes; } set { this._Nodes.Assign(value); } } Also I have to have the [Include] tag above my properties or nothing will be loaded. Edit:: To others wanting to serialize dbml classes Link

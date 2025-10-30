@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1949823
-[parent_id]: 1949566
-[tags]: 
-I have not tested this much, but something like this seems like it would work: USE msdb DECLARE @deleteCmd nvarchar(max); SET @deleteCmd = ''; SELECT @deleteCmd = @deleteCmd + ( 'exec dbo.sp_delete_job @job_name = ''' + replace( j.name, '''', '''''' ) + '''; ' + char(10) ) FROM dbo.sysjobs j WHERE j.[description] like '%foo%' AND not exists ( SELECT 1 FROM dbo.sysjobactivity a WHERE a.job_id = j.job_id AND a.start_execution_date IS NOT NULL AND a.stop_execution_date IS NULL ) PRINT @deleteCmd --print for troubleshooting -- really: EXECUTE( @deleteCmd ) Credit: http://timlaqua.com/2009/05/a-cleaner-way-to-detect-the-state-of-a-sql-server-agent-job-in-sql-server-2005/

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1756810
-[parent_id]: 1756514
-[tags]: 
-D'Oh! Post a question that you've been puzzeling over for a while and take a break. Then of course the answer hits you and it's totaly obvious! I was forgetting to configure the MsmqTransport, my working code is below for anyone that's interested. Configure config = Configure.With(); config .CastleWindsorBuilder() .XmlSerializer() .MsmqSubscriptionStorage() .MsmqTransport() .IsTransactional(true) .PurgeOnStartup(false) .UnicastBus() .ImpersonateSender(false); config .MsmqSubscriptionStorage() .Configurer .ConfigureComponent(NServiceBus.ObjectBuilder.ComponentCallModelEnum.None) .ConfigureProperty(x => x.InputQueue, "testapps_messagebus") .ConfigureProperty(x => x.NumberOfWorkerThreads, 1) .ConfigureProperty(x => x.ErrorQueue, "testapps_errors") .ConfigureProperty(x => x.MaxRetries, 5); IBus bus = config .CreateBus() .Start(); bus.Publish(new Message(DateTime.Now));

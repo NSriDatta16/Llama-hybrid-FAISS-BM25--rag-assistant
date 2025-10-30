@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3483986
-[parent_id]: 3483953
-[tags]: 
-1) first solution add SessionId field to temp1 table add load_session_state table PK sessionId, State tinyint (Process step 1, process step 2... Done...) sp_modify_temp1_rows_move_to_production_table will execute ONLY records with some sessionId and State = Done. (sp_modify_temp1_rows_move_to_production_table can be executed asynchronously by using a sql agent job) truncate should be replaced with DELETE WHERE SessionId = (it is slow, but it has to be done). (it can be executed by the same sql agent job but after moving records to production) TABLOCK should be removed from bcp command 2) second solution CREATE TABLE temp_XXX bcp db.schema1. temp_XXX in import1.txt -h "TABLOCK" exec sp_modify_tempXXX_rows_move_to_production_table @table_name = 'temp_XXX' (use dynamic sql with the @table_name parameter) DROP TABLE temp_XXX ADDED 3) use the table load_session_state as a progress view and for lock your process. if there are any records in it, so notify user for waiting. use your previous solution without changes. just use table load_session_state as logical lock

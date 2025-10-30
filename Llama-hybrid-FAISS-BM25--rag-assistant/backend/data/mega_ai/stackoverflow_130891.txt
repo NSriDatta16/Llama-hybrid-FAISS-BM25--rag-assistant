@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 130891
-[parent_id]: 130790
-[tags]: 
-You not only need enough memory, it needs to be contiguous. Over time memory becomes fragmented and it becomes harder to find big blocks. There aren't a lot of good solutions to this, aside from building up images from smaller bitmaps. new Bitmap(x, y) pretty much just needs to allocate memory -- assuming that your program isn't corrupted in some way (is there any unsafe code that could corrupt the heap), then I would start with this allocation failing. Needing a contiguous block is how a seemingly small allocation could fail. Fragmentation of the heap is something that is usually solved with a custom allocator -- I don't think this is a good idea in IIS (or possible). To see what error you get on out of memory, try just allocation a gigantic Bitmap as a test -- see what error it throws. One strategy I've seen is to pre-allocate some large blocks of memory (in your case Bitmaps) and treat them as a pool (get and return them to the pool). If you only need them for a short period of time, you might be able to get away with just keeping a few in memory and sharing them.

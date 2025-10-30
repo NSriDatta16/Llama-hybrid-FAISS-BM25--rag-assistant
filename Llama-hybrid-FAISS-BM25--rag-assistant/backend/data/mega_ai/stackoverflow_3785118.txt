@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3785118
-[parent_id]: 
-[tags]: 
-Removing COM event handlers automatically in C#
-
-I have a standalone .exe COM server and a trivial C# test program that launches an instance of the server and closes it immediately afterwards. Works like a charm. However, if I close the C# program itself I get an exception during the finalizer run because it is trying to unregister/unadvise COM event sinks from the no longer running COM server. The exception is "A first chance exception of type System.Runtime.InteropServices.InvalidComObjectException' occurred in mscorlib.dll" And the callstack: mscorlib.dll!System.Runtime.InteropServices.ComEventsSink.Unadvise() + 0x20 bytes mscorlib.dll!System.Runtime.InteropServices.ComEventsSink.RemoveAll(System.Runtime.InteropServices.ComEventsSink sinks) + 0x11 bytes mscorlib.dll!System.Runtime.InteropServices.ComEventsInfo.Finalize() + 0x18 bytes I can fix this error by manually removing the COM event handlers before shutting down the server. I.e. myComServer.OnFunkyEvent -= OnFunkyEventHandler; However, I find this inelegant, error prone and tedious. So the question is, can I somehow trigger the RemoveAll() call for my COM events manually so it won't run in the finalizer?

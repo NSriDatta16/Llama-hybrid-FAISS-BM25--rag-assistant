@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 386522
-[parent_id]: 386476
-[tags]: 
-You can improve the performance of this UDF by NOT declaring variables and doing your calculations more in-line. This will likely improve performance a little but (but probably not much). CREATE FUNCTION [dbo].[SquareDistance] (@Lat1 float, @Long1 float, @Lat2 float, @Long2 float) RETURNS float AS BEGIN Return ( SELECT ((@Lat1 - @Lat2) * (@Lat1 - @Lat2)) + ((@Long1 - @Long2) * (@Long1 - @Long2))) END Even better would be to remove the function and put the calculations in the original query. SELECT Lat, Long FROM Table WHERE (Lat BETWEEN 38 AND 42) AND (Long BETWEEN 138 AND 142) AND ((Lat - 40) * (Lat - 40)) + ((Long - 140) * (Long - 140)) There is a little bit of overhead with calling a user defined function. By removing the function, you are likely to gain a little in performance. Also, I encourage you to check your execution plan just to make sure you are getting index seeks like you expect.

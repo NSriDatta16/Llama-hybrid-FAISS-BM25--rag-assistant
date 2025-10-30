@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 388883
-[parent_id]: 
-[tags]: 
-Overcome 8k limit to sql server stored procedure parameter
-
-I recently resolved an issue my VB6 application had when saving large binary objects to sql server using ADO 2.8 and the AppendChunck method for Recordset.Field. If the data was too big I would get either 'Invalid Handle' in a for loop or 'Not enough system storage to perform this operation'. I fixed the issue by sending chunks to a stored procedure and using 'updatetext'. However, in doing so I can now only send 8k characters at a time because of the 8k limit. Does anybody know of a good workaround? Below is my sproc. @chunck binary(8000), @result_id int as declare @pointer binary(16), @imagelength int, @datalength int --get the pointer and length to the image column select @pointer = textptr(result_image), @imagelength = datalength(result_image) from dbo.dash_result where result_id = @result_id if @pointer is null update dbo.dash_result set result_image = @chunck where result_id = @result_id else begin --append the chunck of data to the end set @datalength = datalength(@chunck) updatetext dbo.dash_result.result_image @pointer @imagelength 0 @chunck end

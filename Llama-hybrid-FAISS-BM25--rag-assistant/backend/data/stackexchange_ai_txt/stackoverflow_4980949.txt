@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4980949
-[parent_id]: 4956942
-[tags]: 
-OK, I finally understand how things work with the sphinx thing. You cannot INSERT or UPDATE directly the SphinxSE table. Instead you use INSERT/REPLACE while connected to SphinxQL (directly to sphinx daemon). With 1.10 you can add multiple FullText searchable fields. I added title, tags and content. And the query to give more weight to the title, then tags and then content looks like this: SELECT SQL_NO_CACHE * FROM sphinx_docs WHERE query = 'a lot of keywords;weights=3,2,1;'; I use the SQL_NO_CACHE to tell mysql not to cache the result of this, because on next calls I can't get the number of rows returned from sphinx ( SHOW STATUS LIKE 'sphinx_total_found' ) It's better to let sphinx do all the sorting, filltering and use mysql only to JOIN the table you need more info from. In addition I have to say that I tried many times to add the sphinxse plugin to mysql without success (endless make waiting hours) so I switched to MariaDB 5.2.4 which includes the SphinxSE storage engine.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4433155
-[parent_id]: 
-[tags]: 
-Can I write a C++ functor that accepts both a raw pointer and a smart pointer?
-
-Given the following: struct Foo { int bar() const; }; struct IsEqual : public std::unary_function { int val; IsEqual(int v) : val(v) {} bool operator()(const Foo* elem) const { return elem->bar() == val; } }; I have a container of Foo* and I use std::find_if and std::not1 to find out if there are any elements in the container where bar() returns something different from a given value. The code looks like this: // Are all elements equal to '2'? bool isAllEqual(const std::vector &vec) { return find_if(vec.begin(), vec.end(), std::not1(IsEqual(2))) == vec.end(); } Fast-forward into the future and I now have a different container, this time containing std::tr1::shared_ptr . I'd love to simply re-use my functor in an overloaded version of isAllEqual() . But I can't. Foo* and shared_ptr are different types. And I need to inherit from unary_function so I can use not1 . It'd be more elegant if I could avoid writing the same functor twice. Questions: Is there any way to write IsEqual so it can use both raw and smart pointers? Did I handcuff myself by using std::not1 ? Should I just write IsNotEqual instead? Restrictions: I can't use anything from the boost library. Our compiler isn't cool enough to support C++0x lambdas.

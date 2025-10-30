@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5350032
-[parent_id]: 
-[tags]: 
-Trouble on caching an action when I rewrite a URL
-
-I am using Ruby on Rails 3 and I have an issue on caching when I rewrite a URL in the model using the to_param method. In my User model I have: class User In the User controller I have: class UsersController In the Users sweeper I have: class UsersSweeper :users, :action => :show, :id => user end end Now, when I browse the user show page in the log file I get: Write fragment views/ /users/2-Test_name-Test_surname (0.3ms) When I expire the cache after a change the name or surname in the log file I get Expire fragment views/ /users/2-New_test_name-New_test_surname (0.3ms) So, since the data is changed, it doesn't expire the cache because Rails try to expire 2-New_test_name-New_test_surname and not 2-Test_name-Test_surname . How can I "easly" handle the Rails caching behavior to make it to work? P.S.: Of course if I don't use the to_param method, it works as well. UPDATED I can do something like this caches_action :show, :cache_path => Proc.new { |c| 'users/' + c.params[:id].split('-').first } but I don't think that is a good way to solve things...

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 282780
-[parent_id]: 281781
-[tags]: 
-I threw together a really quick prototype application to test this out. What you are describing is not the behavior I'm seeing: XML File: Left &amp; Right Implementation: #import "XMLMeController.h" @implementation XMLMeController - (IBAction)parse:(id)sender { NSURL *url = [NSURL fileURLWithPath:@"/Users/robertwalker/Desktop/test.xml"]; NSXMLParser *parser = [[NSXMLParser alloc] initWithContentsOfURL:url]; [parser setDelegate:self]; [parser parse]; [parser release]; } - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string { NSLog(@"Found: %@", string); } @end Console output: 2008-11-11 20:41:47.805 XMLMe[10941:10b] Found: Left 2008-11-11 20:41:47.807 XMLMe[10941:10b] Found: & 2008-11-11 20:41:47.807 XMLMe[10941:10b] Found: Right As you can see the parser is finding the "Left" then the "&" and then "Right" as three separate events that are sent to the delegate. I can't really tell from your posting, but you need to make sure that the proper entity is used in the XML file "&amp;" rather than just "&" character, which of course is invalid in XML files.

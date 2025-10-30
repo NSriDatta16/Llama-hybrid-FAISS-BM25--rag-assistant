@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1089456
-[parent_id]: 1087785
-[tags]: 
-It turns out that the real problem isn't the file size, it's the fragment map = new GMap2(document.getElementById("map_canvas")); var geoXml = new GGeoXml("http://(my base url)/files/gps/expr.kml", function() { zoomToGeoXML(geoXml); }); map.addOverlay(geoXml); According to the Google Map docs, you must call setCenter() immediately after constructing a new map. I didn't do that because zoomToGeoXML() does. Unfortunately, that apparently sets up a race condition in the google map code. Changing the code to read: map = new GMap2(document.getElementById("map_canvas")); map.setCenter(new GLatLng(0,0)); var geoXml = new GGeoXml("http://(my base url)/files/gps/expr.kml", function() { zoomToGeoXML(geoXml); }); map.addOverlay(geoXml); apparently solves the problem correctly. However, it has the side-effect that the map will initially be of the entire globe before zooming into the area defined by the kml file.

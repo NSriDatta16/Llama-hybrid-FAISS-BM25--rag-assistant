@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2610256
-[parent_id]: 2604746
-[tags]: 
-If you have an HWND to the window that processes the message, you can intercept its messages, selectively not delivering certain messages to the "real" window procedure. For example: /* Get the current window proc for this hwnd. */ WNDPROC OldWindowProc = (WNDPROC)GetWindowLongPtr(hWnd, GWLP_WNDPROC); /* Set the window proc to your own override. */ SetWindowLongPtr(hWnd, GWLP_WNDPROC, (ULONG_PTR)MyWindowProc); Then inside MyWindowProc , you would intercept the WM_KEYDOWN . For all other messages (and for the WM_KEYDOWN s you want to fall through to the control), you would invoke OldWindowProc (the window proc you don't have source to) via CallWindowProc . Update: Didn't realize this is an EXE you can't change directly. You may need to combine this technique with the DLL injection mentioned by Matteo. Maybe you can inject your DLL, get an HWND via FindWindow , and then change the window procedure as I've described.

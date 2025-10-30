@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2216041
-[parent_id]: 
-[tags]: 
-Prevent unnecessary copies of C++ functor objects
-
-I have a class which accumulates information about a set of objects, and can act as either a functor or an output iterator. This allows me to do things like: std::vector v; Foo const x = std::for_each(v.begin(), v.end(), Joiner ()); and Foo const x = std::copy(v.begin(), v.end(), Joiner ()); Now, in theory, the compiler should be able to use the copy elision and return-value optimizations so that only a single Joiner object needs to be created. In practice, however, the function makes a copy on which to operate and then copies that back to the result, even in fully-optimized builds. If I create the functor as an lvalue, the compiler creates two extra copies instead of one: Joiner joiner; Foo const x = std::copy(v.begin(), v.end(), joiner); If I awkwardly force the template type to a reference it passes in a reference, but then makes a copy of it anyway and returns a dangling reference to the (now-destroyed) temporary copy: x = std::copy &>(...)); I can make the copies cheap by using a reference to the state rather than the state itself in the functor in the style of std::inserter , leading to something like this: Foo output; std::copy(v.begin(), v.end(), Joiner (output)); But this makes it impossible to use the "functional" style of immutable objects, and just generally isn't as nice. Is there some way to encourage the compiler to elide the temporary copies, or make it pass a reference all the way through and return that same reference?

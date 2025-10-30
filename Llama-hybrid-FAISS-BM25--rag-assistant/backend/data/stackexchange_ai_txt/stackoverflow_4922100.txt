@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4922100
-[parent_id]: 4919687
-[tags]: 
-I've been in this situation myself and came to a conclusion that it's too much of a head ache to make child aggregates work in an elegant way. Instead, I'd consider whether you actually need to reference the second aggregate as child of the first. It makes life much easier if you just keep a reference of the aggregate's ID rather than the actual aggregate itself. Then, if there is domain logic that involves both aggregates this can be extracted to a domain service and look something like this: public class DomainService { private readonly IAggregate1Repository _aggregate1Repository; private readonly IAggregate2Repository _aggregate2Repository; public void DoSomething(Guid aggregateID) { Aggregate1 agg1 = _aggregate1Repository.Get(aggregateID); Aggregate2 agg2 = _aggregate2Repository.Get(agg1.Aggregate2ID); agg1.DoSomething(agg2); } } EDIT: I REALLY recommend these articles on the subject: https://vaughnvernon.co/?p=838

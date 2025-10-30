@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2149768
-[parent_id]: 2149639
-[tags]: 
-The addressable gem will do this nicely; please see the superior answer by The Tin Man . But if you want to roll your own, here's how. The only claim this code has to elegance is that it hides the ugly in a method: #!/usr/bin/ruby1.8 def reject_param(url, param_to_reject) # Regex from RFC3986 url_regex = %r"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$" raise "Not a url: #{url}" unless url =~ url_regex scheme_plus_punctuation = $1 authority_with_punctuation = $3 path = $5 query = $7 fragment = $9 query = query.split('&').reject do |param| param_name = param.split(/[=;]/).first param_name == param_to_reject end.join('&') [scheme_plus_punctuation, authority_with_punctuation, path, '?', query, fragment].join end url = "http://example.com/path?param1=one&param2=2&param3=something3" p url p reject_param(url, 'param2') # => "http://example.com/path?param1=one&param2=2&param3=something3" # => "http://example.com/path?param1=one&param3=something3"

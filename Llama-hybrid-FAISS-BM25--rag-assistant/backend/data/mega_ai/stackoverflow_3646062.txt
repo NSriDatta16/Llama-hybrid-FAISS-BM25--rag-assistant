@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3646062
-[parent_id]: 
-[tags]: 
-Zend_Auth_Adapter_DbTable UTF-8
-
-Here is how I am getting an identity from a database: $adapter = new Zend_Auth_Adapter_DbTable(Zend_Registry::get('dbAdapter')); $adapter->setTableName('clients'); $adapter->setIdentityColumn('email'); $adapter->setCredentialColumn('password_hash'); // etc $client = $adapter->getResultRowObject(null, array('password_hash')); Zend_Session::rememberMe(604800); // store client object in the session $authStorage = $auth->getStorage(); $authStorage->write($client); The problem with this is that the getResultRowObject() returns an object with messed up diacritics. My database has UTF-8 encoding as well as all my tables. So instead of: Košice I get: KoÅ¡ice This is how I am creating the db adapter: protected function _initDb() { $this->configuration = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENVIRONMENT); $this->dbAdapter = Zend_Db::factory($this->configuration->database); Zend_Db_Table_Abstract::setDefaultAdapter($this->dbAdapter); $stmt = new Zend_Db_Statement_Pdo($this->dbAdapter, "SET NAMES 'utf8'"); $stmt->execute(); }

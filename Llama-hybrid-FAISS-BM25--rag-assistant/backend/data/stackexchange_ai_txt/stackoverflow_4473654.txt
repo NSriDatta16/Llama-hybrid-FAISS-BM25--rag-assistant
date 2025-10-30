@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4473654
-[parent_id]: 
-[tags]: 
-Magento/Zend not allowing symbolic links
-
-Anyone know why Magento won't allow symbolic links for template .phtml files that are outside the app/design folder? If I do a symlink within that folder, it works fine, but if it's linked outside that, it doesn't work. So it seems like it's some permissions/security thing, but I can't find any info anywhere. Possibly a Zend setting? http://zend-framework-community.634137.n4.nabble.com/Zend-Tool-not-working-with-symbolic-links-in-include-path-td662569.html Anyone? WORKAROUND: Thanks to Alan's suggestion below I found a workaround - as I'll only be using this myself for local development I'm happy enough. In case this helps anyone else, I'm gonna add it here. So I'm inserting the following in core/Mage/Core/Block/Template.php, directly after the line Varien_Profiler::start($fileName); $storeId = Mage::app()->getStore()->getId(); $theme = Mage::getStoreConfig('design/package/name', $storeId); Mage::Log($this->_viewDir.DS.$fileName); $includes = $this->_viewDir.DS.$fileName; if(strpos($includes, 'frontend/'.$theme )) { include $this->_viewDir.DS.$fileName; }; Using the IF statement here stops any base templates being doubled, and only allows your custom theme templates through.

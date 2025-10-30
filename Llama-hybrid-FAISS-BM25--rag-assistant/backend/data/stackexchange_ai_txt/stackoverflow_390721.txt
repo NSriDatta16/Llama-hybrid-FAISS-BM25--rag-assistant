@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 390721
-[parent_id]: 390242
-[tags]: 
-As others have said, the fact that you have to poll is probably indicative of a deeper problem with the design of your system... but sometimes that's the way it goes, so... If you'd like to handle "killing" the process a little more gracefully, you could install a shutdown hook which is called when you hit Ctrl + C : volatile boolean stop = false; Runtime.getRuntime().addShutdownHook(new Thread("shutdown thread") { public void run() { stop = true; } }); then periodically check the stop variable. A more elegant solution is to wait on an event: boolean stop = false; final Object event = new Object(); Runtime.getRuntime().addShutdownHook(new Thread("shutdown thread") { public void run() { synchronized(event) { stop = true; event.notifyAll(); } } }); // ... and in your polling loop ... synchronized(event) { while(!stop) { // ... do JDBC access ... try { // Wait 30 seconds, but break out as soon as the event is fired. event.wait(30000); } catch(InterruptedException e) { // Log a message and exit. Never ignore interrupted exception. break; } } } Or something like that.

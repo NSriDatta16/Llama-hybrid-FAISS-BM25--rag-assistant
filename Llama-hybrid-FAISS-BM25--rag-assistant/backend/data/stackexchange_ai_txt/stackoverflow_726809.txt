@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 726809
-[parent_id]: 726630
-[tags]: 
-I can't offer you an exact solution, but an alternative would be to hide the pass-by-ref semantics behind an adapter, which takes the parameter by value and forwards it to the RemotingHandler. This would be easier to mock, and would remove the "ref" wart from the interface (I am always suspicious of ref parameters :-) ) EDIT: Or you could use a stub instead of a mock, for example: public class StubRemotingHandler : IRemotingHandler { public CustomerContact savedContact; public void SaveCustomerContact(ref CustomerContact contact) { savedContact = contact; } } You can now examine the saved object in your test: IRemotingHandler remote = new StubRemotingHandler(); ... //pass the stub to your object-under-test ... target.AddContact(); Assert.AreEqual(expected, remote.savedContact); You also say in your comment: I'd hate to start a precedent of wrapping random bits of the backend so I can write tests more easily I think that's exactly the precedent you need to set! If your code isn't testable, you're going to keep struggling to test it. Make it easier to test, and increase your coverage.

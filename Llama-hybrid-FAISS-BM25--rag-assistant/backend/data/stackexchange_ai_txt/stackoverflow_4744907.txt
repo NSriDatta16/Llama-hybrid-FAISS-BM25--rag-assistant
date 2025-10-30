@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4744907
-[parent_id]: 
-[tags]: 
-MS Word automation with 2 way communication
-
-I am doing embedding of MS Word in my application using Win32 SetParent function. Everything works fine but there is a requirement to do a callback from Word custom toolbar button to parent application. Word instance is embedded in user control so the parent is this.Handle. The VBA code looks as follows: Sub Submit() Dim hwnd As Long hwnd = FindWindow("Opusapp", vbNullString) hwnd = GetAncestor(hwnd, GA_PARENT) If hwnd = 0 Then MsgBox "Failed to callback!" Exit Sub End If OutputDebugString ("Parent window " + CStr(hwnd)) Dim id As Long id = RegisterWindowMessage("__CALLBACK_FROM_WORD__") If hwnd = 0 Then MsgBox "Failed to callback. Message not registered" Exit Sub End If OutputDebugString ("Message " + CStr(id)) End Sub In C# the code is this: protected override void OnHandleCreated(EventArgs e) { submitMessageId_ = RegisterWindowMessage("__CALLBACK_FROM_WORD__"); base.OnHandleCreated(e); } protected override void OnHandleDestroyed(EventArgs e) { base.OnHandleDestroyed(e); } protected override void WndProc(ref Message m) { if (m.Msg == submitMessageId_) { Logger.Instance().Write("WndProc: Submit event"); return; } base.WndProc(ref m); } The problem seems to be that VBA is unable to locate the correct window handle. I tried using GetParent to no avail.

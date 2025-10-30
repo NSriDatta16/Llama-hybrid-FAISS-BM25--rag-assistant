@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3968394
-[parent_id]: 
-[tags]: 
-Different results fetching results with query api vs. hql
-
-I have the following entity (not exact but gives a general idea): @Entity public class WebElement implements Serializable { private static final long serialVersionUID = 1L; @Id @GeneratedValue private Long id; @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL }) private Set coreElements; private String agent; // ... omitting const' get/set hashcode equals etc. } public class CoreElement implements Serializable { private static final long serialVersionUID = 1L; @Id @GeneratedValue private Long id; private String value; // ... omitting const' get/set hashcode equals etc. } My problem is when trying to fetch WebElements using the Criteria API vs. HQL When executing the following I get an empty list. getCurrentSession().createCriteria(WebElement.class) .createCriteria("coreElements").add( Restrictions.eq("value", value)).list(); But when executing the following HQL I get the correct result. select distinct we from WebElement we, in(we.coreElements) core where core.value = :inputValue Can you help finding what am I doing wrong or different between those calls? ( NOTE My preference is to work with the Criteria API instead of HQLs.

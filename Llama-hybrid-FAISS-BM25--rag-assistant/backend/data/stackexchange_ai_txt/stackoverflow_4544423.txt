@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4544423
-[parent_id]: 
-[tags]: 
-Boost causes an invalid block while overloading new/delete operators
-
-I have a problem which appears to a be an invalid memory block that happens during a Boost call to Boost:runtime:cla::parser::~parser . When that global delete is called on that object, C++ asserts on the memory block as an invalid: dbgdel.cpp(52): /* verify block type */ _ASSERTE(_BLOCK_TYPE_IS_VALID(pHead->nBlockUse)); An investigation I did revealed that the problem happened because of a global overloading of the new/delete operators. Those overloadings are placed in a separate DLL. I discovered that the problem happens only when that DLL is compiled in RELEASE while the main application is compiled in DEBUG. So I thought that the Release/Debug build flavors might have created a problem like this in Boost/CRT when overloading new/delete operators. So I then tried to explicitly call to _malloc_dbg and _free_dbg withing the overloading functions even in release mode, but it didn't solve the invalid heap block problem. Any idea what the root cause of the problem is? is that situation solvable? I should stress that the problem began only when I started to use Boost. Before that CRT never complained about any invalid memory block. So could it be an internal Boost bug? Thanks!

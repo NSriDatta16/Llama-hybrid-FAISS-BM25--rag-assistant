@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4949687
-[parent_id]: 4949602
-[tags]: 
-Notice I gave your second column a fixed value of NULL, since when b does not exist, b.second_name => NULL. The crux of the problem is that ORDER BY RAND() require a full scan to put a rand() against each record. You cannot avoid a table scan. SELECT a.name , NULL AS second_name FROM a WHERE NOT EXISTS (Select * from b WHERE a.joint_id = b.joint_id) ORDER BY RAND() LIMIT 0,10; You could possibly make it faster by not having to drag all columns from table a, assuming you have an ID on table a. http://dev.mysql.com/doc/refman/5.0/en/order-by-optimization.html SELECT a.name , NULL AS second_name FROM a WHERE a.ID in ( select id from a WHERE NOT EXISTS (Select * from b WHERE a.joint_id = b.joint_id) ORDER BY RAND() LIMIT 0,10)

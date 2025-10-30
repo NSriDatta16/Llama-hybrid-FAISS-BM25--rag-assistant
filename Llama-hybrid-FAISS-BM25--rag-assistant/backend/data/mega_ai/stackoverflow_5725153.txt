@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5725153
-[parent_id]: 5724985
-[tags]: 
-Most likely your problem has nothing to do with your ability to quickly parse HTML and everything to do with the latency of page retrieval and blocking on sequential tasks. 1-2 seconds is a reasonable amount of time to retrieve a page. You should be able to find text on the page orders of magnitude faster. However, if you are processing pages one at a time you are blocked waiting for a response from a web server while you could be finding your results. You could instead retrieve multiple pages at once via worker processes and wait only for their output. The following code has been modified from Python's multiprocessing docs to fit your problem a little more closely. import urllib from multiprocessing import Process, Queue def worker(input, output): for func, args in iter(input.get, 'STOP'): result = func(*args) output.put(result) def find_on_page(num): uri = 'http://www.example.com/index.php?id=%d' % num f = urllib.urlopen(uri) data = f.read() f.close() index = data.find('datahere:') # obviously use your own methods if index

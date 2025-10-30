@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1386555
-[parent_id]: 1385695
-[tags]: 
-Let's look at the expansion of the sample invocation sum(1, 2, 3) of the macro #define sum(...) \ _sum(sizeof((int []){ __VA_ARGS__ }) / sizeof(int), (int []){ __VA_ARGS__ }) The ... mean it's a variadic macro, ie it takes any number of comma-seperated arguments. On expansion, the special preprocessor token __VA_ARGS__ will be replaced with these arguments, ie (int []){ __VA_ARGS__ } expands to (int []){ 1, 2, 3 } This is a compound literal: C99 allows to create objects with automatic storage duration on-the-fly via such a typed initialization list. It's important that the size of the array will be inferred: It won't have incomplete type int [] but will be of type int [3] , ie sizeof((int []){ 1, 2, 3 }) = sizeof(int [3]) = 3 * sizeof(int) To get the number of elements, divide by sizeof(int) . The macro invocation sum(1, 2, 3) is therefore equivalent to the C90 code int tmp[3] = { 1, 2, 3 }; _sum(3, tmp);

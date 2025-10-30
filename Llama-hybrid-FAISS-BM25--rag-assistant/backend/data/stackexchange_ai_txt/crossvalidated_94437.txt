@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 94437
-[parent_id]: 94316
-[tags]: 
-I can think of one solution, but I'm open to others. In the paper linked, the use the formula: $$F(Z_i) = \prod_{i=1}^j \frac{R_i - n_i}{R_i} $$ The term being multiplied, $\frac{R_i - n_i}{R_i}$, is a pointwise estimate of the rate at time $i$. For low $R_i$ size, or when $n_i = R_i$ or $n_i = 0$, this produces somewhat pathological results (see my complaints above). Instead we can treat this estimation as a Bayesian beta-binomial problem: Given prior $Beta(\alpha, \beta)$, we observe $n_i$ deaths in $R_i$ opportunities and update our prior to $Beta(\alpha + n_i, \beta + R_i - n_i)$. (I suggest keep $\alpha, \beta$ very low as to not introduce a strong bias in the final product). We then sample from each posterior conversion rate and form the product: $$F(Z_i) = \prod_{i=1}^j (1 - S_i) $$ where $S_i \sim Beta(\alpha + n_i, \beta + R_i - n_i)$. Doing this many times, we can reconstruct the posterior CDF. Why does this work? Even if $n_i = 0$, $S_i$ is still slightly greater than 0, though not too much greater. If I have time later this week, I'll do some simulations.

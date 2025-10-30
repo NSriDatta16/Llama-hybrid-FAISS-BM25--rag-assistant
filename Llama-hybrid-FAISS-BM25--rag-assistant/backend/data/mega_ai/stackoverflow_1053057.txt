@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1053057
-[parent_id]: 1052992
-[tags]: 
-First you need your DLL to be injected into the target process, either by hooks, or by any other way . Find the window handle of interest. Obtain the current window procedure of that window, by calling GetWindowLongPtr(wnd, GWLP_WNDPROC), and save it. Sub-class the window, by calling SetWindowLongPtr( wnd, GWLP_WNDPROC, &NewWndProc ) where NewWndProc is your DLL-implemented message procedure. Inside NewWndProc you'll want to process keyboard messages (there're a dozen of them, type "keyboard input" in MSDN index, I can't post more then 1 link). For the rest of windows messages call the original window procedure you've saved during (3), and return the value it returned. Don't call it directly, use CallWindowProc instead. This way is not very reliable, some antivirus and anti-bot (e.g. "warden client") software might not like it, and debugging may be challenging. However it should work.

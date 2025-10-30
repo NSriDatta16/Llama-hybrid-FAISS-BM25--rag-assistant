@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4937658
-[parent_id]: 4930940
-[tags]: 
-Maybe it's due to an unwanted behaviour with your alpha channel result. You're actually computing lighting on your alpha channel, actually having something like : g gl_FragColor.a = 1.0 + 1.0 * DiffuseTerm which will give you >= 1.0 values. You should be careful not to include your alpha channel in your output (or even in your calculations). Try making sure your blending is disabled, or fix your shader to something like : varying vec3 normal, lightDir; void main() { const vec3 AmbientColor = vec3(0.1, 0.0, 0.0); const vec3 DiffuseColor = vec3(1.0, 0.0, 0.0); vec3 normalized_normal = normalize(normal); vec3 normalized_lightDir = normalize(lightDir); float DiffuseTerm = clamp(dot(normal, lightDir), 0.0, 1.0); gl_FragColor = vec4(AmbientColor + DiffuseColor * DiffuseTerm, 1.0); }

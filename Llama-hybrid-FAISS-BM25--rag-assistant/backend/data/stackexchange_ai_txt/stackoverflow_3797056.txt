@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3797056
-[parent_id]: 3796463
-[tags]: 
-I think this is actually a bug in Windows Forms. Somewhat inevitable due to the way it checks for access to the Handle property by the wrong thread. The SDK docs for SetParent are not explicit about it, it states the requirement is that both windows belong to the same application. No mention of having to belong to the same thread. I know for a fact that the 'same application' requirement is not hard, there's appcompat code in Windows that makes this work for windows from different processes. Adobe Acrobat ab/used this for a long time. Which definitely absolves the 'same thread' requirement. Well, punt the problem and try it out. Set Control.CheckForIllegalCrossThreadCalls to false before you set the owner, back to true afterward. And test the heck out of it. If you have trouble then try pinvoking SetParent() directly instead of setting the Owner. Windows Forms actually uses SetWindowLongPtr which is not recommended by the SDK.

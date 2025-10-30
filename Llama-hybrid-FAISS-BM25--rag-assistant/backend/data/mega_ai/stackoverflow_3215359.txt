@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3215359
-[parent_id]: 
-[tags]: 
-Why are these named_scopes causing a duplicate INNER JOIN?
-
-I have a Model which I am using to track permissions in a hierarchical organization using the awesome_nested_set plugin. I'm running into a problem where two named_scope s, when chained together, are creating a duplication INNER JOIN . class Group :memberships has_many :authorizations has_many :users, :through => :authorizations end The two named_scope s are located in the Account model, and are used to filter accounts by a user and by a group: named_scope :in_group, lambda { |id| group_ids = Group.find(id).self_and_descendants.collect(&:id) { :joins => :memberships, :conditions => ["memberships.group_id in (?)", group_ids] } } named_scope :for, lambda { |user| groups = user.authorizations.groups.collect(&:id) unless user.admin? user.admin ? {} : { :joins => :groups, :conditions => ["groups.id IN (?)", groups] } } Both of these named_scope s need to join memberships , but shouldn't they be able to do that without duplication? When they are chained together, mysql blows up with the following error: Mysql::Error: Not unique table/alias: 'memberships': SELECT `accounts`.* FROM `accounts` INNER JOIN `memberships` ON accounts.id = memberships.account_id INNER JOIN `memberships` ON `accounts`.`id` = `memberships`.`account_id` INNER JOIN `groups` ON `groups`.`id` = `memberships`.`group_id` WHERE ((memberships.group_id in (54,94)) AND (groups.id IN (54,94))) ORDER BY business_name, location_name LIMIT 0, 75

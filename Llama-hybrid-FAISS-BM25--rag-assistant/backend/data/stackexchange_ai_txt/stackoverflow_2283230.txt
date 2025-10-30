@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2283230
-[parent_id]: 2281256
-[tags]: 
-As Yuri points out in the comments, you have incorrectly defined your relationship. Announcements should have_one :rate As a named scope on announcment: class Announcement :rate, :order => 'rates.average DESC' end Announcement.order_by_rate.paginate :per_page => 10, :page => params[:page] Note the difference between :include and :joins as a find option. :joins will join the on the association(s) or SQL JOIN fragment given for purposes of complex WHERE/ORDER clauses. :include will only works on associations, it provides the same advantages of :joins, and also eager load the association. Where eager loading makes a difference: With include, @a.rate is populated in the same SQL statement that populates @a. @a = Association.first :include => :rate Without include @a.rate is not populated until required. @a = Association.first @a.rate #=> @a.rate is populated here, with a separate SQL statement.

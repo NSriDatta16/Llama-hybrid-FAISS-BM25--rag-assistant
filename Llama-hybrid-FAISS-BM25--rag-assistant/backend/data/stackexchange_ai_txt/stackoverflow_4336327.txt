@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4336327
-[parent_id]: 4335866
-[tags]: 
-The constraint is okay, but the problem is that there is no type that would satisfy the constraint and that would be a supertype of both A and B . The match construct needs to return the same type from both of the branches, so you'd need to add upcast ( :> ) to some type such that the conversion works for both of the branches. The type could be either IX or IY , but that wouldn't satisfy the constraint. This would be possible only if .NET allowed you to write something like IX+IY which would mean a type that implements both of the interfaces. Then you would also be able to work with values of this type e.g.: let (a:IX+IY) = new A() // This isn't supported I think that the best solution is to simply return a tuple IX * IY containing two times the same instance, but represented as different type. Here the constriant you wrote can be quite useful: // Type: 'a -> IX * IY when 'a :> IX and 'a :> IY let asTuple a = (a :> IX, a :> IY) let mk t = match t with | Choice1Of2() -> new A() |> asTuple | Choice2Of2() -> new B() |> asTuple

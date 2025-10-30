@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 508391
-[parent_id]: 505476
-[tags]: 
-A traditional C string (accessed through a char const* ) has a sequence of characters terminated by a character 0. (Not the numeral 0 , but an actual zero value, which we write as '\0' .) There's no explicit length — so various string operations just read one character at a time until it hits the '\0' . A C++ std::string has an explicit length in its structure. Is it possible that the memory layout of your string's characters looks like this: 'NTNT\0' but the string's length is set to 2? That would result in exactly this behavior — manipulating the std::string directly will act like it's just two characters long, but if you do traditional C operations using s.c_str() , it will look like "NTNT" . I'm not sure what shenanigans would get you into this state, but it would certainly match the symptoms. One way you could get into this state would be to actually write to the string's characters, something like: strcat((char *)s.c_str(), "NT")

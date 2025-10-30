@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2562220
-[parent_id]: 2561134
-[tags]: 
-Try this, uses a CTE to get the row ordinal number, and then only deletes X number of rows at a time. You can alter this variable to suit your server. Adding ReadPast table hint should prevent locking. : DECLARE @numberToDelete INT; DECLARE @ROWSTOKEEP INT; SET @ROWSTOKEEP = 50000; SET @numberToDelete =1000; WHILE 1=1 BEGIN WITH ROWSTODELETE AS ( SELECT ROW_NUMBER() OVER(ORDER BY dtsTimeStamp DESC) rn, * FROM MyTable ) DELETE TOP (@numberToDelete) FROM ROWSTODELETE WITH(READPAST) WHERE rn>@ROWSTOKEEP; IF @@ROWCOUNT=0 BREAK; END;

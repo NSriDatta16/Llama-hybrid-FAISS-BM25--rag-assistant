@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2548127
-[parent_id]: 
-[tags]: 
-declarative_authorization permission on new but related object id is nil
-
-I have an Organization that has_many Affiliations And a mission that has_one Organization So i can do this: m = Mission.first m.organization.affiliations A user also has_many affiliations so I can do: u = User.first u.affiliations In declarative_authorization I want a user to be able to manage a mission if he is affiliated to the organization of the mission. I have this: has_permission_on :missions, :to => [:manage] do if_attribute :organization => { :affiliations => intersects_with { user.affiliates.type_admin } } end But I'm getting this error: Permission denied: new not allowed for # on # The Mission and Organization are nil. I think that is because on the new, the mission.organization dosn't exists. On the mission controller I have this: def new if(params[:organization_id]) session[:organization_id] = params[:organization_id] @mission = Organization.find_by_id(params[:organization_id]).missions.build end end

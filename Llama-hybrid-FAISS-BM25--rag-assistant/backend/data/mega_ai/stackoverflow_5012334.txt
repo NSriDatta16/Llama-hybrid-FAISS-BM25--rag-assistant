@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5012334
-[parent_id]: 
-[tags]: 
-Malloc Failing on 64-Bit Ubuntu box
-
-I am running the following code on a 64-bit Ubuntu box with 18 GB of RAM, and as you can see, my call to Malloc is failing when I try to allocate 2^31 bytes. I am not sure why this is happening, or how to fix it (i have tried compiler flags and also calloc()). I was wondering if someone can explain to me why I am not able to alloc more space on a 64-bit box and how I can fix this issue. #include #include //#include "svm_model_matlab.h" //include "svm.h" #include struct svm_node { int index; double value; }; //#define Malloc(type,n) (type *)calloc(n,sizeof(type)) #define Malloc(type,n) (type *)malloc((n)*sizeof(type)) int main() { int i; for(i =25; i Output: 2^25 33554432 the address is 8513e010 2^26 67108864 the address is 6513e010 2^27 134217728 the address is 2513e010 2^28 268435456 the address is a513e010 2^29 536870912 the address is a513e010 2^30 1073741824 the address is 0 2^31 -2147483648 the address is 0 2^32 0 the address is 0 2^33 0 the address is 0 2^34 0 the address is 0 Update: I found the issue I was having: I am currently running my code on EC2 on a 64-bit Ubuntu linux distro and the default linux boxes on EC2 have 0 swap space. This was causing my process to seg fault when it was requesting any amount of memory more than the physical RAM because it was not able to page. After I created a swap file, my problem went away. Thanks for your help

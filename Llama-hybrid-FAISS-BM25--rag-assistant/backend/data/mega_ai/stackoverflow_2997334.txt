@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2997334
-[parent_id]: 2973484
-[tags]: 
-I think your strategy is too complicated. If you are using FluentNHibertate just provide the TableName convention into your initialization. e.q.: public class TableNameConvention : IClassConvention { public void Apply(IClassInstance instance) { instance.Table(Inflector.Net.Inflector.Pluralize(instance.EntityType.Name)); } } and usage here: public class AutoPersistenceModelGenerator : IAutoPersistenceModelGenerator { /// /// Get Conf Setup /// /// /// Action of AutoMappingExpressions /// private Action GetSetup() { return c => { c.FindIdentity = type => type.Name == "Id"; c.IsBaseType = this.IsBaseTypeConvention; }; } private Action GetConventions() { return c => { c.Add (); c.Add (); c.Add (); c.Add (); c.Add (); }; } public AutoPersistenceModel Generate() { var model = new AutoPersistenceModel() .AddEntityAssembly(Assembly.GetAssembly(typeof(User))) .Where( this.GetAutoMappingFilter).Conventions.Setup(this.GetConventions()).Setup(this.GetSetup()). UseOverridesFromAssemblyOf (); return model; }

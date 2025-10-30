@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5085665
-[parent_id]: 
-[tags]: 
-Why do these slightly different methods for finding roots yield different results?
-
-Consider these two slightly different methods for computing fifth roots: (define (fifth-root-right x) (fixed-point-of-transform (lambda (y) (/ x (expt y 4))) (repeated average-damp 2) 1.0)) (define (fifth-root-wrong x) (fixed-point (repeated (average-damp (lambda (y) (/ x (expt y 4)))) 2) 1.0)) Both attempt to compute fifth roots by an average dampened search for a fixed point, since a fifth root of x is a fixed point of the map y -> x/(y^4). I've defined (define (average-damp f) (lambda (x) (average x (f x)))) (define tolerance 0.00001) (define (fixed-point f first-guess) (define (close-enough? v1 v2) ( Trying both methods, we get > (fifth-root-right 32) 2.000001512995761 > (fifth-root-wrong 32) 2.8804315666156364 Why does the second method give fail to correctly compute fifth roots? Stranger still, if we try this wrong method on fourth or third roots, it works correctly: (define (fourth-root x) (fixed-point (repeated (average-damp (lambda (y) (/ x (expt y 3)))) 2) 1.0)) (define (cube-root x) (fixed-point (repeated (average-damp (lambda (y) (/ x (expt y 2)))) 2) 1.0)) > (fourth-root 16) 1.982985155172348 > (cube-root 8) 2.0000009087630515 For reference, this code attempts to solve Exercise 1.45 in Structure and Interpretation of Computer Programs . Now that I have the right method, my code works, but I don't understand why my wrong method is wrong.

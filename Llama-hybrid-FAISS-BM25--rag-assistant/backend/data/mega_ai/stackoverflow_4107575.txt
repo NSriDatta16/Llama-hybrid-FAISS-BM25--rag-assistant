@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4107575
-[parent_id]: 4106992
-[tags]: 
-One way to get around output contention is to write the thread-local output to a string stream, (can be done in parallel) and then push the contents to cout (requires synchronization). Something like this: #pragma omp parallel for for (i=0; i related; for (size_t j=0; j This offers much more fine-grained locking and the performance should increase accordingly. On the other hand, this still uses locking. So another way would be to use an array of stream buffers, one for each thread, and pushing them to cout sequentially after the parallel loop. This has the advantage of avoiding costly locks, and the output to cout must be serialized anyway. On the other hand, you can even try to omit the critical section in the above code. In my experience, this works since the underlying streams have their own way of controlling concurrency. But I believe that this behaviour is strictly implementation defined and not portable.

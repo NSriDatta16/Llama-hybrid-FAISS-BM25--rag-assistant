@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2165176
-[parent_id]: 2165105
-[tags]: 
-Adam's answer is correct. In pseudo code: unsigned int iters = 0; NSAutoreleasePool *p = nil; while(1) { if (!p) p = [[NSAutoreleasePool alloc] init]; ... do stuff here ... if ( iters == 1000) { iters = 0; [p drain]; p = nil; } } Re-using temporary objects is generally a waste of time and rife with fragility. Frankly, you should probably just do the autorelease pool dance once per every iteration through the loop and ignore any silly counters and the like until you have instrumented proof that there is overhead otherwise. Something like: NSAutoreleasePool *p = nil; while(1) { p = [[NSAutoreleasePool alloc] init]; ... do stuff here ... [p drain]; }

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5479691
-[parent_id]: 
-[tags]: 
-Is there any standard way of embedding resources into Linux executable image?
-
-It is quite easy to embed binary resources into PE images (EXE, DLL) via Windows API (refer to http://msdn.microsoft.com/en-us/library/ms648008(v=VS.85).aspx ). Is there any similar standard API in Linux? or maybe some kind of de-facto approach to resource embedding? The goal is to embed some static binary and/or textual data into executable, e.g. pictures, HTMLs, etc.. so that program binary distribution is as simple as making one file copy? ( assuming all library dependencies are ok ) Update: following bdk 's suggestion, I've tried solution described in Embedding binary blobs using gcc mingw and it worked for me. Though, there were some issues that are worth mentioning: my project (in Code::Blocks) consists of a number of C++ files and adding binary data into any of corresponding object files rendered them useless breaking the build - objdump -x would show that most of the symbols have gone after embedding (and I didn't find how to fix it). To overcome this issue I added an empty dummy .cpp file into the project with the only purpose of providing an object file to play with and wrote the following custom build step for that file which did the job nicely (example uses Code::Blocks macros): $compiler $options $includes -c $file -o $object ld -Ur -b binary -o $object

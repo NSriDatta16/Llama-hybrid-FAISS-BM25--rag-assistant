@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1334600
-[parent_id]: 
-[tags]: 
-How to implement Synchronization Tag in django
-
-We are making a synchronization between one master database and many slave databases over tight link (7kb). To minimize amount of data send we tag each record that was sent successfully. To do so we created following models: class SynchronizationTag(models.Model): STATUSES = ((0, "Invalid"), (1, "Pending"), (2, "Synchronized"), ) status = models.IntegerField(choices=STATUSES, default = 1) storage = models.ForeignKey("Storage") _content_type = models.ForeignKey(ContentType) _object_id = models.PositiveIntegerField() content_object = generic.GenericForeignKey('_content_type', '_object_id') class Storage(models.Model): id = models.AutoField(primary_key=True) To select records that need synchronization we wrote a general query that would filter out records that were tagged as synchronized from a query set. We came up with following suboptimal solution: delta = queryset.extra( select={ "status" : ("SELECT status FROM rv3adapter_synchronizationtag " "WHERE `_content_type_id` = %d and `_object_id`= %s.id and `storage_id` = %d" % (content_type.pk, table, storage.pk)) }, where=["`status` <> 2 or `status` is NULL") The query above is now broken as we have few models that don't have primary keys named id. Do you know how to improve/correct above query? Note: The query need to return django objects.

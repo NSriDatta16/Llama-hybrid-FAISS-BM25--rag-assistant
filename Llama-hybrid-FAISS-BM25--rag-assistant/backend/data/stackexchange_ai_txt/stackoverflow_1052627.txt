@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1052627
-[parent_id]: 1051781
-[tags]: 
-If all you need is to insert the data and never read it back then you can write a noop function and pretend you inserted them in /dev/nul. The real question is how do you plan to consume the said data ? Do you need to interrogate, filter, sort, reference the individual records? Ie. why did you even consider a database to start with, if a flat file appears to be just as good? With SQL Server you can certainly achieve better performance with a database and insert at a rate of about 50-100k per second at least. Your current chocking point is probably the lgo flush on each insert. You must batch commits and make sure your log is on a fast array of spindles. Start a transaction, insert roughly enough records to fill a log page (64kb) then commit. Also is worth using a battery of 5-10 SqlCommands and connections and use async commands (BeginExecuteNonReader with callback) to launch multiple inserts in parallel, this way you can leverage all dead times you now loose in network round-trip and execution context preparation.

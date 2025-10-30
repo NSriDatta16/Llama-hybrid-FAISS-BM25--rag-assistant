@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4650547
-[parent_id]: 4650420
-[tags]: 
-This is a tough nut to crack. Here are some factors I've used in the past, followed by their relative weight. Exact match: 50 (basically: 100% success) Levenshtein distance Partial match at beginning of name: 15 Partial match somewhere in the name: 10 A full match would get 100 points based on this (it matches all). I then simply sort by sum-of-weight. For my dataset (song names) this yielded pretty good results. Not sure how it holds up with yours. In your case, I'd add a "if input is 3 characters, then 50 points if it matches IATA, if 4 characters, 50 points if it matches ICAO" to the list. How to do this in SQL: SELECT SUM( IF(`name` = :Input, 50, 0), IF(`iata` = :Input, 50, 0), IF(`icao` = :Input, 50, 0), IF(`name` LIKE CONCAT('%', :Input, '%'), 25, 0), ... ) FROM Table; Sorting was done in PHP. Not beautiful or elegant, but it worked.

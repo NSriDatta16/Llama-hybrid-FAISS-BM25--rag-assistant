@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4768915
-[parent_id]: 
-[tags]: 
-How do I map true/false/unknown to -1/0/null without repetition?
-
-I am currently working on a tool to help my users port their SQL code to SQL-Server 2005. For this purpose, I parse the SQL into a syntax tree, analyze it for constructs which need attentions, modify it and transform it back into T-SQL. On thing that I want to support, is the "bools are values too" semantics of other RDBMS. For example, MS-Access allows me to write select A.x and A.y as r from A , which is impossible in T-SQL because: Columns can't have boolean type (column values can't be and'ed) Logical predicates can not be used where expressions are expected. Therefore, my transformation routine converts the above statement into this: select case when (A.x<>0) and (A.y<>0) then -1 when not((A.x<>0) and (A.y<>0)) then 0 else null end as r from A; Which works, but is annoying, because I have to duplicate the logical expression (which can be very complex or contain subqueries etc.) in order to distinguish between true , false and unknown - the latter shall map to null. So I wonder if the T-SQL pro's here know a better way to achieve this? UPDATE: I would like to point out, that solutions which try to keep the operands in the integer domain have to take into account, that some operands may be logical expressions in the first place . This means that a efficient solution to convert a bool to a value is stil required. For example: select A.x and exists (select * from B where B.y=A.y) from A;

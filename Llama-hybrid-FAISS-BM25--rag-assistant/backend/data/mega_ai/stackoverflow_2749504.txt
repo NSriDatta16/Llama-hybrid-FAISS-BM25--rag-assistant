@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2749504
-[parent_id]: 2705020
-[tags]: 
-Mark Evans the gem author did me a favor and answered this question on google group. Here is his answer that worked pretty well for my case: Hi there You can't do this out of the box, because the data store is purposefully designed to be very simple - you pass in data, it gives you back a uid, etc. If you want to do it you'll have to monkey-patch Attachment#save! like so: class Dragonfly::ActiveRecordExtensions::Attachment def save! destroy! if uid_changed? self.uid = app.datastore.store(temp_object, parent_model) if has_data_to_store? end end The only thing I've changed above is that datastore.store takes two args now. You'll then have to modify/monkey-patch Dragonfly::DataStorage::FileDataStore#store to take into account the second arg. Out of interest, why do you want the images to be stored in that format? Cheers Mark

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 478393
-[parent_id]: 478251
-[tags]: 
-When you log out, first, you are queuing the destruction of the cookie (it will occur after the response is sent), then immediately after, rendering your page. The browser has no chance to delete the cookie before rendering, and your $_SESSION variables are still alive. PHP docs say about session_destroy : session_destroy() destroys all of the data associated with the current session. It does not unset any of the global variables associated with the session, or unset the session cookie. A solution is to, instead of destroying the session and the cookie, simply unset the variables which would cause authentication: unset($_SESSION['user']); unset($_SESSION['lastActive']); unset($_SESSION['fingerprint']); Just a note: I would suggest splitting your code up into functions. This would make it much more organized and readable (and reusable if you do things right).

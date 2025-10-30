@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 22417
-[parent_id]: 22416
-[tags]: 
-That can be done with a closure like: Code: def build_k_gaussian(sigma): def k_gaussian(_x1, _x2): diff = _x1[:, np.newaxis] - _x2 normsq = np.square(np.linalg.norm(diff, axis = 2)) return np.exp(- normsq / (2 * np.square(sigma))) return k_gaussian clf = svm.SVC(kernel=build_k_gaussian(sigma=2)) How does this work? The function k_gaussian is defined when build_k_gaussian() is called. k_gaussian will be able to access the value of sigma from when the function was created. This is known as a closure. So in the end, build_k_gaussian returns a function that takes two parameters, which is what the kernel parameter required. According to the Using Python functions as kernels on scikit-learn : Your kernel must take as arguments two matrices of shape (n_samples_1, n_features), (n_samples_2, n_features) and return a kernel matrix of shape (n_samples_1, n_samples_2). So you need to apply the kernel function on all pairs of samples, therefore diff broadcasts the _x1 matrix and subtracts all samples in _x2 from all samples in _x1 . You have to calculate the norm along axis=2 .

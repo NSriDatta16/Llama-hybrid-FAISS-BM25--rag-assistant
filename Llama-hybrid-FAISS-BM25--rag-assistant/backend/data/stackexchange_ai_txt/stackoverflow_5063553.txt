@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5063553
-[parent_id]: 5063214
-[tags]: 
-What looks terrible to you, looks perfectly acceptable to me. If you look at the documentation at the arithmetic you can perform on INTERVALs: http://download.oracle.com/docs/cd/E11882_01/server.112/e17118/sql_elements001.htm#sthref175 then you see you can multiply them with numerics. So if you multiply your intervals to 24 and 60, you can get the number of minutes by extracting the number of days. It's more compact, but I doubt if it's more elegant in your view. SQL> create table t (my_interval interval day to second) 2 / Table created. SQL> insert into t 2 select numtodsinterval(30,'minute') from dual union all 3 select numtodsinterval(4,'hour') from dual 4 / 2 rows created. SQL> select my_interval 2 , 60 * extract(hour from my_interval) 3 + extract(minute from my_interval) minutes_terrible_way 4 , extract(day from 24*60*my_interval) minutes_other_way 5 from t 6 / MY_INTERVAL MINUTES_TERRIBLE_WAY MINUTES_OTHER_WAY ------------------------------ -------------------- ----------------- +00 00:30:00.000000 30 30 +00 04:00:00.000000 240 240 2 rows selected. Regards, Rob.

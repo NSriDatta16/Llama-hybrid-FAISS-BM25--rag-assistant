@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4293259
-[parent_id]: 4292409
-[tags]: 
-I think this is a side-effect of a JIT compiler optimization. If the m() method was virtual, it would have to generate the machine code to dig the method table pointer out of the object, then make the virtual call. But this method isn't virtual and the JIT compiler already knows the method table pointer for the Derived class. So it bypasses the pointer retrieval and supplies it directly. Making the call work as you observed. You can verify my guess by checking the generated machine code. Yeah, the IL verifier isn't scoring any points here. You could make it more interesting by having the Derived.m() method tinker with a field that's only declared in Derived. I've seen too much Reflection.Emit code crash with an AccessViolation to be greatly surprised by this. It however may well be intentional, no need to verify IL that crashes anyway. Not sure, exploiting these kind of verification loopholes isn't (yet) common. Thankfully.

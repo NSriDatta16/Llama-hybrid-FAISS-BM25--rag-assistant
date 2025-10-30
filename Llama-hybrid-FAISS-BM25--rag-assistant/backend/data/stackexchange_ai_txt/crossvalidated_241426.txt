@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 241426
-[parent_id]: 
-[tags]: 
-Modeling the residuals of a logistic regression with spatio-temporal observations
-
-I am attempting to generate a probability map based on spatio-temporal observations where the response is 0 or 1. I use R to do the following I first attempted to use the bam function from the mgcv package. I formula looks like this : gam.fit = bam(Y ~ s(X1) + s(X2) + s(X3) + te(LATITUDE,LONGITUDE,k=25), data=data.df, family=binomial) where X1, X2 and X3 are covariates that have some spatial correlation. I actually have about 15 covariates, some of them being factors and one of them being the day of the year. When I mapped the deviance residuals, there were still some clear spatial patterns, hence my model is not good enough. I thought of applying a model on residuals(gam.fit) but I'm getting confused with all the logit transformations and I'm not sure how I could end up with a "combined residual map". data.df$res = residuals(gam.fit,type='deviance') gam.fit_res = bam(res ~ te(LATITUDE,LONGITUDE,k=25), data=data.df) y1 = predict(gam.fit,data.df) y2 = predict(gam.fit_res,data.df) mu = binomial(link='logit')$linkinv(y1+y2) total_res = binomial(link='logit')$dev.resids(data.df$Y, mu,rep(1,length(mu))) ` I end up with something that doesn't make much sense, with residuals that are all positive and still show a clear spatial pattern. Am I doing something wrong? Are there any other ways I could correct my spatial patterns?

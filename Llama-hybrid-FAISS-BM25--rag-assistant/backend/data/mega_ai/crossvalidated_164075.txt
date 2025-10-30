@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 164075
-[parent_id]: 
-[tags]: 
-How does the R function arima() calculate its residuals?
-
-I am new to time series and I am trying to figure out exactly what does on beyond the scenes in R. Say I have the MA process: $$y_t - \mu = a_t+\theta_1 a_{t-1} + \theta_2 a_{t-2}$$ where $a_t$ are i.i.d. standard normal. For concreteness let $\mu = 0$, $\theta_1 = 0.2$ and $\theta_2 = 0.5$. I have implemented a simulation of this process and fit an MA(2) model back on it: set.seed(47) n = 200 a = rnorm(n,0,1) a0 = rnorm(1,0,1) an1 = rnorm(1,0,1) theta = c(0.2, 0.5) y = NULL y[1] = a[1] + theta[1]*a0 + theta[2]*an1 y[2] = a[2] + theta[1]*a[1] + theta[2]*a0 for (t in 3:n) { y[t] = a[t] + theta[1]*a[t-1] + theta[2]*a[t-2] } MAfit = arima(y,order = c(0,0,2)) Now, when I take the residuals from this arima() call, the first residual is 2.745251. However when I subtract $y(1)$ from the estimation of the mean produced by arima(), I get 3.122668. How is R computing this first residual then? The code I used for these respective calculations is: residuals(MAfit)[1] (returns 2.745251) y[1] - coef(MAfit)[3] (returns 3.122668) My understanding is that for $t=1$, we have: $$\hat{a}_1 = y_1 - \hat{\mu}$$ from rearranging my first equation and using only expected values for $a_0$ and $a_{-1}$. Where have I gone wrong? Thank you! Please note I have the same problem using TS data given to me, so I don't think this is an issue with my MA(2) implementation.

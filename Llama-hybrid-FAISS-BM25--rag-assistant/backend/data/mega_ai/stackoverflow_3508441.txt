@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3508441
-[parent_id]: 3508423
-[tags]: 
-Use: SELECT patron_name, producer.fed_number, tax_number, average_tb_test, (SELECT MAX(s.statement_number) FROM STATEMENT s), (SELECT MAX(s.period_ending) FROM STATEMENT s), FROM PRODUCER JOIN producer_details ON producer.federal_number = producer_details.federal_number JOIN statement ON producer.patron_number = statement.patron_number WHERE producer.patron_number = @PatronNo But you'll get the same maximum STATEMENT.statement_number and STATEMENT.period_ending value for every row. This will give you the max per patron_number value: SELECT patron_name, producer.fed_number, tax_number, average_tb_test, x.max_statement_num, x.max_period FROM PRODUCER JOIN producer_details ON producer.federal_number = producer_details.federal_number JOIN STATEMENT ON producer.patron_number = statement.patron_number JOIN (SELECT s.patron_number, MAX(s.statement_number) AS max_statement_num, MAX(s.period_ending) AS max_period FROM STATEMENT s GROUP BY s.patron_number) x ON x.patron_number = producer.patron_number WHERE producer.patron_number = @PatronNo

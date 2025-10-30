@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4469011
-[parent_id]: 4468963
-[tags]: 
-You don't really need session storage. In the case you've described, you want the sections' show/hide status to be kept between pages, for a single client. Session would be overkill, as it involves the server for something trivial. My go would be to use something like localStorage (or cookies if you really want) directly in the jQuery. It will stay on the client and the server will not mind. EDIT Function to check for localStorage: var canHazStorage = function () { "use strict"; try { return 'localStorage' in window && window.localStorage !== null; } catch(e) { return false; } }; You would need to change the toggling code to set a value: $('#section1').toggle(); if ( canHazStorage ) { if ( is_shown ) { // you'll need to write that yourself window.localStorage['section1'] = true; } else { window.localStorage['section1'] = false; } } else { // same code using cookies } And in init function: if ( canHazStorage ) { var toggled = window.localStorage['section1']; $('#section1').toggle(toggled); } else { // same code using cookies }

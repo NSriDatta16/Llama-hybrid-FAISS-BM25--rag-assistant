@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 967516
-[parent_id]: 
-[tags]: 
-Best way to determine if a domain name would be a valid in a "hosts" file?
-
-The Windows Hosts file allows you to associate an IP to a host name that has far greater freedom than a normal Internet domain name. I'd like to create a function that determines if a given name would be a valid "host" file domain name. Based on this answer and experimentation of what works and doesn't, I came up with this function: private static bool IsValidDomainName(string domain) { if (String.IsNullOrEmpty(domain) || domain.Length > 255) { return false; } Uri uri; if (!Uri.TryCreate("http://" + domain, UriKind.Absolute, out uri)) { return false; } if (!String.Equals(uri.Host, domain, StringComparison.OrdinalIgnoreCase) || !uri.IsWellFormedOriginalString()) { return false; } foreach (string part in uri.Host.Split('.')) { if (part.Length > 63) { return false; } } return true; } It also has the benefit that it should work with Unicode names (where a basic regex would fail). Is there a better/more elegant way to do this? UPDATE : As suggested by Bill , the Uri.CheckHostName method almost does what I want, but it doesn't allow for host names like "-test" that Windows allows in a "hosts" file. I would special case the "-" part, but I'm concerned there are more special cases.

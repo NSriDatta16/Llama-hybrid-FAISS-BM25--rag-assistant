@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2259585
-[parent_id]: 
-[tags]: 
-Efficient way of locating and/or selecting graphic object in a fixed grid
-
-I have a panel that is filled with a large number of circles (Ellipse2D). The circles are stored in a 2 dimensional array (rows and columns). My goal is to be able to "paint" the circles as I drag the mouse over them. I will eventually want to use selection shapes that will change the color of all the circles contained within the selection shape. I'm using a mouse dragging listener that continually scans the entire 2d array and checks is the current point is inside on of the circles. Like so: addMouseMotionListener(new MouseAdapter() { public void mouseDragged(MouseEvent e) { currentColor = ColorSliderPanel.getRGB(); for (int x = 0; x The above code works, but it's really slow (1000+ circles), as it is checking every single object. There must be a better way. I've read a little about a Quadtree, but I'm not sure if a quadtree is more horsepower than I need. Thanks I made the following changes based on some of the comments below. Circles is now a linear ArrayList. The draw method simply fill the circle. Making this change improved the speed by two orders of magnitude. It works much better now. Although, I can still sweep across the panel with moderate speed and miss a few circles. So I may need to optimize futher. Graphics2D g2d = (Graphics2D) getGraphics(); for (Circle2D c : circles) { if (c.contains(p)) { c.setColor(currentColor); //Graphics2D g2d = (Graphics2D) getGraphics(); (moved) c.draw(g2d); } }

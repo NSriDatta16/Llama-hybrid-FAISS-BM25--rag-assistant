@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4415443
-[parent_id]: 
-[tags]: 
-System.Net.WebClient unreasonably slow
-
-When using the System.Net.WebClient.DownloadData() method I'm getting an unreasonably slow response time. When fetching an url using the WebClient class in .NET it takes around 10 sec before I get a response, while the same page is fetched by my browser in under 1 sec. And this is with data that's 0.5kB or smaller in size. The request involves POST/GET parameters and a user agent header if perhaps that could cause problems. I haven't (yet) tried if other ways to download data in .NET gives me the same problems, but I'm suspecting I might get similar results. (I've always had a feeling web requests in .NET are unusually slow...) What could be the cause of this? Edit: I tried doing the exact thing using System.Net.HttpWebRequest instead, using the following method, and all requests finish in under 1 sec. public static string DownloadText(string url) var request = (HttpWebRequest)WebRequest.Create(url); var response = (HttpWebResponse)request.GetResponse(); using (var reader = new StreamReader(response.GetResponseStream())) { return reader.ReadToEnd(); } } While this (old) method using System.Net.WebClient takes 15-30s for each request to finish: public static string DownloadText(string url) { var client = new WebClient(); byte[] data = client.DownloadData(url); return client.Encoding.GetString(data); }

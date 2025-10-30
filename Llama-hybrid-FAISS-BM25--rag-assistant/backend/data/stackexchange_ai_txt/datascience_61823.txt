@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 61823
-[parent_id]: 
-[tags]: 
-RNN LSTM input conflict due to generator
-
-I am trying to do text classification with LSTM RNN on 255 length padded sequences. My classification data looks like this 1, 'sequence 1' The first column is the class label for the sequence. Since I am using custom word embedding (100 dims) I have created a custom data generator and used fit_generator api. My data is converted into following format after preprocessing X -> (batch_size, time_steps=255, 100) # 100 dim word embeddings Y -> (batch_size, 2) # 2 for binary class labels Following is what I have tried with custom generator def data_generator(file): while True: with open(file, 'r') as f: reader = csv.reader(f) for row in reader: # Get embedded line encodes each sequence to its constituent word vectors # creates a 2D np array of size (max_len, 100) yield get_embedded_line(row[1]), to_categorical(row[0], num_classes=2) input_layer = Input(shape=(255, 100)) lstm1 = LSTM(100, return_sequences=True)(input_layer) dense1 = Dense(2, activation='softmax')(lstm1) model = Model(inputs=input_layer, outputs=dense1) model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy']) model.fit_generator(data_generator('data.csv'), steps_per_epoch=10) The model defined above is not even compiling, it throws following error ValueError: Error when checking input: expected input_1 to have 3 dimensions, but got array with shape (100, 1)

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2618417
-[parent_id]: 2614361
-[tags]: 
-I finally managed to solve this problem. The following method works as expected: @Override public List searchPersonsWithSimilarBooks(Long[] bookIds) { Criteria similarPersonCriteria = this.getSession().createCriteria(Person.class, "p"); Criteria bookCriteria = similarPersonCriteria.createCriteria("ownedBooks", "b"); bookCriteria.add(Restrictions.in("b.id", bookIds)); similarPersonCriteria.setProjection(Projections.projectionList() .add(Projections.groupProperty("p.id"), "id") .add(Projections.rowCount(), "similarBookCount")); similarPersonCriteria.addOrder(Order.desc("similarBookCount")); similarPersonCriteria.setResultTransformer(new AliasToBeanResultTransformer(Person.class)); return similarPersonCriteria.list(); } I also updated my person class by adding a transient property called similarBookCount , which can be useful in some situations.

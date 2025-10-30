@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2259415
-[parent_id]: 949727
-[tags]: 
-I think I found the solution to this problem. It has nothing to do with the key per, but rather with the X509Certificate2 object which must be created with the X509KeyStorageFlags.Exportable flag. In this case your X509Certificate2 was created by this method: System.Security.Cryptography.X509Certificates.X509Certificate2 netcert = DotNetUtilities.ToX509Certificate(cert); So make sure you pass the exportable flag in the constructor of the X509Certificate2 in that method. I my situation I needed to sign some data with a private key located in a PFX file so I had to write this: X509KeyStorageFlags flags = X509KeyStorageFlags.Exportable; X509Certificate2 cert = new X509Certificate2("my.pfx", "somepass", flags); Now I can do RSACryptoServiceProvider rsa = (RSACryptoServiceProvider)cert.PrivateKey; RSAParameters rsaParam = rsa.ExportParameters(true); HTH, Stefan

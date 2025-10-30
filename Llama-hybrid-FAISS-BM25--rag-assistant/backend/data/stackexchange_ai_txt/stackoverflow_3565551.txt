@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3565551
-[parent_id]: 
-[tags]: 
-C# Winforms Threading: Closed Form Gets Invoked
-
-The following code demonstrates my dilemma. The code creates a background thread which processes something, then Invokes the UI thread with the result. It may throw an exception if the background thread calls Invoke on the form after the form has closed. It checks IsHandleCreated before calling Invoke, but the form might close after the check. void MyMethod() { // Define background thread Action action = new Action( () => { // Process something var data = BackgroundProcess(); // Try to ensure the form still exists and hope // that doesn't change before Invoke is called if (!IsHandleCreated) return; // Send data to UI thread for processing Invoke(new MethodInvoker( () => { UpdateUI(data); })); }); // Queue background thread for execution action.BeginInvoke(); } One solution might be to synchronize FormClosing and every call to Invoke, but that doesn't sound very elegant. Is there an easier way?

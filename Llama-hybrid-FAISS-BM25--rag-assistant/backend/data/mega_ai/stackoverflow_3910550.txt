@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3910550
-[parent_id]: 3909359
-[tags]: 
-I've seen this question a couple of times before, but I just realized that there is quite an interesting way to workaround the issue (without any significant negative effects such as big runtime overhead). You can use a very simple computation expression that has only Return member. The builder will have a type parameter and Return will expect values of this type. The trick is, that F# does insert automatic upcasts when calling a member. Here is the declaration: type ExprBuilder () = member x.Return(v:'T) = v let expr = ExprBuilder () To write a simple pattern matching that returns anything as obj , you can now write: let foo a = expr { match a with | 0 -> return System.Random() | _ -> return "Hello" } You still have to be explicit about the return type (when creating the computation expression), but I find the syntax quite neat (but it is definitely a tricky use that could confuse people who'll see it for the first time).

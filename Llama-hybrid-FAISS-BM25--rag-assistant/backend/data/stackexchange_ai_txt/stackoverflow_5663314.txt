@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5663314
-[parent_id]: 5661397
-[tags]: 
-By default each insertion is a single transaction. This is very slow. You can group your insertions together into single transactions of, say, 100 insertions, and speed things up greatly. db eval { BEGIN TRANSACTION } ... do some insertions ... db eval { END TRANSACTION } or db transaction { ... do some insertions ... } Out of the box, SQLITE is extremely safe, but quite slow. If you know what you are doing, and are willing to risk db corruption on a disk crash, then there are several optimization you can do that provide spectacular speed improvements. In particular: Switch off synchronization ( PRAGMA synchronous = OFF; ) Group writes into transactions Index tables Use database in memory If you have not explored all of these, then you are likely running many times slower than you might.

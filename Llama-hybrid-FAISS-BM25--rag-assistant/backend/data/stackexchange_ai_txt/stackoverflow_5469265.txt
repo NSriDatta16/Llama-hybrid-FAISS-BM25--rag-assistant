@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5469265
-[parent_id]: 5469183
-[tags]: 
-You're using it absolutely incorrectly: First, you are passing a type instead of a value here: SendMessage(textBoxPathToSource, WM_GETTEXT, length+1, LPARAM(LPCWSTR)); Interfacing WinAPI functions who write to a string requires a buffer, since std::string's cannot be written to directly. You need to define a space to hold the value: WCHAR wszBuff[256] = {0}; (of course you could allocate the storage space using new, which you didn't, you just declared LPCWSTR lpstr ). Extract the string and store in that buffer: SendMessage(textBoxPathToSource, WM_GETTEXT, 256, (LPARAM)wszBuff); and perform std::wstring s(lpStr) . EDIT: Please note the use of std::wstring, not std::string.

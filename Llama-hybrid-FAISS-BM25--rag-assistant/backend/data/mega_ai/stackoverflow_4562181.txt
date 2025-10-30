@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4562181
-[parent_id]: 
-[tags]: 
-Intermittent bug - IE6 showing file as text in browser, rather than as file download
-
-In an ASP.NET WebForms 2.0 site we are encountering an intermittent bug in IE6 whereby a file download attempt results in the contents of the being shown directly in the browser as text, rather than the file save dialog being displayed. Our application allows the user to download both PDF and CSV files. The code we're using is: HttpResponse response = HttpContext.Current.Response; response.Clear(); response.AddHeader("Content-Disposition", "attachment;filename=\"theFilename.pdf\""); response.ContentType = "application/pdf"; response.BinaryWrite(MethodThatReturnsFileContents()); response.End(); This is called from the code-behind click event handler of a button server control. Where are we going wrong with this approach? Edit Following James' answer to this posting, the code I'm using now looks like this: HttpResponse response = HttpContext.Current.Response; response.ClearHeaders(); // Setting cache to NoCache was recommended, but doing so results in a security // warning in IE6 //response.Cache.SetCacheability(HttpCacheability.NoCache); response.AppendHeader("Content-Disposition", "attachment; filename=\"theFilename.pdf\""); response.ContentType = "application/pdf"; response.BinaryWrite(MethodThatReturnsFileContents()); response.Flush(); response.End(); However, I don't believe that any of the changes made will fix the issue.

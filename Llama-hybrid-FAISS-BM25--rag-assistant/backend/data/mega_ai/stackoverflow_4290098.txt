@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4290098
-[parent_id]: 4289640
-[tags]: 
-It seems a simple case of user-unfriendly packaging and code organization. You need to include the "config" header for Wireshark first. I would write it this way: #include /* needed by epan */ #include Be sure that you do this first whenever you include headers from this library. How did I know? I dug into epan/proto.h and found that it conditionally includes varargs.h only if HAVE_STDARG is not set. I then grep 'd in /usr/include/wireshark/ and found this variable is set in config.h , so I figured it might be necessary to include it, and lo, it was. I also needed to add -lwiretap to satisfy linkage with libwireshark . Another nit in the organization of wireshark-dev is that it does not depend (at the package level) on wireshark-common , even though the latter does provide the actual libwireshark.so which the former symlinks to. So you should make sure that wireshark-common is installed, or that /usr/lib/libwireshark.so and its referent exist.

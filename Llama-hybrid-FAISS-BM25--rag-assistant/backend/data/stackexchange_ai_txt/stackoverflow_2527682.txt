@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2527682
-[parent_id]: 
-[tags]: 
-Does Perl's Net::Cassandra module support UTF-8?
-
-I've run into a really strange UTF-8 problem with Net::Cassandra::Easy (which is built upon Net::Cassandra ): UTF-8 strings written to Cassandra are garbled upon retrieval. The following code shows the problem: use strict; use utf8; use warnings; use Net::Cassandra::Easy; binmode(STDOUT, ":utf8"); my $key = "some_key"; my $column = "some_column"; my $set_value = "\x{2603}"; # U+2603 is ☃ (SNOWMAN) my $cassandra = Net::Cassandra::Easy->new(keyspace => "Keyspace1", server => "localhost"); $cassandra->connect(); $cassandra->mutate([$key], family => "Standard1", insertions => { $column => $set_value }); my $result = $cassandra->get([$key], family => "Standard1", standard => 1); my $get_value = $result->{$key}->{"Standard1"}->{$column}; if ($set_value eq $get_value) { # this is the path I want. print "OK: $set_value == $get_value\n"; } else { # this is the path I get. print "ERR: $set_value != $get_value\n"; } When running the code above $set_value eq $get_value evaluates to false . What am I doing wrong?

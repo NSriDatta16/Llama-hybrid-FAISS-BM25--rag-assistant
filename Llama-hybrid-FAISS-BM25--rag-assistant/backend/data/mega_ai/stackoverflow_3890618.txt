@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3890618
-[parent_id]: 
-[tags]: 
-Splitting a build into multiple output directories
-
-I have a solution that uses NServicebus which contains at least 3 projects that are of interest for this scenario; a publisher, a sweep, and a webservice. Basically the sweep(s) gather data for the publisher to store in a database and then publish to subscribers. The webservice gives access to the data stored in the publishers database. When I built this solution on my dev box and deployed to the test environment everything was fine. Last week we started using automated builds on a build server and while it builds successfully, the services would not start up in the test environment. I found this to be because NServicesBus uses marker interfaces. The NServicesBus generic host uses reflection to check assemblies in the same directory as the host for those markers so it knows which to fire up. Unlike my local build the build server does not build each project into it's own bin directory, it just dumps all the assemblies into a single bin directory. Since there are now multiple classes that want to be started by the host, it doesn't work out. Also, the webservice has a lot more assemblies to include than the publisher and sweep need so the end result is the same assemblies get deployed to three different directories. It's unnecessary and doesn't work. I've been modifying the build like so to get around this, but it's tedious and it's not change tolerant: Any elegant suggestions on how to tackle this issue?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 666460
-[parent_id]: 666363
-[tags]: 
-I have not used pivot before, so that may be your answer, but I've used brute force on a problem like this in the past and for you it would look something like: SELECT OrganizationName, SUM(Current) AS Current, SUM(3060Days) AS 3060Days, SUM(6090Days) AS 6090Days, SUM(Over90Days) As Over90Days, SUM(Total) AS Total FROM ( SELECT OrganizationName, CASE WHEN ReceivableStatus = 'Current' THEN SUM(InvoiceFee) ELSE 0 END AS Current, CASE WHEN ReceivableStatus = '30-60 days' THEN SUM(InvoiceFee) ELSE 0 END AS 3060Days, CASE WHEN ReceivableStatus = '60-90 days' THEN SUM(InvoiceFee) ELSE 0 END AS 6090Days, CASE WHEN ReceivableStatus = 'over 90 days' THEN SUM(InvoiceFee) ELSE 0 END AS Over90Days, SUM(InvoiceFee) AS Total FROM v_InvoicesFreelanceOutstanding GROUP BY OrganizationName, ReceivableStatus) temp GROUP BY OrganizationName Basically, the inner query gives you results for each organization and a total for each individual category and the outer query aggregates all of them into single rows for each organization. Again, this may not be the most elegant or efficient way to go, but it is a way.

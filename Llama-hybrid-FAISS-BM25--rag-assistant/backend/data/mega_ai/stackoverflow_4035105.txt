@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4035105
-[parent_id]: 4034895
-[tags]: 
-You need to use std::transform. This does a copy whilst also performing a function on each element. In your case a deep copy of the value. This will therefore do as a transformer: class DeepCopyMapPointer { typedef std::map map_type; typedef map_type::value_type value_type; public: value_type operator()( const value_type & other ) const { return value_type(other.first, new DataElement(*other.second) ); } }; void DataObject::copy(DataObject const &other) { std::transform(other.dataElements.begin(), other.dataElements.end(), std::inserter( dataElements, dataElements.end() ), DeepCopyMapPointer() ); } It's not quite that simple because if you do duplicate an element and your insert fails as a result you will get a leak. You could get round that by writing your own inserter instead of std::inserter... a bit tricky but that's your next exercise.

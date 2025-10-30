@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1770944
-[parent_id]: 
-[tags]: 
-Help optimize this query with a huge IN statement
-
-I have an insert that uses a condition checking for a NOT IN. There are about 230k rows in the NOT IN subquery. INSERT INTO Validate.ItemError (ItemId, ErrorId, DateCreated) ( SELECT ItemId, 10, GetUTCDate() FROM Validate.Item INNER JOIN Refresh.Company ON Validate.Item.IMCompanyId = Refresh.Company.IMCompanyId WHERE Refresh.Company.CompanyId = 14 AND ( IMAccountId IS NULL OR NOT IMAccountId IN ( SELECT RA.IMAccountId FROM Refresh.Account RA INNER JOIN Refresh.BalancePool BP ON RA.BalancePoolId = BP.BalancePoolId WHERE BP.CompanyId = 14 ) ) ) When I run this as-is it takes about 30+ minutes (yikes!). The number of values in the Validate.Item table could be anywhere from 150 rows to over 200k, so you can see how this might be a pain. There are indices on all the relevant fields in the tables, and none are excessively fragmented. My first thought was to do this in pieces, and throw it into a WHILE loop: DECLARE @StartId int, @EndId int, @MaxId int SELECT @MaxId = MAX(AccountId) FROM Refresh.Account SET @StartId = 1 SET @EndId = 1000 WHILE (@StartId Doing it this way nets me a time of about a minute per loop; multiply that by 230 times and we have an even more ridiculous number. Please tell me you guys have a better idea how to optimize this. Without this one query, the entire process only takes 8 seconds; it's just the sheer size of the Refresh.Account table that throws everything into chaos. TIA! Valkyrie

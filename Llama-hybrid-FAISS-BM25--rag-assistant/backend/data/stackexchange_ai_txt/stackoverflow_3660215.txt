@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3660215
-[parent_id]: 3659946
-[tags]: 
-You could use placement new in C++: char *buff = new char[sizeof(TextCache) + (sizeof(char) * nLength)]; TextCache *pCache = new (buff) TextCache; The only caveat being that you need to delete buff instead of pCache and if pCache has a destructor you'll have to call it manually. If you are intending to access this extra area using pBuffer I'd recommend doing this: struct TextCache { ... char *pBuffer; }; ... char *buff = new char[sizeof(TextCache) + (sizeof(char) * nLength)]; TextCache *pCache = new (buff) TextCache; pCache->pBuffer = new (buff + sizeof(TextCache)) char[nLength]; ... delete [] buff;

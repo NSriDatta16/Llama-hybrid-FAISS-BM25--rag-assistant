@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4978855
-[parent_id]: 4978812
-[tags]: 
-You're allocating memory and deleting it in each loop. I don't think that is good if you so concern about performance. So one improvement you can do is: reuse the memory once it is allocated to your program . void *memory = malloc(sizeof(Image)); //reusable memory. //placement new to construct the object in the already allocated memory! img = new (memory) Image(fimagen); //... img->~Image(); //calling the destructor //when you're done free the memory free(memory); //use free, as we had used malloc when allocating! Likewise, you can reuse memory in the Image class, especially at this line: datos = new Pixel[numpixels]; And finally, instead of reading RGB into local variables, then copying them into the image data, is not that elegant, so a little improvement can be done here as well, //this is yours : temporaries, and copying! fich_in >> r >> g >> b; datos[i] = Pixel( r, g ,b); //this is mine : no temporaries, no copying. directly reading into image data! fich_in >> datos[i].r >> datos[i].g >> datos[i].b; Besides these, I don't think there is much scope to improve your code performance wise!

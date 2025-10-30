@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4309240
-[parent_id]: 4309103
-[tags]: 
-inet_addr doesn't always return a simple unsigned int . It returns an in_addr_t (or an in_addr depending on your flavor of C headers, mine's linux 2.6.31 / glib 2.0). On my system, in_addr_t is actually a 128 bits (16 bytes) because inet_addr can return an IPv6 address. Likewise, gethostbyaddr takes an in_addr_t , not an unsigned int . This is almost certainly your problem. Change the type of ip to inet_addr_t and change the corresponding sizeof , and pay more attention to compiler warnings next time. struct hostent *host; in_addr_t ip = inet_addr(ipaddress); host = gethostbyaddr (&ip, sizeof(ip), AF_INET); if (host == NULL) return NULL; return strdup(host->h_name);

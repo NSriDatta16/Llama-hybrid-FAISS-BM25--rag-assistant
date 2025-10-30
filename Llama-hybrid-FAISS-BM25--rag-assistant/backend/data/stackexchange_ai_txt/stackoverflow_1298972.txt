@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1298972
-[parent_id]: 
-[tags]: 
-Manually select related table data (SELECT N + 1 problem) LINQ to SQL
-
-Database example: Image - ImageTag - Tag Images can have multiple tags. The relationships are set up fine and stuff but I am running into performance issues. I have many different queries which select Images according to different criteria. They work fine, however the data for the Tags are not selected with these queries. This means if I iterate through a list of 10 images and try to access their tags objects (via ImageTag), then a new query is executed on my database for every image. This is obviously not ideal. Is there a way to force LINQ to SQL to query for certain data? Here is an example of one of my queries public static IQueryable WithTags(this IQueryable qry, IEnumerable tags) { return from i in qry from iTags in i.ImageTags where tags.Contains(iTags.Tag) select i; } Edit After trying dataload options, this is an example query being generated {SELECT [t0].[id], [t0].[title], [t0].[legend], [t0].[dateAdded], [t0].[deleted], [t0].[averageRating], [t0].[numberOfVotes], [t0].[imageOfTheWeek], [t0].[copyright], [t0].[copyrightText], [t0].[areaOfInterest], [t0].[typeId], [t0].[authorId], [t0].[editorialStatusId], [t0].[comments] FROM [dbo].[Image] AS [t0] CROSS JOIN ([dbo].[ImageTag] AS [t1] INNER JOIN [dbo].[Tag] AS [t2] ON [t2].[id] = [t1].[TagId]) WHERE ([t2].[id] = @p0) AND (NOT ([t0].[deleted] = 1)) AND (NOT ([t0].[deleted] = 1)) AND ([t1].[ImageId] = [t0].[id]) }

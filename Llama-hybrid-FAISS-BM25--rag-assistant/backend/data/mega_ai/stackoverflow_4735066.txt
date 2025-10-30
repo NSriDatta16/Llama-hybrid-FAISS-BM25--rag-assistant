@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4735066
-[parent_id]: 
-[tags]: 
-Clean debug output function?
-
-I want to write an function that will print out error messages/warnings in my program together with the file & line number. There are these two macros in C : __FILE__ __LINE__ but there's a problem in my opinion... When I'm writing a function like this: #include #define STRINGIFY(x) #x #define TOSTRING(x) STRINGIFY(x) #define AT __FILE__ ":" TOSTRING(__LINE__) void error(const char *location, const char *msg) { #ifdef DEBUG printf("Error at %s: %s\n", location, msg); #endif } int main(int , char**) { error(AT, "fake error"); return 0; } There are still a lot of useless function calls & trash (the values of __FILE__ and __LINE__ at every call) in the binary file, even if I undefine DEBUG for the release build. So how can I accomplish this more elegant? I want something like this: #include #define STRINGIFY(x) #x #define TOSTRING(x) STRINGIFY(x) #define AT __FILE__ ":" TOSTRING(__LINE__) void error(const char *location, const char *msg) { printf("Error at %s: %s\n", location, msg); } int main(int , char**) { #ifdef DEBUG error(AT, "fake error"); #endif return 0; } But not writing #ifdef DEBUG and #endif before and after every function call - that would be too huge for such an task. And remove every error(AT, "fake error"); call manually isn't really elegant as well... Any ideas? Maybe inline the function (would not help, wouldn't it)? Some macro or an change of this construct?

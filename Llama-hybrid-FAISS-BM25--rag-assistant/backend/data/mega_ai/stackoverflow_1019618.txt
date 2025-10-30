@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1019618
-[parent_id]: 
-[tags]: 
-Escape apostrophe as \' with c:out JSP
-
-I have an object field with person's last name. If I use ${person.lastName} , I get O'Brian If I use I get O'Brian Both outputs breaks the next jsp code in IE ' + _('Are you sure you want to delete this application?'))) {deleteApplication('${application.identifier}')};return false;"> because it gets transformed to onclick="if(confirm('O&#039;Brian ' or onclick="if(confirm('O'Brian ' I would need O'Brian to be escaped as O\'Brian Any idea how to solve this issue? SOLUTION The most elegant solutions seems to use a simple Tag. package view; import java.io.IOException; import javax.servlet.jsp.JspException; import javax.servlet.jsp.tagext.SimpleTagSupport; public class EscapeJS extends SimpleTagSupport { public String str; public void doTag() throws JspException, IOException { getJspContext().getOut().print(str.replaceAll("\'", "\\\\'")); } public String getStr() { return str; } public void setStr(String str) { this.str = str; } } Then place in WEB-INF a utils.tld file: 1.2 1.1 bean utilsTags utilsTags escapeJS view.EscapeJS scriptless str true true Then inside your jsp:

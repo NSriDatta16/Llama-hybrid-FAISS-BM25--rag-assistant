@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1204712
-[parent_id]: 1198782
-[tags]: 
-OK I've got a working solution now. I have a UserControl that contains that animation. It is located somewhere in my XAML code like this: . This control is loaded when neede by calling LoadingAnimation.Show(); Now when I click on a Button to do the time-consuming work, before I call BeginInvoke() I load that animation. Then when the hard work is finished I call LoadingAnimation.Hide(). Very simple! I add code for the others: private void SearchClick(object sender, RoutedEventArgs e) { LoadingAnimation.Show(); new StringDelegate(DoSearch).BeginInvoke("TextToSearch", null, null); } private void DoSearch(string searchText) { object result = /* Do the time consuming work */ Dispatcher.BeginInvoke(DispatcherPriority.Normal, new ResultDelagate(UpdateUserInterface), result); } private void UpdateUserInterface(object result) { LoadingAnimation.Hide(); DataContext = result as /* what you want */; }

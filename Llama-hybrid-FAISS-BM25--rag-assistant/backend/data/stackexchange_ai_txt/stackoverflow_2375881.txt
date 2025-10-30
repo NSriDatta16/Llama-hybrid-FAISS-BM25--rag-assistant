@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2375881
-[parent_id]: 715332
-[tags]: 
-I had the same problem, it's got nothing to do with your custom implementation of the TransferHandler. When you replace the TransferHandler you also need to get a hold of the default DragSource and tell it to recognize drag gesture. You may also need to implement your own Transferable because you'll need to pass it to the DragGestureEvent.startDrag() method. table.setTransferHandler(new MyTransferHandler()); table.setDragEnabled(true); DragSource source = DragSource.getDefaultDragSource(); source.createDefaultDragGestureRecognizer(table, DnDConstants.ACTION_COPY, new DragGestureListener() { @Override public void dragGestureRecognized(DragGestureEvent dge) { //grab the selected files from the table model ArrayList files = new ArrayList (); for (int row : table.getSelectedRows()) { files.add((File) dm.getValueAt(row, 1)); } //FileTransferable is a custom Transferable implementation Transferable transferable = new FileTransferable(files); //and this is the magic right here dge.startDrag(null,transferable); } });

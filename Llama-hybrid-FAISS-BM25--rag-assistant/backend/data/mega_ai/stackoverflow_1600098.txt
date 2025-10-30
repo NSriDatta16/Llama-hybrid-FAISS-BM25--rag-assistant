@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1600098
-[parent_id]: 1599985
-[tags]: 
-Your client is the problem here. Apparently it treats the text data as a byte array for the purpose of splitting it up, and then sending the invalid fragments as text (HTTP request parameters are inherently textual). At that point, you have already lost. You either have to change the client to split the data as text (i.e. along character boundaries), or change your protocol to send the fragments as binary data, i.e. not as a parameter but as the request body, to be retrieved via ServletRequest.getInputStream() - then, concatenating the data before decoding it should work. (Caveat: the above assumes that you are indeed writing Servlet code, which I inferred from the request.getParameter() method; but even if that's a coincidence the same principles apply: either split the data as a String before any conversion to byte[] happens on the client side, or make sure you concatenate the byte arrays on the server before any conversion to String happens.)

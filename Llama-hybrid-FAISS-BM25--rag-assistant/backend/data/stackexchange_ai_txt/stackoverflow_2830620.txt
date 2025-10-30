@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2830620
-[parent_id]: 2830567
-[tags]: 
-Something like this should do the trick -- it reads from stdin and outputs to stdout, so you can use normal unix pipes to use files: #!/usr/bin/perl use strict; use warnings; use String::Util 'trim'; # set "line ending" to \n\n, to allow slurping by paragraphs: local $/ = "\n\n"; while (my $line = <>) { chomp $line; my ($displayName) = ($line =~ /^displayName: (.+)$/m); my ($name) = ($line =~ /^name: ##(.+)$/m); trim $displayName; trim $name; my ($firstName, $lastName) = ($displayName =~ /^([^ ]+) (.+)$/); print "$firstName\t$lastName\t$name\n"; } I tested this using the sample input you gave below, as test.pl and got the output: John Doe userName Jane Doe userName Ted Doe userName You can read about slurping in paragraph mode in perldoc perlvar under $/, or at this SO question (link needed). Matching within multiple lines is enabled with the m flag on the match operator -- see perldoc perlre .

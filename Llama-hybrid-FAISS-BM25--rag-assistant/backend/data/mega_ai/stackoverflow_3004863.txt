@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3004863
-[parent_id]: 
-[tags]: 
-solution for RPC_E_ATTEMPTED_MULTITHREAD error caused by SPRequestContext caching SPSites?
-
-I'm developing a solution for SharePoint 2007, and I'm using SPSecurity.RunWithElevatedPrivileges a lot, passing in UserToken of the SystemAccount. After reading http://hristopavlov.wordpress.com/2009/01/19/understanding-sharepoint-sprequest/ I finally began to understand why I get these System.Runtime.InteropServices.COMException (0x80010102): Attempted to make calls on more than one thread in single threaded mode. (Exception from HRESULT: 0x80010102 (RPC_E_ATTEMPTED_MULTITHREAD)) errors, but there seems to be no solution - "known issue in the product" The article is more then a year old. I wasn't able to find anything more recent and helpful, but I was hoping maybe someone else has? My code goes like this SPSecurity.RunWithElevatedPrivileges(delegate() { using (SPSite elevatedSite = new SPSite(web.Site.ID, web.Site.SystemAccount.UserToken)) { using (SPWeb elevatedWeb = elevatedSite.OpenWeb(web.ID)) { // some operations on lists and items obtained through elevatedWeb } } } The errors come up wherever such an elevated code is used, and more often when there are more users who use these functionalities, so I guess perhaps the elevated SPSite is getting cached and reused. Is there any way to solve this? If my understanding is correct, how to make Sharepoint forget about the cached SPSites, and use a fresh one instead? Thanks

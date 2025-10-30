@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3303902
-[parent_id]: 
-[tags]: 
-How to choose between different Ports in a SOAP WSDL in PHP?
-
-The Amazon AWS SQS WSDL (at https://sqs.us-east-1.amazonaws.com/doc/2009-02-01/QueueService.wsdl ) lists multiple "ports" with different "addresses" (near the bottom of the file), which specify the HTTP and HTTPS addresses for the service. Using the PHP SOAP object: $aws_ns = 'http://security.amazonaws.com/doc/2007-01-01/'; $sc = new SoapClient('https://sqs.us-east-1.amazonaws.com/doc/2009-02-01/QueueService.wsdl'); $sc->__setSoapHeaders(new SoapHeader($aws_ns, 'AWSAccessKeyId', 'MyAccessKey')); $action = "ListQueues"; $ts = date('c'); $hash = base64_encode(hash_hmac('sha1', $action.$ts, 'MyPrivateKey', true)); try { $rs = $sc->__soapCall($action, array(), NULL, array( new SoapHeader($aws_ns, 'Signature', $hash), new SoapHeader($aws_ns, 'Timestamp', $ts) )); } catch (SoapFault $f) { echo "ERROR: ".$f->faultcode."-".$f->faultstring."\n"; } Running that code gives "ERROR: aws:Client.RequiresSSL-SSL connection required for backward compatible SOAP authentication."; it's using the first "port" (the HTTP one) to contact the AWS service, which isn't allowed with this sort of authentication. If I add a $sc->__setLocation('https://queue.amazonaws.com'); (URL copied and pasted from the WSDL file) line before the __soapCall , it works out fine, but how can I tell the SoapClient object to use the other port in the WSDL, rather than giving it as a static string, in case they change the HTTPS URL down the road?

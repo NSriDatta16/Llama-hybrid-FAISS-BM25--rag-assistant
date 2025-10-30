@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 333695
-[parent_id]: 
-[tags]: 
-How to compute $g_i$ and $h_i$, i.e. the first and second derivative of the loss function in XGBoost?
-
-In XGBoost, the objective function is $J(f_i)=\sum_{i=1}^{n}L(y_i,\hat{y}_i^{(t-1)}+f_t(x_i))+\Omega{(f_i)}+C$, If we take Taylor expansion of the objective function and let $$g_i=\frac{\partial{L(y_i,\hat{y}_i^{(t-1)})}}{\partial{\hat{y}_i^{(t-1)}}}$$, and $$h_i=\frac{\partial^2{L(y_i,\hat{y}_i^{(t-1)})}}{\partial{\hat{y}_i^{(t-1)}}}$$ If the loss function $L$ is the loss function of logistic regression, i.e. $L=-\sum_{i=1}^{m}y_ilog(h_i)+(1-y_i)log(1-h_i)$,then I think $$g_i=\frac{\partial{L}}{\partial{h_i}}=-(\frac{y_i}{h_i}+(1-y_i)*\frac{-1}{1-h_i})$$,that is $$g_i=-\frac{y_i-h_i}{h_i(1-h_i)}$$ However, in the example given by the XGBoost package, they think $g_i$ of loss function of logistic regression is $g_i=h_i-y_i$. Here is the g and h definition: def logregobj(preds, dtrain): labels = dtrain.get_label() preds = 1.0 / (1.0 + np.exp(-preds)) grad = preds - labels hess = preds * (1.0-preds) return grad, hess full code can be found here . I don't get it. Can anyone help? Thanks in advance! Well, it seems that there is another version which I think is correct. def custom_loss(y_pre,D_label): label=D_label.get_label() penalty=2.0 grad=-label/y_pre+penalty*(1-label)/(1-y_pre) hess=label/(y_pre**2)+penalty*(1-label)/(1-y_pre)**2 return grad,hess Although the penalty seems wired.

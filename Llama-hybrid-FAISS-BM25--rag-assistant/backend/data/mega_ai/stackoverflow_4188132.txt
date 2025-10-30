@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4188132
-[parent_id]: 3908573
-[tags]: 
-ANSWER: Just to update everybody on this, I resorted to a different approach... Since I'm using SQL CE and it doesn't support Views or the Lead / Lag functions, I decided to add a new PreviousEndTime column to my table. This was the only elegant way that I could find that allowed me to easily query for a grand total calculation on an Employee . It is not my preferred solution, but it is working ok for me... The only draw back with this approach is that when a user updates their EndTime on any record, I have to do a quick lookup to find the next record and update the PreviousEndTime value to ensure that my calculations return the correct values when querying. Here is a quick pseudo code snippet of what I'm now doing: public decimal GetTotalPay(Employee employee) { return (from row in _timeSheet.GetDetailRows(employee.Id) select ((row.StartTime - row.PreviousEndTime) * employee.OffDutyWage) + ((row.EndTime - row.StartTime) * employee.OnDutyWage)).Sum(); } Thanks for all the feedback.

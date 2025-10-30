@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4772912
-[parent_id]: 4772829
-[tags]: 
-The first thing to comment is that earth surface points should be stored using Geography, not Geometry. There are differences to the storage and how the functions work (even if similarly named) Here is a working example: Simplified table: CREATE TABLE CountrySpatial( ID int IDENTITY(1,1) NOT NULL PRIMARY KEY, geog geography NULL) GO Insert something that resembles a diamond around India INSERT INTO CountrySpatial(geog) VALUES (geography::STGeomFromText('POLYGON((' + '77.22702 28.67613, ' + -- new delhi (top) '72.566071 23.059516, ' + -- ahmedabad (left) '77.593689 13.005227, ' + -- bengaluru (bottom) '88.374023 22.614011, ' + -- kolkata (right) '77.22702 28.67613))', 4326)); Find the match. It is UNION-ed to the Point being sought. STBuffer increases the point to a 100km radius, so that it will show up when viewed together with the Geography record found (switch to Spatial tab in the output) select geog from countryspatial where geog.STIntersects(geography::STGeomFromText('POINT (78 22)', 4326))>0 union all select geography::STGeomFromText('POINT (78 22)', 4326).STBuffer(100000)

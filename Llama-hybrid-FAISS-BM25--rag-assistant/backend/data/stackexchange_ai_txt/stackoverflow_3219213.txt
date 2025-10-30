@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3219213
-[parent_id]: 3219168
-[tags]: 
-2 problems. 1) You need locking around the list. You need to ensure you have mutual exclusive access to the list, so it can't be enumerated over while it's modified. A first solution is to use locks: class Mailbox { List list; void Send(int a) { lock(list) { list.Add(a); } } int Receive() { lock(list) { // Enumerate return ...; } } } More elegantly, you could use one of the new collections in the Concurrent namespace, like BlockingCollection . The latter in not enumeration-safe, but provides a Take() method that can be used to retrieve objects from it, while producers are inserting them. 2) Avoid creating a gazillion threads. You could use the .NET thread pool to enqueue as many request as you like, and the framework will take care of mapping them onto actual threads, without killing the system.

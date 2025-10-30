@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1128290
-[parent_id]: 1122557
-[tags]: 
-The most obvious solutions are already listed. Depending on where the query is sat (i.e. in application code) you can't always use IF statements and the inline CASE statements can get painful where lots of columns become conditional. Assuming Col1 + Col3 + Col7 are the same type, and likewise Col2, Col4 + Col8 you can do this: SELECT Col1, Col2 FROM tbl WHERE @Var LIKE 'xyz' UNION ALL SELECT Col3, Col4 FROM tbl WHERE @Var LIKE 'zyx' UNION ALL SELECT Col7, Col8 FROM tbl WHERE @Var NOT LIKE 'xyz' AND @Var NOT LIKE 'zyx' As this is a single command there are several performance benefits with regard to plan caching. Also the Query Optimiser will quickly eliminate those statements where @Var doesn't match the appropriate value without touching the storage engine.

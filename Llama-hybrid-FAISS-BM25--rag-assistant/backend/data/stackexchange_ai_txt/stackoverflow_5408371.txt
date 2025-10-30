@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5408371
-[parent_id]: 
-[tags]: 
-Lua: preemtive (not cooperative) multitasking in Lua with thread-like structures
-
-I was wondering whether Lua has any preemptive multitasking facilities built-in. I would like to have concurrent threads to use on my multi-core system. I looked into coroutines (see lua-users.org/wiki/CoroutinesTutorial and stackoverflow.com/questions/3107165/there-is-a-type-named-thread-in-lua-does-anyone-know-something-of-this), but it seems not to fit the bill. I wrote the following code: function foo(ver) local iter = 1; while true do print("foo ver="..ver.." iter="..iter); iter = iter + 1; for ii = 1,100000 do end -- busy wait coroutine.yield() end end co1 = coroutine.create(foo) co2 = coroutine.create(foo) coroutine.resume(co1, 1) coroutine.resume(co2, 2) while true do end -- infinite loop The program prints: foo ver=1 iter=1 foo ver=2 iter=1 and then gets stuck. I suspect it just waits in the infinite loop. Attaching to it with gdb reveals that there is only one thread running. I suspect coroutines are cooperative multitasking, correct? If so, is there a native, Lua way to have threads in Lua? If not, do I have to use other libraries (like www.inf.puc-rio.br/~roberto/docs/ry08-05.pdf [PDF] or kotisivu.dnainternet.net/askok/bin/lanes/)? Thanks, Tony

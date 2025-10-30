@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2027322
-[parent_id]: 2027160
-[tags]: 
-You can't. The NSXMLParser class never loads the entire contents of the XML stream in memory at once (that's why it's an "NSXMLParser" and not an "NSXMLDocument"). You should download the data from the URL, and use it to instantiate your RSS parser, and also to create an NSString that you log instead: NSData *data = [NSData dataWithContentsOfURL:xmlURL]; rssParser = [[NSXMLParser alloc] initWithData:data]; NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]; NSLog(@"data: %@", string); [string release]; Please pay attention to the fact that the "initWithContentsOfURL:" methods are synchronous, and will block your UI thread until the data has downloaded. You might want to use ASIHTTPRequest or the NSURLConnection mechanism instead, with asynchronous connections.

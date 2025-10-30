@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3313568
-[parent_id]: 3207163
-[tags]: 
-Modifying the payload is a little bit tricky. The only way I've found to make this work is to use the getPayloadSource() and getPayloadResult() methods on SoapBody , which expose javax.xml.transform -friendly objects for manipulating the data. It's annoyingly heavyweight, but you can do something like this: Transformer identityTransform = TransformerFactory.newInstance().newTransformer(); DOMResult domResult = new DOMResult(); identityTransform.transform(soapBody.getPayloadSource(), domResult); Node bodyContent = domResult.getNode(); // modify this identityTransform.transform(new DOMSource(bodyContent), soapBody.getPayloadResult()); I'd love to see a better way of doing this.

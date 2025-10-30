@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1452096
-[parent_id]: 
-[tags]: 
-How to implement my own byte array creation and disposal
-
-BACKGROUND: In running my app through a profiler, it looks like the hotspots are all involved in allocating a large number of temporary new byte[] arrays. In one run under CLR Profiler, a few short (3-5 seconds worth of CPU time outside the profiler) produced over a gigabyte of garbage, the majority of it byte[] allocation, and this triggered over 500 collections. In some cases it appears that the application is spending upwards of 10% of its CPU time performing collections. Clearly a rewrite is in order. So, I am thinking of replacing the new byte[] allocations with a pool class that could reuse the buffer at a later time. Something like this ... { byte[] temp = Pool.AllocateBuffer(1024); ... } QUESTION: How can I force the application to call code in the routine Pool.deAllocate(temp) when temp is no longer needed. In the above code fragment, when temp is a Pool allocated byte[] buffer, but when it goes out of scope it gets deleted. Not a real problem, but doesn't get reused by the pool. I know I could replace the "return 0;" with "Pool.deAllocate(temp); return 0", but I'm trying to force the recovery to occur. Is this even remotely possible?

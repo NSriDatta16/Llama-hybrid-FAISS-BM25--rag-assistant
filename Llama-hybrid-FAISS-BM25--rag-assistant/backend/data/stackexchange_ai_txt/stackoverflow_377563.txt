@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 377563
-[parent_id]: 377354
-[tags]: 
-I'd use something like: start transaction; create temporary table if not exists ZIPS(ZIP integer) storage=memory; insert into ZIPS (ZIP) VALUES(...) select COLS from MYTABLE M, ZIPS Z where Z.ZIP = M.ZIP drop table ZIPS (or truncate it or do whatever you wish) either commit or rollback In every db API you should have some variation of executemany function, which can call insert into TABLE(COLUMNS) VALUES with multiple value rows and be faster than repeating single insert. And you can wrap such call sequence in some function, for easy reuse, as a temporary table with one INT column is often handy :-) This way you can avoid problem with maximum SQL query length problem (e.in g. MySQL) and your query is effective, clean and easy to maintain or extend further.

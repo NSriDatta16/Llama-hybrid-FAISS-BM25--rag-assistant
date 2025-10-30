@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 952698
-[parent_id]: 
-[tags]: 
-.net remoting dependency / reference issue
-
-I’m doing maintenance on an asp.net web app that uses remoting to call a remote server object to order a credit report. The call “works on my machine” but throws an exception “could not load file or assembly ‘choicepointClue’” when run from the production server (which is running the 64 bit version of the .net framework). I resolved the issue by copying choicepointClue.dll to the bin directory of the web app. But I don’t understand why it needs to be there as it’s a dependency of the remote server library not the client. The dependency tree looks like this: Web app --> choicepointClueClient --> choicepointRemoteAgent --> choicepointClue There is no interface defined for the class in the choicepointRemoteAgent library (as there should be) so it is referenced directly by choicepointClueClient. A class from choicepointRemoteAgent is instantiated using Activator.GetObject(). It’s at this point that I would expect choicepointClue.dll to be loaded on the remote server instead of the runtime trying to load it from the bin directory of the web app. One crackpot theory that crossed my mind is that there is a difference between how assemblies are loaded on x64 vs x86. So on x64 it tries to load choicepointClue as soon as it loads choicepointRemoteAgent, where on x86 it doesn’t try to load chiocepointClue until it’s explicitly called? Obviously I have no idea what’s going on here. Can anyone shed some light on this?

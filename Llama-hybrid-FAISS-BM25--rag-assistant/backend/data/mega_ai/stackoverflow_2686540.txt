@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2686540
-[parent_id]: 2686361
-[tags]: 
-Yep, that's pretty much it. Retrieve all the entities you want to sum, and sum them in your app. There is no SUM in GQL. If what you're trying to accomplish is to find the average rating for an entity, there's a better way. class RateableThing(db.Model): num_ratings = db.IntegerProperty() avg_rating = db.FloatProperty() Finding the thing's average rating is a simple lookup, and adding a new rating is just: thing.avg_ratings = ((thing.avg_ratings * thing.num_ratings) + new_rating) / thing.num_ratings + 1 thing.num_ratings += 1 thing.put() The prevailing idiom of the App Engine datastore is to do as much work as you can on write, and as little as possible on read, since reads will happen much more often.

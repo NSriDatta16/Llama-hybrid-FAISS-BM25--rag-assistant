@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5479362
-[parent_id]: 
-[tags]: 
-Why is fastcall slower than stdcall?
-
-I found following question: Is fastcall really faster? No clear answers for x86 were given so I decided to create benchmark. Here is the code: #include int __fastcall func(int i) { return i + 5; } int _stdcall func2(int i) { return i + 5; } int _tmain(int argc, _TCHAR* argv[]) { int iter = 100; int x = 0; clock_t t = clock(); for (int j = 0; j In case of no optimization result in MSVC 10 is: 4671 4414 With max optimization fastcall is sometimes faster, but I guess it is multitasking noise. Here is average result (with iter = 5000 ) 6638 6487 stdcall looks faster! Here are results for GCC: http://ideone.com/hHcfP Again, fastcall lost race. Here is part of disassembly in case of fastcall : 011917EF pop ecx 011917F0 mov dword ptr [ebp-8],ecx return i + 5; 011917F3 mov eax,dword ptr [i] 011917F6 add eax,5 this is for stdcall : return i + 5; 0119184E mov eax,dword ptr [i] 01191851 add eax,5 i is passed via ECX , instead of stack, but saved into stack in the body! So all the effect is neglected! this simple function can be calculated using only registers! And there is no real difference between them. Can anyone explain what is reason for fastcall ? Why doesn't it give speedup? Edit: With optimization it turned out that both functions are inlined. When I turned inlining off they both are compiled to: 00B71000 add eax,5 00B71003 ret This looks like great optimization, indeed, but it doesn't respect calling conventions at all, so test is not fair.

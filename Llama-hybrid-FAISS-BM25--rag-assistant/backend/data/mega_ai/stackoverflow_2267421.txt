@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2267421
-[parent_id]: 2211122
-[tags]: 
-Does xajax use getBoxObjectFor(), see https://developer.mozilla.org/en/Firefox_3.6_for_developers ? If it does that could be your problem. I had to fix this because as soon as FF 3.6 came out. Our Infragistics grids did not work in certain scenarios and that was the culprit. Here's what I did to fix it. Note that my fix is a la jQuery $(document).ready(function() { if ($.browser.mozilla && !document.getBoxObjectFor) { document.getBoxObjectFor = function(elem) { var boundingRect = elem.getBoundingClientRect(); var doc = elem.ownerDocument; // top and bottom are not rounded off in Gecko1.9 // http://www.quirksmode.org/dom/w3c_cssom.html#elementviewm var elemTop = Math.round(boundingRect.top); var elemLeft = boundingRect.left; var docElement = doc.documentElement; // clientLeft and clientTop would be 0 for Gecko1.9 // https://bugzilla.mozilla.org/show_bug.cgi?id=174397#c34 elemLeft += docElement.scrollLeft; elemTop += docElement.scrollTop; return { x: elemLeft, y: elemTop, width: docElement.width, height: docElement.height }; }; } });

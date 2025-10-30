@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4894802
-[parent_id]: 4894746
-[tags]: 
-[imageView removeFromSuperview] would release the imageView and imageView.image? removeSuperView calls release on the view , but you should pay attention to the views retain count. Just because you called removeFromSuperview doesn't mean it's doing what you want. view = nil; would release its subviews/and associated uiimages recursively? if not, should I implement a recursive function to release a view's subviews? No, you probably want to do (depending on how you've managed your subviews during their creation. If the superview was their only reference, they likely have a retain count of 1 and therefore calling release after calling removeFromSuperview will result in an error): for (UIView* subview in view){ [subview removeFromSuperView]; [subview release] } [view release]; EDIT: To answer your final question, no, calling release on a view does not automatically call release on all of its subviews. You have to do it yourself, whether with release or with removeFromSuperview.

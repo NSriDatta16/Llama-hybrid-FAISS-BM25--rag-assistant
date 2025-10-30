@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1584247
-[parent_id]: 
-[tags]: 
-Parsing grammars using OCaml
-
-I have a task to write a (toy) parser for a (toy) grammar using OCaml and not sure how to start (and proceed with) this problem. Here's a sample Awk grammar: type ('nonterm, 'term) symbol = N of 'nonterm | T of 'term;; type awksub_nonterminals = Expr | Term | Lvalue | Incrop | Binop | Num;; let awksub_grammar = (Expr, function | Expr -> [[N Term; N Binop; N Expr]; [N Term]] | Term -> [[N Num]; [N Lvalue]; [N Incrop; N Lvalue]; [N Lvalue; N Incrop]; [T"("; N Expr; T")"]] | Lvalue -> [[T"$"; N Expr]] | Incrop -> [[T"++"]; [T"--"]] | Binop -> [[T"+"]; [T"-"]] | Num -> [[T"0"]; [T"1"]; [T"2"]; [T"3"]; [T"4"]; [T"5"]; [T"6"]; [T"7"]; [T"8"]; [T"9"]]);; And here's some fragments to parse: let frag1 = ["4"; "+"; "3"];; let frag2 = ["9"; "+"; "$"; "1"; "+"];; What I'm looking for is a rulelist that is the result of the parsing a fragment, such as this one for frag1 ["4"; "+"; "3"]: [(Expr, [N Term; N Binop; N Expr]); (Term, [N Num]); (Num, [T "3"]); (Binop, [T "+"]); (Expr, [N Term]); (Term, [N Num]); (Num, [T "4"])] The restriction is to not use any OCaml libraries other than List... :/

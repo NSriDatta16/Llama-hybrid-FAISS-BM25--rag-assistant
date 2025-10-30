@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2127988
-[parent_id]: 2127978
-[tags]: 
-sizeof(...) expects a constant compile-time expression. strlen is not a compile-time expression, it is a function which needs to be executed to get a result. Therefore, the compiler is not able to reserve sufficient storage for an array declared like this: char c[strlen("Hello")]; Although the length of the string is clearly 5, the compiler does not know. To avoid this pitfall, do not use sizeof here. Instead: char* c = (char*)malloc(strlen(name)+strlen(rname)+1); This gives you a pointer to n bytes in return. sizeof(char)==1 is always true, so the number of bytes in the buffer equals the number of chars you can store in it. To malloc arrays of a different type, multiply with the static size of one array element: int* c = (int*) malloc(sizeof(int)*100); This is Ok, because sizeof is applied to a compile-time expression. Of course, the C++ way is much cleaner: int* c = new int[100];

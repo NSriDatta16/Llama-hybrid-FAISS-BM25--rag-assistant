@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1945244
-[parent_id]: 1944978
-[tags]: 
-If you add the MouseEvent.MOUSE_UP to the object that you are dragging, the event will only fire if the item is underneath the mouse at the moment the MOUSE_UP happens, but since you're updating the item with MOUSE_MOVE, that's a race-condition between when the MOUSE_UP happens and when the MOUSE_MOVE happens. To avoid such problems you want to guarantee that you receive the MOUSE_UP whenever MOUSE_UP fires, during your live-update cycle. To do that, add the event listener to the stage just when it's needed, something like this: menFront.addEventListener(MouseEvent.MOUSE_DOWN, setAnchor); function setAnchor(event:MouseEvent):void { stage.addEventListener(MouseEvent.MOUSE_UP, completeRect); // your other functionality } function completeRect(event:MouseEvent):void { stage.removeEventListener(MouseEvent.MOUSE_UP, completeRect); // your other functionality } so that your completeRect doesn't get called inadvertently if you're clicking elsewhere. Hope This Helps

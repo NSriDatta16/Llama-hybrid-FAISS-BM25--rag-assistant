@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2297156
-[parent_id]: 2295837
-[tags]: 
-I believe the problem is the Cartesian product between the two collections is not handled by the DistinctRootEntityTransformer...so you'll have duplicated data in the collections somewhere. To load multiple collections eagerly it's going to take multiple queries. var queryParents = session.CreateCriteria () .SetFetchMode("ChildCollectionA", FetchMode.Eager) .Add(Expression.Le("ParentDate",endDate)) .SetResultTransformer(new DistinctRootEntityResultTransformer()); //load CollectionB in second query...it's linked together by NH session.CreateCriteria () .SetFetchMode("ChildCollectionB", FetchMode.Eager) .Add(Expression.Le("ParentDate",endDate)) .List(); What I normally do is fetch the main entity along with all the required many-to-one associations. Then I'll eagerly fetch required collections into the session with a MultiCriteria. If it's only two collections sometimes I do like above and fetch the first collection with distinctrootentity. For more info see Eager loading aggregate with many child collections

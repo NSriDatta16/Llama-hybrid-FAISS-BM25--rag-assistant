@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 877837
-[parent_id]: 877709
-[tags]: 
-I still think you should be creating a class to hold you error/success counts, as I said in you last question . I'm guessing you have your own class, so just add something like this to it: class transaction: def __init__(self): self.errorCount = 0 self.successCount = 0 def __enter__(*args): pass def __exit__(self, type, value, traceback): if type: storage.store.rollback() self.errorCount += 1 else: storage.store.commit() self.successCount += 1 ( type is None if there are no exceptions once invoking the contextmanager ) And then you probably are already using this somewhere, which will invoke the contextmanager and run your __exit__() code. Edit: As Eli commented, only create a new transaction instance when you want to reset the coutners. t = transaction() for q in queries: with t: t.execute(q)

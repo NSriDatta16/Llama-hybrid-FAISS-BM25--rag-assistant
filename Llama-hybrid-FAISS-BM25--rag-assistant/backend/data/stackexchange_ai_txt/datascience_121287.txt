@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 121287
-[parent_id]: 88552
-[tags]: 
-Recently I'm working on NVIDIA's FastTransformer . At least in their implementation of layer norm , normalizations are applied to every input token (i.e. its subsequent hidden states) separately. For your example, it will calculate 12x1024 means and standard deviations. I think, they choose to implement layer normalization in this way because that, if you normalize all the feature values for all the tokens together, the output tokens for previous input tokens will be affected by succeeding tokens, which needs recalculation in each "feed-forward" iteration. If we apply normalization to every token separately, this won't happen, so we can just store keys & values for previous tokens (NVIDIA calls them k/v cache) instead of running the complete multi-head attention again and again.

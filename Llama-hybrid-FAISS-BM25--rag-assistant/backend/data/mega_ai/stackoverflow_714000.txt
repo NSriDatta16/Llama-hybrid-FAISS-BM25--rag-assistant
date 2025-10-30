@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 714000
-[parent_id]: 713960
-[tags]: 
-EDIT Toggling IDENTITY_INSERT as suggested by Daren is certainly the more elegant approach, in my case I needed to eliminate the identity column so that I could reinsert selected data into the source table The way that I addressed this was to create the temp table just as you do, explicitly drop the identity column, and then dynamically build the sql so that I have a column list that excludes the identity column (as in your case so the proc would still work if there were changes to the schema) and then execute the sql here's a sample declare @ret int Select * into #sometemp from sometable Where id = @SomeVariable Alter Table #sometemp Drop column SomeIdentity Select @SelectList = '' Select @SelectList = @SelectList + Coalesce( '[' + Column_name + ']' + ', ' ,'') from information_schema.columns where table_name = 'sometable' and Column_Name <> 'SomeIdentity' Set @SelectList = 'Insert into sometable (' + Left(@SelectList, Len(@SelectList) -1) + ')' Set @SelectList = @SelectList + ' Select * from #sometemp ' exec @ret = sp_executesql @selectlist

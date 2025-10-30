@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4736554
-[parent_id]: 4736522
-[tags]: 
-SELECT mc.id, CONCAT(COALESCE(GROUP_CONCAT(mp.extra_textcol ORDER BY id SEPARATOR ''), ''), mc.textcol) AS textcol, mc.extra_textcol, parentID FROM mytable mc LEFT JOIN mytable mp ON mp.ParentID = mc.id GROUP BY mc.id To make an update, you'll have to create a temporary table first, since MySQL won't let you use subqueries to the updated table in an update. CREATE TABLE newtable (id INT NOT NULL PRIMARY KEY, textcol TEXT) ENGINE=Memory AS SELECT mc.id, CONCAT(COALESCE(GROUP_CONCAT(mp.extra_textcol ORDER BY id SEPARATOR ''), ''), mc.textcol) AS textcol, mc.extra_textcol, parentID FROM mytable mc LEFT JOIN mytable mp ON mp.ParentID = mc.id GROUP BY mc.id; UPDATE mytable m JOIN newtable n ON m.id = n.id SET m.textcol = n.textcol If you have an out-of-memory error on CREATE TABLE , you'll have to use MyISAM instead of Memory storage engine.

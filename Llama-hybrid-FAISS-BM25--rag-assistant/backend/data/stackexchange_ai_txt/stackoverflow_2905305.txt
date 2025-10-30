@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2905305
-[parent_id]: 2899087
-[tags]: 
-The best indication of ITL pressure is from the performance views: select event, total_waits, time_waited, average_wait from v$system_event where event like 'enq: TX%' order by 2 desc; shows TX contention waits, and select OBJECT_NAME, SUBOBJECT_NAME, TABLESPACE_NAME, OBJECT_TYPE, STATISTIC_NAME, VALUE from v$segment_statistics where statistic_name = 'ITL waits' and value > 0 order by value desc; shows the tables and indexes involved. (Like all v$ views, the results are from the point in time when the instance was started.) If this shows that you do indeed have ITL waits, then the INITRANS and PCTFREE parameters are the main knobs to turn (but INITRANS = 100 sounds pretty high to me and these do cost space). If ITL waits are not a problem, then the application code needs to be examined.

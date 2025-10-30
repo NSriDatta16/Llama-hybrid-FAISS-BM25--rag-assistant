@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2947243
-[parent_id]: 2947151
-[tags]: 
-The problem that you are having is that you are trying to bind to a templated function. In this case you need to specify the template type of the method you are calling to bind. This is happening for the method A::bindA . See below for a code fragment for main that compiles correctly with the supplied classes. Incidentally in the example I use boost::function (the sister library to bind) to specify what type of function pointers are being used. I think this makes it far more readable and would highly recommend that you become familiar with it if you are going to continue using bind. #include "boost/bind.hpp" #include "boost/function.hpp" int main(int c, char** argv) { A a; B b; typedef boost::function BFunc; typedef boost::function AFunc; BFunc bFunc( boost::bind(&B::bindB, b, _1, _2) ); AFunc aFunc( boost::bind(&A::bindA , a, make(bFunc)) ); bFunc(1,2); }

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5697159
-[parent_id]: 
-[tags]: 
-Interaction between optimizations and testing for error calls
-
-I have a function in a module that looks something like this: module MyLibrary (throwIfNegative) where throwIfNegative :: Integral i => i -> String throwIfNegative n | n I could of course return Maybe String or some other variant, but I think it's fair to say that it's a programmer error to call this function with a negative number so using error is justified here. Now, since I like having my test coverage at 100% I want to have a test case that checks this behavior. I have tried this import Control.Exception import Test.HUnit import MyLibrary case_negative = handleJust errorCalls (const $ return ()) $ do evaluate $ throwIfNegative (-1) assertFailure "must throw when given a negative number" where errorCalls (ErrorCall _) = Just () main = runTestTT $ TestCase case_negative and it sort of works, but it fails when compiling with optimizations: $ ghc --make -O Test.hs $ ./Test ### Failure: must throw when given a negative number Cases: 1 Tried: 1 Errors: 0 Failures: 1 I'm not sure what's happening here. It seems like despite my use of evaluate , the function does not get evaluated. Also, it works again if I do any of these steps: Remove HUnit and call the code directly Move throwIfNegative to the same module as the test case Remove the type signature of throwIfNegative I assume this is because it causes the optimizations to be applied differently. Any pointers?

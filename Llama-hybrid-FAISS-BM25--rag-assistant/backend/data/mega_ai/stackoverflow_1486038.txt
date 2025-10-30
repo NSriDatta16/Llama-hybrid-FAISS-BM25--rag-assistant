@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1486038
-[parent_id]: 1481771
-[tags]: 
-Hmm, seems there is no easy workaround for the problem. While skimming through the Django code, I've found that default error messages are hard-coded into each form field class, for ex: class CharField(Field): default_error_messages = { 'max_length': _(u'Ensure this value has at most %(max)d characters (it has %(length)d).'), 'min_length': _(u'Ensure this value has at least %(min)d characters (it has %(length)d).'), } And the easiest way is to use the error_messages argument, so I had to write the wrapper function: def DZForm(name, args = {}): error_messages = { 'required': u'required', 'invalid': u'invalid', } if 'error_messages' in args.keys(): args['error_messages'] = error_messages.update(args['error_messages']) else: args['error_messages'] = error_messages return getattr(forms, name)(**args) If someone knows a more elegant way of doing this would really appreciate seeing it :) Thanks!

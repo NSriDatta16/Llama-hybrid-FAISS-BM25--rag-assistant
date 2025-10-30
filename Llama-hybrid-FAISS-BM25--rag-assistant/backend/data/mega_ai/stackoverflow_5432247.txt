@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5432247
-[parent_id]: 5431613
-[tags]: 
-Use the __eq__ method! If you wrote the class of site yourself, no problem. If it is from a module outside of your control, see this solution , or create a somewhat less elegant wrapping class. For the wrap variant, this would be the class: class WrappedSite(object): def __init__(self, site): self.site = site def __eq__(self, other): if site.getId(): if self.site.getId() != other.site.getId(): return False if self.site.getName() != other.site.getName(): return False if self.site.getCustomer().getId() != other.site.getCustomer().getId(): return False return True Then your big ugly function is reduced to this: def site_exists(site): """ returns the sitebean if it exists, else returns false """ vpadmin_service = _get_vpadmin_service(site) all_sites = VpAdminServiceUtil.getSites(vpadmin_service) wsite = WrappedSite(site) for site_listing in all_sites: if wsite == WrappedSite(site_listing): return site_listing return False EDIT Fixed site_exists to return sitebean instead of True.

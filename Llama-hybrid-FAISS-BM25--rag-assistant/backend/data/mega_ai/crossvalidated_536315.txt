@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 536315
-[parent_id]: 
-[tags]: 
-Not getting 95% coverage for 95% t-distribution CI
-
-I'm simulating a bunch of 95% confidence intervals on samples taken from a normal distribution. Since the data is normal, then, I think, my 95% confidence should translate into a 95% coverage probability. However, I'm getting something like 94%. Specifically, I'm taking 1000 samples of size n=10 to make a bunch of CIs and estimate a coverage probability, then doing that 1000 times to get a CI for the coverage probability. My five sigma CI for the coverage probability turns out to be ~(0.9384, 0.9408). Is there some statistical reason for this, or am I doing something wrong? Here's my simulation code: import numpy as np import scipy.stats as stats def CI_coverage(alpha, dist, n, n_samples): ''' creates n_samples samples of size n creates an 1-alpha confidence interval for each computes the fraction of those that contain mu ''' # get samples samples = np.stack([dist.rvs(size=n) for i in range(n_samples)]) # summary stats mu = dist.mean() xbar = samples.mean(axis=1) s = samples.std(axis=1) # compute CIs... note that xbar, s, CI_low, CI_high are arrays size n_samples t = stats.t.ppf(1 - alpha/2, n-1) interval_width = t * s / np.sqrt(n) CI_low = xbar - interval_width CI_high = xbar + interval_width coverage_p = np.sum(np.logical_and(CI_low

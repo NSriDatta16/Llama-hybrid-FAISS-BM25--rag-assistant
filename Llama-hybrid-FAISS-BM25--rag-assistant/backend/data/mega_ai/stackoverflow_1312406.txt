@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1312406
-[parent_id]: 
-[tags]: 
-Efficient XSLT pipeline in Java (or redirecting Results to Sources)
-
-I have a series of XSL 2.0 stylesheets that feed into each other, i.e. the output of stylesheet A feeds B feeds C. What is the most efficient way of doing this? The question rephrased is: how can one efficiently route the output of one transformation into another. Here's my first attempt: @Override public void transform(Source data, Result out) throws TransformerException{ for(Transformer autobot : autobots){ if(autobots.indexOf(autobot) != (autobots.size()-1)){ log.debug("Transforming prelim stylesheet..."); data = transform(autobot,data); }else{ log.debug("Transforming final stylesheet..."); autobot.transform(data, out); } } } private Source transform(Transformer autobot, Source data) throws TransformerException{ DOMResult result = new DOMResult(); autobot.transform(data, result); Node node = result.getNode(); return new DOMSource(node); } As you can see, I'm using a DOM to sit in between transformations, and although it is convenient, it's non-optimal performance wise. Is there any easy way to route to say, route a SAXResult to a SAXSource? A StAX solution would be another option. I'm aware of projects like XProc , which is very cool if you haven't taken a look at yet, but I didn't want to invest in a whole framework.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 470663
-[parent_id]: 468990
-[tags]: 
-Here is a simple way without stragg or creating a function. create table countries ( country_name varchar2 (100)); insert into countries values ('Albania'); insert into countries values ('Andorra'); insert into countries values ('Antigua'); SELECT SUBSTR (SYS_CONNECT_BY_PATH (country_name , ','), 2) csv FROM (SELECT country_name , ROW_NUMBER () OVER (ORDER BY country_name ) rn, COUNT (*) OVER () cnt FROM countries) WHERE rn = cnt START WITH rn = 1 CONNECT BY rn = PRIOR rn + 1; CSV -------------------------- Albania,Andorra,Antigua 1 row selected. As others have mentioned, if you are on 11g R2 or greater, you can now use listagg which is much simpler. select listagg(country_name,', ') within group(order by country_name) csv from countries; CSV -------------------------- Albania, Andorra, Antigua 1 row selected.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3361857
-[parent_id]: 3331272
-[tags]: 
-Sat down with a fresh pair of eyes and figured it out... Tags are now ordered by a propery on the Tags Question collection (views).. which made alot more sence in my domain than ordering by the count of children public IList GetTop(int numberOfTags) { using (ITransaction transaction = Session.BeginTransaction()) { DetachedCriteria detachedCriteria = DetachedCriteria.For () .CreateCriteria (x => x.Questions) .AddOrder (x => x.Views, Order.Desc) .SetMaxResults(numberOfTags) .SetProjection(Projections.Distinct(Projections.Id())); IList tags = Session.CreateCriteria () .SetFetchMode (x => x.Questions,FetchMode.Join) .Add(LambdaSubquery.Property (x => x.Id).In(detachedCriteria)) .SetResultTransformer(new DistinctRootEntityResultTransformer()) .List (); transaction.Commit(); return tags; } }

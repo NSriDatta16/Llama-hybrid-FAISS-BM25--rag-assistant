@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 990168
-[parent_id]: 990013
-[tags]: 
-It seems, that you're opening db on every loop cycle, but close only once, before function exit So try to change: } sqlite3_close(db); [localPool release]; } to sqlite3_close(db); } [localPool release]; } Or even better change: for(int i=0;i [[DT sharedDT].typesInLibrary count];i++) { if(sqlite3_open([databasePath UTF8String], &db)==SQLITE_OK) { if (sqlite3_exec(db, "PRAGMA CACHE_SIZE=50;", NULL, NULL, NULL) != SQLITE_OK) { NSAssert1(0, @"Error: failed to set cache size with message '%s'.", sqlite3_errmsg(db)); } to: if(sqlite3_open([databasePath UTF8String], &db)==SQLITE_OK) { if (sqlite3_exec(db, "PRAGMA CACHE_SIZE=50;", NULL, NULL, NULL) != SQLITE_OK) { NSAssert1(0, @"Error: failed to set cache size with message '%s'.", sqlite3_errmsg(db)); } for(int i=0;i [[DT sharedDT].typesInLibrary count];i++) { ... because you're always open the same database

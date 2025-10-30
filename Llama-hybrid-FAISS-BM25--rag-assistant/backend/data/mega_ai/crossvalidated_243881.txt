@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 243881
-[parent_id]: 
-[tags]: 
-Weight decay and RMSprop in neural networks
-
-I've been implementing RMSprop following this helpful blog post . The post doesn't talk about weight decay, i.e. regularization. What I'm implementing is effectively a ridge penalty. The RMSprop update is defined as $$ \theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{E[g^2]_t+\epsilon}}g_t $$ where $\eta$ is the learning rate, $E[g^2]$ is the RMSprop running average of the past squared gradients, $\epsilon$ is the don't-divide-by-zero fudge factor, and $g_t$ is the gradient. Now, for normal SGD with weight decay, I would have $$ \theta_{t+1} = \theta_t - \eta (g_t + 2\lambda\theta_t) $$ For RMSprop, I first did $$ \theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{E[g^2]_t+\epsilon}}(g_t+2\lambda\theta_t) $$ That didn't work very well. MSE at convergence was essentially insensitive to the penalty factor. Without a whole lot of theoretical justification, I tried $$ \theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{E[g^2]_t+\epsilon}}g_t+2\eta\lambda\theta_t $$ ...which worked a lot better. My questions: Why did this work better? I guess it is because you don't want to adaptively penalize, but you do want to adaptively change the learning rate. Adaptively penalizing would basically shrink the ridge penalty with the step size. Is there a better to regularize in the context of RMSprop?

@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 94819
-[parent_id]: 
-[tags]: 
-Backpropagation on a CNN
-
-I have tried searching for this, but it seems like no one addresses a key aspect of this problem (or maybe I'm overthinking this): So, first let's assume we have a 3x3 image with a single channel, and we apply a 2x2 kernel to it, and let's name the kernel weights $w_1$ , $w_2$ , $w_3$ and $w_4$ . This convolution generates a 2x2 feature map, and let's name the resulting activations $a_1$ , $a_2$ , $a_3$ and $a_4$ . So, the way you would calculate the activations would be something like: $\sigma(w_1 * v_1 + w_2 * v_2 + w_3 * v_4 + w_4 * v_5 + b) = a_1$ $\sigma(w_1 * v_2 + w_2 * v_3 + w_3 * v_5 + w_4 * v_6 + b) = a_2$ ... Now, my question is: To calculate dw1, you'd have different results in each activation (dw1 in a1 = v1, whereas dw1 in a2 = v2). So for these, do you SUM them, or AVERAGE them? I've tried it both ways, and averaging them has gotten me faster training and better results, but it seems like most people tell you to sum? Here's a code snippet of how I'm implementing this (data is shaped this way because i'm performing convolution through matrix multiplication and index manipulation) dz is the activation derivative to the current layer, and they all have the following shape: (number of kernels, feature map size, batch size) data = squeeze(sum(data, 2)); // MEAN or SUM across feature maps db = squeeze(sum(dz, 2)); // MEAN or SUM across feature maps dw = db * data'; db = sum(db, 2); // Definitely SUM all mini-batch values

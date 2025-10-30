@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1944091
-[parent_id]: 1944055
-[tags]: 
-Voting I suggest defining two tables in addition to the thread table - VOTE_CODES and THREAD_VOTES . At a glance, it might appear over normalized but the format will allow you to change vote value without needing major DML changes. VOTE_CODES table vote_code , primary key, IE: up, down vote_cast_value --value attributed to up/down vote vote_caster_value --optional, if you want to keep SO's style of the negative vote impacting the caster. THREAD_VOTES table thread_id user_id vote_code All of the columns in THREAD_VOTES are the primary key - that will ensure that there can only be as many rows for a given user and thread as there are vote codes. Assuming only two codes, this would support the ability to reverse a vote because there could only be two records - one with either code. Views I would suggest storing the: thread id ip address user_agent --rough browser capture timestamp All of the above are the primary key. Your table will populate fast, but it will give you the ability to create a computed column in a view for more accurate reporting.

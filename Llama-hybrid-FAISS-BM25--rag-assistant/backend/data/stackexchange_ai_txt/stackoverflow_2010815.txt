@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2010815
-[parent_id]: 2010766
-[tags]: 
-I don't really have experience with Webware, but based on the appearance of your code, Webware is trying to use cgi.FieldStorage to retrieve your field variables, but FieldStorage can't get the length, or gets the length incorrectly (probably because whatever Webware does to get the Content-Length header doesn't work in your CherryPy WSGI environment - the default implementation retrieves the HTTP_CONTENT_LENGTH environment variable, and Webware probably does something similarly hacky), so it's reading and then it hangs. I had a similar problem often when working with CGI. The best solution is to not use cgi.FieldStorage. If the HTTPRequest object in question is coming from Webware, my recommendation is to either port your site to CherryPy completely (or some other Web framework), or just use Webware in its native environment. Hacking something up might be possible, but WSGI is very different from Webware's native environment of its own application server.

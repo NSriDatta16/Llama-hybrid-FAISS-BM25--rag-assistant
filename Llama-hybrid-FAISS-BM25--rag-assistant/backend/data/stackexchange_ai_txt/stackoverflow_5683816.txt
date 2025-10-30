@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5683816
-[parent_id]: 5683756
-[tags]: 
-There are at least two ways to do it. First static int FunB(..., void *userdata_) { int *a = userdata_; /* Here `a[0]` is 3, and `a[1]` is 45 */ ... } int main() { int b[] = { 3, 45 }; funcA(..., FunB, b); /* Note: `b`, not `&b` */ } Second static int FunB(..., void *userdata_) { int (*a)[2] = userdata_; /* Here `(*a)[0]` is 3, and `(*a)[1]` is 45 */ ... } int main() { int b[] = { 3, 45 }; funcA(..., FunB, &b); /* Note: `&b`, not `b` */ } Chose which one you like more. Note that the second variant is specifically tailored for the situations when the array size is fixed and known at compile time (exactly 2 in this case). In such situations the second variant is actually preferable. If the array size is not fixed then you have to use the first variant. And of course you have to pass that size to FunB somehow. Pay attention how the array is passed to funcA (either as b or as &b ) and how it is accessed in FunB (either as a[i] or as (*a)[i] ) in both variants. If you fail to do it properly the code might compile but won't work.

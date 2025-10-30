@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1259685
-[parent_id]: 1259580
-[tags]: 
-The thing you want is called dynamic polymorphism and Django is really bad at it. (I can feel your pain) The simplest solution I've seen so far is something like this: 1) Create a base class for all your models that need this kind of feature. Something like this: (code blatantly stolen from here ) class RelatedBase(models.Model): childclassname = models.CharField(max_length=20, editable=False) def save(self, *args, **kwargs): if not self.childclassname: self.childclassname = self.__class__.__name__.lower() super(RelatedBase, self).save(*args, **kwargs) @property def rel_obj(self): return getattr(self, self.childclassname) class Meta: abstract = True 2) Inherit your order from this class. 3) Whenever you need an Order object, use its rel_obj attribute, which will return you the underlying object. This solution is far from being elegant, but I've yet to find a better one...

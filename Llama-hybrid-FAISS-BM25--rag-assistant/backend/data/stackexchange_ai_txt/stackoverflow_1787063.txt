@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1787063
-[parent_id]: 
-[tags]: 
-Software/system to serve large quantities of images?
-
-At our peak hour we need to serve around 250/rps. What we're doing is accepting a url for an image, pulling the image out of memcache, and returning it via Apache. Our currently system is a dual-core machine with 4GB of memory: 2GB for the images in memcache and 2GB for Apache; but we're seeing a very high load (20-30) during our peak time. The average response time, as reported by Apache, is 30-80ms per request, which seems kind of slow for a simple Apache request served from memory. Are there better tools for this? Serving from disk is not an option since the IO wait was holding it back, so we moved it to memory. How do CDN's do it? EDIT: Well, the system works like this. A request comes in, we check a "queue" to see if we've seen this request before and if we have we serve the image(from disk...or memory). If not we increment the counter for that request in a memcached queue and there are worker machines that actually generate the image and then store it back on the main server. So, currently when a request comes in we're checking the memcached db if it exists then we'll connecting to another db for the actual image database. When the images were on disk we found that just the file_exist function would take 30+ ms to completed so we moved it to memory. If we moved the images to a ramdisk would this speed up the file_exist or would we still want a first check to see if we should even seek the image out?

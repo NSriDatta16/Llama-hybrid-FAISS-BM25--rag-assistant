@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 25024
-[parent_id]: 
-[tags]: 
-Strange behavior with Adam optimizer when training for too long
-
-I'm trying to train a single perceptron (1000 input units, 1 output, no hidden layers) on 64 randomly generated data points. I'm using Pytorch using the Adam optimizer: import torch from torch.autograd import Variable torch.manual_seed(545345) N, D_in, D_out = 64, 1000, 1 x = Variable(torch.randn(N, D_in)) y = Variable(torch.randn(N, D_out)) model = torch.nn.Linear(D_in, D_out) loss_fn = torch.nn.MSELoss(size_average=False) optimizer = torch.optim.Adam(model.parameters()) for t in xrange(5000): y_pred = model(x) loss = loss_fn(y_pred, y) print(t, loss.data[0]) optimizer.zero_grad() loss.backward() optimizer.step() Initially, the loss quickly decreases, as expected: (0, 91.74887084960938) (1, 76.85824584960938) (2, 63.434078216552734) (3, 51.46927261352539) (4, 40.942893981933594) (5, 31.819372177124023) Around 300 iterations, the error reaches near zero: (300, 2.1734419819452455e-12) (301, 1.90354676465887e-12) (302, 2.3347573874232808e-12) This goes on for a few thousand iterations. However, after training for too long, the error starts to increase again: (4997, 0.002102422062307596) (4998, 0.0020302983466535807) (4999, 0.0017039275262504816) Why is this happening?

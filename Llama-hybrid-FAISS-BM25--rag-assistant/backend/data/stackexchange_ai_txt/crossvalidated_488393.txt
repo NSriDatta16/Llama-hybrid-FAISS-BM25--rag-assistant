@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 488393
-[parent_id]: 
-[tags]: 
-Why the output results AR(4) model don't coincide with SARIMAX(order(4,0,0,0,0,0,0))
-
-I am trying to check on a monthly dataset that SARIMAX with order=(4,0,0)x(0,0,0,0) is reduced to AR(4). Let $y$ be my time series data. from statsmodels.tsa.statespace.sarimax import SARIMAX # For AR model_AR_fit = sm.tsa.AR(y).fit(maxlag=4) pred_AR = model_AR_fit.predict('2013-05-01', '2020-03-01') #For SARIMAX model_SARIMAX_fit = sm.tsa.SARIMAX(y,order=(4,0,0), trend='c').fit() I get the following: model_AR_fit.params const 33800.738974 L1.Sales 0.196474 L2.Sales 0.283113 L3.Sales 0.064776 L4.Sales 0.279637 dtype: float64 model_SARIMAX_fit.params intercept 3.380074e+04 ar.L1 2.415533e-01 ar.L2 2.961372e-01 ar.L3 4.379153e-02 ar.L4 2.290115e-01 sigma2 2.673141e+08 I further analyse the result from AR(4) by using linear regression for 4 lags data as follows: # Training set for linear regression num_lag=4 lag_df = pd.DataFrame(columns=range(0,num_lag+1)) lag_df[0] = y #lag_df for i in range(1,num_lag+1): lag_df[i]=lag_df[i-1].shift() lag_df.dropna(inplace=True) # Training dataset for Linear regression y_train = lag_df.iloc[:,0] X_train = lag_df.iloc[:,1:5] lr = LinearRegression() lr_fit=lr.fit(X_train, y_train) print("lr.coef_ = ", lr.coef_) print("lr.intercept_ = " , lr.intercept_) lr.coef_ = [0.19647354 0.28311349 0.0647761 0.279637 ] lr.intercept_ = 33800.7389740792 My question is: Why the result from SARIMAX oder=(4,0,0) is not the same as in AR(4) and how to make both models have the same results.

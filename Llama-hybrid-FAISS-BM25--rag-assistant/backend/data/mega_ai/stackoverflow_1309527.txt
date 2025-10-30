@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1309527
-[parent_id]: 1304232
-[tags]: 
-"delete from results where form_id=".$this->data['Result']['form_id'] The problem is that you want to delete on a field other than the primary id . The Model::delete() method expects you to give it the primary id field. When you're trying to do $this->Report->Result->delete($this->data['Result']['form_id']); even if you put the form_id into a nice array first, the result is just this: $this->Report->Result->delete(25); // let's say 'form_id' is 25 That tells delete() to delete the Result with the id 25, it doesn't know that you want to delete based on a different criterium, nor does it care. What you're looking for is Model::deleteAll() . deleteAll(mixed $conditions, $cascade = true, $callbacks = false) Same as with del() and remove(), except that deleteAll() deletes all records that match the supplied conditions. The $conditions array should be supplied as an SQL fragment or array. You should be able to do something like this with it: $this->Result->deleteAll(array('Result.form_id' => $this->data['Result']['form_id']));

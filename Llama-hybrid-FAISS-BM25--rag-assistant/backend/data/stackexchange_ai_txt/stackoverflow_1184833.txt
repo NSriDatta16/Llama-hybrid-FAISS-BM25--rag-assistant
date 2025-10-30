@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1184833
-[parent_id]: 1007607
-[tags]: 
-I am running into the same problem. The way I am working around not being able to access the synthesized instance variables is the following: public header @interface MyObject:NSObject { } @property (retain) id instanceVar; @property (retain) id customizedVar; @end private header / implementation @interface MyObject() @property (retain) id storedCustomizedVar; @end @implementation MyObject @synthesize instanceVar, storedCustomizedVar; @dynamic customizedVar; - customizedVar { if(!self.storedCustomizedVar) { id newCustomizedVar; //... do something self.storedCustomizedVar= newCustomizedVar; } return self.storedCustomizedVar; } - (void) setCustomizedVar:aVar { self.storedCustomizedVar=aVar; } @end It's not that elegant, but at least it keeps my public header file clean. If you use KVO you need to define customizedVar as dependent key of storedCustomizedVar.

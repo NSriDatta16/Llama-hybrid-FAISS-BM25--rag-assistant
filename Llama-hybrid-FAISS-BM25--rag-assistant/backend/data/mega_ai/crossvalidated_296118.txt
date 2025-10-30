@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 296118
-[parent_id]: 296095
-[tags]: 
-If you read the documentation in tensorflow for static_rnn https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py#L1076 You will see that the input should be a list of tensors with size [batch_size, input_size] . But you have flattened your input, previously shaped like [None, sequenceLength, vocabSize] into the shape [None, sequenceLength*vocabSize] When you write outputs, states = tf.nn.static_rnn(cell, [xFlat], dtype=tf.float32) you are passing into the RNN a sequence of length 1 (because there is only one item in the list), but you are giving the RNN the first 24 characters, all in the first time step! Clearly, if you give the RNN all 24 characters in the first time step, it will be able to give you the first 24 characters back. To be clear, since you only passed in one-time step, this is not even an RNN anymore. It is effectively a feed-forward network with one hidden layer. What you should do is not flatten the input x . I'm not sure why you did that. Instead, pass in a list with 24 tensors, each with size [None, vocabSize] .

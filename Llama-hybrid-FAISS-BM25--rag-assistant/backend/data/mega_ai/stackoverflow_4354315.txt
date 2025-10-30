@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4354315
-[parent_id]: 4353857
-[tags]: 
-Based on description you provided I guess you need to load a set of products with preloaded lastoffers, joined to products by FK. The code below should do this: return Session.CreateCriteria(typeof(ProductViewModel), "p") .CreateCriteria("p.LastOffers", "lastoffers") .SetResultTransformer(new NHibernate.Transform.DistinctRootEntityResultTransformer()) .Add(Restrictions.Eq("p.Active", true)) .Add(Restrictions.Eq("p.Status", Status.Started)) .SetMaxResults(50) .List (); Not testes, but idea is that we join two tables and the result will be 'collapsed' to each row of product (by DistinctRootEntityResultTransformer ) Sorry that the example is not in HQL - I prefer Criterias and QueryOver<> as more stable.

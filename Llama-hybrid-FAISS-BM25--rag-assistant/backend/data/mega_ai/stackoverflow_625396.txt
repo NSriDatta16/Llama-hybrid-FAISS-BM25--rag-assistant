@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 625396
-[parent_id]: 625270
-[tags]: 
-I've seen and used this pattern frequently. Its benefit is to simplify memory management and thus avoid risk of memory leaks. All it takes is to free the malloc'ed block. With a secondary buffer, you'll need two free. However one should define and use a destructor function to encapsulate this operation so you can always change its behavior, like switching to secondary buffer or add additional operations to be performed when deleting the structure. Access to array elements is also slightly more efficient but that is less and less significant with modern computers. The code will also correctly work if memory alignment changes in the structure with different compilers as it is quite frequent. The only potential problem I see is if the compiler permutes the order of storage of the member variables because this trick requires that the package field remains last in the storage. I don't know if the C standard prohibits permutation. Note also that the size of the allocated buffer will most probably be bigger than required, at least by one byte with the additional padding bytes if any.

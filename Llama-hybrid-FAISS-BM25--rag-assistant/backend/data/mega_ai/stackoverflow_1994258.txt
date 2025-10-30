@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1994258
-[parent_id]: 
-[tags]: 
-Resolving ambiguous calls in C++ with namespaces
-
-I'm merging a static library (assimp) into an existing project (Spring RTS) where both the library and the project are under regular development. I'm trying to add the library in such a way that I can easily repeat the integration as new releases come out. Anyway, the issue is that Spring requires the library to perform all maths using the streflop maths library. In practice this means min(x,y) should be replaced with streflop::min(x,y) everywhere it is used (which is a lot, considering the issue applies to all maths functions). I could do a mass regex replace but I was hoping for something a little more elegant. After some research and testing it seemed that adding using namespace streflop; at the top of each .cpp file would do the trick but it didn't. The exact error is: /mnt/work/workspace/spring-patch-git/spring/rts/lib/assimp/code/FixNormalsStep.cpp:147: error: call of overloaded sqrtf(const float&) is ambiguous /usr/include/bits/mathcalls.h:157: note: candidates are: float sqrtf(float) /mnt/work/workspace/spring-patch-git/spring/rts/lib/streflop/SMath.h:347: note: streflop::Simple streflop::sqrtf(streflop::Simple) I thought the whole point of namespaces was to resolve this kind of thing but it doesn't seem to work here. I'm a bit confused by the reference to streflop::Simple as well. Is this a nested namespace and could that be part of the reason it isn't working as expected?

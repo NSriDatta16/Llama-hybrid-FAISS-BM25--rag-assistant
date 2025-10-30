@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2917156
-[parent_id]: 
-[tags]: 
-Long running method causing race condition
-
-I'm relatively new with hibernate so please be gentle. I'm having an issue with a long running method (~2 min long) and changing the value of a status field on an object stored in the DB. The pseudo-code below should help explain my issue. public foo(thing) { if (thing.getStatus() == "ready") { thing.setStatus("finished"); doSomethingAndTakeALongTime(); } else { // Thing already has a status of finished. Send the user back a message. } } The pseudo-code shouldn't take much explanation. I want doSomethingAndTakeALongTime() to run, but only if it has a status of "ready". My issue arises whenever it takes 2 minutes for doSomethingAndTakeALongTime() to finish and the change to thing's status field doesn't get persisted to the database until it leaves foo(). So another user can put in a request during those 2 minutes and the if statement will evaluate to true. I've already tried updating the field and flushing the session manually, but it didn't seem to work. I'm not sure what to do from here and would appreciate any help. PS: My hibernate session is managed by spring.

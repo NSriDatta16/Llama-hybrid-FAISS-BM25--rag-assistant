@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1261428
-[parent_id]: 1261380
-[tags]: 
-Since dependencies are always initialised before the objects that depend on them, and remain available until after such objects are destroyed, it should always be safe to destroy objects in strictly reverse order of initialisation. So all you need is a linked list to which you prepend objects as they are initialised and walk on destruction, and for each object to request initialisation of all its dependencies that have not yet been initialised before it initialises itself. So for initialisation of each object: initialise self, initialising uninitialised dependencies as we go add self to front of destruction list (or push self onto stack if you're using a stack) and for destruction, just walk the linked list from the front forwards (or pop items off stack until empty), destroying as you go. The example in your first paragraph initialised in order B, A, C would thus be destroyed in order C, A, B - which is safe; the example in your edit would be initialised in order B, A, E (not A, B, E since A depends on B), and thus destroyed in order E, A, B, which is also safe.

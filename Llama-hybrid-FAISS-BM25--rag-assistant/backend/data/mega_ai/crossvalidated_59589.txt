@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 59589
-[parent_id]: 
-[tags]: 
-Simple mean reversion measure for binary time series
-
-I am trying to define a simple measure for mean reversion in a stochastic sequence of ones and zeros, which I denote by $x_t$. Yes, a unit root test on the cumulative sum could be a viable choice, but I started off by correlating the current value of the stochastic process with the deviation of the cumulative sum from its expected trend. In more detail: let $p_1$ be the probability of $x_t=1$ (and hence $P(x_t=0)=1-p_1$), $n$ the length of the vector $x$. I then define the above mentioned deviation as y = cumsum(x) - (1:n)*p1 and my measure of mean reversion as the (negative) correlation between $x_t$ and $y_{t-1}$: mr = -cor(x[2:n], y[1:(n-1)]) Or as a function: MeanRevert = function(x,p1){ n=length(x) #y is the detrended random walk. y = cumsum(x) - (1:n)*p1 mr = -cor(x[2:n], y[1:(n-1)]) return(mr) } Now for a purely random walk, I expected an average zero value for that correlation but there appears to be a bias: p1 = 0.12;N=100; MRsample=vector() for (i in 1:500){ x= sample(c(1,0), N, replace=TRUE, p = c(p1, 1-p1)) MRsample = c(MRsample, MeanRevert(x, p1=p1)) } hist(MRsample, xlab ="mean reversion", main =paste("p=",p1, "N=",N)) What am I missing, what causes this bias ? Thanks! ML

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1160565
-[parent_id]: 
-[tags]: 
-How do you setup custom Insert/Update/Delete methods to inherited sub-clasess in LinqToSql?
-
-I have created a bass class in LinqToSql which has 2 sub-classes. I need to assign a different stored procedure to each of the sub-classes custom update methods. Doing this is fine, but I get an error of "Invalid object name 'xxx'". e.g. DataClasses1DataContext dc = new DataClasses1DataContext(); Class2 c2 = new Class2() { ID = 1, Name = "test", Type = "s" }; dc.Class1s.InsertOnSubmit(c2); dc.SubmitChanges(); ...Class2 inherits Class1 and Class2 has it's own custom INSERT method (which is what i want it to execute). thanks. SOLUTION : Bryan's answer gave me what I was after. Here is the code I added to the class behind the designer: partial class DataClasses1DataContext { partial void InsertClass1(Class1 instance) { instance.Insert(this); } } partial class Class1 { public abstract void Insert(DataClasses1DataContext dataContext); } partial class Class2 { public override void Insert(DataClasses1DataContext dataContext) { dataContext.InsertSP(((System.Nullable )(ID)), Name); } } partial class Class3 { public override void Insert(DataClasses1DataContext dataContext) { dataContext.InsertSP2((System.Nullable )(ID), Name); } } The InsertSP and InsertSP2 stored procs were dragged on using the designer, to save me the hassle of having to manually call the sp. ALL CREDIT TO BRYAN FOR THIS ONE

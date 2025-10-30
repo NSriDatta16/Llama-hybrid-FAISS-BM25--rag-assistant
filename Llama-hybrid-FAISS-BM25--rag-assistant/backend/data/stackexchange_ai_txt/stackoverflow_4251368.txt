@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4251368
-[parent_id]: 4248300
-[tags]: 
-Edit: This only applies to GNU make - a fair assumption given the "linux" tag. Your target is a real target, not a PHONY one. The problem is that the output directory gets updated when you put targets in it so that it is always newer than your target. This means your target will always get built because it is out of date with respect to its dependencies. What you need is an order-only prerequisite . These prerequisites allow you to specify that it needs to be built if it does not exist, but not to pay attention to the timestamp. That is, a target will not be out of date with respect to order-only prerequisites. You specify it like this: $(EXEC_WITH_PATH): $(DPEND) $(OBJS) | ${OBJ_DIR} ... Anything after the vertical bar is an order-only prerequisite. You can now make your OBJ_DIR target simpler: ${OBJ_DIR} : mkdir -p ${OBJ_DIR} Note: I've used the ${OBJ_DIR} syntax instead of $(OBJ_DIR) because that is what you used. Order-only prerequisites do not depend on that syntax.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1204754
-[parent_id]: 1037209
-[tags]: 
-Okay, you are on the right track here. Just a few things you need to change. You will have to express the field name and field value in the parser rather than in the lexer, since the lexer has no way to tell the difference between these two. Having multiple Lexer expressions that use the same fragment makes it very hard (impossible!) for the Lexer to determine which one of these you want. Moving the determination of these two (name and value) to the parser makes it very easy. To make the value optional, just make that parser term optional (with the '?' behind it). See below for the parse tree produced with the modified grammar (hopefully this is what you were after). I have also pasted the modified grammar at the bottom of my answer for you. alt text http://img268.imageshack.us/img268/7374/graphw.png grammar FilterExpression; options { language=Java; k=2; } tokens { NOT='!'; } term : '(' NOT? field '=' value? ')'; // lexer field : ID; value : ID; ID : ALPHA+ ; fragment ALPHA : ('a'..'z' | 'A'..'Z');

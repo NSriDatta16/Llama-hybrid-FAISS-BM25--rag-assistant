@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2996955
-[parent_id]: 2996754
-[tags]: 
-I don't think there is a particularly elegant solution to this. After much experimenting with the built in array_* functions trying to find a nice simple solution, I gave up and came up with this: $lastStart = $last = $lastDay = null; $new = array(); foreach ($arr as $day => $times) { if ($times != $last) { if ($last != null) { $key = $lastStart == $lastDay ? $lastDay : $lastStart . '-' . $lastDay; $new[$key] = $last; } $lastStart = $day; $last = $times; } $lastDay = $day; } $key = $lastStart == $lastDay ? $lastDay : $lastStart . '-' . $lastDay; $new[$key] = $last; It only uses one foreach loop as opposed to your two, as it keeps a bunch of state. It'll only merge adjacent days together (i.e., you won't get something like Mon-Tue,Thu-Fri if Wednesday is changed, you'll get two separate entries).

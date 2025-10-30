@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1346550
-[parent_id]: 1346519
-[tags]: 
-Wrap the byte array in a MemoryStream object and place that in ASP.NETs Cache. MemoryStream ms = new MemoryStream(user.Picture.ToArray()); Guid imageGuid = new Guid(); HttpRuntime.Cache.Add(imageGuid.ToString(), ms, null, DateTime.Now.AddMinutes(5), Cache.NoSlidingExpiration, CacheItemPriority.Normal, null); Then use a handler (.ashx) to fetch it out of the cache and send it to the client. string imageGuid = context.Request.QueryString[image]; MemoryStream ms = (MemoryStream)HttpRuntime.Cache[imageGuid]; // configure context.Response with appropriate content type and cache settings // ** Edit ** // It seems I need to be more explicit with regard to the above comment:- context.Response.Cache.SetCacheability(HttpCacheability.Public); context.Response.Cache.SetLastModified(DateTime.UtcNow); context.Response.Cache.SetExpires(DateTime.UtcNow.AddHours(2); context.Response.Cache.SetMaxAge(TimeSpan.FromHours(2)); context.Response.Cache.SetValidUntilExpires(true); ms.WriteTo(context.Response.OutputStream); Now you can drop the MemoryStream from the Cache. HttpRuntime.Cache.Remove(imageGuid);

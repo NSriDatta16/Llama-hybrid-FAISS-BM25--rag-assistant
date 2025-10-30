@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1558637
-[parent_id]: 
-[tags]: 
-django - eliminating duplicate related items
-
-Here's a snippet from my application: class PortolioItem(models.Model): ... user = models.ForeignKey(User) contract = models.ForeignKey(Contract) quantity = models.IntegerField(...) ... class Contract(models.Model): ... market = models.ForeignKey(Market) ... You can see that a User has the same number of PortfolioItems as the number of different contracts he owns. I want to email users who have any "contracts" of a specific "market" in their portfolios. And I want to email a user only once, regardless of how many different types of contracts of that market he may own. Here's what I do: #get users that want to receive notices users = User.active_users.investment_notices_users() #get portfolio items for a specific market market = Market.objects.get(pk=1) portfolio_items = PortfolioItem.objects.filter(contract__in = market.contracts.all(), user__in = users) Since a user can have different types of contracts of the same market, the queryset may contain a user for more than once. I can eliminate duplicate users in several ways (an easy solution seems to be: queryset-->list-->set-->list), but wonder if I am at an inefficient/non-elegant solution and there can be a better ORM way that will give me a unique User queryset. Thanks in advance.

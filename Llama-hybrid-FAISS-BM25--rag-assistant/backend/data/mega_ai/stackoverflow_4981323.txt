@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4981323
-[parent_id]: 4971860
-[tags]: 
-A possible (yet not very elegant) solution may be to first UPDATE the record, then read its data: Each deamon will have a unique ID, and the table will have a new column named 'owner' for that ID. Then the deamon will run something like "UPDATE table SET status='processing', owner='theDeamonId' where status='toprocess' ... LIMIT 1" While the update runs the row is locked, so no other deamon can read it. After the update this row is Owned by a specific deamon, then it can run a SELECT to fetch all necessary data from that row (WHERE status='processing' AND owner= 'theDeamonId'). Finally, the last UPDATE will set the row to 'processed', and may (or may not) remove the owner field. Keeping it there will also enable some statistics about the deamons' work.

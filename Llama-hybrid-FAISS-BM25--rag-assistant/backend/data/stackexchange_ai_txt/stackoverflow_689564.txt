@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 689564
-[parent_id]: 689514
-[tags]: 
-Couple options come to mind: 1) malloc the memory in the driver, free it in the app. But... we tend to avoid malloc use in anything that approaches a real time requirement. If you have access to malloc/free, and there are no "real time" concerns or memory fragmentation issues (i.e. your heap is large enough), then this is a fairly easy approach. The driver just sends the allocated pointer to the app thread via a message queue and the app free's the memory when done. Watch out for memory leaks. 2) Ring or circular buffers. The driver completely manages a fixed size ring buffer and simply sends a message to the application when a buffer is ready. See here for some details: Circular buffer . Then the application marks the data "available" again via a driver API, which helps hide the ring buffer details from the app thread. We use this approach for one of our drivers that has a very similiar set of requirements as you describe. In this case, you need to be concerned with determining the "best" size for the ring buffer, overflow handling in the driver, etc. good luck!

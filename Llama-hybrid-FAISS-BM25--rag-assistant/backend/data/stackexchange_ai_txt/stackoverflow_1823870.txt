@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1823870
-[parent_id]: 1818311
-[tags]: 
-Step 1 is loading all your images in ahead of time (preferably on a background thread). You should have your BitmapImage objects initialized with the CacheOption = BitmapCacheOption.OnLoad . You may already be doing this or it might not be the problem (the images cache by default). However the rendering thread also needs to do some work when you change the image source. If you're not displaying at the source image size, that might be a problem, as by default the Image control uses the high quality Fant scaling algorithm. In that case you could get a performance increase by calling RenderOptions.SetBitmapScalingMode(uiImage, BitmapScalingMode.LowQuality); on your Image . Low quality scaling is orders of magnitude faster. However even after that there's still a bit of work involved. If you want to get the fastest animation possible, you can create an Image control for every frame, then overlap them all on the same place and change which one appears on top. You'll still take the hit on the render thread loading all the images in, but the actual animation should be quite snappy.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5264594
-[parent_id]: 5262669
-[tags]: 
-Because of you need retrieve comments by some attributes, by user, etc.., you can't embed(embedding is always faster for document databases) comment in each object that users can comment. So you need create separate collection for the comments. I suggest following structure: comment { _id : ObjectId, status: int (spam =1, approved =2), userId: ObjectId, commentedObjectId: ObjectId, commentedObjectType: int(for example question =1, answer =2, user =3), commentText } With above structure you can easy do things thats you want: //Mark comments as spam/approved and retrieve comments by this attributes //mark specific comment as spam db.comments.update( { _id: someCommentId }, { status: 1 }, true); db.comments.find({status : 1});// get all comments marked as spam //Retrieve comments by user db.comments.find({'_userId' : someUserId}); //Retrieve comment count for an object/user db.comments.find({'commentedObjectId' : someId,'commentedObjectType' : 1 }) .count(); Also i suppose for comments counting will be better to create extra field in each object and inc it on comment add/delete.

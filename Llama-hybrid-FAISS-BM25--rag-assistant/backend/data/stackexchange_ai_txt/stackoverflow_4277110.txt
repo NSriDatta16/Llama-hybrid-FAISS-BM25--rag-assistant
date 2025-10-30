@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4277110
-[parent_id]: 
-[tags]: 
-Odd partitions using last_day
-
-Hi lads I'm trying to automatize a partitioning process here, and well ren into something odd. Why wouldnt'the following work? create table flp_aa (cdate date, value varchar2(255)) PCTUSED 0 PCTFREE 10 INITRANS 1 MAXTRANS 255 STORAGE ( INITIAL 64M ) LOGGING PARTITION BY RANGE (cdate) ( PARTITION flp_aa_1010 VALUES LESS THAN (last_day(to_date('20101101', 'YYYYMMDD'))) NOLOGGING NOCOMPRESS PCTFREE 10 INITRANS 1 MAXTRANS 255 STORAGE ( INITIAL 64M NEXT 512K MINEXTENTS 1 MAXEXTENTS UNLIMITED PCTINCREASE 0 BUFFER_POOL DEFAULT ) ) The idea is to use last_day(to_date('20101101', 'YYYYMMDD')) so each pretty partition ends on the last day of that month and everybody is happy. However I get an ORA-14019 when trying to execute that code... [UPDATE] Darn odd: This work : (...) PARTITION flp_aa_1010 VALUES LESS THAN (to_date('20101101', 'YYYYMMDD')) (...) This doesn't work: (...) PARTITION flp_aa_1010 VALUES LESS THAN (last_day(to_date('20101101', 'YYYYMMDD'))) (...) And this does not again : (...) PPARTITION flp_aa_1010 VALUES LESS THAN to_date(last_day(to_date('201010','YYYYMM')))) (...) What the duck? which class did I miss here? Isn't the output of all these functions the same? could anyone enlighten me? cheers f.

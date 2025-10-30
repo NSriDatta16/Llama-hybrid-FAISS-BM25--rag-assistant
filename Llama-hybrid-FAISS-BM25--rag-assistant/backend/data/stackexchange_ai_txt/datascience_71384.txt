@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 71384
-[parent_id]: 
-[tags]: 
-Problem when using Autograd with nn.Embedding in Pytorch
-
-I am in trouble with taking derivatives of outputs logits with respect to the inputs input_ids . Here is an example of my input: # input_ids is a list of token ids got from BERT tokenizer input_ids = torch.tensor([101., 1996., 2833., 2003., 2779., 1024., 6350., 102.], requires_grad=True) content_outputs = self.bert(input_ids, position_ids=position_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, head_mask=head_mask) # content_outputs[1] is sentence embedding logits = F.linear(content_outputs[1], self.W_s, self.b_s) # Notes: # - input_ids.dtype = torch.float32 # - input_ids.is_leaf = True # - input_ids.requires_grad = True # - Torch version: 1.0.1 To compute the gradients for input_ids , input_ids.dtype must be float; otherwise, I will get the following error: RuntimeError: Only Tensors of floating point dtype can require gradients However, my model is using an embedding layer which requires the input with dtype=long causing another problem if I use the input_ids initialized with float type above: RuntimeError: Expected tensor for argument #1 'indices' to have scalar type Long; but got torch.FloatTensor instead (while checking arguments for embedding) I have also searched on Stack Overflow as well as Stack Exchange but I found nothing related to this problem. Please help me with this. Any comments would be appreciated!

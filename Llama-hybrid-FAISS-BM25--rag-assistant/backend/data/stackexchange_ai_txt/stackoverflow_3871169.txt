@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3871169
-[parent_id]: 
-[tags]: 
-header() problem in IE
-
-I have a function for outputting documents, images etc: public function direct($theMimeType, $thePath) { header('Content-type: '.$theMimeType); ob_clean(); // clean output buffer flush(); // flush output buffer readfile($thePath); exit; } It works great in Firefox. The file opens whether it is PDF, DOCX or any other file. However, in IE it freezes and nothing shows up. What could cause this? EDIT: I have added few other headers: public function direct($theMimeType, $thePath) { $aSize = filesize($thePath); $aBegin = 0; $aEnd = $aSize; $aFilename = end(explode('/', $thePath)); $aTime = date('r', filemtime($thePath)); $aContentDisposition = ('application/pdf' === $theMimeType) ? 'inline' : 'atachment'; header('HTTP/1.0 200 OK'); header("Content-Type: $theMimeType"); header('Cache-Control: public, must-revalidate, max-age=0'); header('Pragma: no-cache'); header('Accept-Ranges: bytes'); header('Content-Length:'.($aEnd-$aBegin)); header("Content-Range: bytes $aBegin-$aEnd/$aSize"); header("Content-Disposition: $aContentDisposition; filename=$aFilename"); header("Content-Transfer-Encoding: binary\n"); header("Last-Modified: $aTime"); header('Connection: close'); ob_clean(); // clean output buffer flush(); // flush output buffer readfile($thePath); exit; } Well, it works in IE now but still it opens the file much slower than Firefox. There seems to be few seconds freeze up before the IE browser opens the file.

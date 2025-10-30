@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3971279
-[parent_id]: 
-[tags]: 
-Expected System.String, got System.Guid
-
-I am hoping there is a very simple explanation why I am getting this error. I am using S#arpArcitecture 1.6. on a 64bit Windows 7 install. Line 3 of the following code gives the error: {"Provided id of the wrong type. Expected: System.String, got System.Guid"} System.Exception {NHibernate.TypeMismatchException} 1 public Category GetCategory(Guid id) 2 { 3 Category cat = categoryRepository.Get(id); 4 return cat; 5 } Supporting Info Table (SQL Server 2008) CREATE TABLE [dbo].[MasterCategories] ( [masterCategoryId] [uniqueidentifier] ROWGUIDCOL NOT NULL, [organizationId] [nchar](5) NOT NULL, [categoryNumber] [nvarchar](25) NOT NULL ) Entity Definition public class Category : EntityWithTypedId Fluent Mapping public void Override(AutoMapping mapping) { mapping.Table("MasterCategories"); mapping.Id(x => x.Id).Column("masterCategoryId"); mapping.Map(x => x.Number).Column("categoryNumber"); mapping.References(x => x.Organization) .Column("organizationId") .Cascade.All(); } Repository Interface public interface ICategoryRepository : IRepositoryWithTypedId { } Repository public class CategoryRepository : RepositoryWithTypedId , ICategoryRepository { }

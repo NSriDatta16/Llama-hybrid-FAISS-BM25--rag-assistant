@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 336575
-[parent_id]: 
-[tags]: 
-Can I force LWP::UserAgent to accept an expired SSL certificate?
-
-I would like to know whether it is possible to force LWP::UserAgent to accept an expired SSL certificate for a single, well-known server. The issue is slightly complicated by the Squid proxy in between. I went as far as to set up a debugging environment like: use warnings; use strict; use Carp; use LWP::UserAgent; use LWP::Debug qw(+); use HTTP::Cookies; my $proxy = 'http://proxy.example.net:8118'; my $cookie_jar = HTTP::Cookies->new( file => 'cookies.tmp' ); my $agent = LWP::UserAgent->new; $agent->proxy( [ 'http' ], $proxy ); $agent->cookie_jar( $cookie_jar ); $ENV{HTTPS_PROXY} = $proxy; $ENV{HTTPS_DEBUG} = 1; $ENV{HTTPS_VERSION} = 3; $ENV{HTTPS_CA_DIR} = '/etc/ssl/certs'; $ENV{HTTPS_CA_FILE} = '/etc/ssl/certs/ca-certificates.crt'; $agent->get( 'https://www.example.com/'); exit; Fortunately the issue was eventually fixed on the remote server before I was able to come up with my own solution, but I would like to be able to optionally circumvent the problem should it arise again (the underlying service had been disrupted for several hours before I was called into action). I would favor a solution at the LWP::UserAgent level over one based on the underlying Crypt::SSLeay or openSSL implementations, if such a solution exists, since I prefer not to relax security for other unrelated applications. Of course I am still looking for such a solution myself, in my copious free time.

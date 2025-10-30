@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4496931
-[parent_id]: 4492903
-[tags]: 
-You're not specifying anywhere in your code that the FilePath property should be TwoWay so updates of the DP value won't get pushed to the bound source object's property. You can use either: Binding b = new Binding(pi.Name){ Mode = BindingMode.TwoWay }; or you can set up your Dependency Property to use a default of TwoWay: public static readonly DependencyProperty FilePathProperty = DependencyProperty.Register( "FilePath", typeof(string), typeof(FileSave), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnFilePathChanged)); You should also follow Robert's suggestion of removing the manual PropertyChange event, and also don't EVER add any code other than GetValue and SetValue in your DP wrapper property. XAML calls GetValue and SetValue directly so will skip over anything else you add there - which can lead to very nasty bugs.

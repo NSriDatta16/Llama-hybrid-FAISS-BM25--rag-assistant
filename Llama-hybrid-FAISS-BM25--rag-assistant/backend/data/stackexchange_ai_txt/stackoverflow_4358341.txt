@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4358341
-[parent_id]: 2690416
-[tags]: 
-If possible I would go for a stream based approach and use a forward only Xml parser in combination, which should give you better performance as well. If you don't absolutely have to use WCF, you can write your own HttpRequest and then pass the response to the XmlDeserializer and then parse the response like that. It might give you more control and insight into where the problem actually occurs. You can also experiment with a mock service that returns very large documents of the type you are looking for. We had a lot of headaches with the LOH fragmentation as well so I really feel your pain. A problem I noticed when building buffers .NET tends to double capacity every time the buffer is filled up, which causes memory fragmentation since for a document of size 10mb, memory needs to be allocated in many steps. If you know the needed buffer size in advance, it is more efficient to allocate it at once. So if you know how big the incoming document will be, you can create a StringBuilder with exactly that size.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2800256
-[parent_id]: 2785692
-[tags]: 
-This explanation was given by Bernard Duggan on the Erlang questions mailing list : Linked processes don't automatically die when a process they are linked to exits with code 'normal'. That's why [echo_server] doesn't exit when the spawning process exits. So why does the supervisor die? The internals of the supervisor module are in fact themselves implemented as a gen_server, but with process_flag(trap_exit, true) set. The result of this is that when the parent process dies, terminate() gets called (which doesn't happen when trap_exit is disabled) and the supervisor shuts down. It makes sense in the context of a supervisor, since a supervisor is spawned by its parent in a supervision tree - if it didn't die whenever its parent shutdown, whatever the reason, you'd have dangling "branches" of the tree.

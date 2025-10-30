@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5115596
-[parent_id]: 5114797
-[tags]: 
-Not sure if this is what you want, but i would make a method that would do the sending of the emails and the creation of the freeagent, and then let it be handled by delayed_job. Something like class Kase def send_emails(current_user, send_to_highrise, notify_team, send_to_freeagent) UserMailer.deliver_makeakase("dropbox@1223111.domain.highrisehq.com", "Highrise", self) if send_to_highrise UserMailer.deliver_makeakaseteam("surveymanager@domain.co.uk", "Highrise", self) if notify_team self.create_freeagent_project(current_user) if send_to_freeagent end end and in your controller you would then write if @kase.save @kase.delay.send_emails(current_user, params[:sendtohighrise], params[:notify_team_of_creation], params[:send_to_freeagent]) redirect_to @kase flash[:notice] = fading_flash_message("Case was successfully created.", 5) else ... or just handing down the params is maybe simpler/cleaner.

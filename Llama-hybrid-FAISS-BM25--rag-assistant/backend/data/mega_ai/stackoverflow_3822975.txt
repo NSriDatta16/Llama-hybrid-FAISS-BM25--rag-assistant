@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3822975
-[parent_id]: 3716857
-[tags]: 
-It is very easy to search for letters at the beginning of a string. You just need a view that emits the string you want to search for as the key. Assuming the user input is stored in a variable q , you then call that view with the parameters startkey=q and endkey=q+"\ufff0" . The trick here is to append the highest possible Unicode character to the search string. In the sort order, this string comes after anything else starting with q . (This is much easier to implement than the solution suggested by @titanoboa, where you need to "increment" the last letter of the user input.) If you also want to be able to find words in the middle of a string (e.g. "The Colbert Report" when typing "co"), you could use a view like this: function(doc) { if (doc.title) { var words = {}; doc.title.replace(/\w+/g, function(word) { words[word.toLowerCase()] = true; }); for (w in words) { emit(w, doc); } } } Of course this is only advisable for short strings. For searching in longer texts you should look into a full-text search add-on like couchdb-lucene .

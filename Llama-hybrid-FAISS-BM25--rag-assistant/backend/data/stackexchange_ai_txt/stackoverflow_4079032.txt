@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4079032
-[parent_id]: 4078011
-[tags]: 
-Assuming that you can't avoid using runAllManagedModulesForAllRequests="true" as in Hector's link, you could check the type of the request handler and only set the caching headers if the request is being handled by MVC. protected void Application_PreRequestHandlerExecute() { if ( HttpContext.Current.CurrentHandler is MvcHandler ) { HttpContext.Current.Response.Cache.SetExpires(DateTime.UtcNow.AddDays(-1)); HttpContext.Current.Response.Cache.SetValidUntilExpires(false); HttpContext.Current.Response.Cache.SetRevalidation(HttpCacheRevalidation.AllCaches); HttpContext.Current.Response.Cache.SetCacheability(HttpCacheability.NoCache); HttpContext.Current.Response.Cache.SetNoStore(); } } Note that I've moved the code into Application_PreRequestHandlerExecute because the handler hasn't yet been chosen in BeginRequest , so HttpContext.Current.CurrentHandler is null.

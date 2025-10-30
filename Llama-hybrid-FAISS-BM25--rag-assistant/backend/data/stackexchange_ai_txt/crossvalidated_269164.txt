@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 269164
-[parent_id]: 269113
-[tags]: 
-The answer depends on what software is used for fitting and what error measure is minimized when fitting the distributions. As an example, STAN reference (v2.14.0) provides details on fitting finite mixtures in chapter 12. Here is a simple code draft adapted for fitting a mixture of Gaussian and Gamma distribution. data { int N; // number of data points real y[N]; // observations } parameters { simplex[2] theta;// mixing proportions real phi[4]; // distribution parameters } model { real ps[2]; // temp for log component densities for (n in 1:N) { ps[1] = log(theta[1])+ normal_lpdf(y[n] | phi[1], phi[2]); ps[2] = log(theta[2])+ gamma_lpdf(y[n] | phi[3], phi[4]); target += log_sum_exp(ps); } } The code computes $p(y|\phi,\theta_1)= \sum_{i=1}^N\log(\theta_1) \mathrm{PDF}_\mathrm{Normal}(y_i|\phi_1,\phi_2) +\log(1-\theta_1) \mathrm{PDF}_\mathrm{Gamma}(y_i|\phi_3,\phi_4) $ and adds it to the log density of the MCMC sampling algorithm.

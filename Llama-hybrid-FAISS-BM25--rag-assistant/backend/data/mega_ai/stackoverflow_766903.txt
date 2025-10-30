@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 766903
-[parent_id]: 766859
-[tags]: 
-The problem with what you are doing is that to extract the data that is stored inside the drag, you have to specify the exact type. control.DoDragDrop(new Label(), DragDropEffects.Move); e.Data.GetDataPresent(typeof(Control)) // = false e.Data.GetDataPresent(typeof(Label)) // = true What you have to do is create a wrapper and use that for your drag-and-drop code. class ControlWrapper { public Control Control { get; private set; } public ControlWrapper(Control control) { Control = control; } } control.DoDragDrop(new ControlWrapper(new Label()), DragDropEffects.Move); e.Data.GetDataPresent(typeof(ControlWrapper)) // = true And your code now becomes ControlWrapper controlWrapper = e.Data.GetData(typeof(ControlWrapper)) as ControlWrapper; UserControl userControl = controlWrapper.Control as UserControl; And trying not to sound too preachy, but you should check if the data exists in the form you want first. e.Data.GetDataPresent(typeof(ControlWrapper)) will tell you if it is that format.

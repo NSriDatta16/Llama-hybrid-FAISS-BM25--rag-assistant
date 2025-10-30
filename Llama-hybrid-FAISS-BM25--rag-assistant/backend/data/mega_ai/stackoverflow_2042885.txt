@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2042885
-[parent_id]: 
-[tags]: 
-Add comma-separated value of grouped rows to existing query
-
-I've got a view for reports, that looks something like this: SELECT a.id, a.value1, a.value2, b.value1, /* (+50 more such columns)*/ FROM a JOIN b ON (b.id = a.b_id) JOIN c ON (c.id = b.c_id) LEFT JOIN d ON (d.id = b.d_id) LEFT JOIN e ON (e.id = d.e_id) /* (+10 more inner/left joins) */ It joins quite a few tables and returns lots of columns, but indexes are in place and performance is fine. Now I want to add another column to the result, showing comma-separated values ordered by value from table y outer joined via intersection table x if a.value3 IS NULL , else take a.value3 To comma-separate the grouped values I use Tom Kyte's stragg , could use COLLECT later. Pseudo-code for the SELECT would look like that: SELECT xx.id, COALESCE( a.value3, stragg( xx.val ) ) value3 FROM ( SELECT x.id, y.val FROM x WHERE x.a_id = a.id JOIN y ON ( y.id = x.y_id ) ORDER BY y.val ASC ) xx GROUP BY xx.id What is the best way to do it? Any tips?

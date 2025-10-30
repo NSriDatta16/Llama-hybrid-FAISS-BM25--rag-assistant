@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4392756
-[parent_id]: 4392574
-[tags]: 
-Yes, really should steer clear of cursors when possible. Something like this approach would probably be best, storing the results of the query in a temporary table, and then running update statements to get your calculations: declare @Table table ( @Item varchar(10) @OrderCount int @QuantityTotal int @AvgQuantity numeric(9, 2) @Calc1 numeric(9, 2) @Calc2 numeric(9, 2) ) insert into @Table (@Item, @OrderCount, @QuantityTotal, @AvgQuantity) select Items, count(Orders) as NumberOfOrders, sum(Orders) as TotalOrderQuantity, avg(Orders + 0.0) as AverageOrderQuantity from Fruits group by Items order by 1 update @Table set @Calc1 = @OrderCount / @AvgQuantity, @Calc2 = ... select * from @Table or if you can get all your calculations in a single row or joins with another table, you can do it in a single statement, like: select *, (OrderCount / AvgQuantity) as Calc1, (... as Calc2) from ( select Items, count(Orders) as OrderCount, sum(Orders) as TotalQuantity, avg(Orders + 0.0) as AvgQuantity from Fruits group by Items ) t

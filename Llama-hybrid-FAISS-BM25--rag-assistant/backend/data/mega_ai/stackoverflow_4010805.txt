@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4010805
-[parent_id]: 
-[tags]: 
-Amazon S3 path or to_file wont work
-
-Hey guys ive got the following code in my Model require 'RMagick' class Upload has_attached_file :photo, :styles => { :thumb => ["100x100", :jpg], :pagesize => ["500x400", :jpg], }, :storage => :s3, :s3_credentials => "#{RAILS_ROOT}/config/s3.yml", :path => ":attachment/:id/:style.:extension", :bucket => 'your_deck', :default_style => :pagesize attr_accessor :x1, :y1, :width, :height def update_attributes(att) scaled_img = Magick::ImageList.new(self.photo.path) orig_img = Magick::ImageList.new(self.photo.path(:original)) scale = orig_img.columns.to_f / scaled_img.columns args = [ att[:x1], att[:y1], att[:width], att[:height] ] args = args.collect { |a| a.to_i * scale } orig_img.crop!(*args) orig_img.write(self.photo.path(:original)) self.photo.reprocess! self.save super(att) end end This code works offline however when on Heroku with Amazon S3 it fails to work, ive tried the code with to_file and it also wont work I get the following error can't convert Array into String

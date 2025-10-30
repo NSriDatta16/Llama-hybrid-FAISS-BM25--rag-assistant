@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3824792
-[parent_id]: 3471835
-[tags]: 
-Answering my own question: how I've solved the problem so far is to create a base class which serializes and deserializes using a cheap little proxy. The proxy contains only the name of the bean. You'll note that it uses a global to access the Spring context; a more elegant solution might store the context in a thread-local variable, something like that. public abstract class CheaplySerializableBase implements Serializable, BeanNameAware { private String name; private static class SerializationProxy implements Serializable { private final String name; public SerializationProxy(CheaplySerializableBase target) { this.name = target.name; } Object readResolve() throws ObjectStreamException { return ContextLoader.globalEvilSpringContext.getBean(name); } } @Override public void setBeanName(String name) { this.name = name; } protected Object writeReplace() throws ObjectStreamException { if (name != null) { return new SerializationProxy(this); } return this; } } The resulting serialized object is 150 bytes or so (if I remember correctly).

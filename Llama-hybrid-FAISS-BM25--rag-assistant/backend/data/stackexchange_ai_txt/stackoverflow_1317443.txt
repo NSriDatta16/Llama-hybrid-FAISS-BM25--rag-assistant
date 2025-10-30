@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1317443
-[parent_id]: 
-[tags]: 
-Testing with sanitize
-
-I have this in my application_helper.rb : def bbcode(text) # Code snippets text.gsub!(/\[code=?["']?(.*?)["']?\](.*?)\[\/code\]/mis) { CodeRay.scan($2.strip, $1.to_sym).div(:line_numbers => :table)} text = sanitize(text, :tags => %w(span div table tr td br pre tt), :attributes => %w(id class style)) # Gist embedding text.gsub!(/\[gist\](.*?)\[\/gist\]/) { $1.split(" ").map { |gist| " " } } # allows for nested quotes bbquote(text) # non-attributed quote text.gsub!(/\[quote\](.*?)\[\/quote\]/mis) { " " " } # Terminal example text.gsub!(/\[term\](.*?)\[\/term\]/mi) { " " ","&gt;") " } # URLs text.gsub!(/\[url=["']?(.*?)["']?\](.*?)\[\/url\]/mis) { " " " } # handle with care... bbcode_ext(text) end As a good Rails developer, I've attempted to write a test for this method: require File.dirname(__FILE__) + '/../spec_helper' describe ApplicationHelper, "general" do include ApplicationHelper it "should correctly encapsulate double quotes" do bbcode('[quote="Kitten"][quote="Dog"]QUOTE INSIDE[/quote]QUOTE OUTSIDE[/quote]').should eql(" Kitten wrote: Dog wrote: QUOTE OUTSIDE ") end end When I go to run this test however I get this error undefined method 'white_list_sanitizer' for Spec::Rails::Example::HelperExampleGroup::Subclass_1:Class This is because Spec::Rails::Example::HelperExampleGroup::Subclass_1:Class != ActionView::Base . How do I test this code that uses the sanitize method?

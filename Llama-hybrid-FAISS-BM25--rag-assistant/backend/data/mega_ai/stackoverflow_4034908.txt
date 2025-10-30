@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4034908
-[parent_id]: 
-[tags]: 
-Fetch-and-add using OpenMP atomic operations
-
-I’m using OpenMP and need to use the fetch-and-add operation. However, OpenMP doesn’t provide an appropriate directive/call. I’d like to preserve maximum portability, hence I don’t want to rely on compiler intrinsics. Rather, I’m searching for a way to harness OpenMP’s atomic operations to implement this but I’ve hit a dead end. Can this even be done? N.B., the following code almost does what I want: #pragma omp atomic x += a Almost – but not quite, since I really need the old value of x . fetch_and_add should be defined to produce the same result as the following (only non-locking): template T fetch_and_add(volatile T& value, T increment) { T old; #pragma omp critical { old = value; value += increment; } return old; } (An equivalent question could be asked for compare-and-swap but one can be implemented in terms of the other, if I’m not mistaken.)

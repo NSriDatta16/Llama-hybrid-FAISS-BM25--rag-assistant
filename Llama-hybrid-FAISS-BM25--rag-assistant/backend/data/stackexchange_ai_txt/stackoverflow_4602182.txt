@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4602182
-[parent_id]: 4601424
-[tags]: 
-Get ready for a trip down memory lane. glTexImage2D(GL_TEXTURE_2D, 0, 3, ..., ..., 0, GL_RGBA, GL_UNSIGNED_BYTE, ...); That 3 in there is your problem. The right part of the arguments (RGBA+UNSIGNED_BYTE) mentions what your source data type is. the destination data type is the third argument (i.e. what GL will store your texture as). As it happens, when GL 1.0 was created, texturing was somewhat simpler. So the parameter only was required to specify the number of channels you wanted for your final texture, with the mapping 1=GL_LUMINANCE 2=GL_LUMINANCE_ALPHA 3=GL_RGB 4=GL_RGBA I believe this use is discouraged, but as you can see, still works. So... Your texture is stored as GL_RGB, without alpha. The rest is simple application of the spec. A replace on a texture with internal format RGB does final_color=texture_color and final_alpha=fragment_alpha (aka the source from glColor in your case). See this man page for the full tables of texture environment based on internal formats.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1235869
-[parent_id]: 1235544
-[tags]: 
-Doing this so that it is sound and correct even when multiple sessions are doing updates is not easy. You will get yourself in a mess if you try this with triggers, and Oracle's declarative constraints are not powerful enough to express this. It can be done as follows:- Create a materialized view log on both the parent and the child tables Create a materialized join view that joins them together and counts the number of children grouped by the parent. This must be REFRESH FAST ON COMMIT Put a constraint on the materialized join view that the count of child records must equal "n" (your database constant) You can then do a series of insert/update/delete statements. When you commit, the materialized view will refresh and if the condition is not met you will get a constraint violation error at that point. A bonus bit of trickery is to only include rows that fail the constraint into the materialized view (HAVING count(ChildId) <> 5) so you do not waste any storage space.

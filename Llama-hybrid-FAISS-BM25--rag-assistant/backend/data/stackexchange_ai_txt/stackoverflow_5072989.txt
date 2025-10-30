@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5072989
-[parent_id]: 5072952
-[tags]: 
-Both [H|concatenate([T|Tail])] and [H|concatenate(T,Tail)] are not tail-recursive calls, because either calls are a part of another expression, and thus control would be returned to the expression, which includes a call to your concatenate/1,2 . The proper tail-recursive conc could look something like: -module(concat). -export([concatenate/1]). concatenate(L) -> conc(L, []). conc([], Acc) -> lists:reverse(Acc); conc([[H|T] | L1], Acc)-> conc([T|L1], [H|Acc]); conc([[] | L1], Acc) -> conc(L1, Acc). Here, in conc/2 , the call to itself is the last operation in the function body, and the function will never return. EDIT : If we forget about optimizations of non-tail-recursive calls, @Robert mentioned, for the moment, we could end up with memory overflow due to return adresses of calling functions passed onto the stack (heap?). This could happen if you called your non-tail-recursive function passing it a list with a considerable length on a system with insufficient memory size to hold such amount of return addresses.

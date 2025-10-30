@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 353993
-[parent_id]: 
-[tags]: 
-Differencing a perfectly seasonal time series
-
-I was just playing around today with differencing and wanted to see what happened if I differenced a sine function. As far as I am aware, differencing usually results in producing small auto correlations. My expectation was that differencing a perfectly seasonal function would result in near 0 ACFs. What happened was that my ACFs were just as large as the sine function ACFs. To set this up I used the following code: library(tidyverse) #prepare data df % mutate(y = sin(x), diff = c(NA, diff(y)), date = seq(as_date("2010-01-01"), by = "1 day", length.out = 5000)) df %>% ggplot(aes(y = y, x = date))+ geom_line() + geom_line(aes(y = diff)) Code for the ACFs: library(tsibblestats) df %>% na.omit() %>% ACF(value = diff) lag acf 1 1DAY 1.000 2 2DAY 0.999 3 3DAY 0.998 4 4DAY 0.998 5 5DAY 0.997 6 6DAY 0.996 7 7DAY 0.995 8 8DAY 0.994 9 9DAY 0.992 10 10DAY 0.991 and sine acf df %>% na.omit() %>% ACF(value = y) lag acf 1 1DAY 1.000 2 2DAY 1.000 3 3DAY 1.000 4 4DAY 0.999 5 5DAY 0.999 6 6DAY 0.998 7 7DAY 0.998 8 8DAY 0.997 9 9DAY 0.996 10 10DAY 0.995 If differencing is supposed to make a seasonal time series stationary, why is this not the case in a perfectly seasonal time series, as shown with the sine function?

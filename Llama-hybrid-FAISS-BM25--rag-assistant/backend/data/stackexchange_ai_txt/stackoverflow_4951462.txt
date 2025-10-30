@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4951462
-[parent_id]: 4950645
-[tags]: 
-ConvertTo-Html returns a list of objects - some are strings and some are string arrays e.g.: 407# $headerString = " Foo. " 408# $footerString = " " 409# $content = Get-Date | select Day, Month, Year 410# $MyReport = $Content | ConvertTo-Html -Fragment -PreContent $headerString ` -PostContent $footerString 411# $MyReport | Foreach {$_.GetType().Name} String[] String String String String String String String String String String[] So $MyReport contains an array of both strings and string arrays. When you pass this array to the MailMessage constructor, which expects type string, PowerShell attempts to coerce that to a string. The result is: 412# "$MyReport" System.String[] Day Month Year 9 2 2011 System.String[] The easy solution is to run the output of ConverTo-Html through Out-String which will cause $MyReport to be a single string: 413# $MyReport = $Content | ConvertTo-Html -Fragment -PreContent $headerString ` -PostContent $footerString | Out-String 414# $MyReport | Foreach {$_.GetType().Name} String

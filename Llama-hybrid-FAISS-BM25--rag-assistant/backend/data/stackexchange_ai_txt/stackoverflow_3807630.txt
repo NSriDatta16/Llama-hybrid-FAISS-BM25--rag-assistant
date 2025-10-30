@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3807630
-[parent_id]: 3807475
-[tags]: 
-Yes, can't work. You need the actual instance of a class that implements IHandleTraits. Interfaces need a class that implements a v-table. As long as you want to seal this class, you need a factory or create an instance of T. Realistically, the object hierarchy is wrong. SafeHandle should be an abstract base class with concrete derived classes that each know how to deal with a specific handle type. That's how the desktop version of SafeHandle is implemented as well. You can rescue your approach by giving T the new() constraint so that you can create an instance of it. Dragging around the extra reference isn't that great though: public sealed class SafeHandle : IDisposable where T : IHandleTraits, new() { private bool disposed; private IntPtr handle_ = IntPtr.Zero; private T handleType; public SafeHandle() { handleType = new T(); handle_ = handleType.Create(); } // etc... }

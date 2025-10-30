@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 484419
-[parent_id]: 484357
-[tags]: 
-Your struct here is just array of bytes, it contains no pointers that point out of it. Member-to-member copy is most likely performed to cope with alignment, as (char*) &address will likely be greater than ((char*) &descriptor_msg) + 5 . USARTWrite sends HEX codes of the bytes of your struct to stdout , but discards alignment. Compiling this code with different alignment strategies will lead to different outputs. Enclose your structure declaration into #pragma pack(push, n) and #pragma pack(pop) to force alignment, and just copy your structure byte-to-byte.

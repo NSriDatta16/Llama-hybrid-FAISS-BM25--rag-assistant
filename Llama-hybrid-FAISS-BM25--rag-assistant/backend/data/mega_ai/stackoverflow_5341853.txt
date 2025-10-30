@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5341853
-[parent_id]: 4477090
-[tags]: 
-Query string args should be properly escaped and not just concatenated! Building an url with query string by string concatenation is as bad idea as building SQL queries by string concatenation. It is complicated, unelegant and especially dangerous with a user provided (untrusted) input. Unfortunately Django does not offer an easy possibility to pass query parameters to the reverse function. Python standard urllib however provides the desired query string encoding functionality. In my application I've created a helper function like this: def url_with_querystring(path, **kwargs): return path + '?' + urllib.urlencode(kwargs) Then I call it in the view as follows: quick_add_order_url = url_with_querystring(reverse(order_add), responsible=employee.id, scheduled_for=datetime.date.today(), subject='hello world!') # http://localhost/myapp/order/add/?responsible=5& # scheduled_for=2011-03-17&subject=hello+world%21 Please note the proper encoding of special characters like space and exclamation mark!

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2750834
-[parent_id]: 2750351
-[tags]: 
-It turns out the issue was that of this.save() being called from an unsafeWindow context. This is a security violation, but one that should have resulted in an access violation exception being thrown: Error: Greasemonkey access violation: unsafeWindow cannot call GM_getValue. Instead GM_setValue returns having done nothing, and the subsequent logging instructions also execute, so there was no hint of the issue and the documentation may be out of date. In my quest to solve this problem by any means, I abstracted away GM_ storage functions so I could use other storage mechanisms, so the workaround will be to put all save instructions in a pre-existing cleanup routine that runs in setInterval, similar to the fix described in the aforementioned documentation. (The use of an existing interval is to prevent excessive creation of timers which have in the past degraded performance over browser uptime.)

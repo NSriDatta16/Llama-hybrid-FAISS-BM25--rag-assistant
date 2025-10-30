@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3273185
-[parent_id]: 3273003
-[tags]: 
-No, it doesn't work like that. You need explicit storage for each structure: struct A { int n; void *config; }; struct AConfig { int a; char *b; }; struct BConfig { int a; float b; }; struct AConfig ac = { 1932, "hello" }; struct BConfig bc = { 14829, 33.4f }; const struct A table[] = { { 103, &ac }, { 438, &bc } }; Edit: Another possibility is to utilize a union and C99 ( -std=c99 ) named initializers: enum config_type { CT_INT, CT_FLOAT, CT_STRING }; union config_value { int int_value; float float_value; const char* string_value; }; struct config { enum config_type ctype; union config_value cvalue; }; struct config sys_config[] = { { CT_INT, { .int_value = 12 }}, { CT_FLOAT, { .float_value = 3.14f }}, { CT_STRING, { .string_value = "humppa" }}}; void print_config( const struct config* cfg ) { switch ( cfg->ctype ) { case CT_INT: printf( "%d\n", cfg->cvalue.int_value ); break; case CT_FLOAT: printf( "%f\n", cfg->cvalue.float_value ); break; case CT_STRING: printf( "%s\n", cfg->cvalue.string_value ); break; default: printf( "unknown config type\n" ); } }

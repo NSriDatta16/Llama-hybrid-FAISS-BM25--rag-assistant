@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 576604
-[parent_id]: 576536
-[tags]: 
-As Chris J said, the null values are returned as undefined values. If you had warnings enabled, you would have received an "undefined value in print" warning when you printed the values. Using the strict and warnings pragmata can save a lot of time debugging. The diagnostics pragma adds additional explanatory text to the standard warnings and fatal errors. It's pretty easy to trap and replace the NULL values as they come from the database: use strict; use warnings; my @nulls = (); while ((my $null) = $sth1->fetchrow_array) { # before perl 5.10: use the ternary operator. push @nulls, defined $null ? $null : 'NULL'; # perl 5.10 adds the defined-or operator: // push @nulls, $null // 'NULL'; } Or you could build your @nulls array the same way you show above, and then alter the nulls at display time. my @pre_5_10 = map { defined $_ ? $_ : 'NULL' } @nulls; my @perl_5_10 = map { $_ // 'NULL' } @nulls;

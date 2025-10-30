@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 298738
-[parent_id]: 
-[tags]: 
-A Bayesian model using random-walk Metropolis method for data augmentation
-
-I have following model, z=beta1+X1*beta2+e; e~N(0,sigma2) prob=exp(z)/(1+exp(z)); and y= 1 with prob, 0 with (1-prob). I have the following prior: beta~N(betahat,A^(-1)); betahat=c(0,0) and A=0.01*I sigma2~inv-gamma(nu,ssq); nu=0.01*N and ssq=1 I want to use a data augmentation method to solve this model. The steps go like, Based on the likelihood function, draw the augmented value of z for each observation. With the draws of z, obtain beta by standard univariate regression of z on X=[1, X1]. So, I write the following R code, #simulate dataset N=200 X=cbind(runif(N),runif(N)) beta_true=c(1,2) k=length(beta_true) z_true=X%*%beta_true+rnorm(N,sd=2) prob=exp(z_true)/(1+exp(z_true)) y=rbinom(N,1,prob) #prior betabar=c(1,2) A=0.01*diag(k) nu=0.01*N ssq=1 #univeriate regression of y on X uni_regression_one_gibbs However, it can not recover the true value of beta=[1,2]. The problem may be with the likelihood function, I'm not sure. This model is similar to logit, but not the same: we have an error term for z here, instead of z=X*beta in logit. I need latent variable z for later study so I have to use the data augmentation method. Is Metropolis here able to achieve this goal? Any comments and suggestions welcomed!

@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 591505
-[parent_id]: 591502
-[tags]: 
-The null likelihood is computed using the marginal estimate of the mean of the outcome. In other words, it is the negative log likelihood of a model with a single parameter (namely, the intercept). Here is how to compute the null likelihood using python and a comparison with statsmodels import numpy as np import statsmodels.api as sm from statsmodels.tools import add_constant from scipy.special import expit # Simulate some data x = np.random.normal(size = 100) X = add_constant(x) eta = -2 + 0.8*x p = expit(eta) y = np.random.binomial(p=p, n=1) # Fit the model fit = sm.Logit(y, X).fit() fit.summary() marginal_p = y.mean() # Here I am computing the likelihood using a model with a single parameter # I know that p will just be the average of the ys in this model nLL = (np.log(marginal_p)*y + np.log(1-marginal_p)*(1-y)) # Does not yield an exception, so this must be true. np.testing.assert_allclose(nLL.sum(), fit.llnull) I don't see you computing the average if the y in your solution, which si probably the source of the error.

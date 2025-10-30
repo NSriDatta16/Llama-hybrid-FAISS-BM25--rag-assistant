@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5354930
-[parent_id]: 5354850
-[tags]: 
-Array#reject to the rescue, again! Like Array#map , it accepts blocks, allowing you to do something like this: zip_codes = CardSignup.all.map(&:zip_code) @email.distributions.reject{|o| !zip_codes.include?(o.zip_code)} Oh, but of course, if you like finding more elegant ways, always consider the operators like you already did. & will return a new array with objects that are in both, | will join and remove duplicates. ruby-1.9.2-p0 > [1,2] | [2,3] => [1, 2, 3] ruby-1.9.2-p0 > [1,2] & [2,3] => [2] Edit: as Tokland said in the comments, since this is applied on a Rails Model, you may want to consider doing it as a select. Like this - zip_codes = CardSignup.all.map(&:zip_code) @email.distributions.where('zip_code IN (?)', zip_codes) Or, do it with an INNER JOIN. Doesn't look as pretty though. @email.distributions.joins('INNER JOIN card_signups ON card_signups.zip_code = email_distributions.zip_code').all (If the table for @email.distributions is email_distributions..)

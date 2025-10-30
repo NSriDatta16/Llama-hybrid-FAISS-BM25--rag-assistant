@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2248202
-[parent_id]: 2248072
-[tags]: 
-I don't know if there is a built in way to do this. Alternatives include the obvious, private var _num_children:Number = 0; addEventListener(Event.ENTER_FRAME, _checkChildren, false, 0, true); private function _checkChildren($evt:Event):void { if (this.numChildren != _num_children) { _num_children = this.numChildren; // There was a child (or more) added in the last frame execution } } However, this seems like a more elegant solution... public function _addChild($do:DisplayObject) { $do .addEventListener(Event.ADDED_TO_STAGE, _childAdded); addChild($do ); } private function _childAdded($evt:Event) { // do whatever with $evt.target } The difference here, is the _childAdded will get fired for each and every child added via _addChild method. This means if you are doing some costly code execution you will be doing it once for each child instance. If you use the first method, you are only calling the method once per frame, and if 10 images are added on a single frame, then it will only run once.

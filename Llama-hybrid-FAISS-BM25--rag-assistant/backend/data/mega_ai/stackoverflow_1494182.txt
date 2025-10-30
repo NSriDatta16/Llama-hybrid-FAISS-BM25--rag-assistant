@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1494182
-[parent_id]: 
-[tags]: 
-Setting the internal buffer used by a standard stream (pubsetbuf)
-
-I'm writing a subroutine that needs to write data to an existing buffer, and I would like to use the stringstream class to facilitate the formatting of the data. Initially, I used the following code to copy the contents of the stream into the buffer, but would like to avoid this solution as it copies too much data. #include #include void FillBuffer(char* buffer, unsigned int size) { std::stringstream message; message This is when I discovered the streambuf::pubsetbuf() method and simply rewrote the above code as follows. #include void FillBuffer(char* buffer, unsigned int size) { std::stringstream message; message.rdbuf()->pubsetbuf(buffer, size); message Unfortunately, this does not work under the C++ standard library implementation that ships with Visual Studio 2008; buffer remains unchanged. I looked at the implementation of pubsetbuf and it turns out that it literally "does nothing". virtual _Myt *__CLR_OR_THIS_CALL setbuf(_Elem *, streamsize) { // offer buffer to external agent (do nothing) return (this); } This appears to be a limitation of the given C++ standard library implementation. What is the recommended way to configure a stream to write its contents to a given buffer?

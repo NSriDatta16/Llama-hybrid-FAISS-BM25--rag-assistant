@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4215608
-[parent_id]: 
-[tags]: 
-ADO.NET Navigation Properties
-
-I'm having a little problem using Navigation properties and inheritance on ADO.NET. This is my Data Model: First, some vocabulary: Categoria = Category Formulario = Form Campo = Field Imagem = Image Paragrafo = Paragraph Escolha = Choice Texto = Text Resposta = Answer So, I'm trying to create a custom property on a Form returning it's answers count. The normal approach (i think) would be: public partial class Formulario { public int Respostas { get { List itens = this.Itens.ToList(); IEnumerable campos = from m in itens where m as Campo != null select (Campo)m; int soma = campos.Sum(m => m.Respostas.Count); return soma; } } } But it doesn't work. The itens list returns 0 elements. But when I do as below, it return the 4 items it should: public partial class Formulario { public int Respostas { get { FormulariosDB db = new FormulariosDB(); List itens = db.Items.Where(m => m.Formulario.Id == this.Id).ToList(); IEnumerable campos = from m in itens where m as Campo != null select (Campo)m; int soma = campos.Sum(m => m.Respostas.Count); return soma; } } } It only works when I instanciate the entire data model. Does anyone knows why? PS: I'm using the .toList() method so I can use all Linq queries, not only the ones Linq2Entities allows me to

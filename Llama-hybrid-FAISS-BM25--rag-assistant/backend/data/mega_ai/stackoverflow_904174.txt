@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 904174
-[parent_id]: 902687
-[tags]: 
-To quote The Pragmatic Programmer , ``select’’ Isn’t Broken It is rare to find a bug in the OS or the compiler, or even a third-party product or library. The bug is most likely in the application. Why is your program calling WaitForSingleObjectEx() when glfwSleep() calls Sleep() ? Well, even though you don't have the source code to Sleep() , it's not completely a black box. Disassemble Sleep() and you'll probably see (depending on which version of Windows you have) that Sleep() either calls or tail-calls SleepEx() . On XP, SleepEx() calls NtDelayExecutionThread() , and on Vista it calls WaitForSingleObjectEx() . So what happened to the rest of your stack? 00000016, 0000006C, and 00000000 aren't valid return addresses. I would not be surprised if somewhere in your code, you pass a pointer to a stack-allocated buffer to another thread, and while your program is sleeping, that other thread corrupts the first thread's stack. Step into Sleep() , put a memory breakpoint on the return address, and you may be able to catch the culprit.

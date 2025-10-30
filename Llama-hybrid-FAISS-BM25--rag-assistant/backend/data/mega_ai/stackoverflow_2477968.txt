@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2477968
-[parent_id]: 2477790
-[tags]: 
-It seems that the DOMDocument will not play nice with HTML fragments. You may want to either consider the DOMDocumentFragment (as dnagirl suggests ) or consider extending the DOMDocument . After a little research, I've put together a simple extension that will achieve what you are asking: class MyDOMDocument extends DOMDocument { function getElementById($id) { //thanks to: http://www.php.net/manual/en/domdocument.getelementbyid.php#96500 $xpath = new DOMXPath($this); return $xpath->query("//*[@id='$id']")->item(0); } function output() { // thanks to: http://www.php.net/manual/en/domdocument.savehtml.php#85165 $output = preg_replace('/^ /', '', str_replace( array(' ', ' ', ' ', ' '), array('', '', '', ''), $this->saveHTML())); return trim($output); } } Usage $dom = new MyDOMDocument(); $dom->loadHTML($code); var_dump($dom->getElementById("galeria_list")); echo $dom->output();

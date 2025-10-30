@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3039133
-[parent_id]: 
-[tags]: 
-Boost::Mutex & Malloc
-
-I'm trying to use a faster memory allocator in C++. I can't use Hoard due to licensing / cost. I was using NEDMalloc in a single threaded setting and got excellent performance, but I'm wondering if I should switch to something else -- as I understand things, NEDMalloc is just a replacement for C-based malloc() & free(), not the C++-based new & delete operators (which I use extensively). The problem is that I now need to be thread-safe, so I'm trying to malloc an object which is reference counted (to prevent excess copying), but which also contains a mutex pointer. That way, if you're about to delete the last copy, you first need to lock the pointer, then free the object, and lastly unlock & free the mutex. However, using malloc to create a boost::mutex appears impossible because I can't initialize the private object as calling the constructor directly ist verboten. So I'm left with this odd situation, where I'm using new to allocate the lock and nedmalloc to allocate everything else. But when I allocate a large amount of memory, I run into allocation errors (which disappear when I switch to malloc instead of nedmalloc ~ but the performance is terrible). My guess is that this is due to fragmentation in the memory and an inability of nedmalloc and new to place nice side by side. There has to be a better solution. What would you suggest?

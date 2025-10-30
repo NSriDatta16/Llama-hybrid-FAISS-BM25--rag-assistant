@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 76684
-[parent_id]: 56722
-[tags]: 
-Use a mail in database (your Domino administrator can set that up for you but it's in the help file as well). In that database, you can create an agent that runs periodically to process all new documents. That agent will use the EmbeddedObjects property of the NotesRichTextItem class and the ExtractFile method of the NotesEmbeddedObject class to get a handle on the file attachment and extract it to the location you specify. For example, this script goes through all the file attachments, object links, and embedded objects in the Body item of a document. Each time it finds a file attachment, it detaches the file to the SAMPLES directory on the C drive and removes the attachment from the document Dim doc As NotesDocument Dim rtitem As Variant '...set value of doc... Set rtitem = doc.GetFirstItem( "Body" ) If ( rtitem.Type = RICHTEXT ) Then Forall o In rtitem.EmbeddedObjects If ( o.Type = EMBED_ATTACHMENT ) Then Call o.ExtractFile( "c:\samples\" & o.Source ) Call o.Remove Call doc.Save( False, True ) End If End Forall End If

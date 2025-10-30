@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2654061
-[parent_id]: 2650579
-[tags]: 
-From the blog post: Lock Contention during Load Screen Animations by Shawn Hargreaves Here be dragons! The above code will work, but is liable to make your loading hundreds of times slower. The reason is that every time you touch the graphics device from a different thread, the framework takes out a critical section , in order to avoid heisenbadness. If the animation is constantly redrawing, the animation thread will pretty much always own this lock, so any time your load function wants to create a graphics resource such as a texture, vertex buffer, or shader, it must wait until the animation thread releases it. This might take a while if the animation thread is just constantly looping over the same piece of draw code! The solution is to slow down your animation thread by inserting a sleep call , which stops it hogging the graphics device. In your case though, because you're loading very large contiguous textures, you may just need to redesign your loading feature to happen when the user doesn't need to see any animations because you will expect there to be a lock.

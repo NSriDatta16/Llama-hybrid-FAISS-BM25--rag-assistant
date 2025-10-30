@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 575334
-[parent_id]: 575317
-[tags]: 
-To my knowledge, there is no instruction which specifically "drains" the pipeline. This can be easily accomplished though using a serialising instruction. CPUID is a serializing instruction, which means exactly what you're looking for. Every instruction issues before it is guaranteed to execute before the CPUID instruction. So doing the following should get the desired effect: cpuid rdtsc # stuff cpuid rdtsc But, as an aside, I don't recommend that you do this. Your "stuff" can still be effected by a lot of other things outside of your control (such as CPU caches, other processes running on the system, etc), and you'll never be able to eliminate them all. The best way to get accurate performance statistics is to perform the operation(s) you want to measure at least several million times and average out the execution time of the batch. Edit: Most instruction references for CPUID will mention its serializing properties, such as the NASM manual appendix B . Edit 2 : Also might want to take a look at this related question .

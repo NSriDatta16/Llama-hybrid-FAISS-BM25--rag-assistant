@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4762689
-[parent_id]: 4762527
-[tags]: 
-If memcache is an option in your server environment, here's another cool way to sample, but also keep up with the precise number (unlike my other answer): function recordPostPageView($page_id) { $memcache = new Memcached(); // you could also pull this instance from somewhere else, if you want a bit more efficiency* $key = "Counter for Post {$page_id}"; if(!$memcache->get($key)) { $memcache->set($key, 0); } $new_count = $memcache->increment($key); // you could uncomment the following if you still want to notify mysql of the value occasionally /* $notify_mysql_interval = 100; if($new_count % $notify_mysql_interval == 0) { $query = mysql_query("UPDATE posts SET views = {$new_count} WHERE id = '{$page_id}' "); // execute query, etc } */ return $new_count; } And don't mind purists crying foul about Singletons. Or you could pass it into this function, if you're more purist than pragmatist :)

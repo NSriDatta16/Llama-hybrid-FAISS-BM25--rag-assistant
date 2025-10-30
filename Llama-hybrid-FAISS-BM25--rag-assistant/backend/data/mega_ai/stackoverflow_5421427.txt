@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5421427
-[parent_id]: 
-[tags]: 
-Most reliable approach to unit testing used as part of build acceptance where the class contains multiple threading
-
-Consider this unit test: [TestMethod] public void QueueManager_OnNextItem() { bool called = false; var queue = new QueueManager ( new Moq.Mock ().Object, new Moq.Mock ().Object); queue.OnNextItem += i => { called = true; }; queue.Add(1); queue.Start(); //need to RELIABLY wait here Assert.IsTrue(called); } QueueManager has a worker thread running internally ( Start() kicks it off) which dequeues an item and calls OnNextItem . As this test stands it will always always fail, as the Assert... is called before there is a context switch, to allow called = true to be executed. I did place a Thread.Sleep(blah) prior to the Assert... . This does work when the test is run in isolation. However, run it will the other load of unit tests and I found I was being presented with the good old... the agent process was stopped while the test was running ...which has no immediate resolution Unit Testing - The agent process was stopped while the test was running. and leaves you exposed to VS 2010 Test Runner error “The agent process was stopped while the test was running.” So, in light of that...what approach can I use to ensure that I test that my event is being fired AND it is reliable so as not to bork my build process? TIA

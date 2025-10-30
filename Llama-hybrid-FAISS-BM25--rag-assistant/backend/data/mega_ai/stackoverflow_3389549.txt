@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3389549
-[parent_id]: 3389169
-[tags]: 
-Short of using an Apache handler to touch the internal auth* data structures, your best bet is to resort to environment variables. You would set a top-level environment variable using apache_setenv in your PHP code apache_setenv('USERID','jrodriguez',true); and then write the value to the log file with a LogFormat entry in your Apache config using "%{USERID}e" instead of "%u" LogFormat "%v:%p %h %l %{USERID}e %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" envuid_combined CustomLog /path/to/access.log envuid_combined Of course, the real credentials when performing actual HTTP auth would be lost forever, so consider saving %u somewhere else -- either in a new field or in a parallel log file.

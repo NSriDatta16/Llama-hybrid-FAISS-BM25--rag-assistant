@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3194329
-[parent_id]: 3185338
-[tags]: 
-Thanks to lazerscience, here my final solution : from django.core.files.storage import FileSystemStorage from django.db.models import get_model from django.core.urlresolvers import reverse from django.db import models from django.conf import settings class PhotographerStorage(FileSystemStorage): def __init__(self, location=None): super(PhotographerStorage, self).__init__(location) def url(self, name): photo_model = get_model('photographer', 'photo') photo = photo_model.objects.get(original_image=name) url = super(PhotographerStorage, self).url(name) return '%s?size=%d' % (reverse('photographer_photo_display', args=[photo.slug]), 300) fs = PhotographerStorage(location=settings.PHOTOGRAPHER_LOCATION) class Photo(models.Model): ... original_image = models.ImageField(storage=fs) ... It works like a charm :)

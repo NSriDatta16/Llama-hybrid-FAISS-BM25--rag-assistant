@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 8302
-[parent_id]: 
-[tags]: 
-Using previous hour's value in time series data for inclusion in random forest
-
-I have a training data set, which is something like the following: hour windspeed pollution 0 5 8 1 6 9 2 3 1 I am using scipy's RandomForestRegressor to estimate pollution given windspeed, hour . It is doing "ok", with $r^2 = 0.7$ and $rmse = 35$. However, I would like to include the previous hours pollution values as additional predictors, as in: hour windspeed pollution pollution@t-1 polluion@t-2 ... pollution@t-n 0 5 8 NA NA 1 6 9 8 NA 2 3 1 9 8 Eventually, I will be applying this to future weather conditions, estimating pollution, where pollution can only be known at time zero: hour windspeed pollution p@t-1 p@t-2 p@t-3 p@t-4 ... 1 5 ? 34 28 25 ... ... 2 6 ? NA 34 28 25 ... 3 3 ? NA NA 34 28 ... How should I best go about including this in a Random Forest? Since RFs don't tolerate null values, how best to impute them? Since '0' is not appropriate (given that 0 is likely very far from the current value), I was thinking that perhaps NaNs could be filled with the nearest known value, as in: hour windspeed pollution p@t-1 p@t-2 p@t-3 p@t-4 ... 1 5 ? 34 28 25 ... ... 2 6 ? 34 34 28 25 ... 3 3 ? 34 34 34 28 ...

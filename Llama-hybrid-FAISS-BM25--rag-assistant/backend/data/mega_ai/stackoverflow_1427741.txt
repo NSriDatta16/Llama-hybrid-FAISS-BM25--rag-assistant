@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1427741
-[parent_id]: 1066062
-[tags]: 
-It is not safe to load request-specific values into ThreadContext like that. The reason is that ASP.NET shared threads to service requests. It does this quite often, in fact. You could instead use LogicalThreadContext , however that simply stores the values in Call Context, which is used for Remoting. AFAIK there is no HttpContext specific context storage, so what you can do is instead assign a "value provider" instance as your thread context, and at runtime it will call .ToString() on this class to get the value. public class HttpContextUserProvider { public override string ToString() { return HttpContext.Current.User.Identity.Name; } } It's less than ideal, but it works.

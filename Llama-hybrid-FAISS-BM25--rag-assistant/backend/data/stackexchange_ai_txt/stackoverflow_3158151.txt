@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3158151
-[parent_id]: 3156562
-[tags]: 
-You might be interested to read this excellent paper by Wolfgang Breitling which has a lot of info on CBO calculations: http://www.centrexcc.com/A%20Look%20under%20the%20Hood%20of%20CBO%20-%20the%2010053%20Event.pdf . As explained there, because you have histograms, the filter-factor calculation for these columns does not use number of distinct values (NDV) but density, which is derived from the histogram in some way. What are the DENSITY values in USER_TAB_COLUMNS for a.key1 and a.key2? Generally, the problem in cases like this is that Oracle does not gather statistics on pairs of columns, and assumes that their combined filter factor will be the product of their individual factors. This will produce low estimates if there is any correlation between values of the two columns. If this is causing a serious performance issue, I suppose you could create a function-based index on a function of those columns, and use that to do the lookup. Then Oracle would gather statistics on that index and probably produce better estimates.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4285642
-[parent_id]: 4285598
-[tags]: 
-Well, quite simply those methods aren't available for IQueryable . If you look at the Queryable methods you'll see they're almost all based on IQueryable . If your data source will really be an IQueryable at execution time, and you just don't know what T is, then you could find that out with reflection... or in C# 4, just use dynamic typing: public static IQueryable GetPage(this IQueryable query, int page, int pageSize, out int count) { int skip = (int)((page - 1) * pageSize); dynamic dynamicQuery = query; count = Queryable.Count(dynamicQuery); return Queryable.Take(Queryable.Skip(dynamicQuery, skip), pageSize); } The dynamic bit of the C# compiler will take care of working out T for you at execution time. In general though, I'd encourage you to just try to use the generic form everywhere instead - it's likely to be significantly simpler.

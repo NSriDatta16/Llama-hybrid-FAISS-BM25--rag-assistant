@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 18015
-[parent_id]: 17996
-[tags]: 
-Yes, of course. Assuming that you have used sklearn's OneVsRestClassifier and so you have a decision function for example a Support Vector Classifier with say linear kernel. Use set_params to change probability key to True , default is False . Use this in the OneVsRestClassifier classifier and then go with the inbuilt function predict_proba like from sklearn.multiclass import OneVsRestClassifier from sklearn.svm import SVC mod = OneVsRestClassifier(SVC(kernel='linear').set_params(probability=True)).fit(samples,classes) print mod.predict_proba(np.array([your_sample_vector]).reshape(1,-1)) Edit: You can use your old LinearSVC with decision_function to find the distance from the hyperplane and convert them to probabilities like mod = OneVsRestClassifier(LinearSVC()).fit(sample,clas) proba = (1./(1.+np.exp(-mod.decision_function(np.array(your_test_array).reshape(1,-1))))) proba /= proba.sum(axis=1).reshape((proba.shape[0], -1))\ print proba Now you don't need tuning the parameters, I guess. :)

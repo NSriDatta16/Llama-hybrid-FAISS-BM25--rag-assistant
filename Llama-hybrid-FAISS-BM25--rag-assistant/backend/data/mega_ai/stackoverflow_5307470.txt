@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5307470
-[parent_id]: 5307209
-[tags]: 
-If the intervals are not time based, and you just want every 5th row; or If the times are regular and you always have one record per minute The below gives you one record per every 5 select * from ( select *, row_number() over (order by timecolumn) as rown from tbl ) X where mod(rown, 5) = 1 If your time records are not regular, then you need to generate a time series (given in another answer) and left join that into your table, group by the time column (from the series) and pick the MAX time from your table that is less than the time column. Pseudo select thetimeinterval, max(timecolumn) from ( ) X left join tbl on tbl.timecolumn And further join it back to the table for the full record (assuming unique times) select t.* from tbl inner join ( select thetimeinterval, max(timecolumn) timecolumn from ( ) X left join tbl on tbl.timecolumn

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2866053
-[parent_id]: 2865711
-[tags]: 
-It is doubtful that using an integer counter in a for loop will cause speed problems. It is more likely to be slower to try and find the index of a given object from an enumerator than it is to just keep a record of the index yourself. If you want to bypass repeated message dispatch, have a look at NSArray's getObjects:range: method. size_t count = [myArray count]; id *objects = calloc(count, sizeof(id)); [myArray getObjects:objects range:NSMakeRange(0, count)]; // if you have a very large count, you'll save doing an // "objectAtIndex:" for each item. for (int i = 0; i You'll probably only see a minimal performance difference for incredibly large arrays, but don't underestimate the optimisations under the hood. Even the documentation for getObjects:range: discourages using this technique for this purpose. NSArray's indexOfObject: will iterate over all the elements until one returns YES from isEqual: message (which may include further message sending).

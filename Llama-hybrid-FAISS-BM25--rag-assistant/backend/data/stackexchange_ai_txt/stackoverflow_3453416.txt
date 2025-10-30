@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3453416
-[parent_id]: 
-[tags]: 
-Passing instance/default value to a ModelFormSet for the empty forms to use, in a view
-
-How do i pre-populate the exclude fields in a ModelFormSet. AuthorFormSet below doesn't take an instance argument here, only queryset. So how do i force the empty forms coming in not to have a NULL/None user attribute. I want to be able to set that user field to request.user models.py class Author(models.Model): user = models.ForeignKey(User, related_name='author') # assume some other fields here, but not relevant to the discussion. forms.py class AuthorForm(forms.ModelForm): class Meta: model = Author class BaseAuthorFormSet(BaseModelFormSet): """will do some clean() here""" pass AuthorFormSet = modelformset_factory(Author,\ form=AuthorForm, \ formset=BaseAuthorFormSet, extra=1,\ exclude=('user',) ) views.py def my_view(request): if request.method == 'POST': formset = AuthorFormSet(request.POST) if form.is_valid(): form.save() # This will cause problems # for the empty form i added, # since user can't be null. EDIT This is what i ended up doing in my view. Wogan's answer is partly correct, i think it's just missing the iterating over all the forms part. for form in formset.forms: form.instance.user = request.user formset.save()

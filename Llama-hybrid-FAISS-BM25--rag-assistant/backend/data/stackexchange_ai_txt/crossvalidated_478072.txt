@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 478072
-[parent_id]: 
-[tags]: 
-How do I use the coefficients from a logistic regression model to recreate the predictons myself
-
-I've been banging my head against a wall on this as I'm pretty sure this should be pretty straightforward. So I have a pipeline which replaces a few nulls as zero, scales each column (I understand it's subtracting the mean and dividing by the variance. my_pipeline = Pipeline(steps=[ ('preprocessor', SimpleImputer(strategy='constant', fill_value=0)), ('scaler', StandardScaler()), ('model', LogisticRegression(max_iter=10000, class_weight='balanced', solver='liblinear', C=9)) # C from grid search ]) my_pipeline.fit(X,y) preds=my_pipeline.predict(X) This gives me results of the following: pd.Series(preds).value_counts() 1 67 0 56 dtype: int64 which is as expected, so that's great. For my own understanding, and wanting to shift this elsewhere, I want to be able to build this manually too. I tried scaling down the dataset manually: X_scl = (X.fillna(0) - X.fillna(0).mean(axis=0)) / X.fillna(0).var(axis=0) I then fit the model directly (instead of via pipeline), took a row at random (which is sc ) and took the coefficients from the model coef=lr.coef_[0] attempted to make the prediction this way: coef = my_pipeline.named_steps['model'].coef_[0][idx] sigmoid(np.dot(sc, coef) + intercept) but the numbers are just not close. This is the case for all rows so I'm clearly not doing the right thing. Can someone please point me in the right direction?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1161747
-[parent_id]: 1161612
-[tags]: 
-I found that builtin functions are much faster than loops when processing large arrays. This might do what you want (untested code): $lowerCaseKeys = array_map('strtolower', array_keys($array)); $duplicates = array_filter(array_count_values($lowerCaseKeys), create_function('$count', 'return $count > 1;')); if (!empty($duplicates)) { throw new Exception('duplicate keys found: ' . implode(',', array_keys($duplicates))); } # Recreate the array with lower-case keys $array = array_combine($lowerCaseKeys, array_values($array)); EDIT Or the pragmatic approach (should be much faster): $lowerCaseKeyArray = array_change_key_case($array); if (count($lowerCaseKeyArray) !== count($array)) { # You can extract the duplicate keys here as above, if you like throw new Exception('duplicate keys found!'); }

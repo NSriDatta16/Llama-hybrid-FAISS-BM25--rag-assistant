@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4175867
-[parent_id]: 4175754
-[tags]: 
-If you want to de-serialize binary data, one option is to define serialization macros for the structs that you want to use. This is a lot easier in C++ with template functions and streams. (boost::serialization is a non-intrusive serialization library, but if you want to go intrusive, you can make it more elegant) Simple C macros: #define INT(f,v) \ { int _t; fread(&_t, sizeof(int), 1, f); v = ntohl(_t); } #define FLOAT(f,v) \ { int _t; fread(&_t, sizeof(int), 1, f); v = ntohl(_t); /* type punning */ memcpy(&v, &_t, sizeof(float)); } ... Usage: int a; float b; FILE *f = fopen("file", "rb"); INT(f, a); FLOAT(f, b); And, yes, serialization code is some of the most boring and brain-dead code to write. If you can, describe your data structures using metadata, and generate the code mechanically instead. There are tools and libs to help with this, or you can roll your own in Perl or Python or PowerShell or whatever.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 266860
-[parent_id]: 266761
-[tags]: 
-You'd run your select statement SELECT ES.Location, DateAdd(dd, DateDiff(dd, 0, ES.OrderTime), 0),ES.Charge FROM dbo.log_sales ES and capture the result to a type like this public class LogSale { public string Location {get;set;} public DateTime OrderDate {get;set;} public decimal Charge {get;set;} } And then "pivot"/organize that in memory List source = LoadData(); var pivot = source .GroupBy(ls => ls.OrderDate) .OrderBy(g => g.Key) .Select(g => new { Date = g.Key, Details = g .GroupBy(ls => ls.Location) .Select(loc => new { Location = loc.Key, Amount = loc.Sum(ls => ls.Charge) }) }); Here's a second pivoty Linq which pushes the data into XML instead of anonymous types. var pivot = source .GroupBy(ls => ls.OrderDate) .OrderBy(g => g.Key) .Select(g => new XElement("Date", new XAttribute("Value", g.key), g.GroupBy(ls => ls.Location) .Select(loc => new XElement("Detail", new XAttribute("Location", loc.Key), new XAttribute("Amount", loc.Sum(ls => ls.Charge)) )) ));

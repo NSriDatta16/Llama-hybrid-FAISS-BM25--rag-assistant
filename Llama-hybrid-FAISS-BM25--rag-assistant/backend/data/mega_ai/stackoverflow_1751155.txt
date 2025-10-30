@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1751155
-[parent_id]: 1750944
-[tags]: 
-I'd use a WHERE ... IN construct. A JOIN risks changing the averages by duplicating energy rows. SELECT AVG(houses.square_feet) AS avg_sf, AVG(energies.kwh) AS avg_kwh FROM houses LEFT JOIN energies ON houses.id = energies.house_id WHERE houses.house_id in ( SELECT energies.house_id FROM energies JOIN cars ON cars.energy_id = energies.id GROUP BY energies.house_id HAVING count(distinct cars.id) = 2 ) GROUP BY houses.id This even works if one house has multiple links to a single car through the energies table, the COUNT DISTINCT should make sure each car is only counted once.

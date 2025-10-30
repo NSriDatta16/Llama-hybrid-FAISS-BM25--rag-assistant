@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 312716
-[parent_id]: 130322
-[tags]: 
-Others have told you how to do it correctly. But I'm surprised no-one told you this code is actually dangerous: this->ButtonFunc = &ButtonFunc; Since ButtonFunc is a parameter, it will go out of scope when the function returns. You are taking its address. You will get a value of type void (object::**ButtonFunc)() ( pointer to a pointer to a member function ) and assign it to this->ButtonFunc. At the time you would try to use this->ButtonFunc you would try to access the storage of the (now not existing anymore) local parameter, and your program would probably crash. I agree with Commodore's solution. But you have to change his line to ((ButtonObj)->*(ButtonFunc))(); since ButtonObj is a pointer to object.

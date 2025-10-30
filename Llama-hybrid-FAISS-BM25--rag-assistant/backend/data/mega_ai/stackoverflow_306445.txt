@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 306445
-[parent_id]: 304967
-[tags]: 
-So far the only tool I have come across that looks like it might do this is NDepend, but I am wondering if there is a simpler solution. I am one of the developer of the tool NDepend . Please could you let us know what do you find complicated in NDepend and how you imagine a simpler solution for you? NDepend comes with 3 different ways to do what you want: Dependency Matrix , Dependency Graph and also you can write some Code Rule over LINQ Query (CQLinq) and rules to detect cycle between namespaces , or enforce some particular dependencies. For example, say I have a MyApp.BusinessRules namespace and don't want it to access directly anything in MyApp.GUI, but both namespaces are in the same assembly. For that, the following CQLinq rule can be written, could it be any simpler than that?: warnif count > 0 let businessRules = Application.Namespaces.WithNameLike("^MyApp.BusinessRules") let gui = Application.Namespaces.WithNameLike("^MyApp.GUI") from n in businessRules.UsingAny(gui) let guidNamespacesUsed = n.NamespacesUsed.Intersect(gui) select new { n, guidNamespacesUsed }

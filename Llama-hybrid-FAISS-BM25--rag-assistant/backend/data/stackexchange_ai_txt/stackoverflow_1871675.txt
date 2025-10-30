@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1871675
-[parent_id]: 
-[tags]: 
-ActiveRecord :select is messing with my data types
-
-So I have this very simple snippet. Topic.all(:select => 'count(*) as cnt')[0].cnt # behaves the same on all models "500" # What, a string? It seems that for some reason ActiveRecord is coercing the count to a string. In fact, I notice it coerces everything in the select list missing from the original object to a string. Why does this happen? What is a monkey patch to fix this so it works as expected? Please : I do not want to use Topic.count, I have some tricky grouping and selecting I need to do. FYI using ActiveRecord 2.3.5 Proof that the info is in the raw connection: ree-1.8.7-2009.10 > r = ActiveRecord::Base::connection.raw_connection.query( "select 1").fetch_field.type == Mysql::Field::TYPE_LONGLONG => true ree-1.8.7-2009.10 > r = ActiveRecord::Base::connection.raw_connection.query( "select 'a'").fetch_field.type == Mysql::Field::TYPE_VAR_STRING => true And when using the Stmt APIs you get stuff with the right types back automatically ree-1.8.7-2009.10 > s = ActiveRecord::Base::connection.raw_connection.stmt_init => # ree-1.8.7-2009.10 > s.prepare("select 1, 'hello'") => # ree-1.8.7-2009.10 > s.execute => # ree-1.8.7-2009.10 > s.fetch => [1, "hello"] ree-1.8.7-2009.10 > But ... the Active Record MySql Adapter uses the query API that returns strings. ree-1.8.7-2009.10 > cnn.query("select 1,2,3 union all select 1,2,3").each{|r| p r} ["1", "2", "3"] ["1", "2", "3"]

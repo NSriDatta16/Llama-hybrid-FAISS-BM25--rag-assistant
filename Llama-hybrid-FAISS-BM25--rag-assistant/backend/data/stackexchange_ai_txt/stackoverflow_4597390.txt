@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4597390
-[parent_id]: 4597268
-[tags]: 
-You seem to be missing a Repository in all of this. The Repository is usually what handles the conversion from ObjectSet to IList (or, in most cases, IEnumerable or IQueryable ). public class EntityContainer : ObjectContext { private IObjectSet _customers; public IObjectSet Customers { get { return _customers ?? ( _customers = CreateObjectSet ("Customers"); } } } public class CustomerRepository { EntityContext _context = new EntityContext(); public IQueryable FindAll() { return _context.Customers; } public Customer FindById(int id) { return _context.Customers.Single(c => c.Id == id); } // And so on. } I usually then have my UnitOfWork create the Repositories that should be enlisted in the Unit of Work so that anything done through the repositories is bundled in a single operation. Keep in mind, that my UnitOfWork only would have two methods. One for getting a repository and another for committing the Unit of Work. All data retrieval is handled by the Repositories.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3735977
-[parent_id]: 3735806
-[tags]: 
-diffuse_value in the first case is computed in the vertex shader. So it's only done per vertex. After the vertex shader outputs values, the rasterizer takes those values (3 per triangle for each vector) and interpolates (in a perspective correct manner) them to provide different values for each pixel. As it happens, interpolating vectors like that (the normal and the light direction vectors) is not proper, because it loses their normalized property. Many implementations will actually normalize the vectors first thing in the fragment shader. But it's worse to interpolate the dot of the 2 vectors (what the vector lighting effectively does). Say for example that your is N=+Z for all your vertices and L=norm(Z-X) on one and L=norm(Z+X) on another. N.L = 1/sqrt(2) for both vertices. Interpolating that will give you a flat lighting, whereas actually interpolating N and L separately and renormalizing will give you the result you'd expect, a lighting that peaks exactly in the middle of the polygon. (because the interpolation of norm(Z-X) and norm(Z+X) will give exactly Z once normalized).

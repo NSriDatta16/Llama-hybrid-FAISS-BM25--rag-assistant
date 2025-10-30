@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1441762
-[parent_id]: 1440514
-[tags]: 
-I need a simple way for multiple running PHP scripts to share data. APC , and memcached are both good options depending on context. shared memory may also be an option. Should I create a MySQL DB with a RAM storage engine, and share data via that (can multiple scripts connect to the same DB simultaneously?) That's also a decent option, but will probably not be as fast as APC or memcached. Or would flat files with one piece of data per line be better? If this is read-only data, that's a possibility -- but may be slower than any of the options above. Especially if the data is large. Rather than writing custom parsing code, however, consider simply building a PHP array, and include() the file. If this is a datastore that may be accessed by several writers simultaneously, by all means do NOT use a flat file! Writing to a flat file from multiple processes is likely to lead to file corruption. You can lock the file, but you risk lock contention issues, and long lock wait times. Handling concurrent writes is the reason applications like mysql and memcached exist.

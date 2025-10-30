@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4093059
-[parent_id]: 4092998
-[tags]: 
-Just to clarify: You want fragments with alpha=0.0 to be written into neither the colorbuffer nor the depthbuffer? Furthermore I assume you are currently using blending to mask transparent pixels, because otherwise this shouldn't be a problem. In this case you can simply use discard the fragment in your fragmentshader: if( color.a This will ensure that all fragments for which the condition is true won't be rendered at all (instead of being blended with a zero-factor onto the framebuffer). If you are (for whatever reason) programming fixed pipeline you can use the alpha test to get the same behaviour (personally I would suggest switching to a forward compatible (meaning shader) path, but thats beside the point). glEnable(GL_ALPHA_TEST); glAlphaFunc(GL_GREATER,0.0f); As an added bonus since these methods kill the fragment instead of rendering it invisible it might be faster then blending (although I haven't looked into that lately, so it's a might, but it should generally not be slower, so its still a plus)

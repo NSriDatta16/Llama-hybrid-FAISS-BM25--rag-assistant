@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 94044
-[parent_id]: 94036
-[tags]: 
-The problem is that you are using the models in training mode (the default mode), and the stochastic elements like dropout are active in training mode, therefore you obtain different results, not only between different models, but also on different runs of the same model. You should invoke model.eval() , which makes some elements like dropout or batch normalization behave in inference mode, i.e. dropout is disabled altogether, batch-normalization uses the remembered statistics. Also, it is better to avoid gradients being computed with torch.no_grad() , as you do not need them. The same effect can be achieved with torch.set_grad_enabled(False) . import torch, transformers torch.set_grad_enabled(False) # avoid wasting computation with gradients tokenizer = transformers.BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True) torch_model = torch.hub.load('huggingface/pytorch-transformers', 'model', 'bert-base-uncased') torch_model.eval() #

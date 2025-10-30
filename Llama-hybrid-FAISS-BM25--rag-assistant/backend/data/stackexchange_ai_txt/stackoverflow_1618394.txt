@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1618394
-[parent_id]: 
-[tags]: 
-Use fewer columns on SQL query through Hibernate Projections on Entity with ManyToOne relation
-
-I'm trying to build a smaller SQL, to avoid the "select * from A" that is being build by default for hibernate Criteria. If I use simple fields (no relation), through "Transformers", I have can manage to have this SQL: select description, weight from Dog; Hi, I have this Entity: @Entity public class Dog { Long id; String description; Double weight; @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "person_id", nullable = false) Person owner; } @Entity public class Person { Long id; String name; Double height; Date birthDate; } My goal is to have this: select description, weight, owner.name from Dog I tried this with with Criteria (and subcriteria): Criteria dogCriteria = sess.createCriteria(Dog.class); ProjectionList proList = Projections.projectionList(); proList.add(Projections.property("description"), description); proList.add(Projections.property("weight"), weigth); dogCriteria.setProjection(proList); Criteria personCriteria = dogCriteria.createCriteria("owner"); ProjectionList ownerProList = Projections.projectionList(); ownerProList.add(Projections.property("name"), description); dogCriteria.setProjection(ownerProList); //After this line, debugger shows that the //projection on dogCriteria gets overriden //and the query fails, because "name" is //not a field of Dog entity. How should I use Projections, to get a smaller SQL, less columns ? Thanks in advance.

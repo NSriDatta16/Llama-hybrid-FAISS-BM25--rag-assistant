@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2965781
-[parent_id]: 2964516
-[tags]: 
-It's perfectly possible to change the packing of a class in, say, Visual Studio- you can use __declspec(align(x)) or #pragma pack(x) and there's an option in the property pages. I would suggest that the solution is to store your classes in, say, vectors of each data member individually, then each class will hold just a reference to the master class and an index into these vectors. If the master class were to be a singleton, then this could be improved further. class VehicleBase { public: virtual std::string GetCarOwnerFirstName() = 0; virtual ~VehicleBase(); }; class Car : public VehicleBase { int index; public: std::string GetCarOwnerFirstName() { return GetSingleton().carownerfirstnames[index]; } }; Of course, this leaves some implementation details to be desired, such as the memory management of Car's data members. However, Car itself is trivial and can be created/destroyed at any time, and the vectors in GetSingleton will pack data members quite efficiently.

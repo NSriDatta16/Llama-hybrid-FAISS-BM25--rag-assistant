@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4584264
-[parent_id]: 4584102
-[tags]: 
-The problem is here In setup.py it tests if setproctitle is defined in unistd.h , although it is defined in stdlib.h on OpenBSD. By checking in stdlib.h too (which is included later on - So no worries), everything works as expected. Diff below: --- setup.py~ Mon Jan 3 12:05:39 2011 +++ setup.py Mon Jan 3 12:05:39 2011 @@ -39,7 +39,7 @@ # Old BSD versions don't have setproctitle # TODO: not tested on an "old BSD" if 0 == os.spawnlp(os.P_WAIT, 'grep', - 'grep', '-q', 'setproctitle', '/usr/include/unistd.h'): + 'grep', '-q', 'setproctitle', '/usr/include/unistd.h', '/usr/include/stdlib.h'): define_macros['HAVE_SETPROCTITLE'] = 1 else: define_macros['HAVE_PS_STRING'] = 1 The man-page from OpenBSD: setproctitle(3) hints that it is in stdlib.h .

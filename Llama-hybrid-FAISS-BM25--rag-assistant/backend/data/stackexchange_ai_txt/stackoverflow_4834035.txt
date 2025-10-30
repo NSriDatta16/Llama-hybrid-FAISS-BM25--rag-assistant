@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4834035
-[parent_id]: 3043828
-[tags]: 
-All this information is based on Eclipse 3.6: Your IContributor will be an instance of RegistryContributor if you are in the osgi environment which of course you are or you wouldn't be having this issue. RegistryContributor gives you two methods: getID() and getActualID() . getID() may return the host bundle if this was loaded from a fragment. getActualID() always loads the id of the fragment/bundle the contributor represents. You can use this id in your BundleContext.getBundle(long id) method. Here is a snippet: Bundle bundle; if (contributor instanceof RegistryContributor) { long id = Long.parseLong(((RegistryContributor) contributor).getActualId()); Bundle thisBundle = FrameworkUtil.getBundle(getClass()); bundle = thisBundle.getBundleContext().getBundle(id); } else { bundle = Platform.getBundle(contributor.getName()); } I use a fall through method that will degrade gracefully to a non-version aware solution if IContributor gets a new default implementation in the future. The bundle id is unique to an instance of OSGi so it will load the correct version of the bundle.

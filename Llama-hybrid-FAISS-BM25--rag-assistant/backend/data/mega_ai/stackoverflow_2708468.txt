@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2708468
-[parent_id]: 2707200
-[tags]: 
-Please find below working snippet. The difference is that "CalculateAverage" is declared as virtual. The reason is that Moq creates runtime wrapper over "Mock" classes and overrides its beheviour. But if method is not virtual, then it is just impossible. public class Model { public virtual void CalculateAverage() { } } public class View { public virtual event EventHandler CalculateAverage; } public class Controller { private Model model; private View view; public Controller(Model model, View view) { this.model = model; this.view = view; view.CalculateAverage += view_CalculateAverage; } private void view_CalculateAverage(object sender, EventArgs args) { model.CalculateAverage(); } } [TestFixture] public class MvcTest { [Test] public void ModelCalculateAverageCalled() { var modelMock = new Mock (); var viewMock = new Mock (); var controller = new Controller(modelMock.Object, viewMock.Object); viewMock.Raise(x => x.CalculateAverage += null, EventArgs.Empty); modelMock.Verify(x => x.CalculateAverage()); } }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 594173
-[parent_id]: 594162
-[tags]: 
-You can use the raw sockets or for example the pcap library. With pcap you set up the filter and capture the interesting traffic: #include ... pcap_t* reader_handle; char errbuf[PCAP_ERRBUF_SIZE]; if ( (reader_handle = pcap_open_live(device_string, capture_size, 0, timeout, errbuf) ) == NULL) { //ooops } struct bpf_program fp; if (pcap_compile(reader_handle, &fp, filter_string, 1, 0) == -1) { //ooops, cleanup } if (pcap_setfilter(reader_handle, &fp) == -1) { //ooops, cleanup } pcap_freecode(&fp); And afterwards you just capture, there are few different ways, for example: pcap_pkthdr* header; u_char* pkt_data; const int status = pcap_next_ex(reader_handle, &header, &pkt_data); // Check the status After ending the capture: pcap_close(reader_handle); You need privileges to play with raw sockets. The above example can be nicely wrapped in C++.

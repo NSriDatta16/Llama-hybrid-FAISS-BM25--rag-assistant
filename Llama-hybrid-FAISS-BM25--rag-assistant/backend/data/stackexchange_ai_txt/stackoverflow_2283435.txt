@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2283435
-[parent_id]: 
-[tags]: 
-Why do some APIs (like JCE, JSSE, etc) provide their configurable properties through singleton maps?
-
-For example: Security.setProperty("ocsp.enable", "true"); And this is used only when a CertPathValidator is used. I see two options for imporement: again singleton, but with getter and setter for each property an object containing the properties relevant to the current context: CertPathValidator.setValidatorProperties(..) (it already has a setter for PKIXParameters , which is a good start, but it does not include everything) Some reasons might be: setting the properties from the command line - a simple transformer from command-line to default values in the classes suggested above would be trivial allowing additional custom properties by different providers - they can have public Map getProviderProperties() , or even public Object .. with casting. I'm curious, because these properties are not always in the most visible place, and instead of seeing them while using the API, you have to go though dozens of google results before (if lucky) getting them. Because - in the first place - you don't always know what exactly you are looking for. Another fatal drawback I just observed is that this is not thread-safe. For example if two threads want to check a revocation via ocsp, they have to set the ocsp.responderURL property.. and perhaps override the settings of each other.

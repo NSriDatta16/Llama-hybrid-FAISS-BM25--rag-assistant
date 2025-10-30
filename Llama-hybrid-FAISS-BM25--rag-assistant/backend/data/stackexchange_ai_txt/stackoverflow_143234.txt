@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 143234
-[parent_id]: 
-[tags]: 
-Lua = operator as print
-
-In Lua, using the = operator without an l-value seems to be equivalent to a print(r-value), here are a few examples run in the Lua standalone interpreter: > = a nil > a = 8 > = a 8 > = 'hello' hello > = print function: 003657C8 And so on... My question is : where can I find a detailed description of this use for the = operator? How does it work? Is it by implying a special default l-value? I guess the root of my problem is that I have no clue what to type in Google to find info about it :-) edit : Thanks for the answers, you are right it's a feature of the interpreter. Silly question, for I don't know which reason I completely overlooked the obvious. I should avoid posting before the morning coffee :-) For completeness, here is the code dealing with this in the interpreter: while ((status = loadline(L)) != -1) { if (status == 0) status = docall(L, 0, 0); report(L, status); if (status == 0 && lua_gettop(L) > 0) { /* any result to print? */ lua_getglobal(L, "print"); lua_insert(L, 1); if (lua_pcall(L, lua_gettop(L)-1, 0, 0) != 0) l_message(progname, lua_pushfstring(L, "error calling " LUA_QL("print") " (%s)", lua_tostring(L, -1))); } } edit2 : To be really complete, the whole trick about pushing values on the stack is in the "pushline" function: if (firstline && b[0] == '=') /* first line starts with `=' ? */ lua_pushfstring(L, "return %s", b+1); /* change it to `return' */

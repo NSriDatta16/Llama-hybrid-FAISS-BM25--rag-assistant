@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1696243
-[parent_id]: 1696084
-[tags]: 
-You could fork a new php process in the background and let that take care of the stats. Something like: shell_exec('php stats.php &'); The & at the end makes sure that it's run in the background, so even if the stats.php takes 20 seconds, the visitor won't notice it. You would probably need to pass data to the stats script, which you can do by passing in parameters, like this: shell_exec('php stats.php -b '. escapeshellarg($_SERVER['HTTP_USER_AGENT']) .' &'); In stats.php, you'd use the $argv variable to get that data. But I wouldn't do this if the statistics code doesn't take that long to run, since forking a new process for every page load like this has some overhead. I don't know what it is that makes the stats code take a long time to process, but another solution might be to insert the raw data into a database, and let a background job work on that data to create usable statistics. That could be done either by a cron job, or having a screen run in an infinte loop that processes the queue.

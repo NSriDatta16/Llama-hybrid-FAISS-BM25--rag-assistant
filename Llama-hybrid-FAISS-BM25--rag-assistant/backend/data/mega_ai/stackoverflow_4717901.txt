@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4717901
-[parent_id]: 4717691
-[tags]: 
-I'd say using Azure Table Storage alone isn't enough. You should use Azure Queues as well. When a message comes in it gets put in the queue. A worker takes the messages from the queue and processes them. The message goes on the Public Timeline (table keyed by timestamp) The worker gets all followers of the user who posted the message and puts a copy of the message on each of their timelines (table keyed by followerId) Of course the message also gets placed on the User's timeline. (table keyed by UserId) It seems like this might be a wasteful method but you're optimizing for read performance with eventual consistency on the writes. Removing joins from the read side simplifies things.

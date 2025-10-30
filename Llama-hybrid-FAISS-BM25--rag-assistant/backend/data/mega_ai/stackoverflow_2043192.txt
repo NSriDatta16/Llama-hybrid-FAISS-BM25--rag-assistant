@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2043192
-[parent_id]: 2041545
-[tags]: 
-The sp_spaceused command includes the log file free space as well. Even though your database log model is simple, SQL uses your log file to track transactions and the log file grows and it does not shrink until you run a backup. I know that you mentioned that the mdf file is taking up most of the disk, but have you check your ldf file size? Have you checked your clustered indexes fragmentation as well? If you find that the log file is big too, try the following script to see if your database shrinks. It worked for me with simple model logs. use [db_name] backup log [db_name] with truncate_only dbcc shrinkfile ([db_log_filename], 1) This statement would not run an actual backup, it will just truncate the log and allow the shrinkfile remove the free space that the log file is using. If you are planning to run it in Production, I would recommend you to do it in an off peak time. Even though it does not take long. This only affects the log file size. Hope this helps and that is clear why I would recommend you to check the log file as well.

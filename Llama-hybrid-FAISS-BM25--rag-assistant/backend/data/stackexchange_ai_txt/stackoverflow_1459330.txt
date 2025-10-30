@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1459330
-[parent_id]: 1457345
-[tags]: 
-Assuming you're talking about DateTime instances in a DataContract being sent by the server, I don't think there's a straightforward way to do this. The patterns you mention aren't used (if they were, you could just hack the shared pattern instance via reflection for a gross-but-easy solution). The DataContractSerializer ultimately delegates the task to the internal XsdDateTime.ToString() method, which is hardcoded to always emit the fractional seconds if they're nonzero. It's not elegant, but taking advantage of the hardcoded behavior might be the simplest solution: just copy all your DateTimes, resetting the milliseconds to zero before they leave the server. Alternatively, you're left with hooking up a custom IDispatchMessageFormatter or IDispatchMessageInspector on the affected operations. Neither is a walk in the park if you want them to be generic and easy to hook up. Just curious- do you have a misbehaving client that doesn't understand the fractional seconds?

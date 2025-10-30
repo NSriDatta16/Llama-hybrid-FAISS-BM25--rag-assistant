@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 108829
-[parent_id]: 
-[tags]: 
-How to deal with "Ergänzungsstrichen" and "Bindestrichen" in German NLP?
-
-Problem In German, the phrase "Haupt- und Nebensatz" has exactly the same meaning as "Hauptsatz und Nebensatz". However, when transforming both phrases using e.g. spacy's de_core_news_sm pipeline, the cosine similarity of the resulting vectors differs significantly: token1 token2 similarity Haupt- Hauptsatz 0.07 und und 0.67 Nebensatz Nebenssatz 0.87 Code to reproduce import spacy import numpy as np def calc_cosine_similarity(a, b): return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)) nlp = spacy.load("de_core_news_sm") doc1 = nlp("Hauptsatz und Nebensatz") doc2 = nlp("Haupt- und Nebensatz") for token1, token2 in zip(doc1, doc2): similarity = calc_cosine_similarity(token1.vector, token2.vector) print(f"{token1.text}: {similarity}") My research for a solution This Bachelorthesis states on page 5: A distinction is made between phrases with a complementary dash, as in "main and subordinate clauses", and those with a hyphen, as in "price-performance ratio". The former are divided into several tokens, the latter form a single one. (translated from original German) This sounds like a preprocessing solution is readily available? However, so far I could not find any yet on e.g. https://github.com/adbar/German-NLP , but I might have overlooked things.

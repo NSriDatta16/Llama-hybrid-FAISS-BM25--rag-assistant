@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4110861
-[parent_id]: 4110640
-[tags]: 
-Don't know about best practices, but __get comes extremely useful when you need a property to be lazy loaded, e.g. when getting it involves a complex calcification or a db query. Moreover, php provides an elegant way to cache the response by simply creating an object field with the same name, which prevents the getter to be called again. class LazyLoader { public $pub = 123; function __get($p) { $fn = "get_$p"; return method_exists($this, $fn) ? $this->$fn() : $this->$p; // simulate an error } // this will be called every time function get_rand() { return rand(); } // this will be called once function get_cached() { return $this->cached = rand(); } } $a = new LazyLoader; var_dump($a->pub); // getter not called var_dump($a->rand); // getter called var_dump($a->rand); // once again var_dump($a->cached); // getter called var_dump($a->cached); // getter NOT called, response cached var_dump($a->notreally); // error!

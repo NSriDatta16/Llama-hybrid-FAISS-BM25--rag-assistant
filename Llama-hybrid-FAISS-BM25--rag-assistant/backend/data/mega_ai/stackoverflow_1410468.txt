@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1410468
-[parent_id]: 1410373
-[tags]: 
-Why don't you just use new in the query? select new TotalSales(seller_id, count(seller_id)) from sales group by seller_id You just write a class TotalSales with a constructor taking the seller_id and an integer. Edit : When using criteria API, you can use the AliasToBeanResultTransformer (See API docs ). It copies every alias name to a property of the same name. List list = s.createCriteria(Sales.class) .setProjection(Projections.projectionList() .add( Projections.property("id"), "SellerId" ) .add( Projections.rowCount("id"), "Count" ) ) .setResultTransformer( new AliasToBeanResultTransformer(TotalSales.class) ) .list(); Then your TotalSales needs a SellerId and Count property.

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 589983
-[parent_id]: 
-[tags]: 
-Using Gradient Decent For PCA Optimization
-
-I'm trying to solve the PCA problem: For $k\in N$ some number and $X\in R(n\times d)$ where I'm trying to find $w\in R(k\times d)$ such that: $w = argmax( E(WXX^T))$ (I might be wrong with the formulation of the optimization goal. Please correct me). I want to solve the optimization goal with gradient decent rather than with SVD decomposition as usual (I have my reasons, I just want to keep this post short). I'm basing my code on this post: Reference of pretty much the same question . But, my code doesn't seem to find an optimal solution. def get_gd_pca(X, w): k = w.shape[-1] LEARNING_RATE = 0.1 EPOCHS = 200 cov = torch.cov(X) lam = torch.rand(1, requires_grad=True) optimizer = torch.optim.SGD([w, lam], lr=LEARNING_RATE, maximize=True) for epoch in range(EPOCHS): optimizer.zero_grad() left_side_loss = torch.matmul(w.T, torch.matmul(cov, w)) right_side_loss = torch.matmul((lam * torch.eye(k)), (torch.matmul(w.T, w) - 1)) loss = torch.sum(left_side_loss - right_side_loss) loss.backward() optimizer.step() # Normalizing current_P w.data = w.data / torch.norm(w.data, dim=0) print('current_P', w) I have two problems: If I'm not using normalization (last row of the for loop) the w values just explode. If I do use it, it only works with $k=1$ . After that, the returned vectors are the same as the first one. Ideas what have I done wrong? I think it's connect to not using the Lagrangian correctly but I don't understand why.

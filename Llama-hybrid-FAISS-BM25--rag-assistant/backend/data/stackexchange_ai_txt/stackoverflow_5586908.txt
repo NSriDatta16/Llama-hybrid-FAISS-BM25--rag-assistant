@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5586908
-[parent_id]: 
-[tags]: 
-simple ruby plugin/extension architecture
-
-I'm currently writing a little program, that watches a directory and adds video files to a conversion queue. I've been able to achieve that (using resque). But before adding the to the conversion queue I want to trigger specific actions based on the filename. E.g: drop (don't add to queue) specific files according to filename rename files copy certain files Therefore I want to run a couple of helpers before the adding takes place. I want them executed in a certain order and I want it to be easy to add other helpers. The way I thought about it would then look like this: Every helper is a ruby class with a set of methods: run (executes the helper) new_name (returns the new filename if it changed) stop (prevents following helpers to run and prevents adding to the queue) All helpers should be stored in one directory and will be run in alphabetical order (ext/00_helper1.rb, ext/01_helper2.rb...). pseudocode would look like this: filename = stop = false for each file in ext/*.rb obj = asClass(file).new_instance(filename) obj.run if (obj.new_name) filename = obj.new_name if (obj.stop) stop = true break end end if not stop add_to_queue(filename) So my question is: is there an elegant ruby way?

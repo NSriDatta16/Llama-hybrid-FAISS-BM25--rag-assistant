@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2299374
-[parent_id]: 2299364
-[tags]: 
-You aren't actually adding the parameter to the cmd.Parameters collection: cmd.Parameters.Add(par) Alternatively, just add the parameter without instantiating the Parameter object explicitly: cmd.Parameters.Add("@PlaceID", SqlDbType.Int) cmd.Parameters("@PlaceID").Value = 3906 Also, I'd follow the principle of using a variable as close to the declaration as possible and reorganize things this way: Dim con As New SqlConnection("Data Source=localhost\SQLEXPRESS;Initial Catalog=ProgramDB;User ID=test;Password=test") con.Open() Dim cmd As New SqlCommand("esp_getDates", con) Try cmd.CommandType = CommandType.StoredProcedure cmd.Parameters.Add("@PlaceID", SqlDbType.Int) cmd.Parameters("@PlaceID").Value = 3906 cmd.ExecuteNonQuery() Finally If cmd IsNot Nothing Then cmd.Dispose() If cn IsNot Nothing AndAlso cn.State <> ConnectionState.Closed Then cn.Close() End Try

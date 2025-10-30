@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2410733
-[parent_id]: 
-[tags]: 
-get property count with entity using nhibernate
-
-can I am hoping someone can point me to the right direction on how to get count of a property and the entity using a single trip to sql. public class Category { public virtual int Id { get; private set; } public virtual string Description { get; set; } public virtual IList Articles { get; set; } public virtual int ArticlesCount { get; set; } public Category() { Articles=new List (); } public virtual void AddArticle(Article article) { article.Category = this; Articles.Add(article); } public virtual void RemoveArticle(Article article) { Articles.Remove(article); } } public class CategoryMap:ClassMap { public CategoryMap() { Table("Categories"); Id(x => x.Id).GeneratedBy.Identity(); Map(x => x.Description); HasMany(x => x.Articles).KeyColumn("CategoryId").Fetch.Join(); Cache.ReadWrite(); } } My goal is to get the all Categories and the count of the associated articles if there is any. I have tried this ICriteria crit = session.CreateCriteria(typeof(Category)); crit.SetProjection(Projections.ProjectionList() .Add(Projections.Property("Description"), "Description") .Add(Projections.Count("Articles"), "ArticlesCount")); crit.SetResultTransformer(Transformers.AliasToBean (typeof(Category))); var aa=crit.List(); unfortunately the generated sql shows the count of the Category table not the Articles list. Thanks

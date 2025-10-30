@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4418390
-[parent_id]: 
-[tags]: 
-Is it possible to create a process which will always clean up after itself?
-
-I'd like to create a new process which will clean up after itself, even if the calling process has terminated. I've mocked up an example below, using notepad to display a temporary file, which I'd like to be deleted after notepad is closed. In the code below, this works as expected if I uncomment the WaitForExit() line or alternatively go into a infinite loop to mimic the calling program running. The main problem is when the calling program finishes, since the event is no longer handled. I'd appreciate any suggestions on how to handle this case. Regards, Chris static void Main(string[] args) { string filename = @"c:\temp\example.txt"; if (!File.Exists(filename)) File.WriteAllText(filename, "abc"); ProcessStartInfo psi = new ProcessStartInfo("notepad", filename); Process cmdProcess = new Process(); Process p = new Process(); psi.CreateNoWindow = true; p.EnableRaisingEvents = true; p.StartInfo = psi; p.Exited += (sender, e) => { File.Delete(filename); }; p.Start(); //p.WaitForExit(); }

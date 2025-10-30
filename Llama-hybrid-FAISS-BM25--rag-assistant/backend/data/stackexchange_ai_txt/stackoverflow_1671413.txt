@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1671413
-[parent_id]: 
-[tags]: 
-Accessing SSH key from bash script running via a cron job
-
-I've put this script together to updated a folder of forked Github repositories on a daily basis. It runs fine if I call it from a prompt, but I can' figure out how to make it utilize my id_rsa reliably when it is run as a cron job. the eval 'ssh-agent' is an attempt to do just that, but it doesn't seen to have any positive affect. #!/bin/sh LOGPATH=log.txt eval 'ssh-agent' cd /path/to/update/folder echo "-------START UPDATE-------">$LOGPATH echo "Updating repos:">>$LOGPATH date "+%F %T">>$LOGPATH COUNT=1 find . -maxdepth 1 -type d | while read dir; do cd "$dir" LEN=$"${#dir}" if [ $LEN != "1" ] then echo "*********">>$LOGPATH echo "$COUNT. " ${dir:2}>>$LOGPATH /usr/local/bin/git pull upstream master>>$LOGPATH 2>> $LOGPATH /usr/local/bin/git push origin master>>$LOGPATH 2>> $LOGPATH let COUNT=COUNT+1 fi cd "$OLDPWD" done echo "-------END UPDATE-------">>$LOGPATH exit 0 This is probably a horribly inefficient way to go about the process in general, but it works and I don't ever see it. If I could get it to use my creds, I would be elated.

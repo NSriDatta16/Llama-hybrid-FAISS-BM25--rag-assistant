@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1789560
-[parent_id]: 1789532
-[tags]: 
-You're reading from the socket until all the data has been read - meaning "all the data until the socket is closed". Your PHP client is writing data, but not closing the socket - so the server is waiting forever. TCP sockets provide a stream of data. There's no concept of "the end of the current message" which is what it looks like you want. The three ways of handling this are usually: A message delimiter (e.g. a line break) A message length prefix (number of bytes in the message just before the message itself) Use a different connection for each request/response pair You could potentially use a read with a timeout, and assume that if you haven't seen any more data in the last 5 seconds, you've got the whole message - but that's fragile, inefficient and generally a bad idea.

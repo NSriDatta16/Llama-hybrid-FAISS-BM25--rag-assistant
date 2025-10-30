@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3982182
-[parent_id]: 3982012
-[tags]: 
-You are correct, companies are records/people in the Address Book. Look up the value for the kABPersonFlags -- one of the flags is "show as company". Then just do a bitmask and compare. if (([aPerson valueForProperty:kABPersonFlags] & kABShowAsMask) == kABShowAsCompany) { // it's a company } else { // it's a person, resource, or room } I used the following references from Apple, which you should probably read as well: Address Book Programming Guide for Mac OS X Address Book Constants Reference ABPerson Class Reference EDIT: Sorry, the above is for Address Book on Mac OS X. Try this for iOS: ABRecordRef aRecord = ... // Assume this exists CFNumberRef recordType = ABRecordCopyValue(aRecord, kABPersonKindProperty); if (recordType == kABPersonKindOrganization) { // it's a company } else { // it's a person, resource, or room } The idea is the same: get the value of the person type property, and see what it tells you. Used these Apple docs: Address Book Programming Guide for iOS ABPerson Reference

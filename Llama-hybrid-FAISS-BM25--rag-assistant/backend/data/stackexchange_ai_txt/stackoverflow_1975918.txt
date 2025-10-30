@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1975918
-[parent_id]: 1068825
-[tags]: 
-Don't believe if anyone tells you that TINYTEXT is stored in other way, than VARCHAR. The actual differences are: TINYTEXT and other TEXT fields are stored separately from in-memory row inside MySQL heap, whereas VARCHAR() fields add up to 64k limit (so you can have more than 64k in TINYTEXTs, whereas you won't with VARCHAR). TINYTEXT and other 'blob-like' fields will force SQL layer (MySQL) to use on-disk temporary tables whenever they are used, whereas VARCHAR will be still sorted 'in memory' (though will be converted to CHAR for the full width). InnoDB internally doesn't really care whether it is tinytext or varchar. It is very easy to verify, create two tables, one with VARCHAR(255), another with TINYINT, and insert a record to both. They both will take single 16k page - whereas if overflow pages are used, TINYTEXT table should show up as taking at least 32k in 'SHOW TABLE STATUS'. I usually prefer VARCHAR(255) - they don't cause too much of heap fragmentation for single row, and can be treated as single 64k object in memory inside MySQL. On InnoDB size differences are negligible.

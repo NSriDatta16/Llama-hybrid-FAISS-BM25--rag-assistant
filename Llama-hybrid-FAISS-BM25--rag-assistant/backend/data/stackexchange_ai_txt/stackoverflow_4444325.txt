@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4444325
-[parent_id]: 4433874
-[tags]: 
-So, we kind of hacked something quick. By making the calls to SearchUnderlyings(e.SearchText) asynchronous, my GUI thread is no longer blocked and the textbox is no longer "eating" key presses. By adding the lastQueryTag == _lastQuery check, we are trying to ensure some thread-safety, allowing only the most recent query to set the ItemsSource. Perhaps not the most ideal or elegant solution. I am still open to further critiques and suggestions. Thank you! private long _lastQuery = DateTime.Now.Ticks; public void Execute(object sender, object parameter) { var autoCompleteBox = sender as AutoCompleteTextBox; var e = parameter as SearchTextEventArgs; // removed unecessary code for clarity long lastQueryTag = _lastQuery = DateTime.Now.Ticks; Task.Factory.StartNew(() => { var result = SearchUnderlyings(e.SearchText); System.Windows.Application.Current.Dispatch(() => { if (lastQueryTag == _lastQuery) autoCompleteBox.ItemsSource = result; }); }); }

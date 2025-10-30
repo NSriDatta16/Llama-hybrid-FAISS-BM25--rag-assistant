@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3284039
-[parent_id]: 
-[tags]: 
-matlab: exp(X) gives inf even though exp(max(X)) does not
-
-[Edit: The whole thing has a very simple solution: the matrix used the single datatype instead of the default double] I have just noticed a somewhat peculiar (I think) behaviour in matlab and wonder what's causing it. I have a 10000x500 matrix M with values ranging from min(min(M)) = -226.9723 to max(max(M)) = 92.8173 and exp(-227) = 2.6011e-99 exp(93) = 2.4512e+40 but if I exp the entire matrix, this matrix has inf values: ii = isinf(exp(M)); sum(sum(ii)) ans = 2 How does Matlab store the values in the matrix so that operations on individual elements can give a different result than when doing the same operation on the matrix itself? I.e. expM = exp(M); exp(M(1)) == expM(1) ; %can be false, which I find surprising I know I have to change the algorithm anyway as the high exponents will give inexact results even if I can avoid inf values. It happens in a formula for a artificial neural network calculation like: sum(log(1+exp(ones(numcases,1)*b_h + data*w_vh)),2); so my plan is to split this up into two cases, first where the exponent is small I do the calculation as above, for high values I approximate log(1+exp(ones(numcases,1)*b_h + data*w_vh) with ones(numcases,1)*b_h + data*w_vh Does that sound reasonable? My reasoning of course is that log(1+exp(x)) ≈ log(exp(x)) ≈ x, for large x btw: is there a better way to get the maximum element of a matrix other than doing max twice as in max(max(M))?

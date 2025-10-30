@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2921748
-[parent_id]: 2911030
-[tags]: 
-Moving over the cached images isn't going to go far, since they will be deleted next time you flush the Magento cache. So, having moved the images that are in /media/catalog/product, flush the Magento image cache. Make sure that the file permissions are correct for reading. Then, head into Mage_Catalog_Model_Product_Image and take a look at the following code (approx line 270): if ($file) { // add these for debugging Mage::log($baseDir.$file); Mage::log(file_exists($baseDir.$file)); Mage::log($this->checkMemory($baseDir.$file)); if ((!file_exists($baseDir . $file)) || !$this->_checkMemory($baseDir . $file)) { $file = null; } } Add a var_dump or Mage::log statement in there (depending on whether you have logging enabled), and verify that the path to the images is correct, and that you have enough memory for the operation. This is the code that will choose the default image for you if no image path exists. If you still can't get it, post the output of those three logging statements and we'll keep trying. :)

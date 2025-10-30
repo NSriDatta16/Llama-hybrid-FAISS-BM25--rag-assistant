@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5327773
-[parent_id]: 
-[tags]: 
-Is there a `replicateM` function for the internal monad in a monad transformer?
-
-Suppose I have something like this: data Environment = ... data MyState = ... data Report = ... updateState :: Environment -> MyState -> MyState updateState = ... report :: MyState -> Report report = ... foo :: ReaderT Environment (State MyState) Report foo = do env What's in my head are simulations of a time process in which I have parameters that will be stored in Environment , the dynamical state will be stored in MyState and info I wish to collect in each time step of the simulation will be stored in Report . Now, I wan't to run many steps of this simulation and get a list with the reports for each time step. I usually did this without a ReaderT and used to pass the parameters like this: foo :: Enviroment -> State MyState Report Then I would just do: manySteps :: Int -> Enviroment -> State MyState [Report] manySteps n env = replicate n $ (foo env) I'm getting confused with the types of lift and replicateM . Is there a combination that would replicate the State MyState monad inside the transformer? In the future I'll replace ReaderT Environment (State MyState) Report for ReaderT Environment (StateT MyState (Rand StdGen)) Report so it's better to get things right before having this monster type :(. edit: as a side question - is there a better strategy than using ReaderT Environment (State MyState) Report ?

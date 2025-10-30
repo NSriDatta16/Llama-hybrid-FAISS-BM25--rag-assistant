@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 522800
-[parent_id]: 
-[tags]: 
-l1-regularization of network weights not going to zero
-
-I'm working on an autoencoder that transforms a very high dimensional space (~10,000 inputs) through two hidden layers of 256 nodes each. (I settled on these values given the reconstruction error but I don't think the actual dimensions of the hidden layers are that important.) In order to impose sparsity on the weights of the network, I've included l1-regularization on the input and the first hidden layer. Here's the code describing the model. activation = 'selu' dims = (10000, 256, 256) do_level = 0.5 reg_penalty = 10e-5 input_vec = keras.Input(shape = (dims[0], )) hidden_enc = layers.Dense(dims[1], activation = activation, kernel_regularizer = regularizers.l1(reg_penalty))(input_vec) encoded = layers.Dense(dims[2], activation = activation, kernel_regularizer = regularizers.l1(reg_penalty))(hidden_enc) encoded_do = layers.Dropout(do_level)(encoded) hidden_dec = layers.Dense(dims[1], activation = activation)(encoded_do) hidden_dec_do = layers.Dropout(do_level)(hidden_dec) decoded = layers.Dense(dims[0], activation = activation)(hidden_dec_do) autoencoder = keras.Model(input_vec, decoded) autoencoder.compile(optimizer = 'adam', loss = 'mean_squared_error') When I look at the actual weights going into the first or second hidden layer, there are a large proportion that are less than 10e-3, but none are actually set to zero. Shouldn't l1-regularization drive these small weights to zero? I'm working in Python 3.8 with Keras v2.3.1.

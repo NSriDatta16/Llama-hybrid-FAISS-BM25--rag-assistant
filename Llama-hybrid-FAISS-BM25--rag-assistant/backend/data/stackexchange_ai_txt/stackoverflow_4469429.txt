@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4469429
-[parent_id]: 4445168
-[tags]: 
-A deployment is what it is, a deployment. You are asking to deploy without deploying (!?) IMHO, your issue is more related to SCM (svn, git, etc...) than to capistrano. You probably want to deploy part of your code (one migration) but not everything that is committed to trunk/master. What you have to do is to branch/tag for deployment, and deploy from that branch/tag. For example, if I'm using svn I always add these lines to my deploy.rb: set(:tag) { Capistrano::CLI.ui.ask("Tag to deploy: ") } set(:repository) { "#{repository_root}/tags/#{tag}" } this way I can deploy a particular tag and my SVN has clearly defined my production code. In your case, the procedure would be: branch your last production revision apply any changes to this branch (your desired migration) tag it (for example, prod-with_my_desired_migration) deploy that tag including cap deploy:migrate Every tool has its purpose and we have to leverage the power of each of them.

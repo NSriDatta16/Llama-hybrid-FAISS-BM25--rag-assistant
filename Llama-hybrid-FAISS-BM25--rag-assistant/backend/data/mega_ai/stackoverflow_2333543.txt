@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2333543
-[parent_id]: 2333501
-[tags]: 
-You can't make the join table conditional, so in this case you would have to join events to both users and organisations and use coalesce to merge the common fields (eg. name) together. select e.id, coalesce(u.name, o.name) owner_name from events e left join users u on e.owner_id = u.id and e.owner_type = 'user' left join organisations o on e.owner_id = o.id and e.owner_type = 'org' However, you may consider creating an owners table, which contains both users and organisations, with a structure like (id, type, org_id, name, ...). This would only require a single join, but may complicate other areas of your schema, eg. user membership of an organisation. An alternative method would be to union the users and organisations tables together and then join once from events.

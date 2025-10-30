@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5397074
-[parent_id]: 
-[tags]: 
-enable ports RB4 and RB3 on pic 18F4550
-
-I have written this program in mplab v8.63 with c compiler C18 on the pic 18F4550. if I press the button on my picdem (S3) and there is a led connected on RB5 (with a resistor) then the led goes on. When i pressed on (S3) and there is a led on RB4, the the led will not be on (while I expected this) the same with RB3. Thit I forgot something to set? The goal is for the red, green and blue LED separately measured with a LDR. but first I obviously must enable the ports RB5, RB4 and RB3. #pragma code /******************************************************************************/ void main (void) { TRISD = 0x00; // PORTD as output TRISB = 0b00110000; // RB4 en RB5 as input TRISA = 0x00; // RA output RCONbits.IPEN = 0; // priority INTCONbits.GIE = 1; // enable interrupt INTCONbits.RBIE = 1; // interrupt portB on while(1) { _asm sleep _endasm } } #pragma interrupt ISR void ISR (void) { //int red= 01110010011011110110111101100100; int on = 1; int off = 0; if (INTCONbits.RBIF==1) { if(PORTBbits.RB5==0) // S3 pressed? { LATDbits.LATD1 ^= 1; // D2 toggle LATAbits.LATA2 ^= on; } if(PORTBbits.RB4==0) { LATDbits.LATD1 ^= 1; // D2 toggle LATAbits.LATA2 ^= on; } if(PORTBbits.RB3==0) { LATDbits.LATD1 ^= 1; // D2 toggle LATAbits.LATA2 ^= on; } } INTCONbits.RBIF = 0; }

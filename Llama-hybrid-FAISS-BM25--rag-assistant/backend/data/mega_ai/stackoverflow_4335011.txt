@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4335011
-[parent_id]: 
-[tags]: 
-Measuring FLOPs of an application with the linux perf tool
-
-I want to measure the ammount of floating point and arithmetic operations executed by some application with 'perf', the new command line interface command to the linux performance counter subsystem. (For testing purposes I use a simple dummy app which I created, see below). Because I could not find any 'perf' events defined for measuring FP and integer operations, I started digging in the raw hardware event codes (to be used with -rNNN, where NNN is hexadecimal value of the event code). So my real problem is that, the codes I found for retired instructions (INST_RETIRED) do not make the distinction between FP and other instructions (X87 and MMX/SSE). When I tried to use the appropriate umasks to the particular code I found out that somehow 'perf' does not understand or support the umask inclusion. i tried with: % perf stat -e rC0 ./a.out which gives me the instructions retired, but % perf stat -e rC002 ./a.out which should give me the X87 instructions executed says I supplied wrong parameters. Maybe so, but what is the correct way to use umasks of raw hardware events with 'perf'? in general what is the way to get the exact number of floating point and integer operations a program executed using the perf tool? Many thanks, Konstantin Boyanov Here is my test app: int main(void){ float numbers[1000]; float res1; double doubles[1000]; double res2; int i,j=3,k=42; for(i=0;i

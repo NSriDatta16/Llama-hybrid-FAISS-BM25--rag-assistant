@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4820334
-[parent_id]: 
-[tags]: 
-how to compute the average with mongodb and NumberLong
-
-I am trying to compute an average value from a collection using the mongodb java driver, like this: DBObject condition = new BasicDBObject("pluginIdentifier", plugin.getIdentifier()); DBObject initial = new BasicDBObject(); initial.put("count", 0); initial.put("totalDuration", 0); String reduce = "function(duration, out) { out.count++; out.totalDuration+=duration.floatApprox; }"; String finalize = "function(out) { out.avg = out.totalDuration.floatApprox / out.count; }"; DBObject avg = durationEntries.group( new BasicDBObject("pluginIdentifier", true), condition, initial, reduce, finalize); System.out.println(avg); "duration" is a NumberLong (in java, it is a Long, probably the java driver converts it). I figured out after some searching that in order to extract the number, using .floatApprox was one way to go, and this also works in the mongodb console: > db.DurationEntries.findOne().duration.floatApprox 5 However, running the above java code won't compute an average, but returns this instead [{"pluginIdentifier":"dummy", "count":7.0, "totalDuration":NaN, "avg":NaN}] I tried several variations, with and without .floatApprox, but have only been able to obtain some weird string concatenations until now. My question is: what am I doing wrong / how should I go about to calculate the average of one NumberLong column?

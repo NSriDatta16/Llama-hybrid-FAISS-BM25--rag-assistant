@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1547425
-[parent_id]: 1547314
-[tags]: 
-Not very clean but in an ASP.NET MVC View you could actually write this: " /> Which will effectively print whatever the value you have in appSettings: Oh and there won't be a VIEWSTATE tag added to your page :-) Now to the point: I will strongly discourage you doing something like this MVC. It is not the View's responsibility to pull the data to show, it's the controller that needs to pass it. So I would make MySetting a property of the ViewModel which will be populated by the controller and passed to the view to be shown. public ActionResult Index() { var model = new SomeViewModel { // TODO: Might consider some repository here MySetting = ConfigurationManager.AppSettings["MySetting"] } return View(model); } And in the View: or even shorter with the new syntax introduced in ASP.NET 4: UPDATE: Yet another alternative if you think that MySetting is not a property of the ViewModel (like some css name or similar) you could extend the HtmlHelper: public static string ConfigValue(this HtmlHelper htmlHelper, string key) { return ConfigurationManager.AppSettings[key]; } And use it like this:

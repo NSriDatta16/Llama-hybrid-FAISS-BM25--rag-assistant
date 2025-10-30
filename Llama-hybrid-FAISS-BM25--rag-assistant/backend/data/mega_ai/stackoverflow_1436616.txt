@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1436616
-[parent_id]: 1436348
-[tags]: 
-Hey Robert - I don't know how Spark handles it's data, but I can tell you that the second part is pretty simple to fix. First - you have to remember MVC won't reach into the DB for you. In your case your criteria for pulling out a record seems to involve two criteria - so you'll have to pull that again if you want to make sure the data is set properly. So on POST change your signature to this: [AcceptVerbs(HttpVerbs.Post)] public virtual ActionResult Edit(string id, FormCollection form) { //assuming you have some kind of PK var plot = Plot.SingleOrDefault(p => p.ID == id); UpdateModel(plot, form.ToValueProvider()); var validator = new PlotValidator(); try { var results = validator.Validate(plot); if (!results.IsValid) { ... } } } This is freehanded - but it's how you have to do it with L2S anyway...

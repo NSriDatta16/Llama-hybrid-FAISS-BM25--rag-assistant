@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4064532
-[parent_id]: 
-[tags]: 
-Using Parsec with Data.Text
-
-Using Parsec 3.1 , it is possible to parse several types of inputs: [Char] with Text.Parsec.String Data.ByteString with Text.Parsec.ByteString Data.ByteString.Lazy with Text.Parsec.ByteString.Lazy I don't see anything for the Data.Text module. I want to parse Unicode content without suffering from the String inefficiencies. So I've created the following module based on the Text.Parsec.ByteString module: {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-} {-# OPTIONS_GHC -fno-warn-orphans #-} module Text.Parsec.Text ( Parser, GenParser ) where import Text.Parsec.Prim import qualified Data.Text as T instance (Monad m) => Stream T.Text m Char where uncons = return . T.uncons type Parser = Parsec T.Text () type GenParser t st = Parsec T.Text st Does it make sense to do so? It this compatible with the rest of the Parsec API? Additional comments: I had to add {-# LANGUAGE NoMonomorphismRestriction #-} pragma in my parse modules to make it work. Parsing Text is one thing, building an AST with Text is another thing. I will also need to pack my String before return: module TestText where import Data.Text as T import Text.Parsec import Text.Parsec.Prim import Text.Parsec.Text input = T.pack "xxxxxxxxxxxxxxyyyyxxxxxxxxxp" parser = do x1

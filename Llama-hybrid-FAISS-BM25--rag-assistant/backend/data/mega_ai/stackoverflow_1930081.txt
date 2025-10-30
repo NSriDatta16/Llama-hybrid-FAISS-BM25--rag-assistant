@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1930081
-[parent_id]: 
-[tags]: 
-C vs C++ code optimization for simple array creation and i/o
-
-I've been trying to convince a friend of mine to avoid using dynamically allocated arrays and start moving over to the STL vectors. I sent him some sample code to show a couple things that could be done with STL and functors/generators: #include #include #include #include #define EVENTS 10000000 struct random_double { double operator() () { return (double)rand()/RAND_MAX; } }; int main(int argc, char **argv){ std::vector vd (EVENTS); generate(vd.begin(), vd.end(), random_double()); copy(vd.begin(), vd.end(), std::ostream_iterator (std::cout, "\n")); return 0; } His reply to this, although he feels it's more elegant, is that his own code is faster (by almost a factor of 2!) Here's the C code he replied with: #include #include #include #include #define EVENTS 10000000 __inline double random_double() { return (double)rand()/RAND_MAX; } int main(int argc, char **argv){ unsigned int i; double *vd; vd = (double *) malloc(EVENTS*sizeof(double)); for(i=0;i So I ran the simple timing test to see just what happens, and here's what I got: > time ./c++test > /dev/null real 0m14.665s user 0m14.577s sys 0m0.092s > time ./ctest > /dev/null real 0m8.070s user 0m8.001s sys 0m0.072s The compiler options, using g++ were: g++ -finline -funroll-loops. Nothing too special. Can anyone tell me why the C++/STL version is slower in this case? Where is the bottleneck, and will I ever be able to sell my friend on using STL containers?

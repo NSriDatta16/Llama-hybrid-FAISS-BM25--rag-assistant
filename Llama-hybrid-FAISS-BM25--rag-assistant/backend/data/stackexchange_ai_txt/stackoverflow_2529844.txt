@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2529844
-[parent_id]: 2529592
-[tags]: 
-To count the number of "nestings", in a thread-safe way, is a good example of using thread-local storage : import threading mydata = threading.local() mydata.nesting = 0 class auto_refresh(object): def __init__(self, f): self.f = f def __call__(self, *args, **kwargs): mydata.nesting += 1 try: return self.f(*args, **kwargs) finally: mydata.nesting -= 1 if mydata.nesting == 0: print 'refreshing' If you don't care about threading, as long as your installation of Python is compiled with threading enabled (and these days just about all of them are), this will still work just fine. If you fear a peculiar Python installation without threading, change the import statement to try: import threading except ImportError: import dummy_threading as threading roughly as recommended in the docs (except that the docs use a peculiar "private" name for the import's result, and there's no real reason for that, so I'm using a plain name;-).

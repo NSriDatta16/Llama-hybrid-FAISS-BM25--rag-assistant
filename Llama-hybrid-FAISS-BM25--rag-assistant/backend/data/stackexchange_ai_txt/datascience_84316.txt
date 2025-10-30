@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 84316
-[parent_id]: 
-[tags]: 
-Why BERT tokenizers function differently?
-
-While experimenting with transformers' TFBertForSequenceClassification and BertTokenizer , I noticed that BertTokenizer: transformer_bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased") tokenizes the text differently from the tokenizer that I use to construct for my BERT models in this way: !wget --quiet https://raw.githubusercontent.com/tensorflow/models/master/official/nlp/bert/tokenization.py import tokenization FullTokenizer = tokenization.FullTokenizer and then BERT_MODEL_HUB = 'https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/2' bert_layer = hub.KerasLayer(BERT_MODEL_HUB, trainable=True) to_lower_case = bert_layer.resolved_object.do_lower_case.numpy() vocabulary_file = bert_layer.resolved_object.vocab_file.asset_path.numpy() tokenizer = FullTokenizer(vocabulary_file, to_lower_case) as an example: sequence = "Systolic arrays are cool. This is cool too." transformer_bert_tokenizer .tokenize(sequence) # output: ['s', '##ys', '##to', '##lic', 'array', '##s', 'are', 'cool', '.', 'this', '[UNK]', 'is', 'cool', 'too', '.'] tokenizer2.tokenize(sequence) # output: ['sy','##sto','##lic','arrays','are','cool','.','this','[UNK]', 'is','cool','too','.'] Does anyone know why there is a difference? Aren't both tokenizers using the same vocabulary? which way is preferred?

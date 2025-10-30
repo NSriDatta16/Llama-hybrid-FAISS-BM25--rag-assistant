@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 974038
-[parent_id]: 
-[tags]: 
-Reading 64bit Registry from a 32bit application
-
-I have a c# unit test project that is compiled for AnyCPU. Our build server is a 64bit machine, and has a 64bit SQL Express instance installed. The test project uses code similar to the following to identify the path to the .MDF files: private string GetExpressPath() { RegistryKey sqlServerKey = Registry.LocalMachine.OpenSubKey( @"SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL" ); string sqlExpressKeyName = (string) sqlServerKey.GetValue( "SQLEXPRESS" ); RegistryKey sqlInstanceSetupKey = sqlServerKey.OpenSubKey( sqlExpressKeyName + @"\Setup" ); return sqlInstanceSetupKey.GetValue( "SQLDataRoot" ).ToString(); } This code works fine on our 32bit workstations, and did work ok on the build server until I recently enabled code coverage analysis with NCover. Because NCover uses a 32bit COM component, the test runner (Gallio) runs as a 32bit process. Checking the registry, there is no "Instance Names" key under HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SQL Server Is there a way for an application running in 32bit mode to access the registry outside Wow6432Node?

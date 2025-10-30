@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4549659
-[parent_id]: 4547693
-[tags]: 
-I think I figured out by myself: DON'T use a ´UITableViewController´ and a UITableView as root view in your NIB, as you cannot add a UIToolbar to the table view. Instead: In the NIB, put a standard view and drag a UIToolbar and a UITableView on it. Connect the standard view to the controller's "view" outlet. Add another outlet and make it a UITableView. Connect the table view to it. In the code: Let your controller inherit from UIViewController and not from UITableViewController. Add a property to your controller to get the TableView to make it look compatible to UITableViewController. public UITableView TableView { get { return this.viewTableView; } } Upon the viewDidRotate event you will have to adjust the table views width and height now (UITableViewController did that job for you before): this.TableView.Frame = new RectangleF(0, 44, this.SuperView.Frame.Width, this.SuperView.Frame.Height); The 44 pixels com from the parent view's toolbar. I don't miss UITableViewController. I know there are some issues like automatic scrolling when editing, but in my case this is simply not needed. René

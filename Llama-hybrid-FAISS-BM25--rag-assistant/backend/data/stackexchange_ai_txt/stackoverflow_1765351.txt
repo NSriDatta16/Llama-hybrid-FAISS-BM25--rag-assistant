@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1765351
-[parent_id]: 
-[tags]: 
-strange iphone sdk sqlite memory leak
-
-I have a very strange memory leak problem, it seems that sqlite3_step is doing some nasty stuff :| I spent almost 4 hours trying to fix this but no luck till now :( Here it is the code: [dbList removeAllObjects]; sqlite3_stmt *statement = nil; const char *sql = "SELECT * FROM dbs ORDER by rowOrder;"; if (sqlite3_prepare_v2(dbHandler, sql, -1, &statement, NULL) == SQLITE_OK) { while (sqlite3_step(statement) == SQLITE_ROW) { DatabaseEntry *entry = [[DatabaseEntry alloc] init]; entry.databaseID = sqlite3_column_int(statement, 0); entry.databaseTitle = [NSString stringWithFormat:@"%s", (char *)sqlite3_column_text(statement, 1)]; entry.databaseProtected = sqlite3_column_int(statement, 3); entry.databaseFileName = [NSString stringWithFormat:@"%s", (char *)sqlite3_column_text(statement, 2)]; entry.databaseOrder = sqlite3_column_double(statement, 4); [dbList addObject:entry]; [entry release]; } } sqlite3_finalize(statement); The problem seems to be with my query, if I remove the "ORDER by rowOrder" part, everything seems to be just fine, also I'm using sqlcipher, and I'm wondering if that might cause this leak ?! Thanks a lot for your attention !!!

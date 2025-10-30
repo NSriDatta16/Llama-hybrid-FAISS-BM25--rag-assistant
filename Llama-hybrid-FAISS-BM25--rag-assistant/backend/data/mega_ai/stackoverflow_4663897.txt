@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4663897
-[parent_id]: 
-[tags]: 
-Testing helpers in Rails 3 with Rspec 2 and Devise
-
-My helper code looks like this (and works fine btw): module ProvidersHelper def call_to_review(provider) if user_signed_in? && review = Review.find_by_provider_id_and_user_id(provider.id, current_user.id) link_to "Edit Your Review", edit_provider_review_path(provider, review), :class => "call_to_review" else link_to "Review This Provider", new_provider_review_path(provider), :class => "call_to_review" end end end Unfortunately, this produces the following error when I run my tests: undefined method `user_signed_in?' for # # ./app/helpers/providers_helper.rb:3:in `call_to_review' Clearly the Devise::Controllers::Helpers are not being included in my helpers when rspec is running the test. Any suggestions that might help this work? Edit: to provide a bit more information, my spec_helper does have this: config.include Devise::TestHelpers, :type => :controller config.include Devise::TestHelpers, :type => :view config.include Devise::TestHelpers, :type => :helper (Sadly, I couldn't get it to work with :type => [:controller, :view, :helper] ) Anyway I believe that these lines add the sign_in(scope, object) (and other) test helpers to your tests. They don't add the helpers that you would actually leverage in your controller / view code.

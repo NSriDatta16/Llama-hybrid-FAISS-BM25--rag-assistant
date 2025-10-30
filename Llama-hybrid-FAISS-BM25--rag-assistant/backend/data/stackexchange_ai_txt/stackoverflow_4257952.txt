@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4257952
-[parent_id]: 4251823
-[tags]: 
-Your intuition for how to parallelize this problem seems correct, but I'd guess there's something in your implementation that is unexpectedly serializing your disk accesses. Grep will be I/O bound, and you should see massive speedups if you get each system in your cluster to operate on its local data. You're going to have to look in to the fine details of how files are accessed over MPI from a Lustre system. It sounds like the software stack is actually serializing all your disk accesses, so you can't take advantage of the distributed FS. Or, your clients might be accessing the wrong slice of the file for the node they're on. How do I take advantage of a DFS when writing C code? If you're using standard POSIX file operations, you're out of luck. They don't expose enough information to make this task easy. This is why distributed file storage and processing systems are written as

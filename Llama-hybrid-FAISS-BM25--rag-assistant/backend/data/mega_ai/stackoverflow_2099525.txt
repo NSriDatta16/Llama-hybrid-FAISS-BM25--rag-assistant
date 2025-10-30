@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2099525
-[parent_id]: 
-[tags]: 
-How to count many things with SQLite under Perl?
-
-I want to count many strings (>3G), so I choose SQLite with a table of (str TEXT PRIMARY KEY, count INTEGER DEFAULT 1) . There are about 3G strings, each takes 40*2/8=10 bytes, thus the whole strings is 30GB. Of those 10 bytes, there are 2^80 kinds, which is much larger than 3G. So how to update effectively ? UPDATE table SET count = count + 1 WHERE str = 'xxx'; # check whether rows infected INSERT INTO table (str) VALUES ('yyy') Or sth. like INSERT OR REPLACE , which I am not familiar with. Any suggestions ? I follow Sinan Ünür's way: PRAGMA synchronous = OFF; PRAGMA journal_mode = OFF; PRAGMA temp_store = MEMORY; PRAGMA auto_vacuum = NONE; PRAGMA cache_size = 4000000; CREATE TABLE kmers ( seq TEXT ); SELECT seq,COUNT(seq) FROM kmers GROUP BY seq; No index used. Autocommit is 0. And I have not test whether journal_mode OFF is faster. temp_store should be useless.

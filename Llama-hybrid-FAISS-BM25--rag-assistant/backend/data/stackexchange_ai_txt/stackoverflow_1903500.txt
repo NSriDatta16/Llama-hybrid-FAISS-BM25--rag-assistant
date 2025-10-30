@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1903500
-[parent_id]: 
-[tags]: 
-libnet creates UDP packets with invalid checksums
-
-I'm using pylibnet to construct and send UDP packets. The UDP packets I construct in this way all seem to have invalid checksums. Example: # python Python 2.4.3 (#1, Sep 3 2009, 15:37:12) [GCC 4.1.2 20080704 (Red Hat 4.1.2-46)] on linux2 Type "help", "copyright", "credits" or "license" for more information. >>> >>> import libnet >>> from libnet.constants import * >>> >>> net = libnet.context(RAW4, 'venet0:0') >>> ip = net.name2addr4('www.stackoverflow.com', RESOLVE) >>> data = 'This is my payload.' >>> udptag = net.build_udp(sp=54321, dp=54321, payload=data) >>> packetlen = IPV4_H + UDP_H + len(data) >>> iptag = net.autobuild_ipv4(len=packetlen, prot=IPPROTO_UDP, dst=ip) >>> >>> net.write() Capturing the above packet on the sending host reveals an invalid checksum: # tcpdump -i venet0:0 -n -v -v port 54321 tcpdump: WARNING: arptype 65535 not supported by libpcap - falling back to cooked socket tcpdump: listening on venet0:0, link-type LINUX_SLL (Linux cooked), capture size 96 bytes 08:16:10.303719 IP (tos 0x0, ttl 64, id 1, offset 0, flags [none], proto: UDP (17), length: 47) 192.168.55.10.54321 > 69.59.196.211.54321: [bad udp cksum 50c3!] UDP, length 0 Am I doing something wrong here?

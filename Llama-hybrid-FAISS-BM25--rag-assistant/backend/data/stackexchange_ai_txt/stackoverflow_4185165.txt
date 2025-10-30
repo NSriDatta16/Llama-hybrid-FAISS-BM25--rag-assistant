@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4185165
-[parent_id]: 4185017
-[tags]: 
-As Ignacio said, ARG_MAX is the maximum length of the buffer of arguments passed to exec() , not the maximum number of files ( this page has a very in-depth explanation). Specifically, it lists fs/exec.c as checking the following condition: PAGE_SIZE*MAX_ARG_PAGES-sizeof(void *) / sizeof(void *) And, it seems, you have some additional limitations: On a 32-bit Linux, this is ARGMAX/4-1 (32767) . This becomes relevant if the average length of arguments is smaller than 4. Since Linux 2.6.23, this function tests if the number exceeds MAX_ARG_STRINGS in (2^32-1 = 4294967296-1). And as additional limit, one argument must not be longer than MAX_ARG_STRLEN (131072).

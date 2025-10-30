@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3741218
-[parent_id]: 3740833
-[tags]: 
-With warnings pragma switched on then you do get Use of uninitialized value in print at... warnings at the two lines you want to die. So if you make warnings fatal then they would die instead: use warnings FATAL => 'all'; Update Based on comments you've made I assume your common case issue is something along these lines: my $x = $hash{B}{C}{X}; Which won't throw warning/error until you actually use $x later on. To get around this then you can do: my $x = $hash{B}{C}{X} // 'some default value'; my $z = $hash{B}{C}{Z} // die "Invalid hash value"; Unfortunately the above would mean a lot of extra typing :( Here is at least a short cut: use 5.012; use warnings FATAL => 'all'; use Carp 'croak'; # Value Or Croak! sub voc { $_[0] // croak "Invalid hash" } Then below would croak! my $x = voc $hash{B}{C}{X}; Hopefully this and also the fatal warnings are helpful to you. /I3az/

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1029348
-[parent_id]: 1028318
-[tags]: 
-I've found two issues with your question. You say: If an agent is accessed while an action is occurring then the value isn't returned until the action has finished http://clojure.org/agents says: the state of an Agent is always immediately available for reading by any thread I.e. you never have to wait to get the value of an agent (I assume the value changed by an action is proxied and changed atomically). The code for the deref -method of an Agent looks like this (SVN revision 1382): public Object deref() throws Exception{ if(errors != null) { throw new Exception("Agent has errors", (Exception) RT.first(errors)); } return state; } No blocking is involved. Also, I don't understand what you mean (in your Ref section) by Transactions are committed on calls to deref Transactions are committed when all actions of the dosync block have been completed, no exceptions have been thrown and nothing has caused the transaction to be retried. I think deref has nothing to do with it, but maybe I misunderstand your point.

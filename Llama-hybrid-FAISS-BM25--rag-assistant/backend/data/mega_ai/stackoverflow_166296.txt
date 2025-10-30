@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 166296
-[parent_id]: 159011
-[tags]: 
-I such situations I use an XML DOM as surrogate for the HTML DOM I would have in a browser. jQuery can manipulating an XML DOM however jQuery expects window to be present in its context. It may be possible to fool jQuery (or tweak it) so that it would work server-side but it could be quite fragile. Personnally I just use a small library of helper functions that make manipulating an XML DOM a little less painful, For example as:- function XmlWrapper(elem) { this.element = elem; } XmlWrapper.prototype.addChild = function(name) { var elem = this.element.ownerDocument.createElement(name); return new XmlWrapper(this.element.appendChild(elem)); } Now your page code can do:- var dom = Server.CreateObject("MSXML2.DOMDocument.3.0"); dom.loadXML(" "); var html = XmlWapper(dom.documentElement); var head = html.addChild("head"); var body = html.addChild("body"); var tHead = body.addChild("table").addChild("tHead"); As you create code that manipulates the DOM 'in the raw' you will see patterns you can re-factor as methods of the XmlWrapper class.

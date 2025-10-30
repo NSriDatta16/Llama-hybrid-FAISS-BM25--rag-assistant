@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1829040
-[parent_id]: 1828955
-[tags]: 
-You are asking for an XML operation, not for a relational operation. What you want is to produce a new XML by inserting a fragment of XML into it, which means you have to use the xml.modify() method. Technically this is possible, but the modify() must be called within an update context, so it won't work in a SELECT. It can work in a SET or in an UPDATE: UPDATE t1 SET parent.modify(N'insert sql:column("t2.guts") into (/Root)[1]') FROM @table1 t1 JOIN @table2 t2 on t1.id = t2.id; SELECT * from @table1; If you must have the result in a SELECT then you'll have to shred the XML into relational table, join that and reconstruct the XML back using FOR XML.

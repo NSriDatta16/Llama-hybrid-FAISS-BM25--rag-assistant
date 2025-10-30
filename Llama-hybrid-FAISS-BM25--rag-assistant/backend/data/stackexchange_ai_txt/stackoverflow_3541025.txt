@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3541025
-[parent_id]: 3540992
-[tags]: 
-As I can see, you share user between Register and Process . So the problem is how to refresh Process when data in user are updated. You could create listener on User , or on 'Register'. IMHO listener on 'Register' is more elegant. RegisterListener: public interface RegisterListener { void userRegistered(User user); } Register: public void addRegisterListener(RegisterListener listener) { //add listener to some collection. } //Call this method on Submit button press protected void fireRegistered() { //iterate over collection of listeners and on each do: listener.userRegistered(user); } Process: Process implements RegisterListener { public void userRegistered(User user) { refreshView(); } } And in main: Register register = new Register(user); Process process = new Process(); register.addRegisterListener(process); So Process should be informed when user is registered, and it should receive all the necessary data in user parameter of listener method.

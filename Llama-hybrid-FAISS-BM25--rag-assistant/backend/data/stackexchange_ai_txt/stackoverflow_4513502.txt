@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4513502
-[parent_id]: 4511840
-[tags]: 
-Turns out I had the junit jar in the boot classpath specified for the javaagent as well as the user classpath specified through -classpath i.e. the manifest for agent.jar had the following entry: Boot-Class-Path: ...junit.jar... and the -classpath argument to the java command had the following: -classpath ...junit.jar... I was able to fix the problem by removing junit.jar from the manifest boot classpath entry. Here is a short explanation of the problem: Since junit.jar was included in the boot classpath, org.junit.runner.JUnitCore was first loaded using the boot classloader. So when Class.forName was invoked within JunitCore, it tried to find the class using the boot classloader which could not find the class since it was not part of the boot classpath.

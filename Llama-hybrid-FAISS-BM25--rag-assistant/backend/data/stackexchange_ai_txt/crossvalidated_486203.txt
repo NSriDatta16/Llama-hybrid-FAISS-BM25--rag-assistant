@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 486203
-[parent_id]: 
-[tags]: 
-Why we learn $\log{\sigma^2}$ in VAE reparameterization trick instead of standard deviation?
-
-We know that the reparameterization trick is to learn two vectors $\sigma$ and $\mu$ , sample $\epsilon$ from $N(0, 1)$ and then your latent vector $Z$ would be (where $\odot$ is the element-wise product.): $$ Z = \mu + \sigma\odot\epsilon $$ However, in the TensorFlow TensorFlow tutorial code for VAEs, it is learning $\log{\sigma^2}$ and then transform it to $\sigma$ with Exp. The code is here: def reparameterize(self, mean, logvar): eps = tf.random.normal(shape=mean.shape) return eps * tf.exp(logvar * .5) + mean which is showing this: $$ Z = \mu + \epsilon\times e^{0.5\times\log{\sigma^2}} = \mu + \epsilon\times e^{\log{\sqrt{\sigma^2}}} = \mu + \epsilon\times \sigma $$ I know that we learn $\log{\sigma^2}$ instead of $\sigma^2$ because the variance of a random variable is constrained to be positive (i.e. $\sigma^2 \in \mathbb{R}^+$ ) and so if we were to try to learn the variance we would have to constrain somehow the output of a neural network to be positive. A simple way around this is to learn the logarithm instead since $\log(\sigma^2) \in \mathbb{R}$ ensures that $\exp(\log(\sigma^2)) \in \mathbb{R}^+$ (thanks to this answer) . BUT I don't understand why don't we just learn $\log{\sigma}$ ? why do we learn variance instead of standards deviation?

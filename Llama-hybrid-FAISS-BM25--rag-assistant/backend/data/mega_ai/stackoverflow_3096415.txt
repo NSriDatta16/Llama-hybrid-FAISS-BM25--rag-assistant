@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3096415
-[parent_id]: 3096148
-[tags]: 
-I can't answer your main question, but there are a couple of things that you can do to speed things up. Firstly, make sure that your MySQL database is set up to use InnoDB. Then it can use transactions to rollback the state of the db before each test, which in my experience has led to a massive speed-up. You can pass a database init command in your settings.py (Django 1.2 syntax): DATABASES = { 'default': { 'ENGINE':'django.db.backends.mysql', 'HOST':'localhost', 'NAME':'mydb', 'USER':'whoever', 'PASSWORD':'whatever', 'OPTIONS':{"init_command": "SET storage_engine=INNODB" } } } Secondly, you don't need to run the South migrations each time. Set SOUTH_TESTS_MIGRATE = False in your settings.py and the database will be created with plain syncdb, which will be much quicker than running through all the historic migrations.

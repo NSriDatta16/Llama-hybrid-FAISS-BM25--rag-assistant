@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 10809
-[parent_id]: 
-[tags]: 
-Image Segmentation with a challenging background
-
-I'm working on an animal classification problem, with the data extracted from a video feed. The recording was made in a pen, so the problem is quite challenging with a dark background and many shadows: Initially I tried scikit-image, but then someone helped me with an advanced tool called crf-rnn ( http://crfasrnn.torr.vision/ ) that does a great job segmenting and labelling objects in an image. I did the following: import caffe net = caffe.Segmenter(MODEL_FILE, PRETRAINED) IMAGE_FILE = '0045_crop2.png' input_image = caffe.io.load_image(IMAGE_FILE) from PIL import Image as PILImage image = PILImage.fromarray(np.uint8(input_image)) image = np.array(image) mean_vec = [np.mean(image[:,:,vals]) for vals in range(image.shape[2])] im = image[:, :, ::-1] im = im - reshaped_mean_vec cur_h, cur_w, cur_c = im.shape pad_h = 750 - cur_h pad_w = 750 - cur_w print(pad_h, pad_w, "999") im = np.pad(im, pad_width=((0, max(pad_h,0)), (0, max(pad_w,0)), (0, 0)), mode = 'constant', constant_values = 255) segmentation = net.predict([im]) segmentation2 = segmentation[0:cur_h, 0:cur_w] The resulting image segmentation is rather poor (although two cows are recognized correctly): I use a trained crf-rnn (MODEL_FILE, PRETRAINED), which works well for other problems, but this one is harder. I would appreciate any suggestions on how to pre-process this sort of image to extract the shape of most cows.

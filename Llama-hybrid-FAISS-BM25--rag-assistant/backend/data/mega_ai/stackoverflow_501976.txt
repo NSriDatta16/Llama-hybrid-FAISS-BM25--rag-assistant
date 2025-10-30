@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 501976
-[parent_id]: 501936
-[tags]: 
-I don't think the SQL provider supports adding lambda columns to the query. However, it does support a coalesce operator, and since you are essentially doing this: SELECT * FROM Tasks ORDER BY ISNULL(DueDate, DATEADD(year, 10, GETDATE())) Try this: from o in dc.Orders orderby o.DueDate ?? DateTime.Today.AddYears(10) If you need that fake, future date to also be in your resultset for some reason, you can modify the entity class in the LINQtoSQL designer.cs file: [Column(Storage="_DueDate", DbType="SmallDateTime")] public System.Nullable DueDate { get { if(this._DueDate == null) { return DateTime.Today.AddYears(10); } return this._DueDate; } So if you ever ask for DueDate on the object and DueDate is null, you'll at least get the far-future date.

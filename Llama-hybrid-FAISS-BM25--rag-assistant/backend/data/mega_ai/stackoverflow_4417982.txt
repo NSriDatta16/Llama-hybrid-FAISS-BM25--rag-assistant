@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4417982
-[parent_id]: 4417655
-[tags]: 
-It may be tempting to over-think this, but I'm not convinced what you want to do is very complicated. STI is probably not the best idea here, because you restrict a user to no more than one of these key roles. As far as storing membership specific information, I'm not sure that your tables will be "huge" when you add columns for STI. If they are null, they aren't really consuming any resources. If you don't need to select on that data, you might consider having a single column role_information and then using serialize :role_information so that you can define a hash and store it in the column. Another option is to override methods such that they check for role membership when responding, i.e.: has_many :agents def agents return nil unless self.has_role(:manager) return self[:agents] end Replace "has_role" with whatever you need to check role membership. You can do this on the setting side as well. Authorization for specific functions should be done in your controller, so you should check for role membership at that point.

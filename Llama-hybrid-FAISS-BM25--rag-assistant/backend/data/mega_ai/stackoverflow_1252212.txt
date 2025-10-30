@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1252212
-[parent_id]: 
-[tags]: 
-Groovy/Java process management intercept/listen output
-
-Groovy has a nice process execution engine and I'd like to use it. There is a method consumeProcessOutput that does all the necessary work. But what I want is to inject my additional functionality every time when consumeProcessOutput call append or something on the out instance. public class ProcessExecutor { static public void execute(IOutput output, String processName) { def process = processName.execute() def out = new StringBuffer() process.consumeProcessOutput(out, out) process.waitFor() } } I am aware of use (MyStringBufferIntercept) { process.consumeProcessOutput(out, out) } But they seems work only for current thread and consumeProcessOutput creates additional threads. So is there any solution to listen to lines adding and call output.addLine(line) and output.addErrorLine(line) ? So far I have only one solution which doesn't work good when error output goes along with normal output quite fast: order changes. def process = processName.execute() def inThread = Thread.start { process.in.eachLine{ line -> output.addLine(line)} } def errThread = Thread.start { process.err.eachLine{ line -> output.addErrorLine(line)} } inThread.join() errThread.join() process.waitFor() I will agree with a Java solution. But I tend to think that groovy's one has to be more elegant.

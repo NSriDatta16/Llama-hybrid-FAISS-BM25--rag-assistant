@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5392016
-[parent_id]: 5391925
-[tags]: 
-You can do this: SELECT SUM(SOM) FROM ( SELECT f.nummer AS factuur_id, f.mvoor AS factuur, f.faktuurnr AS factuur_nr, f.topdatum AS factuur_datum, f.vervaldag AS factuur_vervaldatum, f.totbruto AS factuur_totaal, SUM(c.totbruto) AS credit_totaal, SUM(b.bedrag) AS bedrag_totaal, f.totbruto - (SUM(c.totbruto) + SUM(b.bedrag)) AS SOM FROM ((facturen AS f LEFT JOIN creditnota AS c ON f.nummer = c.nummer) LEFT JOIN betaling1 AS b ON f.nummer = b.factuurnr) LEFT JOIN klanten AS k ON f.klantnr = k.nr WHERE f.betaald = 'N' AND CURDATE() >= DATE_ADD(f.vervaldag, INTERVAL 15 DAY) GROUP BY f.nummer HAVING (factuur_totaal - (SUM(c.totbruto) + SUM(b.bedrag))) > 0 ORDER BY k.naam) AS temp Basically I've just wrapped your query in a SELECT SUM( ) FROM ( ) AS temp .

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 537644
-[parent_id]: 534044
-[tags]: 
-I think this does the trick if not very elegantly: class Subject { public: Subject() : t(bind(&Subject::Run, this)),m_key(0) { } void Subscribe(Observer* o) { mutex::scoped_lock l(m); InternalObserver io( o ); boost::shared_ptr sp(&io); observers.insert(pair > (MakeKey(o),sp)); } void Unsubscribe(Observer* o) { mutex::scoped_lock l(m); observers.find( MakeKey(o) )->second->exists = false; } void WaitForSomethingInterestingToHappen() {} void Run() { for (;;) { WaitForSomethingInterestingToHappen(); for( unsigned int i = 0; i exists ) { mem_fun(&Observer::Notify);//needs changing } else { observers.erase(i); --i; } } } } private: int MakeKey(Observer* o) { return ++m_key;//needs changeing, sha of the object? } class InternalObserver { public: InternalObserver(Observer* o) : m_o( o ), exists( true ) {} Observer* m_o; bool exists; }; map > observers; thread t; mutex m; int m_key; };

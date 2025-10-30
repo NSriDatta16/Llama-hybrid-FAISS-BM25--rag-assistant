@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5174340
-[parent_id]: 5174248
-[tags]: 
-Why not leverage the BackgroundWorker in this scenario... void Go() { BackgroundWorker worker = new BackgroundWorker(); worker.WorkerReportsProgress = true; worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged); worker.DoWork += new DoWorkEventHandler(worker_DoWork); worker.RunWorkerAsync(); } void worker_ProgressChanged(object sender, ProgressChangedEventArgs e) { progressBar_ChangeProgress.Value = e.ProgressPercentage; } void worker_DoWork(object sender, DoWorkEventArgs e) { BackgroundWorker worker = sender as BackgroundWorker; for (int b = 0; b UPDATE: If you are wanting to use the Dispatcher ; set the priority to Normal and perform the processing on the background thread then calling a method on the UI thread to provide the update. void Go() { ThreadStart start = delegate() { //this is taking place on the background thread for (int i = 0; i (Update), i ); } }; new Thread(start).Start(); } void Update(int value) { //this is taking place on the UI thread _progressBar.Value = value; }

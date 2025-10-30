@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 351414
-[parent_id]: 351396
-[tags]: 
-I think the main multicollinearity problem is that country is completely predictable from region/state. Say your dummy variables are I(US), I(CA), I(TX) and I(ON) (where I(US) is the indicator variable: I(US) = 1 if that data point comes from the US and I(CA) = 1if it comes from California, etc.) Then, in this case I(US) = I(CA) + I(TX), which is perfect collinearity. I think you can drop country, then run a post-hoc test on the contrast between the average Canadian and average American state. Here's an example with the multcomp package: library(multcomp) samples = list() samples[["ca"]] = cbind("ca",rbinom(100,1,.6)) samples[["tx"]] = cbind("tx",rbinom(100,1,.5)) samples[["on"]] = cbind("on",rbinom(100,1,.85)) samples[["bc"]] = cbind("bc",rbinom(100,1,.75)) data = rbind.data.frame(samples[["ca"]],samples[["tx"]],samples[["on"]],samples[["bc"]]) colnames(data) = c("region","response") model = glm(response ~ region, family = binomial, data) contrast = glht(model, linfct=t(c(0,.5,-.5,-.5)), alternative = "less", rhs=0) summary(contrast)

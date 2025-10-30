@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5096830
-[parent_id]: 5094957
-[tags]: 
-Linux case (BSD's are probably somewhat similar, using mbuf s instead of skbuff s): Linux uses skbuffs (socket buffers) to buffer network data. A skbuff has metadata about some network data, and some pointers to that data. Taps (pcap users) create clones of skbuffs. A clone is a new skbuff, but it points to the same data. When someone needs to modify data shared by several skbuffs (the original skbuff and its clones), it first needs to create a fresh copy (copy-on-write). When someone doesn't need an skbuff anymore, it kfree_skb() 's it. kfree_skb() decrements a reference count, and when that reference count reaches zero, the skbuff is freed. It's slightly more complicated to account for clones, but this is the general idea.

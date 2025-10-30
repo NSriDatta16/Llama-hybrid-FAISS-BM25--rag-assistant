@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1904797
-[parent_id]: 1904652
-[tags]: 
-You haven't really defined what you mean by "better." However, one way I might go about this is to create a custom attribute for each TClass that defines the repository, and read this attribute in your GetRepository method. It uses some Reflection, but it's more elegant than a big if-else, and more lightweight than a full-fledged dependency-injection framework. Quick example: Attribute: [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)] public class RepositoryAttribute : Attribute { public RepositoryAttribute(Type repositoryType) { this.RepositoryType = repositoryType; } public Type RepositoryType { get; private set; } } Entity class: [Repository(typeof(UserClassRepository))] public class UserClass { // Class code // ... } Factory method: public static IBaseRepository GetRepository () where TClass : IDataEntity { Type t = typeof(TClass); RepositoryAttribute attr = (RepositoryAttribute)Attribute.GetCustomAttribute(t, typeof(RepositoryAttribute), false); if (attr != null) { return (IBaseRepository )Activator.CreateInstance(attr.RepositoryType); } return null; }

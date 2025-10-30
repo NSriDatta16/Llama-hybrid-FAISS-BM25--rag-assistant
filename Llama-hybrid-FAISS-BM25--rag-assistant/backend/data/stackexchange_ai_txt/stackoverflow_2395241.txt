@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2395241
-[parent_id]: 2395207
-[tags]: 
-The problem in the code you've posted is pretty simple: strtok works by modifying the string you pass to it. Modifying a string literal gives undefined behavior. A truly minuscule change to your code lets it work (I've also headed the appropriate headers, and moved the executable part into a function: #include #include char response[] = "HTTP/1.1 200 OK\nServer: Apache-Coyote/1.1\nPragma: no-cache"; int main() { char *token = NULL; token = strtok(response, "\n"); while (token) { printf("Current token: %s.\n", token); token = strtok(NULL, "\n"); } return 0; } In real use, you'll be reading the HTTP response into a buffer anyway; the problem you encountered only arises in a trivial test case like you generated. At the same time, it does point to the fact that strtok is a pretty poorly designed function, and you'd almost certainly be better off with something else.

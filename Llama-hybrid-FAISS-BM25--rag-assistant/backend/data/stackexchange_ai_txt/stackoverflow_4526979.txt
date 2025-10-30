@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4526979
-[parent_id]: 4526817
-[tags]: 
-I'd say your problem lies with your 2nd query. Have you done an EXPLAIN on it? Because of the ORDER BY clause a filesort will be required. If you don't have appropriate indices that can slow things down further. Try this syntax and sub in a valid integer for your apcatnum variable during testing. SELECT d.apnumber, d.aptitle FROM poster_prodcat_inno p JOIN poster_data_inno d ON poster_data_inno.apnumber = poster_prodcat_inno.apnumber WHERE p.apcatnum ='{$cats['apcatnum']}' ORDER BY aptitle ASC; Secondly, since catorder is just an integer version of the combination of apcatnum and aptitle , it's a denormalization for convenience sake. This isn't necessarily bad, but it does mean that you have to update it every time you add a new title or category. Perhaps it might be better to partition your poster_prodcat_inno table by apcatnum and just do the JOIN with poster_data_inno when you need the actually need the catorder .

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4358877
-[parent_id]: 4358284
-[tags]: 
-Why don't you capture on 'any' device (Pseudo-device that captures on all interfaces) ? Any way, here is a little snippet that will help you find 'active' interfaces #include #include #include #include #include static void dump_addresses (pcap_addr_t *addresses) { pcap_addr_t *addr = addresses; printf("("); while (addr) { struct sockaddr_in *ip = (struct sockaddr_in *)addr->addr; struct sockaddr_in *nm = (struct sockaddr_in *)addr->netmask; if (ip && nm) printf("%s/%s ", inet_ntoa(ip->sin_addr), inet_ntoa(nm->sin_addr)); addr = addr->next; } printf(")"); } static void devs_dump (pcap_if_t *devs) { pcap_if_t *dev = devs; while (dev) { printf("dev: %s - %s - ", dev->name, dev->description); dump_addresses(dev->addresses); printf("\n"); dev = dev->next; } } int main(int argc, char *argv[]) { int r; char errbuf[PCAP_ERRBUF_SIZE]; pcap_if_t *devs; r = pcap_findalldevs (&devs, errbuf); if (r) { printf("Findalldevs: %d (%s)\n", r, errbuf); return -1; } devs_dump(devs); pcap_freealldevs (devs); return 0; }

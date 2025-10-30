@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4977376
-[parent_id]: 4970719
-[tags]: 
-I'm not sure why it's so slow at your end, but I actually manage to get a 'false' for non-existing blobs in 5ms and the actual data in 44ms (where the actual data is only a few bytes). What size of data is in every cached blob? If it's only a few kilobytes it should be no problem, but anything bigger will probably make your cache slow as data has to be retrieved over the network each time. For distributed caching, check http://www.davidaiken.com/2011/01/11/windows-azure-memcached-plugin . For caching on the local VM, use the filesystem (http://phpazurecontrib.codeplex.com, check local resource) or make use of the WinCache extensions available. And for reference: checking if the blob exists is not necessary in your code sample, just try the following structure: $blobData = null; $metaData = null; try { $blobData = $blobStorageClient->getBlobData($container, $path); $blobStorageClient->getBlobMetadata($container, $path); } catch (Microsoft_WindowsAzure_Exception $ex) { return false; } return $blobData; This will have one less roundtrip to storage.

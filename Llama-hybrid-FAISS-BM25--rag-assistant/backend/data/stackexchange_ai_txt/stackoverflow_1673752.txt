@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1673752
-[parent_id]: 
-[tags]: 
-Editing an SMTP header with an Exchange 2007 Transport Agent
-
-I'm currently writing an Exchange 2007 Transport Agent to replace some headers in all outgoing mails from a particular sender. I managed to replace the 'From' SMTP header successfully, but rewriting the 'Return-Path' header does not seem to work. To make this all happen, I have written a custom SmtpReceiveAgent and subscribe to the OnEndOfData event like this: private static void MyAgent_OnEndOfData(ReceiveMessageEventSource source, EndOfDataEventArgs e) { try { var address = e.MailItem.Message.From.SmtpAddress; if (address.ToLower().EndsWith("[internal email domain]")) { // replace the From: header - WORKING FINE! e.MailItem.Message.From = new EmailRecipient("[displayname]", "[email address]"); // replace the Return-Path: header - NOT WORKING! var headerList = e.MailItem.Message.RootPart.Headers; var header = (AddressHeader)headerList.FindFirst("Return-Path"); var newheader = new AddressHeader("Return-Path") { Value = "[email address" }; headerList.ReplaceChild(newheader, header); } } catch (Exception ex) { // do something useful here } }

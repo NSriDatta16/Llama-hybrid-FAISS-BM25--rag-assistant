@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3713373
-[parent_id]: 
-[tags]: 
-AWS::S3::NoConnectionEstablished error using aws-s3 gem in Rails
-
-I am getting a AWS::S3::NoConnectionEstablished exception when trying to download a file using paperclip + s3. I can fire up s3sh and create a connection just fine with the s3 credentials in my config. What is the best next step I can take to debug this issue? This is what my model looks like: has_attached_file :file, :storage => :s3, :s3_permssions => :private, :path => lambda { |attachment| ":id_partition/:basename.:extension" }, :url => lambda { |attachment| "products/:id/:basename.:extension" }, :s3_credentials => "#{Rails.root}/config/amazon_s3.yml", :bucket => "products.mycompany.com" And the error occurs here: def temporary_s3_url(options={}) options.reverse_merge! :expires_in => 10.minutes #, :use_ssl => true hard_url = AWS::S3::S3Object.url_for file.path, file.options[:bucket], options # Use our vanity URL hard_url.gsub("http://s3.amazonaws.com/products.mycompany.com","http://products.mycompany.com") end I tried hard coding a connection as the first line in the temporary_s3_url method but I get a "bucket not found" error. I think the problem is definitely that paperclip is having a problem initializing my s3 configuration.

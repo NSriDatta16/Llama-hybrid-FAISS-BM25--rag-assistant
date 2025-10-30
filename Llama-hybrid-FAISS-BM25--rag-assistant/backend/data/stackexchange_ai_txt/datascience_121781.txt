@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 121781
-[parent_id]: 
-[tags]: 
-Issues with sklearn.svm.SVC
-
-I am trying to use the sklearn.svm.SVC on a relatively big dataset, 1.5k test/train samples, 512 features each, one sample per class (so, 1.5k classes). I know that SVC doesn't scale well, so at first I tried LinearSVC, but it didn't achieve the required quality. So, I decided to fit an RBF/polynomial kernel, and utilise parallelism as much as possible to reduce computation time. I have attempted the following: Use a plain SVC(kernel='rbf'). This approach failed immediately, since calling decision_function somehow required 200Gb of RAM. Wrap SVC in a OneVsRest classifier, which significantly reduced the required memory. This works, but it utilizes all 16 CPUs only in the beginning (during fit would be my guess), after which it gets stuck at one worker (according to htop: total workload drops from 1600% to 100%). I believe the culprit is the decision_function. To achieve method 1 I use model = SVC().fit(X_train, Y_train) decision_scores = model.decision_function(X_test) For method 2: with joblib.parallel_backend('loky'): model = OneVsRestClassifier(SVC(**self.kwargs)).fit(gallery_feats, gallery_ids) decision_scores = model.decision_function(probe_feats) So, my question is, how does one parallelize the decision_function call? Or, alternatively, how to reduce the memory footprint of SVC().decision_function? Any help much appreciated!

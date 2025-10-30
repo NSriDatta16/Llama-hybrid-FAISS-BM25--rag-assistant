@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4218106
-[parent_id]: 4217273
-[tags]: 
-I ran into some performance problems in a similar situation. I was creating the factory objects on each use to avoid thread problems (10's per second). The XML implementation in that (admittedly old) platform did some relatively slow lookup logic for a service-provider class. My tuning was to determine the answer that resulted and configure it via command-line properties. That caused the lookup to be skipped. -Djavax.xml.parsers.DocumentBuilderFactory=com.example.FactoryClassName -Djavax.xml.transform.TransformerFactory=com.example.OtherFactoryClassName The frustrating thing was that the lookup code had caching logic if a class was found. But no caching of a miss (nothing found, use default). Slightly better lookup caching that handled the negative case would have made this unneeded. Is this still needed? Requires testing in your environment. I used truss on Solaris to notice the very frequent file operations resulting from that lookup logic.

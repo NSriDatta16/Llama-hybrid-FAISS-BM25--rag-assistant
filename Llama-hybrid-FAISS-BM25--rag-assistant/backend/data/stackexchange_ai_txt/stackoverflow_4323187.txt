@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4323187
-[parent_id]: 4314545
-[tags]: 
-What you are worrying about isn't anything to do with full text - by default Lucene works on an OR basis and what you want is an AND If I were you I'd do String[] terms = searchTerm.Split(" "); // Or whatever the string.split method is and .Where("Name:(" + String.Join(" AND ", terms) + ")"); Your index should look something like public class Movie_ByName : AbstractIndexCreationTask { public override IndexDefinition CreateIndexDefinition() { return new IndexDefinitionBuilder { Map = movies => from movie in movies select new { movie.Name, market.Id }, Indexes = { {x => x.Name, FieldIndexing.Analyzed} } } .ToIndexDefinition(DocumentStore.Conventions); } You don't need storage, you're not requesting the data from lucene directly at any time. You might not even want an index (You might actually want FieldIndexing.Analyzed, and might get away with just using dynamic queries here) Up to you though.

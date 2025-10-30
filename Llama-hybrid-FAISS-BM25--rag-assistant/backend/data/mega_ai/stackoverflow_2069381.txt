@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2069381
-[parent_id]: 2069301
-[tags]: 
-You're allocating the buffer on the stack, and it's way too big. When you allocate storage on the stack, all the compiler does is decrease the stack pointer enough to make that much room (this keeps stack variable allocation to constant time). It does not try to touch any of this stacked memory. Then, when you call open() , it tries to put the parameters on the stack and discovers it has overflowed the stack and dies. You need to either operate on the file in chunks, memory-map it ( mmap() ), or malloc() storage. Also, path should be declared const char* .

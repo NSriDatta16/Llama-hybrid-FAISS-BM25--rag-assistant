@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4447483
-[parent_id]: 4446949
-[tags]: 
-Here is my take. First a functional solution: l.map(_._1).toSet.map({n:String=>(n, if(l contains (n,"FAIL")) "FAIL" else "PASS")}) First we isolate the names, uniquely ( toSet ), then we map each name to a tuple with itself as first element, and either "FAIL" as second element if a fail is contained in l , or otherwise it must obviously be a "PASS" . The result is a set. Of course you can do toList at the end of the call chain if you really need a list. Here is an imperative solution: var l = List(("Agent", "PASS"), ("Agent", "FAIL"), ("Agent 1", "FAIL"), ("Agent", "PASS"), ("Agent 2", "PASS")) l.foreach(t=>if(t._2=="FAIL") l=l.filterNot(_ == (t._1,"PASS"))) l=l.toSet.toList I don't like it as much because it is imperative, but hey. In some sense, it reflects better what you would actually do when you'd solve this by hand. For each "FAIL" you see, you remove all corresponding "PASS" es. After that, you ensure uniqueness ( .toSet.toList ). Note that l is a var in the imperative solution, which is necessary because it gets reassigned.

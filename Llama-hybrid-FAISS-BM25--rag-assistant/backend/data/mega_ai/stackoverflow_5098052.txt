@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5098052
-[parent_id]: 5097628
-[tags]: 
-As far as I understand, you need a scatter operation (uniform FBO pixel space -> random mesh UV texture destination) to be performed in OpenGL. There is a way to do this, not as simple as you may expect, and not even as fast, but I can't find a better one: Run a draw call of type GL_POINTS and size equal to the width*height of your source FBO. Select model texture as a destination FBO color layer, with no depth layer attached In a vertex shader, compute the original screen coordinate by using gl_VertexID . Sample from the source FBO texture to get color and target position (assuming your original FBO surface was a texture). Assign a proper gl_Position and pass the target color to the fragment shader. In a fragment shader, just copy the color to the output. This will make GPU to go through each of your original FBO pixels and scatter the computed colors over the destination texture.

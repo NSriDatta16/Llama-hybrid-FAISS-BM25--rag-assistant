@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5323016
-[parent_id]: 
-[tags]: 
-Rails send event when editing record aswell as create?
-
-I have the following code in my controller: # GET /kases/1/edit def edit @kase = Kase.find(params[:id]) respond_to do |format| format.html { render :layout => 'kaseshow'} # show.html.erb format.xml { render :xml => @kase } format.pdf { render :layout => false } end end # POST /kases # POST /kases.xml def create @company = Company.find(params[:kase][:company_id]) @kase = @company.kases.new(params[:kase]) if @kase.save UserMailer.deliver_makeakase("xxxxxx@xxxxxxxx.com", "Highrise", @kase) if params[:sendtohighrise] UserMailer.deliver_makeakaseteam("xxxxxxxx@xxxxxxx.co.uk", "Highrise", @kase) if params[:notify_team_of_creation] @kase.create_freeagent_project(current_user) if params[:send_to_freeagent] redirect_to(@kase) #flash[:notice] = 'Case was successfully created.' flash[:notice] = fading_flash_message("Case was successfully created.", 5) else render :new end end I am trying to make it so if the user edits a case and then selects the Send to Freeagent tickbox: @kase.create_freeagent_project(current_user) if params[:send_to_freeagent] then the case is resent to Freeagent (online accounting software). I'm not worried about dealing with duplicates because if the case already exists in Freeagent then the user won't need to resend it. Is this possible?

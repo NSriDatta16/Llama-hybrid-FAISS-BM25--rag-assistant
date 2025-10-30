@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5328753
-[parent_id]: 5328235
-[tags]: 
-I checked code of simple_html function. It is actually a gsub call as follows: # File actionpack/lib/action_view/helpers/text_helper.rb, line 253 def simple_format(text, html_options={}, options={}) text = ''.html_safe if text.nil? start_tag = tag('p', html_options, true) text = sanitize(text) unless options[:sanitize] == false text.gsub!(/\r\n?/, "\n") # \r\n and \r -> \n text.gsub!(/\n\n+/, " \n\n#{start_tag}") # 2+ newline -> paragraph text.gsub!(/([^\n]\n)(?=[^\n])/, '\1 ') # 1 newline -> br text.insert 0, start_tag text.html_safe.safe_concat(" ") end The reason previously it is not working is I need to add html_safe call. I remember I met this before. It is for rails 3 only. Therefore nkassis is not wrong. In fact I can write the code as follows: ').html_safe %>

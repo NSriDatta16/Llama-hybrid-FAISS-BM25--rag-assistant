@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 152551
-[parent_id]: 
-[tags]: 
-pymc implementation of ThinkBayes 1.3 cookie problem
-
-This is obviously overkill for this problem , but I thought it would help cement the concepts for me. The problem: Suppose there are two bowls of cookies. Bowl 1 contains 30 vanilla cookies and 10 chocolate cookies. Bowl 2 contains 20 of each. Now suppose you choose one of the bowls at random and, without looking, select a cookie at random. The cookie is vanilla. What is the probability that it came from Bowl 1? Here is my attempt: import pymc as mc which_bowl = mc.Categorical('which_bowl', [.5,.5]) bowl_probs = [ # vanilla, chocolate [.75, .25], # bowl 1 [.5, .5 ], # bowl 2 ] @mc.deterministic def bowl(which_bowl=which_bowl): return bowl_probs[which_bowl] observation = mc.Categorical('obs', bowl, value=0, observed=True) model = mc.Model([which_bowl, bowl, observation]) mcmc = mc.MCMC(model) mcmc.sample(15000, 3000) bowl_data = mcmc.trace('bowl')[:] print 1.0 * sum(bowl_data) / len(bowl_data) Solving this by hand gives: .6 But the code above results in [ 0.64997917 0.35002083] That .6499 doesn't seem close enough to the expected .6. I'd appreciate help identifying what's wrong with my setup.

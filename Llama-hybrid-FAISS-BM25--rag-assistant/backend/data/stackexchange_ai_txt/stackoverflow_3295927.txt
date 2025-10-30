@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3295927
-[parent_id]: 2235840
-[tags]: 
-I was having the same problem and came up with the following answer as the simplest one : class Car(db.Model): name = db.StringProperty(required=True) def __init__(self,*args, **kwargs): super(Car, self).__init__(*args, **kwargs) loadingAnExistingCar = ("key" in kwargs.keys() or "key_name" in kwargs.keys()) if not loadingAnExistingCar: self.__makeSureTheCarsNameIsUnique(kwargs['name']) def __makeSureTheCarsNameIsUnique(self, name): existingCarWithTheSameName = Car.GetByName(name) if existingCarWithTheSameName: raise UniqueConstraintValidationException("Car should be unique by name") @staticmethod def GetByName(name): return Car.all().filter("name", name).get() It's important to not that I first check if we are loading an existing entity first. For the complete solution : http://nicholaslemay.blogspot.com/2010/07/app-engine-unique-constraint.html

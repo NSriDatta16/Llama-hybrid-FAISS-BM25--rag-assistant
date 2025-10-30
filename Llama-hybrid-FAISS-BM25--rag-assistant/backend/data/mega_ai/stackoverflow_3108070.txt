@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3108070
-[parent_id]: 
-[tags]: 
-PHP5.3: "Call to undefined method" error when calling invoke from class variable
-
-I have been doing some tests (to replace old code) with the __invoke magic method and I'm not sure this is a bug or not: Lets suppose we have a class: class Calc { function __invoke($a,$b){ return $a*$b; } } The following is possible and works without any problem: $c = new Calc; $k = $c; echo $k(4,5); //outputs 20 However if I want to have another class to store an instance of that object, this doesn't work: class Test { public $k; function __construct() { $c = new Calc; $this->k = $c; //Just to show a similar situation than before // $this-k = new Calc; produces the same error. } } The error occurs when we try to call it like: $t = new Test; echo $t->k(4,5); //Error: Call to undefined method Test::k() I know that a "solution" could be to have a function inside the class Test (named k) to "forward" the call using call_user_func_array but that is not elegant. I need to keep that instance inside a common class (for design purposes) and be able to call it as function from other classes... any suggestion? Update: I found something interesting (at least for my purposes): If we assign the "class variable" into a local variable it works: $t = new Test; $m = $t->k; echo $m(4,5);

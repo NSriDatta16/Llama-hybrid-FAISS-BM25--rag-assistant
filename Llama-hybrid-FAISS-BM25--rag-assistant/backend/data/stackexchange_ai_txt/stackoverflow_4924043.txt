@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4924043
-[parent_id]: 4923706
-[tags]: 
-After a bit of try-and-error, I came up with the following solution. First, create a helper class that will emulate a decorated descriptor: class DecoratedDescriptor(object): def __init__(self, descriptor, decorator): self.funcs = {} for attrname in '__get__', '__set__', '__delete__': self.funcs[attrname] = decorator(getattr(descriptor, attrname)) def __get__(self, *args, **kwargs): return self.funcs['__get__'](*args, **kwargs) def __set__(self, *args, **kwargs): return self.funcs['__set__'](*args, **kwargs) def __delete__(self, *args, **kwargs): return self.funcs['__delete__'](*args, **kwargs) Then, if you see a property, wrap it in it: # Fragment of your WrappedObject.__init__ method: if attr != '__init__' and callable(item): setattr(cls, attr, my_decorator(item)) elif isinstance(item, property): setattr(cls, attr, DecoratedDescriptor(item, my_decorator)) This works like this: >>> inst = WrappedObject(MyObject)() >>> print inst.result Calling decorated function Some derived property There! No metaclasses :)

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1625757
-[parent_id]: 
-[tags]: 
-How to convert dumbo sequence file input to tab separated text
-
-I have in input, which could be a single primitive or a list or tuple of primitives. I'd like to flatten it to just a list, like so: def flatten(values): return list(values) The normal case would be flatten(someiterablethatisn'tastring) But if values = '1234', I'd get ['1', '2', '3', '4'], but I'd want ['1234'] And if values = 1, I'd get TypeError: 'int' object is not iterable, but I'd want [1] Is there an elegant way to do this? What I really want to do in the end is just '\t'.join(flatten(values)) Edit: Let me explain this better... I wish to convert a hadoop binary sequence file to a flat tab separated text file using dumbo. Using the output format option, -outputformat text Dumbo is a python wrapper around hadoop streaming. In short I need to write mapper function: def mapper(key, values) #do some stuff yield k, v where k is a string from the first part in the key, and value is a tab separated string containing the rest of the key and the values as strings. eg: input: (123, [1,2,3]) output: ('123', '1\t2\t\t3') or more complicated: input: ([123, 'abc'], [1,2,3]) output: ('123', 'abc\t1\t2\t\t3') The input key or value can be a primitive or a list/tuple of primitives I'd like a "flatten" function that can deal with anything, and return a list of values. For the out value, I'll do something like this v = '\t'.join(list(str(s) for s in flatten(seq)))

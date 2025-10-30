@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 72956
-[parent_id]: 
-[tags]: 
-SciKit-Learn: predict values sometimes different from top predict_proba entries?
-
-I noticed that in my text classification problem, I get significantly worse results when I use the max of predict_proba 's output as compared to the straight predict value. Digging further, I found that the highest entries in each row of predict_proba don't always have index equal to the entry of predict . Example: > [*test.target] [61, 13, 11, 89, 11, 71, 118, 33, 52, 57, 16, 57, 100, 24, ...] > [*text_clf.predict(test.data)] [61, 16, 11, 16, 11, 89, 26, 33, 16, 57, 16, 118, 11, 26, ...] > [max(enumerate(prob), key=lambda p: p[1])[0] for prob in text_clf.predict_proba(test.data)] [60, 16, 11, 16, 11, 87, 25, 32, 16, 56, 16, 115, 11, 25, ...] You can see that predictions roughly follows test.target (not the greatest accuracy, but cest la vie), and predict_proba roughly follows predict , however for values above 25 there's an offset of 1. And for values above 87 there's an offset of 2. 115/118 and so on. Any idea why this might be? I would expect those two expressions to be identical. My pipeline: [ ("vect", StemmedCountVectorizer(ngram_range=(1, 2), max_df=0.8, min_df=3),), ("tfidf", TfidfTransformer(use_idf=True)), ( "clf", SGDClassifier( loss="modified_huber", penalty="l2", alpha=0.001, random_state=42 ), ), ]

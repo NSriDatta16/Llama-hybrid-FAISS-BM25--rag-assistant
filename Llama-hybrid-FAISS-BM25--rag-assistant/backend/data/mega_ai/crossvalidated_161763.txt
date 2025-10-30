@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 161763
-[parent_id]: 
-[tags]: 
-How do I use Stan to fit a covariance matrix?
-
-I'm new to Stan (and bayesian methods in general), so this is likely very simple. I'm trying to model some multivariate normal data. All I want to know is the covariance matrix generating the data, assuming the data is centered. I've been using this as my template: https://github.com/jrnold/pygments_bugs/blob/53eecb07aa805df7cedc365b7faab641e8fe541d/examples/stan/jaws.stan But I can't get it to properly fit a known covariance matrix. I'm using Matlab to simulate some data. Here's the little code snippet: x = mvnrnd([0,0],[1,1.5;1.5,3],100); data = struct('N',100,... 'dim',2,... 'x',x); fit1 = stan('file','singleWishart.stan','data',data,'iter',1000,'chains',4);` And here's the stan code: data { int N; // Sample size int dim; // Number of dimensions row_vector[dim] x[N]; // Value for each sample on each dimension } parameters { cov_matrix[dim] cov1; } model { vector[dim] zeros; //For now, means are zero matrix[dim,dim] identity; //Identity for scaling matrix zeros I've tried both cov1 ~ inv_wishart and cov1 ~ wishart (I'm not clear on which one I should be using - I thought wishart, but the examples I've seen seem to use inv_wishart), but neither have worked, giving me ridiculous estimates instead of the expected 1, 1.5, 1.5, 3.

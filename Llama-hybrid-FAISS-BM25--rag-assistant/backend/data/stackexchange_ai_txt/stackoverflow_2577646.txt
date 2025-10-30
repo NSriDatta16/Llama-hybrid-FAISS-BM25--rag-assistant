@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2577646
-[parent_id]: 2577499
-[tags]: 
-Have you tried running the program under the debugger both on the client and server side to see where it hangs? I would check first if any bytes are sent and then work from there. There are a couple of problems I noticed with the code that might or might not trigger this behaviour: You're using write() to send data down a socket. The correct socket function would be send() , not write() . Keep in mind that send() might send fewer bytes than you asked it to so you might have to check and loop to get the whole buffer sent. Same goes for the client, you want to use recv() and not read() . Both send() and recv() return -1 if there was any sort of problem. You need to handle this condition and preferably also check what the actual error was. Socket programming is different from using plain files and there are a few more pitfalls due to the network generally being a little more flaky than your average file system.

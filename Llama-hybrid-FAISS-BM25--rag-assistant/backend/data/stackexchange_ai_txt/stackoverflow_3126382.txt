@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3126382
-[parent_id]: 3125080
-[tags]: 
-Others pointed out problems with your code, namely: not using return values of read(2) and write(2) calls, mixing binary data and character control data, using strcmp(3) on strings that might not be zero-terminated (let me note that using functions relying on terminating zero on data received from the network is generally not a good idea, and often leads to buffer overruns.) You would be much better off defining simple protocol for file transfer (read the "The ultimate SO_LINGER page, or: why is my tcp not reliable" if you want to know why.) Let the server side know upfront how much data you are sending - precede the transfer with a fixed-size header containing the file length (that might also include the file name, but then you would need to transfer the length of that name too.) Pay attention to number endianness - always send numbers in network byte order . Since you are on Linux, let me also point you to sendfile(2) , which is a very efficient way of sending files since it avoids copying data to/from userland.

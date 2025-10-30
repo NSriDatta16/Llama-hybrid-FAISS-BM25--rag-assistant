@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 213901
-[parent_id]: 
-[tags]: 
-In Perl, how do I process input as soon as it arrives, instead of waiting for newline?
-
-I'd like to run a subcommand from Perl (or pipe it into a Perl script) and have the script process the command's output immediately, rather than waiting for a timeout, a newline, or a certain number of blocks. For example, let's say I want to surround each chunk of input with square brackets. When I run the script like this: $ ( echo -n foo ; sleep 5 ; echo -n bar ; sleep 5; echo baz) | my_script.pl I'd like the output to be this, with each line appearing five seconds after the previous one: [foo] [bar] [baz] How do I do that? This works, but is really ugly: #! /usr/bin/perl -w use strict; use Fcntl; my $flags = ''; fcntl(STDIN, F_GETFL, $flags); $flags |= O_NONBLOCK; fcntl(STDIN, F_SETFL, $flags); my $rin = ''; vec($rin,fileno(STDIN),1) = 1; my $rout; while (1) { select($rout=$rin, undef, undef, undef); last if eof(); my $buffer = ''; while (my $c = getc()) { $buffer .= $c; } print "[$buffer]\n"; } Is there a more elegant way to do it?

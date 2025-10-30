@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3213847
-[parent_id]: 
-[tags]: 
-Fluorine TransientAttribute and Linq-to-SQL
-
-I've found a workaround, but I had trouble earlier this week working with FluorineFx , where I had a Linq-to-SQL–generated object I wanted to send over the wire to Flash. This object contained a property that Flash didn't need: [Association(Name="User_UserEntry", Storage="_UserEntries", ThisKey="UserID", OtherKey="UserID")] public EntitySet UserEntries { ... } But Flex couldn't handle reinflating this type, throwing: ArgumentError: Error #2173: Unable to read object in stream. The class flex.messaging.io.ArrayCollection does not implement flash.utils.IExternalizable but is aliased to an externalizable class. Now I didn't need to send the property over the wire, so I tried the steps that Marc Gravell suggested in issue 456624 , firstly adding attributes to it using the MetadataTypeAttribute in System.ComponentModel.DataAnnotations (found from JasonW 's comment on issue 393687 : [MetadataType(typeof(UserMetadata)] public partial class User { } internal class UserMetadata { [FluorineFx.Transient] public EntitySet UserEntries { get; set; } } Unfortunately it seems that FluorineFx doesn't support metadata attributes yet (which isn't very surprising, tbh, they are quite new). What I ended up having to do was create a dedicated DTO, with all the properties that Flash cared about and none of the properties it didn't. Not the most elegant of solutions. So, have other people come across this problem and have you found more-elegant ways of solving it?

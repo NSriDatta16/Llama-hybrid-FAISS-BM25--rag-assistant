@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2873892
-[parent_id]: 
-[tags]: 
-jersey (jsr 311) & custom ViewProcessor
-
-it seems i cant wrap my Head around how to implment a custom ViewProcessor in Jersey. Ihave the following Resource: @Path("/events") public class EventController extends AbstractController { private static final Logger LOG = LoggerFactory.getLogger(EventController.class); @Resource(name = "eventService") private EventService eventService; public void setEventService(EventService eventService) { this.eventService = eventService; } @GET @Produces(MediaType.TEXT_HTML) public Viewable viewEventsAsHtml() { Map model = new HashMap (); model.put("msg", "test"); return new Viewable("/events.jsp", model); } } since i want to organize my jsp views in "/WEB-INF/views/jsp" i extended JSPTemplateProcessor thusly: public class CJJspTemplateProcessor extends JSPTemplateProcessor { private static final Logger LOG = LoggerFactory.getLogger(CJJspTemplateProcessor.class); private final String basePath = "/WEB-INF/views/jsp"; public CJJspTemplateProcessor(@Context ResourceConfig resourceConfig) { super(resourceConfig); } @Override public String resolve(String name) { String path; if (!name.endsWith(".jsp")) { name += ".jsp"; } path = basePath + name; LOG.debug("resolving " + name + " to " + path); return path; } } but when i navigate to the event resource i get an 404, although i can see that the TemplateProcessor resolved the right path for the jsp in the logfiles. plx help :)

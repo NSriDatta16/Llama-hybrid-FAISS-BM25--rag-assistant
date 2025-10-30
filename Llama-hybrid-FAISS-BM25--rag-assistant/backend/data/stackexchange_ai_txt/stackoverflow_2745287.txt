@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2745287
-[parent_id]: 
-[tags]: 
-Whats the proper way to do explicit transactions with linq to sql?
-
-I have some scenarios where I need to have multiple calls to .SubmitChanges() on a datacontext, but I want to explicitly control the transaction myself to make it atomic. For a while I have been doing this by creating a connection, creating a transaction on that connection, then creating the datacontext and passing it both. Lets assume for now I dont want to use TransactionScope instead. My code looks like this: Using conn As New SqlConnection("connection string...") conn.Open() Using trans = conn.BeginTransaction() Dim dc as new DataContext(conn) dc.Transaction = trans ' do some work trans.Commit() End Using End Using I began using the Linq To SQL profiler and it breaks this code. For some reason they require you to use the .Connection property on the datacontext to create the transaction. It fails if you use the connection variable directly (which I think is silly). My question is, is it more appropriate to do it this way: Using conn As New SqlConnection("connection string...") conn.Open() Dim dc as new DataContext(conn) Using trans = dc.Connection.BeginTransaction() dc.Transaction = trans ' do some work trans.Commit() End Using End Using Which is the more widely accepted way to do this?

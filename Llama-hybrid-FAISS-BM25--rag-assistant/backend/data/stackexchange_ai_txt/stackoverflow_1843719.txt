@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1843719
-[parent_id]: 1843454
-[tags]: 
-Really what you're running into is a weakness with Generics. Once your class has resolved what type it's using for generics, you're somewhat restricted in what you can do. Normally, I'd say Dependency Injection would be a savior here, but since the problematic method is static , that muddies up the waters. I'd say the best thing is to have the ObjectManager class do the work for you: static public class ObjectManager { ... the code that already exists in ObjectManager ... static public U GetById (long id) { object obj = GetById(id); if (obj is U) return (U)obj; return default(U); } } Then, in your code: ExtendedProduct.Manager.GetById (7).DoSomethingElse(); It's not really tons more elegant than casting, but may be one of the only solutions using Generics.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 697838
-[parent_id]: 692614
-[tags]: 
-I would recommend the following: use left outer join to get jokes that have no ratings use avg() instead of manually computing average possibly use coalesce() to avoid null values in the result Here's a simplified version of your tables: create table joke(jokeid int primary key, jokedata varchar(50)); create table ratings(rating int, relative_id int); insert into joke values(1, "killing"); insert into joke values(2, "no rating"); insert into ratings values(5, 1); insert into ratings values(10, 1); And some example queries: select joke.jokeid, avg(ratings.rating) as average from joke left outer join ratings on ratings.relative_id = joke.jokeid group by joke.jokeid; +--------+---------+ | jokeid | average | +--------+---------+ | 1 | 7.5000 | | 2 | NULL | +--------+---------+ Or, using coalesce() : select joke.jokeid, avg(coalesce(ratings.rating, 0)) as average from joke left outer join ratings on ratings.relative_id = joke.jokeid group by joke.jokeid; +--------+---------+ | jokeid | average | +--------+---------+ | 1 | 7.5000 | | 2 | 0.0000 | +--------+---------+

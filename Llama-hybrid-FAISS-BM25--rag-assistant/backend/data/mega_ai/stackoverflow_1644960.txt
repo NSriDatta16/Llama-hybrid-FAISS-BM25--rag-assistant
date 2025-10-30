@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1644960
-[parent_id]: 1640738
-[tags]: 
-The problem is caused by including the initial slash in the action. When you set a link with a root-relative link, it is equivalent to setting an absolute link, when the destination anchor is under the same domain name. ("/form/save" is equivalent to " http://localhost/form/save "). In your case, it sounds like you need to add a base URL to the form, if you want to send the data to a different controller/action. You're using Zend_Form (right?), the most elegant solution would be to subclass Zend_Form , overridding the setAction() method to prepend your base URL to every action you set. class My_Form extends Zend_Form { ... public function setAction($action) { $baseAction = rtrim($this->_getBaseUrl(),'/') . $action; // Will remove a slash from the end of the base URL, so form actions start with a slash. parent::setAction($baseAction); } private function _getBaseUrl() { // Retrive your base url from somewhere (config might be a good place). } } Now whenever you create a new form from My_Form and call My_Form::setAction() you'll have your base URL automatically included. Hope this helps.

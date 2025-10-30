@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4596666
-[parent_id]: 2235890
-[tags]: 
-Another solution is the one Robert Rossney proposed in this question: WPF INotifyPropertyChanged for linked read-only properties You can create a property dependency map (using his code samples): private static Dictionary _DependencyMap = new Dictionary { {"Foo", new[] { "Bar", "Baz" } }, }; and then do this in your OnPropertyChanged: PropertyChanged(this, new PropertyChangedEventArgs(propertyName)) if (_DependencyMap.ContainsKey(propertyName)) { foreach (string p in _DependencyMap[propertyName]) { PropertyChanged(this, new PropertyChangedEventArgs(p)) } } You can even attach an attribute to tie the dependent property to the one it depends on. Something like: [PropertyChangeDependsOn("Foo")] public int Bar { get { return Foo * Foo; } } [PropertyChangeDependsOn("Foo")] public int Baz { get { return Foo * 2; } } I haven't implemented the details of the attribute yet. I'd better get to working on that now.

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 410334
-[parent_id]: 
-[tags]: 
-Simulate An Error Correction Model with Multiple Cointegrating Vectors
-
-Simulating multiple time series with a single cointegrating vector can be done as follows: $S_t = S_{t-1} - \kappa (S_{t-1} \cdot P-\mu) \Delta t + \epsilon_t\sqrt{\Delta t} $ where the noise $\epsilon$ and weights matrix $P$ are defined as \begin{align}\epsilon_t \sim N(0, \Sigma) \quad\text{and}\quad P = \begin{bmatrix} {w_1}/{w_1} & {w_2}/{w_1} & {w_3}/{w_1}\\ {w_1}/{w_2} & {w_2}/{w_2} & {w_3}/{w_2}\\ {w_1}/{w_3} & {w_2}/{w_3} & {w_3}/{w_3}\\ \end{bmatrix} \end{align} and the single cointegrating vector $\textbf{w} = [w_1,w_2,w_3]$ The above can be implemented in Python easily: import numpy as np w = [1,-0.7,-0.3] N = 1000 S = np.ones([N,len(w)])*2000 kappa = 20 sigma = 20 dt = 1/N corr = 0.9 C = np.ones([len(w),len(w)])*corr+(1-corr)*np.eye(len(w)) for t in range(1,N): eps = np.random.multivariate_normal([0]*len(w),C) for i in range(len(w)): si = 0 for j in range(len(w)): si += w[j]/w[i]*S[t-1,j] S[t,i] = S[t-1,i] - kappa*dt*si + sigma**2*np.sqrt(dt)*eps[i] fig, ax = plt.subplots(2, figsize=(15,5), gridspec_kw={'hspace':0.02}) ax[0].plot(S) ax[1].plot(S.dot(w)) Which produces: What is the appropriate way to simulate 3 time series with two cointegrating vectors? ie given weights $\textbf{w}_1$ and $\textbf{w}_2$ such that $S\cdot \textbf{w}_1 \sim I(0)$ and $S\cdot \textbf{w}_2 \sim I(0)$

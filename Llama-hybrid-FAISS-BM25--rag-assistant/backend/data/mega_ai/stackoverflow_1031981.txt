@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1031981
-[parent_id]: 767999
-[tags]: 
-Mark's solution can be quite expensive since it needs to synchronize everytime. We can get around the need for synchronization by using the thread-specific storage pattern: public class RandomNumber : IRandomNumber { private static readonly Random Global = new Random(); [ThreadStatic] private static Random _local; public int Next(int max) { var localBuffer = _local; if (localBuffer == null) { int seed; lock(Global) seed = Global.Next(); localBuffer = new Random(seed); _local = localBuffer; } return localBuffer.Next(max); } } Measure the two implementations and you should see a significant difference.

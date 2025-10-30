@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4211963
-[parent_id]: 4211454
-[tags]: 
-The main cause of slowness in this proxy is probably these three lines: req = urllib.urlopen("http://weblock.zbrowntechnology.info/ProgFiles/stats.php?%s" % params, proxies=proxies) resp = req.read() req.close() A normal Twisted-based application is single threaded. You have to go out of your way to get threads involved. That means that whenever a request comes in, you are blocking the one and only processing thread on this HTTP request. No further requests are processed until this HTTP request completes. Try using one of the APIs in twisted.web.client, (eg Agent or getPage ). These APIs don't block, so your server will handle concurrent requests concurrently. This should translate into much smaller response times.

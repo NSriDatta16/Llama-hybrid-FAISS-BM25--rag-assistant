@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1850500
-[parent_id]: 1845909
-[tags]: 
-The correct (and documented) way to use capGetVideoFormat() to to call it twice - once to get the size of memory required, then allocate memory of that size, and then call it a second time to fill in the memory. This is because the BITMAPINFO::bmiColors member is variable-length, so you have to make sure you have enough memory to receive all of that data. The way your code is currently written, you are allocating a BITMAPINFO on the stack, but the actual BITMAPINFO declaration only specifies room for 1 RGBQUAD item in its bmiColors member. If your video format has more than 1 color in it, you are corrupting stack memory. You need to dynamically allocate the BITMAPINFO on the heap instead, for example: DWORD dwSize = capGetVideoFormat((*m_pCapWndArray)[i].hCapWnd, NULL, 0); if (dwSize > 0) { BITMAPINFO *bmpInfo = (BITMAPINFO*) malloc(dwSize); if (bmpInfo != NULL) { capGetVideoFormat((*m_pCapWndArray)[i].hCapWnd, bmpInfo, dwSize); (*m_pCapWndArray)[i].bmiHeader = bmpInfo->bmiHeader; } free(bmpInfo); }

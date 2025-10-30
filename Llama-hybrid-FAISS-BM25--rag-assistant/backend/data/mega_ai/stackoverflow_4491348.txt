@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4491348
-[parent_id]: 
-[tags]: 
-Proper Mutex usage / Good coding style?
-
-Within the following code, the producer periodically_fill_page_queue might add a page to the queue that is currently being consumed (read: in the consumer before the status being_processed is set). class Example def initialize @threads = ThreadGroup.new @page_queue = Queue.new Thread.abort_on_exception = true end def start periodically_fill_page_queue periodically_process_page_queue end def periodically_fill_page_queue @threads.add(Thread.new do loop do if @page_queue.empty? Page.with_state(:waiting).each do |p| p.queued! @page_queue :waiting do event :queued do transition :waiting => :queued end event :being_processed do transition :queued => :being_processed end event :processed do transition :being_processed => :processed end end end To avoid this, i'd use a Mutex object: def initialize ... @mutex = Mutex.new end def periodically_process_page_queue loop do until file = @page_queue.pop sleep 2 end @mutex.synchronize { page.being_processed } process(page) end end Is this "good" coding style, or are there any more elegant approaches? Thanks!

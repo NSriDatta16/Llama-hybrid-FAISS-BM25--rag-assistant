@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4234555
-[parent_id]: 4234480
-[tags]: 
-I think you're looking for rand_r() , which explicitly takes the current RNG state as a parameter. Then each thread should have it's own copy of seed data (whether you want each thread to start off with the same seed or different ones depends on what you're doing, here you want them to be different or you'd get the same row again and again). There's some discussion of rand_r() and thread-safety here: whether rand_r is real thread safe? . So say you wanted each thread to have its seed start off with its thread number (which is probably not what you want, as it would give the same matrix every time you ran with the same number of threads, but just as an example): #pragma omp parallel default(none) shared(matrix, cols) { int i= omp_get_thread_num(); unsigned int myseed = i; for(int j=0; j Now each thread is modifying its own state exclusively ( rand_r() is a pure function) and you should be home free.

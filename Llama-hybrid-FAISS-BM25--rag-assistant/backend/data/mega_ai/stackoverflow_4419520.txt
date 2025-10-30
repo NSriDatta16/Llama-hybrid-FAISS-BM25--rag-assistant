@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4419520
-[parent_id]: 4336512
-[tags]: 
-Well, I was close. As @James Manning said in his answer, "just change the Effects to None ... should be enough." So, true, as long as you do it in the right place. I had put my code to handle this in the DragEnter event handler, when it should have been done in the DragOver event handler. Changing the effects in DragEnter are like Rainier Wolfcastle's Radioactive Man goggles-- they do nothing. So, the code that works is as follows: lbDragDrop.DragOver += (src, e) => { VaultSocketViewModel vm = this.DataContext as VaultSocketViewModel; ListBoxDragDropTarget target = src as ListBoxDragDropTarget; ObservableCollection listBoxBinding = vm.Slots[target.Name]; object data = e.Data.GetData(e.Data.GetFormats()[0]); ItemDragEventArgs eventArgs = data as ItemDragEventArgs; SelectionCollection coll = eventArgs.Data as SelectionCollection; ItemModel newItem = coll.Select(t => t.Item).OfType ().FirstOrDefault(); if (!target.Name.StartsWith(newItem.ItemSlot)) // don't allow drop { e.Effects = Microsoft.Windows.DragDropEffects.None; e.Handled = true; } else { } };

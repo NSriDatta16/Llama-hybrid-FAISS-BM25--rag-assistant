@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 87906
-[parent_id]: 
-[tags]: 
-Transformer model: Why are word embeddings scaled before adding positional encodings?
-
-While going over a Tensorflow tutorial for the Transformer model I realized that their implementation of the Encoder layer (and the Decoder) scales word embeddings by sqrt of embedding dimension before adding positional encodings. Notice that this is different from scaling the dot product attention. I'm referring to the 3rd line of the call method of the Encoder class here: https://www.tensorflow.org/tutorials/text/transformer#encoder def call(self, x, training, mask): seq_len = tf.shape(x)[1] # adding embedding and position encoding. x = self.embedding(x) # (batch_size, input_seq_len, d_model) x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32)) x += self.pos_encoding[:, :seq_len, :] x = self.dropout(x, training=training) for i in range(self.num_layers): x = self.enc_layers[i](x, training, mask) return x # (batch_size, input_seq_len, d_model) I could not find any mention of this scaling in the papers I've read so far. People always show the input to the encoder as WE + PE, that is word embedding plus positional encoding. But this implementation seems to use sqrt(d_model) * WE + PE. My questions: Have you ever seen this extra scaling step mentioned in a paper? I didn't find it in "Attention is all you need" (Vaswani et. al.). What is this additional scaling trying to achieve?

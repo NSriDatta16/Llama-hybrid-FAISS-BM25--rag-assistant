@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4966992
-[parent_id]: 4965784
-[tags]: 
-The simplest way is std::aligned_storage , which takes alignment as a second parameter. If you don't have it yet, you might want to check Boost's version . Then you can build your union: union vector { __m128 simd; std::aligned_storage alignment_only; } Finally, if it does not work, you can always create your own little class: template // Align must be a power of 2 class RawStorage { public: Type* operator->() { return reinterpret_cast (aligned()); } Type const* operator->() const { return reinterpret_cast (aligned()); } Type& operator*() { return *(operator->()); } Type const& operator*() const { return *(operator->()); } private: unsigned char* aligned() { if (data & ~(Align-1) == data) { return data; } return (data + Align) & ~(Align-1); } unsigned char data[sizeof(Type) + Align - 1]; }; It will allocate a bit more storage than necessary, but this way alignment is guaranteed. int main(int argc, char* argv[]) { RawStorage simd; *simd = /* ... */; return 0; } With luck, the compiler might be able to optimize away the pointer alignment stuff if it detects the alignment is necessary right.

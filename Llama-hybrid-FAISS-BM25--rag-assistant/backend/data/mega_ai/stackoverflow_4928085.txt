@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4928085
-[parent_id]: 
-[tags]: 
-How could I improve this solution to the "create index entries" exercise of Emacs Lisp Intro?
-
-I've programmed this solution for the exercise from section 11.4 (Looping Exercise): (defun texinfo-index-dfns-in-par () "Create an index entry at the beginning of the paragraph for every '@dfn'." (interactive) (save-excursion (forward-paragraph) (let ((bound (point))) (backward-paragraph) (let ((insert-here (point))) (while (search-forward "@dfn{" bound t) (let* ((start (point)) (end (1- (search-forward "}" bound))) (dfn (buffer-substring start end))) (save-excursion (goto-char insert-here) (newline) (setq insert-here (point)) (insert "@cindex " dfn) (while ( Though it's working, it feels much to convoluted to me. I'd like to know how this code could be simplified. I'm also interested in other possible improvements. Edit: Tyler's answer was great. With narrowing I could write a much shorter and cleaner version: (defun texinfo-index-dfns-in-par () "Create an index entry at the beginning of the paragraph for every '@dfn'." (interactive) (save-excursion (mark-paragraph) (save-restriction (narrow-to-region (point) (mark)) (while (search-forward "@dfn{" nil t) (let ((start (point)) (end (1- (search-forward "}")))) (save-excursion (goto-char (point-min)) (insert "\n@cindex " (buffer-substring start end)) (while (> (line-number-at-pos) 2) (join-line)) (narrow-to-region (line-end-position) (point-max))))))))

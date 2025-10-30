@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4932673
-[parent_id]: 
-[tags]: 
-Can I generate nested bags using nested FOREACH statements in Pig Latin?
-
-Let's say I have a data set of restaurant reviews: User,City,Restaurant,Rating Jim,New York,Mecurials,3 Jim,New York,Whapme,4.5 Jim,London,Pint Size,2 Lisa,London,Pint Size,4 Lisa,London,Rabbit Whole,3.5 And I want to produce a list by user and city of average review. I.e. output: User,City,AverageRating Jim,New York,3.75 Jim,London,2 Lisa,London,3.75 I could write a Pig script as follows: Data = LOAD 'data.txt' USING PigStorage(',') AS ( user:chararray, city:chararray, restaurant:charray, rating:float ); PerUserCity = GROUP Data BY (user, city); ResultSet = FOREACH PerUserCity { GENERATE group.user, group.city, AVG(Data.rating); } However I'm curious whether I can first group the higher level group (the users) and then sub group the next level (the cities) later: i.e. PerUser = GROUP Data BY user; Intermediate = FOREACH PerUser { B = GROUP Data BY city; GENERATE group AS user, B; } I get: Error during parsing. Invalid alias: GROUP in { group: chararray, Data: { user: chararray, city: chararray, restaurant: chararray, rating: float } } Has anyone tried this with success? Is it simply not possible to GROUP within a FOREACH? My goal is to do something like: ResultSet = FOREACH PerUser { FOREACH City { GENERATE user, city, AVG(City.rating) } }

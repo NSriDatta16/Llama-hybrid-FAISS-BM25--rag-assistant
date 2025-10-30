@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 166393
-[parent_id]: 121240
-[tags]: 
-You probably want portable C code here, which your compiler will turn into proper ARM assembly. ARM has conditional moves, and these can be conditional on overflow. The algorithm then becomes: add and conditionally set the destination to unsigned(-1), if overflow was detected. uint16_t add16(uint16_t a, uint16_t b) { uint16_t c = a + b; if (c Note that this differs from the other algorithms in that it corrects overflow, instead of relying on another calculation to detect overflow. x86-64 clang 3.7 -O3 output for adds32 : significantly better than any other answer: add edi, esi mov eax, -1 cmovae eax, edi ret ARMv7: gcc 4.8 -O3 -mcpu=cortex-a15 -fverbose-asm output for adds32 : adds r0, r0, r1 @ c, a, b it cs movcs r0, #-1 @ conditional-move bx lr 16bit: still doesn't use ARM's unsigned-saturating add instruction ( UADD16 ) add r1, r1, r0 @ tmp114, a movw r3, #65535 @ tmp116, uxth r1, r1 @ c, tmp114 cmp r0, r1 @ a, c ite ls @ movls r0, r1 @,, c movhi r0, r3 @,, tmp116 bx lr @

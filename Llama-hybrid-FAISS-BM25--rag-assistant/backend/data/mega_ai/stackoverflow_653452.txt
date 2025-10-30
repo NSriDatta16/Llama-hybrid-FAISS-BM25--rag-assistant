@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 653452
-[parent_id]: 653391
-[tags]: 
-My answer will be a bit complicated, and it works only if you script your entire database (i.e. keep everything in SQL scripts). What we did in a massive project was organize the scripts into the following structure: _ddl : holds the table changes, such as new columns, indexes, relations etc.. _fn : stored functions _prc : stored procedures _static : obviously, "static data", or data which has to be in the database upon deployment _tab : tables (create scripts) _trg : triggers _views : view scripts Folder names are of course our random choice, you can always arrange things differently. After that, we've created a batch script to merge all those files in a single SQL in the following order: _tab _ddl _trg _views _fn _prc _static The key trick is to write your scripts in a way they can be run a thousand times. This means: drop your procedures before you create them, check if a table exists before creating it, check if a row exists before adding it in static, etc.. It's not perfect, but it gets the job done.

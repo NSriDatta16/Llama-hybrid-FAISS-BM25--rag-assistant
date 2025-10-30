@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3190705
-[parent_id]: 
-[tags]: 
-How to select rows from an SQL model for a QListView connected to it
-
-I am trying the following in PyQt4, using SQLAlchemy as the backend for a model for a QListView. My first version looked like this: class Model(QAbstractListModel): def __init__(self, parent=None, *args): super(Model, self).__init__(parent, *args) def data(self, index, role): if not index.isValid(): return None if role == QtCore.Qt.DisplayRole: d = sqlmodel.q.get(index.row()+1) if d: return d.data return None This had the problem that as soon as I start deleting rows, the ids are not consecutive anymore. So my current solution looks like this: class Model(QAbstractListModel): def __init__(self, parent=None, *args): super(Model, self).__init__(parent, *args) def data(self, index, role): if not index.isValid(): return None if role == QtCore.Qt.DisplayRole: dives = Dive.q.all() if index.row() >= len(dives) or index.row() But I guess this way, I might run into trouble selecting the correct entry from the database later on. Is there some elegant way to do this? My first idea would be to return the maximum id from the db as the row_count, and then fill non-existing rows with bogus data and hide them in the view. As the application will, at most, have to handle something around 10k, and that is already very unlikely, I think this might be feasible.

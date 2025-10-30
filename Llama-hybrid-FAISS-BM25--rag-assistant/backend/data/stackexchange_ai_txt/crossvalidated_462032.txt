@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 462032
-[parent_id]: 461052
-[tags]: 
-I figured it out, QDA needs to be trained on less features! (Images are 64x64 pixels => 4096 features) LDA can be used for dimensionality reduction in a first step, keeping let's say 6 discriminating features. In this subspace, you can train a QDA classifier and on the AT&T dataset it slightly outperforms LDA. (see picture below, for 5 fold crossvalidation using the entire dataset) My mistake was that in a rush I trained it like I trained LDA, forgetting QDA can't do dimensionality reduction. Some code to illustrate this; lda = LinearDiscriminantAnalysis(solver='svd') crossval_scores_lda.append(cross_val_score(lda, X_load, y_load, cv=5)) lda = LinearDiscriminantAnalysis(solver='svd', n_components=6) X_load_qda = lda.fit_transform(X_load, y_load) qda = QuadraticDiscriminantAnalysis() clf = GridSearchCV(qda, params, cv=4) clf.fit(X_load_qda, y_load) reg_params_qda_after_LDA.append(clf.best_params_['reg_param']) qda2 = QuadraticDiscriminantAnalysis(reg_param=clf.best_params_['reg_param']) crossval_scores_qda.append(cross_val_score(qda2, X_load_qda, y_load, cv=5))

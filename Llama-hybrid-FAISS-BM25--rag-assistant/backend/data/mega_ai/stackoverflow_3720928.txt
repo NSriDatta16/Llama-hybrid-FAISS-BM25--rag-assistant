@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3720928
-[parent_id]: 3720832
-[tags]: 
-The outer query is redundant. We can make this clearer by removing it: var RecoveryManagerQuery = from REP in e.Results select REP.Organization.Representatives.Select(RM=>RM.Person); As you can see, the select clause says, for each REP , to select all the people associated with representatives in REP 's organization. This means that each element in RecoveryManagerQuery is going to be a set of Person objects, not an individual object. You want to flatten the query so it returns a set of Person objects, not a set of a set of Person objects: var RecoveryManagerQuery = from REP in e.Results from orgRep in REP.Organization.Representatives select orgRep.Person; Edit: Here is the dot notation: e.Results.SelectMany( REP => REP.Organization.Representatives, (REP, orgRep) => orgRep.Person);

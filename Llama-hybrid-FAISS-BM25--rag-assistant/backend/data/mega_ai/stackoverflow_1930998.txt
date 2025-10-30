@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1930998
-[parent_id]: 
-[tags]: 
-confused why are my entities changes reflected w/o committing?
-
-I am using nhiberate, with the repository patter. e.g. MakePersistance looks like: public T MakePersistent(T entity) { Session.Save(entity); return entity; } In a httpmodule the begin request: ISession session = NHibernateHelper.OpenSession(); session.BeginTransaction(); CurrentSessionContext.Bind(session); End Request: ISession session = CurrentSessionContext.Unbind( NHibernateHelper.SessionFactory); if (session != null) try { session.Transaction.Commit(); } catch (Exception ex) { session.Transaction.Rollback(); //Server.Transfer("...", true); } finally { session.Close(); } So on each page request, the transaction starts and ends. From what I understood, this means that if I update an entity, and then query for that entity after the update, the query would return the original state of the entity since the update hasn't been committed to the database. But, I tested (and viewed in sql profiler) that the db performs the update and then retrieval of the same entity is fresh/up-to-date. So I did: Entity e = EntityDao.GetById(1); // e.count outputs 0 e.Count += 1; // e.count outputs 1 as expected EntityDao.MakePersistant(entity); entity = EntityDao.GetById(1); // getting from the db again // e.count ouputs 1 *** Shouldn't it be 0 though since the db is stale until the request ends and commits to the db??

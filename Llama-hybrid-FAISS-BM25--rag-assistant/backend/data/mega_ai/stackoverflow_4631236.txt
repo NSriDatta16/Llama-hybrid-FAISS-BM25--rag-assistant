@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4631236
-[parent_id]: 4631099
-[tags]: 
-If WPF does not have an appropriate converter it just calls the ToString() method, the Bitmap format is unsuitable, what you normally want to use is an Image with a source that is a BitmapImage , there are several ways to do conversions between the different formats. Here is one method that does a conversion from Bitmap to BitmapImage : public static BitmapImage BitmapToBitmapImage(System.Drawing.Bitmap bitmap) { MemoryStream ms = new MemoryStream(); bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png); BitmapImage bImg = new System.Windows.Media.Imaging.BitmapImage(); bImg.BeginInit(); bImg.StreamSource = new MemoryStream(ms.ToArray()); bImg.CreateOptions = BitmapCreateOptions.None; bImg.CacheOption = BitmapCacheOption.Default; bImg.EndInit(); ms.Close(); return bImg; } Note that ImageFormat.Png is slower than uncompressed formats but it retains the transparency if there is any. Now you should be able to use this as the Source of an Image control and this Image control as the content of the button.

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 625576
-[parent_id]: 
-[tags]: 
-Bayesian model with maybe-missing data
-
-Suppose we have data that come from a normal distribution with unknown $\mu$ and $\sigma$ parameters. The twist is that each value is missing with the given probability $p$ , i.e. we observe a vector of pairs: (value, probability) . In particular, if $p_i=0$ we should treat the $i$ -th observation as missing (removing it from the model altogether) and if $p_i=1$ we should simply add $y_i ~ N(\mu, \sigma)$ to the log-likelihood for that $i$ . In other words, I wonder what to put in the model section in the stan model below: data { int N; real y[N]; // the value real p[N]; // probability the value is valid. Zero means the value should completely discarded as missing. } parameters { real mu; real sigma; } model { for (i in 1:N) { // y[i] ~ normal(mu, sigma) // baseline // target += normal_lpdf(y[i], mu, sigma) + log(p[i]) // this approach is wrong } } When I studied Bayesian statistics some 10 years ago, I learned that problems that involve probabilities of probabilities were not solvable (unless the probability could be treated as a parameter). I hope I am wrong. One obvious walk-around of the problem is the Monte-Carlo approach: toss a (Bernoulli) coin for each parameter $p_i$ ; if positive - include the $i$ -th data point in the sample vector. Then solve the standard normal problem using the sampled data. Repeat the process for each of the $N$ simulations from the dataset. At the end aggregate all the (Bayesian) results together.

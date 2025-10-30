@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 43511
-[parent_id]: 43457
-[tags]: 
-Well I've figured it out. I need to use a depth-wise convolution. In tensorflow/keras this is implemented using DepthwiseConv2D. The depth_multiplier argument will create a new set of channels for every set of input channels, so 15 input channels with a depth multiple of 16 will create 240 output channels (instead of just 16). Because I'm dealing with a 1D signal I just make the kernel height 1. There is an extra input dimension that also need to be 1. Here is a fragment: TIME_RANGE = 31 NUMBER_OF_CHANNELS = 15 from keras.layers import DepthwiseConv2D model = Sequential() model.add(DepthwiseConv2D(input_shape = (1, TIME_RANGE, NUMBER_OF_CHANNELS), kernel_size=(1, 7), # height 1, width 7 (ostensibly 1D) depth_multiplier = 16, activation = 'elu', padding = 'valid')) Hope this helps someone else in the future. BTW I got the right info from this useful blog page: https://eli.thegreenplace.net/2018/depthwise-separable-convolutions-for-machine-learning/

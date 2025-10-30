@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4579333
-[parent_id]: 4579020
-[tags]: 
-This basically is called "post-processing" because you're applying an effect (here: radial blur) to the whole scene after it's rendered. So yes, you're right: the good way for post-processing is to: create a screen-sized NPOT texture ( GL_TEXTURE_RECTANGLE ), create a FBO, attach the texture to it set this FBO to active, render the scene disable the FBO, draw a full-screen quad with the FBO's texture. As for the "why", the reason is simple: the scene is rendered in parallel (the fragment shader is executed independently for many pixels). In order to do radial blur for pixel (x,y), you first need to know the pre-blur pixel values of the surrounding pixels. And those are not available in the first pass, because they are only being rendered in the meantime. Therefore, you must apply the radial blur only after the whole scene is rendered and fragment shader for fragment (x,y) is able to read any pixel from the scene. This is the reason why you need 2 rendering stages for that.

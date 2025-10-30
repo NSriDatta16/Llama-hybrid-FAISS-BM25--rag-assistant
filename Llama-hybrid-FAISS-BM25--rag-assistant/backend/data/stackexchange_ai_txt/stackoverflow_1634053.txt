@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1634053
-[parent_id]: 1634044
-[tags]: 
-Leave the field NULL. Don't use OR, use UNION ALL: select ... from ... where InTime sometime union all select ... from ... where InTime Using magic values instead of NULL is a recipe for disaster. At the least, it uses more storage. More specifically, it breaks the semantics of NULL when enforcing database constraints, when computing aggregates and in applications. Using OR in queries is asking for performance trouble. The optmizer will likely turn any index range seeks into scans. Using UNION is usually better, as the optimizer will create two plans, one optimal for the NULLs one otpimal for the non-NULL, and union them. If you do not have any index on Intime and/or OutTime then the query will be a scan anyway and the UNION will perform worse than an OR, but then that is not a scenario that is worth talking about. The question is, of course, how to optimize a query on properly designed storage.

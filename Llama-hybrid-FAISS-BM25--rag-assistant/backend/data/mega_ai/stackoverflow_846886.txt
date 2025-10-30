@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 846886
-[parent_id]: 846869
-[tags]: 
-Option 1: To sanitize Python source code, try the built-in tokenize module. It can correctly find strings and other tokens in any Python source file. Option 3: Use pygments with HTML output, and replace anything in blue (etc.) with "string" . pygments supports a few dozen languages. Option 2: For most of the languages, you can build a custom regexp substitution. For example, the following sanitizes Python source code (but it doesn't work if the source file contains """ or ''' ): import re sanitized = re.sub(r'(#.*)|\'(?:[^\'\\]+|\\.)*\'|"(?:[^"\\]+|\\.)*"', lambda match: match.group(1) or '"string"', source_code) The regexp above works properly even if the strings contain backslashes ( \" , \\ , \n , \\ , \\" , \\\" etc. all work fine). When you are building your regexp, make sure to match comments (so your regexp substitution won't touch strings inside comments) and regular expression literals (e.g. in Perl, Ruby and JavaScript), and pay attention you match backslashes and newlines properly (e.g. in Perl and Ruby a string can contain a newline).

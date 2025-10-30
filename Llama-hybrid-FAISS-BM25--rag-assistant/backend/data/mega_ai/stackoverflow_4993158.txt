@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4993158
-[parent_id]: 
-[tags]: 
-sysinfo system call returns wrong load average values on linux
-
-I have a C program that prints some system statistics. #include #include int main() { int days, hours, mins; struct sysinfo sys_info; if(sysinfo(&sys_info) != 0) perror("sysinfo"); // Uptime days = sys_info.uptime / 86400; hours = (sys_info.uptime / 3600) - (days * 24); mins = (sys_info.uptime / 60) - (days * 1440) - (hours * 60); printf("Uptime: %ddays, %dhours, %dminutes, %ldseconds\n", days, hours, mins, sys_info.uptime % 60); // Load Averages for 1,5 and 15 minutes printf("Load Avgs: 1min(%ld) 5min(%ld) 15min(%ld)\n", sys_info.loads[0], sys_info.loads[1], sys_info.loads[2]); printf("Total Ram: %lluk\tFree: %lluk\n", sys_info.totalram *(unsigned long long)sys_info.mem_unit / 1024, sys_info.freeram *(unsigned long long)sys_info.mem_unit/ 1024); // Number of processes currently running. printf("Number of processes: %d\n", sys_info.procs); return 0; } My problem is that the load average values are different than /proc/loadavg ./a.out Uptime: 1days, 4hours, 1minutes, 16seconds Load Avgs: 1min(13248) 5min(14880) 15min(11840) Total Ram: 2052956k Free: 188104k Number of processes: 265 Why? I am printing 13248 but "top" or "cat /proc/loadavg" gives 0.24. What is the problem?

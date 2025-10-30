@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 16576
-[parent_id]: 16464
-[tags]: 
-The opposite of what you describe is used more often. You start with many features and then prune the neural network at the end. I don't believe any python neural network package does what you want. But it's very simple to implement. For example, using sklearn, you can just pass warm_start=True , so that it doesn't reinitialize weights every time you call fit() , and then you can increase the number of nodes in your feature layer, or any layer you wish. from sklearn import datasets from sklearn.neural_network import MLPClassifier import numpy as np X, y = datasets.load_iris(True) X = (X-np.mean(X, 0))/np.std(X, 0) # normalize nhidden = 10 m = MLPClassifier(nhidden, max_iter=1000, warm_start=True).fit(X[:, :1], y) # every 1,000 iterations, throw in a new feature for nfeatures in range(2, X.shape[1]+1): m.coefs_[0] = np.r_[m.coefs_[0], np.random.randn(1, nhidden)] m.fit(X[:, :nfeatures], y) # in the end, we have a neural network trained with all features print(m.score(X, y))

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 730365
-[parent_id]: 
-[tags]: 
-Proxy host C# problem
-
-My proxy usage : "Proxy.ashx?url=" Code: public class Proxy : IHttpHandler { public void ProcessRequest (HttpContext context) { HttpWebRequest request = (HttpWebRequest)WebRequest.Create(context.Request["url"]); request.UserAgent = context.Request.UserAgent; request.ContentType = context.Request.ContentType; request.Method = context.Request.HttpMethod; byte[] trans = new byte[1024]; int offset = 0; int offcnt = 0; if (request.Method.ToUpper() == "POST") { Stream nstream = request.GetRequestStream(); while (offset 0) { nstream.Write(trans, 0, offcnt); offset += offcnt; } } nstream.Close(); } using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) { context.Response.ContentType = response.ContentType; using (Stream receiveStream = response.GetResponseStream()) { offset = 0; offcnt = receiveStream.Read(trans, offset, 1024); while (offcnt>0) { context.Response.OutputStream.Write(trans, 0, offcnt); offset += offcnt; if (offcnt >= 0) { try { offcnt = receiveStream.Read(trans, offset, 1024); } catch (Exception) { break; } } else break; } } context.Response.OutputStream.Close(); context.Response.Flush(); response.Close(); } } public bool IsReusable { get { return false; } } } I always get a blank page as result (Proxy.ashx?url= http://www.google.com ) ... Any idea what mistake I´ve done?

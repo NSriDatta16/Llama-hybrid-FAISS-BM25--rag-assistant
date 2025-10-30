@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3129078
-[parent_id]: 
-[tags]: 
-Discriminating between typedefs to same type in c++
-
-I want functionality similar to the below: typedef int A; typedef int B; struct foo { foo(A a) { /*specific to type A*/ } foo(B b) { /*specific to type B*/ } }; I use the typedefs in my program to denote logically different usage of the same type. So, I would like to create object of type foo differently for different typedefs. I could compile this in g++, but msvc throws a fit saying that foo(A) is already defined when it sees the second definition foo(B). I thought of using a type list and the position of a type in the list to discriminate between the typedefs and tried using a boost::mpl::vector: #include #include typedef int A; typedef int B; struct foo { typedef boost::mpl::vector supported_types; foo(boost::mpl::find ::type, A a) {} foo(boost::mpl::find ::type, B b) {} }; but unfortunately, find too discards my typedef and just returns iterator for A in both cases. I also thought about defining an enum and using it for each type enum { TYPE_A, TYPE_B }; template struct int2type {}; and using this int2type and type B in the program. But this looks inelegant to me as it is prone to errors. I would like use a typelist and do this, so that it is clear what types would be supported. Please let me know if there is a generic and extensible way of doing this.

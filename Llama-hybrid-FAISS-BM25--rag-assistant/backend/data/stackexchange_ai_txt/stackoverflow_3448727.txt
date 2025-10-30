@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3448727
-[parent_id]: 3448505
-[tags]: 
-Assuming that you use a builtin subclass of ConfigParser.RawConfigParser module: This is not supported. Even in the newest revision , the regex for section headers is just SECTCRE = re.compile( r'\[' # [ r'(?P [^]]+)' # very permissive! r'\]' # ] ) There is no escaping mechanism, and the section header simply ends at the first closing brackets. You should only use simple strings without "special characters" as header names, not arbitrary strings like file names. EDIT: Concerning Python 3, the equivalent code has been reorganized a bit, but the regex is the same: _SECT_TMPL = r""" \[ # [ (?P [^]]+) # very permissive! \] # ] """ EDIT 2: You can make your own subclass, as suggested in the other solution, or patch RawConfigParser directly: import ConfigParser import re ConfigParser.RawConfigParser.SECTCRE = re.compile(r"\[(?P .+)\]") However, I'd suggest not doing any of these and avoid the brackets instead. If you have brackets in section headers, your configuration files are likely to be unportable.

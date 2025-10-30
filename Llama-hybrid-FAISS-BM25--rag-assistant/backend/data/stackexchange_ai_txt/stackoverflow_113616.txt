@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 113616
-[parent_id]: 113395
-[tags]: 
-I would recommend using a helper method instead of an attribute. Something like this: public static class ExceptionAssert { public static T Throws (Action action) where T : Exception { try { action(); } catch (T ex) { return ex; } Assert.Fail("Exception of type {0} should be thrown.", typeof(T)); // The compiler doesn't know that Assert.Fail // will always throw an exception return null; } } Then you can write your test something like this: [TestMethod] public void GetOrganisation_MultipleOrganisations_ThrowsException() { OrganizationList organizations = new Organizations(); organizations.Add(new Organization()); organizations.Add(new Organization()); var ex = ExceptionAssert.Throws ( () => organizations.GetOrganization()); Assert.AreEqual(MyRes.MultipleOrganisationsNotAllowed, ex.Message); } This also has the benefit that it verifies that the exception is thrown on the line you were expecting it to be thrown instead of anywhere in your test method.

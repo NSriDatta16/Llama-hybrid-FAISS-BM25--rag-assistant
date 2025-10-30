@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 554907
-[parent_id]: 
-[tags]: 
-How to describe f1 soft loss mathematically
-
-Normal F1-score using binarized prediction can be described like this: $$F_1 = \frac{2 \cdot TP }{2 \cdot TP + FP + FN}$$ But in a loss function for a Machine Learning model, you will typically need to consider the class probabilities given by the model in order to calculate gradients, and Soft F1-loss lets us do that. I want to describe Soft F1 loss in a mathematical way and the Python code looks like this: y = tf.cast(y_true, tf.float32) y_hat = tf.cast(y_pred, tf.float32) tp = tf.reduce_sum(y_hat * y, axis=0) fp = tf.reduce_sum(y_hat * (1 - y), axis=0) fn = tf.reduce_sum((1 - y_hat) * y, axis=0) tn = tf.reduce_sum((1 - y_hat) * (1 - y), axis=0) soft_f1_class1 = 2*tp / (2*tp + fn + fp + 1e-16) soft_f1_class0 = 2*tn / (2*tn + fn + fp + 1e-16) cost_class1 = 1 - soft_f1_class1 cost_class0 = 1 - soft_f1_class0 cost = 0.5 * (cost_class1 + cost_class0) macro_cost = tf.reduce_mean(cost) To demonstrate how things work y_true = np.array([1,0,1,0]) y_pred = np.array([0.8,0.3,0.4,0.7]) gives tp = 1.2, tn = 1.0, fp = 1.0, fn = 0.8 So how can I formulate this F1 soft loss with mathematical formulas?

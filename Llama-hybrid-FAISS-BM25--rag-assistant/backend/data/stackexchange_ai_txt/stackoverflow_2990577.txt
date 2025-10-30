@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2990577
-[parent_id]: 2990273
-[tags]: 
-The Thread.SetApartmentState() method is important here. The Clipboard is a COM object, it is not thread-safe. There are many Windows features that behave like this, Drag+Drop and the shell dialogs like OpenFileDialog are other examples. You cannot set the apartment state of a threadpool thread, it is always MTA (Multi-threaded apartment). You can on a regular Thread but an additional STA requirement is that you also pump a message loop (Application.Run). Which gives you the exact same problem back: you cannot block or take a long time to execute code. The simple solution is to do whatever takes a long time to execute on a thread. And make the Clipboard call from the UI thread. Use Control.BeginInvoke() or, better, BackgroundWorker.RunWorkerCompleted.

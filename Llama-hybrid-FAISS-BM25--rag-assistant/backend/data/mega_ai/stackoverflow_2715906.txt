@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2715906
-[parent_id]: 2715860
-[tags]: 
-I'm guessing your server program is trying to write to standard output or perhaps standard error ( System.out / System.err in Java terms) which it implicitly inherited from your Java program but which turn into pumpkins when your Java program goes away. A simple solution might be for your Java program to exec a shell script which starts your server as a background process (using START (Windows) or & (Unix)) with explicitly redirected I/O streams. The Java library has recently gotten some nice updates to the Process class (I think) that allow you to do a lot of fiddling with the streams, but I don't have much experience there so I can't offer a detailed suggestion. EDIT: My suggestion from the middle paragraph. Untested, sorry! File server-runner.sh : #!/bin/bash /path/mmserver >/dev/null & You'll need to chmod +x server-runner.sh , of course. Then, from your Java program, you exec the script server-runner.sh rather than your mmserver . If you want to kill mmserver, you'll have to find it in ps -ux and use kill on the process number.

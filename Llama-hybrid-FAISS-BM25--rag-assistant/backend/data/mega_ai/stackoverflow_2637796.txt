@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2637796
-[parent_id]: 2637762
-[tags]: 
-The ajax call runs asynchronously. Therefore your function returns (by dropping out of the end of the block) before your ajax call completes. You have two ways to handle this. Add the aSync: false option to force the ajax call to run synchronously or use a callback to your function that can be executed when the ajax call completes. I'd prefer the latter. function setDataFromUrl(urlWithContent,callback) { // jQuery async request $.ajax( { url: urlWithContent, dataType: "html", success: function(data) { callback(data); }, error: function(e) { alert('Error: ' + e); } }); } setDataFromUrl(dialogAnchor.attr("href"), function(data) { dialogDiv.html(data); }); or even better, unless you're sharing this code in lots of places: var dialogDiv = $('div.dialog'); var dialogAnchor = dialogDiv.find('a'); // jQuery async request $.ajax( { url: dialogAnchor.attr('href'), dataType: "html", success: function(data) { dialogDiv.html(data); }, error: function(e) { alert('Error: ' + e); } });

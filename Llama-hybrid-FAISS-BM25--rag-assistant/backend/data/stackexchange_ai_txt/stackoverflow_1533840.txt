@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1533840
-[parent_id]: 1533822
-[tags]: 
-Obligatory note: NEVER concatenate user-supplied data into a SQL query; you are opening yourself up to SQL injection attacks. My previous answer (using "IN") was based on a mistaken idea that you were collecting multiple IDs from the user, and searching against a column with one value. But you're doing the opposite -- the column has multiple values, and you're trying to match against one value coming from the user. This is a bad way to do it. Don't use comma-separated values; add a new table with a one-to-many relationship. Then the query will look like SQL = "SELECT Product.* FROM Product, ProductCategory WHERE ProductCategory.ProductId=Product.ID AND ProductCategory.CategoryId = " & Request.QueryString("CategoryId") If you really really want to do the comma-separated thing, you could do a search using LIKE and % wildcards, but it will be fragile (e.g. you'll have to make sure that an ID of "2" doesn't match "12").

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 181433
-[parent_id]: 181406
-[tags]: 
-Beware of C extensions which allocate large chunks of memory themselves. As an example, when you load an image using RMagick, the entire bitmap gets loaded into memory inside the ruby process. This may be 30 meg or so depending on the size of the image. However , most of this memory has been allocated by RMagick itself. All ruby knows about is a wrapper object, which is tiny(1). Ruby only thinks it's holding onto a tiny amount of memory, so it won't bother running the GC. In actual fact it's holding onto 30 meg. If you loop over a say 10 images, you can run yourself out of memory really fast. The preferred solution is to manually tell the C library to clean up the memory itself - RMagick has a destroy! method which does this. If your library doesn't however, you may need to forcibly run the GC yourself, even though this is generally discouraged. (1): Ruby C extensions have callbacks which will get run when the ruby runtime decides to free them, so the memory will eventually be successfully freed at some point, just perhaps not soon enough.

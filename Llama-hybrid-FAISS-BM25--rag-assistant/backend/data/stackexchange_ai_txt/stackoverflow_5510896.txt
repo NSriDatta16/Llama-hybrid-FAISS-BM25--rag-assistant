@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5510896
-[parent_id]: 5509837
-[tags]: 
-The statement (set! *myglobal* "This does not") is executed in the transformer environment , not the normal environment. So it's not able to find *myglobal . We need to get both the expressions executed in the environment where *myglobal* is defined. Here is one solution: (define *defined-values* null) (define-macro (mydefine thing definition) `(begin (set! *defined-values* (cons ,definition *defined-values*)) (define ,thing ,`(car *defined-values*)))) > (mydefine a 10) > (mydefine b (+ 20 30)) > a 10 > b 50 > *defined-values* (50 10) > (define i 10) > (mydefine a (begin (set! i (add1 i)) i)) ;; makes sure that `definition` ;; is not evaluated twice. > a 11 If the Scheme implementation does not provide define-macro but has define-syntax , mydefine could be defined as: (define-syntax mydefine (syntax-rules () ((_ thing definition) (begin (set! *defined-values* (cons definition *defined-values*)) (define thing (car *defined-values*))))))

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2672215
-[parent_id]: 2671448
-[tags]: 
-Yes you can, and in fact you don't even need to override or use virtual anything. class ABC { public: // or this may be protected, no difference void woof(); void moo(); }; class D : private ABC { // now woof and moo are private public: using ABC::woof; // using declaration to make woof public again ABC::moo; // access declaration (deprecated) does the same }; The same works if they are virtual, too. Or, as others noted, virtual function lookup ignores the access specified by the implementing class; any class you can cast to may provide access at compile time. On the other hand, without the special declarations in D , the public interface of ABC would indeed be inaccessible through D because you wouldn't be able to upcast to ABC . And if woof and moo were virtual , you would want to make the overrides private to hide them. Perhaps that better answers the question.

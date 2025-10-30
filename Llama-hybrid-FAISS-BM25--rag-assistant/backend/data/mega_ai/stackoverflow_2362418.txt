@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2362418
-[parent_id]: 1300180
-[tags]: 
-Compilers are supposed to ignore #pragma directives they don't understand; that's the whole point of the syntax. And the functions defined in openmp.h have simple well-defined meanings on a non-parallel system -- in particular, the header file will check for whether the compiler defines ENABLE_OPENMP and, if it's not enabled, provide the right fallbacks. So, all you need is a copy of openmp.h to link to. Here's one: http://cms.mcc.uiuc.edu/qmcdev/docs/html/OpenMP_8h-source.html . The relevant portion of the code, though, is just this: #if defined(ENABLE_OPENMP) #include #else typedef int omp_int_t; inline omp_int_t omp_get_thread_num() { return 0;} inline omp_int_t omp_get_max_threads() { return 1;} #endif At worst, you can just take those three lines and put them in a dummy openmp.h file, and use that. The rest will just work.

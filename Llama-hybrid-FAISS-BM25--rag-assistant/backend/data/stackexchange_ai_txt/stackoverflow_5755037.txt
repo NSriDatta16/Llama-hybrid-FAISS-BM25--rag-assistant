@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5755037
-[parent_id]: 5753852
-[tags]: 
-Yes, "Attempted to read or write protected memory. This is often an indication that other memory is corrupt." is expected result. This happens because of you try to return string value from within function. In this case .NET framework creates string objects and tries to free memory in which you have take string from function with CoTaskMemFree function. As I understand you are not alocated this memory with CoTaskMemAlloc so exeption you have is correct. To avoid this you should change your C# function prototype to return IntPtr: [DllImport(DllName)] public static extern IntPtr Translation_TranslateNameEnglish(IntPtr ptr, ref DFName name); And you can you it like below: string result = Marshal.PtrToStringAnsi(DFHack.Translation_TranslateNameEnglish(translation, ref name); [EDIT] It also may be useful for you - Marshaling unmanaged char** to managed string[]

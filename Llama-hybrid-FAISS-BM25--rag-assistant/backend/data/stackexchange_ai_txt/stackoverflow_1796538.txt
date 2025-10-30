@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1796538
-[parent_id]: 1796510
-[tags]: 
-One principal I've found useful in writing C extensions is to use each language where it's best suited. So if you have a task to do that would be best implemented in Python, implement in Python, and if it would be best implemented in C, do it in C. Interpreting tracebacks is best done in Python for two reasons: first, because Python has the tools to do it, and second, because it isn't speed-critical. I would write a Python function to extract the info you need from the traceback, then call it from C. You could even go so far as to write a Python wrapper for your callable execution. Instead of invoking someCallablePythonObject , pass it as an argument to your Python function: def invokeSomeCallablePythonObject(obj, args): try: result = obj(*args) ok = True except: # Do some mumbo-jumbo with the traceback, etc. result = myTraceBackMunger(...) ok = False return ok, result Then in your C code, call this Python function to do the work. The key here is to decide pragmatically which side of the C-Python split to put your code.

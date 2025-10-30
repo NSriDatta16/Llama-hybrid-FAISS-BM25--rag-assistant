@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 114430
-[parent_id]: 114419
-[tags]: 
-More generally seen, your problem is, that you want to predict a multi-variate / multi-dimensioan lable , but your algorithm only supports uni-variate / 1-dimensional target variables . I see two direct approaches that you could try: Independent Models You could train $H$ independent XGBoost Models, one for each target dimension. sklearn already provides a wrapper for this: model = MultiOutputRegressor(XGBRegressor()) model.fit(X, y) Flatten the output You could turn each sample into $H$ different samples, one for each output dimension. In order to distinguish these dimensions, you could add the index of the output as another feature. In other word, your $(N,T)$ input would be transformed into an $(N\cdot H, T+1)$ input and your target into an $(N\cdot H)$ vector. For example, the data X = [[1, 5, -3], [2, 4, 6]] y = [[4, 6], [13, 20]] would be transformed into X = [[1, 5, -3, 1], [1, 5, -3, 2], [2, 4, 6, 1], [2, 4, 6, 2]] y = [4, 6,13,20]

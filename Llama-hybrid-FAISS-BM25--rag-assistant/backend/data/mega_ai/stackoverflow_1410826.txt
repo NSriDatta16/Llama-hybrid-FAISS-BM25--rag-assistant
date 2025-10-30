@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1410826
-[parent_id]: 1410163
-[tags]: 
-The correct way to do it would be to change the DNS record so your old subdomain points to your new one. Then everything just gets submitted to the new domain, although with the same path. But it doesn't sound like you can do that. The alternative is to emulate the POST that the your flash app submitted using curl. Just grab the url query string (GETs) and submit the POST. It doesn't matter that your field names are $_POST['key']['value']. $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, 'othersite.ro/subscribe.php?'.$_SERVER['QUERY_STRING']); curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); curl_setopt($ch, CURLOPT_POST, 1); curl_setopt($ch, CURLOPT_POSTFIELDS, $_POST); curl_setopt($ch, CURLOPT_USERAGENT, 'Redirect Fix'); $result = curl_exec($ch); curl_close($ch); You could even return the $result variable to your flash app. Then you just have a server in the middle routing data back and forth. You can drop the CURLOPT_USERAGENT line, you just use that if you want to specify a custom agent, normally this is the browser identifier string.

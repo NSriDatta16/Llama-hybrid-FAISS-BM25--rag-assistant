@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3599028
-[parent_id]: 3585144
-[tags]: 
-The issue is indirectly about the multiple virtual inheritance from std::exception . The compiler gets confused because of it, but forgets to tell you why. :-/ James McNellis is right: the compiler promises to mention a type, but it doesn't. Try without the template : #include class Base: virtual public std::exception {}; class Derv: public Base, virtual public std::exception {}; int main() { try { throw Derv(); } catch (const Base &) { return 2; } catch (...) { return 1; } } When compiled with level 4 warnings, this says nothing more than: warning C4673: throwing 'Derv' the following types will not be considered at the catch site I see the value of warnings. But apparently level 4 is buggy in this case. As all works as expected you could just silence the compiler: #pragma warning(disable: 4673) I guess you could report this case as a bug to Microsoft. The compiler should state the type and what the problem is.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4320850
-[parent_id]: 4320472
-[tags]: 
-Try something like this: var query = @"select (select sum(pu.Amount) from Purchase pu where pu.People.Id = ppl.Id), (select sum(pa.Amount) from Payments pa where pa.People.Id = ppl.Id) from People ppl"; var results = session .CreateQuery(query) .List(); Or perhaps using ad-hoc mapping : public class BulkReport { public double Purchases { get; set; } public double Payments { get; set; } } var results = session .CreateQuery(query) .SetResultTransformer(Transformers.AliasToBean(typeof(BulkReport))) .List (); Another option would be using MultiQueries .

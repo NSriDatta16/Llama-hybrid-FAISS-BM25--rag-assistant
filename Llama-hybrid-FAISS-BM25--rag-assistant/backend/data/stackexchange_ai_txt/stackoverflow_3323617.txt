@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3323617
-[parent_id]: 3323461
-[tags]: 
-Wow, that is surprising. When you set a value on a dependency property, binding expressions are updated before value coercion runs! If you look at DependencyObject.SetValueCommon in Reflector, you can see the call to Expression.SetValue halfway through the method. The call to UpdateEffectiveValue that will invoke your CoerceValueCallback is at the very end, after the binding has already been updated. You can see this on framework classes as well. From a new WPF application, add the following XAML: Set Invalid and the following code: private void SetInvalid_Click(object sender, RoutedEventArgs e) { var before = this.Value; var sliderBefore = Slider.Value; Slider.Value = -1; var after = this.Value; var sliderAfter = Slider.Value; MessageBox.Show(string.Format("Value changed from {0} to {1}; " + "Slider changed from {2} to {3}", before, after, sliderBefore, sliderAfter)); } public int Value { get; set; } If you drag the Slider and then click the button, you'll get a message like "Value changed from 11 to -1; Slider changed from 11 to 10".

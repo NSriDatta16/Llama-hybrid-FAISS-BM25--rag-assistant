@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1226723
-[parent_id]: 
-[tags]: 
-Fluent NHibernate: override derived classes not in the base class auto-mapping
-
-The story: I had class User and class Organization: User. I did not use any mappings for these classes, let FNH do mapping automatically. Then, I added public class OrganizationMap : IAutoMappingOverride { public void Override(AutoMap mapping) { } } Notice there're no overrides. So I did not expect any changes in FNH behavior. But I got this (during schema export actually): NHibernate.MappingException: (XmlDocument)(2,4): XML validation error: The element 'class' in namespace 'urn:nhibernate-mapping-2.2' has incomplete content. List of possible elements expected: 'meta, subselect, cache, synchronize, comment, tuplizer, id, composite-id' in namespace 'urn:nhibernate-mapping-2.2'. The generated Orders.Core.Organization.hbm.xml was really empty: So, after I reviewed the User.hbm I got the idea - I need to override Organization in the base class like this: public class UserMap : IAutoMappingOverride { public void Override(AutoMap mapping) { mapping.JoinedSubClass ("ColumnId", m => {...} ); } } But, I would better like to do this in a separate mapping override class for Organization... after all, what would the mapping become if I have 5 subclasses all in single Override method. Is this possible?

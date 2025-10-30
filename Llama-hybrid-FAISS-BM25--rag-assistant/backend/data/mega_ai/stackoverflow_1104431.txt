@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1104431
-[parent_id]: 1104414
-[tags]: 
-If you have a PRIMARY KEY on user_actions : SELECT u.*, ua.* FROM users u LEFT JOIN user_actions ua ON user_actions.id = ( SELECT TOP 1 id FROM user_actions uai WHERE uai.userid = u.userid AND uai.action_date >= u.pay_date ORDER BY uai.action_date ) If you don't: WITH j AS ( SELECT u.*, ua.*, ROW_NUMBER() OVER (PARTITION BY ua.userid ORDER BY ua.action_date) AS rn, ua.action_date FROM users u LEFT JOIN user_actions ua ON ua.userid = u.userid AND ua.action_date >= u.pay_date ) SELECT * FROM j WHERE rn = 1 or action_date is null Update: CROSS APPLY proposed by @AlexKuznetsov is more elegant and efficient.

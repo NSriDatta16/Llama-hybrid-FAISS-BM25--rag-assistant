@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 487743
-[parent_id]: 487734
-[tags]: 
-Using file_get_contents is fine, unless the file is very large. In that case, you don't really need to be holding the entire thing in memory. For a large retrieval, you could fopen the remote file, fread it, say, 32KB at a time, and fwrite it locally in a loop until all the file has been read. For example: $fout = fopen('/tmp/verylarge.jpeg', 'w'); $fin = fopen("http://www.example.com/verylarge.jpeg", "rb"); while (!feof($fin)) { $buffer= fread($fin, 32*1024); fwrite($fout,$buffer); } fclose($fin); fclose($fout); (Devoid of error checking for simplicity!) Alternatively, you could forego using the url wrappers and use a class like PEAR's HTTP_Request , or roll your own HTTP client code using fsockopen etc. This would enable you to do efficient things like send If-Modified-Since headers if you are maintaining a cache of remote files.

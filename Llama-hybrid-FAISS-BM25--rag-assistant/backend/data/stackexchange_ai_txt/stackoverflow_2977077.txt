@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2977077
-[parent_id]: 
-[tags]: 
-C++ boost mpl vector
-
-I understand that the following code won't work, as i is a runtime parameter and not a compile time parameter. But i want to know, whether there is a way to achieve the same. i have a list of classes and i need to call a template function, with each of these classes. void GucTable::refreshSessionParams() { typedef boost::mpl::vector SessionParams; for( int i = 0; i ::value; ++i ) boost::mpl::at ::type* sparam = g_getSessionParam ::type >(); sparam->updateFromGucTable(this); } } Can someone suggest me a easy and elegant way to perform the same? i need to iterate through the mpl::vector and use the type to call a global function and then use that parameter to do some run-time operations. Thanks in advance, Gokul. Working code typedef boost::mpl::vector SessionParams; class GucSessionIterator { private: GucTable& m_table; public: GucSessionIterator(GucTable& table) :m_table(table) { } template void operator()(const U& ) { g_getSessionParam ()->updateFromGucTable(m_table); } }; void GucTable::refreshSessionParams() { boost::mpl::for_each ( GucSessionIterator(*this) ); return; }

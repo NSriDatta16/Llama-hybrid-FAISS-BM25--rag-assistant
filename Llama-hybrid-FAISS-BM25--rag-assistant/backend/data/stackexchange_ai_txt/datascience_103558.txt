@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 103558
-[parent_id]: 
-[tags]: 
-Vectorize scipy.stats.norm.logpdf
-
-I am tryint to trying to train a Bayesian NN and at some point I need to compute log-likelihoods for some data points, according to a multivariate diagonal gaussian distribution with parameters (mu, sigma). I have 2 problems: I don't know the size of the values in advance (note that I am guaranteed that 'values', 'mu' and 'rho') are the same size, but they could either be 1D or 2D, which forces me to have an ugly if statement. Ideally I would just iterate over the elements no matter the size of the tensor. This is painfully slow. I don't see how I could vectorize the logpdf the numpy way, as passing in the values, mu and sigma directly to norm.logpdf seems to implicitely construct a covariance matrix (which is too big and makes the program crash). from scipy.stats import norm ... mu = self.mu.detach().numpy() sigma = np.log(1 + np.exp(self.rho.detach().numpy())) vals = values.detach().numpy() log_likelihood_val = 0 if len(values.size()) == 2: for i in range(values.size()[0]): for j in range(values.size()[1]): log_likelihood_val += norm.logpdf(vals[i,j], loc=mu[i,j], scale=sigma[i,j]) else: for i in range(values.size()[0]): log_likelihood_val += norm.logpdf(vals[i], loc=mu[i], scale=sigma[i]) return torch.tensor(log_likelihood_val) How should I implement it instead?

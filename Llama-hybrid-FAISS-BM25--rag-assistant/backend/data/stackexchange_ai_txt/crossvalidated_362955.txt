@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 362955
-[parent_id]: 
-[tags]: 
-PCA returns the same pair of principal axes for completely different 2D datasets
-
-I noticed a (seemingly) weird behavior while using sklearn's PCA on 2D standardized datasets: I kept getting the same principal axes: $\pm\left(\begin{gathered}\sqrt{0.5}\\ \sqrt{0.5} \end{gathered} \right)$ and $\pm\left(\begin{gathered}\sqrt{0.5}\\ -\sqrt{0.5} \end{gathered} \right)$ (i.e. the lines $y = x$ and $y = -x$), even when I significantly changed the dataset. Just to be sure, I wrote a short script that demonstrates this behavior: (The script creates nonsense datasets from different distributions, and standardizes and performs PCA on each dataset.) import numpy as np from sklearn.preprocessing import StandardScaler from sklearn.decomposition import PCA from sklearn.pipeline import make_pipeline dists_funcs = [np.random.chisquare, np.random.exponential, np.random.power, np.random.standard_gamma, np.random.weibull, np.random.rayleigh, np.random.pareto, np.random.poisson, np.random.standard_t] sqrt_of_half = 0.5 ** 0.5 n = 1000 for i, dist_func1 in enumerate(dists_funcs[:-1]): dist_func2 = dists_funcs[i + 1] X = np.array([(a, a * dist_func2(i + 2)) for a in dist_func1(i + 3, n)]) pipe = make_pipeline(StandardScaler(), PCA(n_components=2)) pipe.fit(X) pca = pipe.named_steps['pca'] for principal_axe in pca.components_: for z in principal_axe: if abs(abs(z) - sqrt_of_half) > 1e-10: print(f'got {principal_axe} in {i}') print('done') Is this behavior guaranteed? Is there an intuitive explanation for it?

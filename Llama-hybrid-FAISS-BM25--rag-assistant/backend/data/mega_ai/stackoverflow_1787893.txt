@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1787893
-[parent_id]: 
-[tags]: 
-Number of memcache connections never drops, keeps growing
-
-We've set up three memcache servers for our web application. Two are doing fine, handling tens of thousands of reads and writes, all while maintaining no more than 12 connections each (according to memcache-top ). We have a third memcache server which is responsible for storing administrative client session data (using PHPs built in memcache session handler ) and some random application data. For some reason the number of connections on this box never goes down, only increasing over time. For example, we recently restarted the server and an hour later memcache-top records ~300 connections. The code base uses a mixture of persistent connections and dynamic connections, but I have been unable to come up with a simple example for recreating the situation where connections never die. This third memcache server actually hosts the least active portion of our web application, as you can see from memcache-top: memcache-top v0.6 (default port: 11211, color: on, refresh: 3 seconds) INSTANCE USAGE HIT % CONN TIME EVICT/s READ/s WRITE/s memcache1:11211 15.7% 83.5% 10 1.2ms 0.0 24.9K 34.5K memcache2:11211 15.8% 81.3% 10 1.0ms 0.0 19.1K 31.6K memcache3:11211 0.1% 0.0% 354 1.1ms 0.0 4 321 AVERAGE: 10.5% 55.0% 124 1.1ms 0.0 14.7K 22.1K TOTAL: 0.6GB/ 6.0GB 374 3.2ms 0.0 44.0K 66.4K So my question is: Why do the connections for this memcache instance never die?

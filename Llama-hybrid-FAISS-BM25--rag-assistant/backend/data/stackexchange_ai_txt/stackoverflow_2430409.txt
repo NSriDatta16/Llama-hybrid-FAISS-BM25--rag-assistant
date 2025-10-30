@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2430409
-[parent_id]: 
-[tags]: 
-Is this a good way to manage initializations of COM?
-
-I'm very new to anything involving Component Object Model, and I'm wondering if this method of managing calls to CoInitalize/CoUninitalize makes sense: COM.hpp: #pragma once namespace WindowsAPI { namespace ComponentObjectModel { class COM { COM(); ~COM(); public: static void Setup(); }; }} COM.cpp: #include #include "COM.hpp" namespace WindowsAPI { namespace ComponentObjectModel { COM::COM() { if (CoInitializeEx(NULL, COINIT_APARTMENTTHREADED) != S_OK) throw std::runtime_error("Couldn't start COM!"); } COM::~COM() { CoUninitialize(); } void COM::Setup() { static COM instance; } }} Then any component that needs COM just calls COM::Setup() and forgets about it. Does this make sense or am I breaking any "rules" of COM?

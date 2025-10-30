@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1870627
-[parent_id]: 
-[tags]: 
-Type traits definition. Traits blobs & Metafunctions
-
-Reading some source code, I have found next traits definition: namespace dds { template struct topic_type_support { }; template struct topic_data_writer { }; template struct topic_data_reader { }; template struct topic_data_seq { }; } #define REGISTER_TOPIC_TRAITS(TOPIC) \ namespace dds { \ template<> struct topic_type_support { \ typedef TOPIC##TypeSupport type; }; \ template<> struct topic_data_writer { \ typedef TOPIC##DataWriter type; }; \ template<> struct topic_data_reader { \ typedef TOPIC##DataReader type; }; \ template<> struct topic_data_seq { \ typedef TOPIC##Seq type; }; \ } That looks weird to me. I would have grouped all the traits in a unique class like this: namespace dds { template struct topic_traits { }; } #define REGISTER_TOPIC_TRAITS(TOPIC) \ namespace dds { \ template<> struct topic_traits { \ typedef TOPIC##TypeSupport type_support; \ typedef TOPIC##DataWriter data_writter; \ typedef TOPIC##DataReader data_reader; \ typedef TOPIC##Seq seq_type; \ }; \ } Can any of you figure out why second approach could be more fragile than the first one or significantly harder to add new traits?

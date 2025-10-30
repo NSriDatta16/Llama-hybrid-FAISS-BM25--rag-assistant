@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2200886
-[parent_id]: 2200494
-[tags]: 
-There is no built-in event for removing elements, but you can create one by fake-extending jQuery's default remove method. Note that the callback must be called before actually removing it to keep reference. (function() { var ev = new $.Event('remove'), orig = $.fn.remove; $.fn.remove = function() { $(this).trigger(ev); return orig.apply(this, arguments); } })(); $('#some-element').bind('remove', function() { console.log('removed!'); // do pre-mortem stuff here // 'this' is still a reference to the element, before removing it }); // some other js code here [...] $('#some-element').remove(); Note: some problems with this answer have been outlined by other posters. This won't work when the node is removed via html() replace() or other jQuery methods This event bubbles up jQuery UI overrides remove as well The most elegant solution to this problem seems to be: https://stackoverflow.com/a/10172676/216941

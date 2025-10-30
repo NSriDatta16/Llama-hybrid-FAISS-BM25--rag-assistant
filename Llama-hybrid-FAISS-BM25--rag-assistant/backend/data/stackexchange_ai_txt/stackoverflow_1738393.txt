@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1738393
-[parent_id]: 1738313
-[tags]: 
-If it is an external C library whose code you can not modify, then there is not much you can do about it. You'll not be able to call the member function as they require this pointer to work properly (to get the attributes of the object). The easiest workaround, I can think of is using third void* param to pass around this pointer. You can define struct like after defining one more typedef like: typedef double (cls_lasvm::*lasvm_kernel_t_member)(int i, int j, void* closure); struct MyParam { A* pThis; lasvm_kernel_t_member pMemFun; void* kParam; }; I haven't compiled it, I hope it makes sense. Then in your class define a static method which receives the call from library: class cls_lasvm { static double test(int i, int j, void *kparam) { MyParam* pParam = reinterpret_cast (kparam); return (pParam->*pMemFun)(i,j,pParam->kParam); } }; While calling you should use something like: cls_lasvm a; MyParam param; param.pThis = &a; param.pMemFun = &cls_lasvm::kernel; param.kParam = NULL; lasvm_kcache_create(&cls_lasvm::test,&a);

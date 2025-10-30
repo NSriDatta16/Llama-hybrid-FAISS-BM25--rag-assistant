@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4554821
-[parent_id]: 
-[tags]: 
-Android parsing ints efficiency
-
-I am trying to parse some unsigned integers from a file stored on the memory card. Since java does not provide unsigned types I use longs to store the obtained values. The performance seems to be influenced by the Debugger: Without the debugger connected I can parse 20000 values in ~820ms. With the debugger ~5800ms (on HTC Desire). Can you reproduce this on your devices? Any clue why the debugger has such an overhead? Here is the code: public class IntParsingTest extends Activity { public static final String TEST_FILE = "yourfile"; public static final int LOOPS = 20000; private Handler handler = new Handler() { @Override public void handleMessage(Message msg) { super.handleMessage(msg); Toast.makeText(IntParsingTest.this, (CharSequence) msg.obj, Toast.LENGTH_LONG).show(); } }; @Override public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); setContentView(R.layout.main); try { Runnable r = new Runnable() { @Override public void run() { Message m = new Message(); File path = Environment.getExternalStorageDirectory(); File f = new File(path, TEST_FILE); long startTime = SystemClock.currentThreadTimeMillis(); try { InputStream is = new FileInputStream(f); for (int i = 0; i } Edit: It is also interesting that only the shift opperations are slow. If I return one of the bytes or a sum of them it works much faster. It may be the way shift is implemented !?

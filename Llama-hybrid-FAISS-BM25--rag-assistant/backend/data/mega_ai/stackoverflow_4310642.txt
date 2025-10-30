@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4310642
-[parent_id]: 
-[tags]: 
-Illegal attempt to establish a relationship in core data
-
-I'm trying to build a relationship between two objects on a background thread and Core Data keeps firing off "llegal attempt to establish a relationship" Here is some basic code of what is happening: - (NSPersistentStoreCoordinator *)persistentStoreCoordinator { @synchronized(self) { return persistentStoreCoordinator; } return nil; } - (void)startBackgroundTask { [self performSelectorInBackground:@selector(backgroundTask:) withObject:managedObjectID]; } - (void)backgroundTask:(NSManagedObjectID *)pManagedObjectID { NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] init]; [managedObjectContext setPersistentStoreCoordinator:[self persistentStoreCoordinator]]; NSManagedObject *object = [managedObjectContext objectWithID:pManagedObjectID]; NSManagedObject *childObject = [NSEntityDescription insertNewObjectForEntityForName:@"ChildObject" inManagedObjectContext:managedObjectContext]; [object setValue:childObject forKey:@"childObject"]; [managedObjectContext save:nil]; } I'm correctly creating a "thread-safe" background thread managed object context and fetching the object via the object id so unsure why it's not working. Also compare the [object managedObjectContext] contexts results in a "true" equal condition. Any help greatly appreciated, -Robert

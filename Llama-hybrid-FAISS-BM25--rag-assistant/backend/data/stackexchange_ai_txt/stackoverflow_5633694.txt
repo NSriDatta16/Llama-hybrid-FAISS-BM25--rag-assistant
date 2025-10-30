@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5633694
-[parent_id]: 5632119
-[tags]: 
-try to solve the problem at an higher level of abstraction. Since you have two separate domains (one containing the Activity entity, and one containing the User entity), it would be convenient to have this explicitly in your application design. For instance, define a factory of some kind per domain: public interface IActivityDomainContextFactory { ObjectContext CreateNew(); } public interface IPeopleDomainContextFactory { ObjectContext CreateNew(); } You can now easily create an implementation for each interface, register them in the Autofac ContainerBuilder and let your services depend on one of those interfaces, instead of depending them on a EntityConnection . In this case you of course still have a dependency on the Entity Framework itself (see here for how to abstract that away), but this makes your configuration much easier, less fragile, better performing, and your application code more maintainable. I hope this helps.

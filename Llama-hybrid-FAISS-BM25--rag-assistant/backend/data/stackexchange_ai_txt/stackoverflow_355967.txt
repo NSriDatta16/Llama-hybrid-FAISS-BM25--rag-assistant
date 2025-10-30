@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 355967
-[parent_id]: 
-[tags]: 
-How to use MSVC intrinsics to get the equivalent of this GCC code?
-
-The following code calls the builtin functions for clz/ctz in GCC and, on other systems, has C versions. Obviously, the C versions are a bit suboptimal if the system has a builtin clz/ctz instruction, like x86 and ARM. #ifdef __GNUC__ #define clz(x) __builtin_clz(x) #define ctz(x) __builtin_ctz(x) #else static uint32_t ALWAYS_INLINE popcnt( uint32_t x ) { x -= ((x >> 1) & 0x55555555); x = (((x >> 2) & 0x33333333) + (x & 0x33333333)); x = (((x >> 4) + x) & 0x0f0f0f0f); x += (x >> 8); x += (x >> 16); return x & 0x0000003f; } static uint32_t ALWAYS_INLINE clz( uint32_t x ) { x |= (x >> 1); x |= (x >> 2); x |= (x >> 4); x |= (x >> 8); x |= (x >> 16); return 32 - popcnt(x); } static uint32_t ALWAYS_INLINE ctz( uint32_t x ) { return popcnt((x & -x) - 1); } #endif What functions do I need to call, which headers do I need to include, etc to add a proper ifdef for MSVC here? I've already looked at this page , but I'm not entirely sure what the #pragma is for (is it required?) and what restrictions it puts on MSVC version requirements for compilation. As someone who doesn't really use MSVC, I also don't know whether these intrinsics have C equivalents on other architectures, or whether I have to #ifdef x86/x86_64 as well when #defining them.

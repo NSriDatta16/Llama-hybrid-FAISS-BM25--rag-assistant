@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3661093
-[parent_id]: 3659049
-[tags]: 
-One thing you can do is add a lookahead for the closing angle bracket: (p1|p2)(?![^<>]*+>) The idea is, after you find a match you scan forward a bit; if you find a closing bracket without first seeing an opening bracket, the match must have occurred inside a tag, so reject it. But be aware that even in well-formed HTML there are many things that can mess you up, like SGML comments, CDATA sections, or even angle brackets in attribute values. Another approach would be to match the tags and ignore those matches: ((?: ]++>)++)(p1|p2) Then you test whether it was group #1 that matched: MatchResult match = scanner.match(); if (match.start(1) != -1) { // keep searching } But again, as a general solution this is way too fragile, for the reasons I cited above. You should only use one of these solutions (or any regex solution) if you're sure it's compatible with the particular pages you're working on.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4378099
-[parent_id]: 
-[tags]: 
-ListBox Item Removal
-
-I have a WPF window that manages sets of configurations and it allows users to edit a configuration set (edit button) and to remove a configuration set (remove button). The window has a ListBox control that lists the configuration sets by name and its ItemsSource has a binding set to a list of configuration sets. I'm trying to remove the item in the code behind file for the window.. private void RemoveButton_Click(object sender, RoutedEventArgs e) { var removedItems = configSetListBox.SelectedItems; foreach(ConfigSet removedItem in removedItems) { configSetListBox.Items.Remove(removedItem); } } My code yields an invalid operation exception stating "Access and modify elements with ItemsControl.ItemsSource instead." What property should I be accessing to properlyremove items from the ListBox? Or is there possibly a more elegant way to handle this in WPF? My implementation is a bit WinForm-ish if you will :) Solution private void RemoveButton_Click(object sender, RoutedEventArgs e) { foreach(ConfigSet removedItem in configSetListBox.SelectedItems) { (configSetListBox.ItemsSource as List ).Remove(removedItem); } configSetListBox.Items.Refresh(); } In my case I had a List as the ItemSource binding type so I had to cast it that way. Without refreshing the Items collection, the ListBox doesn't update; so that was necessary for my solution.

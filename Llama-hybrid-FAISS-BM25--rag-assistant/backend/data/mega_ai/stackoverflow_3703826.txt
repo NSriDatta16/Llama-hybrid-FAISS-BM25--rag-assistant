@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3703826
-[parent_id]: 3703658
-[tags]: 
-You can just accept the arguments by the variadic template and let typechecking check the validity later on when they are converted. You can check convertibility on the function interface level though, to make use of overload resolution for rejecting outright wrong arguments for example, by using SFINAE template struct fst { typedef R type; }; template typename fst ::value >::type... >::type f(Args...); For your use-case if you know the steps to go from an std::array<> to your dragon_list_t then you have already solved it though according to the first option above ("convert-later"): template dragon_list_t make_dragon_list(Items... maidens) { std::array arr = {{ maidens ... }}; // here be dragons } If you combine this with the above is_convertible approach you have a reject-early template that also does overload resolution on arguments and rejects them if not applicable.

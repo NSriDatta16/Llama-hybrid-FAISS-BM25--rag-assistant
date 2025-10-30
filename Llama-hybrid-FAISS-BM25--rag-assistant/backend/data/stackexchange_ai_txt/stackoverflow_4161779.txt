@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4161779
-[parent_id]: 4161629
-[tags]: 
-The only way to avoid looping over every item in your list is to sort it by date and then just searching it backwards until you find the last item that's greater than your target date, adding them to your filtered_list as you go. Or sort your list descending and search forwards until you find the first last item that's greater than your target. This would let you easily modify your loop like this: filtered_list = [] for it in item_list: if date_from_db > it.date: filtered_list.append(it) else: break Alternatively, if you expect more than a few items in your filtered list, it may be faster to do a binary search to find the first item that meets your criteria and use a list slice to copy it to filtered_list : first = binary_search(item_list, lambda it: cmp(date_from_db, it.date)) if first == -1: return [] return item_list[first:] And here's a binary search function I adapted from the link in the last paragraph. I believe it should work: def binary_search(a, comp, lo=0, hi=None): if hi is None: hi = len(a) while lo 0: hi = mid else: return mid return -1

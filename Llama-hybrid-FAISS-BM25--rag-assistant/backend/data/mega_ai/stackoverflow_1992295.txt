@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1992295
-[parent_id]: 1989301
-[tags]: 
-From my own tests (nothing scientific) you may be better with working directly on arrays in cases where you do lots of sorting. But if you sort rarely and have a lots of random access to do though, going with a vector may be a better choice as random access time is more than 40% faster on average, but the sorting performance is horrible due to converting the vector to an array and then back to a vector. Here's my findings: (def foo (int-array (range 1000))) (time (dotimes [_ 10000] (java.util.Arrays/sort foo))) ; Elapsed time: 652.185436 msecs (time (dotimes [_ 10000] (nth foo (rand-int 1000)))) ; Elapsed time: 7.900073 msecs (def bar (vec (range 1000))) (time (dotimes [_ 10000] (vec (sort bar)))) ; Elapsed time: 2810.877103 msecs (time (dotimes [_ 10000] (nth bar (rand-int 1000)))) ; Elapsed time: 5.500802 msecs P.S.: Note that the vector version doesn't actually store the sorted vector anywhere, but that shouldn't change the result considerably as you would use simple bindings in a loop for speed.

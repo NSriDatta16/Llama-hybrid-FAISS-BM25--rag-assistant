@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3823198
-[parent_id]: 
-[tags]: 
-Counting in Erlang (how do I increment a variable?)
-
-I've figured out the Erlang-style loops: tail-recursion with functions that take all the "variables that don't vary": %% does something, 80 bytes at a time loop(Line, File) -> loop(Line, File, 0). loop(Line, File, Count) -> do_something(Line, Count), case file:read(File, 80) of {ok, Line2} -> loop(Line2, File, Count + 1); eof -> file:close(File); {error, Reason} -> {error, Reason} end. But, what is the best way to increment a counter in Erlang? In most programming languages, the way you count things is by incrementing a variable (ie. count += 1; ). Erlang's variables don't vary, so we have to be creative. Fortunately, we have options... We can pass a Counter variable with our functions, and increment it with each function call. We can use the process dictionary to store a count, and get and put to increment it. We can use ETS, the local data storage for processes. We can use a counter process (!!!): loop(Count) -> receive { incr } -> loop(Count + 1); { report, To } -> To ! { count, Count }, loop(Count) end. incr(Counter) -> Counter ! { incr }. get_count(Counter) -> Counter ! { report, self() }, receive { count, Count } -> Count end. I'm sure there are other ways too, depending on the scope. What's considered "best practice" for incrementing a variable in Erlang?

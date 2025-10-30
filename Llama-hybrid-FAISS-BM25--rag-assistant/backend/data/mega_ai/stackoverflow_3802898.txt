@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3802898
-[parent_id]: 3802830
-[tags]: 
-Your each call to a web method will invoke a new web service on server side, so it is not good to keep any private variables on Web Service. For both calls, lh.Open and lh.Get, on server side, two different instances of WebService are created even if you have only one single instance of your proxy at client. If you want to correct this, then you should only use HttpContext.Current.Session and store your useful instances of objects in this like... You should change your web service as below... [WebMethod(EnableSession = true)] public void Open(string login, string password) { MNConnection _conn = new MNConnection(); _conn.Open(login, password); HttpContext.Current.Session["MyConn"] = _conn; HttpContext.Current.Session["LPU"] = _conn.CreateLPU(); } [WebMethod(EnableSession = true)] public decimal Get() { MNLPU _lpu = HttpContext.Current.Session["LPU"] as MNLPU; return _lpu.Count; }

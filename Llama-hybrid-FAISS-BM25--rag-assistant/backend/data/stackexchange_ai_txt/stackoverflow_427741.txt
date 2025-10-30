@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 427741
-[parent_id]: 427679
-[tags]: 
-Try replacing the body of the if with this code instead. aTags[i].addEventListener("mouseover", (function(source, fragment) { return function() { if (this.title == "") { (providers[source])(this, fragment); } } })(data[1], data[2]), false) ; Note after the loop is complete do aTags = null; . Your problem is that an if statement block is not a true scope, anything var'd will belong to the outer functions scope. Hence your inner function that you are providing as an event handler would use the source, link and fragment of the last pass. Additionaly by maintaining references to DOM object you would have a memory leak due to circular references. The above approach create a new scope on each pass via a function call so each source and fragment is in its own scope. It also uses the fact that a function called as an event listener has the this property pointing at the element to which it is attached, hence avoiding a circular reference containing a DOM element.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 729108
-[parent_id]: 729088
-[tags]: 
-There's no need to free() / realloc() at all. Your char **frags is a pointer to a list of pointers so you can just shuffle the pointer values around without creating new strings. Just make sure you start at the far end of the list, and count backwards, or use memmove() : void shift_frags(char **frags, int frag_len, int cur) { int i; free(frags[frag_len]); /* because otherwise this is left dangling */ for(i = frag_len; i > cur; i--) { frags[i] = frags[i - 1]; } } or: void shift_frags(char **frags, int frag_len, int cur) { int n = frag_len - cur; frags += cur; free(frags[n]); memmove(frags + 1, frags, n * sizeof(*frags)); /* nb: memmove(dst, src, n) */ } NB: there's a possible off-by-one error here, it depends on the semantics of your frag_len value, and whether you know that the frag block of memory is already large enough to hold another pointer.

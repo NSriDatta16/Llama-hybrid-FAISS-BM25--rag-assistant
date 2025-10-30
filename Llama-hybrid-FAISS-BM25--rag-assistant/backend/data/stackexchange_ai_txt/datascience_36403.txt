@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 36403
-[parent_id]: 
-[tags]: 
-Tensorflow.js mapping to Tensorflow (python)
-
-Despite having no understanding of what I'm doing, I decided to take a shot at porting rnn-nlu to tensorflow.js A few lines in, and I'm really confused by the relationship between the python and javascript APIs. Take the following code: def create_cell(): if not forward_only and dropout_keep_prob For BasicLSTMCell there seem to be two very similar functions in the tensorflow-js: tf.basicLSTMCell - identical in name, but needs forgetBias , lstmKernel and lstmBias which are all absent from the python call. tf.layers.lstmCell - I can create one of these in a similar fashion as per the python API: tf.layers.lstmCell({units: this.cell_size} The first option seems like a more likely candidate, but there are 3 extra parameters. If I could get past that, I could call tf.multiRNNCell(cells) - but that also requires data , c and h which are not required in the python API (which optionally takes state and scope ). If I go with the second option, it seems as though I would replace MultiRNNCell with let cell = tf.layers.stackedRNNCells({cells}) - but the difference in function names is not encouraging. The only thing in the js API that looks remotely similar to DropoutWrapper is tf.layers.dropout() but it returns a Layer instead of a Cell and the parameters do not match at all. I have also attempted to import a model which was learned by Python into JavaScript, but I could not figure out how to do that either .

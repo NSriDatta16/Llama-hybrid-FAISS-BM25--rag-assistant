@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4051175
-[parent_id]: 
-[tags]: 
-update same record which fires a trigger
-
-I want to update the same record which fires a trigger. I have done that using "BEFORE INSERT" option. But note that I have use a transaction to rollback the operation if there is an any faliure. CREATE OR REPLACE TRIGGER GANUKA.INTF_CONTROLLER_UPLOADER BEFORE insert ON GANUKA.INTF_CONTROLLER for each row DECLARE PRAGMA AUTONOMOUS_TRANSACTION; max_id INTEGER; stat VARCHAR2(32); begin select :new.id into max_id from dual; select :new.status into stat from dual; IF STAT = 'NEW' THEN --ONLY NEW UPLOADS WILL CONTINUE FOR PROCESS :NEW.STATUS := 'STARTED'; max_id := GANUKA.BACKOFFICE_UPDATE(max_id); --PL/SQL function :NEW.STATUS := 'COMPLETED'; ELSE :NEW.STATUS := 'ABORTED'; :NEW.REMARKS :='STATUS IS NOT RECONGNIZED'; END IF; COMMIT; EXCEPTION WHEN OTHERS THEN ROLLBACK; RAISE; end; / Problem is if there is an an any exception I want to update the record to set the state as 'Failed'. Can any one tell me how to do that.

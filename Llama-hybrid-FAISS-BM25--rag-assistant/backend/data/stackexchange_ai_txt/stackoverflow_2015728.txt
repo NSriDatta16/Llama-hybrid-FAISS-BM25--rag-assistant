@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2015728
-[parent_id]: 2011197
-[tags]: 
-I have used django's other inheritance methods because I hit the same problem you are running into. I'm not sure if there is an elegant solution. Ultimately, you need several queries done on the DB and for the results to be merged together. I can't picture the ORM supporting that. Here is my usual hackish approach for this situation: class NotQuiteAbstractBaseClass(models.Model): def get_specific_subclass(self): if self.model1: return self.model1 elif self.model2: return self.model2 else: raise RuntimeError("Unknown subclass") class Model1(NotQuiteAbstractBaseClass): def whoami(self): return "I am a model1" class Model2(NotQuiteAbstractBaseClass): def whoami(self): return "I am a model2" Then, you can query the entire list like this: for obj in NotQuiteAbstractBaseClass.objects.iterator(): obj = obj.get_specific_subclass() print obj.whoami()

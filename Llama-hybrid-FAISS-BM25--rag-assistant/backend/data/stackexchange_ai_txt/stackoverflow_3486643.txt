@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3486643
-[parent_id]: 3485861
-[tags]: 
-If your third dimension is time, then it's usually best to work with specialized time/date objects. The most commonly used general-purpose time series packages in R include custom functions to do what you want. For instance, to roll-up some data originally in months to years: > data(AirPassengers); AP = AirPassengers > # import the package xts, which will 'auto-import' its sole dependency, > # the package 'zoo' > library(xts) # AP is an R time series whose data points are in months > class(AP) [1] "ts" > start(AP) [1] 1949 1 > end(AP) [1] 1960 12 > frequency(AP) [1] 12 > AP[1:3] [1] 112 118 132 > # step 1: convert ts object to an xts object > X = as.xts(AP) > class(X) [1] "xts" "zoo" > # step 2: create index of endpoints to pass to the aggregator function > np = endpoints(X, on="years") > # step 3: call the aggregator function > X2 = period.apply(X, INDEX=np, FUN=sum) > X2[1:3] [,1] Dec 1949 1520 Dec 1950 1676 Dec 1951 2042 > # 'X2' is in years (each value is about 12X higher than the first three values for > # AP above

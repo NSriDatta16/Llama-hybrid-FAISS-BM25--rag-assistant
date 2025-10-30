@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5702579
-[parent_id]: 5702501
-[tags]: 
-SELECT s.agent_id, ac.team_id, ac.name, s.`day` + COALESCE(ac.`day`, 0) AS `day`, s.`day` + COALESCE(ac.`week`, 0) AS `week`, s.`day` + COALESCE(ac.`month`, 0) AS `month` FROM sales s LEFT JOIN agent_count ac ON ac.agent_id = s.agent_id team_id and name will be NULL if there is no record in agent_count for an agent. If the agents can be missing from both tables, you normally would need to make a FULL JOIN but since MySQL does not support the latter you may use its poor man's substitution: SELECT agent_id, MAX(team_id), MAX(name), SUM(day), SUM(week), SUM(month) FROM ( SELECT agent_id, NULL AS team_id, NULL AS name, day, day AS week, day AS month FROM sales UNION ALL SELECT * FROM agent_count ) q GROUP BY agent_id

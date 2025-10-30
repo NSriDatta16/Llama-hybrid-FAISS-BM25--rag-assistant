@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3751986
-[parent_id]: 3749303
-[tags]: 
-QWidget::childAt(int,int) returns the child widget, not the parent widget. In your case, it returns the QProgressBar. You then try to cast into a MyWidget, which it is not. What you are looking for is for the parent of the QProgressBar (or QLabel). static_cast does not verify the type of the object you are trying to cast, and will always yield a non-null pointer even if the cast is invalid. What you are looking for here is dynamic_cast , which will return NULL if the object is not of the type you are looking for. Since you are looking for the parent (or an ancestor) of the widget being clicked, you could use a loop to iterate through the clicked widget's ancestry to find the instance of MyWidget you are looking for. void DragDrop::mousePressEvent(QMouseEvent *event) { QWidget *widget = childAt(event->pos()); do { MyWidget *myWidget = dynamic_cast (widget); widget = widget->parentWidget(); } while (myWidget == NULL && widget != NULL) if (myWidget == NULL) return; qDebug() returnLabelText(); // ... }

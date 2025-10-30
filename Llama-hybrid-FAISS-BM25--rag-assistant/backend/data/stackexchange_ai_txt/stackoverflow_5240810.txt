@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5240810
-[parent_id]: 
-[tags]: 
-3 Parallel regions
-
-How do I ensure that 3 pieces of code execute concurrently with OpenMP? In the following toy problem, sections A & B generate some data and section C polls the data and acts on it. int main(int argc, char* argv[]) { int G = -1,S = -1; #pragma omp parallel sections default(none) shared(G,S,cout) { // Section A #pragma omp section { for(;;) { G = G_Generator(); if(G == 0) break; } } // Section B #pragma omp section { for(;;) { S = S_Generator(); if(S == 0) break; } } // Section C #pragma omp section { for(;;) { if(G == 1 || S == 1) Do_1(); if(G == 2 || S == 2) Do_2(); if(G == 0 || S == 0) break; } } } return 0; } This doesn't work and I can't debug it. Is it possible that the polling section C can "miss" a G or S value of 1 or 2? The code just doesn't seem to achieve the desired results --- is this the right way to code in OpenMP? I've only parallelized loops before.

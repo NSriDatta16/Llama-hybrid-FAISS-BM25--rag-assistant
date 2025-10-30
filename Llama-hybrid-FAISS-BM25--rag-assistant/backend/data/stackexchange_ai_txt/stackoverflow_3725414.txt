@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3725414
-[parent_id]: 3725325
-[tags]: 
-If storage is your main concern, I suspect you need quite a few 20-bit variables. How about storing them in pairs? You could create a class representing two such variables and store them in 2.5+2.5 = 5 bytes. To access the variables conveniently you could override the []-operator so you could write: int fst = pair[0]; int snd = pair[1]; Since you may want to allow for manipulations such as pair[1] += 5; you would not want to return a copy of the backing bytes, but a reference . However, you can't return a direct reference to the backing bytes (since it would mess up it's neighboring value), so you'd actually need to return a proxy for the backing bytes (which in turn has a reference to the backing bytes) and let the proxy overload the relevant operators. As a metter of fact, as @Tony suggest, you could generalize this to have a general container holding N such 20-bit variables. (I've done this myself in a specialization of a vector for efficient storage of booleans (as single bits).)

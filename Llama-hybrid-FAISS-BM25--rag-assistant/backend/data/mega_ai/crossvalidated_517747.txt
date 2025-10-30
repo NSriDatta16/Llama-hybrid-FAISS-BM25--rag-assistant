@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 517747
-[parent_id]: 
-[tags]: 
-Likelihood loss function for finite support probability distribution in Neural Networks
-
-I have managed to reproduce solution from this article and made it work for my dataset. Instead of making a Neural Network output a scalar (regression), we make it output two parameters of a probability distribution. This is done by changing the last layer of existing MLP architecture to layer of two nodes, and after that we use negative-log likelihood loss of negative binomial distribution . For each output parameters we get, we can generate probability density function (pdf) and if needed, get the $y$ prediction by calculating the median of the given pdf. This is the loss function formula from the article. $$\mathcal{L}(n, p \mid Y)=\frac{\Gamma(Y+n)}{\Gamma(Y+1) \Gamma(n)} p^{n}(1-p)^{Y}$$ After we apply $-\log (L(n, p \mid Y)))$ we get: $$\begin{aligned} \mathrm{NLL}(n, p \mid Y)=& \log \Gamma(n)+\log \Gamma(Y+1)-\log \Gamma(Y+n) \\ &-n \log (p)-Y \log (1-p) \end{aligned}$$ My problem is that negative binomial distribution is supported on semi-infinite intervals $[0, \infty]$ , this makes my network sometimes output a pdf which goes out of target bounds. What I need is distribution which has finite supported intervals. Which one should I use? What would you recommend if my target in the dataset is discrete and in range of $[a, b]$ where $a, b \in \mathbb{N}_0$ . What is the loss function of the probability distribution you recommend?

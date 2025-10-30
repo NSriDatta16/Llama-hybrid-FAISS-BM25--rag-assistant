@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3693495
-[parent_id]: 
-[tags]: 
-Working around unexpected behavior in yaml for Ruby -- interned unicode strings
-
-(1.9 on Windows) Reproducing: require 'yaml' s = YAML::load("\xEC\x86\x8C\xEB\x85\x80\xEC\x8B\x9C\xEB\x8C\x80") # => "∞åîδàÇ∞ï£δîÇ" or "소녀시대", depending on your terminal's unicode support s_interned = s.intern s_interned.class # => Symbol s_yamld = s_interned.to_yaml # => "--- \":\\xEC\\x86\\x8C\\xEB\\x85\\x80\\xEC\\x8B\\x9C\\xEB\\x8C\\x80\"\n" unyamld = YAML::load(s_yamld) # => ":∞åîδàÇ∞ï£δîÇ" or ":소녀시대" unyamld.class # => String # => expected: Symbol And once again: YAML::load(s_interned.to_yaml).class # => String Here's how a "normal" symbol behaves: YAML::load(:foo.to_yaml).class # => Symbol Normal symbols behave fine, but symbols with unicode characters don't seem to. They get interpreted as strings with a colon as their first character. I'm pretty sure this script was working last night. But I woke up this morning and everything is gone wrong. Does anyone know how I can resolve this or get around this? I've tried using some clever regular expression/sub hacks to get around this and "reconvert", but they've all proven inelegant or have made the situation worse.

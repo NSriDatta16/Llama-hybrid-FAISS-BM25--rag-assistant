@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5582838
-[parent_id]: 
-[tags]: 
-unaligned memory access difference on Solaris and Linux
-
-I wrote a program on linux(x86,32-bit),everything works fine.But when I try to compile and run the same source code on Solaris (SPARC,64-bit),I got a bus error(SIGBUS).The message from gdb is as follows: gdb) where #0 0xff2aa57c in number () from /lib/libc.so.1 #1 0xff2a9a70 in __doscan_u () from /lib/libc.so.1 #2 0xff2b0014 in vsscanf () from /lib/libc.so.1 #3 0xff2aeb90 in fscanf () from /lib/libc.so.1 #4 0x00010940 in main (argc=4, argv=0xffbff48c) at wHeap.c:22 It turns out the bug is occurred because of the fscanf function, and the corresponding code snip is as follows: while( fscanf(input,"%[^,],%hu,%u,%u,%[^\n]\n",record.name,&record.race,&record.class,&record.id,record.guild) != EOF){ ...... } basically, I try to extract the information from a comma-separated-value file and store them in an array of structs(record),which for example like: Rod'rod,1,4,103026,Project Peace Ceru,1,6,89351,World Keepers Belget,2,9,246708,Radiant Heaters The record struct is as follows: #pragma pack(1) typedef struct { char name[MAXNAME]; unsigned short race; unsigned int class; unsigned int id; char guild[MAXGUILD]; }record; As you may notice, I used the pragma pack to try to prevent the alignment difference between these two machines.

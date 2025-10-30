@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1997462
-[parent_id]: 1997457
-[tags]: 
-I was thinking of using HAVING to force the results into a single row, and subqueries to check for things, but this isn't necessary. Try using aggregates in your SELECT clause, so that you get exactly one row back. Then you can use CASE to get the info you want. SELECT CASE WHEN COUNT(*) = 0 THEN 'No username' WHEN MAX(password) = @password THEN 'Logged in' ELSE 'Bad password' END as LoginStatus, MAX(emailaddress) as Email FROM dbo.Users u WHERE username = @username ; Repeat the MAX(emailaddress) for all the other fields you need. If username is unique (and you should put a constraint in place to make sure it is), then this will be fine. If there's no matching user, these rows will come back blank. But if they just got the password wrong, these fields will be returned, so check your LoginStatus to see whether you should be paying attention to it or not.

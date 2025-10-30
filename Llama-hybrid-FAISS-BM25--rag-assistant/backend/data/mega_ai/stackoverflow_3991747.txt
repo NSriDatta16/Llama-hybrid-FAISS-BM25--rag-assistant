@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3991747
-[parent_id]: 
-[tags]: 
-Clean up my makefile fragment?
-
-I'm using GNU Make to run scientific data analysis, where we have a bunch of Matlab scripts that ponder some input data and then spit out several files. It does this in a fairly complex way, so I've had to do some nasty Makefile tricks when trying to describe its function to Make. Here's an example: seg_cams_nozero := cam1 cam2 cam3 seg_per_camera := $(shell echo {,dyn_}{hands,obj{1,2,3,4,5}}.mat) # the complete list of things we want segmentation_outputs := $(foreach cam,$(seg_cams_nozero),$(foreach product,$(seg_per_camera),derived/cont_$(cam)_$(product))) # how to make some product, independent of what camera define seg_per_product derived/cont_cam%_$$(product): /path/to/input/file_%.mat run_a_script $$* endef $(foreach product,$(seg_per_camera),$(eval $(seg_per_product))) segmentation: $(segmentation_outputs) So, this is basically horrible because I haven't figured out how to use pattern rules effectively in this situation, and because I have to generate a ton of filenames using the shell. How would you write something like this? Would you pre-generate the filenames and put them in an included Makefile? Figure out a great way to use pattern rules? Is there any way to do it without $(eval ...) ?

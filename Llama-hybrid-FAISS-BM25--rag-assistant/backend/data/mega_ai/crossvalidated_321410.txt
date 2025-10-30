@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 321410
-[parent_id]: 321244
-[tags]: 
-This is not a package I'm very familiar with, so I'll describe my thought process generally - To calculate AIC, you need to specify a likelihood function - likelihood functions using sum-of-squares are pretty common, and the residuals sum-of-squares is included in the output as out$Ed (according to ?brnn ). The also include "effective number of parameters" as out$gamma . If you used weights or other features, you should take those in to account. In R, if you implement a logLik method for brnn , AIC will use it automatically: logLik.brnn Then you can compare two models using AIC, etc: model_brnn2 = brnn(lnWeight ~ lnLength, data = alligator, neurons=2) model_brnn4 = brnn(lnWeight ~ lnLength, data = alligator, neurons=4) AIC(model_brnn2) AIC(model_brnn4) This is probably good enough for a random revise-and-resubmit, but could probably use some deeper thought - you could incorporate the coefficients in the likelihood, etc. Also be sure to set the RNG seed, I get slightly different results each run otherwise.

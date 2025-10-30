@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 775278
-[parent_id]: 770503
-[tags]: 
-I think that @1800's explanation is the closest yet. When you move a window from a thread that does not own the window, I think that Windows does not use SendMessage to deliver things like WM_WINDOWPOSCHANGING to the window procedure of the moved window. Instead, to ensure that the window procedure is only called on the right thread, it posts the WM_WINDOWPOSCHANGING message and blocks untill it's picked by event loop running in the right thread. However, that event loop is not running - it's blocked, waiting for MoveWindow to complete. The solutions from @totaland and from @Logan Capaldo will work. May be you don't need to wait until your window has moved. Or, if you do need to be sure, use MsgWaitForMultipleObjectsEx and run a small event loop to process posted messages.

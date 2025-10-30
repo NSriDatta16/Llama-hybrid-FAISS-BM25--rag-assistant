@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2172726
-[parent_id]: 
-[tags]: 
-Are there any reasons why the StringPiece/StringRef idiom is not more popular?
-
-From the documentation of the StringPiece class in Chromium's source code : // A string-like object that points to a sized piece of memory. // // Functions or methods may use const StringPiece& parameters to accept either // a "const char*" or a "string" value that will be implicitly converted to // a StringPiece. // // Systematic usage of StringPiece is encouraged as it will reduce unnecessary // conversions from "const char*" to "string" and back again. Example of use: void foo(StringPiece const & str) // Pass by ref. is probably not needed { // str has same interface of const std::string } int main() { string bar("bar"); foo(bar); // OK, no mem. alloc. // No mem. alloc. either, would be if arg. of "foo" was std::string foo("baz"); } This seems like such an important and obvious optimization that I can't understand why it's not more widespread, and why a class similar to StringPiece is not already in the standard. Are there any reasons why I shouldn't replace the use of string and char* parameters in my own code with this class? Is there anything like it already in the C++ standard libraries? UPDATE . I've learnt that LLVM's source uses a similar concept: the StringRef class.

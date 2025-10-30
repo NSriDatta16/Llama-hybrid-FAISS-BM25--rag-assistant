@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 964803
-[parent_id]: 964214
-[tags]: 
-When you select *, the system will still needs to get every column. So the optimizer will often determine that it is quicker to use the clustered index scan (remember a clustered index is not really an index - it's just data organized by the order specified) than to use a seek on a different index combined with a bookmark lookup based on primary key to retrieve the additional rows. So the key to performance is to have a non-clustered index (this is a bad name, really, since non-clustered indexes often far outperform clustered indexes) and INCLUDE additional columns in the index so that it becomes covering . In the case of pre-SQL Server 2005, you simply have to add the columns to the end of the index. So, basically, a primary key is good, but should not necessarily determine your choice of clustering, and you will generally need to rely on non-clustered indexes (with appropriately INCLUDE ed columns) for performance on most selective operations, with the clustered index designed for the least selective and most commonly sorted case.

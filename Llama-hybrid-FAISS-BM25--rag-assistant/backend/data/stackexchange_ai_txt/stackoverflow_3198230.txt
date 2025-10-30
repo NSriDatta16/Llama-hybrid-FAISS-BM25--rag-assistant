@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3198230
-[parent_id]: 3197632
-[tags]: 
-There's a simple trick you can use for this sort of query if your table has a surrogate primary key. (Actually, you can do it without one, but it's more convoluted.) The setup: if object_id('tempdb..#Fruits') is not null drop table #Fruits create table #Fruits ( [id] int identity(1,1) not null, [type] nvarchar(250), [variety] nvarchar(250), [price] money ) insert into #Fruits ([type], [variety], [price]) select 'Apple', 'Gala', 2.79 union all select 'Apple', 'Fuji', 0.24 union all select 'Apple', 'Limbertwig', 2.87 union all select 'Orange', 'Valencia', 3.59 union all select 'Pear', 'Bradford', 6.05 And now the SQL: select * -- no stars in PROD! from #Fruits a where a.id in ( select top 1 x.id from #Fruits x where x.[type] = a.[type] order by x.price )

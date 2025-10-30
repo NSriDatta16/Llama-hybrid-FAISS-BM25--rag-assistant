@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4491639
-[parent_id]: 4491456
-[tags]: 
-The return from inside the "success" callback is not going to work anyway. It'll return from that function, but nothing is going to pay attention to the return value, and in particular the return value from the "success" function will not be the return value from "MyFunction". If what you want is for "MyFunction" to fetch a value and allow some code to work on it, then that code will have to be passed in to "MyFunction" and called in the "success" function. Thus, instead of: var thing = MyClass.MyFunction(); /* do stuff with "thing" */ you'd change "MyFunction" around so that you could do this: MyClass.MyFunction(function(thing) { /* do stuff with "thing" */ }); The function would look something like this: MyClass.MyFunction = function (doStuff) { /// MyFunction Description $.ajax({ type: 'GET', url: '/Foo/Bar', dataType: 'json', success: function (result) { doStuff(new MyClass(result)); } }); }

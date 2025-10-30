@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4675903
-[parent_id]: 
-[tags]: 
-How to select from tableA sum of grouped numbers from tableB above their sums average in Oracle?
-
-I have data like this: tableA.ID --------- 1 2 3 tableB.ID tableB.NUM -------------------- 1 10 1 15 2 18 3 12 2 12 2 15 3 13 1 12 I need to select tableA IDs where the sum of their NUMs in tableB is above the average of all tableA IDs sums. In other words: SUM ID=1 -> 10+15+12 = 37 SUM ID=2 -> 18+12+15 = 45 SUM ID=3 -> 12+13 = 25 AVG ALL IDs -> (37+45+25)/3 = 35 The SELECT must only show ID 1 and 2 because 37 > 35, 45 > 35 but 25 This is my current query which is working fine: SELECT tableA.ID FROM tableA, tableB WHERE tableA.ID = tableB.ID HAVING SUM(tableB.NUM) > ( SELECT AVG(MY_SUM) FROM ( SELECT SUM(tableB.NUM) MY_SUM FROM tableA, tableB WHERE tableA.ID = tableB.ID GROUP BY tableA.ID ) ) GROUP BY tableA.ID But I have a feeling there might be a better way without all those nested SELECTs. Perhaps 2, but 3 feels like too much. I'm probably wrong though. For instance, why can't I do something simple like this: SELECT tableA.ID FROM tableA, tableB WHERE tableA.ID = tableB.ID HAVING SUM(tableB.NUM) > AVG(SUM(tableB.NUM)) GROUP BY tableA.ID Or this: SELECT tableA.ID, SUM(tableB.NUM) MY_SUM FROM tableA, tableB WHERE tableA.ID = tableB.ID HAVING MY_SUM > AVG(MY_SUM) GROUP BY tableA.ID

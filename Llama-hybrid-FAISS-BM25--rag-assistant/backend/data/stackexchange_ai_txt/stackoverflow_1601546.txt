@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1601546
-[parent_id]: 1598600
-[tags]: 
-If I'm not mistaken, your value transformer has a reversed direction. I do the same thing in my application, using code like the following: + (Class)transformedValueClass { return [NSData class]; } + (BOOL)allowsReverseTransformation { return YES; } - (id)transformedValue:(id)value { if (value == nil) return nil; // I pass in raw data when generating the image, save that directly to the database if ([value isKindOfClass:[NSData class]]) return value; return UIImagePNGRepresentation((UIImage *)value); } - (id)reverseTransformedValue:(id)value { return [UIImage imageWithData:(NSData *)value]; } While this is for the iPhone, you should be able to swap in your NSImage code at the appropriate locations. I simply haven't tested my Mac implementation yet. All I did to enable this was to set my image property to be transformable within the data model, and specify the name of the transformer. I didn't need to manually register the value transformer, as you do in your +initialize method.

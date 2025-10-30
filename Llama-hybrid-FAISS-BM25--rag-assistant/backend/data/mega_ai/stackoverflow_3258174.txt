@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3258174
-[parent_id]: 3257965
-[tags]: 
-Perf takes a nose-dive on x86 and x64 cores when a member straddles a cache line boundary. The common compiler default is 8 byte packing which ensures you're okay on long long, double and 64-bit pointer members. SSE2 instructions require an alignment of 16, the code will bomb if it is off. You cannot get that out of a packing pragma, the heap allocator for example will only provide an 8-byte alignment guarantee. Find out what your compiler and CRT support. Something like __declspec(align(16)) and a custom allocator like _aligned_malloc(). Or over-allocate the memory and tweak the pointer yourself.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3345734
-[parent_id]: 
-[tags]: 
-.net mvc & ajax forms - how to handle session expired
-
-I have a customer filter attribute to check for expired session in my .Net MVC application which works fine on a standard html form. However, when I apply the attribute to an action that is called by an Ajax form and the session is expired, it reloads the login page (where the filter attribute redirects the context) into the ajax update container. Does anyone know of a way to get the entire page to redirect to the login page if the session is expired when the ajax call is made or does anyone know how to handle this situation a little more elegantly? Thanks in advance. public class SessionExpiredFilterAttribute : ActionFilterAttribute { public override void OnActionExecuting(ActionExecutingContext filterContext) { HttpContext ctx = HttpContext.Current; // check if session is supported if (ctx.Session != null) { // check if a new session id was generated if (ctx.Session.IsNewSession) { // If it says it is a new session, but an existing cookie exists, then it must // have timed out string sessionCookie = ctx.Request.Headers["Cookie"]; if ((null != sessionCookie) && (sessionCookie.IndexOf("ASP.NET_SessionId") >= 0)) { //SessionHelper.AddPageMessage("message", "Your session has expired. Please login to continue"); ctx.Response.Redirect("~/Account/Logon"); } } } base.OnActionExecuting(filterContext); } }

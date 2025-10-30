@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 233827
-[parent_id]: 
-[tags]: 
-Faster xgb.cv for large data set
-
-I have a record of data that contains 1.1 millions observations and 14 variables. The response is 0 or 1. It was suggested to me that I use Gradient Boosted Trees to build my logistic model. Using xgb.cv from xgboost in R, I'm attempting to estimate the best hyperparameters on a holdout of 2/3 of the data. However, the code takes forever to run. It took me 13 hours for learning rate = 0.5, depth = 7, number of folds = 5 and number of trees = 10000. I can't imagine the time it will take to loop over different learning rates and depths. How could I make the process faster? I guess that reducing the number of trees to 2500 would make sense, based on my error curve. Will reducing the number of folds help? Is it really necessary to do bootstrapping? My current code looks like this, for reference : etas = c(0.75,0.5,0.1) max.depths = c(11,9,7,5,3) fitAssessmentLst = list() lstPos = 0 for(eta in etas){ for(max.depth in max.depths){ lstPos = lstPos + 1 x = xgb.cv(params = list(objective="binary:logistic", eta=eta, max.depth=max.depth, nthread=3), data = train_data.xgbdm, nrounds = 10000, prediction = FALSE, showsd = TRUE, nfolds = 5, verbose = 0, print.every.n = 1, early.stop.round = NULL ) fitAssessmentLst[[lstPos]] = list(eta = eta, max.depth = max.depth, assessmentTbl = x) } }

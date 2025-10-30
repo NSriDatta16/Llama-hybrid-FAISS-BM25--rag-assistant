@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5462952
-[parent_id]: 
-[tags]: 
-WSARecvFrom on unconnected UDP socket does not return
-
-I am writing a small program that tests an UDP network service. The implementation of the service is allowed to create a new socket for the session and respond to the client from there, at which point the client is then required to talk to this address (similar to TFTP). Minimal client sans error checking looks like this: int fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP); sockaddr_in destaddr = { ... }; MSGBUF msg[] = { ... }; DWORD sent; WSASendTo(fd, msg, sizeof msg / sizeof *msg, &sent, 0, (sockaddr *)sa, sizeof sa, 0, 0); char buffer[4096]; MSGBUF rcvmsg = { sizeof buffer, buffer }; DWORD received; sockaddr_storage sa; socklen_t sa_len = sizeof sa; DWORD flags = 0; WSARecvFrom(fd, &rcvmsg, 1, &received, &flags, (sockaddr *)&sa, &sa_len, 0, 0); The client works fine if the server responds from the same address and port that the initial message was sent to, however replies from another port are silently discarded and the client hangs in WSARecvFrom . Explicitly binding the socket to { AF_INET, INADDR_ANY, 0 } to force assignment of a local port, or invoking listen(fd, 5); makes no difference, as expected. Is there anything in WSASendTo that implicitly connects an UDP socket, and if so, what should I do to avoid this?

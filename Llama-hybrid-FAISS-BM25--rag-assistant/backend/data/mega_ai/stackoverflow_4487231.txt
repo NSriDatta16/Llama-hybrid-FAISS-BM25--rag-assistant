@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4487231
-[parent_id]: 
-[tags]: 
-Multiple Threads accessing the database: one with long transaction, one with short transactions
-
-Let's say I have a desktop app that acts as a garage for a bunch of cars: @Entity public class Garage { private List cars = new ArrayList (); ... } The desktop app has a "simulation" button that starts a new thread and starts calling methods on the Garage, Car, Wheel, etc etc. This simulation can take as long as 10 minutes to run. At the moment I have a class that looks like this: beginTransaction(); Garage garage = garageDao.findGarage(1); List cars = garage.getCars(); for (Car car : cars) { // call methods on the car to lazily fetch other things like wheels... } commitTransaction(); This code only does "reads" and never "writes" So the above can take a long time depending on how badly the cars need a service. While the above is happening, the user may continue working using the desktop app. They may choose to change the color of a car that is being used in the above transaction. My question is whether the above long transaction is going to prevent the changing of the car color? i.e. the user changing the color of the car in the desktop app will be prevented from committing the change until the long transaction is finished?

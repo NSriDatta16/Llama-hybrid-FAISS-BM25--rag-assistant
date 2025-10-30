@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2598784
-[parent_id]: 
-[tags]: 
-No coverage for runtime with Devel::Cover and ModPerl::Registry
-
-When I'm running Devel::Cover with ModPerl::Registry , I get no coverage info except for BEGIN blocks. When I'm running the same script with Devel::Cover from command line or as a CGI, everything works alright (obviously). How can I make Devel::Cover "see" my code being executed in the runtime? Here's Devel::Cover related stuff in my httpd.conf : MaxClients 1 PerlSetEnv DEVEL_COVER_OPTIONS -db,/tmp/cover_db,-silent,1 PerlRequire /var/www/project/startup.pl Here's startup.pl : #!/usr/bin/perl use strict; use warnings; use Apache2::Directive (); BEGIN { # Devel::Cover database must be writable by worker processes my $conftree = Apache2::Directive::conftree->as_hash; my $name = $conftree->{User} or die "couldn't find user in Apache config"; print "user=$name\n"; my $uid = getpwnam($name); defined $uid or die "couldn't determine uid by name"; no warnings 'redefine'; local $> = $uid; require Devel::Cover; my $old_report = \&Devel::Cover::report; *Devel::Cover::report = sub { local $> = $uid; $old_report->(@_) }; Devel::Cover->import; } 1; (As you may see, I made a monkey patch for Devel::Cover since startup.pl is being run by root , but worker processes run under a different user, and otherwise they couldn't read directories created by startup.pl . If you know a better solution, make a note, please.)

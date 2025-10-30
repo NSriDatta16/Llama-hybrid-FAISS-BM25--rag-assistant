@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 505242
-[parent_id]: 502038
-[tags]: 
-You will also need to override -acceptsFirstResponder to return YES. #pragma mark NSResponder Overrides - (BOOL)acceptsFirstResponder { return YES; } -mouseMoved events are expensive so I turn off mouse moved events when my control's -mouseExited message is called and I turn it on in -mouseEntered. - (void)mouseEntered:(NSEvent *)theEvent { [[self window] setAcceptsMouseMovedEvents:YES]; [[self window] makeFirstResponder:self]; } - (void)mouseMoved:(NSEvent *)theEvent { ... } - (void)mouseExited:(NSEvent *)theEvent { [[self window] setAcceptsMouseMovedEvents:NO]; } I quickly tested this in my custom control application. I duplicated the control several times in the nib file and it worked as expected. You may also need: - (void)awakeFromNib { [[self window] setAcceptsMouseMovedEvents:YES]; [self addTrackingRect:[self bounds] owner:self userData:NULL assumeInside:YES]; } I don't think the -setAcceptsMouseMovedEvents is necessary, but I'm pretty sure the tracking rect code is. You may also need to experiment with the value of the assumeInside: parameter, but that is documented.

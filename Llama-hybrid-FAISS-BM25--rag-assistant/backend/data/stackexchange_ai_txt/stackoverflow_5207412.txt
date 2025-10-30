@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5207412
-[parent_id]: 5204482
-[tags]: 
-You could use named pipes instead your anonymous pipe. With this concept your python script could fill the tables through different psql processes with the corresponding data. Create pipes: mkfifo fifo_table1 mkfifo fifo_table2 Run psql instances: psql db_name Your python script would look about so (Pseudocode): SQL_BEGIN = """ BEGIN; TRUNCATE TABLE %s; COPY %s FROM STDIN WITH NULL AS ''; """ fifo1 = open('fifo_table1', 'w') fifo2 = open('fifo_table2', 'w') bigfile = open('mybigfile', 'r') print >> fifo1, SQL_BEGIN % ('table1', 'table1') #ugly, with python2.6 you could use .format()-Syntax print >> fifo2, SQL_BEGIN % ('table2', 'table2') for line in bigfile: # your code, which decides where the data belongs to # if data belongs to table1 print >> fifo1, data # else print >> fifo2, data print >> fifo1, 'COMMIT;' print >> fifo2, 'COMMIT;' fifo1.close() fifo2.close() Maybe this is not the most elegant solution, but it should work.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1815523
-[parent_id]: 1815486
-[tags]: 
-The member _it in StdStringContainer is never initialized to point into the _items vector. This means it's an invalid iterator. When you assign _it to it in GetNext() , you've given it the invalid, uninitialized value that existed in _it . You then increment the uninitialized _it via _it++ , which is what's triggering your fault. As Stroustrup says in 19.2, an uninitialized iterator is an invalid iterator. This means that your uninitialized _it is invalid and that operations performed with it are undefined, and likely to cause dramatic failure. Your problem is deeper, however. Iterators have a fundamentally different lifetime from the containers that they enumerate. There aren't really any "good" ways to do what you're trying to do with a single iterator member like this unless the container is immutable and initialized in the constructor. If you can't expose the std:: namespace names, have you considered aliasing them via typedef's, e.g.? What about your organization or project makes it impossible to expose the template classes?

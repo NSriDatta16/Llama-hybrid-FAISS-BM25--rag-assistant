@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4976299
-[parent_id]: 4976202
-[tags]: 
-As Ed and Martin said, pointer math involves the size of the type for the pointer. Adding one to a pointer increases the address of the pointer by the size of the type. Now one thing you don't mention is the type of m_pBuf . But from your debugging session, the compiler/debugger believes that `(char *)&m_pBuf[1] - (char *)m_pBuf == 0x01E8EE04 - 0x01E7E0E0 == 0x10D24 == 68900 decimal 68900 / 260 (sizeof T) == 265 So the compiler/debugger believes that m_pBuf is T[265]. But as Foo Bah noted, the m_pBuf++ modified the pointer. So the two debugger view expressions m_pBuf[[1]] and m_pBuf+1 probably occurred after m_pBuf++ since the window for m_pBuff++ shows a smaller value than the other two test expressions. Readjusting for that scenario, we end up with m_pBuf is T[263]. If you wanted to access the first T bytes from the beginning of m_pBuf, you can cast m_pBuf to (char *) before doing the pointer arithmetic. There are most likely more elegant solutions, but you haven't shown enough code yet - those darn debugger expression windows are covering up important stuff!

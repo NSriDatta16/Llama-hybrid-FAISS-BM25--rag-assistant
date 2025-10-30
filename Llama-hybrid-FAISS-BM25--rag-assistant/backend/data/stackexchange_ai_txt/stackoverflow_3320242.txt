@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3320242
-[parent_id]: 
-[tags]: 
-C#, simplified code to handle both changes and updates of a dependency property
-
-Obviously, I'm not an expert in C#. I would like to simplify this code by using an anonymous handler, or maybe a lambda, not sure. ValueHasChanged is a PropertyChangedCallback used when a dp is changed, it ensures the new object will be monitored for update, so that both changes and updates will be processed using the same code: ProcessNewValue . The pity here is to create a second handler ValueHasBeenUpdated only to call the same method. Is there a possibility to remove the definition of ValueHasBeenUpdated ? Thanks. private static void ValueHasChanged( DependencyObject sender, DependencyPropertyChangedEventArgs args) { // get instance MyClass1 instance = sender as MyClass1; // unregister on old object if (args.OldValue != null) (args.OldValue as MyClass2).PropertyChanged -= instance.ValueHasBeenUpdated; // register for updates on new object if (args.NewValue != null) (args.NewValue as MyClass2).PropertyChanged += instance.ValueHasBeenUpdated; // process new value anyway instance.ProcessNewValue(); } // value has been updated private void ValueHasBeenUpdated(object sender, PropertyChangedEventArgs e) { // just call the actual method that will process it, not elegant... ProcessNewValue(); } // process any new or updated object private void ProcessNewValue() {...}

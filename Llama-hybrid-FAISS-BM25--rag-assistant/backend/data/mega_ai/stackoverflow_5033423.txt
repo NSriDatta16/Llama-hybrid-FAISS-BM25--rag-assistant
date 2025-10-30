@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5033423
-[parent_id]: 5033163
-[tags]: 
-Your first attempt doesn't work because you're defining a let-bound function called CoordErr which shadows the exception constructor, which isn't what you want. Your second attempt almost works. Unfortunately, exception definitions don't work quite like discriminated unions: when pattern matching against an exception constructor, the expression that you're matching has to be of type exn (and not of the specific exception subtype). In your case, you are trying to match this (of type CoordErr ) against the CoordErr constructor. How's this for a workaround? exception CoordErr of int * int with override this.Message = let (CoordErr(x,y)) = upcast this sprintf "(%i %i)" x y

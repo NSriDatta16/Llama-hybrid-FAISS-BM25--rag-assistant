@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4491361
-[parent_id]: 4488813
-[tags]: 
-I'm not sure that having more than one Saga within the same process boundary works very well - at least, I've had problems with it too. It's probably better (in general) to have Sagas separated into two different processes anyway, because otherwise it would cause a lot of locking and potentially deadlocks on your saga storage. Is your message that is handled by 2 Sagas Sent or Published? If it's published (or can be made to), it would be easy to separate the Sagas into two separate assemblies. Just be sure to manually call Bus.Subscribe() for the message type in each Saga, since Sagas don't auto-subscribe to messages listed in the app.config. If your message is Sent, and there's nothing you can do to change it, then create a central handler for your existing message type that either Publishes a second message type to go to both Sagas, or Sends two separate messages to each saga.

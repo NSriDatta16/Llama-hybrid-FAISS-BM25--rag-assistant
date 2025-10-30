@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 57510
-[parent_id]: 
-[tags]: 
-PyMC beginner: how to actually sample from the fitted model
-
-I'm trying a very simple model: fitting a Normal where I assume I know the precision, and I just want to find the mean. The code below seems to fit the Normal correctly. But after fitting, I want to sample from the model, ie generate new data which is similar to my data variable. I know I can use trace("mean") to get samples for the mean variable. But how can I get new samples from the model itself? I've looked at docs eg http://pymc-devs.github.io/pymc/database.html#accessing-sampled-data . I've also looked at quite a few examples, eg the mining disasters, and several from the Probabilistic Programming notebooks, and none mention this. I (more or less an MCMC beginner) expected that sampling from the fitted model was the whole point! What am I missing? from pymc import * data = np.array([-1, 0, 4, 0, 2, -2, 1, 0, 0, 2, 1, -3, -1, 0, 0, 1, 0, 1]) mean = Uniform("mean", -4, 4) precision = 2.0**-2 obs = Normal("obs", mean, precision, value=data, observed=True) model = Model( {"mean": mean, "obs": obs}) mcmc = MCMC(model) mcmc.sample(10000, 1000, 1) # I can get samples for the "mean" variable mean_samples = mcmc.trace("mean")[:] hist(mean_samples) # but how can I do the equivalent of mcmc.trace("obs")?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 200892
-[parent_id]: 200857
-[tags]: 
-Well gee, if we are talking about just a function, that you always want to return the same value. it's quite simple. const char * foo() { static char[] return_val= "HelloWorld!"; return return_val; } The tricky bit is when you start doing things where you are caching the result, and then you have to consider Threading,or when your cache gets invalidated, and trying to store thing in thread local storage. But if it's just a one off output that is immediate copied, this should do the trick. Alternately if you don't have a fixed size you have to do something where you have to either use a static buffer of arbitrary size.. in which you might eventually have something too large, or turn to a managed class say std::string . const char * foo() { static std::string output; DoCalculation(output); return output.c_str(); } also the function signature const char *getHelloString() const; is only applicable for member functions. At which point you don't need to deal with static function local variables and could just use a member variable.

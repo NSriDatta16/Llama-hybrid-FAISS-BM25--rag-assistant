@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 571306
-[parent_id]: 571279
-[tags]: 
-You can specify your prior distribution in any way that let's you then determine $\mu$ and $\sigma$ (uniquely) so that you can insert the transformed parameter values into the likelihood. Whether that is still going to lead to a nice tractable analytical approach, is another question. If you are willing to do MCMC sampling instead of working with analytical solutions, writing this down as Stan code could be quite helpful and make it quite easy to sample from anything you want (you can of course declare any priors you want and then transform the parameters back in the transformed parameters block into $\mu$ and $\sigma$ for insertion into the likelihood. E.g. data { int N; real x[N]; } parameters { real mu; real sigma; } transformed parameters { real phi; phi = mu/sigma; } model { // insert whatever priors you like e.g. mu ~ normal(0,10); sigma ~ normal(0,1); // or some complex log-pdf like target += log_normal_inv_gamma_pdf(mu, sigma....); x ~ normal(mu, sigma); }

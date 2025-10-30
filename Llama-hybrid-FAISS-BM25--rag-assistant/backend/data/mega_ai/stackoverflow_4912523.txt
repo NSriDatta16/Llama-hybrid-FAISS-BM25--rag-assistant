@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4912523
-[parent_id]: 
-[tags]: 
-Python Network/cidr Calculations
-
-I am working on building an embedded network appliance (linux based) and have come across the need to dynamically build daemon conf files. As such, I need to be able to do some network address calculations in the python code that will be building the conf files. I am not a programmer so I'm fearful I wrote a module that will fail to function as I'd hoped once the appliance starts shipping. Below is what I have so far, its really pieced together with what I could find on this site and Google. Is there a better method to find the network address and cidr for a network interface? Converting the netmask to a bin str and counting the 1's seems pretty inelegant. import socket import fcntl import struct SIOCGIFNETMASK = 0x891b SIOCGIFADDR = 0x8915 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) def _GetIfaceMask(iface): return struct.unpack('L', fcntl.ioctl(s, SIOCGIFNETMASK, struct.pack('256s', iface))[20:24])[0] def _GetIfaceAddr(iface): return struct.unpack('L', fcntl.ioctl(s, SIOCGIFADDR, struct.pack('256s', iface[:15]))[20:24])[0] def GetIfaceNet(iface): net_addr = _GetIfaceAddr(iface) & _GetIfaceMask(iface) return socket.inet_ntoa(struct.pack('L', net_addr)) def GetIfaceCidr(iface): bin_str = bin(_GetIfaceMask(iface))[2:] cidr = 0 for c in bin_str: if c == '1': cidr += 1 return cidr Thanks for any input, I really am somewhat lost on this. If this isn't the place for this type of feedback, please let me know.

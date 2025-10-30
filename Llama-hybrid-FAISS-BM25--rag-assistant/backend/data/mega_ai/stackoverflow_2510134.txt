@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2510134
-[parent_id]: 2506927
-[tags]: 
-The only problem is how do I tell my subclass that it should receive that delegate? I Have no instance of my viewcontroller in my subclass so I can not set the delegate. MyUIView.h: @protocol MyUIViewDelegate; @interface MyUIView : UIView { ... id delegate; ... } ... @property (nonatomic, assign) id delegate; ... @end @protocol MyUIViewDelegate - (void)myUIViewDidFinish:(MyUIView*)myUIView; @end MyUIView.m: ... @synthesize delegate; ... - (void)dismiss { [delegate myUIViewDidFinish:self]; } MyUIViewController.h: #import "MyUIView.h" @interface MyUIViewController : UIViewController { ... MyUIView* myOverlay; ... } ... @property (nonatomic, retain) IBOutlet MyUIView* myOverlay; ... @end MyUIViewController.m: ... @synthesize myOverlay; ... - (void)dealloc { ... [myOverlay release]; ... [super dealloc]; } ... - (void)viewDidLoad { [super viewDidLoad]; ... myOverlay.delegate = self; ... } ... - (void)showMyUIView { // ... show myOverlay ... } ... #pragma mark MyUIViewDelegate Methods - (void)myUIViewDidFinish:(MyUIView*)myUIView { // ... hide myOverlay ... }

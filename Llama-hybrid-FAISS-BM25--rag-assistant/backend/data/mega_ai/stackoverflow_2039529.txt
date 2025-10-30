@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2039529
-[parent_id]: 
-[tags]: 
-C++ Exception Design Pattern
-
-I'd like to encapsulate Win32 errors (those returned from GetLastError()) in some form of exception class. Rather than having a single Win32 exception, however, I'd like to be able to have a specialized exception catchable for common errors, such as ERROR_ACCESS_DENIED. For example, I'd have classes declared like this: class WindowsException : public std::exception { public: static WindowsException Create(DWORD lastError); //blah }; class ErrorAccessDeniedException : public WindowsException { public: //blah }; However, I'd like the Win32 exception to be responsible for picking the right exception to return. That is, the thrower of the exception should look like: int DangerousMethod() { throw WindowsAPI::WindowsException::Create(GetLastError()); } and the catcher might look like: try { DangerousMethod(); } catch(WindowsAPI::ErrorAccessDeniedException ex) { //Code for handling ERROR_ACCESS_DENIED } catch(WindowsAPI::WindowsException ex) { //Code for handling other kinds of error cases. } My problem is that if the WindowsException::Create factory method returns a WindowsException, then the subtype (potentially ErrorAccessDeniedException) is sliced down to the base type. That is, the instance can't be polymorphic. I don't want to use a new'd pointer, because that would force the exception handler to delete it when it's done. Does anyone know of a design solution that would be feasible for solving this problem elegantly? Billy3

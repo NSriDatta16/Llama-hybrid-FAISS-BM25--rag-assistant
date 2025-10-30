@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 545344
-[parent_id]: 545320
-[tags]: 
-In MySQL, something using substring like select foo from bar where substring(col, 500,1)='1' and substring(col, 1500,1)='1'; This will be pretty inefficient though, you might want to rethink your schema. For example, you could store each bit separately to tradeoff space for speed... create table foo ( id int not null, bar varchar(128), primary key(id) ); create table foobit ( int foo_id int not null, int idx int not null, value tinyint not null, primary key(foo_id,idx), index(idx,value) ); Which would be queried select foo.bar from foo inner join foobit as bit500 on(foo.id=bit500.foo_id and bit500.idx=500) inner join foobit as bit1500 on(foo.id=bit1500.foo_id and bit1500.idx=1500) where bit500.value=1 and bit1500.value=1; Obviously consumes more storage, but should be faster for those query operations as an index will be used.

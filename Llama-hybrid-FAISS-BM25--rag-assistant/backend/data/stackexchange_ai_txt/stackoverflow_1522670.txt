@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1522670
-[parent_id]: 1522390
-[tags]: 
-Some good ideas here. Pay particular attention to queries with performance issues, and try to create indexes with high selectivity. As an aside, it's not a bad idea to monitor your index usage: ALTER INDEX MONITORING USAGE; Periodically you can check the value of v$object_usage.used to see if the index has ever been accessed since you turned on monitoring: SELECT i.table_name, i.index_name, i.tablespace_name, bytes/1000000 mb, u.used FROM dba_indexes i JOIN dba_segments ON (i.index_name = segment_name) LEFT OUTER JOIN v$object_usage u ON (i.index_name = u.index_name) WHERE i.owner = AND NVL(USED,'NO') = 'NO' AND i.table_name = ORDER BY bytes DESC; I've been able to prune several indexes with the information this provides.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2409544
-[parent_id]: 2409149
-[tags]: 
-First off, I would say instead of doing a big first-time download, why not ship your app with a copy of the database instead? Then all you have to worry about is incremental updates. If the database isn't being modified constantly, I think the easiest way to do this would be leveraging a query log. Turn on query logging on the MySQL DB so that all operations are recorded to a file. Then, when the iPhone requests updated data, you can simply parse the log file and prepare a response that describes inserts, updates, and deletes. If the database is being modified by many users in real time, this isn't really a good idea since the query log would be enormous. In that case, you can use createdOn/modifiedOn timestamps in the database to know which inserts and updates are candidates for the iPhone response. For deletes though, you could either mark each row as "not really deleted" until the iPhone app is made aware, or you could create a table called "deleted data" and move stuff into there instead of explicitly deleting it.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4454493
-[parent_id]: 
-[tags]: 
-Avoid "Nullable object must have a value." in Linq-To-Sql
-
-I have a method query like this: public IList GetBusinessObject(Guid? filterId) { using (var db = new L2SDataContext()) { var result = from bo in db.BusinessObjects where (filterId.HasValue) ? bo.Filter == filterId.value : true orderby bo.Name select SqlModelConverters.ConvertBusinessObject(bo); return result.ToList(); } } At runtime, this throws a System.InvalidOperationException: Nullable object must have a value. Looking at the Debugger, the problem is my Where Clause: Linq To SQL tries to convert the entire thing to SQL, so even if filterId is NULL, it will still try to access filterId.value. I thought/hoped the C# compiler/CLR would evaluate that where clause as a code block and only send one of the two branches to Linq To SQL, but that's not how it works. My refactored version works, but is not very elegant: public IList GetBusinessObject(Guid? filterId) { using (var db = new L2SDataContext()) { var temp = from bo in db.BusinessObjects select bo; if(filterId.HasValue) temp = temp.Where(t => t.Filter == filterId.Value); var result = from t in temp orderby t.Name select SqlModelConverters.ConvertBusinessObject(bo); return result.ToList(); } } I know that Lazy-Evaluation will make sure that only one query is really sent, but having that temp object in there isn't that great really.

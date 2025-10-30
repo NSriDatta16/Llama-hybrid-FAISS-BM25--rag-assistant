@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 457646
-[parent_id]: 
-[tags]: 
-Bayesian linear regression with ARD
-
-I am trying to implement the usual Bayesian linear regression with automatic relevance determination (ARD) with Gibbs sampler. My linear model is $y_i = w^tx_i+\epsilon_i$ with $\epsilon \sim N(0,\beta^{-1})$ . Likelihood is $P(y|w,x,\beta) = \prod_i^n N(y_i|w^t x_i, \beta^{-1})$ . Then I put the following a priori information: $P(\beta) \sim Gamma(a_0, b_0)$ $P(w_j) \sim N(0, \alpha_j^{-1})$ $P(\alpha_j) \sim Gamma(c_0, d_0)$ Basically this is just the usual Bayesian linear regression but instead of having one prior precision parameter $\alpha$ for every weight I have a separate one for every weight. In order to apply Gibbs sampling I have computed: $P(\beta|y,w,x,\alpha_j) \propto P(y|w,x,\beta,\alpha_j)P(\beta)= \prod_i^n N(y_i|w^t x_i, \beta^{-1}) Gamma(a_0, b_0)$ $= Gamma(a_0 +n/2, b_0 + \frac{\sum_i (y_i-w^tx_i)^2}{2})$ (from the conjugate prior theory) $P(\alpha|y,x,w,\beta) \propto P(y|w,x,\beta,\alpha_j)P(w_j|\alpha_j)P(\alpha_j)$ = $\prod_i^n N(y_i|w^t x_i, \beta^{-1}) \prod_j^d N(w_j|0, \alpha_j^{-1}) Gamma(c_0, d_0)$ = $Gamma(c_0+d/2+n/2, d_0 + \sum_j^d w_j^2 /2 + \sum_i^n (y_i-w^tx_i)^2/2)$ (again from the conjugate prior theory) $P(w|y,x,w,\beta) = P(y|w,x,\alpha,\beta)P(w|\alpha_j) = \prod_i^n N(y_i|w^t x_i, \beta^{-1})N(w|0, \Lambda^{-1}) = N(\bar{\mu}, \bar{\Sigma})$ with $\Lambda = \alpha_j^{-1} I$ $\bar{\Sigma}= (\beta X_iX_i^t + \Lambda)^{-1}$ $\bar{\mu}= (\bar{\Sigma} \beta Y_iX_i)$ does it make sense so far?

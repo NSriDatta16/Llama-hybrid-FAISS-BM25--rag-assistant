@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 399104
-[parent_id]: 394329
-[tags]: 
-The main issue here is that you are using np.random.rand , which draws from a uniform distribution over [0, 1), whereas you should be using np.random.normal to draw from a Gaussian distribution. This means that your error term is always positive, and your time series only increases. A second issue is that you are not including the intercept. I think you should have: x[t] = 0.1 + alpha1 * x[t-1] + alpha2 * x[t-2] + w[t] + beta1 * w[t-1] A third issue is that the comparison code discards the first 50 draws (this mainly affects the starting point of the graph, not the overall look). Also, you are drawing many more draws, which will tend to make the graph look different than the one you are comparing to. NB: In recent updates to Statsmodels (not yet in a released version, but available on Github), you can simulate this model directly, as follows: empty_dataset = np.zeros(150) mod = sm.tsa.SARIMAX(empty_dataset, order=(2, 0, 1), trend='c', initialization='diffuse') simulations = mod.simulate([0.1, 5/3, -2/3, 5/6, 0.2**2], 150)[50:]

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2745175
-[parent_id]: 2745121
-[tags]: 
-Using the TPL (or any form of parallelism) when dealing with file I/O is actually more likely to slow down execution than speed it up, unless you have some way to guarantee that the files being accessed in parallel are on different physical disks or on a Solid State Disk. Magnetic storage tends to be much better at sequential I/O than random-access I/O (which you are essentially forcing here). But, as always, you need to profile and actually measure the impact of the change. To clarify: Running expensive file operations in the background (preferably using I/O completion ports, which FileVersionInfo unfortunately does not offer) is a good thing to do, in order to avoid blocking the UI, or the ASP.NET request, depending on your environment. That is much different from running them in parallel , however; the TPL is primarily intended for parallelization of CPU-intensive tasks, where multiple CPU cores can help to complete the operation faster.

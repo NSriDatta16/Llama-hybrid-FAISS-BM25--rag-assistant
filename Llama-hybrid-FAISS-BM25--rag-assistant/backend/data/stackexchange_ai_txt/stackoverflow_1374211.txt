@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1374211
-[parent_id]: 1373991
-[tags]: 
-My first instinct would be to suggest using gdb and breakpoints, since most of that information is available in a stack trace. However, if you really want to see it printed, there are ways to approximate what you're talking about The preprocessor recognizes the __PRETTY_FUNCTION__ macro for printing the function/method name, and it works well for Objective-C methods. If you print the method name and the value of self at each method of interest, you've pretty much generated a poor man's stack trace. Try including a #define like this in a header that every file that wants it includes: #define METHOD() printf("%s\t0x%x\n", __PRETTY_FUNCTION__, (unsigned int)self) Then just include this line whenever you want to print that information: METHOD(); The output will look something like this: -[MyClass initWithFoo:bar:] 0x12345678 As I mentioned, this type of approach is likely to produce huge amounts of output, and gdb is probably a more pragmatic option.

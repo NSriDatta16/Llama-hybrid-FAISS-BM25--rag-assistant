@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5480036
-[parent_id]: 5478648
-[tags]: 
-Here's a solution that uses reduce to call substitute for each of the old-new pairs, incrementally transforming the original sequence: (defun myreplace (substitutions sequence) (reduce (lambda (seq substitution) (destructuring-bind (old new) substitution (substitute new old seq))) substitutions :initial-value sequence)) EDIT: Trey's idea to use assoc (not assq , that's Emacs Lisp) for finding a substitution is very nice. Using that can be simplified by using an operator that has built-in support for building a new list, i.e. mapcar or loop with the collect clause: (defun myreplace (substitutions list) (mapcar (lambda (elt) (let ((substitution (assoc elt substitutions))) (if substitution (second substitution) elt))) list)) or (defun myreplace (substitutions list) (loop for elt in list for substitution = (assoc elt substitutions) when substitution collect (second substitution) else collect elt))

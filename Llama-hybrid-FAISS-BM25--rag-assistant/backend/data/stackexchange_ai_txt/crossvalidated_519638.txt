@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 519638
-[parent_id]: 
-[tags]: 
-Bagged Decision trees / Random Forests: why ISLR uses validation set instead of OOB to compute out-of-sample MSE?
-
-I am reading the book "An Introduction to Statistical Learning" available here . Chapter 8.3.3 at page 328 of the book computes a bagged decision tree (which is a random forest where we use all of the predictors at each step). It does so for a regression problem. It then calculates out-of-sample MSE using a separate test set. The code goes like that: library(MASS) library(randomForest) set.seed(1) train = sample(1:nrow(Boston), nrow(Boston)/2) # Bagging = Bootstrap aggregation bag.boston = randomForest(medv~., data=Boston, subset=train, mtry=13, importance=T) yhat To be truth, at each step the training set is bootstrapped, and the decision tree is trainined on the bootstrapped dataset. Some samples are not drawn during bootstrapping, and are used after training to compute MSE. At least this is how I understood it. Why the book uses a separate validation set, instead of OOB samples, to compute out-of-sample MSE? Said otherwise, why the following is wrong? print(mean(bag.boston$mse)) I have tried it, and the results are as follows. The code: mse = mean((y-yhat)^2) print(paste0("MSE: ", mse)) returns 19.88 , while the code print(mean(bag.boston$mse)) returns a much lower 11.72 . So it seems that the latter is overfitted, but I don't understand why.

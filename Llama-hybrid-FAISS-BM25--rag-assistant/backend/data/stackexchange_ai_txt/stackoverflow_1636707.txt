@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1636707
-[parent_id]: 1636637
-[tags]: 
-You could say: maxlength= 12*1024*1024 thefile= urllib2.urlopen(request).read(maxlength+1) if len(thefile)==maxlength+1: raise ThrowToysOutOfPramException() but then of course you've still read 12MB of unwanted data. If you want to minimise the risk of this happening you can check the HTTP Content-Length header, if present (it might not be). But to do that you need to drop down to httplib instead of the more general urllib. u= urlparse.urlparse(ep_url) cn= httplib.HTTPConnection(u.netloc) cn.request('GET', u.path, headers= {'User-Agent': ua}) r= cn.getresponse() try: l= int(r.getheader('Content-Length', '0')) except ValueError: l= 0 if l>maxlength: raise IAmCrossException() thefile= r.read(maxlength+1) if len(thefile)==maxlength+1: raise IAmStillCrossException() You can check the length before asking to get the file too, if you prefer. This is basically the same as above, except using the method 'HEAD' instead of 'GET' .

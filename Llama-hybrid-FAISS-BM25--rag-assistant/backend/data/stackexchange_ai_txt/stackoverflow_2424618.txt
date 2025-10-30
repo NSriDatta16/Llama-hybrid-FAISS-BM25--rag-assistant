@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2424618
-[parent_id]: 2422655
-[tags]: 
-You just need to instruct the browser to NOT cache the page. You can do this with help of a servlet filter which sets the following response headers: @WebFilter("*.jsp") public class NoCacheFilter implements Filter { @Override public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException { HttpServletResponse response = (HttpServletResponse) res; response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1. response.setHeader("Pragma", "no-cache"); // HTTP 1.0. response.setDateHeader("Expires", 0); // Proxies. chain.doFilter(req, res); } // ... } Now just map this filter on an URL pattern covering the JSP pages of interest. E.g. *.jsp or /somefolder/* (the @WebFilter in the example does that for all JSPs). Make sure that you clear the browser cache before testing. See also: How to control web page caching, across all browsers?

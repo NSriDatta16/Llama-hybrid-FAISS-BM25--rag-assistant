@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1091448
-[parent_id]: 1091099
-[tags]: 
-Specifically for x86, and regarding your example: counter++ , there are a number of ways it could be compiled. The most trivial example is: inc counter This translates into the following micro operations: load counter to a hidden register on the CPU increment the register store the updated register in counter This is essentially the same as: mov eax, counter inc eax mov counter, eax Note that if some other agent updates counter between the load and the store, it won't be reflected in counter after the store. This agent could be another thread in the same core, another core in the same CPU, another CPU in the same system, or even some external agent that uses DMA (Direct Memory Access). If you want to guarantee that this inc is atomic, use the lock prefix: lock inc counter lock guarantees that nobody can update counter between the load and the store. Regarding more complicated instructions, you usually can't assume that they'll execute atomically, unless they support the lock prefix.

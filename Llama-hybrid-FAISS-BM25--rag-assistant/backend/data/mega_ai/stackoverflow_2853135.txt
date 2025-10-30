@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2853135
-[parent_id]: 
-[tags]: 
-Controlling ASP.NET output cache memory usage
-
-I would like to use output caching with WCF Data Services and although there's nothing specifically built in to support caching, there is an OnStartProcessingRequest method that allows me to hook in and set the cacheability of the request using normal ASP.NET mechanisms. But I am worried about the worker process getting recycled due to excessive memory consumption if large responses are cached. Is there a way to specify an upper limit for the ASP.NET output cache so that if this limit is exceeded, items in the cache will be discarded? I've seen the caching configuration settings but I get the impression from the documentation that this is for explicit caching via the Cache object since there is a separate outputCacheSettings which has no memory-related attributes. Here's a code snippet from Scott Hanselman's post that shows how I'm setting the cacheability of the request. protected override void OnStartProcessingRequest(ProcessRequestArgs args) { base.OnStartProcessingRequest(args); //Cache for a minute based on querystring HttpContext context = HttpContext.Current; HttpCachePolicy c = HttpContext.Current.Response.Cache; c.SetCacheability(HttpCacheability.ServerAndPrivate); c.SetExpires(HttpContext.Current.Timestamp.AddSeconds(60)); c.VaryByHeaders["Accept"] = true; c.VaryByHeaders["Accept-Charset"] = true; c.VaryByHeaders["Accept-Encoding"] = true; c.VaryByParams["*"] = true; }

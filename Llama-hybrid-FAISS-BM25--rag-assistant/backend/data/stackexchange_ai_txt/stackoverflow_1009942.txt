@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1009942
-[parent_id]: 1009813
-[tags]: 
-Using GTK on X windows (i.e. Linux, FreeBSD, Solaris), you can use the XEMBED protocol to embed widgets using gtk.Socket . Unfortunately, the application that you're launching has to explicitly support it so that you can tell it to embed itself. Some applications don't support this. Notably, I can't find a way to do it with Firefox. Nonetheless, here's a sample program that will run either an X terminal or an Emacs session inside a GTK window: import os import gtk from gtk import Socket, Button, Window, VBox, HBox w = Window() e = Button("Emacs") x = Button("XTerm") s = Socket() v = VBox() h = HBox() w.add(v) v.add(s) h.add(e) h.add(x) v.pack_start(h, expand=False) def runemacs(btn): x.set_sensitive(False); e.set_sensitive(False) os.spawnlp(os.P_NOWAIT, "emacs", "emacs", "--parent-id", str(s.get_id())) def runxterm(btn): x.set_sensitive(False); e.set_sensitive(False) os.spawnlp(os.P_NOWAIT, "xterm", "xterm", "-into", str(s.get_id())) e.connect('clicked', runemacs) x.connect('clicked', runxterm) w.show_all() gtk.main()

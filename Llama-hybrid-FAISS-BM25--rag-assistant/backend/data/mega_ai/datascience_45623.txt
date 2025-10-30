@@ -1,5 +1,0 @@
-[site]: datascience
-[post_id]: 45623
-[parent_id]: 45554
-[tags]: 
-RNN (and LSTM / GRU)can generate variable length output. For example, generation of text. In such problems, RNN is designed to generate next character (It keeps track of what characters have generated in past). RNN should generate "End Of Output" character to indicate end of sequence. For example : https://chunml.github.io/ChunML.github.io/project/Creating-Text-Generator-Using-Recurrent-Neural-Network/ Following method will have to be changed : def generate_text(model, length): ix = [np.random.randint(VOCAB_SIZE)] y_char = [ix_to_char[ix[-1]]] X = np.zeros((1, length, VOCAB_SIZE)) for i in range(length): X[0, i, :][ix[-1]] = 1 print(ix_to_char[ix[-1]], end="") ix = np.argmax(model.predict(X[:, :i+1, :])[0], 1) y_char.append(ix_to_char[ix[-1]]) return ('').join(y_char) to : stop_characters = set(['.','?']) .. .. ix = np.argmax(model.predict(X[:, :i+1, :])[0], 1) predicted_char=ix_to_char[ix[-1]] if(predicted_char in stop_characters ): break y_char.append(predicted_char)

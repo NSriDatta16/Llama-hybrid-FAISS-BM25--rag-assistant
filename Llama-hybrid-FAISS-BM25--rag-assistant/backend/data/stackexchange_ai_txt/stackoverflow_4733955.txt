@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4733955
-[parent_id]: 
-[tags]: 
-calculate an unique id from an array/class
-
-I use a data class to feed templates my data, I want to calculate a unique id from the data in the data class so I can check if the template with that data is already in cache and then serve that version. so a function to get an unique id from an array of a class would help me out. something like this works but is rather costly md5(serialize($classdata)) I'm hoping there is some function to get the unique id without serializing all data, or at least not to have to in php. edit: I celebrated too soon, the unique id is only the same in the current instance a restart of the same script makes another id, which then of course is not in cache. testscript used: I'll explain in some more depth class template_data implements IteratorAggregate, ArrayAccess, Countable { private $_data; //some methods for the overloaded classes // //the getId function public function getId() { return hash('md5',serialize($this->_data)); } } $t = new template('file'); $d = new template_data('some data'); $t->addData($d); $t->display(); Now if the data given to the template engine is in cache it uses that version preventing to having to re-parse the template for the dataset. This is a simplistic view of the template_data, it is actually lazy loading and uses memcached dataid's so the data isn't actually fetched till it is used in the template.

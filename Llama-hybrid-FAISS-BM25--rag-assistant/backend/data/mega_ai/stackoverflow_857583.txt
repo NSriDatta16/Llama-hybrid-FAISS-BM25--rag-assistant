@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 857583
-[parent_id]: 857107
-[tags]: 
-Aggregate works slightly differently in PLINQ. From MSDN Blogs: Rather than expecting a value to initialize the accumulator to, the user gives us a factory function that generates the value: public static double Average(this IEnumerable source) { return source.AsParallel().Aggregate( () => new double[2], (acc, elem) => { acc[0] += elem; acc[1]++; return acc; }, (acc1, acc2) => { acc1[0] += acc2[0]; acc1[1] += acc2[1]; return acc1; }, acc => acc[0] / acc[1]); } Now, PLINQ can initialize an independent accumulator for each thread. Now that each thread gets its own accumulator, both the folding function and the accumulator combining function are free to mutate the accumulators. PLINQ guarantees that accumulators will not be accessed concurrently from multiple threads . So, in your case, you would also need to pass an accumulator function which sums the outputs of the paralleled aggregates (hence why you're seeing a result that is roughly half of what it should be).

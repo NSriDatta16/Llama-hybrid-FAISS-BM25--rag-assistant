@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3982283
-[parent_id]: 3919194
-[tags]: 
-To give another interesting illustrates what's going on, consider the case where you want to pack a structure that crosses a type boundary. E.g. struct state { unsigned int cost : 24; unsigned int back : 21; unsigned int a : 1; unsigned int b : 1; unsigned int c : 1; }; This structure can't be packed into 6 bytes using MSVC as far as I know. However, we can get the desired packing effect by breaking up the first two fields: struct state_packed { unsigned short cost_1 : 16; unsigned char cost_2 : 8; unsigned short back_1 : 16; unsigned char back_2 : 5; unsigned char a : 1; unsigned char b : 1; unsigned char c : 1; }; This can indeed be packed into 6 bytes. However, accessing the original cost field is extremely awkward and ugly. One method is to cast a state_packed pointer to a specialized dummy struct: struct state_cost { unsigned int cost : 24; unsigned int junk : 8; }; state_packed sc; state_packed *p_sc = &sc; sc.a = 1; (*(struct state_cost *)p_sc).cost = 12345; sc.b = 1; If anyone knows a more elegant way of doing this, I would love to know!

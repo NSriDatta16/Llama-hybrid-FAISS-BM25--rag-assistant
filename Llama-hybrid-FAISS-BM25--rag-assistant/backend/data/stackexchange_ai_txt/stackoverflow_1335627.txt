@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1335627
-[parent_id]: 1335577
-[tags]: 
-There are lots of creative ways of organizing hierarchial data in a database, but consistently I find it easiest bring back the data in non-hierarchial format, then match up parent and child records programmatically. Total amount of effort: 1 query + 1 programmatic pass through your dataset to create the hierarchy. Alternative approach: I've used this method in the past with limited success. You can store the path of each item in your tree using a varchar(max) column as follows: ID ParentID Path -- -------- ---- 1 null 1/ 2 1 1/2/ 3 null 3/ 4 2 1/2/4/ 5 4 1/2/4/5/ 6 null 6/ 7 5 1/2/4/5/7/ 9 5 1/2/4/5/9/ From that point, getting all of the nodes under ID = 5 is a very simple: SELECT * FROM table WHERE Path like (SELECT Path FROM Table WHERE ID = 5) + '%'

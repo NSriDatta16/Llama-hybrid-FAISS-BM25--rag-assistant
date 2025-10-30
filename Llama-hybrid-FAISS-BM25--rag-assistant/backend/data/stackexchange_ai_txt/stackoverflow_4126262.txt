@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4126262
-[parent_id]: 4124328
-[tags]: 
-This is a bit of a guess, but I think your dealloc method for obcnode does not release its innerText instance variable on deallocation. At first glance, your code fragment looks fine for memory management and that is the only potential error I can see. The reason why it would be flagging the leak for innerText is possibly that trimmedText uses the same underlying unichar array as innerText but with different start and length values and therefore it retains innerText to stop the unichar array from going away. Because trimmedText is an immutable string, sending copy to it merely causes it to send retain to itself and return itself, so obcNode owns trimmedText which owns innerText.

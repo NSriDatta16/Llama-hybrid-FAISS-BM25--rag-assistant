@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 241462
-[parent_id]: 241388
-[tags]: 
-edg is correct, but the original code is unnecessarily obtuse. In most cases, $#foo is a red flag that the code could be written more simply using scalar @foo . return (undef) unless ($#ret >= 0); unless foo >= bar is difficult to puzzle out. First, turn it into a positive statement. return (undef) if ($#ret When is $#ret return (undef) if scalar @ret But you can't have a negative length array, so... return (undef) if scalar @ret == 0; And == is in scalar context, so that "scalar" is redundant... return (undef) if @ret == 0; But that's just a wordy way of saying "if @ret is false". return (undef) if !@ret; Which I think for simple statement modifiers is better expressed with unless. return (undef) unless @ret; Isn't that easier to follow? As a final side-note, return undef is discouraged because it does the wrong thing in list context. You get back a list containing one undef element, which is true. Instead, just use a blank return which returns undef in scalar context and an empty list in list context. return unless @ret;

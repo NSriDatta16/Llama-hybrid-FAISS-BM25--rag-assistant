@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 870952
-[parent_id]: 
-[tags]: 
-Terrible performance - a simple issue of overhead, or is there a program flaw?
-
-I have here what I understand to be a relatively simple OpenMP construct. The issue is that the program runs about 100-300x faster with 1 thread when compared to 2 threads. 87% of the program is spent in gomp_send_wait() and another 9.5% in gomp_send_post . The program gives correct results, but I wonder if there is a flaw in the code that is causing some resource conflict, or if it is simply that the overhead of the thread creation is drastically not worth it for a a loop of chunk size 4. p ranges from 17 to 1000, depending on the size of the molecule we're simulating. My numbers are for the worst case, when p is 17 and the chunk size 4. The performance is the same whether I'm using static, dynamic, or guided scheduling. With p=150 and chunk size 75 , the program is still 75x-100x slower than serial. ... double e_t_sum=0.0; double e_in_sum=0.0; int nthreads,tid; #pragma omp parallel for schedule(static, 4) reduction(+ : e_t_sum, e_in_sum) shared(ee_t) private(tid, i, d_x, d_y, d_z, rr,) firstprivate( V_in, t_x, t_y, t_z) lastprivate(nthreads) for (i = 0; i

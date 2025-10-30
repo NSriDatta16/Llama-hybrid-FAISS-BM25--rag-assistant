@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 243740
-[parent_id]: 238441
-[tags]: 
-This does not answer your question but here is my 2 cents about a related issue... I did not have the problem of stack space optimization but I had the problem of mis-alignment of double variables on the stack. A function may be called from any other function and the stack pointer value may have any un-aligned value. So I have come up with the idea below. This is not the original code, I just wrote it... #pragma pack(push, 16) typedef struct _S_speedy_struct{ double fval[4]; int64 lval[4]; int32 ival[8]; }S_speedy_struct; #pragma pack(pop) int function(...) { int i, t, rv; S_speedy_struct *ptr; char buff[112]; // sizeof(struct) + alignment // ugly , I know , but it works... t = (int)buff; t += 15; // alignment - 1 t &= -16; // alignment ptr = (S_speedy_struct *)t; // speedy code goes on... }

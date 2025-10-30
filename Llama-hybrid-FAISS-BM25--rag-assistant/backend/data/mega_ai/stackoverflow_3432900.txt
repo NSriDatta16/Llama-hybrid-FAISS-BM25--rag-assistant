@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3432900
-[parent_id]: 3432231
-[tags]: 
-The setfenv() function can be used to create a sandbox or environment for each file loaded. This example shows that all three files could be loaded with conflicting functions and that the functions can be called in any order. Similar code could be written in C++. This example only exports the print function to each environment, more might be needed in your scenario. function newEnv() -- creates a simple environment return {["print"]=print} end local e={} -- environment table local c -- chunk variable -- first instance c = loadstring([[function f() print("1") end]]) e[#e+1] = newEnv() setfenv(c, e[#e]) -- set the loaded chunk's environment pcall(c) -- process the chunk (places the function into the enviroment) -- second instance c = loadstring([[function f() print("2") end]]) e[#e+1] = newEnv() setfenv(c, e[#e]) pcall(c) -- third instance c = loadstring([[function f() print("3") end]]) e[#e+1] = newEnv() setfenv(c, e[#e]) pcall(c) pcall(e[3].f) --> 3 pcall(e[2].f) --> 2 pcall(e[1].f) --> 1 pcall(e[1].f) --> 1 pcall(e[2].f) --> 2 pcall(e[3].f) --> 3

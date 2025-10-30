@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3407628
-[parent_id]: 3407409
-[tags]: 
-The switch isn't all bad. It's one way to implement the factory pattern. It's easily testable, it makes it easy to understand the entire range of available objects, and it's good for coverage testing. Another technique is to build a mapping between your enum types and factories to make the specific objects from the data stream. This turns the compile-time switch into a run-time lookup. The mapping can be built at run-time, making it possible to add new types without recompiling everything. // You'll have multiple Factories, all using this signature. typedef MsgBase *(*Factory)(StreamType &); // For example: MsgBase *CreateDerived1(StreamType &inputStream) { MsgDerived1 *ptr = new MsgDerived1; inputStream.deserialize(ptr); return ptr; } std::map knownTypes; knownTypes[MSG_DERIVED_1] = CreateDerived1; // Then, given the type, you can instantiate the correct object: MsgBase *object = (*knownTypes[type])(inputStream); ... delete object;

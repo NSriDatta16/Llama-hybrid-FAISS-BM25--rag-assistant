@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3020360
-[parent_id]: 3018791
-[tags]: 
-Sending a confirmation email is best done asynchronously after the order has bees saved to database. I would introduce some kind of message bus (like NServiceBus) to handle such a case. In the same transaction as you save order, you publish a message on the bus "Order has been created". These is a handler that subscribes to this message and sends emails to customers. Why asynchronously? Because SMTP servers have a tendency to fail and sending emails can be pretty lengthy task and blocking database tables for such a long period of time can introduce deadlocks. I encourage you to look at Udi Dahan's blog : he is the author of NServiceBus and blogs a lot about cases similar to your confirmation emails.

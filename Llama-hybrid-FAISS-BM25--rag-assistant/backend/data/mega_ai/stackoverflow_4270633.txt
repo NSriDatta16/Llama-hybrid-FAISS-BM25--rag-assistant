@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4270633
-[parent_id]: 
-[tags]: 
-perl utf8 corruption
-
-I am using the perl module sapnwrfc to connect to SAP and retrieve reports. This module uses utf8 and when the data is returned some of the data has a pattern of utf8 character corruption. This appears to happen when a line in the SAP report is more than 4096 in length and my current thinking is that the read buffer of perl is splitting utf8 characters and causing the corruption. $abap_lookup = $sap_rfc->function_lookup("REPORT"); $abap_program = $abap_lookup->create_function_call; # set abap program input variables $abap_program->REPORT($abap_program_name); $abap_program->VARIANT($abap_variant_name); # call the abap program $abap_program->invoke; $abap_program->DATA has the corruption in one place in each line that is more than 4Kb This is the fragment with the corruption, the actual line is a byte or two more than 4Kb. \x{f8fc}\x{2500} \x{500}/\x{f8fc}\x{2500} This is what is expected, so I am assuming something is splitting the line and causing the problem. \x{f8fc}\x{2500}\x{f8fc}\x{2500}\x{f8fc}\x{2500} I have tried all manner of open ':utf8' pragma and other settings (use utf8, binmode(STDIN, ":utf8"), binmode(STDOUT, ":utf8");). Also have tried to turn off buffering ($| = 1;). I cannot tell if this is a utf8 problem or a buffering problem. Does anyone know why this would be doing this and how to fix it?

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 954398
-[parent_id]: 
-[tags]: 
-Templated Barton and Nackman Trick Problems
-
-I'm trying to implement class using the Barton and Nackman trick to avoid dynamic dispatch. (I'm writing MCMC code where performance matters.) I'm not a C++ expert but the basic trick is working for me elsewhere. However I now have a case where the second derived class needs to be templated. This seems to cause problems. The outline of my code is: // Generic step class template class Step { public: DerivedStepType& as_derived() { return static_cast (*this); } void DoStep() { return as_derived.DoStep(); } }; // Gibbs step template // THIS IS THE PROBLEM class GibbsStep : public Step { public: GibbsStep(DerivedParameterType new_parameter) { } void DoStep() { } }; The problem is template and the following (from the Barton and Nackman trick). Using g++ v 4.01 (OSX), I get the following error: ./src/mcmc.h:247: error: type/value mismatch at argument 1 in template parameter list for 'template class Step' ./src/mcmc.h:247: error: expected a type, got 'GibbsStep' Everything compiles fine if a drop template and replace DerivedParameterType with, say, double . Any ideas?

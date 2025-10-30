@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4984788
-[parent_id]: 
-[tags]: 
-Double-checked creation of thread-safe singleton and lock-free
-
-I wrote the following code creating singleton instance of my interface manager. #include #pragma intrinsic(_ReadWriteBarrier) boost::mutex global_interface_manager_creation_mutex; interface_manager* global_interface_manager = NULL; interface_manager* get_global_interface_manager() { interface_manager* volatile temp = global_interface_manager; _ReadWriteBarrier(); if (temp == NULL) { boost::mutex::scoped_lock(global_interface_manager_creation_mutex); temp = global_interface_manager; if (temp == NULL) { temp = new interface_manager(); _ReadWriteBarrier(); global_interface_manager = temp; } } return temp; } But I don't want to use the lock and memory barrier so change the code to: interface_manager* get_global_interface_manager() { interface_manager* volatile temp = global_interface_manager; __assume(temp != NULL); if (temp == NULL) { temp = new interface_manager(); if(NULL != ::InterlockedCompareExchangePointer((volatile PVOID *)&global_interface_manager, temp, NULL)) { delete temp; temp = global_interface_manager; } } return temp; } It seems like this code works well but I don't be sure and I really don't know how to test it is correct.

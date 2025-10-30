@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3738543
-[parent_id]: 3737630
-[tags]: 
-I found a way to work around the issue. Not sure if this is a bug in PDO or some other part of the tool set but what I'm doing to work around is the following: $exception_exists = FALSE; $db->query(NULL, 'BEGIN', FALSE); $query = DB::query(Database::INSERT, 'INSERT INTO test_table (test_table_id, test_table_val) VALUES (:id, :value)'; $query->param(':id', 1); $query->param(':value', "test value"); try { $result = $query->execute($db); } catch (Exception $e) { echo 'Caught exception: ', $e->getMessage(), "\n"; $exception_exists = TRUE; } if (!$exception_exists) { $db->query(NULL, 'ROLLBACK', FALSE); } By adding the variable $exception_exists in the catch I can then act of that if there is no exception. If there is an exception and I try to ROLLBACK or COMMIT then I get the freezing behavior. This works for now but I wouldn't call it elegant.

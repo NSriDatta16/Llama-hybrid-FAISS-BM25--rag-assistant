@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 448078
-[parent_id]: 448034
-[tags]: 
-I'm pretty sure that the lock needs to be the same object for each thread. Try this: import time from threading import Thread, Lock def main(): lock = Lock() for i in range(20): agent = Agent(i, lock) agent.start() class Agent(Thread, Lock): def __init__(self, thread_num, lock): Thread.__init__(self) self.thread_num = thread_num self.lock = lock def run(self): while True: print 'hello from thread %s' % self.thread_num self.write_result() def write_result(self): self.lock.acquire() try: f = open('foo.txt', 'a') f.write('hello from thread %s\n' % self.thread_num) f.flush() f.close() finally: lock.release() if __name__ == '__main__': main()

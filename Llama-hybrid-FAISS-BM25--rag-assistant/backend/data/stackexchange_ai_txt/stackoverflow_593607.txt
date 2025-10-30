@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 593607
-[parent_id]: 558423
-[tags]: 
-I just found the solution to this one myself: X509KeyStorageFlags flags = X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.MachineKeySet; X509Certificate2 cert = new X509Certificate2(pkcs12_buf, password, flags); The trick here is to use the local key store MachineKeySet flag instead of the user profile key store, which is the default if you don't specify an alternative location. Because the ASP.NET process identity doesn't load the user profile store, you can't access the store when importing a certificate programmatically, but you can access the machine store. I think PersistKeySet just keeps the private key loaded, but I'm not sure exactly what it does - it's required if you need to access the private key for some reason though.

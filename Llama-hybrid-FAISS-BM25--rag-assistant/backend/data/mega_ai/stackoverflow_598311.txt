@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 598311
-[parent_id]: 598148
-[tags]: 
-The standard says the side effect happens before the call, so the code is the same as: std::list ::iterator i_before = i; i = i_before + 1; items.erase(i_before); rather than being: std::list ::iterator i_before = i; items.erase(i); i = i_before + 1; So it is safe in this case, because list.erase() specifically doesn't invalidate any iterators other than the one erased. That said, it's bad style - the erase function for all containers returns the next iterator specifically so you don't have to worry about invalidating iterators due to reallocation, so the idiomatic code: i = items.erase(i); will be safe for lists, and will also be safe for vectors, deques and any other sequence container should you want to change your storage. You also wouldn't get the original code to compile without warnings - you'd have to write (void)items.erase(i++); to avoid a warning about an unused return, which would be a big clue that you're doing something odd.

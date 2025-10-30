@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 76379
-[parent_id]: 73308
-[tags]: 
-You can make your own timeout like this: use LWP::UserAgent; use IO::Pipe; my $agent = new LWP::UserAgent; my $finished = 0; my $timeout = 5; $SIG{CHLD} = sub { wait, $finished = 1 }; my $pipe = new IO::Pipe; my $pid = fork; if($pid == 0) { $pipe->writer; my $response = $agent->get("http://stackoverflow.com/"); $pipe->print($response->content); exit; } $pipe->reader; sleep($timeout); if($finished) { print "Finished!\n"; my $content = join('', $pipe->getlines); } else { kill(9, $pid); print "Timed out.\n"; }

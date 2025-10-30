@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5232712
-[parent_id]: 
-[tags]: 
-questions regarding shared_from_this
-
-I have a function which takes a shared_ptr . In some member function memfun of MyClass , I need to pass this to that function. But if I write void MyClass:memfun() { func(shared_ptr (this)) } I am assuming that after the call has ended the reference count will reach 0 and this will be attempted to be destroyed, which is bad. Then I remembered that there this class enable_shared_from_this with the function shared_from_this . So now I am going to use the following: class MyClass: public enable_shared_from_this { void MyClass:memfun() { func(shared_from_this()); } }; Questions are: 1) Is is absolutely impossible to use the functionality without deriving from enable_shared_from_this ? 2) Does deriving from enable_shared_from_this mean that calling memfun on an object with automatic storage duration will result in something bad? E.g. int main() { MyClass m; //is this OK? m.memfun(); // what about this? } 3) If I derive from MyClass, will the enable_shared_from_this functionality be correctly inherited or do I need to derive again? That is, class MyCoolClass: public Myclass { void someCoolMember { someCoolFuncTakingSharedPtrToMyCoolClass(shared_from_this()); } } Is this OK? Or correct is the following? class MyCoolClass: public Myclass, public enable_shared_from_this { void someCoolMember { someCoolFuncTakingSharedPtrToMyCoolClass(enable_shared_from_this ::shared_from_this()); } } Thanks very much in advance.

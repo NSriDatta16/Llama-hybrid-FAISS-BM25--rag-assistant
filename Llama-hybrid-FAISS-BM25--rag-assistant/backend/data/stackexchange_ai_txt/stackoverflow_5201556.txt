@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5201556
-[parent_id]: 
-[tags]: 
-Making a secure login cookie
-
-I've recently read one of Jeff's articles about XSS and it got me thinking about how to better protect the login cookies in my home cooked authentication system. Basically what I do now is this(note, everything is configurable and currently set to true ): protected static string ComputeLoginHash(string passwordhash){ StringBuilder sb=new StringBuilder(); sb.Append(passwordhash); if(CookieUseIP){ sb.Append(HttpContext.Current.Request.UserHostAddress); } if(CookieUseBase){ sb.Append(HttpContext.Current.Request.MapPath("/")); } if(CookieUseBrowserInfo){ sb.Append(HttpContext.Current.Request.UserAgent); } sb.Append(SiteName); return ComputeHash(sb.ToString()); } (note that passwordhash is made out of password, unique salt, and username). Ok, so one of the questionable things I do is use the UserAgent string. Is there harm in doing this? Or browsers which will change their UserAgent string under normal operation(as in, without being updated)? My goal is basically for if an attacker gets a login cookie, for them to not be able to do anything with it. Would this help meet my goal or is it just overly cumbersome for the user? At the moment, the only info I store in the cookie plain text is the username.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4997057
-[parent_id]: 4996426
-[tags]: 
-You have to give some sort of sample data and how you like it processed. Telling us that you are storing it in MySQL or with innodb is not central to the problem (e.g., the ORM handles that). I assume you are able to extract your time series data as a list of integers, and you are trying to find where gaps start/end from this list. def gaps(seq): seq_set = set(seq) # e.g., set([0, 1, 2, 3, 7, 8, 9, 10, 16, 17, 18]) full_set = set(range(seq[-1]+1)) # set([0,1,2,3,..., 17, 18]) missing_pts = list(seq_set ^ full_set) # [4, 5, 6, 11, 12, 13, 14, 15] missing_pts.sort() # EDIT: originally didn't have this; # should have as sets are unordered. missing_pt_pairs = [] first_pt = missing_pts[0] prev_pt = missing_pts[0] for pt in missing_pts: if pt - prev_pt > 1: missing_pt_pairs.append((first_pt, prev_pt)) first_pt = pt prev_pt = pt missing_pt_pairs.append((first_pt, pt)) return missing_pt_pairs time_pts = [0,1,2,3,7,8,9,10,16,17,18] gaps(time_pts) # returns [(4,6), (11,15)], # indicating that two gaps are present starting from [4,6] and [11,15]

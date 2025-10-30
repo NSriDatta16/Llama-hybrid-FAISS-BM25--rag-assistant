@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 509811
-[parent_id]: 509808
-[tags]: 
-I'm not sure if you're asking specifically about gensim , and this question will likely be closed (generally questions about specific libraries aren't accepted) but I really like the Huggingface library and they have a transformerxl implementation. I've not used it but in general I've used the following: tokenizer = AutoTokenizer.from_pretrained(model_name) config = AutoConfig.from_pretrained(model_name) config.output_hidden_states = True model = AutoModel.from_pretrained(model_name, config=config) model.eval() def cls_embedding(example): inputs=tokenizer(example, return_tensors='pt') outputs = model(**inputs) return outputs["hidden_states"][-1][-1][0].detach().numpy() Note you probably want outputs["hidden_states"][-1][-1][:] if you want an embedding per input token (i.e. contextual embedding)?

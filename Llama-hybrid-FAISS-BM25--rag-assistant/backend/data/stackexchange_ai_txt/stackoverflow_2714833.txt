@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2714833
-[parent_id]: 2714639
-[tags]: 
-If you're certain that for each foreign key in Table2 there is a corresponding record in Table1, then you can avoid the join just making a group by. In that case, the LINQ query is like this: IEnumerable wheighted_averages = from record in Table2 where record.PCR != -1 group record by record.ForeignKey into bucket select bucket.Sum(record => record.PCR * record.Length) / bucket.Sum(record => record.Length); UPDATE This is how you can get the wheighted_average for a specific foreign_key . IEnumerable records = (from record in Table2 where record.ForeignKey == foreign_key where record.PCR != -1 select record).ToList(); int wheighted_average = records.Sum(record => record.PCR * record.Length) / records.Sum(record => record.Length); The ToList method called when fetching the records, is to avoid executing the query twice while aggregating the records in the two separate Sum operations.

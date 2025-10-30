@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3490172
-[parent_id]: 3488201
-[tags]: 
-Use a single view to handle all the touch interaction. EDIT: Oh, all right. When a view receives a touch hitTest:withEvent: is called recursively, until a view which "accepts" the touch is found. Once hitTest:withEvent: returns a non-nil value, it's over (by default); that view "owns" the touch (see UITouch.view). Only that view gets touchesBegan/Moved/Ended/Cancelled:withEvent: callbacks. If you want the touch to affect any card in the deck, the deck should implement touches*:withEvent:, and either set userInteractionEnabled=NO on subviews, or override hitTest:withEvent: so it returns "self" instead of one of the "cards". Then, in touches*:withEvent:, detect which "card" the touch is on, and then do card.highlighted = YES . If you have multipleTouchEnabled=NO, you can assume that there's only one touch and use UITouch * touch = [touches anyObject] . (There are a handful of UIKit classes which somehow sit between the touch and its owning view: UIScrollView can intercept the touch and scroll instead; gesture recognizers cancel touches when they detect a gesure.)

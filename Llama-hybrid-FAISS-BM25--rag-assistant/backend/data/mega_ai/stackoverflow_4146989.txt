@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4146989
-[parent_id]: 
-[tags]: 
-How to elegantly access thread-safe collection and use AutoResetEvent
-
-I have two methods, ProcessQueue and AddToQueue , which happen on different threads. Sometimes I will attempt to Process the Queue before an item is added to a queue, at which point I want to wait for an item to be added to a queue. I also want to make sure that I will never get a situation where I wait, after the Queue is evaluated as being empty and then after the Queue is added to on a different thread. Below is my attempt at doing this, but a deadlock is created because the Auto Reset Event waits with a lock still in force. There has to be a more elegant way of doing this. Any suggestions? private readonly object m_Locker = new object(); private readonly Queue m_Queue = new Queue (); private readonly AutoResetEvent m_AutoResetEvent = new AutoResetEvent(false); void ProcessQueue() { lock (m_Locker) { if (m_Queue.Count == 0) { // nothing is happening, so wait for it to happen m_AutoResetEvent.WaitOne(); } } Console.WriteLine("Processed {0}", m_Queue.Dequeue()); } // on another thread void AddToQueue(int i) { lock (m_Locker) { m_Queue.Enqueue(i); m_AutoResetEvent.Set(); } }

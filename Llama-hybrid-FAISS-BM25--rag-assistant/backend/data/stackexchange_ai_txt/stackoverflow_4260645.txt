@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4260645
-[parent_id]: 
-[tags]: 
-How to get running counts for numpy array values?
-
-OK, I think this will be fairly simple, but my numpy-fu is not quite strong enough. I've got a an array A of ints; it's tiled N times. I want a running count of the number of times each element is used. For example, the following (I've reshaped the array to make the repetition obvious): [0, 1, 2, 0, 0, 1, 0] \ [0, 1, 2, 0, 0, 1, 0] ... would become: [0, 0, 0, 1, 2, 1, 3] \ [4, 2, 1, 5, 6, 3, 7] This python code does it, albeit inelegantly and slowly: def running_counts(ar): from collections import defaultdict counts = defaultdict(lambda: 0) def get_count(num): c = counts[num] counts[num] += 1 return c return [get_count(num) for num in ar] I can almost see a numpy trick to make this go, but not quite. Update Ok, I've made improvements, but still rely on the above running_counts method. The following speeds things up and feels right-track-ish to me: def sample_counts(ar, repititions): tile_bins = np.histogram(ar, np.max(ar)+1)[0] tile_mult = tile_bins[ar] first_steps = running_counts(ar) tiled = np.tile(tile_mult, repititions).reshape(repititions, -1) multiplier = np.reshape(np.arange(repititions), (repititions, 1)) tiled *= multiplier tiled += first_steps return tiled.ravel() Any elegant thoughts to get rid of running_counts() ? Speed is now OK; it just feels a little inelegant.

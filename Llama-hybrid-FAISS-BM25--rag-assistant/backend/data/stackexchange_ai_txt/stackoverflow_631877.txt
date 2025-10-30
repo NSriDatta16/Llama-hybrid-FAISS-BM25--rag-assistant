@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 631877
-[parent_id]: 631632
-[tags]: 
-I would encapsulate the whole thing as follows: #include "stdlib.h" #include "stdio.h" // structure enum type { typeint, typefloat, typedouble }; struct genericarray { enum type type; void ** storage; }; typedef struct genericarray genericarray; // allocate void allocate(long numItems, enum type varType, genericarray * array) { (*array).type = varType; switch (varType) { case typeint: (*array).storage = malloc(numItems*sizeof(int)); break; case typefloat: (*array).storage = malloc(numItems*sizeof(float)); break; case typedouble: (*array).storage = malloc(numItems*sizeof(double)); } } // release void release(genericarray array) { free(array.storage); } // usage int main(int argCount, char ** argList) { genericarray image_1; genericarray image_2; int iv; float fv; allocate(10, typeint, &image_1); allocate(10, typefloat, &image_2); ((int *)(image_1.storage))[5] = 42; iv = ((int *)(image_1.storage))[5]; printf("image_1[5] = %d\n", iv); ((float *)(image_2.storage))[5] = 3.14159; fv = ((float *)(image_2.storage))[5]; printf("image_2[5] = %f\n", fv); release(image_2); release(image_1); return 0; }

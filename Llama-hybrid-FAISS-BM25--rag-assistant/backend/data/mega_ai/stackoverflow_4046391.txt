@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4046391
-[parent_id]: 4045771
-[tags]: 
-This doesn't make any sense. You can only pin managed objects, the return value of PDF_LoadDoc() sure doesn't look like a managed object to me. Same goes for result , it is not a managed array , just a plain vanilla C array that gets allocated on the stack frame. Unfortunately, pin_ptr<> doesn't complain about this. The result array could only get 'empty' if code is stomping the stack frame. Which you can diagnose by setting a data breakpoint on the first element. Fwiw, SystemStringToCStr() looks like a candidate. This cannot work without releasing the buffer for the native string somewhere. Another candidate is the PDF API function declarations. Pay attention to the value of the ESP register and make sure it doesn't change. If it does, the stack is get imbalanced because you don't have the proper calling convention. Which is usually __stdcall for DLL exports.

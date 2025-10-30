@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 32300
-[parent_id]: 
-[tags]: 
-Swap 2 number in tf.Tensor
-
-Given a pair of Variable i and j and a Tensor A , how to get a new Tensor which is A with i th element and j th element swapped? How about N pairs of i and j and we need to swap them all? How to do that in batch training? I found swapping one pair is easy: if i Swapping multiple pairs would require explicit loop / reducing: for i, j in ijpairs: A = swap_one_pair(A, i, j) return A Swapping multiple samples in a batch would require explicit mapping: return tf.map_fn(swap_one_pair, (As, is, js)) I found if I separate the swapping into "read" and "write", reading can be easily vectorized via gather_nd : indexes = tf.stack((tf.tile(tf.range(batch_size)[:,None], (1,read_size)), all_i), 2) index_results = tf.gather_nd(A, indexes) Is there a "write" version of gather_nd ? Or is there any more elegant way of implementing swapping utilizing vectorization/broadcasting? EDIT I found a "write" version scatter_nd_update . Unfortunately it only works for Variable . I tried casting Tensor to Variable using tf.Variable(myTensor) but don't work. I currently use: def scatter_nd_update(ref, indices, updates): original_part = ref * (1 - tf.scatter_nd(indices, tf.ones(updates.shape), ref.shape)) update_part = tf.scatter_nd(index, update, ref.shape) return original_part + update_part This method uses a lot of meaningless computation. Any idea of better one?

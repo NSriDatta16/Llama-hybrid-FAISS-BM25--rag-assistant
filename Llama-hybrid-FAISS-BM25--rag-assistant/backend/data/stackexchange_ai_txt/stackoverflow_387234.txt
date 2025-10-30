@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 387234
-[parent_id]: 
-[tags]: 
-Cannot compile FSM sample code
-
-There is a nice state machine tutorial called UML Tutorial: Finite State Machines by Robert C. Martin. But I can't compile the sample code it provides. I got *FsmTest.cpp(46) : error C2664: 'SetState' : cannot convert parameter 1 from 'class UnlockedState *' to 'class TurnstileState ' Please, help. Thanks. class Turnstile { public: virtual void Lock(); virtual void Unlock(); virtual void Thankyou(); virtual void Alarm(); }; class TurnstileFSM; class LockedState; class UnlockedState; class TurnstileState { public: virtual void Coin(TurnstileFSM*) = 0; virtual void Pass(TurnstileFSM*) = 0; protected: static LockedState lockedState; static UnlockedState unlockedState; }; class TurnstileFSM : public Turnstile { public: void SetState(TurnstileState* s) {itsState = s;} void Coin() {itsState->Coin(this);} void Pass() {itsState->Pass(this);} private: TurnstileState *itsState; }; class LockedState : public TurnstileState { public: virtual void Coin(TurnstileFSM* t) { t->SetState(&unlockedState); t->Unlock(); } virtual void Pass(TurnstileFSM* t) { t->Alarm(); } }; class UnlockedState : public TurnstileState { public: virtual void Coin(TurnstileFSM* t) { t->Thankyou(); } virtual void Pass(TurnstileFSM* t) { t->SetState(&lockedState); t->Lock(); } }; LockedState TurnstileState::lockedState; UnlockedState TurnstileState::unlockedState;

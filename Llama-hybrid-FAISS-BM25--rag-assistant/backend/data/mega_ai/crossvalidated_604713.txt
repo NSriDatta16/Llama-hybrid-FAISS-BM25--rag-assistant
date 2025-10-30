@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 604713
-[parent_id]: 
-[tags]: 
-Feature selection and 10-fold cross validation
-
-I am analyzing a case/control dataset with a low number of observations (250) and 45 parameters. I have performed lasso regularization and 10-fold cross-validation. I believe I need to run the CV (x) number of times to tune my hyperparameter (lambda) but uncertain how many times this would be. Would I use the average of lambda over (x) amount of times? My ROC AUC would be biased because I used the same data to train/test, correct? Edit -- Response to @Henry I am currently using 100 lambdas. If I understand you correctly I should slowly increase my # lambda's so that when I cross-validate, the lambda min and # of parameters do not change (or only slightly). Example code -> install.packages('Rcpp') install.packages('clogitL1') library(Rcpp) library(clogitL1) set.seed(145) # data parameters K = 10 # number of strata n = 5 # number in strata m = 2 # cases per stratum p = 20 # predictors # generate data y = rep(c(rep(1, m), rep(0, n-m)), K) X = matrix (rnorm(K*n*p, 0, 1), ncol = p) # pure noise strata = sort(rep(1:K, n)) par(mfrow = c(1,2)) # fit the conditional logistic model clObj = clogitL1(y=y, x=X, strata, numLambda=100, minLambdaRatio = .0000001, switch = 0, alpha = 1)) plot(clObj, logX=TRUE) # cross validation clcvObj = cv.clogitL1(clObj) plot(clcvObj) summary(clcvObj) Would I summarize the accuracy of the model with a ROC curve?

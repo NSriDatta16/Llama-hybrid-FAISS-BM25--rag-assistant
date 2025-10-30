@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5687949
-[parent_id]: 
-[tags]: 
-OpenMP and reduction()
-
-I've got simply 3 functions, one is control function aan the next 2 function are done in a bit different way using OpenMP. But function thread1 gives another score than thread2 and control and I have no idea why? #include #include #include #include float function(float x){ return pow(x,pow(x,sin(x))); } float integrate(float begin, float end, int count){ float score = 0 , width = (end-begin)/(1.0*count), i=begin, y1, y2; for(i = 0; i Here are simple answears : gcc -fopenmp zad2.c -o zad -pg -lm env OMP_NUM_THREADS=2 ./zad 3 13 100000 control: 5407308.500000 control count: 138308058 thread1: 5407494.000000 thread1 count: 96525618 thread2: 5407308.500000 thread2 count: 104770859 Update: Ok, I tried to do this more quickly, and not count values for periods twice. double thread3(double begin, double end, int count){ double score = 0 , width = (end-begin)/(1.0*count), yp, yk; int i,j, k; #pragma omp parallel private (yp,yk) { int thread_num = omp_get_num_threads(); k = count / thread_num; #pragma omp for private(i) reduction(+:score) for(i=0; i But after few tests I found that the scores are near the right value, but not equal. Sometimes one of the threads doesn't start. When I'm not using OpenMp, the value is correct.

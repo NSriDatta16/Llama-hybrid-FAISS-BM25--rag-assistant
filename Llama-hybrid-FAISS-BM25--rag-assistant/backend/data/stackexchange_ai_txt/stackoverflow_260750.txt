@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 260750
-[parent_id]: 256702
-[tags]: 
-Since no one answered the question satisfactorily, I spent sometime digging into the boost::mpl source. Man, it's not pretty with layers of macros and hundreds of lines of specialization classes. I now have more appreciation for the authors of the boost libraries to make meta programming easier and more portable for us. Hopefully C++0x will make library writers' life easier as well. Anyway, the solution turns out to be simple and elegant. First iter_fold is not what I want, as I couldn't figure out how to specify an iterator that can be deferenced to a null type. So I fiddled around with fold and find the following: typedef fold >::type MyPolicy; In order for this to work, I need to provide the Null type and a specialization for Cons: struct Null { }; template struct Cons { static void init() { PolicyT::init(); } static void cleanup() { PolicyT::cleanup(); } };

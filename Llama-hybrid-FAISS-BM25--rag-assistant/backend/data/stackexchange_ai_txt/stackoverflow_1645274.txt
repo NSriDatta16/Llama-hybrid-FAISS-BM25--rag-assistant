@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1645274
-[parent_id]: 
-[tags]: 
-Generate a row per minute of the day from a sparsely populated database table
-
-I have a table populated with time stamped rows inserted at (essentially) random point in the day. I need to generate running totals with 1 row per minute (so for a single day there will always be exactly 24 * 60 rows) e.g. Date Quantity Running Total 2009-10-29 06:30 1 1 2009-10-29 06:31 5 6 2009-10-29 06:32 10 16 2009-10-29 06:33 11 27 2009-10-29 06:34 22 49 ... ... Any thoughts on the best way to do this? One SQL query would be ideal but not essential, performance is fairly important (sub 5 seconds on a table containg 500k rows of which 70k are interesting to this query) My Final Solution (more or less). The actual scenario was this. I have two tables one containing Orders with a 1:n relationship to a Fills table. I needed to show the running Average Price and Cumulative Total for each minute in the trading day DECLARE @StartDate AS DATETIME, @EndDate AS DATETIME SET @StartDate = '2009-10-28'; SET @EndDate = '2009-10-29'; -- Generate a Temp Table containing all the dates I'm interested in WITH DateIntervalsCTE AS ( SELECT 0 i, @StartDate AS Date UNION ALL SELECT i + 1, DATEADD(minute, i, @StartDate ) FROM DateIntervalsCTE WHERE DATEADD(minute, i, @StartDate ) = DATEADD(mi,390, @StartDate) -- 06:30 AND d.Date I still haven't completed all my testing but this looks like it does the trick, thanks for the assistance!

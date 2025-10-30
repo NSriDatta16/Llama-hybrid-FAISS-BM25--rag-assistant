@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4610883
-[parent_id]: 4610791
-[tags]: 
-It's failing because your function closes the connection before returning. The way to fix this is to turn the function into a generator that passes on the results. Something like the following untested code should work: def connection (db, arg): conn = sqlite3.connect(db) conn.execute('pragma foreign_keys = on') cur = conn.cursor() cur.execute(arg) for row in cur: yield row conn.commit() conn.close() You have to be extra careful to consume all the rows when calling this function, because if you don't then the connection won't be closed. You might be able to avoid this problem by looking at implementing the functions necessary for the with syntax.

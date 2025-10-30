@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 781059
-[parent_id]: 781044
-[tags]: 
-Would something like this work (untested): SELECT moname, MIN(updatetime) FROM amoreAgentTST01 GROUP BY moname HAVING COUNT(moname)>1 Edit - the above is meant only as a replacement for your existing code, so it doesn't directly answer your question. I think something like this should work for your main question: SELECT moname, updatetime FROM amoreAgentTST01 GROUP BY moname, updatetime HAVING COUNT(moname)>1 ORDER BY updatetime LIMIT 0, 10 Edit - sorry, the above won't work because it's returning only 10 records for all the monames - rather than the 10 oldest for each. Let me have a think. One more go at this (admittedly, this one looks a bit convoluted): SELECT a.moname, a.updatetime FROM amoreAgentTST01 a WHERE EXISTS (SELECT * FROM amoreAgentTST01 b WHERE a.moname = b.moname AND a.updatetime = b.updatetime ORDER BY b.updatetime LIMIT 0, 10) AND (SELECT COUNT(*) FROM amoreAgentTST01 x WHERE x.moname = a.moname) > 1 I should add that if there is an ID column - generally the primary key- then that should be used for the sub-query joins for improved performance.

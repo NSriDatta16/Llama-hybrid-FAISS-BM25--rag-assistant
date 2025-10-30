@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 443289
-[parent_id]: 443234
-[tags]: 
-You may be interested in using the recursive feature elimination (RFE) function in the caret package: 1. Eliminate highly correlated variables # You can use any threshold you want to deem a correlation too high. Here we use .80 nonColinearData = yourdata_neu[, -findCorrelation(cor(yourdata_neu), cutoff = .8)] 2. Use recursive feature elimination # Set RFE control ctrl = rfeControl(functions = rfFuncs, # "rfFuncs" are built-in to caret method = "repeatedcv", repeats = 10, saveDetails = TRUE) # By using rfFuncs, caret will use a random forest to evaluate the usefulness of a feature. # Set a sequence of feature-space sizes to search over: sizes = seq(sqrt(ncol(nonColinearData))*.5, ncol(nonColinearData), by = 5) # note, this will fit hundreds of forests (not trees), so it may take a while. # Use caret's rfe function to fit RF models to these different feature spaces rfeResults = rfe(x = select(nonColinearData, -Depressiv), y = nonColinearData$Depressiv, sizes = sizes, rfeControl = ctrl) 3. Evaluate results: rfeResults$results

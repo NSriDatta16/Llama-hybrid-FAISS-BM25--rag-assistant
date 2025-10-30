@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5629923
-[parent_id]: 5629773
-[tags]: 
-import urllib2 import BeautifulSoup import string badwords = set([ 'cup','cups', 'clove','cloves', 'tsp','teaspoon','teaspoons', 'tbsp','tablespoon','tablespoons', 'minced' ]) def cleanIngred(s): # remove leading and trailing whitespace s = s.strip() # remove numbers and punctuation in the string s = s.strip(string.digits + string.punctuation) # remove unwanted words return ' '.join(word for word in s.split() if not word in badwords) def main(): url = "http://allrecipes.com/Recipe/Slow-Cooker-Pork-Chops-II/Detail.aspx" data = urllib2.urlopen(url).read() bs = BeautifulSoup.BeautifulSoup(data) ingreds = bs.find('div', {'class': 'ingredients'}) ingreds = [cleanIngred(s.getText()) for s in ingreds.findAll('li')] fname = 'PorkRecipe.txt' with open(fname, 'w') as outf: outf.write('\n'.join(ingreds)) if __name__=="__main__": main() results in olive oil chicken broth garlic, paprika garlic powder poultry seasoning dried oregano dried basil thick cut boneless pork chops salt and pepper to taste ? I don't know why it's left the comma in it - s.strip(string.punctuation) should have taken care of that.

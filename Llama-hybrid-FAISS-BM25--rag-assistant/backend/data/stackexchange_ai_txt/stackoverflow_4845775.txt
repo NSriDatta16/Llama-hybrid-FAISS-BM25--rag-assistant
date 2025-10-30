@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4845775
-[parent_id]: 4845705
-[tags]: 
-You have to asyncronize your workflow by removing the return statements from the fetchArtist() function because it cannot do what you need because of the async behaviour of the $.get request. Try something like this: if (Modernizr.localstorage) { // there is storage var artist = localStorage.getItem('artist'); if (!artist) { // but no cache fetchArtist(); } else { doWhatYouNeedWithArtist( artist ); } } else { // there's no storage fetchArtist(); } function fetchArtist() { var fetchedArtist; var recentTracks; $.get('script.php', [], function(data) { recentTracks = data.recenttracks; fetchedArtist = ((recentTracks !== undefined) ? recentTracks.track.artist['#text'] : 'Last.fm connection failed.'); if ( Modernizr.localstorage ) { Modernizr.localstorage.setItem('artist', fetchedArtist); } // then do your stuff doWhatYouNeedWithArtist( fetchedArtist ); }, 'json'); } function doWhatYouNeedWithArtist( artists ) { // do stuff } Hope this helps! Ciao.

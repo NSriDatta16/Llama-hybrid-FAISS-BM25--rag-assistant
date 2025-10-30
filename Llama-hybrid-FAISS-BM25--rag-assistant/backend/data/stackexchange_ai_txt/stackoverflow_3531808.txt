@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3531808
-[parent_id]: 3531769
-[tags]: 
-This gets each day, and the number of questions: select q.myTimestamp, count(*) from questionsTable q where q.myTimeStamp >= '6/1/2010' and q.ResponseID IS NULL group by myTimestamp To get the average you need both the count of days, and sum of number of questions... I would probably do this with 2 queries to MySQL and calculate in PHP. $query1 = "select count(*) as totalCount from questionsTable where myTimestamp >= '6/1/2010' and ResponseID IS NULL"; $query2 = "select count(*) as totalDays from (select distinct myTimestamp from questionsTable where myTimestamp >= '6/1/2010' and ResponseID IS NULL) a"; $res1 = mysql_query($query1); $res2 = mysql_query($query2); $row1 = mysql_fetch_array($res1); $row2 = mysql_fetch_array($res2); $avgPostCount = ($row1['totalCount'] / $row2['totalDays']); not optimal, but should work.. I made an assumption, that you wouldn't want to count days where there were no questions.. otherwise it could be simplified to one query using a mysql function to get the number of days since 6/1/2010.

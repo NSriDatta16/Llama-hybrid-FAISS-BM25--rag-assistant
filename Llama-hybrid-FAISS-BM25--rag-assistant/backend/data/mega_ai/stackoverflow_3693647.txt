@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3693647
-[parent_id]: 3693145
-[tags]: 
-Your CardViewController is created and then you immediately try to set the text of a UILabel in that controller's view. The problem is, the view isn't loaded yet. At the time updateUI is called, viewDidLoad: has not yet been called for the CardViewController , which means nameLabel and infoLabel are nil . You have to force the CardViewController 's view to load from the NIB before trying to access any of the outlets. a simple [self view]; would suffice. For example: -(void) updateUI { NSLog(@"nameLabel's value: %@",nameLabel); //nil here [self view]; NSLog(@"nameLabel's value after loading view: %@",nameLabel); //Now it's loaded nameLabel.text = @"test1"; infoLabel.text = @"test2"; } EDIT: Another solution would be to move the call to updateUI to after addSubview : myTopCard = [deck.deckArray objectAtIndex:cardOnTopOfDeck]; [self.view addSubview:topCard.view]; [topCard setCard:myTopCard]; frame = topCard.view.frame; frame.origin.x = (320-frame.size.width)/2; frame.origin.y = 10; topCard.view.frame = frame;

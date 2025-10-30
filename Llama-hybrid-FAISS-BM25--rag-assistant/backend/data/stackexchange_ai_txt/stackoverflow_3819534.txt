@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3819534
-[parent_id]: 3813940
-[tags]: 
-I would suggest letting SQL Server deal with the concurrency. Here's how: Create a stored procedure that accepts your log values (method name, month/date, and execution statistics) as arguments. In the stored procedure, before anything else, get an application lock as described here , and here . Now you can be sure only one instance of the stored procedure will be running at once. (Disclaimer! I have not tried sp_getapplock myself. Just saying. But it seems fairly straightforward, given all the examples out there on the interwebs.) Next, in the stored procedure, query the log table for a current-month's entry for the method to determine whether to insert or update, and then do the insert or update. As you may know, in VS you can drag stored procedures from the Server Explorer into the DBML designer for easy access with LINQ to SQL. If you're trying to avoid stored procedures then this solution obviously won't be for you, but it's how I'd solve it easily and quickly. Hope it helps!

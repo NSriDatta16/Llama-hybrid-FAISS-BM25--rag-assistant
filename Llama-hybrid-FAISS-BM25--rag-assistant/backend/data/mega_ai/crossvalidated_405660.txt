@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 405660
-[parent_id]: 
-[tags]: 
-PCA in production - use with incoming data
-
-I have a large training dataset that I used to fit a model. Before fitting the model I applied PCA. Now the model is fit and ready to be deployed to production, where it will make predictions one observation at a time. My question is, what is the appropriate way to transform the incoming n variables to the PCA reduced set m ? EDIT: minimal code example showing that mean subtraction is required # using sklearn 0.21 import pandas as pd import numpy as np from sklearn.decomposition import PCA #dummy data np.random.seed(0) df = pd.DataFrame(np.random.rand(10,5)) pca = PCA(n_components=2) transformed_data = pca.fit_transform(df) array([[-0.09150808, 0.10412935], [-0.03471536, -0.41757135], [-0.42427325, -0.19299645], [ 0.76549898, -0.26305905], [-0.62059276, -0.02702175], [ 0.26488503, -0.09145729], [-0.27959735, 0.24832636], [-0.01023595, -0.29202606], [ 0.4358998 , 0.43832102], [-0.00536107, 0.49335522]]) transformed_no_mean = df.dot(pca.components_.T) 0 1 0 -0.334199 -0.832622 1 -0.277407 -1.354323 2 -0.666965 -1.129748 3 0.522808 -1.199811 4 -0.863284 -0.963773 5 0.022194 -1.028209 6 -0.522289 -0.688425 7 -0.252927 -1.228778 8 0.193209 -0.498431 9 -0.248052 -0.443396 transformed_with_mean = (df-pca.mean_).dot(pca.components_.T) 0 1 0 -0.091508 0.104129 1 -0.034715 -0.417571 2 -0.424273 -0.192996 3 0.765499 -0.263059 4 -0.620593 -0.027022 5 0.264885 -0.091457 6 -0.279597 0.248326 7 -0.010236 -0.292026 8 0.435900 0.438321 9 -0.005361 0.493355

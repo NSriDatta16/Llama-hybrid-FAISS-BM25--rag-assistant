@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4868977
-[parent_id]: 4868449
-[tags]: 
-Looking at the standard raw_storage_iterator does not typedef value_type to be T , but it's void instead: template class raw_storage_iterator : public iterator ^^^^ whereas uninitialized_copy has to use that typedef: template ForwardIterator uninitialized_copy(InputIterator first, InputIterator last, ForwardIterator result); Effects: for (; first != last; ++result, ++first) ::new (static_cast (&*result)) typename iterator_traits ::value_type(*first); ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ In your code, after all substitutions, this leads to: new (...&*result) void (*first); ^^^^^^^^^^^^^ invalid use here From that you can conclude that those two were never meant to work together. If you want to use raw_storage_iterator , then it should be fine to pass it to std::copy since all the magic happens in the operator=(const T&) overload. If you think any of this is necessary for a primitive like char where you might just allocate with new char[x] (NB! terminating NUL) and copy with strcpy .

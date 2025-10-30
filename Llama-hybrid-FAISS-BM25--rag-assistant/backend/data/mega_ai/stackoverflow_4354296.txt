@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4354296
-[parent_id]: 
-[tags]: 
-Qunit: Test leakage
-
-I have a leakage problem when testing my jQuery plugin. The problem occurs when I want to mock out a value or function on a literal object. Example: test('Overwrite some default setting', function(){ $.fn.plugin.defaults.bar = 'foo'; }); test('Bar should be undefined', function(){ equals( $.fn.plugin.defaults.bar, undefined ); }); This test will fail because the first test added the 'bar' var to defaults. I fixed it with the following code but taking a copy of a copy doesn't look very elegant. $(function(){ /* * Trolley Button Base: Options. */ var defaults_copy = $.extend({}, $.fn.plugin.defaults ); var setdown = { setup : function(){ $.fn.plugin.defaults = $.extend({}, defaults_copy); }, teardown : function(){ } }; module('Test leakage', setdown ); test('Overwrite some default setting', function(){ $.fn.plugin.defaults.bar = 'foo'; }); test('Bar should be undefined', function(){ equals( $.fn.plugin.defaults.bar, undefined ); }); }) Also if I have a few objects in the jQuery namespace it might become a little messy if I have to take multiple copies of each object. So was wondering does anybody have a better solution to 'reset' all objects?

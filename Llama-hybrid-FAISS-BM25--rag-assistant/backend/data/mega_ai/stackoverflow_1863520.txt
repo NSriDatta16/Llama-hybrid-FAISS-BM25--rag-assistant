@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1863520
-[parent_id]: 1863479
-[tags]: 
-In general, you can't prevent an object from being cast in Java. The code that receives a reference to your GameState will be able to call any non-private, non-protected method on that object. Even if you could prevent casting, it could still use reflection. If the Agent code is under your control, just keep things simple and don't cast. If others write Agent classes, you could create a proxy class which takes a GameState object and only implements the methods of GameStateInterface. class GameStateProxy implements GameStateInterface { private GameStateInterface state; public GameStateProxy(GameState state) { this.state = state; } public int someMethodInGameStateInterface(int x) { return state.someMethodInGameStateInterface(x); } // other methods ... } Then you could create a proxy and pass it like this: GameStateInterface proxy = new GameStateProxy(gameState); int bestAction = agent.action(proxy); The code that receives a GameStateProxy would only have access to the methods in GameStateInterface .

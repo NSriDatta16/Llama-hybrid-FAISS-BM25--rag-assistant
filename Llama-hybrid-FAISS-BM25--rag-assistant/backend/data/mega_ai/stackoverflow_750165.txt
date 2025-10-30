@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 750165
-[parent_id]: 
-[tags]: 
-Understanding Goetz's article on Thread safety of HttpSession
-
-Referring to Brian Goetz's article Are all stateful Web applications broken? for IBM developerWorks, I want to refer to this piece of code HttpSession session = request.getSession(true); ShoppingCart cart = (ShoppingCart)session.getAttribute("shoppingCart"); if (cart == null) { cart = new ShoppingCart(...); session.setAttribute("shoppingCart", cart); } doSomethingWith(cart); From my available understanding, this code is not thread-safe because it uses the check-then-act pattern. But I have a doubt: Isn't the creation or retrieval of the HttpSession in the first line totally atomic? By atomic, I mean that if two Threads call request.getSession() , one will block. Although both will return the same HttpSession instance. Thus, if a client (mobile/web browsers) makes two or make calls to the same Servlet (that executes the snippet above), you will never get a situation in which different threads see different values for cart . Assuming I am convinced that it is NOT thread safe, how would one make this thread safe? Would an AtomicReference work? e.g.: HttpSession session = request.getSession(true); AtomicReference cartRef = ( )session.getAttribute("shoppingCart"); ShoppingCart cart = cartRef.get(); if (cart == null) { cart = new ShoppingCart(...); session.setAttribute("shoppingCart", new AtomicReference (cart)); } doSomethingWith(cart); Merci!

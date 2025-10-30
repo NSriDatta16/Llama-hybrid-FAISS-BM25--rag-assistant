@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4027292
-[parent_id]: 4026971
-[tags]: 
-One way around your problem would be to set a single common delegate for all of your UIGestureRecognizers (probably the UIViewController for this view). That delegate could return NO for gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer if the pinch gesture recognizer was in the "Began" or "Changed" states (meaning it was recognizing and processing a pinch). That should prevent any of the pan gesture recognizers from eating touches during a pinch gesture. In the interface file, you will need to save a reference to the pinch gesture recognizer: @interface MyViewController : UIViewController { UIGestureRecognizer *pinchGestureRecognizer; } And in the implementation, make sure you check the pinch gesture recognizer's state, not the state of the gesture recognizer being passed: @implementation MyViewController - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer { if(pinchGestureRecognizer.state == UIGestureRecognizerStateBegan || pinchGestureRecognizer.state == UIGestureRecognizerStateChanged) { return NO; } else { return YES; } }

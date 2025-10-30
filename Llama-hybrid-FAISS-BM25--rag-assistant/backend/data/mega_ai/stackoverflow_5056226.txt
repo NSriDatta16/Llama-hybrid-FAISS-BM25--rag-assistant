@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5056226
-[parent_id]: 
-[tags]: 
-C++ Dynamic vs Stack Objects and How to Use Them
-
-I've always done allocations dynamically on the heap; I've done a lot of Objective-C programming as well as plain C and since I'm usually dealing with large chunks of memory, heap objects are necessary to prevent a stack overflow. I've recently been told that using dynamically allocated objects is discouraged in C++ and that stack objects should be used whenever possible. Why is this? I guess the best way to illustrate this is by example: Class *_obj1; Class *_obj2; void doThis(Class *obj) {} void create() { Class *obj1 = new Class(); Class obj2; doThis(obj1); doThis(&obj2); _obj1 = obj1; _obj2 = &obj2; } int main (int argc, const char * argv[]) { create(); _obj1->doSomething(); _obj2->doSomething(); return 0; } This creates 2 objects, stores them in the pointers, then main() calls a method on each. The Class object creates a char* and stores the C string "Hello!" in it; the ~Class() deallocator frees the memory. The doSomething() method prints out "buff: %s" using printf() . Simple enough. Now let's run it: Dealloc Buff: Hello! Buff: ¯ø_ˇ Whoa, what happened? C++ deallocated that _obj2 even though we stored a pointer to it ; that's because it's on the stack and not the heap, and C++ has no retain count mechanism like Objective-C (I tried implementing one at one point; it worked perfectly but I didn't feel like adding it to everything as a superclass). So we have to jump through hoops to keep it around after the function returns.

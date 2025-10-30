@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2681834
-[parent_id]: 2680902
-[tags]: 
-Why one mustn't declare global variables? O_o. It just looks like a propaganda. If the author knows what he wants and what side-effects will be, why not. Maybe it's just a quick experiment. You could declare your counter as a model class -member. Then to deal with race condition you have to add a method that will wait if some other client, from another thread works with counter. Something like this: import threading class MyModel(ModelBase): _counter = 0 _counter_lock = threading.Lock() @classmethod def increment_counter(cls): with cls._counter_lock: cls._counter += 1 def some_action(self): # core code self.increment_counter() # somewhere else print MyModel._counter Remember however: you have to have your application in one process . So if you've deployed the application under Apache, be sure it is configured to spawn many threads, but not many processes. If you're experimenting with ./manage.py run no actions are required.

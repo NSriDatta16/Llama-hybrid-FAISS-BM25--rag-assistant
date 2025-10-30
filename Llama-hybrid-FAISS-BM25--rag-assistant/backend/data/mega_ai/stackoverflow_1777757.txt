@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1777757
-[parent_id]: 1777717
-[tags]: 
-Yes, that's fine. (See edit below.) (jkp might be seeing something I've missed, but I don't think you "still have to clean up in the event of an exception being thrown" because, as you say, in that case the auto_ptr will delete the object for you.) But I think it would be better still to hide the auto_ptr shenanigans from the caller: void manage(T *t) { std::auto_ptr p(t); // to delete t in case push_back throws vec.push_back(t); p.release(); } EDIT: I initially wrote "Yes, that's fine," referring to the original manage(auto_ptr ) plan, but I tried it and found that it doesn't work. The constructor auto_ptr ::auto_ptr(T *) is explicit . The compiler wouldn't let you write manage(new T) because it can't implicitly convert that pointer to an auto_ptr . manage(T *) is a friendlier interface anyway!

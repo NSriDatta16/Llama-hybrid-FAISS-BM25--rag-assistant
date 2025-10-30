@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5380452
-[parent_id]: 5379995
-[tags]: 
-You need to create a custom ResourceResolver which resolves resources from classpath, put it in the common JAR file and then declare it in web-fragment.xml of the JAR (or in web.xml of the WARs). Kickoff example: package com.example; import java.net.URL; import javax.faces.view.facelets.ResourceResolver; public class FaceletsResourceResolver extends ResourceResolver { private ResourceResolver parent; private String basePath; public FaceletsResourceResolver(ResourceResolver parent) { this.parent = parent; this.basePath = "/META-INF/resources"; // TODO: Make configureable? } @Override public URL resolveUrl(String path) { URL url = parent.resolveUrl(path); // Resolves from WAR. if (url == null) { url = getClass().getResource(basePath + path); // Resolves from JAR. } return url; } } with in web-fragment.xml or web.xml javax.faces.FACELETS_RESOURCE_RESOLVER com.example.FaceletsResourceResolver

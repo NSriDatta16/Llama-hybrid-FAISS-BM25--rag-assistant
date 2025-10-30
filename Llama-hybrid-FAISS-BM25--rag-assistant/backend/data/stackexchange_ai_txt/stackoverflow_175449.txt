@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 175449
-[parent_id]: 174190
-[tags]: 
-I'm currently on a project that does something similar. The answer I used that was very elegant was I added a parent_id column that pointed to another task. When doing your model, make sure to do the following: belongs_to :project belongs_to :parent, :class_name => "Task" has_many :children, :class_name => "Task", :foreign_key => "parent_id" ...and then you can do recursion by: def do_something(task) task.children.each do |child| puts "Something!" do_something(child) end end This way, you can reference your tasks by its parent or by its children. When doing your routes, you'll access a single task always by /project/:project_id/task/:task_id even though it may have a parent or children. Just make sure that you don't have a task that has its parent the same as its child or else you'll go into an infinite loop when you do your recursion to find all the children. You can add the condition to your validation scripts to make sure it doesn't. See also: acts_as_tree

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5373788
-[parent_id]: 
-[tags]: 
-How can you get a histogram of counts from a join table without using a subquery?
-
-I have a lot of tables that look like this: (id, user_id, object_id). I am often interested in the question "how many users have one object? how many have two? etc." and would like to see the distribution. The obvious answer to this looks like: select x.ucount, count(*) from (select count(*) as ucount from objects_users group by user_id) as x group by x.ucount order by x.ucount; This produces results like: ucount | count -------|------- 1 | 15 2 | 17 3 | 23 4 | 104 5 | 76 7 | 12 Using a subquery here feels inelegant to me and I'd like to figure out how to produce the same result without. Further, if the question you're trying to ask is slightly more complicated it gets messy passing more information out of the subquery. For example, if you want the data further grouped by the user's creation date: select x.ucount, (select cdate from users where id = x.user_id) as cdate, count(*) from ( select user_id, count(*) as ucount from objects_users group by user_id ) as x group by cdate, x.ucount, order by cdate, x.ucount; Is there some way to avoid the explosion of subqueries? I suppose in the end my objection is aesthetic, but it makes the queries hard to read and hard to write.

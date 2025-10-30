@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 514614
-[parent_id]: 
-[tags]: 
-How to quantify information in a time series?
-
-I have a time series of daily values for one year and I want to find out which slice of the time series contains maximum information considering a slice is of 150 values. I calculated Shannon's Entropy of every slice moving 5 steps every time. To my surprise the Shannon's Entropy was all the same for all the slices. The time series look as below [![enter image description here][1]][1] The python code is as below: import pandas as pd import scipy def ts_features(array): return scipy.stats.entropy(pd.Series(array).value_counts()) def window_with_highest_entropy( array: np.ndarray, window_size: int = None, step_size=5, return_all=False, ): """Finds the slice/window in a 1d array which has highest entropy. """ assert array.size == len(array) if window_size is None: window_size = int(array.size * 0.4) endings = np.arange(window_size, array.size, step_size) entropies = {} for en in endings: st = en - window_size entropies[f'{st}_{en}'] = ts_features(array[st:en]) if return_all: return entropies # return key with the highest entropy return max(entropies, key=entropies.get) What feature should I use to extract the information holding capacity of time series. [1]: https://i.stack.imgur.com/7Vtx1.png

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4342079
-[parent_id]: 
-[tags]: 
-How can I retrieve snapshot dependencies from Nexus using SBT?
-
-I have a maven2 repository from which I'm trying to fetch an snapshot artifact with an appended timestamp. I'm (unsurprisingly) able to retrieve it fine when building with maven2 but when building with simple-build-tool (sbt) , much preferred by me, I can't pull it down. I can see from this question about snapshots in Ivy that it is possible to configure Ivy to get snapshot artifacts but I don't know how to tell sbt to do it. The relevant bits of my current configuration: val snapshotsName = "Snapshots Repository" val snapshotsUrl = new java.net.URL("http://host:port/path/to/root") val snapshotsPattern = "[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]" val snapshots = Resolver.url(snapshotsName, snapshotsUrl)(Patterns(snapshotsPattern)) Credentials(Path.userHome / ".ivy2" / ".credentials", log) Update: After some more tinkering it looks like I can get it to point at the correct artifact url with the following pattern. val snapshotsPattern = "[organisation]/[module]/[revision]-SNAPSHOT/[artifact]-[revision](-[timestamp]).[ext]" With that I still need to specify the timestamp extra in the dependency val dep = "group" % "artifact" % "0.0.1" extra("timestamp" -> "20101202.195418-3") but it does pull the artifact. However it does NOT pull the artifact's dependencies. So it seems I've still got something wrong.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4891920
-[parent_id]: 4880171
-[tags]: 
-DON'T USE TRYSCAN!!! Unfortunately, the TryScan function in the current version of F# is broken in two ways. Firstly, the whole point is to specify a timeout but the implementation does not actually honor it. Specifically, irrelevant messages reset the timer. Secondly, as with the other Scan function, the message queue is examined under a lock that prevents any other threads from posting for the duration of the scan, which can be an arbitrarily long time. Consequently, the TryScan function itself tends to lock-up concurrent systems and can even introduce deadlocks because the caller's code is evaluated inside the lock (e.g. posting from the function argument to Scan or TryScan can deadlock the agent when the code under the lock blocks waiting to acquire the lock it is already under). I used TryScan in an early prototype of my production code and it caused no end of problems. However, I managed to architect around it and the resulting architecture was actually better. In essence, I eagerly Receive all messages and filter using my own local queue.

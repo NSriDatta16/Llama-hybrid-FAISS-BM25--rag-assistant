@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5173914
-[parent_id]: 5173871
-[tags]: 
-Can you avoid slurping 200,000 campaign items' Conversions into concrete lists before adding them to a master list? I would: Replace the Where().Count() with an Any() function, which will in the average case give the right answer faster. Refactor out the ToLists(); these functions take the source collection and clone it into a new collection instance, which is extremely time and memory-intensive especially in a loop like this. You're creating two Lists and an Array each iteration; stop that! Here's the new code: List listCampaigns = new List (); foreach (var item in campaigns) { if (!listCampaigns.Any(a => a.CampaignName == item.CampaignName && a.Term == item.Term)) { //this doesn't exist listCampaigns.Add(item); } else { //this exists already var campaign = listCampaigns.First(a => a.CampaignName == item.CampaignName && a.Term == item.Term); campaign.TotalVisits += item.TotalVisits; //Reduces the number of collection copies created per iteration from 3 to 1 campaign.Conversions = campaignConversions.Concat(item.Conversions).ToArray(); } }

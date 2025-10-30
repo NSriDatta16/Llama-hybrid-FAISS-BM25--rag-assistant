@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4433608
-[parent_id]: 
-[tags]: 
-What are the consequences of converting heap-indexes to clustered indexes on SQL Server?
-
-I've recently got the advice, that I should convert all our tables from using heap indexes such that each table has a clustered index. What are the consequences of persuing this strategy? E.g. is it more important to regularly reorganize the database? datagrowth? danger of really slow inserts? Danger of page-defragmentation if the PK is a GUID? Noticable speed-increase of my application? What are your experiences? To serve as inspiration for good answers, here are some of the "facts" I've picked up from other threads here on stackoverflow Almost certainly want to establish a clustered index on every table in your database. If a table does not have one. Performance of most common queries is better. Clustered indexes are not always bad on GUIDs... it all depends upon the needs of your application. The INSERT speed will suffer, but the SELECT speed will be improved. The problem with clustered indexes in a GUID field are that the GUIDs are random, so when a new record is inserted, a significant portion of the data on disk has to be moved to insert the records into the middle of the table. Clustered index on GUID is ok in situations where the GUID has a meaning and improves performance by placing related data close to each other http://randommadness.blogspot.com/2008/07/guids-and-clustered-indexes.html Clustering doesn't affect lookup speed - a unique non-clustered index should do the job.

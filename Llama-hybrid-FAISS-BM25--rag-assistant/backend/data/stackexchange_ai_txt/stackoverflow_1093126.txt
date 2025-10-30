@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1093126
-[parent_id]: 1093021
-[tags]: 
-If you've ruled out network latency, your most likely culprit (with real quantities of data) is your pipeline organisation. Specifically, what transformations you're doing along the pipeline. Data transformations come in four flavours: streaming (entirely in-process/in-memory) non-blocking (but still using I/O, e.g. lookup, oledb commands) semi-blocking (blocks a pipeline partially, but not entirely, e.g. merge join) blocking (blocks a pipeline until it's entirely received, e.g. sort, aggregate) If you've a few blocking transforms, that will significantly mash your performance on large datasets. Even semi-blocking, on unbalanced inputs, will block for long periods of time.

@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 103141
-[parent_id]: 
-[tags]: 
-Predicting time series with OpenBUGS
-
-I have a number of fairly short time series (about 4–100 observations) which I need to forecast into the future. I decided to use Bayesian inference, because there is external information about each time series (the time series are mutually similar), and prediction probabilities would be very desired. I chose to create a Bayesian model resembling the classical AR model: $$ y_{i+1} = b_0 + b_1 y_i $$ The prior for $y_i$'s in the future should be a normal distribution derived from all time series. However, I have a problem combining these two sources of information (from the autoregressive model and prior) together in an OpenBUGS model (via BRugs ). This is a fairly simple model implementing only the autoregressive model: model { b0 ~ dunif(-20,20) b1 ~ dunif(-20,20) sd ~ dunif(0, 10) tau where N is the number of observations, K number of predicted values, and z[(N+K):(N+K)] are the predicted values. It works pretty well with simple time series such as (1,2,4,8,16), but fails with real time series, as it tends to grow exponentially (it is not stable). I belive that restricting y's to a normal prior distribution would alleviate the problem, but I do not know how to extend to model to do that. It should be something it the sense of: z[i] ~ dnorm(mu0, tau0) where mu0 and tau0 are defined externally, but that would not be possible here, as z[i] is already defined. How to construct such a model?

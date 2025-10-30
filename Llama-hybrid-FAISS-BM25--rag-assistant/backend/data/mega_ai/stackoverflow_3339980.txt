@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3339980
-[parent_id]: 3339946
-[tags]: 
-I know I'll get lynched for this, but I had a friend who said they used goto for that. Then he told me that it wasn't enough in most cases and he now used setjmp() / longjmp() . Basically he reinvented C++'s exceptions but with much less elegance. That said, since goto could work, you could refactor it into something that doesn't use goto , but the indentation will get out of hand fast: char* function() { char* result = NULL; char* mem = get_memory(100); if(mem) { struct binder* b = get_binder('regular binder'); if(b) { struct file* f = mk_file(); if (f) { // ... } free(b); } free(mem); } return result; } BTW, scattering the local variable declarations around the block like that isn't standard C. Now, if you realize that free(NULL); is defined by the C standard as a do-nothing, you can simplify the nesting some: char* function() { char* result = NULL; char* mem = get_memory(100); struct binder* b = get_binder('regular binder'); struct file* f = mk_file(); if (mem && b && f) { // ... } free(f); free(b); free(mem); return result; }

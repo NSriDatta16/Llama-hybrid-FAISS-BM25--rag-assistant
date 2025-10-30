@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2757749
-[parent_id]: 2718946
-[tags]: 
-Just don't use Include, filter manually. You can first filter Contracts that are associated with required ProgramId and OrganizationId. After that you can select persons associated with selected contracts. A've attached a sample code. You'll need to modify it to utilize M-M relationship correctly. But anyway logic should be correct. public class PersonDetails { public Person person; public List contracts; } var selected_program = (from pr in ctx.Programs where pr.Id == param.ProgramId select pr).Single(); //select contracts by OrganizationId and ProgramId var selected_contracts = from c in ctx.Contracts where c.OrganizationId == param.OrganizationId from p in ctx.Programs where p.Id == param.ProgramId where p.ContractId == c.Id select c; //select persons and contracts var people = from p in ctx.People select new PersonDetails() { person = p, contracts = (from c in selected_contracts where c.PersonId == p.Id select c).ToList() }; //select people associated with selected contracts var selected_people = from p in people where p.contracts.Count > 0 select p;

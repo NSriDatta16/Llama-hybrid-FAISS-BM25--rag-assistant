@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 662725
-[parent_id]: 660820
-[tags]: 
-How can you create a query which would return instances of a type that is not mapped ? I think Michal has a point here, and maybe you should have a look at projections. (At least, this is what I think you're looking for). You create a query on some mapped type, and then, you can 'project' that query to a 'DTO'. In order to do this, you'll have to 'import' your Person class, so that it is known to NHibernate, and you'll have to use a ResultTransformer. Something like this: ICriteria crit = session.CreateCriteria (typeof(Person)); // set some filter criteria crit.SetProjection (Projections.ProjectionList() .Add (Property("Name"), "Name") .Add (Property( ... ) ); crit.SetResultTransformer(Transformers.AliasToBean(typeof(PersonView)); return crit.List (); But, this still means you'll have to import the class, so that NHibernate knows about it.

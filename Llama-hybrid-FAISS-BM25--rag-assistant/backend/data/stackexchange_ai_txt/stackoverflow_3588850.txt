@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3588850
-[parent_id]: 3586877
-[tags]: 
-I agree with Ladislav that what you're seeing is the correct behavior. There's a great document on MSDN that describes what's happening when WCF receives and sends messages: http://msdn.microsoft.com/en-us/library/aa347789.aspx The key paragraph that pertains to what you're asking is here: Reading the message is primarily used by the service framework when receiving messages. For example, when the DataContractSerializer is in use, the service framework will get an XML reader over the body and pass it to the deserialization engine, which will then start reading the message element-by-element and constructing the corresponding object graph. So the framework uses a DataContractSerializer to deserialize the payload (which is an XML infoset) to the appropriate class when it's received. You could attempt to use the same logic - by extracting the payload (probably using Message.GetReaderAtBodyContents() which returns an XmlReader) and then using the DataContractSerializer to deserialize the XML to the object that you want to work with with the returned XmlReader . Hopefully this helps!

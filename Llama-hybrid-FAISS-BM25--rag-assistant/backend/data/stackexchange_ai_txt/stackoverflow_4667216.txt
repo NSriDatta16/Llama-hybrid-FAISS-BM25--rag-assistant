@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4667216
-[parent_id]: 4667019
-[tags]: 
-Do you have the following indexes? for tblWerbemittel - object_group, object_revision for tblVorgang - object_group, object_revision for tblWerbemittel_has_tblAngebot - werbemittel_id, zuschlag Let me know if that helps, there are a few more that I can see might help but try those first. EDIT Can you try these two queries and see if they run fast? SELECT w1.id AS AMOUNT FROM tblWerbemittel w1 INNER JOIN (SELECT wmax.object_group, MAX( wmax.object_revision ) AS wmaxobjrev FROM tblWerbemittel AS wmax GROUP BY wmax.object_group ) AS wmaxselect ON w1.object_group = wmaxselect.object_group AND w1.object_revision = wmaxselect.wmaxobjrev WHERE w1.flags = 0 SELECT v1.werbemittel_id FROM tblVorgang v1 LEFT JOIN (SELECT vmax.object_group, MAX( vmax.object_revision ) AS vmaxobjrev FROM tblVorgang AS vmax GROUP BY vmax.object_group ) AS vmaxselect ON v1.object_group = vmaxselect.object_group AND v1.object_revision = vmaxselect.vmaxobjrev LEFT JOIN WHERE v1.flags = 0

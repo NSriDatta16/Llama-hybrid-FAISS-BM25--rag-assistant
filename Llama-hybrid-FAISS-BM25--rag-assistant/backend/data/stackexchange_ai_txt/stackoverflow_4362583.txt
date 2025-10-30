@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4362583
-[parent_id]: 4362367
-[tags]: 
-I think you can just create 2 xml layouts. One for your EULA and the Accept/Deny buttons, and then another for your main app. When the app loads you can just show the EULA layout if it's the first time and not tracked in the shared preferences. Then when the user accepts have it setContentView on the application content view. Abstract out most of your stuff from onCreate() so you can re-use the components, e.g. private static boolean EulaRequired = true; public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); EulaRequired = sharedprefs.getBoolean("firsttime", true); inflateLayout(); } private void inflateLayout() { if (EulaRequired) { this.setContentView(R.layout.eula); } else { this.setContentView(R.layout.application); DBGetOnlineVersionNumber(); } } private void stuffToDoIfUserAgreesToEULA() { String version = DBGetOnlineVersionNumber(); } void AcceptClicked(Event e) { EulaRequired = false; inflateLayout(); } Something like this should work, I have never tried it though.

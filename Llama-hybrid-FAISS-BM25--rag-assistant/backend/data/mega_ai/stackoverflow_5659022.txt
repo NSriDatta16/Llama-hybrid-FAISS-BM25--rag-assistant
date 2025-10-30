@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5659022
-[parent_id]: 5658747
-[tags]: 
-It seems like id is the custom parameter that gets passed to the callback. If you only have 32-bit targets (and it seems like DragonFireSDK is meant only for iPhone, so I guess the answer is yes), you can cast it to Player* to bind to the player instance. int PlayerMoveLeft(int id, int event, int x, int y) { Player* player = reinterpret_cast (id); return player->MoveLeft(event, x, y); } int PlayerMoveRight(int id, int event, int x, int y) { Player* player = (Player*)id; return player->MoveRight(event, x, y); } void AppMain() { Player* player = new Player(20,20,10); tleft = TouchAdd(0,0,180,480,PlayerMoveLeft,(int)player); tright = TouchAdd(180,0,180,480,PlayerMoveRight,(int)player); } Even if that doesn't work, or you don't want to use kinda-ugly type casts, you can always have a global or static object with lookup tables. Making PlayerMoveLeft and PlayerMoveRight static members of the Player class may also look nicer, and I think it should play well with TouchAdd().

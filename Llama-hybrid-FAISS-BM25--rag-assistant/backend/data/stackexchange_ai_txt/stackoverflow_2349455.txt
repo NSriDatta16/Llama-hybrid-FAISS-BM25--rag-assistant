@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2349455
-[parent_id]: 
-[tags]: 
-A better way to search for events?
-
-I recently found myself in the situation that I needed to remove a function bound to the resize event of the window by WordPress' media manager (media-upload.js), because it was interfering with the proper use of Thickbox. The event is attached like this: a(window).resize(function(){tb_position()}) It took me a while, but I finally found out I could do it in this way: jQuery.each( jQuery(window).data('events')['resize'], function(i, event) { var thisEvent = event.toString().replace(/\n/g, '').replace(/\t/g, '').split(' ').join(''); var expectedEvent = 'function(){tb_position()}'; if (thisEvent == expectedEvent) delete jQuery(window).data(‘events’)[‘resize’][i]; }) Here I cycle through the events, removing spaces, tabs and new lines from them and compare them to what I'm looking for, and when I find it I throw it out of the goddamn airlock. It happens in this case that the attached function perhaps doesn't have spaces, tabs or new lines, but this way also works with more complicated functions as far as I can tell. Is there an easier and/or more elegant way of doing this? Is this a recipe for disaster down the road?

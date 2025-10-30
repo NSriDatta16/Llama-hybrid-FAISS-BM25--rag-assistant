@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 625995
-[parent_id]: 
-[tags]: 
-Simulate time series with periodic spikes
-
-I have multiple time series representing a process that operates in batches. It consists of many small intervals interleaved by periodic long intervals (spikes) at the offset of each batch. The period between the spikes varies slightly. Without knowing the period between spikes (i.e., the spikes are unlabeled), is there a way to learn it from data and simulate a time series with similar properties? What I tried Autocorrelation learns/simulates this process poorly because the lagged correlations are applied to all points, also the non-spike points, resulting in non-spikey simulated values. I tried e.g. forecast::auto.arima() . Bootstrapping naturally doesn't respect the temporal structure out-of-the-box. Data Here's some data that approximately represents the kind of intervals I'm working with, having spikes every 9-11 intervals (it could be 18-22 for another process and the spike height could be different, etc.). The spike-intervals are superimposed on (shifted) log-normal data. I.e., there's a true minimum interval (maximum speed) and then a fat tail of variability. N = 100 # The periodic spikes periodic_intervals = rep(0, N) periodic_intervals[cumsum(sample(9:11, 10^3, replace = TRUE))] = 1 periodic_intervals = periodic_intervals[1:N] * runif(N, 100, 150) # For all data lognormal_intervals = 20 + exp(rnorm(N, 2, 1)) # Superimpose the two intervals = lognormal_intervals + periodic_intervals plot(intervals[1:50], type = "b")

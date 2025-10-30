@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5578833
-[parent_id]: 
-[tags]: 
-url encoded character gets parsed wrongly by webflow/EL/JSF
-
-when I submit the character Ö from a webpage the backend recieves Ã. The webpage is part of a Spring Webflow/JSF1.2/Facelets application. When I inspect the POST with firebug I see: Content-Type: application/x-www-form-urlencoded Content-Length: 74 rapport=krediet_aanvragen&fw1=0&fw2=%C3%96ZTEKIN&fw3=0&fw4=0&zoeken=Zoeken The character Ö is encoded as %C3%96, using this table I can see that it is the correct hexadecimal representation of the UTF-8/Unicode character Ö. However when it reaches the backend the character is changed into Ã. Using the same table I can see there is some code somewhere that tries to interpret the C3 and the 96 separately (or as unicode \u notation). U+00C3 happens to be Ã, 96 is not a visible character so that explains that. Now I know this is a typical case of an encoding mismatch, I just don't know where to look to fix this. The webpage contains When debugging I can see the library responsible for the wrong interpration is jboss-el 2.0.0.GA, which seems right because the value is parsed to the backend in a webflow expression: It is put onto the flowScope by: Nevermind the convulated way of getting the form input into the backend, this is code that tries to integrate Webflow with BIRT reports...but I have the same sympton in other webapplications. Any idea where I have to start looking?

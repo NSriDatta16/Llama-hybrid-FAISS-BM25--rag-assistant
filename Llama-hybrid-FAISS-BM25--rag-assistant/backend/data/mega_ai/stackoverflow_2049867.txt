@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2049867
-[parent_id]: 975071
-[tags]: 
-I got this to work in a slightly different manner. I've tried to illustrate how this was done. In Plain English: use urldecode() In Commented Code Fragments $json = $this->getContent($url); // CURL function to get JSON from service $result = json_decode($json, true); // $result is now an associative array ... $insert = "INSERT INTO mytable (url, data) "; $insert .= "VALUES('" . $url . "', '" . urlencode(json_encode($result)) . "') "; $insert .= "ON DUPLICATE KEY UPDATE url=url"; ... /* ** Figure out when you want to check cache, and then it goes something like this */ $sqlSelect = "SELECT * FROM mytable WHERE url='" . $url . "' LIMIT 0,1"; $result = mysql_query($sqlSelect) or die(mysql_error()); $num = mysql_numrows($result); if ($num>0) { $row = mysql_fetch_assoc($result); $cache = json_decode(urldecode($row['data']), true); } Hope this is helpful

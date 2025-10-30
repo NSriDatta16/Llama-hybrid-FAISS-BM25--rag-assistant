@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3963562
-[parent_id]: 3963010
-[tags]: 
-I don't think there's an elegant solution, but you could try this: On the User model, use Facebook ID as the key name, and store each user's list of things in a ListProperty. class Thing(db.Model): ... class User(db.Model): things = db.ListProperty(db.Key) ... Entity creation would go like this: user = User.get_or_insert(my_facebook_id) thing = Thing() thing.put() user.things.append(thing.key()) user.put() Retrieval takes 2 queries: friends = User.get_by_key_name(friend_ids) thing_keys = [] for friend in friends: thing_keys.extend(friend.things) things = db.get(thing_keys)

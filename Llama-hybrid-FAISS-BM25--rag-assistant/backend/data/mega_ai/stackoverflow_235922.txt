@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 235922
-[parent_id]: 232785
-[tags]: 
-I would generally try to avoid the use of #pragmas if possible, since they're extremely compiler-dependent and non-portable. If you want to use them in a portable fashion, you'll have to surround every pragma with a #if / #endif pair. GCC discourages the use of pragmas, and really only supports some of them for compatibility with other compilers; GCC has other ways of doing the same things that other compilers use pragmas for. For example, here's how you'd ensure that a structure is packed tightly (i.e. no padding between members) in MSVC: #pragma pack(push, 1) struct PackedStructure { char a; int b; short c; }; #pragma pack(pop) // sizeof(PackedStructure) == 7 Here's how you'd do the same thing in GCC: struct PackedStructure __attribute__((__packed__)) { char a; int b; short c; }; // sizeof(PackedStructure == 7) The GCC code is more portable, because if you want to compile that with a non-GCC compiler, all you have to do is #define __attribute__(x) Whereas if you want to port the MSVC code, you have to surround each pragma with a #if / #endif pair. Not pretty.

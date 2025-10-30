@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3366207
-[parent_id]: 3366032
-[tags]: 
-If it is possible to switch to lxml , here is one way it could be done: import lxml.etree as le root=le.XML(content) result=[] namespaces={'pre':'http://www.mysyte.com/foo'} for record in root: id=record.xpath('pre:id',namespaces=namespaces)[0] name=record.xpath('pre:name',namespaces=namespaces)[0] result.append({'code':id.text,'name':name.text}) print(result) # [{'code': 'first', 'name': 'john'}, {'code': 'second', 'name': 'mike'}, {'code': 'third', 'name': 'albert'}] Building off of Dimitre Novatchev's XPath expression , you could do this: id_name_nodes = iter(ctxt.xpathEval('/pre:records/pre:record/*[self::pre:id or self::pre:name]')) ret_list=[] for id,name in zip(id_name_nodes,id_name_nodes): ret_list.append({'code':id.content,'name':name.content}) print(ret_list) This libxml2 code, relies on every record having an id and name. If an id or name is missing, the ret_list will pair the wrong id and name, failing silently. Under the same circumstance, the lxml code would raise an error.

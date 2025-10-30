@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1906735
-[parent_id]: 1906533
-[tags]: 
-Perhaps you are being stymied because you are asking for the wrong version of the windowproc. Window Procs, like applications, occur in two flavors: ansi and unicode. Windows cannot return a raw pointer to a ansi window to a unicode application, or visa versa, as they will attempt to call it with the wrong string type. So, there is no GetWindowLongPtr function. Its a macro that resolves to two 'real' functions the windows api provides: GetWindowLongPtrA and GetWindowLongPtrW. If the window is a unicode window, and GetWindowLongPtrA is called windows will return a handle instead of the raw pointer, so that it can intercept calls (made via CallWindowProc) and marshal the string's from ansi to unicode. The opposite conversion holds the other way. Even if you call the correct function, you still might get a handle back - its completely possible that ansi code has subclassed a unicode window. so the windowproc has been completely replaced by one of the callWindowProc handles. In that case - tough luck I guess.

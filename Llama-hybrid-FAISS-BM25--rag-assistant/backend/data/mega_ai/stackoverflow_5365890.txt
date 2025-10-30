@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5365890
-[parent_id]: 5365746
-[tags]: 
-Template Haskell has two main operations: lifting: [| |] splicing $( ) When you wrap something in the Oxford brackets, you delay its type checking (and evaluation), and instead build an AST fragment that will be type checked when it is spliced back in. The AST that is built can be observed: {-# LANGUAGE TemplateHaskell #-} import Language.Haskell.TH main = print = Running this program (or typing the bracket expression into GHCi), and we get a well-formed AST, but one that is not type correct if treated as a Haskell fragment: InfixE (Just (LitE (StringL "hello"))) (VarE GHC.Num.+) (Just (LitE (IntegerL 1))) Now when we try to actually splice it, type checking happens: *Main> :t [| "hello" + 1 |] [| "hello" + 1 |] :: Q Exp *Main> $( [| "hello" + 1 |] ) :1:4: No instance for (Num [Char]) arising from the literal `1' As we expect. So, yes, TH expressions are type checked, but at a late point, when spliced back into a program.

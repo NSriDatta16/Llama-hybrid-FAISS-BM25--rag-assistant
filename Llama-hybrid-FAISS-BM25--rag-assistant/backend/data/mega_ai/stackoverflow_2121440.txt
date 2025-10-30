@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2121440
-[parent_id]: 2121199
-[tags]: 
-You're not laying out the entries in the band storage properly; it was working before by a happy accident. The LAPACK docs say: On entry, the matrix A in band storage, in rows KL+1 to 2*KL+KU+1; rows 1 to KL of the array need not be set. The j-th column of A is stored in the j-th column of the array AB as follows: AB(KL+KU+1+i-j,j) = A(i,j) for max(1,j-KU) So if you want a tridiagonal matrix with 2 on the diagonal and -1 above and below, the layout should be: * * * * * * * ... * * * * * -1 -1 -1 -1 -1 -1 ... -1 -1 -1 -1 2 2 2 2 2 2 2 ... 2 2 2 2 -1 -1 -1 -1 -1 -1 -1 ... -1 -1 -1 * LDAB should be 4 in this case. Bear in mind that LAPACK uses a column-major layout, so the actual array should be look like this in memory: { *, *, 2.0, -1.0, *, -1.0, 2.0, -1.0, *, -1.0, 2.0, -1.0, ... } dgbsv was giving different results for the two identical arrays because it was reading off the ends of the arrays that you had laid out.

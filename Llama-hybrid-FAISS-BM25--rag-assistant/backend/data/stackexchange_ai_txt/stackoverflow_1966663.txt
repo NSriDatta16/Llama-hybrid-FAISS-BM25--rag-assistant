@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1966663
-[parent_id]: 1932875
-[tags]: 
-No, there is no function like this. If you really need to do it, e.g. because you want to perform some action in another application you need to write platform-specific code yourself (e.g. use SendInput() under Windows). If you want to use this to execute some code in your own application though, there is a much better solution: instead of doing unsupported, fragile and ugly void MyClass::OnLeftUp(wxMouseEvent& event) { ... do something with click at event.GetPosition() ... } void MyOtherFunction() { wxMouseEvent event(...); ... initialization not shown because there is no right way to do it anyhow ... myObject->ProcessEvent(event); } just refactor your code to do it like this instead: void MyClass::OnLeftUp(wxMouseEvent& event) { HandleClick(event.GetPosition()); } void MyClass::HandleClick(const wxPoint& pos) { ... do something with click at pos ... } void MyOtherFunction() { myObject->HandleClick(position); }

@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 123539
-[parent_id]: 
-[tags]: 
-pandas problem in calling rolling window and lambda function
-
-I have a pandas dataframe with the following set of columns (from the df.columns function): Index(['open', 'high', 'low', 'close'], dtype='object') I am trying to compute loss functions (future in time) with this code rolling_loss = lambda x: (x["high"].max() - x["close"].iloc[0]) indexer = pd.api.indexers.FixedForwardWindowIndexer(window_size=3) df["rolling_loss"] = df.rolling(window=indexer, min_periods=1).apply(rolling_loss) The intent is to calculate the difference between max high value in the next 3 days and today's close value within the 3 day window Two asks: Yes. I need help to resolve the error as everything seesm correct in my "eyes". Seond ask is how do you debug problems like this - just experience? Is there something I am not doing. TIA edit: The below works without errors. but think the lambda is elegant. Any suggestions rolling_loss = lambda x: (x["high"].max() - x["close"].iloc[0]) indexer = pd.api.indexers.FixedForwardWindowIndexer(window_size=3) # df["rolling_loss"] = df.rolling(window=indexer, min_periods=1).apply(rolling_loss) df["roll_3_max"] = df["high"].rolling(window=indexer, min_periods=1).max() df["roll_3_min"] = df["low"].rolling(window=indexer, min_periods=1).min() df["roll_3_loss_up"] = df["roll_3_max"] - df["close"] df["roll_3_loss_dn"] = df["roll_3_min"] - df["close"] pp(df.head(10)) ```

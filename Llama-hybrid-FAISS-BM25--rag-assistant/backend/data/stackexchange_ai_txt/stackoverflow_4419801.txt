@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4419801
-[parent_id]: 4419759
-[tags]: 
-Exception-safe doesn't mean catching exceptions. It means using RAII and automatic destructors to ensure that cleanup occurs properly in the presence of an exception. As for the mutex, the correct way to do that would be to have a static mutex object and an automatic scoped-guard style acquire/release RAII object. Since the RAII object has automatic storage, it will release the mutex when an exception occurs. EDIT: This is the correct form for the RAII class class scoped_lock_guard { Lock& m_lock; public: scoped_locK_guard(Lock& lock) : m_lock(lock) { lock.acquire(); } ~scoped_lock_guard() { m_lock.release(); } }; The Lock object itself has to be shared somehow.

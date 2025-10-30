@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4344202
-[parent_id]: 
-[tags]: 
-CloseHandle confusion - Must I call CloseHandle on multiple "copies" of a handle?
-
-I have some (more) questions about calling CloseHandle. So, the SO citizens have spoken, and you must always close a handle . Question 1 I've written the following code snippet in a destructor: HANDLE handles[] = { m_hGrabberThread, m_hCtrlThread, m_hErrDispatchThread }; int nNumHandles = sizeof(handles) / sizeof(handles[0]); for( int n = 0; n Is the above code valid, or must I call CloseHandle() on each handle member variable individually? e.g. if( m_hCtrlThread != INVALID_HANDLE_VALUE ) CloseHandle( m_hCtrlThread ); I suppose that this question is linked (vaguely) to question 2... Question 2 I have a class that creates an event handle: HANDLE hEventAbortProgram = CreateEvent( NULL, TRUE, FALSE, NULL ); This handle is shared among other threads in other objects. By sharing the handle, I mean: objectB.m_hEventAbort = objectA.m_hEventAbort; Each object's threads will then do something like: while( WaitForSingleObject(m_hEventAbort, 0) == WAIT_TIMEOUT ) {...} When the event is signaled, all threads will exit. My question is: must I call CloseHandle on each copy of the handle, or just once in my main "parent" object? I suppose that I'm asking - are handles reference counted when they're copied? I know that a handle is only a typedef for a void*, so my instinct says no, I only need to call it once per handle.

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 231705
-[parent_id]: 230138
-[tags]: 
-The link I posted above is a great option that addresses the main issue: that we can never programmatically account for all cases (Smith-Jones, von Haussen, John Smith M.D.), at least not in an elegant manner. Tony introduces the concept of an exception / break character to deal with these cases. Anyways, building on Cervo's idea (upper all lower chars preceded by space), the replace statements could be wrapped up in a single table based replace instead. Really, any low/up character combination could be inserted into @alpha and the statement would not change: declare @str nvarchar(8000) declare @alpha table (low nchar(1), up nchar(1)) set @str = 'ALL UPPER CASE and SOME lower ÄÄ ÖÖ ÜÜ ÉÉ ØØ ĈĈ ÆÆ' -- stage the alpha (needs number table) insert into @alpha -- A-Z / a-z select nchar(n+32), nchar(n) from dbo.Number where n between 65 and 90 or n between 192 and 223 -- append space at start of str set @str = lower(' ' + @str) -- upper all lower case chars preceded by space select @str = replace(@str, ' ' + low, ' ' + up) from @Alpha select @str

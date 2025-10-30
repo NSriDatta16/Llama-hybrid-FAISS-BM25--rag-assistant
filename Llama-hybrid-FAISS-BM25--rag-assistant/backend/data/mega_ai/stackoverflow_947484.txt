@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 947484
-[parent_id]: 947024
-[tags]: 
-For the greatest speed, you would create a persisted computed column like shortNameCrc = checksum(shortName), then create an index on (foreignKey, checksum(shortName)) and include (shortName). Then you would query like where foreignKey = foreignKey and shortNameCrc = checksum(@shortName) and shortName = shortName If SomeTable is not clustered on tableKey then you would want to add tableKey as an include columns. If it is clustered on tableKey then the value is already present in the covering index. Filling a page should not cause a speed increase, this will cost you in excess memory usage and a greater likelihood in having to visit disk. Filling a page may be better for throughput in some cases for a workload that is very high in contention in the same physical area. Making shortName char(100) may be better than varchar(100). Given unlimited ram I suspect it would be. In the real world it may depend on the average length and the likelihood of a cache miss.

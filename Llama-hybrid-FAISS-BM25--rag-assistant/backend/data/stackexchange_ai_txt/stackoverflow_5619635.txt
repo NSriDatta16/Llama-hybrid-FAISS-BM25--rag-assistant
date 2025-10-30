@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5619635
-[parent_id]: 5614568
-[tags]: 
-You need to specify what the list that represents your graph means. Currently you have only given an example list. When the graph has a syntax like: graph = (node*) node = (name nextnodename*) name = SYMBOL nextnodename = SYMBOL Then a transformation function might be: (defun convert-graph (graph) (mapcar (lambda (node) (destructuring-bind (name . nodes) node (cons name (mapcar #'first nodes)))) graph)) or if you might need other extraction functions: (defun convert-graph (graph &key (key #'first)) (mapcar (lambda (node) (destructuring-bind (name . nodes) node (cons name (mapcar key nodes)))) graph)) Example: (convert-graph '((a (b 3) (c 1)) (b (a 3) (d 1)) (c (a 1) (d 2) (e 2))) :key #'first) ((A B C) (B A D) (C A D E)) Now you might need to remove duplicate links. But this depends on the syntax and semantics of your graph description.

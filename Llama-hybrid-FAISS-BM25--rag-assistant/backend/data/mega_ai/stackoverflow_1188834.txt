@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1188834
-[parent_id]: 1186400
-[tags]: 
-"Correct" is a dangerous word in Ruby. There's usually more than one way to do anything. If you know you'll always want that default value for that column on that table, setting them in a DB migration file is the easiest way: class SetDefault "Doe" end def self.down # You can't currently remove default values in Rails raise ActiveRecord::IrreversibleMigration, "Can't remove the default" end end Because ActiveRecord autodiscovers your table and column properties, this will cause the same default to be set in any model using it in any standard Rails app. However, if you only want default values set in specific cases -- say, it's an inherited model that shares a table with some others -- then another elegant way is do it directly in your Rails code when the model object is created: class GenericPerson "Doe"}.merge(attributes) super(attr_with_defaults) end end Then, when you do a GenericPerson.new() , it'll always trickle the "Doe" attribute up to Person.new() unless you override it with something else.

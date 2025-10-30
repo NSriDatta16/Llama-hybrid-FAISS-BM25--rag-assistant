@@ -1,7 +1,0 @@
-[site]: datascience
-[post_id]: 30602
-[parent_id]: 
-[tags]: 
-How to implement PCA color augmentation as discussed in AlexNet
-
-I read through "ImageNet Classification with Deep Convolutional Neural Networks" again specifically for details on how to implement PCA color augmentation. I am unsure if I have it right. Here is how I did this in numpy: # original image is 224x224x3 of dtype uint8 renorm_image = np.reshape(original_image,(original_image.shape[0]*original_image.shape[1],3)) renorm_image = renorm_image.astype('float32') renorm_image -= np.mean(renorm_image, axis=0) renorm_image /= np.std(renorm_image, axis=0) cov = np.cov(renorm_image, rowvar=False) lambdas, p = np.linalg.eig(cov) alphas = np.random.normal(0, 0.1, 3) delta = np.dot(p, alphas*lambdas) delta = (delta*255.).astype('int8') pca_color_image = np.maximum(np.minimum(original_image + delta, 255), 0).astype('uint8') One serious doubt is the line "delta = (delta*255.)". I have to do this to rescale things such that the numbers make sense. I hope someone can give me feedback if this is right.

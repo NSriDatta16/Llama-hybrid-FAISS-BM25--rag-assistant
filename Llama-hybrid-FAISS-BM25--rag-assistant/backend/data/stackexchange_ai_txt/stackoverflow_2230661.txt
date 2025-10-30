@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2230661
-[parent_id]: 2227493
-[tags]: 
-Although it does look like it should work, it really doesn't. I finally was able to track down the problem, and it was in the _isPILImage() function. The problem is that "Image.Image" is actually "from PIL import Image" whereas my object is actually just from Image. I would have assumed they were the same, but in any case isinstance doesn't evaluate them as the same. My hack solution was to change _isPILImage(fileName): ... to 519 def _isPILImage(im): 520 import Image as PIL_Image 521 try: 522 return isinstance(im,Image.Image) or isinstance(im, PIL_Image.Image) 523 except ImportError: 524 return 0 That solves my error. Since you pointed me in the right direction I originally tried to post this as a comment then accept your answer, but it doesn't allow enough characters. Thank you for the input! If you can think of a more elegant way to fix this... (I tried to wrap the Image.Image object in a PIL Image object) let me know!

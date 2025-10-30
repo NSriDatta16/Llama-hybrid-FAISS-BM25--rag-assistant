@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2633720
-[parent_id]: 2631973
-[tags]: 
-I looked at the appendix.sty source, and I see the problem: line 74, in the definition of \@chap@pppage , issues a \thispagestyle{plain} command, thus overriding your \pagestyle{empty} for this page. The inelegant but direct way to fix this is to redefine the command without this line - issue the following code after importing the package. Revised, tested version \documentclass{report} \usepackage{appendix} %==== The action ================ \makeatletter \def\@chap@pppage{% \clear@ppage \if@twocolumn\onecolumn\@tempswatrue\else\@tempswafalse\fi \null\vfil \markboth{}{}% { \centering \interlinepenalty \@M \normalfont \Huge \bfseries \appendixpagename\par}% \if@dotoc@pp\addappheadtotoc\fi \vfil\newpage \if@twoside \if@openright \null \thispagestyle{empty}\newpage\fi \fi \if@tempswa \twocolumn\fi } \makeatother %==== Back to the document ======== \begin{document} \tableofcontents \chapter{Blah} Rhubarb, rhubarb, rhubarb. \appendix \pagestyle{empty} \appendixpage \noappendicestocpagenum \addappheadtotoc \chapter{Boff} Cabbages, cabbages, cabbages. \end{document}

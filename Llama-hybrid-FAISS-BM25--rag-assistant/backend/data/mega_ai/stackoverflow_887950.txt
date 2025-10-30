@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 887950
-[parent_id]: 886511
-[tags]: 
-The problem is that the lexer is gobbling the DecimalDigit and returning a NumericLiteral. The parser will never see DecimalDigits because it is a fragment rule. I would recommend moving timeLiteral into the lexer (capitalize its name). So you'd have something like timeLiteral : TimeLiteral -> ^(TIMELIT TimeLiteral*) ; number : DecimalLiteral ; TimeLiteral : DecimalDigit DecimalDigit COLON DecimalDigit DecimalDigit COLON DecimalDigit DecimalDigit ; DecimalLiteral : DecimalDigit+ ('.' DecimalDigit+)? ; fragment DecimalDigit : ('0'..'9') ; Keep in mind that the lexer and parser are completely independent. The lexer determines which tokens will be passed to the parser, then the parser gets to group them.

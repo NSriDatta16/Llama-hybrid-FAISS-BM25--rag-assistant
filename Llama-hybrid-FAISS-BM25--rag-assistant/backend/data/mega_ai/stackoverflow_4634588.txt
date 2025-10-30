@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4634588
-[parent_id]: 
-[tags]: 
-Is it possible to automatically clean up resources at the end of scope in Guice?
-
-Let's say I have a Closeable object injected through Guice using request scope: @Provides @RequestScoped public MyCloseableResource providesMyCloseableResource(){ return new MyCloseableResourceImpl(); } Is it possible to hook-up a clean-up method that would automatically call close() on my resource when the scope exists, without resorting to custom scope implementation? Looking at the custom scope implementation guide on the Guice wiki, it shows that scopes should be created and cleaned up like this: /** * Runs {@code runnable} in batch scope. */ public void scopeRunnable(Runnable runnable) { scope.enter(); try { // explicitly seed some seed objects... scope.seed(Key.get(SomeObject.class), someObject); // create and access scoped objects runnable.run(); } finally { scope.exit(); } } I am wondering if there is way to hook-up some custom clean-up code in the finally of the built-in scopes (especially session and request scopes). If it isn't possible, might there be issues that would discourage this kind of automatic clean-up? I have found ways of achieving the same effect in servlet containers by implementing a Filter to create and clean-up a resource per request, which works great but I am curious if it is possibly with pure Guice.

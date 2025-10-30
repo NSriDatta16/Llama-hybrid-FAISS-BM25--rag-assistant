@@ -1,7 +1,0 @@
-[site]: crossvalidated
-[post_id]: 382112
-[parent_id]: 
-[tags]: 
-For a specific dataset do all the features have the same importance across different algorithms?
-
-I wonder if by implementing a feature selection technic using training with a specific algorithm you can select the feature you need to use with other algorithms also. To be more specific after I trained an XGBoost model with the default parameters and using the following code: columns = ['Thresh', 'n', 'selected_features', 'Logloss'] feature_selection = pd.DataFrame(columns=columns) thresholds = np.sort(model.feature_importances_) for thresh in thresholds: # select features using threshold selection = SelectFromModel(model, threshold=thresh, prefit=True) select_X_train = selection.transform(X_train) # train model selection_model = XGBClassifier(objective='multi:softprob', n_jobs=-1) selection_model.fit(select_X_train, y_train) # eval model select_X_val = selection.transform(X_val) y_pred = selection_model.predict_proba(select_X_val) score = log_loss(y_val, y_pred) result = pd.DataFrame( np.array([ thresh, select_X_train.shape[1], X_train.columns[selection.get_support()], score ]).reshape(1, -1), columns=columns) feature_selection = feature_selection.append(result, ignore_index=True) I ended up with: and I decided to continue with the 22 out of 33 features. My question is can I use these features as the most important to try other models (including DNN), or their importance is specific for this algorithm?

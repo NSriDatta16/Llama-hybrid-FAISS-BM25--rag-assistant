@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1538124
-[parent_id]: 
-[tags]: 
-PHP array_key_exists() and SPL ArrayAccess interface: not compatible?
-
-I wrote a simple collection class so that I can store my arrays in objects: class App_Collection implements ArrayAccess, IteratorAggregate, Countable { public $data = array(); public function count() { return count($this->data); } public function offsetExists($offset) { return (isset($this->data[$offset])); } public function offsetGet($offset) { if ($this->offsetExists($offset)) { return $this->data[$offset]; } return false; } public function offsetSet($offset, $value) { if ($offset) { $this->data[$offset] = $value; } else { $this->data[] = $value; } } public function offsetUnset($offset) { unset($this->data[$offset]); } public function getIterator() { return new ArrayIterator($this->data); } } Problem: when calling array_key_exists() on this object, it always returns "false" as it seems this function is not being handled by the SPL. Is there any way around this? Proof of concept: $collection = new App_Collection(); $collection['foo'] = 'bar'; // EXPECTED return value: bool(true) // REAL return value: bool(false) var_dump(array_key_exists('foo', $collection));

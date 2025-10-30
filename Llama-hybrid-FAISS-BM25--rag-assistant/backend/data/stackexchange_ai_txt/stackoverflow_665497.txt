@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 665497
-[parent_id]: 665417
-[tags]: 
-Well, you could generate the Guid by hand. However, one of the advantages of a Guid is that it isn't guessable - i.e. given record 0000-...-0005 , there is usually little point (from an attacker) checking for record 0000-....-0004 etc. Also - re fragmentation? As long as you have a non-clustered index on this data, I'm not sure that this is an issue. You wouldn't normally put a clustered index on a Guid , so the table will be a heap (unless you have a separate clustered index, such as an IDENTITY int). In which case you will be adding to the end, and inserting the new Guid into the non-clustered index. No real pain. (edit) One problem of using the time directly is that you introduce a lot more risk of collisions; you would need to worry about tight-loop Guid creation (i.e. avoiding repetition when creating a few in sequence), which means synchronization, etc - and it gets even more troublesome if multiple machines are working intensively in parallel - chances are you'll get duplicates.

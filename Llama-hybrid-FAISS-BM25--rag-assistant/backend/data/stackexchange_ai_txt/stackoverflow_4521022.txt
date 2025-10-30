@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4521022
-[parent_id]: 4518856
-[tags]: 
-I found the answer in another question The way to do it is to pass the source ListView into the DragDrow.DoDragDrop method ie. In the method which handles the PreviewMouseMove for the ListView do- private static void List_MouseMove(MouseEventArgs e) { if (e.LeftButton == MouseButtonState.Pressed) { if (e.Source != null) { DragDrop.DoDragDrop((ListView)e.Source, (ListView)e.Source, DragDropEffects.Move); } } } and then in the OnHandleDrop method change the code to private static void OnHandleDrop(DragEventArgs e) { if (e.Data != null && e.Data.GetDataPresent("System.Windows.Controls.ListView")) { //var person = e.Data.GetData("myFormat") as PersonModel; //Gets the ItemsSource of the source ListView and removes the person var source = e.Data.GetData("System.Windows.Controls.ListView") as ListView; if (source != null) { var person = source.SelectedItem as PersonModel; ((ObservableCollection )source.ItemsSource).Remove(person); //Gets the ItemsSource of the target ListView ((ObservableCollection )(((ListView)e.Source).ItemsSource)).Add(person); } } }

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2356622
-[parent_id]: 2355552
-[tags]: 
-Magento drops quote items into the cart, specifically. Those quote items are retrieved by using $product->prepareForCart . These items also include different information, such as quantity and configurable product options (on a quote item). From a backend perspective, data for products are stored in: catalog_product_entity_* , whereas quote items are stored in sales_flat_quote_item (at least in Enterprise. someone else might want to verify this on community). EDIT: Attaching some code that we wrote to import product inventories a while back. $product = Mage::getModel("catalog/product")->load($productId); $product->seStockData(array( "qty" => (int)$yourQuantity, "is_in_stock" => ((int)$isTheProductInStock), "manage_stock" => $manageStock, "is_qty_decimal" => $isQtyDecimal, "use_config_manage_stock" => $useConfigManageStock, )); Mage::getModel('catalog/product_api')->update($sku,$product->getData()); For your purposes you may just need to call $product->save(); , but I'm including the whole snippet as written because it works. Hope that helps. Thanks, Joe

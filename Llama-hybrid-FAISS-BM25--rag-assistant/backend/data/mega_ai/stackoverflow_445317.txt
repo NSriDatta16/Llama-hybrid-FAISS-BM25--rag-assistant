@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 445317
-[parent_id]: 445050
-[tags]: 
-You can still use the cache (shared among all responses) and session (unique per user) for storage. I like the following "try get from cache/create and store" pattern (c#-like pseudocode): public static class CacheExtensions { public static T GetOrStore (this Cache cache, string key, Func generator) { var result = cache[key]; if(result == null) { result = generator(); cache[key] = result; } return (T)result; } } you'd use this like so: var user = HttpRuntime .Cache .GetOrStore ( $"User{_userId}", () => Repository.GetUser(_userId)); You can adapt this pattern to the Session, ViewState (ugh) or any other cache mechanism. You can also extend the ControllerContext.HttpContext (which I think is one of the wrappers in System.Web.Extensions), or create a new class to do it with some room for mocking the cache.

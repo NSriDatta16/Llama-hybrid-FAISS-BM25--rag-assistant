@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3467798
-[parent_id]: 
-[tags]: 
-Bit fields and endianness
-
-I have defined the following struct to represent an IPv4 header (up until the options field): struct IPv4Header { // First row in diagram u_int32 Version:4; u_int32 InternetHeaderLength:4; // Header length is expressed in units of 32 bits. u_int32 TypeOfService:8; u_int32 TotalLength:16; // Second row in diagram u_int32 Identification:16; u_int32 Flags:3; u_int32 FragmentOffset:13; // Third row in diagram u_int32 TTL:8; u_int32 Protocol:8; u_int32 HeaderChecksum:16; // Fourth row in diagram u_int32 SourceAddress:32; // Fifth row in diagram u_int32 DestinationAddress:32; }; I now also captured an IP frame with Wireshark. As an array literal it looks like this: // Captured with Wireshark const u_int8 cIPHeaderSample[] = { 0x45, 0x00, 0x05, 0x17, 0xA7, 0xE0, 0x40, 0x00, 0x2E, 0x06, 0x1B, 0xEA, 0x51, 0x58, 0x25, 0x02, 0x0A, 0x04, 0x03, 0xB9 }; My question is: How can I create a IPv4Header object using the array data? This doesn't work because of incompatible endianness: IPv4Header header = *((IPv4Header*)cIPHeaderSample); I'm aware of the functions like ntohs and ntohl, but it can't figure out how to use them correctly: u_int8 version = ntohs(cIPHeaderSample[0]); printf("version: %x \n", version); // Output is: // version: 0 Can anyone help?

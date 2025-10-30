@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 574323
-[parent_id]: 574302
-[tags]: 
-In general, you want to parse the HTML into a DOM, and then traverse the text nodes. I would use Template::Refine for this: #!/usr/bin/env perl use strict; use warnings; use feature ':5.10'; use Template::Refine::Fragment; my $frag = Template::Refine::Fragment->new_from_string(' Hello, world. This is a test of foo finding. Here is another foo.'); say $frag->process( simple_replace { my $n = shift; my $text = $n->textContent; $text =~ s/foo/ /g; return XML::LibXML::Text->new($text); } '//text()', )->render; This outputs: Hello, world. This is a test of &lt;foo&gt; finding. Here is another &lt;foo&gt;. Anyway, don't parse structured data with regular expressions. HTML is not "regular", it's "context-free". Edit: finally, if you are generating the HTML inside your program, and you have to do transformations like this on strings, "UR DOIN IT WRONG". You should build a DOM, and only serialize it when everything has been transformed. (You can still use TR, however, via the new_from_dom constructor.)

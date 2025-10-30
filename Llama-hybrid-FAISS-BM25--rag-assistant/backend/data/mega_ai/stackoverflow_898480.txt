@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 898480
-[parent_id]: 898432
-[tags]: 
-In the compiler output I have seen, function local static variables are initialized exactly as you imagine. (Caveat: This paragraph applies to C++ versions older than C++11. See the comments for changes since C++11.) Note that in general this is not done in a thread-safe manner. So if you have functions with static locals like that that might be called from multiple threads, you should take this into account. Calling the function once in the main thread before any others are called will usually do the trick. I should add that if the initialization of the local static is by a simple constant like in your example, the compiler doesn't need to go through these gyrations - it can just initialize the variable in the image or before main() like a regular static initialization (because your program wouldn't be able to tell the difference). But if you initialize it with a function's return value, then the compiler pretty much has to test a flag indicating if the initialization has been done or something equivalent.

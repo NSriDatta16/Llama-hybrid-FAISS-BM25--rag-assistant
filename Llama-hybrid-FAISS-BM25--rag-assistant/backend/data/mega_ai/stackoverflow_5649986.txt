@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5649986
-[parent_id]: 5647794
-[tags]: 
-It's easy enough to add your custom message to the stack when an item is added. Add an event listener for checkout_cart_add_product_complete which does this: public function observeAddToCart($observer) { $product = $observer->getEvent()->getProduct(); // you may need to play with this $session = Mage::getSingleton("checkout/session")->addSuccess($message); $message = Mage::helper("yourmodule")->__('%s, you added %s to your shopping cart.', Mage::helper('core')->htmlEscape($product->getName())); $session->addSuccess($message); } That leaves the problem of removing the old message. The closest that I see right now is that you can clear all other messages on command by retrieving them. So you could clear the Magento-set message afterwards like so: Mage::getSingleton("checkout/session")->getMessages(true); You would need to do this after Magento's message has been added, however. Hope that gives you a start! Thanks, Joe

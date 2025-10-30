@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3124382
-[parent_id]: 3124099
-[tags]: 
-Yes, that cannot work. Calling DoDragDrop() turns mouse control over to the Windows D+D logic, that's going to interfere with normal mouse handling. You need to delay starting the D+D until you see the user actually dragging. This ought to solve the problem: Point dragStart; private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e) { if (e.Button == MouseButtons.Left) dragStart = e.Location; } private void dataGridView1_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e) { if (e.Button == MouseButtons.Left) { var min = SystemInformation.DoubleClickSize; if (Math.Abs(e.X - dragStart.X) >= min.Width || Math.Abs(e.Y - dragStart.Y) >= min.Height) { // Call DoDragDrop //... } } }

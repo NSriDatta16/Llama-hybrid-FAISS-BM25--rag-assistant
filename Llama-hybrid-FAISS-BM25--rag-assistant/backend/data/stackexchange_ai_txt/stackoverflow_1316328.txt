@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1316328
-[parent_id]: 1316292
-[tags]: 
-Use a parameterized query, instead of building the query using string concatenation : using (SQLiteConnection = new SQLiteConnection(cntnStr)) { connection.Open(); string query = "Insert Into Pages (ID, Data, Name) Values (?, ?, ?)"; using (SQLiteCommand command = new SQLiteCommand(query, connection) { command.Parameters.Add("id", DbType.Int32); command.Parameters.Add("data", DbType.String); command.Parameters.Add("name", DbType.String); foreach(Page p in pages) { command.Parameters["id"].Value = p.Id; command.Parameters["data"].Value = p.Data; command.Parameters["name"].Value = p.Name; command.ExecuteNonQuery(); } } } This will be faster because the DbCommand is only created once, and the query is only parsed once. Also, you avoid the risks of SQL injection due to the string concatenation BTW, have a look at this article by Robert Simpson (author of the SQLite .NET provider)

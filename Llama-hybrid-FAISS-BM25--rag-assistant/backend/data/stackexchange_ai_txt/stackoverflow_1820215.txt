@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1820215
-[parent_id]: 
-[tags]: 
-Full-text search across concatenated columns?
-
-I'm new to free-text search, so pardon the newbie question. Suppose I have the following full-text index: Create FullText Index on Contacts( FirstName, LastName, Organization ) Key Index PK_Contacts_ContactID Go I want to do a freetext search against all three columns concatenated FirstName + ' ' + LastName + ' ' + Organization So that for example Searching for jim smith returns all contacts named Jim Smith Searching for smith ibm returns all contacts named Smith who work at IBM This seems like it would be a fairly common scenario. I would have expected this to work: Select c.FirstName, c.LastName, c.Organization, ft.Rank from FreeTextTable(Contacts, *, 'smith ibm') ft Left Join Contacts c on ft.[Key]=c.ContactID Order by ft.Rank Desc but this is apparently doing smith OR ibm ; it returns a lot of Smiths who don't work at IBM and vice versa. Surprisingly, searching for smith AND ibm yields identical results. This does what I want... Select c.FirstName, c.LastName, c.Organization from Contacts c where Contains(*, 'smith') and Contains(*, 'ibm') ...but then I can't parameterize queries coming from the user -- I would have to break up the search string into words myself and assemble the SQL on the fly, which is ugly and unsafe.

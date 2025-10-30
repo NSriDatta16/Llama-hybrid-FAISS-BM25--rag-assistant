@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1463838
-[parent_id]: 1463711
-[tags]: 
-Memory leaks in .NET are not that common, but when they happen it is most commonly due to unattached event handlers. Make sure you detach handlers, before the listeners go out of scope. Another option is if you forget to call Dispose() on IDisposable resources. This may prevent cleanup of unmanaged resources (which are not handled by GC). And yet another possible reason is a deadlocked finalizer. That will prevent all remaining objects in the finalizer queue from being collected. I use WinDbg + Sos to track down leaks. The steps are as follows Dump the heap and look for suspects Use !gcroot to find out what is keeping the suspects alive Repeat as necessary Be aware that large memory usage may also be due to heap fragmentation. The regular heaps are compacted, but pinned objects can cause fragmentation. Also, the LOH is not compacted so fragmentation is not uncommon for LOH. Excellent tutorials on WinDbg + sos here: http://blogs.msdn.com/tess/

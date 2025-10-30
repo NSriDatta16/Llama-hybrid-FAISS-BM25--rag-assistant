@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 669531
-[parent_id]: 669482
-[tags]: 
-My suspicion is that you are "over" retaining: Trees[0] = [[Sprite spriteWithFile:@"mytree.png"] retain]; If Trees is a local variable in a function you do not have to retain in that case if spriteWithFile is returning a Sprite with an autorelease. The section on delay release in the apple documentation discusses this further . The long and short of it is that the receiver of the autorelease is guaranteed to have the object be valid for the duration of its scope. If you need the object beyond the scope of the function (e.g. Trees is a property of a class) then yes, in that case you need a retain (or just synthesize a property configured to retain). By issuing the extra retain, it is likely that your retain count is always too high (never reaches 0) and hence your object is not garbage collected. For good measure, I'd suggest reviewing this paragraph as well that talks about the validity of objects .

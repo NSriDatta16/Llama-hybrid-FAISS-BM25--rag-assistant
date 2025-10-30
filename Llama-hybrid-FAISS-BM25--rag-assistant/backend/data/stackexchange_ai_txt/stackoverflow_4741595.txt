@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4741595
-[parent_id]: 4741191
-[tags]: 
-Use typedef : typedef NSImage *(^KWResizerBlock)(CGFloat size, BOOL preview); This makes your code become: - (KWResizerBlock) resizeBlock { KWResizerBlock block = ^(CGFloat size, BOOL preview){ // image-resizing code return [[[NSImage alloc] init] autorelease]; }; return [[block copy] autorelease]; } -(void)queueResize:(CGFloat)targetSize toView:(NSImageView *)targetView { KWResizerBlock sizeBlock = [self resizeBlock]; NSBlockOperation *bo = [NSBlockOperation blockOperationWithBlock:^{ NSImage *previewImage = sizeBlock(targetSize, YES); //do something with previewImage }]; [queue addOperation:bo]; } One word of caution: Your NSBlockOperation is going to be executing on a thread that's not the main thread, and so it is unsafe to manipulate any UI element from within that context. If you need to put the previewImage onto the UI, then you should dispatch_async() back to the main thread (or something functionally equivalent). It may work right now, but it is strongly discourage and can lead to undefined behavior.

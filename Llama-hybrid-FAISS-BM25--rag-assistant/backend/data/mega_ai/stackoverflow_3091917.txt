@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3091917
-[parent_id]: 2883900
-[tags]: 
-Here is my solution: class Model_Mapper_Db_Comment extends Model_Mapper_Db_Abstract { public function getUserCommentsPaginator($user_id) { $select = $this->_getTable()->select()->where('user_id = ?', (int)$user_id); $paginator = Zend_Paginator::factory($select, 'DbSelect'); return $paginator; } } class Model_User extends Model_Abstract implements Zend_Auth_Adapter_Interface { public function getCommentsPaginator() { $paginator = $this->getMapper(null, 'Comment')->getUserCommentsPaginator($this->id); $paginator->setFilter(new App_Filter_Array_Collection('Model_Collection_Comments')); return $paginator; } } Model requests Zend_Paginate object with prepared query based on user_id provided from Model. Then Model added filter to Zend_Paginate object to make it compatible with other Model methods (return Model_Collection classes, not arrays). All other pagination parameters are set in controller (page, the number of items per page, etc.). Thet's how I had separated storage, business and control logic in my application.

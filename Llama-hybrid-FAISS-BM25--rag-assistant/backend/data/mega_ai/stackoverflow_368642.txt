@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 368642
-[parent_id]: 
-[tags]: 
-Procedure expects parameter which was not supplied
-
-I'm getting the error when accessing a Stored Procedure in SQL Server Server Error in '/' Application. Procedure or function 'ColumnSeek' expects parameter '@template', which was not supplied. This is happening when I call a Stored Procedure with a parameter through .net's data connection to sql (System.data.SqlClient) , even though I am supplying the parameter. Here is my code. SqlConnection sqlConn = new SqlConnection(connPath); sqlConn.Open(); //METADATA RETRIEVAL string sqlCommString = "QCApp.dbo.ColumnSeek"; SqlCommand metaDataComm = new SqlCommand(sqlCommString, sqlConn); metaDataComm.CommandType = CommandType.StoredProcedure; SqlParameter sp = metaDataComm.Parameters.Add("@template",SqlDbType.VarChar,50); sp.Value = Template; SqlDataReader metadr = metaDataComm.ExecuteReader(); And my Stored Procedure is: USE [QCApp] GO SET ANSI_NULLS ON GO SET QUOTED_IDENTIFIER ON GO ALTER PROCEDURE [dbo].[ColumnSeek] @template varchar(50) AS EXEC('SELECT Column_Name, Data_Type FROM [QCApp].[INFORMATION_SCHEMA].[COLUMNS] WHERE TABLE_NAME = ' + @template); I'm trying to figure out what I'm doing wrong here. Edit: As it turns out, Template was null because I was getting its value from a parameter passed through the URL and I screwed up the url param passing (I was using @ for and instead of & )

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1049791
-[parent_id]: 
-[tags]: 
-pass data from controller to filter
-
-In a Grails application I'm looking for some way to pass data from a controller action to a filter that runs after the action. I was thinking of something like: class MyController { def myAction = { render(view:"myView", model:[key: "value"]) passData { // Do some processing here name = "paolo" age = 38 } } } public class MyFilters { def name def age def filters = { myFilter(controller: "*", action: "*") { after = { model -> // Do something with name and age return true } } } } The original plan was to do the following in the init() closure of BootStrap.config: Use meta-programming to add a "passData(Closure pdClosure)" method to all the controllers Set the delegate of pdClosure to MyFilters, so that when the name and age properties are set within this closure, they are set on the MyFilters instance. However, I realised this won't work as there's no obvious way for me to access (from BootStrap.init) the MyFilters instance that will be called for a particular controller. Equally, there doesn't appear to be any way to access the controller instance from within the filter. Of course, I could just stuff all the data into the model, but I'm wondering if there's a more elegant way to pass data between the two? Thanks, Don

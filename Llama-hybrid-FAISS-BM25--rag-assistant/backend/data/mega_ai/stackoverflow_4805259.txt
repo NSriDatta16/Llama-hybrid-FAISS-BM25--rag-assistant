@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4805259
-[parent_id]: 
-[tags]: 
-Issue with TryGetInstance using StructureMap and NET MVC 2
-
-I am using StructurMap (just upgraded to 2.6.1) and Jimmy Bogard's Smart Model Binders within my NET MVC 2 application. I am also adapting a technique by Dominic Pettifer so that you can use the smart model binder to inject DI into your viewModels for postback scenarios where select lists need to be repopulated! I know very little about StructureMap , and one of the problems I was getting was a structuremap 202 no instance defined error for viewModel binding with parameterless constructors. So In my IOCMOdelBinder class I am trying to use TryGetInstance() instead of GetInstance() as the former returns null if there is no match with the modelType. Basically if it doesn't find a registered instance then fall back to the default model binder. My override CreateModel class looks like this: protected override object CreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, Type modelType) { var myInstance = ObjectFactory.TryGetInstance(modelType); if (myInstance != null) { return myInstance; } else { return base.CreateModel(controllerContext, bindingContext, modelType); } } I took out the line ObjectFactory.GetInstance(modelType); I would expect them to work the same way but TryGetInstance returns null and GetInstance returns the correct object OK so it is definitely in the registry. I can use GetInstance but have to wrap it in try catch which is a little less elegant!!! Any suggestions please?

@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2649254
-[parent_id]: 2648841
-[tags]: 
-To give a first answer to my own question, I found this work-around to work: If the COM object is wrapped in a .NET object, Workflow Foundation will be able to deal with it. (1) First define a generic helper class: public class Wrapped { T Value { get; set; } public Wrapped(T init) { Value = init; } } (2) Then, change the above activity property definitions to: public Wrapped Workspace { get; private set; } // ^^^^^^^^^^^^^^^^^^^ // this is now a .NET class type wrapping a COM object instance. public static DependencyProperty WorkspaceProperty = DependencyProperty.Register( "Workspace", typeof(Wrapped ), typeof(FoobarActivity)); (3) Finally, the assignment to the Workspace property now becomes: this.Workspace = new Wrapped (...); While this works just fine, it's still only a workaround. If someone has a more elegant solution, I'd love to hear about it.

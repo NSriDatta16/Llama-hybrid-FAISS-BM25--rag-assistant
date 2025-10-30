@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2411490
-[parent_id]: 2409961
-[tags]: 
-Assuming table like: create table item ( i int not null primary key, t datetime not null ); select i1.i, i2.i, abs( unix_timestamp( i1.t ) - unix_timestamp( i2.t )) diff from item i1 join item i2 on i1.i+1 = i2.i order by diff desc limit 1; This is a self-join where a row is joined with the next row. The diff value is printed in descending value (largest first), and only the first row is output. EDIT: Here's a feeble attempt to salvage my solution given the clarification of the question. Create a temporary table with the entries datetime order, assigned an auto_increment value representing the ranking, then apply the self-join to the temporary table: create temporary table ranked_item ( rank int not null auto_increment primary key, i int not null, t datetime not null ); insert into ranked_item select null, i, t from item order by t asc; select i1.rank, i2.rank, i1.i, i2.i, abs( unix_timestamp( i1.t ) - unix_timestamp( i2.t )) diff from ranked_item i1 join ranked_item i2 on i1.rank+1 = i2.rank order by diff desc limit 1; Obviously, if your item table is huge, this could be a bit extravagant.

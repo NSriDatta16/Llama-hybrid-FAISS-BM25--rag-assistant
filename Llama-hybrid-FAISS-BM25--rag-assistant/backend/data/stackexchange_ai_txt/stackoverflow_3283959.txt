@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3283959
-[parent_id]: 
-[tags]: 
-NHibernate : pattern for returning fully loaded instances from repositories
-
-As part of my endless NHibernate-inspired DAL refactoring purgatory, I have started to use the Repository pattern to keep NHibernate at arms length from my UI layer. Here's an example of a Load method from a repository. public StoredWill Load(int id) { StoredWill storedWill; using (ISession session = NHibernateSessionFactory.OpenSession()) { storedWill = session.Load (id); } return storedWill; } I love the fact that my website doesn't know what an ISession is. Naturally, I started getting lazy initialisation exceptions because the method above doesn't load the StoredWill, it just returns a proxy. When you access the proxy's properties, you get the exception because you are ro longer within the scope of the ISession. I laughed out loud when I realised what was happening. I have fixed this with: public StoredWill Load(int id) { StoredWill storedWill; using (ISession session = NHibernateSessionFactory.OpenSession()) { storedWill = session.Load (id); string iReallyCouldntCareLess = storedWill.TestatorLastName; } return storedWill; } But it all seems a little silly . Does anyone use a slightly more elegant pattern? Love you guys. David

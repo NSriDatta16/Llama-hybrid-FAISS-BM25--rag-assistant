@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4395919
-[parent_id]: 
-[tags]: 
-Linux system call: getaddrinfo return -2
-
-I'm using the system call getaddrinfo and it return -2. I try to know what is this error and get that ths is "name or service not known". the name - it is my host name and I'm sure it is known. but the service is a number that is changed from run to run. how can I know that I am bringing the correct parameter? my code: int GetSockPeerIPs(int sock, AddressList &addresses, int &error, int family, bool zeroport) { struct sockaddr_storage ss; socklen_t salen = sizeof(ss); struct sockaddr *sa; struct addrinfo hints, *paddr, *paddrp; sa = (struct sockaddr *)&ss; if (getpeername(sock, sa, &salen) != 0) { error = errno; return -1; } char hbuf[NI_MAXHOST]; char pbuf[NI_MAXSERV]; if (0 != (error = getnameinfo(sa, salen, hbuf, sizeof(hbuf), pbuf, sizeof(pbuf), 0))) { return -1; } memset(&hints, 0, sizeof(hints)); if (ATNetworkTool::AF_XINETX == family) { hints.ai_family = PF_UNSPEC; } else { hints.ai_family = family; } hints.ai_socktype = SOCK_STREAM; if (0 != (error = getaddrinfo(hbuf, pbuf, &hints, &paddrp))) { return -1; } addresses.clear(); for (paddr = paddrp; paddr; paddr = paddr->ai_next) { if (ATNetworkTool::AF_XINETX == family) { if (!ATAddress::saIsInet(paddr->ai_addr)) { continue; } } if (zeroport) { addresses.insert(ATAddress(paddr->ai_addr, 0)); } else { addresses.insert(paddr->ai_addr); } } freeaddrinfo(paddrp); return 0; } thanks! gln

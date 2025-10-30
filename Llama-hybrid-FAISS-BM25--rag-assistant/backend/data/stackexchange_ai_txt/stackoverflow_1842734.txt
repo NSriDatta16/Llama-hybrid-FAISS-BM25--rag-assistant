@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1842734
-[parent_id]: 
-[tags]: 
-How to asynchronously call a method in Java
-
-I've been looking at Go's goroutines lately and thought it would be nice to have something similar in Java. As far as I've searched the common way to parallelize a method call is to do something like: final String x = "somethingelse"; new Thread(new Runnable() { public void run() { x.matches("something"); } }).start(); Thats not very elegant. Is there a better way of doing this? I needed such a solution in a project so I decided to implement my own wrapper class around a async method call. I published my wrapper class in J-Go . But I don't know if it is a good solution. The usage is simple: SampleClass obj = ... FutureResult res = ... Go go = new Go(obj); go.callLater(res, "intReturningMethod", 10); //10 is a Integer method parameter //... Do something else //... System.out.println("Result: "+res.get()); //Blocks until intReturningMethod returns or less verbose: Go.with(obj).callLater("myRandomMethod"); //... Go away if (Go.lastResult().isReady()) //Blocks until myRandomMethod has ended System.out.println("Method is finished!"); Internally I'm using a class that implements Runnable and do some Reflection work to get the correct method object and invoking it. I want some opinion about my tiny library and on the subject of making async method calls like this in Java. Is it safe? Is there already a simplier way?

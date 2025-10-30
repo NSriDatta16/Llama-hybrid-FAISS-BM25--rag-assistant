@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5302906
-[parent_id]: 5302653
-[tags]: 
-The problem here is that you're operating on the entire element. Boxes is part of the nodeValue of an anchor tag. If the structure above is always the same you can do something like $new_html = preg_replace("##", "", $f->item(0)->nodeValue); In reality, the best way to go about it is to unset the anchor's node value and create an entirely new element and append it. (Consider this psuedo code) $inv_listitems = $invcontents->getElementsByTagName('li'); foreach ($inv_listitems as $f) { $span = $invcontents->createElement("span"); $span->setAttribute("class", "highlight"); $span->nodeValue = $f->item(0)->nodeValue; $f->appendChild($span); } echo $invcontents->saveHTML(); You'll have to do some matching in there, as well as unsetting the nodeValue of $f but hopefully this makes it a little more clear. Also, don't set HTML in nodeValue directly, because it will run htmlentities() against all of the html you set. That is why I create a new element above. If you absolutely have to set HTML in nodeValue then you should create a DocumentFragment Object

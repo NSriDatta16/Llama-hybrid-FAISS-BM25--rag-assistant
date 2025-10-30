@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3876239
-[parent_id]: 3875919
-[tags]: 
-You can easily accomplish this solution by creating a proxy class. The class will be responsible for getting the email delivery request, log the request and forward it to the appropriate Mailer. This is a very simple prototype, assuming you are using Rails 2. module MailerProxy mattr_accessor :emails_count @@emails_count = 0 def self.deliver(klass, method, *args) emails_count += 1 klass.send("deliver_#{method}", *args) end end MailerProxy.deliver(UserMailer, :email_notification, User.first) Despite the solution above might work, I strongly encourage you to use an appropriate service for sending emails which is able to handle your daily rate instead of trying to create complex workarounds.

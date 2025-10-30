@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2539575
-[parent_id]: 2539456
-[tags]: 
-My QCD (Quick,cheap and dirty) example: Assume a simple employee manager relationship in an organization. We are going to have a EmployeeManager Table, EmpMan, which has 2 columns EmpID and ManID. I am going to leave out the other details (indexes, secondary tables which have employee name/contacts etc) for the sake of simplicity CREATE TABLE [dbo].[EmpMan]( [EmpID] [int] NOT NULL, [ManID] [int] NOT NULL) GO; insert into dbo.EmpMan select 2,1 union select 3,1 union select 4,1 union select 31,3 union select 32,2 union select 43,4 `/* 3X report to 3 and 4X report to 4*/` union select 310,31 union select 314,31 `/* 31X reports to 31*/` union select 56,5 union select 87,8 `/*empID 56 reports to 5 and 87 reports to 8, 5 and 8 do not have managers*/` CTE query can do recursive queries: with Manager AS ( /*initialization query*/ select EmpID,ManID from EmpMan where ManID=1/* assuming that your VP ID is 1, or it can be the top most person whom you want to query on*/ union all /*recursive query*/ select E.EmpID,E.ManID from EmpMan E join Manager M on E.ManID=M.EmpID) select * from Manager

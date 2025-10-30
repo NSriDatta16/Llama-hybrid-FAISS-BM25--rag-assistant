@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1424294
-[parent_id]: 1423987
-[tags]: 
-I'm a bit confused by your problem description. I understand the circular dependency aspect, and the transformer aspect, but I'm not so sure about "the reply goes to everyone attached to A". It kind of sounds like you might want to have two service activators for B. Your existing one in B would stay, and most clients would use it. The other one would go in A, and would only use channels defined in A. This would prevent requests from A to B from resulting in responses being received by components outside A. This should make the problem of transformation easier. Transformers take a message from one channel, transform it, and place it on another. Just add one in A and you should be good. So in A you would have these components, only useable by A: a gateway an input channel a service activator for B an output channel a transformer a transformed output channel In B you would have, useable by anyone: an input channel a service activator for B an output channel A depends on B, but B does not depend on A. Will that work?

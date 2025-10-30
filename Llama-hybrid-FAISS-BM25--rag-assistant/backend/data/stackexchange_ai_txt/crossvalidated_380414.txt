@@ -1,5 +1,0 @@
-[site]: crossvalidated
-[post_id]: 380414
-[parent_id]: 380397
-[tags]: 
-Your data has very weak autocorrelation and is - in theory - not eligible for a time series approach. yt = c(0,0,0,606,662,104,453,642,636,666,619,686,732,693,736,612,492,85,616,798,847,893,821,800) yt = ts(yt, start = c(2016), frequency = 12) plot(yt) Acf(yt) Box.test(x = yt, type = "Ljung-Box", lag = 2)$p.value The Ljung-Box test of autocorrelation here will seem to be significant (p-value As a result, the tools from the forecast package will fail to fit your series: plot(forecast(ets(yt))) plot(forecast(auto.arima(yt))) However, I found that with this package here (you need to follow the installation instructions first), you can train and test your series (90%-10% split) with a simple seasonal model to get an out-of-sample MAPE of 8.58%: kfit = auto.karma(yt, method = "local-descent", test_type="percentage", test_pct=10, max_sdiff = T) karma.cv(kfit) As well as make a decent prediction: plot(forecast(kfit, h=12))

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3307170
-[parent_id]: 
-[tags]: 
-Rotating logs without restart, multiple process problem
-
-Here is the deal: I have a multiple process system (pre-fork model, similar to apache). all processes are writing to the same log file (in fact a binary log file recording requests and responses, but no matter). I protect against concurrent access to the log via a shared memory lock, and when the file reach a certain size the process that notices it first roll the logs by: closing the file. renaming log.bin -> log.bin.1, log.bin.1 -> log.bin.2 and so on. deleting logs that are beyond the max allowed number of logs. (say, log.bin.10) opening a new log.bin file The problem is that other processes are unaware, and are in fact continue to write to the old log file (which was renamed to log.bin.1). I can think of several solutions: some sort of rpc to notify other processes to reopen the log (maybe even a singal). I don't particularly like it. have processes check the file length via the opened file stream, and somehow detect that the file was renamed under them and reopen log.bin file. None of those is very elegant in my opinion. thoughts? recommendations?

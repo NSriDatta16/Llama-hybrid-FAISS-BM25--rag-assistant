@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5036721
-[parent_id]: 
-[tags]: 
-perl help replacing commas and embedding values with ctrl characters
-
-I need some help with tweaking my perl script. I've got an input file with comma separated values like so: to_em,from_em,flags,updated,marks xtr133823@xra.co.nz#hv,abc@def.com,16,2007-08-18 16:18:50,33 The first row are the column names to_em from_em flags updated marks and the following record are the values for each column: to_em = xtr133823@xra.co.nz#hv from_em = abc@def.com flags = 16 updated = 2007-08-18 16:18:50 marks = 33 I am also creating a unique value (MD5), prefixed with " __pkey__ ". Each column name starts with ^E . Each value starts with ^A , including the hex value. The record will end with ^D . I want the final output file to look like this: __pkey__^Ad41d8cd98f00b204e9800998ecf8427e^Eto_em^Axtr133823@xra.co.nz#hv^Efrom_em^Aabc@def.com^Eflags^A16^Eupdated^A2007-08-18 16:18:50^Emarks^A33^E^D But, its coming out like this: __pkey__^Ad41d8cd98f00b204e9800998ecf8427e^E^Ato_em^E^D__pkey__^A5c09354d0d3d34c96dbad8fa14ff175e^E^Axtr133823@xra.co.nz#hv^E^D Here's my code: use strict; use Digest::MD5 qw(md5_hex); my $data = ''; while (<>) { my $digest = md5_hex($data); chomp; my ($val) = split /,/; $data = $data. "__pkey__^A$digest^E^A$val^E^D"; } print $data; exit;

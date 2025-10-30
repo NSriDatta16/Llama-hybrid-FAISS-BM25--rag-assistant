@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4985992
-[parent_id]: 4985863
-[tags]: 
-The quick, hackish solution would be to wrap your entire query in an outer query, and only return records containing the appropriate tag using WHERE tags LIKE '%....% . This is fragile, because there's always the chance that you'll have one tag (e.g. "berry") that is container within another (e.g. "strawberry"). There are ways around this, but they're not pretty and not very SQLish. A slightly more correct (and equally untested!) solution would be to add the original query as a subquery in your WHERE clause: WHERE EXISTS ( SELECT 1 FROM tbl_talks LEFT JOIN tbl_linking_talk_tag ON tbl_talks.talk_id = tbl_linking_talk_tag.talk_id LEFT JOIN tbl_tag ON tbl_linking_talk_tag.tag_id = tbl_tag.tag_id WHERE tbl_tag.tag_id IN (the, tag_ids, you, want) ) There might be a simpler built-in way of doing this in MySQL, but I don't know it.

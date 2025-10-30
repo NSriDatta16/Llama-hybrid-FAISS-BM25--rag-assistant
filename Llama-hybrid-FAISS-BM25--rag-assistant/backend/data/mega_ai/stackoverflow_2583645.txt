@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2583645
-[parent_id]: 2583621
-[tags]: 
-Keep the primary keys of the first three items in a file or other persistent storage, then do an update statement instead of delete/insert? If you want to put all in the DB, then I would add a unique sequence number to all records in the in-between table (lets call it seqid), then still perform a query but instead of getting whole rows, only get the sequence number e.g. SELECT seqid from inbetweentable where article_id=? and user_id=? Order that in your programming language (lets say PHP) and then do an update UPDATE inbetweentable SET seqid=BIGGESTID+1, ... WHERE seqid=SMALLESTID (BIGGESTID and SMALLESTID come from your PHP code) Edit: To only return one value (a comma seperated String) from the SQL statement do: SELECT GROUP_CONCAT(seqid) as idsCsv from inbetweentable where article_id=? and user_id=? ORDER BY seqid and parse this in PHP. This will spare the looping code on mysql and PHP side and should be faster. e.g.

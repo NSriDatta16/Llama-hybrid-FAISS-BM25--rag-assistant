@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3375360
-[parent_id]: 
-[tags]: 
-How to redefine a Ruby constant without warning?
-
-I'm running some Ruby code which evals a Ruby file every time its date changes. In the file, I have constant definitions, like Tau = 2 * Pi and, of course, they make the interpreter display the unwanted "already initialized constant" warning every time, so, I'd like to have the following functions: def_if_not_defined(:Tau, 2 * Pi) redef_without_warning(:Tau, 2 * Pi) I could avoid the warning by writing all my constant definitions like this: Tau = 2 * Pi unless defined?(Tau) but it is inelegant and a bit wet (not DRY ). Is there a better way to def_if_not_defined ? And how to redef_without_warning ? -- Solution thanks to Steve: class Object def def_if_not_defined(const, value) mod = self.is_a?(Module) ? self : self.class mod.const_set(const, value) unless mod.const_defined?(const) end def redef_without_warning(const, value) mod = self.is_a?(Module) ? self : self.class mod.send(:remove_const, const) if mod.const_defined?(const) mod.const_set(const, value) end end A = 1 redef_without_warning :A, 2 fail 'unit test' unless A == 2 module M B = 10 redef_without_warning :B, 20 end fail 'unit test' unless M::B == 20 -- This question is old. The above code is only necessary for Ruby 1.8. In Ruby 1.9, P3t3rU5's answer produces no warning and is simply better.

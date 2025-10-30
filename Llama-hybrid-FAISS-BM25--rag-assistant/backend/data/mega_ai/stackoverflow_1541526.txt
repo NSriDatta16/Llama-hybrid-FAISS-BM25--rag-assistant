@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 1541526
-[parent_id]: 1539590
-[tags]: 
-Okay, From what I can tell from trying out this scenario is this. The redirect doesn't stop the page from finishing it's lifecycle. Microsoft should have added another overload for RedirectFromLoginPage that included 'endResponse' like it did for Response.Redirect. Unfortunately they didn't. Being that the Page_Load runs before any of the postback events, and that you are calling the RedirecFromLoginPage before the event fires you will need to stop the current page from finishing it's currently processing life cycle. It's far from elegant, however putting a FormsAuthentication.RedirecFromLoginPage("someUser", false); Response.End(); after your RedirectFromLoginPage to discontinue the current page lifecycle and therefore stopping any other events firing and you should get the action you are looking for. At least I hope. This will however cause a 'System.Threading.ThreadAbortException' just like if you were to pass true in to Response.Redirect as the 'endResponse' parameter. Hope this helps.

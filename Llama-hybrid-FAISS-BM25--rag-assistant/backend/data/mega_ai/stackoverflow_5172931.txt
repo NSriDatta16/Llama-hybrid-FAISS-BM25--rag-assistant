@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5172931
-[parent_id]: 5172828
-[tags]: 
-If you want to decouple it, the best way is to pass a callback object when you create the Task . interface FooListManipulator { void addFoo( Foo f ); List getFooList(); } class Task { private FooListManipulator fooListManipulator; public Task( FooListManipulator fooListManipulator ) { this.fooListManipulator = fooListManipulator; } } This way the Task itself doesn't have to assume anything about who created it and how the list is stored. And in your ComputeEngine you will do something like this: class ComputeEngine { private static List fooList; class Manipulator implements FooListManipulator { public void addFoo( Foo f ) { synchronized( fooList ) { fooList.add( f ); } } public List getFooList() { return Collections.unmodifiableList( fooList ); } } private Task createTask() { return new Task( new Manipulator() ); } } If you want to change the storage of fooList later (which you should really consider, as static global variables aren't a great idea), Task will remain unchanged. Plus you will be able to unit test Task with a mock manipulator.

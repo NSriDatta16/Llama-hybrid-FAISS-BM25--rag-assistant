@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2785129
-[parent_id]: 2785097
-[tags]: 
-Binding to a function is possible in WPF, but it's generally painful. In this case a more elegant approach would be to create another property which returns a formatted string and bind to that. class FileInfo { public int FileSizeBytes {get;set;} public int FileSizeFormatted { get{ //Using general number format, will put commas between thousands in most locales. return FileSizeBytes.ToString("G"); } } } In XAML, bind to FileSizeFormatted : EDIT Alternative solution, thanks to Charlie for pointing this out. You could write your own value converter by implementing IValueConverter . [ValueConversion(typeof(int), typeof(string))] public class IntConverter : IValueConverter { public object Convert(object value, Type targetType, object parameter, CultureInfo culture) { //needs more sanity checks to make sure the value is really int //and that targetType is string return ((int)value).ToString("G"); } public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) { //not implemented for now throw new NotImplementedException(); } } Then in XAML: ...

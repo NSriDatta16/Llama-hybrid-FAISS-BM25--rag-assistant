@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 2182306
-[parent_id]: 
-[tags]: 
-misusing OpenMP?
-
-I have a program using OpenMP to parallelize a for-loop. Inside the loop, the threads will write to shared variable, so I need to synchronize them. However I can sometimes get either segment fault or double free or corruption error. Anyone knows what happens? Thanks and regards! Here is the code: void KNNClassifier::classify_various_k(int dim, double *feature, int label, int *ks, double * errors, int nb_ks, int k_max) { ANNpoint queryPt = 0; ANNidxArray nnIdx = 0; ANNdistArray dists = 0; queryPt = feature; nnIdx = new ANNidx[k_max]; dists = new ANNdist[k_max]; if(strcmp(_search_neighbors, "brutal") == 0) {// search _search_struct->annkSearch(queryPt, k_max, nnIdx, dists, _eps); }else if(strcmp(_search_neighbors, "kdtree") == 0) { _search_struct->annkSearch(queryPt, k_max, nnIdx, dists, _eps); // double free or corruption } for (int j = 0; j nb_examples){nb_try=i; break;} error_validation[i] = 0; } int i = 0; #pragma omp parallel shared(nb_examples_test, error_validation,features_test, labels_test, nb_try, ks) private(i) { #pragma omp for schedule(dynamic) nowait for (i=0; i UPDATE: As in my last post double free or corruption , the code runs fine with single-thread but gives runtime errors for multi-thread. The error changes from time to time. If I run it twice, one will be segfault, and the other will be double free or corruption.

@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4000482
-[parent_id]: 
-[tags]: 
-Iterating over items in a search result view with Django haystack MultiValueField
-
-If I have a MultiValueField on one of my search indexes, and I want to display each value in the search results, how would I do that? It seems like something is not being formatted appropriately or I am somehow misunderstanding the MultiValueField? class PageAttachmentIndex(indexes.SearchIndex): # This should reference search/indexes/pages/pageattachment_text.txt text = indexes.CharField(document=True, use_template=True) title = indexes.CharField(model_attr='name') page = indexes.IntegerField(model_attr='page_id') attrs = indexes.MultiValueField() file = indexes.CharField(model_attr='file') filesize = indexes.IntegerField(model_attr='file__size') timestamp = indexes.DateTimeField(model_attr='timestamp') url = indexes.CharField(model_attr='page') def prepare_attrs(self, obj): """ Prepare the attributes for any file attachments on the current page as specified in the M2M relationship. """ # Add in attributes (assuming there's a M2M relationship to # attachment attributes on the model.) Note that this will NOT # get picked up by the automatic schema tools provided by haystack attributes = obj.attributes.all() return attributes In leveraging this in my template view: {% if result.attrs|length %} {% for a in result.attrs %} {{ a.name }} : {{ a.value }} {% endfor %} {% endif %} This seems to return nothing for me :(

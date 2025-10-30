@@ -1,7 +1,0 @@
-[site]: stackoverflow
-[post_id]: 729721
-[parent_id]: 
-[tags]: 
-Waiting for pthread_create to finish without using pthread_join
-
-I want to halt one thread till another thread has finished initializing without using pthread_join. I tried using a join but it leads to a deadlock due to some asynchronous inter-thread communication system that we have. Right now, I'm using a (custom) lock to achieve this. In Thread 1: lock_OfflineWorker.Lock() if (pthread_create(&tid0, NULL, RunOfflineWorker, NULL) != 0) { } lock_OfflineWorker.TryLock(); lock_OfflineWorker.Unlock(); In Thread 2: bool OfflineWorker::Initialize() { lock_OfflineWorker.Unlock(); } But this is inelegant and I'm not too sure about the side effects (possibility for another deadlock). Is this Ok? If not, is there another way to achieve this (using locks or otherwise) EDIT: Forgot include the "RunOfflineWorker" function void* RunOfflineWorker(void* pData) { g_OfflineWorker.Initialize(); }

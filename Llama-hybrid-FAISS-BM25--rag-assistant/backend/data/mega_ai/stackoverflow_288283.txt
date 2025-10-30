@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 288283
-[parent_id]: 288217
-[tags]: 
-It's not exactly elegant, but you could do something like this: struct ControllerCoordinator { Supervisor supervisor; set controllers; ~ControllerDeallocator() { set ::iterator i; for (i = controllers.begin(); i != controllers.end(); ++i) { delete *i; } } } New global: ControllerCoordinator control; Everywhere you construct a controller, add control.supervisor.insert(controller) . Everywhere you destroy one, add control.erase(controller) . You might be able to avoid the control. prefix by adding a global reference to control.supervisor. The supervisor member of the coordinator won't be destroyed until after the destructor runs, so you're guaranteed that the supervisor will outlive the controllers.

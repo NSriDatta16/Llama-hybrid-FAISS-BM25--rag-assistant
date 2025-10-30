@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 3598245
-[parent_id]: 3597900
-[tags]: 
-Before using QSettings , I would suggest, in your main() to set a few informations about your application and your company, informations that QSettings will be using : int main(int argc, char *argv[]) { QApplication a(argc, argv); a.setApplicationName("test"); a.setOrganizationName("myorg"); a.setOrganizationDomain("myorg.com"); // etc... return a.exec(); } Then, when selecting a file with QFile::getOpenFileName() (for instance), you can read from a key of QSetting the last directory. Then, if the selected file is valid, you can store/update the content of the key : void Widget::on_tbtFile_clicked() { const QString DEFAULT_DIR_KEY("default_dir"); QSettings MySettings; // Will be using application informations // for correct location of your settings QString SelectedFile = QFileDialog::getOpenFileName( this, "Select a file", MySettings.value(DEFAULT_DIR_KEY).toString()); if (!SelectedFile.isEmpty()) { QDir CurrentDir; MySettings.setValue(DEFAULT_DIR_KEY, CurrentDir.absoluteFilePath(SelectedFile)); QMessageBox::information( this, "Info", "You selected the file '" + SelectedFile + "'"); } }

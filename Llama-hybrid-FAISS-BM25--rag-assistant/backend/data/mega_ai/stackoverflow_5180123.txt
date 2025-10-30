@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 5180123
-[parent_id]: 5155407
-[tags]: 
-Here is how i managed to achieve load-on-demand for treeview (list) My Gtk.TreeView is a child of Gtk.ScrolledWindow (everything is built with glade, but that is not important) I've set up my treeview rendering as Serge said : cell = gtk.CellRendererText() col = gtk.TreeViewColumn("Column header text") col.pack_start(cell, True) col.set_attributes(cell,text=0) col.set_cell_data_func(cell, self._loadDataTest, treeView) treeView.append_column(col) Function to handle: def _loadDataTest(self, column, cell, model, iter, widget): pageSize = widget.get_parent().get_vadjustment().get_page_size()+20 adjGap = widget.get_parent().get_vadjustment().get_upper() - widget.get_parent().get_vadjustment().get_value() if widget.is_focus() and model.get_path(iter)[0] >= len(model)-2 and adjGap Now new data is loaded when "pre-last" (second from bottom) row is visible and scrollBar is almost at bottom. In my case, sleep is used to pause while gtk.widgets are refreshed. Works by keyboard navigation, by mouse drag of scrollBar or mouse clicking on scrollbar button Hope this will help someone

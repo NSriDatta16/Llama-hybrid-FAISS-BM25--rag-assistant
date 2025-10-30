@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 691366
-[parent_id]: 691347
-[tags]: 
-I presume you are calling it within some loop which is otherwise stonkingly efficient. What you could do is keep a count of how many iterations your loop goes through before the return value of time changes. Then don't call it again until you've gone through that many iterations again. You can dynamically adjust this count upwards or downwards if you find you're going adrift, but you should be able to engineer it so that on average, it calls time() once per second. Here's a rough idea of how you might do it (there's many variations on this theme) int iterations_per_sec=10; //wild guess int iterations=0; while(looping) { //do the real work //check our timing if (++iterations>iterations_per_sec) { int t=time(NULL); if (t==lasttime) { iterations_per_sec++; } else { iterations_per_sec=iterations/(t-lasttime); iterations=0; lastime=t; //do whatever else you want to do on a per-second basis } } }

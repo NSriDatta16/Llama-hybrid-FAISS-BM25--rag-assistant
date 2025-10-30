@@ -1,5 +1,0 @@
-[site]: stackoverflow
-[post_id]: 4366215
-[parent_id]: 4366185
-[tags]: 
-Looks like a join to me: var query = from navigator in db.NavigatorUserFieldProperties where navigator.UserId == "albert" join field in db.NavigatorEntityFieldMasters .Where(f => f.EntityId == 1 && f.UseType == 0) on navigator.FieldId equals field.FieldId select navigator; Note that this will return the same value multiple times if there are multiple fields with the same ID - but I suspect that's not the case. You could do a more literal translation like this: var query = from navigator in db.NavigatorUserFieldProperties where navigator.UserId == "albert" && db.NavigatorEntityFieldMasters .Where(f => f.EntityId == 1 && f.UseType == 0) .select(f => f.FieldId) .Contains(navigator.FieldId) select navigator; ... and that may end up translating to the same SQL... but I'd personally go with the join.
