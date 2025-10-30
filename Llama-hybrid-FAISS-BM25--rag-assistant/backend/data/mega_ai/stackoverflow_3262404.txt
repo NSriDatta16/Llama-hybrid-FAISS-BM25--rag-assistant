@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3262404
+[parent_id]: 3262225
+[tags]: 
+No, it's not correct. For example, on x86, segmentation uses "far" pointers that consist of two parts: the segment selector (loaded into a segment register, e.g., DS) and an offset into the segment. Segment offsets always begin at 0. The CPU uses the segment selector to find the segment descriptor which contains the segment's LINEAR base address, length and access rights. All accesses are length-checked; if you try to access memory outside of the segment limit or with invalid access (e.g., writing to a read-only segment), the CPU will generate a general protection fault. Since segment addresses are always zero-based and the segment base is implicit in the segment selector, the OS can move segments around and defragment memory without affecting the programs using that data. (Contrast this with the "flat" memory model where if you move some data, you also have to update all pointers pointing to it.) Now, when paging is disabled, the LINEAR segment base address is its physical memory address. When paging is enabled, all accesses to segment data are translated by the MMU as usual.

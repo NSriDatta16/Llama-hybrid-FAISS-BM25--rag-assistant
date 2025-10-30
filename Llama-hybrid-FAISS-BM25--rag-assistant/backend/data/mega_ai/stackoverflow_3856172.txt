@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3856172
+[parent_id]: 3855954
+[tags]: 
+Variables are not shared between programs, ever. (Although specially-allocated shared memory can be shared, this is an "object" and not a "variable" in C terminology.) Where you're confused is that the on-disk backing is what's shared between processes, and this is the same whether it's the main program (static or dynamic linked) or a shared library file. The operating system's virtual memory implementation takes care of using the same page of physical memory for multiple processes when the contents are unchanged from what's on-disk, and making physical duplicates of pages at runtime if they're written to. All of this is transparent to your application, which sees a linear 32- or 64-bit address space consisting of nothing but its own code and data. In practice, the dynamic linking system makes a number of storage optimizations which isolate the data which will be changed per-process to a few pages, allowing the vast majority of pages to be shared between processes that use the same executable file or same libraries.

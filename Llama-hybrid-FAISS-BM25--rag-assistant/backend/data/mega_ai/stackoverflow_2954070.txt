@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2954070
+[parent_id]: 2953781
+[tags]: 
+You have to establish the relationship between the tables explicitly. The LINQ to SQL designer might be able to do this, but I prefer writing the code, like this: [Table(Name="Contact")] public class Contact { [Column(Id=true)] public int ContactID; [Column] public string BillingAddressID; private EntityRef _BillingAddress; [Association(Storage="_BillingAddress", ThisKey="BillingAddressID")] public BillingAddress BillingAddress { get { return this._BillingAddress.Entity; } set { this._BillingAddress.Entity = value; } } } [Table(Name="BillingAddress")] public class BillingAddress { [Column(Id=true)] public string BillingAddressID; ... private EntitySet _Contacts; [Association(Storage="_Contacts", OtherKey="BillingAddressID")] public EntitySet Contacts { get { return this._Contacts; } set { this._Contacts.Assign(value); } } }

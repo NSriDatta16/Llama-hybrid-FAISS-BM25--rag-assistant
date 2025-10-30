@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1345205
+[parent_id]: 1344725
+[tags]: 
+The accepted "best practice" for this case would be someting along the lines of this: // create your client ICustomer channel = CreateCustomerClient(); try { // use it channel.GetCustomerDetails() .... (more calls) // close it channel.Close(); } catch(CommunicationException commEx) { // a CommunicationException probably indicates something went wrong // when closing the channel --> abort it channel.Abort(); } Typically, since the channel also implements "IDisposable", you might be tempted to just simply put it in a using(ICustomer channel = CreateCustomerChannel()) { // use it } block - unfortunately, that could bomb out since there's a good chance that when attempting to call .Close() on your channel, you'll get another exception (which would go unhandled in this case). Our moderator here, Marc Gravell, has an interesting blog post (don't(don't(use using)) on the topic, with an elegant solution to the problem. Marc

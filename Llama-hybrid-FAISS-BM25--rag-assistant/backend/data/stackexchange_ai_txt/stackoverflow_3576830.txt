@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3576830
+[parent_id]: 3576778
+[tags]: 
+The performance difference will most likely be miniscule in this particular case, as mysql uses an index on "US.%" . The performance degradation is mostly felt when searching for something like "%.US" (the wildcard is in front). As it then does a tablescan without using indices. EDIT : you can look at it like this: MySql internally stores varchar indices like trees with first symbol being the root and branching to each next letter. So when searching for = "US" it looks for U , then goes one step down for S and then another to make sure that is the end of the value. That's three steps. Searching for LIKE "US.%" it looks again for U , then S , then . and then stops searching and displays the results - that's also three steps only as it cares not whether the value terminated there. EDIT2 : I'm in no way promoting such database denormalization, I just wanted to attract your attention that this matter may not be as straightforward as it seems at first glance.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1848178
+[parent_id]: 1846830
+[tags]: 
+It is behaving correctly. While the collector scans the heap exactly [as much as possible] in that each class has a layout and only the slots that refer to objects or use __strong are scanned, the stack must be scanned conservatively. Every pointer sized and pointer aligned slot on the stack must be scanned for references. Thus, your alloca() bumps the stack pointer down and the collector scans all of it. You should probably throw in an assert to make sure the alloca'd space is pointer aligned as the behavior is otherwise undefined. Actually, you really shouldn't use alloca() at all. Even the man page says The alloca() function is machine and compiler dependent; its use is discouraged. Instead, use NSAllocateCollectable() to allocate a scanned chunk of heap space. Unless you are talking about many allocations vs. your other operations, the overhead should be minimal. Furthermore, you no longer run [nearly as great] a risk of exceeding the maximum stack size of a thread (which isn't large and changes depending on which thread you are running on and how it is allocated.

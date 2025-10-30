@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4742465
+[parent_id]: 4742251
+[tags]: 
+IplImage struct have a variable char* imageData - it's just a buffer of all pixels. To read it properly you have to know your image format. For example for RGB888 image 3 first chars in imageData array will represent the r,g,b values of the first pixel at the first row. If you know the image format - you can read the data properly. Image format can be restored reading another values of IplImage structure: http://opencv.willowgarage.com/documentation/basic_structures.html Also i think it's more efficient to write the loop like this: uchar r,g,b; for (int y = 0; y height; y++) { uchar *ptr = (uchar*) (cvFrame_->imageData + y*cvFrame_->widthStep); for (int x = 0; x width; x++) { r = ptr[3*x]; g = ptr[3*x + 1]; b = ptr[3*x + 2]; } } This code is for RGB888 image

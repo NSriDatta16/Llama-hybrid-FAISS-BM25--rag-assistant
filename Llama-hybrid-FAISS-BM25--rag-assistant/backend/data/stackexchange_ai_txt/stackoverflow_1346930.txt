@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1346930
+[parent_id]: 1346893
+[tags]: 
+Well, an aggregate function grouped by a unique key is not going to do much for you, that's for sure. It sounds like you're getting mired in the idea of grouping when really all you want are the top three highest valued events for each home_team . Try something like this, instead: select event_id, home_team, value from my_tbl t where event_id in (select event_id from my_tbl where home_team = t.home_team order by value desc limit 0,3) Update: Your edit clears some things up, so here goes: select (select min(event_id) from table2 where home_team = t2.home_team) as event_id, t2.home_team, avg(t1.value) as average from table1 t1 inner join table2 t2 on t1.event_id = t2.event_id group by t2.home_team What you're describing is fairly nonsensical. You want to group by event_id but then only show one home_team ? Unless you're looking to take the top home_team row: select home_team, max(average) as topavg from ( select t2.event_id, t2.home_team, avg(t1.value) as average from table1 t1 inner join table2 t2 on t1.event_id = t2.event_id group by t2.event_id, t2.home_team ) as a group by home_team

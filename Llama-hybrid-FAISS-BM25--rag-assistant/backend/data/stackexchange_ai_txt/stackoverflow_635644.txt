@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 635644
+[parent_id]: 635276
+[tags]: 
+Improving Michael solution above for C++. Michael solution is perfect for C applications. But when used in C++ this style is discouraged because of the possibility of exceptions. If an exception happens in operation1 or operation2 then the critical section will not be correctly left and all other threads will block waiting. // Perfect solution for C applications void func() { // cs previously initialized via InitializeCriticalSection EnterCriticalSection(&cs); operation1(); operation2(); LeaveCriticalSection(&cs); operation3();} } // A better solution for C++ class Locker { public: Locker(CSType& cs): m_cs(cs) { EnterCriticalSection(&m_cs); } ~Locker() { LeaveCriticalSection(&m_cs); } private: CSType& m_cs; } void func() { // cs previously initialized via InitializeCriticalSection { Locker lock(cs); operation1(); operation2(); } operation3(); }

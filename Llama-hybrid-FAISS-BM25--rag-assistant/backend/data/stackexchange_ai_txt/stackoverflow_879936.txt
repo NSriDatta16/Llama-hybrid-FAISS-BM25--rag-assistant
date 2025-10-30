@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 879936
+[parent_id]: 878995
+[tags]: 
+The issue is that categories are logically separate from their classes, and are even stored separately in the binary file. The internal implementation is that a class description structure holds an array of method lists which initially contains only the list of methods defined in the main @implementation block. As the ObjC linker modules load new categories, their method lists are added to that array. Because of this implementation, the categories themselves have no means of accessing the storage for a class, and therefore cannot modify it (it also opens up the question of what to do when the category is un-loaded). Lastly, from a more logical rather than technical perspective, the idea is that a category doesn't have any 'ownership' of the in-memory structure of a class, it simply associates some new methods. To fully support property synthesis, it would need to modify the class's storage in some way The solution? You either put the @synthesize statements inside your main @implementation block, or you just implement your own accessors directly within the category @implementation.

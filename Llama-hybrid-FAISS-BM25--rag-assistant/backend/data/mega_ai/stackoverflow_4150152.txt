@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4150152
+[parent_id]: 4150075
+[tags]: 
+The problem is that you're using deleted.CustomerId on the right side of a comparison. I was doing something similar to what you're doing. and the solution is to define a @variable to hold deleted.CustomerId (After your SET NO COUNT line), then compare CustomerOrders.CustomerId to the variable. EDIT: Here's the code which works just fine, It is a trigger to update movie rating by the average rating it got from tblRating(MovieID, UserID, rating) which also represents a many-to-many relationship between tblMovies and tblUsers, this one uses inserted but it is the same with deleted: CREATE TRIGGER trUpdateRating ON [dbo].[tblRating] AFTER INSERT AS BEGIN SET NOCOUNT ON DECLARE @rate float, @mid int SET @rate = 0; -- here is the assignment I was talking about and it is valid SELECT @mid=MovieID from inserted; SELECT @rate=AVG(isnull(Rating, 0)) FROM tblRating WHERE MovieID=@mid; -- and here is the comparison UPDATE tblMovies SET avg_rating = @rate WHERE ID=@mid; END

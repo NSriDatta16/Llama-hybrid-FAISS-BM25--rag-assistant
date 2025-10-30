@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4023686
+[parent_id]: 291424
+[tags]: 
+Here is an implementation of CommandLineToArgvA that delegate the work to CommandLineToArgvW, MultiByteToWideChar and WideCharToMultiByte. LPSTR* CommandLineToArgvA(LPSTR lpCmdLine, INT *pNumArgs) { int retval; retval = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, lpCmdLine, -1, NULL, 0); if (!SUCCEEDED(retval)) return NULL; LPWSTR lpWideCharStr = (LPWSTR)malloc(retval * sizeof(WCHAR)); if (lpWideCharStr == NULL) return NULL; retval = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, lpCmdLine, -1, lpWideCharStr, retval); if (!SUCCEEDED(retval)) { free(lpWideCharStr); return NULL; } int numArgs; LPWSTR* args; args = CommandLineToArgvW(lpWideCharStr, &numArgs); free(lpWideCharStr); if (args == NULL) return NULL; int storage = numArgs * sizeof(LPSTR); for (int i = 0; i 0); BOOL lpUsedDefaultChar = FALSE; retval = WideCharToMultiByte(CP_ACP, 0, args[i], -1, buffer, bufLen, NULL, &lpUsedDefaultChar); if (!SUCCEEDED(retval)) { LocalFree(result); LocalFree(args); return NULL; } result[i] = buffer; buffer += retval; bufLen -= retval; } LocalFree(args); *pNumArgs = numArgs; return result; }

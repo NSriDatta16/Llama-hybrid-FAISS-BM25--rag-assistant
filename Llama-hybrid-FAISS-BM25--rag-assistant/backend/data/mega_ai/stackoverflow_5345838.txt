@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5345838
+[parent_id]: 5345460
+[tags]: 
+The problem is that entity framework is not able to work with entity without a key. So if your table doesn't specify a key, entity framework will infer its own. The key created by EF is composed of all non-nullable non-binary columns. So if you for example have single non-nullable column in your entity which have only very small set of values (like enum) you will be able to load only single entity "per value". The reason is an inner implementation of the context and the state manager which uses Identity map pattern. When data record is retrieved from database, EF will first check an entity key and tries to find an object with the same key in its internal storage. If an object is found it will use that object instead of data record retrieved (despite of different data). If an object with the key is not found a new object is materialized and added to internal storage. That is the purpose of Identity map - object with given key should be created only once by each context. Identity map is core pattern in ORM. I wrote about Identity map also in this question .

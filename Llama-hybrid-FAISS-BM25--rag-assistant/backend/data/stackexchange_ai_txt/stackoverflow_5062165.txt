@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5062165
+[parent_id]: 
+[tags]: 
+Stock indicator calculations in TTR ( R package): Best way to align the output to the left?
+
+I am using the TTR package to generate stock indicators. However, the indicator functions add NA (where applicable -- e.g. CMO, SMA, CMF, etc.) to the beginning of the series instead of the end. Is there a way to align the output to the left so the NA values are added to the end of the series as opposed to the beginning? For example: library(TTR) x = 1:10 # TTR's simple moving average SMA(x,n=2) [1] NA 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 zoo package has an align option to pad the series with NAs at the end: library(zoo) rollmean(x,2,na.pad=TRUE,align='left') [1] 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 NA Is there a way to specify something like this in TTR as I need to generate indicators beyond moving averages? I guess I can create a wrapper around these functions and manually shift the resulting values but not sure if there is a better way to do it. Also, since TTR is heavily used to add indicators to stock prices, I am wondering why the padding is at the beginning as opposed to the end especially since most historical prices as sorted in descending order(by date)? In the above example, if x[1] is the price of a stock today and x[10] the price 10-days ago, shouldn't the moving average (span = 2) for today the average of today + yesterday? As much as I would like to add NAs at the end, I would also like to make sure I am not misinterpreting how these indicators are used. Thanks, -e

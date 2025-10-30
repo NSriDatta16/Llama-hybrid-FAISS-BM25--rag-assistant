@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5458527
+[parent_id]: 5456674
+[tags]: 
+Checking the source code it appears Qt is lame in this regards and has no mechanism to do this. For the X11 code the function QDragManager::updateCursor variables which contain the cursors it uses. Those are created using the QCursor constructor with constant hot-spot values (0,0). The ForbiddenCursor is completely hard-coded, thus preventing any alternation. To set the cursor it calls QApplication::changeOverrideCursor . As a static function there is no way to intercept that call. Even if the pixmaps are set (via setCursor) the intial drag cursor is still the default. This just appears to be a defect in QT. This is at qdnd_x11.cpp:1948 , the pointer cursor is forcibly set at the start of a drag Thus there is no actual way to use custom cursors for the standard drag-n-drop.

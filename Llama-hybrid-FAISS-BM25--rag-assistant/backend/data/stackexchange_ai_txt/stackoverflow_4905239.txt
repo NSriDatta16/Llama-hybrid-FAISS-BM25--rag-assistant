@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4905239
+[parent_id]: 4904358
+[tags]: 
+That respondsToSelector/performSelector combo is an idiom for optional delegate methods. The delegate isn't guaranteed to have that method defined, so a direct call to it would cause a compiler warning. What the compiler was actually complaining about in this case: [self.delegate performSelector:sel withObject:self withObject:(id)_cellViews.count-1]; error: arithmetic on pointer to interface 'id', which is not a constant size in non-fragile ABI is risky pointer arithmetic... 'id' is a pointer type, so: (id)_cellViews.count-1 tells the compiler it's going to subtract one from a pointer instead of an integer....which is probably not the intent of that code. The withObject argument of performSelector has to be a pointer, it can't be a primitive. You can get around this by wrapping _cellViews.count - 1 in an NSNumber, and unwrapping it in the delegate method. [self.delegate performSelector:sel withObject:self withObject:[NSNumber numberWithInt:_cellViews.count-1]];

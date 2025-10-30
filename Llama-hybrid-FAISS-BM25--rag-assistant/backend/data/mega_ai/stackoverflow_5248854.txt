@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5248854
+[parent_id]: 5245729
+[tags]: 
+Use executeSimpleSQL . openDatabase returns a mozIStorageConnection instance, which does not have any method named execute . You can use executeSimpleSQL any time you want to execute a SQL statement without bound parameters (which is what you're doing). You were probably thinking of mozIStorageStatement's execute method. executeSimpleSQL is not sufficient when bound parameters are necessary. Instead, you need to create a statement, bind any parameters, and then execute it: var statement = mDBConn.createStatement( "SELECT * FROM log_det WHERE column_name = :parameter"); statement.bindStringParameter(0, "value"); statement.execute(); statement.reset(); Also note that mozIStorageConnection does not have any method named drop . Maybe you meant to write mDBConn.close() ? All of this is covered here: https://developer.mozilla.org/en/storage

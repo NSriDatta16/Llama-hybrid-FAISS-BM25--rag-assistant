@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5715656
+[parent_id]: 
+[tags]: 
+Mocking inherited class with Moq
+
+I have some Web API methods that I want to write unit tests for. They need database access, so, naturally, I wanted to Moq that part. The storage classes are accessed via an interface, and the class that implements the API method inherits the interface. What I don't know is how to mock is the inherited interface in a unit test. public class CreateWishList : APIAccess { public long CreateWishListV1(long userId, string wishListName) { // Do stuff like long result = Storage.CreateWishList(userId, wishListName); return result; } } public class APIAccess { protected IStorage Storage { get; private set; } public APIAccess() : this(new APIStorage()) { } public APIAccess(IStorage storage) { Storage = storage; } } public interface IStorage { long CreateWishList(long userId, string wishListName); } So, I want to unit test the CreateWishListV1(...) method, and to do that without database access, I need to mock what Storage.CreateWishList(...) returns. How do I do that? UPDATE: I'm trying something like this: [Test] public void CreateWishListTest() { var mockAccess = new Mock (MockBehavior.Strict); mockAccess.Setup(m => m.Device.CreateWishList(It.IsAny (), It.IsAny ())).Returns(123); var method = new CreateWishList(); method.Storage = mockAccess.Object; long response = method.CreateWishListV1(12345, "test"); Assert.IsTrue(response == 123, "WishList wasn't created."); } Had to change the Storage property on APIAccess to public as well.

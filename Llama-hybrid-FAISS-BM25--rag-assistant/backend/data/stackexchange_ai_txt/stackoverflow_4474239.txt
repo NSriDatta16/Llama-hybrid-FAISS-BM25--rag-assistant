@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4474239
+[parent_id]: 4469305
+[tags]: 
+A simple way to do this is to have each view expose a property of type MenuItem , which contains its local menu. (The menu itself can live in the view's resource dictionary; you just implement a property getter that retrieves it using FindResource .) Then make your main menu look something like this: Edit I think I misunderstood your question, but in part that's because I think your question's much easier to answer than the one I thought you were asking. Create a RoutedCommand property in your application view model called DisabledCommand that is always disabled. Then bind your application menus to commands like this: public RoutedCommand SaveCustomerCommand { get { CustomerView cv = SelectedView as CustomerView; return cv == null ? DisabledCommand; : ((CustomerViewModel)cv.DataContext).SaveCommand; } } The casting is a little awkward looking, but other than that this is straightforward, elegant even. The only implementation detail your application view needs to know about the customer view is that there's a SaveCommand on its view model.

@@ -1,0 +1,117 @@
+MIDI Machine Control, or MMC, a subset of the MIDI specification, provides specific commands for controlling recording equipment such as multi-track recorders. MMC messages can be sent along a standard MIDI cable for remote control of such functions as Play, Fast Forward, Rewind, Stop, Pause, and Record. These are "System Exclusive" (SysEx) messages, specifically Real Time Universal SysEx messages.
+
+MIDI Universal Real Time SysEx Message Format
+
+MIDI includes System Exclusive messages that are extensions of the MIDI format implemented by MIDI manufacturers. Some of the extensions, the "Universal" ones, are a set of the same functions that different manufacturers can implement differently in detail. Some of them are Non Real Time, with no reliable delivery timing. Others are Real Time, including MMC, so they are more reliably delivered when expected. SysEx messages start with (hexadecimal) F0 and end with F7. Universal Real Time SysEx messages start with F0, followed by 7F, then include other fields before the terminating F7.
+
+The following shows Universal Real Time SysEx message format (all numbers hexadecimal):
+
+F0 7F <Device-ID> <Sub-ID#1> [<Sub-ID#2> [<parameters>]] F7
+
+where Device-ID is:
+
+MMC device's ID#; value 00-7F (7F = all devices); AKA "channel number"
+
+and Sub-ID#1: is one of the following values. The bolded values are MIDI Machine Control related:
+
+MMC Message Format
+An MMC message is either an MMC command (Sub-ID#1=06) or an MMC response (Sub-ID#1=07). As a SysEx message it is formatted  (all numbers hexadecimal):
+
+F0 7F <Device-ID> <06|07> [<Sub-ID#2> [<parameters>]] F7
+
+Device-ID: MMC device's ID#; value 00-7F (7F = all devices); AKA "channel number"
+
+Sub-ID#1: 06 = command
+  Sub-ID#2:
+  01 Stop
+  02 Play
+  03 Deferred Play (play after no longer busy)
+  04 Fast Forward
+  05 Rewind
+  06 Record Strobe (AKA [[Punch in/out|Punch In]])
+  07 Record Exit (AKA [[Punch out (music)|Punch out]])
+  08 Record Pause
+  09 Pause (pause playback)
+  0A Eject (disengage media container from MMC device)
+  0B Chase
+  0D MMC Reset (to default/startup state)
+  40 Write (AKA Record Ready, AKA Arm Tracks)
+    parameters: <length1> 4F <length2> <track-bitmap-bytes>
+  44 Goto (AKA Locate)
+    parameters: <length>=06 01 <hours> <minutes> <seconds> <frames> <subframes>
+  47 Shuttle
+    parameters: <length>=03 <sh> <sm> <sl> (MIDI Standard Speed codes)
+
+Sub-ID#1: 07 = response
+  Sub-ID#2: response state
+  parameters: values detailing response state
+
+MMC Commands
+MMC Commands are either MMC transport messages containing one byte representing the command, or other types  containing the command byte followed by parameter bytes. Some parameters are lengths of collections of bytes in the message, some parameters are constants associated with the command, other parameters are variable data values specifying command execution.
+
+Record Ready
+The Record Ready (Arm Tracks) message will record-enable tracks. It is formatted  (all numbers hexadecimal):
+
+F0 7F <Device-ID> 06 40 <length1> 4F <length2> <track-bitmap> F7
+
+length1: number of bytes between length1 and F7
+length2: number of bytes in the track bitmap
+track-bitmap: Each track is assigned a bit in the track bitmap.
+
+To set a track, you must know both the byte in which the track's bit lives, and also the bit corresponding to that track. Note that each byte can only hold 7 tracks.
+
+Track 1: byte 1 + 0x20
+Track 2: byte 1 + 0x40
+Track 3: byte 2 + 0x01
+Track 4: byte 2 + 0x02
+Track 5: byte 2 + 0x04
+Track 6: byte 2 + 0x08
+Track 7: byte 2 + 0x10
+Track 8: byte 2 + 0x20
+Track 9: byte 2 + 0x40
+Track 10: byte 3 + 0x01
+and so on.
+
+Goto/Locate
+The Goto (AKA Locate) message cues recording or playback to an SMPTE time (a specific hour, minute, second, SMPTE frame number, and subframe code). It is formatted  (all numbers hexadecimal):
+
+F0 7F <Device-ID> 06 44 <length>=06 01 <hr> <mn> <sc> <fr> <ff> F7
+
+Sub-ID#2 =44: LOCATE command
+length: 06 Data byte count (always six bytes)
+subcommand: 01 TARGET
+hr: hours and type (as with MTC Fullframe); values 0-17 (= 0-23 decimal)
+mn: minutes; values 0-3B (= 0-59 decimal)
+sc: seconds; values 0-3B (= 0-59 decimal)
+fr: frames; values 0-1D (= 0-29 decimal)
+ff: sub-frames / fractional frames (leave at zero if un-sure); values 0-63 (= 0-99 decimal)
+(some manufacturers encode the subframe value differently at different frame rates to indicate subframe 0)
+
+Shuttle
+Both forward and backward shuttling share the same MMC message; direction is encoded as a sign value. It is formatted  (all numbers hexadecimal):
+
+F0 7F <Device0ID> 06 47 <length=03> <sh> <sm> <sl> F7
+Note: sh, sm and sl are defined as Standard Speed in the MIDI 1.0 Recommended Practice RP-013.
+sh = Nominal Integer part of speed value: 0 g sss ppp
+  g = sign (1 = reverse)
+  sss = shift left count (see below)
+  ppp = most significant bits of integer multiple of play-speed
+sm = MSB of nominal fractional part of speed value: 0 qqqqqqq
+sl = LSB of nominal fractional part of speed value: 0 rrrrrrr
+Speed values per shift left count:
+BINARY REPRESENTATION USABLE RANGES (DECIMAL)
+Integer multiple Fractional part Integer Fractional
+sss of play speed of play speed range resolution
+000 ppp - qqqqqqqrrrrrrr 0-7 1/16384
+001 pppq - qqqqqqrrrrrrr 0-15 1/8192
+010 pppqq - qqqqqrrrrrrr 0-31 1/4096
+011 pppqqq - qqqqrrrrrrr 0-63 1/2048
+100 pppqqqq - qqqrrrrrrr 0-127 1/1024
+101 pppqqqqq - qqrrrrrrr 0-255 1/512
+110 pppqqqqqq - qrrrrrrr 0-511 1/256
+111 pppqqqqqqq - rrrrrrr 0-1023 1/128
+
+External links
+ MIDI Standard Document
+
+MIDI standards

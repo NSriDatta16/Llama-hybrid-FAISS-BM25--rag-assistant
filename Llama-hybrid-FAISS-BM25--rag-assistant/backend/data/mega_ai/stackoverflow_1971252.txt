@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1971252
+[parent_id]: 1971045
+[tags]: 
+A clustered index range seek that returns 138 rows is not your problem. Technically you can improve the seek performance by making the clustered index narrower: evict all varlenght into a separate allocation unit by setting 'large value types out of row ' to 1 and recreating the table from scratch). enable page compression (SQL 2008 EE only). Both can have quite a dramatic impact on range seek time, as they reduce the IO and the need to hit physical reads. Of course, as usually, the result will vary on a big number of other factors, like what columns do you project (evicting a projected column into BLOB allocation unit may actually have adverse effects on certain queries). As a side note, usually fragmentation will have only a marginal impact on such a short range scan. Again, it depends. But as I say, I highly doubt this is your true problem. You have only posted selected parts of the plan and the results of your own analysis. The true root cause may lay completely elsewhere.

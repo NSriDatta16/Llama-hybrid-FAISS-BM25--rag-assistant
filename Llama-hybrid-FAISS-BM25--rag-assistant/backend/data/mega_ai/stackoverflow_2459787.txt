@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2459787
+[parent_id]: 
+[tags]: 
+In Rails 3, how does one render HTML within a JSON response?
+
+I'm porting an application from Merb 1.1 / 1.8.7 to Rails 3 (beta) / 1.9.1 that uses JSON responses containing HTML fragments, e.g., a JSON container specifying an update, on a user record, and the updated user row looks like . In Merb, since whatever a controller method returns is given to the client, one can put together a Hash, assign a rendered partial to one of the keys and return hash.to_json (though that certainly may not be the best way.) In Rails, it seems that to get data back to the client one must use render and render can only be called once, so rendering the hash to json won't work because of the partial render. From reading around, it seems one could put that data into a JSON .erb view file, with in and render that. Is there a Rails-way of solving this problem (return JSON containing one or more HTML fragments) other than that? In Merb: controller: only_provides :json ... self.status = 204 # or appropriate if not async return { 'action' => 'update', 'type' => 'user', 'id' => @user.id, 'html' => partial('user_row', format: :html, user: @user) }.to_json In Rails: controller: respond_to do |format| format.json do render template: '/json/message-1', locals: { action: 'update', type: 'user', id: @user.id, partial: 'user_row.html.erb', locals: { user: @user } } end end view: json/message-1.json.erb { "action": , "type": , "id": , "html": }

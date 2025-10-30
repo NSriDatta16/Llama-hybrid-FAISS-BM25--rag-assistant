@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 103234
+[parent_id]: 
+[tags]: 
+Bias of Panel Generalization of Durbin-Watson
+
+I'm working with an unbalanced panel dataset. (Country-Time) of approximate dimensions H=100 individuals i and average time length over individuals $mean(T_i)\approx7.5$. And about n= 8 regressors (appart from the fixed effects dummies). I want to use the Durbin-Watson panel generalization from Bhargava, Alok, Luisa Franzini, and Wiji Narendranathan. "Serial correlation and the fixed effects model." The Review of Economic Studies 49.4 (1982) 533-549 ( http://restud.oxfordjournals.org/content/49/4/533.short ) $d_P = \frac{ \sum_{i=1}^H \sum_{t=2}^T \left( \tilde{u}_{it} - \tilde{u}_{it-1} \right)^2 }{ \sum_{i=1}^H \sum_{t=1}^T \tilde{u}_{it}^2 }$ Critical values are given in the paper and are dependent on (T, H, n) with n the number of regressors. Which i linearly interpolate. $cv(7.5, 100, 8) \to d_{PL}=1.8561,\; d_{PU}=1.9039$ Now if i simulate data without autocorrelation I tend to find very low values for $d_P$ that reject $H0: \rho=0$ #[R] require(data.table) set.seed(1) DT 1.617848, 1.735762, 1.614137 Which are all If a negative correlation of 0.2 is forced the test does flip side but still looks downward biased: DT[, u:=u-0.2*c(0, u[1:(length(u)-1)])] # d_P --> 2.038816 Am I missing something here? The tabulated 5%c.v. are for T=6 and T=10 so the short+wide property should not be a problem. Also balancing the simulation to e.g. $T_i=T=7$ gives low $d_P$

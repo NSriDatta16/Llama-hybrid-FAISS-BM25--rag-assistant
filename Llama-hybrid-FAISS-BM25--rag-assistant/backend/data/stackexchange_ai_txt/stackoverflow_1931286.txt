@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1931286
+[parent_id]: 1930948
+[tags]: 
+i think you've chosen the wrong storage formats for your picked numbers. The standard approach is to use binary values which have N-th bit set if the number N is choosen. Consider this example: user chooses numbers "2 4 5 9 11". Setting corresponding bits to 1 gives '10100011010' which is decimal 1306. Now the lottery picks "4 7 9 12 13" which is '1100101001000' == 6472. Perform a bitwise AND on both values and count the number of bits set in the result: SELECT BIT_COUNT(1306 & 6472) this immediately tells us that the user has 2 correct picks. Just as easy you can select "full" winners: SELECT * FROM tickets WHERE BIT_COUNT(tickets.pick & lotto.pick) = 5 or sort the tickets by the number of correct picks SELECT * FROM tickets ORDER BY BIT_COUNT(tickets.pick & lotto.pick) DESC

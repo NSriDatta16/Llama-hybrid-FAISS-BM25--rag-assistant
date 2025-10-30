@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4670457
+[parent_id]: 4662744
+[tags]: 
+I remember I had to do something like this some years ago working around some design limitation of VCL hierarchy. So it seems it was something like this: type TGrandParent = class(TObject) public procedure Show;virtual; end; TParent = class(TGrandParent) public procedure Show;override; end; THackParent = class(TGrandParent) private procedure CallInheritedShow; end; TMyObject = class(TParent) public procedure Show;override; end; { TGrandParent } procedure TGrandParent.Show; begin MessageDlg('I''m the grandparent', mtInformation, [mbOk], 0); end; { TParent } procedure TParent.Show; begin inherited; MessageDlg('I''m the parent', mtInformation, [mbOk], 0); end; { THackParent } procedure THackParent.CallInheritedShow; begin inherited Show; end; { TVIP } procedure TMyObject.Show; begin THackParent(Self).CallInheritedShow; end; procedure TForm6.Button6Click(Sender: TObject); var VIP: TMyObject; begin VIP:=TMyObject.Create; try VIP.Show; finally VIP.Free; end; end; Not supper-elegant but still a solution :)

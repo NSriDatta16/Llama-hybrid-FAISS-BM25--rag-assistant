@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1505500
+[parent_id]: 1503711
+[tags]: 
+As I recall (and it's been a while...), XmlMtomReader does the minimal amount of internal storage required, depending on the order in which the MIME parts appear in the input stream. (The MTOM standard allows them to appear in any order). So if your input stream is, for example: Binary part 1 Then the main XML part, e.g. ...binary part 1... ...binary part 2... Then Binary part 2 Here's what happens: To start reading the XML (element "a"), it must store Binary Part 1 internally When you read contents of element "b", it comes from the internal storage When you start reading element "c", it stores the rest of the XML internally (element "d"), and advances the stream to Binary Part 2. When you read the contents of element "c" at this point, it comes directly from the stream, not from storage. When you lastly read element "d", the XML comes from internal storage

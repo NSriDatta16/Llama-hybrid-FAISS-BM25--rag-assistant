@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 461052
+[parent_id]: 
+[tags]: 
+LDA vs QDA on the AT&T dataset, poor QDA performance
+
+I am obtaining two very different accuracies for the AT&T face database when fitting the model with lda & qda. Before using QDA I first search for the ideal regularisation parameter, AFAIK the only import parameter to fine-tune for QDA. X_load,y_load = datasets.fetch_olivetti_faces(data_home="R:/DATASET/AT&T", return_X_y=True) I split this into a balanced train and test sequence (8 images for training, 2 for testing per person) lda = LinearDiscriminantAnalysis(solver='svd') lda.fit(X_train, y_train) y_pred_lda = lda.predict(X_test) y_true_lda = y_test f1_scores_lda.append(met.f1_score(y_true_lda, y_pred_lda, average='micro')) qda = QuadraticDiscriminantAnalysis() clf = GridSearchCV(qda, params, cv=4) clf.fit(X_train, y_train) reg_params_qda.append(clf.best_params_['reg_param']) Im running this experiment for an increasing number of persons so Im keeping a python list with these parameters qda2 = QuadraticDiscriminantAnalysis(reg_param=clf.best_params_['reg_param']) qda2.fit(X_train, y_train) y_pred_qda = qda2.predict(X_test) y_true_qda = y_test f1_scores_qda.append(met.f1_score(y_true_qda, y_pred_qda, average='micro')) When i run this using the whole dataset (40 persons); f1_scores_lda outputs 0.975 f1_scores_qda outputs 0.125 When i run this for 10 persons; f1_scores_lda outputs 0.9 f1_scores_qda outputs 0.3 Why is QDA performing so poorly? I'm getting "Variables are collinear" warning for QDA, what can I do about this?

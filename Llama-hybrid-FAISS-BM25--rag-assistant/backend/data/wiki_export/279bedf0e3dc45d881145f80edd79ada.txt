@@ -1,0 +1,138 @@
+In the areas of computer vision, image analysis and signal processing, the notion of scale-space representation is used for processing measurement data at multiple scales, and specifically enhance or suppress image features over different ranges of scale (see the article on scale space). A special type of scale-space representation is provided by the Gaussian scale space, where the image data in N dimensions is subjected to smoothing by Gaussian convolution. Most of the theory for Gaussian scale space deals with continuous images, whereas one when implementing this theory will have to face the fact that most measurement data are discrete. Hence, the theoretical problem arises concerning how to discretize the continuous theory while either preserving or well approximating the desirable theoretical properties that lead to the choice of the Gaussian kernel (see the article on scale-space axioms). This article describes basic approaches for this that have been developed in the literature.
+
+Statement of the problem
+
+The Gaussian scale-space representation of an N-dimensional continuous signal,
+
+is obtained by convolving fC with an N-dimensional Gaussian kernel:
+
+In other words:
+
+However, for implementation, this definition is impractical, since it is continuous.  When applying the scale space concept to a discrete signal fD, different approaches can be taken. This article is a brief summary of some of the most frequently used methods.
+
+Separability
+Using the separability property of the Gaussian kernel
+
+the N-dimensional convolution operation can be decomposed into a set of separable smoothing steps with a one-dimensional Gaussian kernel G along each dimension
+
+where
+
+and the standard deviation of the Gaussian σ is related to the scale parameter t according to t = σ2.
+
+Separability will be assumed in all that follows, even when the kernel is not exactly Gaussian, since separation of the dimensions is the most practical way to implement multidimensional smoothing, especially at larger scales.  Therefore, the rest of the article focuses on the one-dimensional case.
+
+The sampled Gaussian kernel
+When implementing the one-dimensional smoothing step in practice, the presumably simplest approach is to convolve the discrete signal fD with a sampled Gaussian kernel:
+
+where
+
+(with t = σ2) which in turn is truncated at the ends to give a filter with finite impulse response
+
+for M chosen sufficiently large (see error function) such that
+
+A common choice is to set M to a constant C times the standard deviation of the Gaussian kernel
+
+where C is often chosen somewhere between 3 and 6.
+
+Using the sampled Gaussian kernel can, however, lead to implementation problems, in particular when computing higher-order derivatives at finer scales by applying sampled derivatives of Gaussian kernels. When accuracy and robustness are primary design criteria, alternative implementation approaches should therefore be considered.
+
+For small values of ε (10−6 to 10−8) the errors introduced by truncating the Gaussian are usually negligible. For larger values of ε, however, there are many better alternatives to a rectangular window function.  For example, for a given number of points, a Hamming window, Blackman window, or Kaiser window will do less damage to the spectral and other properties of the Gaussian than a simple truncation will. Notwithstanding this, since the Gaussian kernel decreases rapidly at the tails, the main recommendation is still to use a sufficiently small value of ε such that the truncation effects are no longer important.
+
+The discrete Gaussian kernel
+]
+A more refined approach is to convolve the original signal with the discrete Gaussian kernel T(n, t)
+
+where
+
+and  denotes the modified Bessel functions of integer order, n. This is the discrete counterpart of the continuous Gaussian in that it is the solution to the discrete diffusion equation (discrete space, continuous time), just as the continuous Gaussian is the solution to the continuous diffusion equation.
+
+This filter can be truncated in the spatial domain as for the sampled Gaussian
+
+or can be implemented in the Fourier domain using a closed-form expression for its discrete-time Fourier transform:
+
+With this frequency-domain approach, the scale-space properties transfer exactly to the discrete domain, or with excellent approximation using periodic extension and a suitably long discrete Fourier transform to approximate the discrete-time Fourier transform of the signal being smoothed. Moreover, higher-order derivative approximations can be computed in a straightforward manner (and preserving scale-space properties) by applying small support central difference operators to the discrete scale space representation.
+
+As with the sampled Gaussian, a plain truncation of the infinite impulse response will in most cases be a sufficient approximation for small values of ε, while for larger values of ε it is better to use either a decomposition of the discrete Gaussian into a cascade of generalized binomial filters or alternatively to construct a finite approximate kernel by multiplying by a window function. If ε has been chosen too large such that effects of the truncation error begin to appear (for example as spurious extrema or spurious responses to higher-order derivative operators), then the options are to decrease the value of ε such that a larger finite kernel is used, with cutoff where the support is very small, or to use a tapered window.
+
+Recursive filters
+
+Since computational efficiency is often important, low-order recursive filters are often used for scale-space smoothing.  For example, Young and van Vliet use a third-order recursive filter with one real pole and a pair of complex poles, applied forward and backward to make a sixth-order symmetric approximation to the Gaussian with low computational complexity for any smoothing scale.
+
+By relaxing a few of the axioms, Lindeberg concluded that good smoothing filters would be "normalized Pólya frequency sequences", a family of discrete kernels that includes all filters with real poles at 0 < Z < 1  and/or Z > 1, as well as with real zeros at Z < 0.  For symmetry, which leads to approximate directional homogeneity, these filters must be further restricted to pairs of poles and zeros that lead to zero-phase filters.
+
+To match the transfer function curvature at zero frequency of the discrete Gaussian, which ensures an approximate semi-group property of additive t, two poles at
+
+can be applied forward and backwards, for symmetry and stability.  This filter is the simplest implementation of a normalized Pólya frequency sequence kernel that works for any smoothing scale, but it is not as excellent an approximation to the Gaussian as Young and van Vliet's filter, which is not normalized Pólya frequency sequence, due to its complex poles.
+
+The transfer function, H1, of a symmetric pole-pair recursive filter is closely related to the discrete-time Fourier transform of the discrete Gaussian kernel via first-order approximation of the exponential:
+
+where the t parameter here is related to the stable pole position Z = p via:
+
+Furthermore, such filters with N pairs of poles, such as the two pole pairs illustrated in this section, are an even better approximation to the exponential:
+
+where the stable pole positions are adjusted by solving:
+
+The impulse responses of these filters are not very close to gaussian unless more than two pole pairs are used.  However, even with only one or two pole pairs per scale, a signal successively smoothed at increasing scales will be very close to a gaussian-smoothed signal.  The semi-group property is poorly approximated when too few pole pairs are used.
+
+Scale-space axioms that are still satisfied by these filters are:
+
+linearity
+shift invariance (integer shifts)
+non-creation of local extrema (zero-crossings) in one dimension
+non-enhancement of local extrema in any number of dimensions
+positivity
+normalization
+
+The following are only approximately satisfied, the approximation being better for larger numbers of pole pairs:
+
+existence of an infinitesimal generator A (the infinitesimal generator of the discrete Gaussian, or a filter approximating it, approximately maps a recursive filter response to one of infinitesimally larger t)
+the semi-group structure with the associated cascade smoothing property (this property is approximated by considering kernels to be equivalent when they have the same t value, even if they are not quite equal)
+rotational symmetry
+scale invariance
+
+This recursive filter method and variations to compute both the Gaussian smoothing as well as Gaussian derivatives has been described by several authors.  Tan et al. have analyzed and compared some of these approaches, and have pointed out that the Young and van Vliet filters are a cascade (multiplication) of forward and backward filters, while the Deriche and the Jin et al. filters are sums of forward and backward filters.
+
+At fine scales, the recursive filtering approach as well as other separable approaches are not guaranteed to give the best possible approximation to rotational symmetry, so non-separable implementations for 2D images may be considered as an alternative.
+
+When computing several derivatives in the N-jet simultaneously, discrete scale-space smoothing with the discrete analogue of the Gaussian kernel, or with a recursive filter approximation, followed by small support difference operators, may be both faster and more accurate than computing recursive approximations of each derivative operator.
+
+Finite-impulse-response (FIR) smoothers
+For small scales, a low-order FIR filter may be a better smoothing filter than a recursive filter.  The symmetric 3-kernel , for t ≤ 0.5 smooths to a scale of t using a pair of real zeros at Z < 0, and approaches the discrete Gaussian in the limit of small t.  In fact, with infinitesimal t, either this two-zero filter or the two-pole filter with poles at Z = t/2 and Z = 2/t can be used as the infinitesimal generator for the discrete Gaussian kernels described above.
+
+The FIR filter's zeros can be combined with the recursive filter's poles to make a general high-quality smoothing filter.  For example, if the smoothing process is to always apply a biquadratic (two-pole, two-zero) filter forward then backwards on each row of data (and on each column in the 2D case), the poles and zeros can each do a part of the smoothing.  The zeros limit out at t = 0.5 per pair (zeros at Z = –1), so for large scales the poles do most of the work.  At finer scales, the combination makes an excellent approximation to the discrete Gaussian if the poles and zeros each do about half the smoothing.  The t values for each portion of the smoothing (poles, zeros, forward and backward multiple applications, etc.) are additive, in accordance with the approximate semi-group property.
+
+The FIR filter transfer function is closely related to the discrete Gaussian's DTFT, just as was the recursive filter's.  For a single pair of zeros, the transfer function is
+
+where the t parameter here is related to the zero positions Z = z via:
+
+and we require t ≤ 0.5 to keep the transfer function non-negative.
+
+Furthermore, such filters with N pairs of zeros, are an even better approximation to the exponential and extend to higher values of t :
+
+where the stable zero positions are adjusted by solving:
+
+These FIR and pole-zero filters are valid scale-space kernels, satisfying the same axioms as the all-pole recursive filters.
+
+Real-time implementation within pyramids and discrete approximation of scale-normalized derivatives
+Regarding the topic of automatic scale selection based on normalized derivatives, pyramid approximations are frequently used to obtain real-time performance. The appropriateness of approximating scale-space operations within a pyramid originates from the fact that repeated cascade smoothing with generalized binomial kernels leads to equivalent smoothing kernels that under reasonable conditions approach the Gaussian. Furthermore, the binomial kernels (or more generally the class of generalized binomial kernels) can be shown to constitute the unique class of finite-support kernels that guarantee non-creation of local extrema or zero-crossings with increasing scale (see the article on multi-scale approaches for details). Special care may, however, need to be taken to avoid discretization artifacts.
+
+Other multi-scale approaches
+For one-dimensional kernels, there is a well-developed theory of multi-scale approaches, concerning filters that do not create new local extrema or new zero-crossings with increasing scales. For continuous signals, filters with real poles in the s-plane are within this class, while for discrete signals the above-described recursive and FIR filters satisfy these criteria. Combined with the strict requirement of a continuous semi-group structure, the continuous Gaussian and the discrete Gaussian constitute the unique choice for continuous and discrete signals.
+
+There are many other multi-scale signal processing, image processing and data compression techniques, using wavelets and a variety of other kernels, that do not exploit or require the same requirements as scale space descriptions do; that is, they do not depend on a coarser scale not generating a new extremum that was not present at a finer scale (in 1D) or non-enhancement of local extrema between adjacent scale levels (in any number of dimensions).
+
+See also
+
+Scale space
+Pyramid (image processing)
+Multi-scale approaches
+Gaussian filter
+
+External links
+pyscsp: Scale-space toolbox for Python at GitHub (including implementations of different methods for approximating Gaussian smoothing for discrete data)
+
+References
+
+Image processing
+Computer vision
+Gaussian function

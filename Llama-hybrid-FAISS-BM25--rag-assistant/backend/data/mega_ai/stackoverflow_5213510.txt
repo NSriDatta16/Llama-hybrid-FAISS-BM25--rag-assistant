@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5213510
+[parent_id]: 5206508
+[tags]: 
+First of all consider doing the simulation itself on GPU by ping-ponging between 2 OpenGL textures. If not some complex optimizations - Conway's Life is a pretty straightforward task for GPU. It will require 2 framebuffer objects and some understanding of shaders. Edit-1: Example fragment shader (brain-compiled) #version 130 uniform sampler2D input; out float life; void main() { ivec2 tc = ivec2(gl_FragCoord); float orig = texelFetch(input,tc,0); float sum = orig+ texelFetchOffset(input,tc,0,ivec2(-1,0))+ texelFetchOffset(input,tc,0,ivec2(+1,0))+ texelFetchOffset(input,tc,0,ivec2(0,-1))+ texelFetchOffset(input,tc,0,ivec2(0,+1))+ texelFetchOffset(input,tc,0,ivec2(-1,-1))+ texelFetchOffset(input,tc,0,ivec2(-1,+1))+ texelFetchOffset(input,tc,0,ivec2(+1,-1))+ texelFetchOffset(input,tc,0,ivec2(+1,+1)); if(sum The vertex shader is a simple pass-through: #version 130 in vec2 vertex; void main() { gl_Position = vec4(vertex,0.0,1.0); }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3726860
+[parent_id]: 3726136
+[tags]: 
+This is not recommended from architectural point of view but this is used only for low level logging deep inside Model and doesn't do any harm. Also this is thread-safe solution. ApplicationController or just single controller: around_filter :store_remote_ip_in_thread def store_remote_ip_in_thread begin Thread.current[:remote_ip] = request.remote_ip yield ensure Thread.current.delete :remote_ip end end Reusable module for retrieval: module RemoteIpAware def current_remote_ip Thread.current[:remote_ip] || '-' end end Somewhere in model/mailer/lib class: include RemoteIpAware ... #use current_remote_ip method anywhere Keep in mind I wrote it from my memory.. syntax may not be ok ;) In you case instead of remote IP you can save params[:action] :controller name etc..

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4466831
+[parent_id]: 4464824
+[tags]: 
+There are a few problems here: An empty paragraph doesn't render visibly in most browsers. You need some content in there; You've called getSelection() on the iframe's document rather than the iframe's Window object. You need var sel = iwin.getSelection(); ; None of this can work in IE, which has an entirely different way of handling selections. WebKit cannot place the caret in a an empty element. See https://bugs.webkit.org/show_bug.cgi?id=15256 There's a couple of other minor issues: for an iframe DOM element, contentWindow is non-standard and contentDocument is not universally supported. I'd suggest something like the following for maximum use of standards: var iframe = $('#editor')[0]; var idoc, iwin; if (typeof iframe.contentDocument != "undefined") { idoc = iframe.contentDocument; iwin = idoc.defaultView; } else if (typeof iframe.contentWindow != "undefined") { iwin = idoc.contentWindow; idoc = iwin.document; } I've updated your example (although unfortunately the second paragraph is no longer empty): http://jsfiddle.net/timdown/MGaTf/6/

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3570672
+[parent_id]: 3570614
+[tags]: 
+The UIImageView is being released, but are you sure you don't have a phantom retain on it somewhere else? If I were you I would try to track down its retains and releases. You can either do that with funky debugger tricks, tools like malloc_history, or simply by make a subclass of UIImageView: @interface DebugImageView @end @implementation DebugImageView - (id) retain { NSLog(@"retained"); return [super retain]; } - (void) release { NSLog(@"release"); [super release]; } - (void) dealloc { NSLog(@"dealloc"); [super dealloc]; } Just change the class of the UIImageView object in IB to DebugImageView, and you should be good to go. You can also put break points on those to see where they are called, or just make calls to backtrace() where I have logging statements. If the object is in fact being deleted, then your memory increase is probably not serious, and is most likely due to either a large reusable buffer object that is lazily evicted, or heap fragmentation. 1.5MB does seem a bit high for that sort of thing though, so I suspect it is a an over retain.

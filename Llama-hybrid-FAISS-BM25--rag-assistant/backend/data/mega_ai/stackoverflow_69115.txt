@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 69115
+[parent_id]: 
+[tags]: 
+char[] to hex string exercise
+
+Below is my current char* to hex string function. I wrote it as an exercise in bit manipulation. It takes ~7ms on a AMD Athlon MP 2800+ to hexify a 10 million byte array. Is there any trick or other way that I am missing? How can I make this faster? Compiled with -O3 in g++ static const char _hex2asciiU_value[256][2] = { {'0','0'}, {'0','1'}, /* snip..., */ {'F','E'},{'F','F'} }; std::string char_to_hex( const unsigned char* _pArray, unsigned int _len ) { std::string str; str.resize(_len*2); char* pszHex = &str[0]; const unsigned char* pEnd = _pArray + _len; clock_t stick, etick; stick = clock(); for( const unsigned char* pChar = _pArray; pChar != pEnd; pChar++, pszHex += 2 ) { pszHex[0] = _hex2asciiU_value[*pChar][0]; pszHex[1] = _hex2asciiU_value[*pChar][1]; } etick = clock(); std::cout Updates Added timing code Brian R. Bondy : replace the std::string with a heap alloc'd buffer and change ofs*16 to ofs Antti Sykäri :replace inner loop with int upper = *pChar >> 4; int lower = *pChar & 0x0f; pszHex[0] = pHex[upper]; pszHex[1] = pHex[lower]; result ~8ms Robert : replace _hex2asciiU_value with a full 256-entry table, sacrificing memory space but result ~7ms! HoyHoy : Noted it was producing incorrect results

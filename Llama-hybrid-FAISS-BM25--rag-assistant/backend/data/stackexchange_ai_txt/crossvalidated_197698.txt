@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 197698
+[parent_id]: 
+[tags]: 
+Why does power (other conditions equal) decrease as the odds ratio increases above 2?
+
+I am simulating a logistic regression setting (P(Y=1|x). Estimated proportion of patients with a poor feature at time zero is 40%. I am generating 1000 replications per scenario, sample size ranging from 100 to 200 by 10, for odds ratios ranging from 1.5 to 2.5 by 0.1. I generate x (years) from Uniform~(2,6). Relative power increases appropriately for odds ratios from 1.5 to 2.0. However, relative power decreases for odds ratios greater than 2.0. Does anyone have an explanation for this. data t; b0=-0.405;`enter code here` do or=1.5 to 2.5 by 0.1; b1=log(or); do ss=100 to 200 by 10; do rep=1 to 1000; do i=1 to ss; *years=6*ranuni(34958487); years=4*ranuni(34958487)+2; *years=1*rannor(34958487)+3; lp=b0 + b1*years; pi=exp(lp)/(1 + exp(lp)); y=ranbin(45823765,1,pi); output; end; end; end; end; run; proc sort data=t; by b1 ss rep;run; ods listing close; ods select ParameterEstimates(persist); ods output ParameterEstimates=Estimates; proc logistic descending data=t; by b1 ss rep; model y=years; run; ods select all; ods listing; data reject; set estimates; if variable="years"; rej=(probchisq

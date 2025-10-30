@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2686049
+[parent_id]: 2685456
+[tags]: 
+Looks like a good candidate for a little input record separator ( $/ ) trickery. The idea is to manipulate it so that it deals with one record at a time, rather than the default single line. use strict; use warnings; $^I = '.bak'; open my $dataIn, ' ', 'gen_results.txt' or die "Can't open output file: $!"; { local $/ = "\n\t"; # Records have leading tabs while ( my $record = ) { # Skip header & records that contain 'NULL' next if $record =~ /NULL|Event_time/; # Strip out the unwanted yik-yak $record =~ s/SubNetwork.*BtsSiteMgr=//s; # Print record to output file print $dataOut $record; } } close $dataIn; close $dataOut; Pay attention to the following: use of the safer three-argument form of open (the two-argument form is what you've shown) use of scalar variables rather than barewords for defining filehandles use of the local keyword and extra curlies to modify the definition of $/ only when needed. the second s in s/SubNetwork.*BtsSitMgr=//s allows matches over multiple lines as well.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3462698
+[parent_id]: 
+[tags]: 
+twisted: how to communicate elegantly between reactor code and threaded code?
+
+I have a client connected to a server using twisted. The client has a thread which might potentially be doing things in the background. When the reactor is shutting down, I have to: 1) check if the thread is doing things 2) stop it if it is What's an elegant way to do this? The best I can do is some confused thing like: def cleanup(self): isWorkingDF = defer.Deferred() doneDF = defer.Deferred() def checkIsWorking(): res = self.stuff.isWorking() #blocking call reactor.callFromThread(isWorkingDF.callback, res) def shutdownOrNot(isWorking): if isWorking: #shutdown necessary, shutdown is also a blocking call def shutdown(): self.stuff.shutdown() reactor.callFromThread(doneDF, None) reactor.callInThread(shutdown) else: doneDF.callback(None) #no shutdown needed isWorkingDF.addCallback(shutdownOrNot) reactor.callInThread(checkIsWorking) return doneDF First we check if it's working at all. The result of that callback goes into rescallback which either shuts down or doesn't, and then fires the doneDF, which twisted waits for until closing. Pretty messed up eh! Is there a better way? Maybe a related question is, is there a more elegant way to chain callbacks to each other? I could see myself needing to do more cleanup code after this is done, so then I'd have to make a different done deferred, and have the current doneDF fire a callback which does stuff then calls that done deferred..

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 492162
+[parent_id]: 491906
+[tags]: 
+If you don't need the data you should definitely create a different type. By convention I typically name this sort of class "nnnInfo" or "nnnListItem". To create ArticleListItem, in L2S, simply drag the table to your DataContext designer a second time. Then rename it from 'Article1' to 'ArticleListItem' and remove the unneeded properties (rt click, delete). In EF, the process would be similar. As Craig notes, you could use anonymous types, but by creating a concrete type, you can reuse throughout your app, expose via services, etc. A second way to do this would be to create the class manually and write an extension method to return ArticleListItem: public static IQueryable ToListItems(this IQueryable articles) { return from a in articles select new ArticleListItem{ Title = a.Title, ...} } This would allow you to "cast" any queries against Article as ArticleListItem...

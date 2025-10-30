@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5143575
+[parent_id]: 
+[tags]: 
+Aggregating Tally counters
+
+Many times I find myself counting occurrences with Tally[ ] and then, once I discarded the original list, having to add (and join) to that counters list the results from another list. This typically happens when I am counting configurations, occurrences, doing some discrete statistics, etc. So I defined a very simple but handy function for Tally aggregation: aggTally[listUnTallied__List:{}, listUnTallied1_List, listTallied_List] := Join[Tally@Join[listUnTallied, listUnTallied1], listTallied] //. {a___, {x_, p_}, b___, {x_, q_}, c___} -> {a, {x, p + q}, b, c}; Such that l = {x, y, z}; lt = Tally@l; n = {x}; m = {x, y, t}; aggTally[n, {}] {{x, 1}} aggTally[m, n, {}] {{x, 2}, {y, 1}, {t, 1}} aggTally[m, n, lt] {{x, 3}, {y, 2}, {t, 1}, {z, 1}} This function has two problems: 1) Performance Timing[Fold[aggTally[Range@#2, #1] &, {}, Range[100]];] {23.656, Null} (* functional equivalent to *) Timing[s = {}; j = 1; While[j 2) It does not validate that the last argument is a real Tallied list or null (less important for me, though) Is there a simple, elegant, faster and more effective solution? (I understand that these are too many requirements, but wishing is free)

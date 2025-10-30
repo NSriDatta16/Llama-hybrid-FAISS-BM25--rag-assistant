@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5775048
+[parent_id]: 5775000
+[tags]: 
+You've allocated the memory for your matrix (perfectly) but you don't actually assign it to the A variable from the callee. Instead, A ends up still uninitialized and attempting to assign to A[1][1] caused a segfault. To be able to do that, you'd need a pointer to that variable and assign your matrix to that address. So in effect, your function signature and implementation would need to change: /* take a pointer to a (double **) */ void assign_matrix_storage(double ***matrix, int n){ /* then all accesses need to dereference first */ if(((*matrix) = malloc(n * sizeof(double*))) == NULL){ printf("ERROR: Memory allocation failed\n"); exit(EXIT_FAILURE); } int i; for(i = 0; i A better alternative to what you have would be to return the pointer to the new matrix instead and assign that to your variable. double **assign_matrix_storage(int n) { double **matrix; /* the rest of your implementation */ return matrix; } double **A; A = assign_matrix_storage(2); A[1][1] = 42;

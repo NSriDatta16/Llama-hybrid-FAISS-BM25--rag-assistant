@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1506174
+[parent_id]: 1506087
+[tags]: 
+It's perfectly possible for someone enterprising / malicious to map the fields to any of the properties on your model. There are a few ways around this The most simple is to use the exclude / include properties overloads of UpdateModel as has been mentioned before. The downside of this is that the method only accepts a string array which can sometimes mean your code gets out of sync if you do any renaming. Another way is to use a simple DTO which holds the bound fields, you can then take the DTO and do what you want with your event object, this obviously adds another class and is much more manual but gives you a lot more control public ActionResult(int id, EditForm form) { MyEvent event = _eventRepository.GetMyEvent(id); event.Name = form.Name; //etc; if (User.IsInRole("Organiser")) { event.Date = form.Date; } return ... } Another way could be via a customer model binder for your MyEvent class which only binds your desired field, probably overkill though.

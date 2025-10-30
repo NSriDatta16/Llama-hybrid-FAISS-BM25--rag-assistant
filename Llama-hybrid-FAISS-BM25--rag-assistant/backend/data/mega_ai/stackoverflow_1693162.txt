@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1693162
+[parent_id]: 1691451
+[tags]: 
+Ok, I made some tests, here are results. First value is with index on TS column, second value is without index on TS column. SELECT * FROM parts WHERE CAST(TS AS DATE) = DATE('2009-10-01'); 2.1 sec, 2.1 sec SELECT * FROM parts WHERE DATE(TS) = DATE('2009-10-01'); 2.1 sec, 2.1 sec SELECT * FROM parts WHERE TS >= DATE('2009-10-01') AND TS 0.1 sec, 2.15 sec SELECT * FROM parts WHERE TS >= '2009-10-01' AND TS 0.1 sec, 2.15 sec So, as you can see, there is no difference if we don't have an index on TS column. But there is a very big difference when we have index. When we use CAST() or DATE() on indexed column, the index can not be used anymore, so we get bad results. As for me, I would choose this solution: SELECT * FROM parts WHERE TS >= DATE('2009-10-01') AND TS I think it's the most elegant. PS. I'm still looking for even better solutions, so if you have one - please share.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1381523
+[parent_id]: 1381420
+[tags]: 
+You could create an event in the Service class and then invoke it in a thread-safe manner. Pay very close attention to how I have implemented the SetStatus method. class Service { public delegate void JobStatusChangeHandler(string status); // Event add/remove auto implemented code is already thread-safe. public event JobStatusChangeHandler JobStatusChange; public void PerformWork() { SetStatus("STARTING"); // stuff SetStatus("FINISHED"); } private void SetStatus(string status) { JobStatusChangeHandler snapshot; lock (this) { // Get a snapshot of the invocation list for the event handler. snapshot = JobStatusChange; } // This is threadsafe because multicast delegates are immutable. // If you did not extract the invocation list into a local variable then // the event may have all delegates removed after the check for null which // which would result in a NullReferenceException when you attempt to invoke // it. if (snapshot != null) { snapshot(status); } } }

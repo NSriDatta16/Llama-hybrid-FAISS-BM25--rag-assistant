@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1461099
+[parent_id]: 1460954
+[tags]: 
+You might want to consider storing the IP address as an INT UNSIGNED. Also store the netmask so you can tell the difference between a static address and a subnet. INSERT INTO bots (ipaddress, netmask, bot_name) VALUES (INET_ATOI('192.168.1.0'), INET_ATOI('255.255.255.0'), 'Wall-E'); Then you can query to see if an input IP address matches: SELECT bot_name FROM bots WHERE __input_ip__ & netmask = ipaddress & netmask; Using integers for IP addresses instead of CHAR(15) is a common optimization. Even storing the 8 bytes for the IP address and the netmask is little more than half the storage of the CHAR(15). And the bitwise operations are likely to be a lot faster than the regular expression matching, and it's easier to avoid the corner cases like in @Gumbo's comment.

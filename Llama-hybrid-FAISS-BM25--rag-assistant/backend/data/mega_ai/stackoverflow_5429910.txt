@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5429910
+[parent_id]: 5429017
+[tags]: 
+Unfortunatelly this is not possible through mapping. Your CurrentTagEntry reprents one-to-one relation between Tag and TagEntry but in the same time you have one-to-many relation between Tag and TagEntry . One-to-one mapping demands that both entities share primary key => to be able to map one-to-one relations TagEntry's PK must be FK to Tag . This will obviously break one-to-many relation. You must do this as helper function instead of mapping. For example this can be used as helper linq query: var lastLog = (from te in context.TagEntries where te.TagId == id orderby te.LogTime descending select te).FirstOrDefault(); Or this as helper loading: var entry = context.Entry (tag); if (!entry.Collection(t => t.TagEntries).IsLoaded) { // Selective eager loading entry.Collection(t => t.TagEntries) .Query() .OrderByDescending(te => te.LogTime) .Take(1) .Load(); } var tag = tag.TagEntries.FirstOrDefault();

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1755111
+[parent_id]: 1754541
+[tags]: 
+First, the protocol is nasty. You're sending fixed-size blocks when you want to send a nul-terminated string ... it would be simpler just to put the string length at the front of the message. Second, you're not reading correctly from the socket, it just happens to work so long as you don't have any other messages in the pipeline. If your while loop was ever really exercised, you'd overwrite the first fragment with any subsequent reads. Anyway, the proximate cause of the bug is that you prepend a nul terminator (separator?) to the string. Doesn't that explain why you always find your nul at index 0? If you can't see it, try writing out the contents of the buffer as sent. #define ERRBUFSIZE 51 void server(string const &name) { string error = "Error - Already Registered: "; error.append(name); char err[ERRBUFSIZE]; // you sure you want a NUL terminator at index 0?? err[0] = 0; // can replace both lines with strcpy(err, error.c_str()) std::copy(error.begin(), error.end(), err+1); err[error.size() + 2] = '\0'; if (send(sock, &err, ERRBUFSIZE, 0)

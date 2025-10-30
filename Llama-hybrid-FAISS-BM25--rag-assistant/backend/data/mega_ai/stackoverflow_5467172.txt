@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5467172
+[parent_id]: 5466005
+[tags]: 
+Make use of Ruby's Singleton (or Eigen) class and then the following one liner solves your problem: module Formatter def format_date Date.parse(self[:date]).strftime('%Y-%m-%d') end def format_time self[:time].split(':')[0,2].join('-') end def format_first_name self[:first_name].upcase end def format {:date => format_date, :time => format_time, :first_name => format_first_name, :last_name => self[:last_name]} end end records = [ {:date => 'March 05', :time => '12:13:00', :first_name => 'Wes', :last_name => 'Bailey'}, {:date => 'March 06', :time => '09:15:11', :first_name => 'Joe', :last_name => 'Buck'}, {:date => 'March 07', :time => '18:35:48', :first_name => 'Troy', :last_name => 'Aikmen'}, ] records.map {|h| h.extend(Formatter).format} => [{:date=>"2011-03-05", :time=>"12-13", :first_name=>"WES", :last_name=>"Bailey"}, {:date=>"2011-03-06", :time=>"09-15", :first_name=>"JOE", :last_name=>"Buck"}, {:date=>"2011-03-07", :time=>"18-35", :first_name=>"TROY", :last_name=>"Aikmen"}]

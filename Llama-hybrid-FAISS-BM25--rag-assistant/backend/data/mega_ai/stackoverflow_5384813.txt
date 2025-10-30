@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5384813
+[parent_id]: 5384361
+[tags]: 
+This would also work (though it's not particularly elegant): public static string MethodCallExpressionRepresentation(this LambdaExpression expr) { var expression = (MethodCallExpression)expr.Body; var arguments = string.Join(", ", expression.Arguments.OfType ().Select(x => { var tempInstance = ((ConstantExpression)x.Expression).Value; var fieldInfo = (FieldInfo)x.Member; return "\"" + fieldInfo.GetValue(tempInstance).ToString() + "\""; }).ToArray()); return expression.Object.Type.FullName + "." + expression.Method.Name + "(" + arguments + ")"; } You can call it like this: Expression expr = c => myService.Do(param1)); var repr = expr.MethodCallExpressionRepresentation(); // Namespace.IMyService.Do("1")

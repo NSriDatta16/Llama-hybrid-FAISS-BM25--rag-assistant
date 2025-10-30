@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 144358
+[parent_id]: 
+[tags]: 
+Singular Value decomposition positive components
+
+I am using Singular Value Decomposition (SVD) applied to Singular Spectrum Analysis (SSA) of a timeseries. % original time series x1= rand(1,10000); N = length(x1); % windows for trajectory matrix L = 600; K=N-L+1; % trajectory matrix/matrix of lagged vectors X = buffer(x1, L, L-1, 'nodelay'); % Covariance matrix A = X * X' / K; % SVD [U, S_temp, ~] = svd(A); % The eigenvalues of A are the squared eigenvalues of X S = sqrt(S_temp); d = diag(S); % Principal components V = X' * U; for i = 1 : L V(:, i) = V(:, i) / d(i); end EDIT 1: If I try to reconstruct the original matrix X adding the i-matrices given by d(i)*U(:,i)*V(:,i)' I get exactly the original matrix. X_rec = zeros(size(X)); for index_col = 1 : L disp(index_col) X_i = d(index_col)*U(:,index_col)*V(:,index_col)'; X_rec=X_rec+X_i; end I wanted to know if there is a way to have the singular components V always positive with the compromise of having an error in the recostructed matrix. In this case the reconstructed matrix would be just an approximation of the original. X is always > 0 in my case (and also the Covariance matrix A)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5038908
+[parent_id]: 5038664
+[tags]: 
+First, fragment rules can only be "seen" by lexer rules, not parser rules. So, the following is invalid: integer_number : DIGIT+; // can't use DIGIT here! fragment DIGIT : ('0'..'9'); To fix your ambiguity with these numbers, it's IMO best to make these integer - and hex numbers lexer rules instead of parser rules. An example: grammar enum; rule_enum : 'enum' ID '{' enum_values+ '}'';'; enum_values : enum_value (COMMA enum_value)+; enum_value : ID ('=' number)?; number : HEX_NUMBER | INTEGER_NUMBER ; HEX_NUMBER : '0' 'x' HEX_DIGIT+; INTEGER_NUMBER : DIGIT+; fragment HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ; fragment DIGIT : ('0'..'9'); COMMA : ','; ID : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*; SPACE : (' ' | '\t' | '\r' | '\n') {skip();}; which produces the following parse tree of your example snippet:

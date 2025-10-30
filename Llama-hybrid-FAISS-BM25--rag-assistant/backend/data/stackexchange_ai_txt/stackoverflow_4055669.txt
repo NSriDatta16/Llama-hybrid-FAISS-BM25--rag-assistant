@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4055669
+[parent_id]: 
+[tags]: 
+Why does MAP_GROWSDOWN cause SIGBUS errors after upgrading to Centos 5.5?
+
+I was upgrading the OS on one of our build from Centos 5.3 32bit to Centos 5.5 32bit. After doing the package update I rebooted, checked out a clean copy of the source, built and ran the unit tests. All unit tests which rely on our MemMap base class began to fail. The crash occurs when we attempt to set the value of the guard page after immediatly after mapping the memory. After poking around I was able to isolate the problem to our use of the MAP_GROWSDOWN flag, the tests run fine without it but crash when the flag is set. These tests worked fine when the build system was running 5.3, but immediatly started crashing when we upgraded to 5.5. They also work fine on my development machine which is also running 5.5 but is real hardware; the build system is a XEN VM. This is a stable bit of code which hasn't been modified in several releases and has unit test coverage north of 80%. So I guess my question is why is this happening? int flags = MAP_ANONYMOUS|MAP_PRIVATE|MAP_GROWSDOWN; int prot = PROT_EXEC|PROT_READ|PROT_WRITE; size_t length = 524288; long rv = ::sysconf(_SC_PAGESIZE); if (rv (static_cast (m_addr) + pagelength); m_length = length - pagelength; // Fill the guard page with an interesting pattern unsigned int *g = static_cast (m_addr); for (size_t i=0; i

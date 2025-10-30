@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4158043
+[parent_id]: 3808778
+[tags]: 
+See also in the Swig 2.0 documentation this Java-specific section on exception handling . To avoid writing the pattern more than once, I created a SWIG macro supporting methods that throw one type of C++ exception -- by catching that and throwing a corresponding Java exception: WRAP_THROW_EXCEPTION( myCppDeclaration, com::foo::MyCppExceptionClass, "com.foo.MyException", "com/foo/MyException" ); Here's the macro: %define WRAP_THROW_EXCEPTION( MATCH, CPPTYPE, JTYPE, JNITYPE ) %javaexception(JTYPE) MATCH { try { $action } catch ( CPPTYPE & e ) { jclass eclass = jenv->FindClass(JNITYPE); if ( eclass ) { jenv->ThrowNew( eclass, e.what() ); } } } %enddef

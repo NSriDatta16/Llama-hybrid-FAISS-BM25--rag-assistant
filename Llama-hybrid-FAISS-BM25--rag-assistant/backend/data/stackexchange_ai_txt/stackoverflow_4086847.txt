@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4086847
+[parent_id]: 4085475
+[tags]: 
+The main problem is that substr is local to myFunction , and once myFunction exits it no longer exists, so the pointer you return will no longer be valid. Secondly, you are not using typedef correctly. The proper syntax would be typedef char (*ptr)[20]; Syntactically, typedef basically acts like a storage class specifier similar to static or extern (although the semantics are different). Basically, you figure out the declaration for an object char (*ptr)[20]; // ptr is a pointer to a 20-element array of char and then add the typedef to it: typedef char (*ptr)[20]; Somehow myFunction needs to allocate memory in such a way that it isn't destroyed as soon as the function exits. Here's one option: typedef char (*ptr)[20]; ptr myFunction(size_t count) { /** * Dynamically allocate a block of N 20-element arrays of char */ ptr p = malloc(sizeof *ptr * count); return p; } int main(void) { ptr str = myFunction(10); size_t i, j; for (i = 0; i

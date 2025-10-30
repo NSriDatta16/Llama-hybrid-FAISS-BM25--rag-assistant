@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 547057
+[parent_id]: 
+[tags]: 
+How to properly perform predictions in ordinal regression?
+
+This question is a sequel to this one . Proportional odds logistic regression predicts probabilities for each level $l$ , conditioned on the predictor $x$ : $$ P(y = l ~|~ x) \text{ for every } l \in L $$ But in practice we mostly simply want to predict the level $l$ itself. I recon the standard way is to pick the most probable level for $x$ . This at least seems to be the default way how predict for R's MASS::polr works. An alternative is to compute the expectation of the level and round it: $$ y = \lfloor ~ \sum_{l \in L} l \cdot P(y = l ~|~ x) ~ \rceil $$ (as written, this works only for levels enumerated as numbers, e.g. $0, 1, ...$ , but it is trivial to extend it to other values). The two approaches differ and produce different predictions. I'd assume the first one, as implemented in standard statistical software, should be preferred, but, at least on my dataset from the previous question , the second one performs better (MAE = 0.97 vs. MAE = 1.71) and approaches the performance of the binomial predictor (MAE = 0.94). Notice how picking the most probable level never selects levels 1 and 2: So, which is the "standard" way of predicting the level and under which circumstances can an alternative be justified? Edit in response to comment: I'm implicitly assuming that the ordinal scale is a discretised version of an underlying, latent, continuous variable, as suggested in McCullagh's (1980) original paper.

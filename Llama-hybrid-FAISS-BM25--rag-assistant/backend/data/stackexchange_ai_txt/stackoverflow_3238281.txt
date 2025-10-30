@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3238281
+[parent_id]: 3238040
+[tags]: 
+Your code is mostly fine. In fact, your general architecture is the most elegant solution in my opinion. You just forgot to start the timer. You do not need to worry about the GC prematurely collecting the timer because it will actually "root" itself automatically when it is started. That of course begs the question of whether or not this would cause a memory leak since a new timer is created everytime. I think not since the timer will also "unroot" itself when it is stopped. So the following should work fine. void dataLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) { DataLabel.Text = "Database Loaded"; var timer = new System.Windows.Forms.Timer(); timer.Interval = 5000; timer.Tick += (o, a) => { timer.Stop(); DataLabel.Text = ""; }; timer.Start(); }

@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 126509
+[parent_id]: 126508
+[tags]: 
+You need to from datasets import load_dataset , and even though the warning tells you so, you do not seem to need to import the Dataset class if you just want to run the Trainer on your own text file input. For me, the load_dataset module was enough. This code runs through, its output is a dataset that can build a fine-tuned model with the help of the Huggingface Transformers PyTorch Trainer class. from transformers import AutoTokenizer from datasets import load_dataset model_name = "dbmdz/german-gpt2" tokenizer = AutoTokenizer.from_pretrained(model_name) file_path = './myfile.txt' bln_truncation = False dataset = load_dataset("text", data_files={"train": file_path}) block_size = 512 tokenizer = AutoTokenizer.from_pretrained(model_name) def tokenize_function(examples): return tokenizer( examples["text"], padding="max_length", truncation=bln_truncation) tokenized_datasets = dataset.map(tokenize_function, batched=True) The dataset must then be passed to the Trainer class like this: trainer = Trainer( ... train_dataset=tokenized_datasets["train"], ... )

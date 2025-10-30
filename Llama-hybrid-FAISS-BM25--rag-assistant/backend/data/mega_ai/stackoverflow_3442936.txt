@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3442936
+[parent_id]: 3001629
+[tags]: 
+Actually, it is possible to map enums to INT, but in SQLite, INT will come back as an Int64, and, since you can't specify that your enum is castable to long, you will get this error. I am using NHibernate, so my workaround was to create a custom AliasToBean class that handles converting the enum fields to Int32: public class AliasToBeanWithEnums : IResultTransformer where T : new() { #region IResultTransformer Members public IList TransformList(IList collection) { return collection; } public object TransformTuple(object[] tuple, string[] aliases) { var t = new T(); Type type = typeof (T); for (int i = 0; i Usage: public IList GetItemSummaries() { ISession session = NHibernateSession.Current; IQuery query = session.GetNamedQuery("GetItemSummaries") .SetResultTransformer(new AliasToBeanWithEnums ()); return query.List (); }

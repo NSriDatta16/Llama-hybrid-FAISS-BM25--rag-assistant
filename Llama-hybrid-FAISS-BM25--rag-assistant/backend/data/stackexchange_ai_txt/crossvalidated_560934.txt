@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 560934
+[parent_id]: 
+[tags]: 
+K-fold cross validation for kNN Imputer in Python
+
+I have a dataset with columns, say, y, x1, x2, x2 and a lot of missing values in x1, x2, x3 . I decided to use KNNImputer from sklearn.impute to fill these NaNs. Later on, I would like to fit a few models, like XGBoost, Artificial Neural Networks, Random Forests, etc. and measure my score via k-fold cross validation, as I don't have a test set. The thing is that I would like to also investigate how the number of neighbours in KNNImputer affects the results. What should I do? Let's say that's (a very small) part of my data: data = pd.DataFrame({'y':['5', '2', '1', '9', '8'], 'x1':["NaN", 0.8, 1.5, "NaN", 0.3], 'x2':[22.1, "NaN", 13.7, 18.2, 10], 'x3':[5, "NaN", "NaN", 3, 7]}) # Imputing imputer = KNNImputer(n_neighbors = 5, weights = 'distance') imputer.fit((data.loc[:,["x1", "x2", "x3"]])) data.loc[:,["x1", "x2", "x3"]] = imputer.transform(data.loc[:,["x1", "x2", "x3"]]) # XGBoosting import xgboost as xgb from xgboost import cv from xgboost import XGBClassifier params = { 'max_depth': 4, 'alpha': 10, 'learning_rate': 1.0, 'n_estimators':100 } # instantiate the classifier xgb_clf = XGBClassifier(**params) # fit the classifier to the training data xgb_clf.fit(datax[["x1", "x2", "x3"]], datax["y"]) And there is of course cv function from xgboost but it doesn't help with k-fold CV for KNN imputer. I guess I would need to do a pipeline, am I right? Could you help me put it all together?

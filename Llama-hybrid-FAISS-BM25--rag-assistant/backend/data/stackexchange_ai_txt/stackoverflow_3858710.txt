@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3858710
+[parent_id]: 3858413
+[tags]: 
+If you need only C# solution, there is much more elegant solution: //I intentionally change to 5th of October var stringDates = new string[] { "05-Oct-2010", "05-Oct", "05-OCT-2010", "05-OCT" }; foreach(var s in stringDates) { DateTime dt; if (DateTime.TryParseExact(s, new string[] { "dd-MMM-yyyy", "dd-MMM" }, null, DateTimeStyles.None, out dt) ) Console.WriteLine(dt.ToShortDateString()); } This code prints: 05/10/2010 05/10/2010 05/10/2010 05/10/2010 And you could even use some fancy LINQ: static DateTime? Parse(string str, string[] patterns) { DateTime result; if (DateTime.TryParseExact(str, patterns, null, DateTimeStyles.None, out result) ) return result; return null; } static void Main(string[] args) { var stringDates = new string[] { "05-Oct-2010", "05-Oct", "05-OCT-2010", "05-OCT" }; var patterns = new string[] {"dd-MMM-yyyy", "dd-MMM"}; var dates = from s in stringDates let dt = Parse(s, patterns) where dt.HasValue select dt.Value; foreach( var d in dates) Console.WriteLine(d.ToShortDateString()); Console.ReadLine(); } And we have the same result;)

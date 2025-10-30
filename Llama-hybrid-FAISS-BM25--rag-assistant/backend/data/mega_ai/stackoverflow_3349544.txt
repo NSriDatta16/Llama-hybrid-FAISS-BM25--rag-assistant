@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3349544
+[parent_id]: 3349444
+[tags]: 
+I think you're jumping the gun with some of the LongPtrs. For example the first parameter to GetGUIThreadInfo is a DWORD for the thread id, even on 64bit windows DWORD is still 32 bits. c:\Users\logan>type foop.c #include #include int main() { int n = sizeof(DWORD); printf("%d\n", n); n = sizeof(DWORD_PTR); printf("%d\n", n); return 0; } c:\Users\logan>cl foop.c Microsoft (R) C/C++ Optimizing Compiler Version 14.00.50727.762 for x64 Copyright (C) Microsoft Corporation. All rights reserved. foop.c Microsoft (R) Incremental Linker Version 8.00.50727.762 Copyright (C) Microsoft Corporation. All rights reserved. /out:foop.exe foop.obj c:\Users\logan>foop.exe 4 8 Likewise, LONG is actually still 32bits, so your RECT definition is wrong. It's also been a very long time since I've done VB, but I don't remember if ByVal or ByRef is the default. If the former you problem need to specify ByRef on the struct parameter to GetGUIThreadInfo.

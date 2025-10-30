@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2375756
+[parent_id]: 2372815
+[tags]: 
+You made no reference to the ifc_system_id column before your method so I'll assume that's not immediately pertinent to the question. Also the output you specify as desirable is actually inconsistent. The key that you're missing, it seems, is to call the recursive function using data relevant to the child records - in this case, ifc_name rather than ifc_parent . public function getByFilerOrganisedChildren($filer_id, $parent = '') { $table = new Filer_Interface_Table(); $where[] = $table->getAdapter()->quoteInto('ifc_system_id = ?', $filer_id); $where[] = $table->getAdapter()->quoteInto('ifc_parent = ?', $parent); $rows = $table->fetchAll($where, 'ifc_parent ASC'); $data = array(); foreach ($rows as $row) { $data[$row->ifc_name] = $this->getByFilerOrganisedChildren($row->ifc_name); } return (! empty($data) ? $data : false); }

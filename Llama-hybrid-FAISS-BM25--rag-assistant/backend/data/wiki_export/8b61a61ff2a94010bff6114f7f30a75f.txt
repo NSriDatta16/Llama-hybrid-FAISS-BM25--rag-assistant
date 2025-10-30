@@ -1,0 +1,99 @@
+In computer programming, error hiding (or error swallowing) is the practice of catching an error or exception, and then continuing without logging, processing, or reporting the error to other parts of the software. Handling errors in this manner is considered bad practice and an anti-pattern in computer programming. In languages with exception handling support, this practice is called exception swallowing.
+
+Errors and exceptions have several purposes:
+ Help software maintainers track down and understand problems that happen when a user is running the software, when combined with a logging system
+ Provide useful information to the user of the software, when combined with meaningful error messages, error codes or error types shown in a UI, as console messages, or as data returned from an API (depending on the type of software and type of user)
+ Indicate that normal operation cannot continue, so the software can fall back to alternative ways of performing the required task or abort the operation.
+
+When errors are swallowed, these purposes can't be accomplished. Information about the error is lost, which makes it very hard to track down problems. Depending on how the software is implemented, it can cause unintended side effects that cascade into other errors, destabilizing the system. Without information about the root cause of the problem, it's very hard to figure out what is going wrong or how to fix it.
+
+Examples
+
+Languages with exception handling 
+
+In this C# example, even though the code inside the try block throws an exception, it gets caught by the blanket catch clause. The exception has been swallowed and is considered handled, and the program continues.
+
+try {
+  throw new Exception();
+} catch {
+  // do nothing
+}
+
+In this PowerShell example, the trap clause catches the exception being thrown and swallows it by continuing execution. The "I should not be here" message is shown as if no exception had happened.
+
+&{ 
+  trap { continue }
+  throw
+  write-output "I should not be here"
+}
+
+Exception swallowing can also happen if the exception is handled and rethrown as a different exception, discarding the original exception and all its context.
+
+In this C# example, all exceptions are caught regardless of type, and a new generic exception is thrown, keeping only the message of the original exception. The original stacktrace is lost, along with the type of the original exception, any exception for which the original exception was a wrapper, and any other information captured in the exception object.
+
+try {
+    // do something
+} catch (Exception ex) {
+    // maybe do some local handling of the exception
+    throw new Exception(ex.Message);
+}
+
+A better way of rethrowing exceptions without losing information is to throw the original exception from the catch clause:
+
+try {
+    // do something
+} catch (Exception ex) {
+    // do some local handling of the exception
+    throw;
+}
+
+Alternatively, a new exception can be created that wraps the original exception, so any other handlers will have access to both:
+
+try {
+    // do something
+} catch(Exception ex) {
+    // maybe do some local handling of the exception
+    throw new CustomException(ex);
+}
+
+Other languages 
+
+In Go, errors are propagated by returning an Error object along with the normal function return value. It can be ignored, as in this example.
+
+f, _ := "I should not be here", errors.New("")
+fmt.Print(f)
+
+In the case of C system calls, errors are indicated by the return value of the call being NULL, and error information is stored in a global errno variable. This code makes sure the file is valid before accessing it, but if fopen failed, the error is swallowed.
+
+FILE *file = fopen("", "r");
+if (file) {
+  // do something with the file
+}
+
+Causes 
+
+The most common underlying cause of error swallowing is the lack of good logging tools and processes while the developer is building software. When faced with an error that can't be easily handled, if the developer has good logging tools, logging an unexpected error does not cost the developer any time or effort. Logging the error should be straightforward (one method call), quick (with no impact to application performance), safe (does not raise any errors or exceptions), and ensures that all information is saved, by recording the type of error and any relevant data associated with it, the stacktrace of the error (so the developer can identify exactly where the error occurred and what instructions led up to it), and the timestamp of the error.
+
+Temporary exception handlers 
+
+In languages with checked exceptions, all exceptions raised in a method must be listed in a signature of that method. When prototyping and implementing software, code changes often, which means that the type of exceptions that might be raised in a method also change often. Having to adjust the method signature every time something changes slows down development and can be frustrating, so swallowing exceptions as a temporary measure while doing large code changes is appealing. This temporary exception handling code might end up in the released codebase.
+
+Even in languages without checked exceptions, adding temporary exception handlers while undergoing large code changes to speed up prototyping can happen, which can lead to error swallowing.
+
+Preventing crashes 
+
+In situations where software must not crash for any reason, error swallowing is a practice that a programmer can easily fall into. For example, a plugin that is running inside another application is expected to handle all errors and exceptions in such a way as to not crash the application in which it is embedded. Blanket catching of errors and exceptions is a pattern that is easy to fall into when attempting to prevent crashes at all costs, and when you combine that with poor logging tools, error swallowing can happen.
+
+Hiding complexity from users 
+
+When showing errors to users, it's important to turn cryptic technical errors into messages that explain what happened and what actions the user can take, if any, to fix the problem. While performing this translation of technical errors into meaningful user messages, specific errors are often grouped into more generic errors, and this process can lead to user messages becoming so useless that the user doesn't know what went wrong or how to fix it. As far as the user is concerned, the error got swallowed.
+
+See also 
+ Error message
+ Log file
+ Tracing (software)
+
+References 
+
+Anti-patterns
+Articles with example code

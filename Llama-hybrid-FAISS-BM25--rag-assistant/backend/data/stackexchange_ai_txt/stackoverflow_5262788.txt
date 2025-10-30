@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5262788
+[parent_id]: 3416126
+[tags]: 
+An event will need to fire on the form, be it a button click event or some other UI event. In Windows forms, if you double click on a button in the designer, it will create the event handler for you. In the event handler, you'll need to leverage another class, or use the EF Context directly. Since you're going down the path of using a repository, you can leverage a repository class from your designer file, though I would recommed going through a Service layer to apply any business logic (i.e. UI calls Service Layer, Service Layer uses repository internally). This keeps code separate and is much easier to maintain/reuse. But, to persist data to datastore, it might look something like this... public void SetPersonName(int personID, string personName) { var context = new PersonContext(myConnectionString); var person = context.Persons.Where(x => x.PersonID == personID).FirstOrDefault(); if(person == null) { throw new InvalidOperationException("Boo Hoo, person ID is invalid"); } person.Name = personName; context.SaveChanges(); }

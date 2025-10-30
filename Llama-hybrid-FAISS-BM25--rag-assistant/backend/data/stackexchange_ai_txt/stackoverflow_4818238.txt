@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4818238
+[parent_id]: 4818039
+[tags]: 
+My question is basically whether this is solely due the dynamic allocation of std::string and why in this case that can't be optimized away since it is const and can't change? Yes, it is due to the allocation and copying for std::string on every iteration. A sufficiently smart compiler could potentially optimize this, but it is unlikely to happen with current optimizers. Instead, you can hoist the string yourself: void do_parallel_str() { int found(0); Timer clock; std::string const str = "pos"; // you can even make it static, if desired #pragma omp parallel for for( int64_t i = 0; i

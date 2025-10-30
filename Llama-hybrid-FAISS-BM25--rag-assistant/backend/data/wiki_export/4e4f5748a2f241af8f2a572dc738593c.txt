@@ -1,0 +1,262 @@
+The sunrise equation or sunset equation can be used to derive the time of sunrise or sunset for any solar declination and latitude in terms of local solar time when sunrise and sunset actually occur.
+
+Formulation
+It is formulated as:
+
+where:
+ is the solar hour angle at either sunrise (when negative value is taken) or sunset (when positive value is taken);
+ is the latitude of the observer on the Earth;
+ is the sun declination.
+
+Principles 
+The Earth rotates at an angular velocity of 15°/hour. Therefore, the expression , where  is in degree, gives the interval of time in hours from sunrise to local solar noon or from local solar noon to sunset.
+
+The sign convention is typically that the observer latitude  is 0 at the equator, positive for the Northern Hemisphere and negative for the Southern Hemisphere, and the solar declination  is 0 at the vernal and autumnal equinoxes when the sun is exactly above the equator, positive during the Northern Hemisphere summer and negative during the Northern Hemisphere winter.
+
+The expression above is always applicable for latitudes between the Arctic Circle and Antarctic Circle. North of the Arctic Circle or south of the Antarctic Circle, there is at least one day of the year with no sunrise or sunset. Formally, there is a sunrise or sunset when  during the Northern Hemisphere summer, and when  during the Southern Hemisphere winter. For locations outside these latitudes, it is either 24-hour daytime or 24-hour nighttime.
+
+Expressions for the solar hour angle 
+In the equation given at the beginning, the cosine function on the left side gives results in the range [-1, 1], but the value of the expression on the right side is in the range . An applicable expression for  in the format of Fortran 90 is as follows:
+
+omegao = acos(max(min(-tan(delta*rpd)*tan(phi*rpd), 1.0), -1.0))*dpr
+
+where omegao is  in degree, delta is  in degree, phi is  in degree, rpd is equal to , and dpr is equal to .
+
+The above expression gives results in degree in the range . When , it means it is polar night, or 0-hour daylight; when , it means it is polar day, or 24-hour daylight.
+
+Hemispheric relation 
+Suppose  is a given latitude in Northern Hemisphere, and  is the corresponding sunrise hour angle that has a negative value, and similarly,  is the same latitude but in Southern Hemisphere, which means , and  is the corresponding sunrise hour angle, then it is apparent that
+
+,
+
+which means 
+
+.
+
+The above relation implies that on the same day, the lengths of daytime from sunrise to sunset at  and  sum to 24 hours if , and this also applies to regions where polar days and polar nights occur. This further suggests that the global average of length of daytime on any given day is 12 hours without considering the effect of atmospheric refraction.
+
+Generalized equation 
+
+The equation above neglects the influence of atmospheric refraction (which lifts the solar disc — i.e. makes the solar disc appear higher in the sky — by approximately 0.6° when it is on the horizon) and the non-zero angle subtended by the solar disc — i.e. the apparent diameter of the sun — (about 0.5°). The times of the rising and the setting of the upper solar limb as given in astronomical almanacs correct for this by using the more general equation
+
+with the altitude angle (a) of the center of the solar disc set to about −0.83° (or −50 arcminutes).
+
+The above general equation can be also used for any other solar altitude. The NOAA provides additional approximate expressions for refraction corrections at these other altitudes. There are also alternative formulations, such as a non-piecewise expression by G.G. Bennett used in the U.S. Naval Observatory's "Vector Astronomy Software".
+
+Complete calculation on Earth 
+The generalized equation relies on a number of other variables which need to be calculated before it can itself be calculated. These equations have the solar-earth constants substituted with angular constants expressed in degrees.
+
+Calculate current Julian day 
+
+where:
+ is the number of days since Jan 1st, 2000 12:00.
+ is the Julian date;
+2451545.0 is the equivalent Julian year of Julian days for Jan-01-2000, 12:00:00.
+0.0008 is the fractional Julian Day for leap seconds and terrestrial time (TT).
+TT was set to 32.184 sec lagging TAI on 1 January 1958. By 1972, when the leap second was introduced, 10 sec were added. By 1 January 2017, 27 more seconds were added coming to a total of 69.184 sec. 0.0008=69.184 / 86400 without DUT1.
+The  operation rounds up to the next integer day number n.
+
+Mean solar time 
+
+where:
+
+ is an approximation of mean solar time at integer  expressed as a Julian day with the day fraction.
+ is the longitude (west is negative, east is positive) of the observer on the Earth;
+
+Solar mean anomaly 
+
+where:
+
+M is the solar mean anomaly used in the next three equations.
+
+Equation of the center 
+
+where:
+
+C is the Equation of the center value needed to calculate lambda (see next equation).
+1.9148 is the coefficient of the Equation of the Center for the planet the observer is on (in this case, Earth)
+
+Ecliptic longitude 
+
+where:
+
+λ is the ecliptic longitude.
+102.9372 is a value for the argument of perihelion.
+
+Solar transit 
+
+where:
+
+Jtransit is the Julian date for the local true solar transit (or solar noon).
+2451545.0 is noon of the equivalent Julian year reference.
+ is a simplified version of the equation of time. The coefficients are fractional days.
+
+Declination of the Sun 
+
+where:
+
+ is the declination of the sun.
+23.4397° is Earth's maximum axial tilt toward the sun
+
+Hour angle 
+
+This is the equation from above with corrections for atmospherical refraction and solar disc diameter.
+
+where:
+
+ωo is the hour angle from the observer's meridian;
+ is the north latitude of the observer (north is positive, south is negative) on the Earth.
+
+For observations on a sea horizon needing an elevation-of-observer correction, add , or  to the −0.833° in the numerator's sine term. This corrects for both apparent dip and terrestrial refraction. For example, for an observer at 10,000 feet, add (−115°/60) or about −1.92° to −0.833°.
+
+Calculate sunrise and sunset 
+
+where:
+
+Jrise is the actual Julian date of sunrise;
+Jset is the actual Julian date of sunset.
+
+Example of implementation in Python 
+#!/usr/bin/python3
+
+import logging
+from datetime import datetime, timedelta, timezone, tzinfo
+from math import acos, asin, ceil, cos, degrees, fmod, radians, sin, sqrt
+from time import time
+
+log = logging.getLogger()
+
+def _ts2human(ts: int | float, debugtz: tzinfo | None) -> str:
+    return str(datetime.fromtimestamp(ts, debugtz))
+
+def j2ts(j: float | int) -> float:
+    return (j - 2440587.5) * 86400
+
+def ts2j(ts: float | int) -> float:
+    return ts / 86400.0 + 2440587.5
+
+def _j2human(j: float | int, debugtz: tzinfo | None) -> str:
+    ts = j2ts(j)
+    return f'{ts} = {_ts2human(ts, debugtz)}'
+
+def _deg2human(deg: float | int) -> str:
+    x = int(deg * 3600.0)
+    num = f'∠{deg:.3f}°'
+    rad = f'∠{radians(deg):.3f}rad'
+    human = f'∠{x // 3600}°{x // 60 % 60}′{x % 60}″'
+    return f'{rad} = {human} = {num}'
+
+def calc(
+        current_timestamp: float,
+        f: float,
+        l_w: float,
+        elevation: float = 0.0,
+        *,
+        debugtz: tzinfo | None = None,
+) -> tuple[float, float, None] | tuple[None, None, bool]:
+    log.debug(f'Latitude               f       = {_deg2human(f)}')
+    log.debug(f'Longitude              l_w     = {_deg2human(l_w)}')
+    log.debug(f'Now                    ts      = {_ts2human(current_timestamp, debugtz)}')
+
+    J_date = ts2j(current_timestamp)
+    log.debug(f'Julian date            j_date  = {J_date:.3f} days')
+
+    # Julian day
+    # TODO: ceil ?
+    n = ceil(J_date - (2451545.0 + 0.0009) + 69.184 / 86400.0)
+    log.debug(f'Julian day             n       = {n:.3f} days')
+
+    # Mean solar time
+    J_ = n + 0.0009 - l_w / 360.0
+    log.debug(f'Mean solar time        J_      = {J_:.9f} days')
+
+    # Solar mean anomaly
+    # M_degrees = 357.5291 + 0.98560028 * J_  # Same, but looks ugly
+    M_degrees = fmod(357.5291 + 0.98560028 * J_, 360)
+    M_radians = radians(M_degrees)
+    log.debug(f'Solar mean anomaly     M       = {_deg2human(M_degrees)}')
+
+    # Equation of the center
+    C_degrees = 1.9148 * sin(M_radians) + 0.02 * sin(2 * M_radians) + 0.0003 * sin(3 * M_radians)
+    # The difference for final program result is few milliseconds
+    # https://www.astrouw.edu.pl/~jskowron/pracownia/praca/sunspot_answerbook_expl/expl-4.html
+    # e = 0.01671
+    # C_degrees = \
+    #     degrees(2 * e - (1 / 4) * e ** 3 + (5 / 96) * e ** 5) * sin(M_radians) \
+    #     + degrees(5 / 4 * e ** 2 - (11 / 24) * e ** 4 + (17 / 192) * e ** 6) * sin(2 * M_radians) \
+    #     + degrees(13 / 12 * e ** 3 - (43 / 64) * e ** 5) * sin(3 * M_radians) \
+    #     + degrees((103 / 96) * e ** 4 - (451 / 480) * e ** 6) * sin(4 * M_radians) \
+    #     + degrees((1097 / 960) * e ** 5) * sin(5 * M_radians) \
+    #     + degrees((1223 / 960) * e ** 6) * sin(6 * M_radians)
+
+    log.debug(f'Equation of the center C       = {_deg2human(C_degrees)}')
+
+    # Ecliptic longitude
+    # L_degrees = M_degrees + C_degrees + 180.0 + 102.9372  # Same, but looks ugly
+    L_degrees = fmod(M_degrees + C_degrees + 180.0 + 102.9372, 360)
+    log.debug(f'Ecliptic longitude     L       = {_deg2human(L_degrees)}')
+
+    Lambda_radians = radians(L_degrees)
+
+    # Solar transit (julian date)
+    J_transit = 2451545.0 + J_ + 0.0053 * sin(M_radians) - 0.0069 * sin(2 * Lambda_radians)
+    log.debug(f'Solar transit time     J_trans = {_j2human(J_transit, debugtz)}')
+
+    # Declination of the Sun
+    sin_d = sin(Lambda_radians) * sin(radians(23.4397))
+    # cos_d = sqrt(1-sin_d**2) # exactly the same precision, but 1.5 times slower
+    cos_d = cos(asin(sin_d))
+
+    # Hour angle
+    some_cos = (sin(radians(-0.833 - 2.076 * sqrt(elevation) / 60.0)) - sin(radians(f)) * sin_d) / (cos(radians(f)) * cos_d)
+    try:
+        w0_radians = acos(some_cos)
+    except ValueError:
+        return None, None, some_cos > 0.0
+    w0_degrees = degrees(w0_radians)  # 0...180
+
+    log.debug(f'Hour angle             w0      = {_deg2human(w0_degrees)}')
+
+    j_rise = J_transit - w0_degrees / 360
+    j_set = J_transit + w0_degrees / 360
+
+    log.debug(f'Sunrise                j_rise  = {_j2human(j_rise, debugtz)}')
+    log.debug(f'Sunset                 j_set   = {_j2human(j_set, debugtz)}')
+    log.debug(f'Day length                       {w0_degrees / (180 / 24):.3f} hours')
+
+    return j2ts(j_rise), j2ts(j_set), None
+
+def main():
+    logging.basicConfig(level=logging.DEBUG)
+    latitude = 33.00801
+    longitude = 35.08794
+    elevation = 0
+    print(calc(time(), latitude, longitude, elevation, debugtz=timezone(timedelta(hours=3), 'fake-zone')))
+
+if __name__ == '__main__':
+    main()
+
+See also
+Day length
+Equation of time
+
+References
+
+External links
+Sunrise, sunset, or sun position for any location – U.S. only
+Sunrise, sunset and day length for any location – Worldwide
+Rise/Set/Transit/Twilight Data – U.S. only
+Astronomical Information Center
+Converting Between Julian Dates and Gregorian Calendar Dates
+Approximate Solar Coordinates
+Algorithms for Computing Astronomical Phenomena
+Astronomy Answers: Position of the Sun
+A Simple Expression for the Equation of Time
+The Equation of Time
+Equation of Time
+Long-Term Almanac for Sun, Moon, and Polaris V1.11
+Evaluating the Effectiveness of Current Atmospheric Refraction Models in Predicting Sunrise and Sunset Times
+
+Equations
+Time in astronomy
+Dynamics of the Solar System

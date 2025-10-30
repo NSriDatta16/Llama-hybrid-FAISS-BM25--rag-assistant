@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3040531
+[parent_id]: 3039998
+[tags]: 
+So, you problem is that JAXB treats XML files without header as UTF-8, when your file uses some other encoding (probably ISO-8859-1 or Windows-1252, if 0xBF character actually intended to mean ¿ ). If you can change the producer of the file, you may add header with actual encoding specification, or just use UTF-8 to write a file. If you can't change the producer, you have to use InputStreamReader with explicit encoding specification, because (unfortunately) JAXB don't allow to change its default encoding: results = (Results) unmarshaller.unmarshal( new InputStreamReader(new FileInputStream(inputFile), "ISO-8859-1")); However, this solution is fragile - it fails on input files with header with different encoding specification.

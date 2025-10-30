@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 715538
+[parent_id]: 
+[tags]: 
+How can I talk to UniProt over HTTP in Python?
+
+I'm trying to get some results from UniProt, which is a protein database (details are not important). I'm trying to use some script that translates from one kind of ID to another. I was able to do this manually on the browser, but could not do it in Python. In http://www.uniprot.org/faq/28 there are some sample scripts. I tried the Perl one and it seems to work, so the problem is my Python attempts. The (working) script is: ## tool_example.pl ## use strict; use warnings; use LWP::UserAgent; my $base = 'http://www.uniprot.org'; my $tool = 'mapping'; my $params = { from => 'ACC', to => 'P_REFSEQ_AC', format => 'tab', query => 'P13368 P20806 Q9UM73 P97793 Q17192' }; my $agent = LWP::UserAgent->new; push @{$agent->requests_redirectable}, 'POST'; print STDERR "Submitting...\n"; my $response = $agent->post("$base/$tool/", $params); while (my $wait = $response->header('Retry-After')) { print STDERR "Waiting ($wait)...\n"; sleep $wait; print STDERR "Checking...\n"; $response = $agent->get($response->base); } $response->is_success ? print $response->content : die 'Failed, got ' . $response->status_line . ' for ' . $response->request->uri . "\n"; My questions are: 1) How would you do that in Python? 2) Will I be able to massively "scale" that (i.e., use a lot of entries in the query field)?

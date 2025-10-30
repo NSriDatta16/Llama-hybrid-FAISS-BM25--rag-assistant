@@ -1,0 +1,80 @@
+Chicken (stylized as CHICKEN) is a programming language, specifically a compiler and interpreter which implement a dialect of the programming language Scheme, and which compiles Scheme source code to standard C. It is mostly R5RS compliant and offers many extensions to the standard. The newer R7RS standard is supported through an extension library. Chicken is free and open-source software available under a BSD license. It is implemented mostly in Scheme, with some parts in C for performance or to make embedding into C programs easier.
+
+Focus
+Chicken's focus is quickly clear from its slogan: "A practical and portable Scheme system".
+
+Chicken's main focus is the practical application of Scheme for writing real-world software. Scheme is well known for its use in computer science curricula and programming language experimentation, but it has seen little use in business and industry. Chicken's community has produced a large set of libraries to perform a variety of tasks. The Chicken wiki (the software running it is also a Chicken program) also contains a list of software that has been written in Chicken.
+
+Chicken's other goal is to be portable. By compiling to an intermediate representation, in this case portable C (as do Gambit and Bigloo), programs written in Chicken can be compiled for common popular operating systems such as Linux, macOS, other Unix-like systems, Windows, Haiku, and mobile platforms iOS and Android. It also has built-in support for cross-compiling programs and extensions, which allows it to be used on various embedded system platforms.
+
+Design
+Like many Scheme compilers, Chicken uses standard C as an intermediate representation. A Scheme program is translated into C by the Chicken compiler, and then a C compiler translates the C program into machine code for the target computer architecture, producing an executable program. The universal availability of C makes it useful for this purpose.
+
+Chicken's design was inspired by a 1994 paper by Henry Baker that outlined an innovative strategy to compile Scheme into C. A Scheme program is compiled into C functions. These C functions never reach the return statement; instead, they  call a new continuation when complete. These continuations are C functions and are passed on as extra arguments to other C functions. They are calculated by the compiler.
+
+So far, this is the essence of continuation-passing style. Baker's novel idea is to use the C call stack for the Scheme heap. Hence, normal C stack operations such as automatic variable creation, variable-sized array allocation, and so on can be used. When the stack fills up (that is, the stack pointer reaches the top of the stack), a garbage collection can be initiated.  The design used is a copying garbage collector originally devised by C. J. Cheney, which copies all live continuations and other live objects to the heap.  Despite this, the C code does not copy C stack frames, only Scheme objects, so it does not require knowledge of the C implementation.
+
+In full, the Scheme heap consists of the C stack as the nursery together with the two heaps required by the generational garbage collector. This approach gives the speed of the C stack for many operations, and it allows the use of continuations as simple calls to C functions. Further, Baker's solution guarantees asymptotic tail recursive behavior, as required by the Scheme language standard. The implementation in the Chicken Scheme compiler is even asymptotically safe for space.
+
+Limitations and deviations from the standard
+Chicken Scheme is mostly R5RS-compliant, with a few notable limitations and deviations. R7RS compatibility is supplied as an extension library.
+
+The core system has basic support for UTF-8 characters, however the string indexing and manipulation procedures are not UTF-8 aware. An extension library exists which adds support for full UTF-8 awareness.
+
+Add-on software
+Chicken has a large software repository of added libraries and programs, termed eggs. This system is very similar to RubyGems.
+
+Initially, these eggs were developed in one central svn repository, in which creating a tag would automatically cause a new version of the extension to become available for download.  Currently, eggs can be developed anywhere and under any version control system, while still maintaining semi-automatic release management when using most of the popular code hosting sites. This release method is VCS-agnostic in the sense that the user does not need to have these VCSes installed. The developer is free to host anywhere they choose, and can even choose to avoid public version control and distribute only plain tarballs.
+
+For all released eggs, the latest version is tested automatically as part of a continuous integration process. A canonical test server exists, where the core system and all eggs are tested daily against the most recent development version (to catch regressive bugs), and the most recent stable version (to ensure that everything works for users of the stable system). Also, anyone can volunteer to supply further testing capacity, on different: hardware, operating systems, or core releases.
+
+Features
+Chicken supports most of R5RS standard Scheme, but it also adds a few nonstandard features which are not available in all Scheme implementations.
+
+Foreign function interface
+Chicken compiling to C makes it possible to inject custom C code into the compiled result, which eases integrating with C libraries. Its foreign function interface supports converting back and forth between most built-in C types and corresponding Scheme objects.
+
+Also, extension libraries exist for interfacing to Python, Lua, and Java, via Java Native Interface (JNI) or a bridge.
+
+Cross-compiling
+It is relatively easy to cross-compile Scheme code to another platform (for example for embedded use on a device).
+
+To make cross-compiling possible for Scheme code, Chicken imposes a model of separate compiling: A compiled module consists of two shared libraries. One library contains the actual code which will be used at runtime (compiled for the target platform), and the other is an import module, which will be used to load the code which runs at compile-time (on the host platform), such as procedural macro code.
+
+The Chicken compiler can also be easily cross-compiled. After translation to C has been achieved, one can simply use a C compiler which is set up to build for another platform.
+
+Modules and macros
+Since version 4, Chicken has a built-in module system and support for low-level hygienic macros through explicit renaming macros (before version 4, this was available through an add-on library). Standard syntax-rules macros are also supported, and implicit renaming macros, which is basically a reversed version of explicit renaming.
+
+This mechanism trades performance for convenience. Each identifier not explicitly injected as unhygienic will be automatically renamed to avoid name capture. The performance cost occurs because implicit renaming requires the macro-expander to retraverse the expressions two more times. This cost is paid at expansion time, so a macro author must consider if longer compiling times are acceptable.
+
+Remote debugger
+Since version 4.11, Chicken comes shipped with a debugger named Feathers. When Scheme code is compiled with the needed debugging option, debugging events are injected at specific points in the code. These are implemented as calls to a C function, which is relatively low-overhead when not actually debugging the code. When debugging, it will try to make a TCP connection to a Feathers server process, possibly on a different machine. The process is halted, the user may set breakpoints and start the program. Then, when the breakpoint is hit, the client (process being debugged) enters a command loop, which allows interrogation of the client, to read out variables, or mutate them.
+
+Limited static type analysis
+Chicken supports local flow analysis. This allows the compiler to catch variable type errors at compile-time, and perform type specialisation. This specialisation makes it possible to remove several safety checks for type detection at runtime when the type can be deduced at compile-time. This results in improved run-time performance.
+
+This scrutinizer does not allow cross-module flow analysis, so it can only be used to optimize code that's part of one compiling unit (or module).
+
+History
+CHICKEN Scheme was originally developed by Felix Winkelmann on Cygwin/gcc and later Visual C++ 5.0 on Windows 98. He came up with the name "CHICKEN" arbitrarily as the "first thing that came to my mind that day" thinking of a plastic toy of Feathers McGraw on his desk. As the project matured, he decided not to change the name out of superstition.
+
+See also
+
+ Tail recursion
+ Cheney's algorithm
+ "M.T.A. (song)", a song reference in Baker's 1994 paper
+ Gambit (Scheme implementation)
+ Stalin (Scheme implementation)
+
+References
+
+External links
+ 
+ 
+
+Scheme (programming language) compilers
+Scheme (programming language) interpreters
+Scheme (programming language) implementations
+Free compilers and interpreters
+Software using the BSD license

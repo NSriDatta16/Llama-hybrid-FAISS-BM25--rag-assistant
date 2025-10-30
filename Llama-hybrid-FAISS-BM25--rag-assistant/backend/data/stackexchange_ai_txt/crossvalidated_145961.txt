@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 145961
+[parent_id]: 
+[tags]: 
+Jags - estimates are same as true values of y?
+
+Lets say I have the following state space model: $y_t = \beta_t x_t + \epsilon_t$ $\beta_{t+1} = \mu_t + \beta_t \eta_t$ $\mu_{t+1} = \mu_t + \omega_t$ All my true values for $y$ are known, but I want to obtain fitted values. In Jags I run the following. # The data (an any other input) we pass to jags jags.data = list("Y"=y, "N"=N, Y1=y[1], C=x1) # The parameters that we are monitoring (must monitor at least 1) jags.params=c("sd.q","sd.r","Y", "X1", "X2") model.loc=("ss_model.txt") mod_ss = jags(jags.data, parameters.to.save=jags.params, model.file=model.loc, n.chains = 3, n.burnin=5000, n.thin=1, n.iter=10000, DIC=TRUE) attach.jags(mod_ss, overwrite=TRUE); Y But then the values that I get back for $y$ are the same as the true values. I sort of get this, because Jags can of course not find better values than the true values and its Bayesian, but is there not a way to let it fit new values? Such that my true $y$ values are used for estimation but won't be the same as the estimated $y$? Edit: Jags code # jags model specification jagsscript = cat(" model { # priors on parameters # Make sure mu prior is scaled to the data mu ~ dnorm(Y1, 1/(Y1*100)); tau.q ~ dgamma(0.001,0.001); # This is inverse gamma sd.q

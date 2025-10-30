@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2056500
+[parent_id]: 2056201
+[tags]: 
+Ok, I have figured it out (with a great deal of help from this blog post . Thanks Thaberkern ) Create a route to grab the file name: legacy_docs: url: /docs/:filename.pdf param: { module: default, action: display_pdf } Then create an action to output the pdf: public function executeDisplayPdf() { $filename = $this->getRequestParameter('filename'); $path_to_pdf = 'http://'.sfConfig::get('website_hostname').'/uploads/'.'/'.$filename.'.pdf'; //create the response object $this->getResponse()->clearHttpHeaders(); $this->getResponse()->setHttpHeader('Pragma: public', true); $this->getResponse()->setContentType('application/pdf'); $this->getResponse()->sendHttpHeaders(); $this->getResponse()->setContent(readfile($path_to_pdf)); //set up the view $this->setLayout(false); sfConfig::set('sf_web_debug', false); return sfView::NONE; }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1705899
+[parent_id]: 1705885
+[tags]: 
+The reason it's not using the heap is to conform with standards (POSIX) and other systems. The interface is just not such that you are supposed to free the buffer returned. It assumes static storage.. But by declaring it as thread local (with __thread ), two threads do not conflict with each other if they happen to both be calling the function. This is glibc's workaround for the brokenness of the interface. It's true that this is not re-entrant or consistent with the spirit of that term. If you have a recursive function that calls it, you cannot rely on the buffer being the same between calls. But it can be used by multiple threads, which often is good enough. EDIT: By the way, I just remembered, there is a newer version of this function that uses a caller-provided buffer. See inet_ntop() .

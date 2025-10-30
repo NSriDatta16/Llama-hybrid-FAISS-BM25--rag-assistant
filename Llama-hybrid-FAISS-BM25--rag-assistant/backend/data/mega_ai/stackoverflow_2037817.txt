@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2037817
+[parent_id]: 2037556
+[tags]: 
+Much of your problem seems to be that NormalMCMC and NormalImportance take arguments but, as you correctly imply, traits can't have constructors. Instead, you can take the parameters that you'd want to supply via a trait constructor (if such a thing existed) and make them abstract members of the trait. The members then get realised when the trait is constructed. Given: trait Foo { val x : String //abstract } you can use it as either of the following: new Bar with Foo { val x = "Hello World" } new Bar { val x = "Hello World" } with Foo Which gives you back the equivalent functionality of using Trait constructors. Note that if the type Bar already has a non-abstract val x : String then you can simply use new Bar with Foo In some scenarios it can also help to make x lazy, which can gives you more flexibility if initialization order should become an issue.

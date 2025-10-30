@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 56923
+[parent_id]: 
+[tags]: 
+When I use SHAP for classification problem, it shows an output that is not 0 or 1. How can I overcome this?
+
+I'm using Pima Indians Diabetes Database( https://www.kaggle.com/uciml/pima-indians-diabetes-database ). I made predictions using XGboost and I'm trying to analyze the features using SHAP. However when I use force_plot with just one training example(a 1x8 vector) it shows that my output is -2.02. This is a classification problem, I shouldn't be seeing such a value. I'm new in SHAP and I don't know what the problem is. Here is my code: import numpy as np import xgboost as xgb import sklearn as skl import shap dataset=np.loadtxt("diabetes.csv", delimiter=",") X=dataset[:,0:8] Y=dataset[:,8] seed=7 test_size=0.33 X_train, X_test, y_train, y_test=skl.model_selection.train_test_split(X, Y, test_size=test_size, random_state=seed) shap.initjs() model=xgb.XGBClassifier() model.fit(X_train, y_train) predictions=model.predict(X_test) accuracy=skl.metrics.accuracy_score(y_test, predictions) print(accuracy*100) explainer = shap.TreeExplainer(model) shap_values = explainer.shap_values(X_train) shap.force_plot(explainer.expected_value, shap_values[0,:].reshape(1, 8), X_train[0,:].reshape(1, 8)) Accuracy of my model is: 77,95.

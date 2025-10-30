@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3067090
+[parent_id]: 3066972
+[tags]: 
+I agree with @Daniel that the proper response is an HTTP 500 (server error). The web application has to be written to roll back the transaction when there is an error, not leave things half-finished. One thing you can leverage in your web application is "idempotency". This is the property of a function (or operation) that you can repeat it as many times as you like with the same result. For instance if a read fails, the client can simply retry it until it succeeds. If a deletion appears to fail, the client can again retry and the server will treat the request as valid whether or not the resource being deleted is already gone. And if an update appears to fail, the client can retry that until it gets a successful return from the server. The REST approach to architecting web services makes heavy use of idempotency to make operations robust in the face of error.

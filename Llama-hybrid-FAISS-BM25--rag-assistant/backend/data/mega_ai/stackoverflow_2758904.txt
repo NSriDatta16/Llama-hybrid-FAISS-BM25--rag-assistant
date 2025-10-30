@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2758904
+[parent_id]: 2698941
+[tags]: 
+Heap corruption! Apparently there is a flag called HeapEnableTerminationOnCorruption that was not previously enabled by default. As a new feature in Windows Vista, the IIS worker process terminates when the heap corruption is detected. So, it only APPEARED to be working in our stand-alone apps and on our 32-bit Windows XP machines, when in actuality it was simply ignoring the error. To fix the problem we changed our code for calling into the Delphi libraries to use IntPtrs and pass data back using out parameters. For example: public string CallDLL(string sTest) { string s = ""; IntPtr p1 = Marshal.StringToHGlobalAnsi(sTest); s = Marshal.PtrToStringAnsi(p1); if (p1 != IntPtr.Zero) { Class1.TestDLL(out p1); s = Marshal.PtrToStringAnsi(p1); } Marshal.FreeCoTaskMem(p1); return s; } Hope this helps anyone with the same issue.

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 124057
+[parent_id]: 
+[tags]: 
+Parameter outside specified range using HGboost/Hyperopt library
+
+I am trying to use the HGboost library which uses the Hyperopt library for doing hyperparameter optimization of an XGboost model. The script runs fine but the optimized parameter for "n_estimators" is returning 52 which falls outside the minimum range specified in the hp.quniform argument (min set to 200). Could anyone guide me as to why this might be happening? I know that hp.choice returns the index but my understanding is that hp.quinifrom should not. Code extract # Initialize HGboost hgb = hgboost( max_eval=500, threshold=0.5, cv=5, test_size=0.2, val_size=0.2, top_cv_evals=10, is_unbalance=True, random_state=None, n_jobs=-1, gpu=False, verbose=3, ) # Define hyperparameter search space xgb_reg_params = { 'learning_rate': hp.uniform('learning_rate', 0.001, 1), 'max_depth': hp.uniform('max_depth', 3, 30), 'min_child_weight': hp.uniform('min_child_weight', 1, 10), 'gamma': hp.quniform('gamma', 0, 0.5, 0.1), 'reg_lambda': hp.uniform('reg_lambda', 0.1, 5.0), 'subsample': hp.uniform('subsample', 0.5, 1), 'n_estimators': hp.quniform('n_estimators', 200, 500, 5), } # Train and evaluate the model results = hgb.xgboost_reg(X, y, eval_metric='mae') # Access and interpret results print("Best Parameters:", results['params']) print("Model Summary:", results['summary'])

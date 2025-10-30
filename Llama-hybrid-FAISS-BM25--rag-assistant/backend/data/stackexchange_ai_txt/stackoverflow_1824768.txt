@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1824768
+[parent_id]: 
+[tags]: 
+Why does my thread stop when I try to access a synchronized list?
+
+For some reason, the output of this: public void msgNeedParts() { // Blabla... System.out.println(name + ": Try to print 'tasks'..."); synchronized(tasks) { System.out.println(name + ": Tasks--" + tasks); System.out.println(name + ": Did I manage to print it?"); tasks.add(new BinToDump(feeder, binNum)); } stateChanged(); } Just prints out "GantryAgent: Try to print 'tasks'..." but not any of the following messages. I'm guessing the thread somehow 'gets stuck' when trying to access the synchronized list 'tasks', but I don't know why this is happening. 'tasks' was declared and initialized like this: private List tasks = Collections.synchronizedList(new ArrayList ()); Can anybody point out what I'm missing? Ah! I suspect I may have a culprit: /* If nothing left to do, return to original position. */ synchronized (tasks) { if (tasks.isEmpty()) { doReturnToOriginalPos(); } } In my scheduler (this is an agent design), I check to see if 'tasks' is empty, then I call doReturnToOriginalPos(). Maybe this is just happening over and over so fast that other methods don't get a chance to modify it? That was indeed the problem! It kept getting called so fast in my scheduler that nothing else could access 'tasks'. Thanks all for the help!

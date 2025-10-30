@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3366961
+[parent_id]: 3366157
+[tags]: 
+It seems the STI would work OK in your case?. If I read your requirements correctly, the entity inheritance would be a chain: Note Integrity: Surely not an issue? Each of AccountId, OrderId and OrderLineId can be FK'd to their respective tables (or be NULL) If on the other hand, if you removed AccountId, OrderId and OrderLineId (I'm NOT recommending BTW!) and instead just ObjectId and NoteTypeId, then you couldn't add RI and would have a really messy CASE WHEN type Join. Performance: Since you say that AccountId must always be present, I guess it could be non-null, and since OrderLine cannot exist without Order, an Index of (AccountId, OrderId) or (AccountId, OrderId, OrderLineId) seems to make sense (Depending on selectability vs narrowness tradeoffs on the average #OrderLines per Order) But OMG Ponies is right about messy ALTER TABLEs to extend this to new note types, and the indexing will cause headaches if new notes aren't Account-derived. HTH

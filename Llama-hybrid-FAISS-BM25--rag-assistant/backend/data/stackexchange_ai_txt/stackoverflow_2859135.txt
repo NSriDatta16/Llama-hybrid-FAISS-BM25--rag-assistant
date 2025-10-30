@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2859135
+[parent_id]: 2823590
+[tags]: 
+I've found it's necessary to set the content type before assigning the body. This works for me, using groovy 1.7.2: @Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.0' ) import groovyx.net.http.* import static groovyx.net.http.ContentType.* import static groovyx.net.http.Method.* def List search(String query, int maxResults) { def http = new HTTPBuilder("mywebsite") http.request(POST) { uri.path = '/search/' requestContentType = URLENC headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4' body = [string1: "", query: "test"] response.success = { resp, InputStreamReader reader -> assert resp.statusLine.statusCode == 200 String data = reader.readLines().join() println data } } [] }

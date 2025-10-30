@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5687174
+[parent_id]: 
+[tags]: 
+Could I create a function based on another function at runtime?
+
+I'm playing with Microsoft's Detours to hook api, for example, I can change what happens when MessageBoxA is called in this way: int (WINAPI* pMessageBoxA)(HWND, LPCTSTR, LPCTSTR, UINT) = MessageBoxA; int WINAPI MyMessageBoxA(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType) { printf("A function is called here!\n"); return pMessageBoxA(hWnd, lpText, lpCaption, uType); // call the regular MessageBoxA } DetourTransactionBegin(); DetourUpdateThread(GetCurrentThread()); DetourAttach(&(PVOID&)pMessageBoxA, MyMessageBoxA); So when you call MessageBoxA , you are actually calling MyMessageBoxA . Now I want to write a function Hook() , which would do what codes above do at runtime. For example, if I pass function pointer MessageBoxA to the function, it will do exactly what the above code did. Of course, I can pass other function pointer to it too. Then there is a question, when I get a function pointer in Hook , how could I define a function with the same return value and parameter as the given function(in this case, MessageBoxA to int WINAPI MyMessageBoxA(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType) ) and then fill the function's function body?

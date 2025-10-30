@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 376715
+[parent_id]: 376609
+[tags]: 
+K-means shouldn't be applied to a distance matrix at all. It is meant to compute means in the original data. There is kernel k-means, but it works differently, and requires a proper kernel to work. If you apply k-means on the distance matrix, you cluster the distances, not the data. This causes some odd double-weighting of the number of points: if you have n copies of the same point, it also gets n colums in the distance matrix, so it's effect increases there also. So this boosts effects of dense clusters in a very non-intuitive way. The results will often be reasonable (so you don't easily notice this), but the semantics of these results are very non-intuitive, and not satisfy any useful quality criterion. It also is much slower: at least O(n²). Adding a PCA or other dimension reduction step inbetween certainly does not make the results more valid, on the contrary. PCA will reweight the factors, so in the end you have pretty much no idea what the clustering minimizes. No, I don't think this is a very good paper: The analysis methodology is completely broken.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5506161
+[parent_id]: 5499607
+[tags]: 
+As a more elegant solution than using -performSelectorOnMainThread: , you could simply use a block to guarantee your UI update is on the main thread: [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *deviceMotion, NSError *error) { CMAcceleration *userAcceleration = deviceMotion.userAcceleration; dispatch_async(dispatch_get_main_queue(), ^{ self.labelX.text = [NSString stringWithFormat:@"%f", userAcceleration.x]; }); }]; Note that [NSOperationQueue currentQueue] will return the main queue if that's where you run the above code from, so your callback will already be running on the main queue in that case.

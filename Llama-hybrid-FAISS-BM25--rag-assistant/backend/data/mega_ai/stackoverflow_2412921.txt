@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2412921
+[parent_id]: 
+[tags]: 
+Django: problem with merging querysets after annotation
+
+I have a manager for "Dialog" looking like this: class AnnotationManager(models.Manager): def get_query_set(self): return super(AnnotationManager, self).get_query_set().annotate( num_votes=Count('vote', distinct=True), num_comments=Count('comment', distinct=True), num_commentators = Count('comment__user', distinct=True), ) Votes and Comments has a ForeignKey to Dialog. Comments has a ForeignKey to User. When I do this: dialogs_queryset = Dialog.public.filter(organization=organization) dialogs_popularity = dialogs_queryset.exclude(num_comments=0) | dialogs_queryset.exclude(num_votes=0) ...dialogs_popularity will never returned the combination, but only the dialogs with more than 0 comments, or if I change the order of the OR, the dialogs with more than 0 votes! To me, the expected behavior would be to get the dialogs with more than 0 votes AND the dialogs with more than 0 comments. What am I missing? Or is there a bug in the annotation behavior here?

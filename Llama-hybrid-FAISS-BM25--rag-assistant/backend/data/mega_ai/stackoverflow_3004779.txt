@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3004779
+[parent_id]: 
+[tags]: 
+Output in one row by using stuff function
+
+What I want is one row, although I tried to use the cast function but not much success. Can someone tell me how I can achieve this MS SQL server as in oracle we do have certain functions like stragg I'm getting the following result: Tenancy No Property NO usercode name Address person no lead tenant 123 1234 12345 MR Rose Temp add 1 1 123 1234 12345 MRS Rose Temp add 2 0 but I want something like this: 123 1234 12345 MR Rose ; MRS ROSE Temp add 1 ; 0 Here is my code: Select distinct(t."prhst-occ-num") as "TENANCY_REF", per."pr-seq-no" as "PROPERTY-REF-NO" , pr."user-cde" as "USER_CDE", **/*CAST( SUBSTRING( stuff (( select distinct(',' + per."fnam") From per per , prhst prh, aTNCY t where prh."per-num"=per."num" and t."prhst-occ-num"=prh."occ-num" and prh."lead-tenant" in (0,1) for XML Path('') ), 1, 1, ''),1,500) as nvarchar(500)) as "FIRSTNAMES",*/** per."fnam" + '-' + per."snam" as "FULL NAME", pr."addr" + ' '+ pr."postcode" as "FULL ADDRESS" , prh."tenu-cde", prh."per-num" as "PERSON NUMBER", prh."lead-tenant" as "LEAD TENANT" , From TNCY t, PR pr, PRHST prh, per per Where t."prhst-occ-num"=prh."occ-num" and pr."seq-no"=prh."pr-seq-no" and per."num"=prh."per-num" order by 1,2

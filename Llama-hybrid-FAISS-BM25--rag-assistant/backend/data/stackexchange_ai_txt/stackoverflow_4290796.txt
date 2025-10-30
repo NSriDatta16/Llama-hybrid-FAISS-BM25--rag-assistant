@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4290796
+[parent_id]: 4290727
+[tags]: 
+How did you use shared_ptr ? Try the following : // test.h #pragma once #include typedef boost::array bigLut_t; extern const bigLut_t constLut; // test.cpp #include #include #include "test.h" boost::shared_ptr initializeConstLut() { if( boost::filesystem::exists("my_binary_file") == false ) { std::ofstream outStream( "my_binary_file", ios::out | ios::binary ); bigLut_t* tempLut = new bigLut_t; for(int i = 0; i at(i) = i; } outStream.write( reinterpret_cast (tempLut), sizeof(bigLut_t) ); outStream.close(); delete tempLut; } // We can't write "bigLut_t lut;" because that would cause a stack overflow boost::shared_ptr lut(new bigLut_t); // lut gets never deallocated std::ifstream inStream( "my_binary_file", ios::in | ios::binary ); inStream.read( reinterpret_cast (lut), sizeof(bigLut_t) ); inStream.close(); return lut; } const bigLut_t constLut = *(initializeConstLut().get());

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 413205
+[parent_id]: 
+[tags]: 
+How to handle timeseries extremes (sigma > 20) in deep learning?
+
+I'm using 16-channel, 400-Hz, standardized EEG data to train CNN-LSTM for seizure classification. The data contains $O(3)$ sigma > 20 points, rarely thousands in a row - and $O(4)$ sigma > 10 points (imgs below). Overall, they comprise a very small fraction of all data - regardless, I'm unsure of their impact on model's learning. I've inadvertently left in one sample in a batch of 32 as nonstandardized, having it end up with sigma =52 - which almost always severely disrupted the model, causing gradient death, and classifier flip-flops (always predicting '0', then always predicting '1', etc). BatchNormalization layers looked completely different in both train and inference modes. This suggests a notable fraction of a single sample having extreme points may notably harm training. Also, such a fraction pre-standardization can, and did, substantially shrink all other points in the sample. Lastly, the data itself is strongly Normally-distributed (img below). All considered, what's a reliable remedy? Ideas so far: Clipping - but at what value to clip? Noisy clipping - e.g. clip at 10, subtract random uniform $\sim(0,1)$

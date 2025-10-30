@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2164152
+[parent_id]: 2158879
+[tags]: 
+After a bit more careful reading of the post mentioned before ( http://forums.infragistics.com/forums/p/23690/86732.aspx#86732 ) I have been able to tackle this problem. This can be all handled within the KeyPress event after setting UltraWinGrid.DisplayLayout.Override.CellClickAction = CellClickAction.CellSelect; in the InitializeLayout event of course. private void ugridQuoteSheet_KeyPress(object sender, KeyPressEventArgs e) { UltraGrid grid = (UltraGrid)sender; if (!Char.IsControl(e.KeyChar) && grid != null && grid.ActiveCell != null && grid.ActiveCell.EditorResolved is EditorWithText && !grid.ActiveCell.IsInEditMode) { grid.PerformAction(UltraGridAction.EnterEditMode); EditorWithText editor = (EditorWithText)grid.ActiveCell.EditorResolved; editor.TextBox.Text = e.KeyChar.ToString(); editor.TextBox.SelectionStart = 1; } } I was ignorant of how to handle the simultaneous key press, [ctrl][v]. The Char.IsControl(e.KeyChar) does the trick here.

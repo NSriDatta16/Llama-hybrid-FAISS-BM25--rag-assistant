@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2189340
+[parent_id]: 2160259
+[tags]: 
+I think the conflict is actually the restriction in the count query, so I'd expect it to return wrong results on the second run of the pagination query. Using a single Criteria for both requires some resetting between uses, which can probably be done along the lines of: criteria.setProjection(null) .setResultTransformer(Criteria.ROOT_ENTITY); If you really want two separate but identical criteria, I think the easiest way is to first create a DetachedCriteria, which is Serializable, and use the serialization-deserialization cloning hack to make another one, before converting them to normal Criteria by attaching to a session. But if you can work in a reset, you might not need two.

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 42247
+[parent_id]: 
+[tags]: 
+How can I parallelize GloVe reverse lookups in PyTorch?
+
+I feel like I'm missing something obvious here because I can't find any discussion of this. I want to do a lot of reverse lookups (nearest neighbor distance searches) on the GloVe embeddings for a word generation network. I'm currently just iterating through the vocabulary on the cpu. I've sped it up a bit using a process pool, as shown in the snippet below, but it's still very slow for large vocabs. Is there a way to move this to to the GPU using cuda? I've also read that there is a way to turn this sort of thing into one big matrix operation... Any references would be appreciated. Thanks! glove = torchtext.vocab.GloVe(name='6B', dim=wordDim) def closest(vec): dists = [(w, torch.dist(vec, glove.vectors[glove.stoi[w]] for w in glove.itos] return sorted(dists, key=lambda t: t[1])[0] output = # word vectors… # using a process pool to parallelize the lookup pool=ProcessPoolExecutor(max_workers=8) predictedWords = [w for w in list(pool.map(closestWord, output)]

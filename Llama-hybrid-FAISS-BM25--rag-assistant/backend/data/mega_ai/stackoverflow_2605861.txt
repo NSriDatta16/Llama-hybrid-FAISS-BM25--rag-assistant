@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2605861
+[parent_id]: 2605385
+[tags]: 
+Your question is ambiguous - in the first paragraph you want to refer to columns by index and in the second, by sql name. Since by index is easy, I'll assume by name. First of all, you can use the doWork method to access the underlying JDBC connection and handle it as you would with pure JDBC: session.doWork(new Work() { public void execute(Connection connection) throws SQLException { connection.prepareStatement(... } }); Or, you can use query.getReturnAliases which returns a String[] of the column names. For effciency, I'd probably build a Map of alias to index and then you can do something like result[map.get("column name")] . But really, Hibernate handles composite keys pretty easily when using xml mappings (haven't tried with annotations). It's a little more work up front and there are a few issues with complex relationships (mainly when foreign key names/spans don't match), but once you create the id class and map it, you can stick with HQL/Criteria and get all the benefits of lazy loading, simple joins, dirty checking, etc.

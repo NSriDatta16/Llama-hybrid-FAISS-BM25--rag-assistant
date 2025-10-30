@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1421840
+[parent_id]: 1421615
+[tags]: 
+You appare to be locking more then is required, in your good case (cache full and valid) every request aquires a lock. you can get away with only locking if the cache is expired. If we are reloading, do nothing. If we are not reloading, check if expired if not expired go ahead. If we are not reloading and we are expired, get the lock and double check expired to make sure we have not sucessfuly loaded seince last check. Also note you may wish to reload the cache in a background thread so not event the one requrest is heldup waiting for cache to fill. private void checkForReload() { if (cachedObject == null || isExpired()) { if (!isReloading()) { // Recheck expiration because another thread might have // refreshed the cache before we were allowed into the // synchronized block. if (isExpired()) { synchronized (lock) { if (isExpired()) { isLoading = true; try { cachedObject = retrieve(); lastRetrieval = System.currentTimeMillis(); } catch (Exception e) { log.error("Exception occurred retrieving cached object", e); } finally { isLoading = false; } } } } } }

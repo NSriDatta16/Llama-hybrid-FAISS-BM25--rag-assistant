@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1579708
+[parent_id]: 1579632
+[tags]: 
+Here's what I think is going wrong: You added in a comment that you are runing on the Blackfin Processor. I looked this up on some web sites and they claim that the Blackfin requires what are called aligned accesses. That is, if you are reading or writing a 32-bit value to/from memory, then the physical address must be a an even multiple of 4 bytes. Arrays in C are indexed beginning with [0], not [1]. A 4-byte array of char ends with element [3]. In your code, you have a 4-byte array of char which: You treat as though it began at index 1. You convert via pointer casts to a DWORD via 32-bit memory fetch. I suspect your 4-char array is aligned to a 4-byte boundary, but as you are beginning your memory access at position +1 byte, you get a misalignment of data bus error.

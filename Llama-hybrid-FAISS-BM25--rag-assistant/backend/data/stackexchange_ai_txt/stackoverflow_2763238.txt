@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2763238
+[parent_id]: 1467369
+[tags]: 
+A friend and I have figured out how to call Bernardo Damele's sys_eval UDF, but the solution isn't as elegant as I'd like. Here's what we did: Since we're using Windows, we had to compile the UDF library for Windows using Roland Bouman's instructions and install them on our MySQL server. We created a stored procedure that calls sys_eval. We created a trigger that calls the stored procedure. Stored Procedure code: DELIMITER $$ CREATE PROCEDURE udfwrapper_sp (p1 DOUBLE, p2 DOUBLE, p3 BIGINT) BEGIN DECLARE cmd CHAR(255); DECLARE result CHAR(255); SET cmd = CONCAT('C:/xampp/php/php.exe -f "C:/xampp/htdocs/phpFile.php" ', p1, ' ', p2, ' ', p3); SET result = sys_eval(cmd); END$$; Trigger code: CREATE TRIGGER udfwrapper_trigger AFTER INSERT ON sometable FOR EACH ROW CALL udfwrapper_sp(NEW.Column1, NEW.Column2, NEW.Column3); I'm not thrilled about having the stored procedure, and I don't know if it creates extra overhead, but it does work. Each time a row is added to sometable, the trigger fires.

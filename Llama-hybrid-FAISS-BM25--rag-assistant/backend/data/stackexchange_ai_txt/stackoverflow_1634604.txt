@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1634604
+[parent_id]: 1562917
+[tags]: 
+[Zip].[Latitude] is a member expression. In order to pass this to a function as a numeric value SSAS will return the equivalent of ([Zip].[Latitude], Measures.CurrentMember). And you can't directly filter one dimension based on another in MDX. By definition, different dimensions are completely independent and in OLAP terms every product could potentially exist at every Zip location. What I suspect that the logic would have to look like is the following: select NONEMPTY([DimProducts].[Product].[Product] * FILTER([Zip].[Zip].[Zip] , ZipCalculatorLib.GetDistance(43.474208, [Zip].[Latitude].CurrentMember.MemberValue, 96.687689, [Zip].[Longitude].CurrentMember.MemberValue) This gets all of the Zip members that have a latitude/longitude within 100 miles, cross joins that with products and then returns those that have a nonempty RowCount.

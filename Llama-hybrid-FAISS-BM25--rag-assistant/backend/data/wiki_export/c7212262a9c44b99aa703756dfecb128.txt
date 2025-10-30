@@ -1,0 +1,208 @@
+The Numerical Electromagnetics Code, or NEC, is a popular antenna modeling system for wire and surface antennas. It was originally written in FORTRAN during the 1970s by Gerald Burke and Andrew Poggio of the Lawrence Livermore National Laboratory. The code was made publicly available for general use and has subsequently been distributed for many computer platforms from mainframes to PCs.
+
+NEC is widely used for modeling antenna designs, particularly for common designs like television and radio antennas, shortwave and ham radio, and similar examples. Examples of practically any common antenna type can be found in NEC format on the internet. While highly adaptable, NEC has its limits, and other systems are commonly used for very large or complex antennas or special cases like microwave antennas.
+
+By far the most common version is NEC-2, the last to be released in fully public form. There is a wide and varied market of applications that embed the NEC-2 code within frameworks to simplify or automate common tasks. Later versions, NEC-3 and NEC-4, are available after signing a license agreement. These have not been nearly as popular. Versions using the same underlying methods but based on entirely new code are also available, including MININEC.
+
+History
+NEC traces its history to an earlier program, BRACT, which was used to analyze antennas consisting of many thin wires in free space. It was useful for modeling certain common types of antennas used on aircraft or spacecraft or other examples where the ground was far enough away that it did not affect the signals. BRACT was developed in the early 1970s by MBAssociates for the US Air Force's Space and Missile Systems Center. MBAssociates, named after the founding partners of Bob Mainhardt and Art Biehl, are better known for the development of the Gyrojet rocket gun.
+
+BRACT's success led to a second contract with MBAssociates, this time by the Naval Research Laboratory and USAF Rome Air Development Center, to adapt the BRACT code to consider the effect of the ground. This produced the Antenna Modeling Program, or AMP, which was extensively modified to support disk-based files, simplify the input and output to make it easier to use, and extensively documented. A follow-up, AMP2, added calculations for extended surfaces like reflectors.
+
+NEC is an advanced version of AMP2, with more options and features. It was written by programmers at Lawrence Livermore National Laboratory (LLNL) under contract to the Naval Ocean Systems Center and the Air Force Weapons Laboratory. The original NEC added a more accurate system for calculating currents along the wires, and at junctions between them, as well as an option that increased the accuracy when the wire was thick, with a low aspect ratio compared to its length. NEC-2 added two major features to the original NEC, a numerical Green's function for working with large planes, and an expansion of the ground-plane code to deal with partially lossy materials that are more realistic for antennas near the ground. With the release of NEC-2, the original became known as NEC-1.
+
+All of these programs originated in the mainframe era, originally running on Control Data machines. The code was written in FORTRAN and designed to take input from punched card stacks in column-delimited format and then print the results on a line printer. These early versions were widely ported to a number of other big-iron platforms. AMP added support for disk-based files by emulating the original system, writing out the data from a single punch card to 80-column line in a text file, with the file as a whole representing a deck of cards. With the move from punch card input to the use of text files, a profusion of slightly different file formats appeared, which was later described as "close to free format".
+
+Versions were introduced on the MS-DOS platform in the late 1980s, mostly using FORTRAN compilers capable of compiling the original code. Later versions converted the FORTRAN to the C programming language, either by hand or using automated tools. These versions were often limited by the platform's resources. Modern versions run on a wide variety of platforms.  Modern programs usually have a separate graphical user interface (GUI) that allows the user to draw and edit the antenna. When that is complete, the GUI converts the design into the NEC-2 deck file format and runs NEC-2. The GUI then parses NEC-2's output and graphically displays the results.
+
+Development of the original NEC codes continued at LLNL, producing NEC-3 which added the ability to model elements buried in or projecting out of the ground, and NEC-4, which included a wide variety of updates. NEC-4 formalized what was already widely the case, taking input from a specified file, sending output to another file, and allowing comments to be added to any line using the ! character. NEC-4 also introduced a new licensing system, and is not available as open source.
+
+How it works
+The code is based on the method of moments solution of the electric field integral equation (EFIE) for thin wires and the magnetic field integral equation (MFIE) for closed, conducting surfaces. It uses an iterative method to calculate the currents in a set of wires, and the fields that result.
+
+The calculation starts by calculating the electrical field in space for a radio signal of a given frequency, normally traveling along the X axis in three-dimensional space. This field is uniform in Y and Z, but varies along the X axis; the signal's magnitude at any point along X is defined by the phase at that instant. Antennas work because the field changes over time as the wavefront moves past the antenna. This changing field induces current in conductors, the voltage being defined by the magnitude of the field at that instant. An antenna consists of extended but finite length conductors, so the pattern of the field results in different voltages at different points around the antenna. In antenna terms, each of the conductors making up the antenna is known as an element.
+
+To calculate the net result, NEC breaks the antenna's elements into a number of sampled points, called segments. It uses simple calculations based on the diameter of the conductor and the wavelength of the signal to determine the induced voltage and currents at each of these segments. Depending on the arrangement of the wires, the induced currents in some segments will reinforce or resist the currents in others. NEC sums all of these to determine the net current in each of the conductors.
+
+When alternating current flows in a conductor it radiates an electromagnetic wave (radio wave). In multi-element antennas, the fields due to currents in one element induce currents in the other elements. Antennas are self-interacting in this respect; the waves reradiated by the elements superimpose on the original radio signal being studied. NEC calculates the field resulting from these contributions, adds it to the original radio signal, and then runs the entire calculation again with this modified field. Because the reradiated signal is normally small compared to the original signal, it only produces a small change, or perturbation, in the resulting element currents. The program then repeats the calculation again with the new element currents, getting new radiation fields. This process is repeated until resulting values converge.
+
+NEC uses a separate method to calculate the contribution of extended planes of material, like a wire mesh reflector. In this case, the plane is considered as a unit and the magnetic contribution is calculated directly and fed back into the calculation once the contributions from the individual wires are considered. Similar integral solutions are used to calculate the effects of the ground plane. Similarly, inductive and capacitive loads, insulated transmission wires above and buried in the ground and other common parts of an extended antenna system are also modeled using simpler numeric methods.
+
+The calculations normally converge rapidly. The output is then sampled at a user-defined point, the load. In a real antenna, this is normally where the wire attaches for connection to the transmitter or receiver. The result is a value that indicates the energy delivered to the load on reception, or the amount of energy absorbed by the antenna during transmission.
+
+NEC then repeats this entire series of calculations while changing the signal so it approaches the antenna from different angles along the X and Y axes, storing the results for each combination of angles. The results are then normalized to the strongest signal received (almost always at X and Y = 0, or "head on") to produce a 3D pattern illustrating the relative gain for every angle. The gain relative to an isotropic antenna (dBi), front-to-back ratio, standing wave ratio and the general reception pattern are all evident from these numbers. Programs often process this into more common forms like Smith charts.
+
+The algorithm has no theoretical size limit and can be applied to very large arrays or for detailed modeling of very small antenna systems. The algorithm has proven reliable (likely to converge to a solution) and accurate (likely to produce results comparable to measured performance) at modeling thin-element structures like Yagi antennas and radiating towers. The NEC engine provides support for modeling patch antennas as well. It can be used for, but is not well suited to, slotted waveguide antennas, fractal antennas or similar designs in which the component conductive elements are not rod-like.
+
+The method of moments algorithm has practical limitations as well; the number of calculations required to model a three-dimensional structure of N radiating elements is roughly proportional to the cube of N. Modeling an antenna with 100 wire segments requires 1003 = 1 million calculations. Increasing the number of elements by a factor of 10 requires 10003 = 1 billion calculations, increasing the computing time by a factor of 1000, assuming the simulation completes at all given memory limitations and such. Consequently, there are other approaches such as geometric optics which are preferred for modeling large structures.
+
+Most programs using NEC include features that run batches of NEC calculations to produce a composite output. A common example is to run the entire calculation suite for different input frequencies, and then plot samples on a single chart. One might use this to sample through the UHF television frequencies, for instance, producing a diagram that illustrates the gain across the band. Another common feature is an iterative solver that adjusts a given parameter between runs, say the spacing between elements, in order to maximize performance. These operations are highly independent and can be trivially paralleled on modern machines.
+
+Example
+The NEC input file is a sequence of lines; the input file is known as a "deck" (from "card deck', referring to the original punch card formats) and uses a .deck or .nec file extension. Each line of text, or "card", starts with one of several dozen identifiers that indicate how the line should be interpreted. One of the most common identifiers found in NEC codes is GW, which defines a single wire (element) in the antenna. Its definition is:
+ GW ITG NS XW1 YW1 ZW1 XW2 YW2 ZW2 RAD
+The string literal GW identifies this as a line describing straight-wire geometry. The parameter ITG, short for "integer tag", is a user-provided number used to identify ("tag") this element. The NS parameter defines the number of segments the wire should be divided into during the calculation; using more segments breaks the wire into smaller parts and may produce more accurate results at the cost of increased calculation time. The next six parameters are real numbers that define the X, Y and Z locations of the wire's two endpoints. Finally, the RAD parameter is the radius of the wire. If this is set to zero, then the next line must be a GC line that includes additional information to define tapering rods.
+
+The following example of a complete input deck models a log-periodic antenna, like those used for VHF television reception:
+
+CM TESTEX5
+CM 12 ELEMENT LOG PERIODIC ANTENNA IN FREE SPACE
+CM 78 SEGMENTS. SIGMA=O/L RECEIVING AND TRANS. PATTERNS.
+CM DIPOLE LENGTH TO DIAMETER RATIO=150.
+CE TAU=0.93. SIGMA=0.70. BOOM IMPEDANCE=50. OHMS.
+GW 1 5 0.0000 -1.0000 0.0000000 0.00000 1.0000 0.000 .00667
+GW 2 5 -.7527 -1.0753 0. -.7527 1.0753 0. .00717
+GW 3 5 -1.562 -1.1562 0. -1.562 1.1562 0. .00771
+GW 4 5 -2.4323 -1.2432 0. -2.4323 1.2432 0. .00829
+GW 5 5 -3.368 -1.3368 0. -3.368 1.3368 0. .00891
+GW 6 7 -4.3742 -1.4374 0. -4.3742 1.4374 0. .00958
+GW 7 7 -5.4562 -1.5456 0. -5.4562 1.5456 0. .0103
+GW 8 7 -6.6195 -1.6619 0. -6.6195 1.6619 0. .01108
+GW 9 7 -7.8705 -1.787 0. -7.8705 1.787 0. .01191
+GW 10 7 -9.2156 -1.9215 0. -9.2156 1.9215 0. .01281
+GW 11 9 -10.6619 -2.0662 0. -10.6619 2.0662 0. .01377
+GW 12 9 -12.2171 -2.2217 0. -12.2171 2.2217 0. .01481
+GE
+FR 0 0 0 0 46.29 0.
+TL 1 3 2 3 -50.
+TL 2 3 3 3 -50.
+TL 3 3 4 3 -50.
+TL 4 3 5 3 -50.
+TL 5 3 6 4 -50.
+TL 6 4 7 4 -50.
+TL 7 4 8 4 -50.
+TL 8 4 9 4 -50.
+TL 9 4 10 4 -50.
+TL 10 4 11 5 -50.
+TL 11 5 12 5 -50. ,0.,0.,0.,.02
+EX 0 1 3 10 1 
+RP 0 37 1 1110 90. 0. -5. 0.
+EN
+The example starts with several CM (comment) lines followed by the last comment on a CE (comment end) line. The CE must be followed by geometry lines (lines whose commands start with the letter G.
+
+In this case, the geometry section consists of twelve GW elements making up the antenna. Each element is longer than the last, and to maintain accuracy, the later elements are divided into more segments. All measurements in NEC use metres, so the first element is 2 metres wide, running from -1 to 1. The GE line indicates the end of the geometry section.  At this point, NEC scans the geometry for overlapping endpoints, which it then connects together to make a single longer conductor. The GE line also has a single input that indicates whether a ground plane is present; in this example, it is not specified, so the antenna is located above a "standard ground".
+
+The FR line then sets the test frequency to 46.29 MHz. FR lines can optionally define the number and magnitude of the frequency steps if the system is being used to analyze the performance across a range of frequencies, but this is not being used in this case. The TL lines (transmission line) connect the various elements together. These can be seen on most log-periodic designs in the form of two thin rods running down the boom between the main antenna elements, although some designs use the boom itself, or hide the wires within the boom. The EX (excitation) line indicates the location of the energy supplied to the design, in this case an incoming plane wave being captured on segment 10, while the RP (radiation pattern) sets up some specifics of the signal.
+
+Finally the EN line (end of input) indicates the deck is complete, at which point the NEC code starts the simulation and generates reports. The reports start by reprinting much of the input, which allows the user to check for errors. It then includes lengthy sections showing how the system broke the antenna down into segments. Finally, it begins to list calculated values, in tabular format. A small sample of the output from the sample above includes:
+                                  - - - RADIATION PATTERNS - - -
+
+  - - ANGLES - -    - DIRECTIVE GAINS -  - - POLARIZATION - -   - - E(THETA) - -   - - - E(PHI) - - -
+  THETA     PHI     VERT. HOR.   TOTAL   AXIAL   TILT   SENSE   MAGNITUDE  PHASE   MAGNITUDE   PHASE
+ DEGREES  DEGREES   DB     DB    DB      RATIO   DEG.            VOLTS/M  DEGREES    VOLTS/M   DEGREES
+  90.00     .00   -999.99  9.75  9.75   .00000  90.00  LINEAR  0.00000E+00    .00  2.46922E+00  -66.00
+  85.00     .00   -999.99  9.70  9.70   .00000  90.00  LINEAR  0.00000E+00    .00  2.45352E+00  -65.20
+[many lines removed]
+  30.00     .00   -999.99  2.10  2.10   .00000  90.00  LINEAR  0.00000E+00    .00  1.02313E+00   38.02
+  25.00     .00   -999.99  -.14  -.14   .00000  90.00  LINEAR  0.00000E+00    .00  7.90310E-01   59.26
+[more lines removed]
+The output indicates that the antenna has a maximum gain of 9.75 dBi, a little over three times the gain of an isotropic antenna. However, as the signal moves even five degrees to the side, this has dropped to 9.5. When you reach 75 degrees off the front, the antenna begins to have negative gain. This indicates that this antenna is fairly directional, and one would expect it to have a high front-to-back ratio.
+
+NEC versions
+
+BRACT
+BRACT was a pure method of moments implementation, suitable for use on antennas consisting of uniform diameter conductors arranged in free space and connected to each other at their ends (if at all). It did not model the contributions of the ground (or water) and was primarily useful for aircraft and spacecraft type applications.
+
+AMP
+AMP modified BRACT by adding a system for calculating the effects of ground planes.
+
+AMP2
+AMP2 added the ability to model extended closed surfaces.
+
+NEC-1
+The original NEC, later known as NEC-1 when NEC-2 was introduced, was a modification of the earlier AMP2, adding a more accurate current expansion along wires and at multiple wire junctions, and an option in the wire modeling for far greater accuracy on thick wires. A new model for a voltage source was added and several other modifications made for increased accuracy.
+
+NEC-2
+NEC-2 is the highest version of the code within the public domain without a license. It cannot model buried radials or ground stakes.
+
+NEC-3
+NEC-3 modified NEC-2 to include a Sommerfeld model to properly model wires buried in or close to the ground.
+
+NEC-4
+NEC-4 modified NEC-3 to better model very small antennas, like those on cell phones and WiFi routers. The most recent version, 4.2, includes a better version of the Sommerfeld model used in NEC-3 for in- and near-ground wires, added current sources instead of just voltage sources as in earlier models, and used a new memory management system that allows arbitrarily large designs.
+
+NEC-4 remains the property of the Lawrence Livermore National Laboratory and the University of California. NEC-4 requires a license.
+
+NEC-5
+NEC-5 solves the Electric-field integral equation for wires and surfaces using the newer mixed potential method developed by Rao, Wilton and Glisson.
+
+NEC-5 remains the property of the Lawrence Livermore National Laboratory and the University of California. NEC-5 requires a license.
+
+MININEC
+MININEC is an independent implementation of the concepts in NEC. It uses the same method of moments algorithm to calculate the outcomes, but using entirely original code. The first versions were written in 1980 in BASIC for 32 kB Apple II computers, and after following some advice from Professor Wilton at the University of Mississippi, the first public release was made in 1982 for 64 kB machines. An improved version, MININEC2, was released in 1984, followed by a port to the IBM PC as MININEC3 in 1986. Like the original NEC, MININEC now runs on many platforms, although its popularity has fallen with the more widespread availability of the original NEC codes in C form.
+
+MININEC suffers from some known flaws compared to NEC, the best known being that resonant frequencies may be slightly in error. However, MININEC handles different wire diameters better than NEC-2 and probably NEC-4; this includes different diameter parallel wires, different diameter wires joined at an angle and tapered diameter antenna elements. Placing sources at an intersection of two wires is a problem for NEC-2 but not MININEC. MININEC converges more slowly (requires more segments) when wires join at an angle, when wire segments of significantly different length are adjacent, and has a weaker ground model.
+
+References
+
+Bibliography
+ 
+ 
+ 
+ 
+ 
+ 
+This article has an excellent illustrated explanation of the NEC method of moments concepts.
+
+External links
+
+Cost-free resources
+nec2++ - an extensive rewrite of NEC-2 in C++ licensed under GPLv2, with a C/C++ interface and python bindings. It can easily be incorporated into automatic optimizers.
+EZnec - A well-known antenna modeling package based on NEC3 and NEC4, EZnec was formerly commercial but is now available without cost.  The ARRL's "Antenna Book" makes extensive use of EZnec and includes many example files (in .EZ format) to model amateur radio antennas. Opens .EZ files.  (EZnec also works on Linux using Wine, or on Raspberry Pi using Wine inside ExaGear).
+4nec2 - A free NEC2/NEC4 implementation for Microsoft Windows.  It is a tool for designing 2D and 3D antennas and modeling their near-field/far-field radiation patterns.
+Numerical Electromagnetics Code NEC2 unofficial home page - NEC2 documentation and code examples
+MMANA-GAL basic - A free antenna modeling program based on MININEC.  Opens .MAA files.  (MMANA-GAL also works on Linux using Wine, or on Raspberry Pi using Wine inside ExaGear).
+xnec2c - A translation of NEC2 into C with multithreading and accelerated math libraries; uses GTK3 to provide 3D radiation pattern and 2D graphs for impedance, gain, directionality and a Smith chart.  Opens .NEC files, supports external Simplex optimization, and much more. (official github repo)
+xnec2c-optimize - An optimizer that works with xnec2c to tune antenna geometries (i.e. high gain, low VSWR) with the Simplex optimization algorithm.
+NEC Lab - NEC Lab is a powerful tool that uses Numerical Electromagnetics Code (NEC2) and Artificial Intelligence (AI) to design antennas.
+CocoaNEC  - Open source GUI front-end for Apple Mac OS X. Includes NEC2 and supports NEC4 with separate license.
+
+Commercial resources
+AN-SOF - A Windows simulation software for antennas in free space and above a lossy ground, microstrip patch antennas and printed circuit boards (PCBs). A radial wire ground screen is included and connections to imperfect ground are allowed. Not based on NEC. 
+AutoEZ - An Excel application that works in conjunction with EZNEC v.5.0 & v.6.0.  AutoEZ allows you to run multiple EZNEC test cases while AutoEZ automatically changes one or more variables between runs.
+NEC4WIN NEC4WIN /VM - A Windows XP, Vista simulation program based on Mininec 3.
+AC6LA antenna utilities - A collection of commercial antenna utilities
+Nec-Win plus - A commercial modeling package.
+ GAL-ANA - A commercial antenna modeling package based on NEC2 and MININEC.
+GNEC - A commercial NEC package with a graphical user interface.
+MMANA-GAL PRO - A commercial modeling package, up to 45000 segments.
+
+Example NEC files (for amateur radio antennas)
+DF9CY - EZNEC Simulation files collection - Antenna modeling files for EZnec and 4nec2.
+ARRL antenna modeling files - .NEC, .YAG, and .EZ files contributed by various sources.
+KK4OBI - Bent and other dipole models - This web site is devoted primarily as a resource for amateur radio operators to see what happens if they bend a half-wave dipole. (.NEC files for dipoles)
+L.B. Cebik's Basic & Intermediate Antenna Modeling - Includes exercise models for EZnec (also see Cebik's Antenna Modeling Notes - 7 Volumes including the models).
+Simulating the end-fed half-wave (EFHW) dipole antenna
+VK3IL - Multiband end-fed 80-10m antenna - NEC2 model file of a "MyAntennas EFHW-8010" multi-band antenna.
+Other retail books (such as The ARRL Antenna Book, Marcel De Canck's Advanced Antenna Modeling, and others) also include antenna model files.
+Most free or retail NEC software packages include an 'example' folder containing antenna model files.
+
+NEC antenna modeling tutorials
+Archive of L. B. Cebik's papers on antennas and antenna modeling (mirror) - Larry Wolfgang, WR1B, QEX Editor, called Cebik "probably the most widely published and often read author of Amateur Radio antenna articles ever to write on the subject."
+How to Start Modeling Antennas using EZNEC - Antenna Modeling for Beginners (W8WWV, May 2011)
+Computer Antenna Modeling Simplified - Slide show compiled from the Internet for the AARA Ham Radio Club, (KE5KJD, 2010)
+Maximum-Gain Radial Ground Systems for Vertical Antennas - Analysis of how many ground radials is theoretically optimal for different vertical antennas (modeled with EZNEC4)
+Numerical Electromagnics Code - Older website which gathered some NEC2 documentation from a group of leading scientists and engineers
+The ARRL's antenna modeling page - Includes some links to QST magazine publications of LB Cebik's NEC tutorials (for paid QST members only - though the original source articles are also available for free distribution at other websites).
+The ARRL's supplemental information page for their Antenna Modeling for Beginners book - Includes some presentations, links to tutorials, and references.
+Installing and getting oriented with xnec2c in Debian Linux
+
+YouTube Tutorials
+David Casler (KEØOG)'s Antenna Modeling Videos
+How High Should a Dipole Be? A Look at Antenna Modeling - Intro to EZnec
+Decoding Antenna Modeling Charts
+Modeling Common Dipole Variations
+Modeling the Simple Inverted Vee Antenna
+Antenna Modeling a Modified Dipole with EZNEC 6+
+20/40 Two Band Dipole Modeled
+What I discovered by modeling the MFJ-1846 Hex Beam
+Callum (M0MCX)'s Antenna Software Modeling videos - YouTube playlist
+Karl Schneider (KE0JWK)'s Antenna Modeling with 4NEC2 - YouTube Playlist
+
+Other NEC software lists
+The unofficial Numerical Electromagnetic Code (NEC) Archives
+The W8IO Antenna Site - NEC and Mininec
+
+Electromagnetic simulation software
+Free simulation software
+Amateur radio software

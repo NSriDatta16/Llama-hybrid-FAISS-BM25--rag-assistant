@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1266815
+[parent_id]: 1257474
+[tags]: 
+I eventually figured out that the name of the property by looking in the source code for the WindowsPlacesBar: Color bgColor = new Color(UIManager.getColor("ToolBar.shadow").getRGB()); setBackground(bgColor); I set the ToolBar.shadow though and nothing changed. Further poking around eventually helped me to realize that the XPStyle.subAppName property was overriding anything I put in. I added this piece of code: JFileChooser chooser = new JFileChooser(); setWindowsPlacesBackground( chooser ); private void setWindowsPlacesBackground( Container con ) { Component[] jc = con.getComponents(); for( int i = 0; i By unsetting that property, it allowed my colors and schemes to come through. I still feel like there should be a more clean way of unsetting it than iterating through the containers, but I couldn't find it. It did seem like the WindowsPlacesBar was always the first component in the FileChooser. I'm going to leave this open for another day or two just in case somebody else can show me something more "elegant."

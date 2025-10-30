@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2789177
+[parent_id]: 1743521
+[tags]: 
+You should be using the Microsoft.Office.Interop.Outlook.Extensions.Linq API, which allows the type safe retrieval of items: public void checkFolder(MAPIFolder folder) { MailParser parser = new MailParser(); IQueryable query = folder.Items.AsQueryable (); foreach (MailItem wrappedItem in query) { parser.parseMail(wrappedItem.Item); } } Here the the Mail type is a subclass of OutlookItemBase . It has an Item property which returns the MailItem COM object. It will also safely filter out non-compatible types without throwing an exception, so you don't have to add null checks. The Extensions API also solve the missing base class problem for the items, so you can finally access UserProperties and such through the non-generic OutlookItem base class. Also the API supports some attributes, which can add some performance boost to the Linq queries, by executing them on Outlook side, instead over COM. Unfortunately they are not well documented.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 762605
+[parent_id]: 757059
+[tags]: 
+Inspired by this similar post that involves searching for a set bit, I offer the following: unsigned GetLowestBitPos(unsigned value) { double d = value ^ (value - !!value); return (((int*)&d)[1]>>20)-1023; } Pros: no loops no branching runs in constant time handles value=0 by returning an otherwise-out-of-bounds result only two lines of code Cons: assumes little endianness as coded (can be fixed by changing the constants) assumes that double is a real*8 IEEE float (IEEE 754) Update: As pointed out in the comments, a union is a cleaner implementation (for C, at least) and would look like: unsigned GetLowestBitPos(unsigned value) { union { int i[2]; double d; } temp = { .d = value ^ (value - !!value) }; return (temp.i[1] >> 20) - 1023; } This assumes 32-bit ints with little-endian storage for everything (think x86 processors).

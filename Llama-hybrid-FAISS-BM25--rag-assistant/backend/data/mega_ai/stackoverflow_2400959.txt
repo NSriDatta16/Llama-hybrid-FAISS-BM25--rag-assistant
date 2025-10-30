@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2400959
+[parent_id]: 
+[tags]: 
+MVC, how to organize caching parts of page and how to be with View?
+
+Right now I'm trying to create my own tiny MVC (just for practice and for understanding MVC pattern details). I'd like to cache parts of pages (dropdowns, lists etc.) and I don't know what is the best way to organize it. Let's imagine that I have PostsController with method getPostDetailsShortly($post_id). This method could look like this... public function getPostDetailsShortly($post_id) { if (!$post_id) return false; $content = $this->memcache->get("post" . $post_id); //Trying to get post details HTML from memcache if (!$content) { //Not fount in memcache $model = new PostsModel(); $data = $model->getPostDetailsShortly($post_id); $this->view->assign('data', $data); ob_start(); $this->view->render(); $content = ob_get_contents(); //Getting view output into variable ob_end_clean(); $this->memcache->set('post' . $post_id, $content, 1000); //Writing variable to memcache } return $content; } Now I should make this controller method be available from Views. Because I will use it inside of other pages, for example, for building related posts list. What is the best practice of doing it? Maybe I'm wrong and there are some better methods to organize caching parts of pages? PS:Sorry for my English, but I hope it is clear. Thank you!

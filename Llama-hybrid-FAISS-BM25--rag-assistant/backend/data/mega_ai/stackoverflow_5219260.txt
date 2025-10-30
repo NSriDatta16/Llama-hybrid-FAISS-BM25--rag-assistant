@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5219260
+[parent_id]: 
+[tags]: 
+How to create a background task for rake task?
+
+How do I create a background task for a rake task. I want it run every 15 minutes. My statistik.rake in lib/tasks desc "Importer statistikker" namespace :reklamer do task :iqmedier => :environment do require 'Mechanize' agent = WWW::Mechanize.new agent.get("http://www.iqmedier.dk") form = agent.page.forms.first form.Username = 'username' form.Password = 'password' form.submit agent.page.link_with(:href => "/Publisher/Stats").click form = agent.page.forms.first form.submit @stats = agent.page.search('//tr')[-2].search('td').map{ |n| n.text } @existing = Reklamer.where(dato: @stats[0]).first if @existing.nil? Reklamer.create!(:virksomhed => 'Iqmedier', :dato => @stats[0], :unik_klik => @stats[1], :klik => @stats[2], :unik_vis => @stats[3], :vis => @stats[4], :leads => @stats[5], :ordre => @stats[6], :cpc => @stats[7], :earn => @stats[8]) elsif @existing.dato != Date.today Reklamer.create!(:virksomhed => 'Iqmedier', :dato => Date.today, :unik_klik => 0, :klik => 0, :unik_vis => 0, :vis => 0, :leads => 0, :ordre => 0, :cpc => 0, :earn => 0) else @existing.update_attributes!(:unik_klik => @stats[1], :klik => @stats[2].to_i, :unik_vis => @stats[3], :vis => @stats[4], :leads => @stats[5], :ordre => @stats[6], :cpc => @stats[7], :earn => @stats[8]) end end end

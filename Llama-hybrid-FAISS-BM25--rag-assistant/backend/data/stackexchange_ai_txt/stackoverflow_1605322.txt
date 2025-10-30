@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1605322
+[parent_id]: 1605312
+[tags]: 
+You can't modify a reference. Even if you replace it with a pointer modifying a pointer will not modify an object pointed to. Instead you need to work through the reference - just swap the fields. void myString::swap(myString &from) { std::swap( stringLen, from.stringLen ); std::swap( stringPtr, from.stringPtr ); } the above is using std::swap() as suggested by user sbi in comments. This is completely equivalent to the following (just for illustration, don't reinvent STL): void myString::swap(myString &from) // First remember own length and pointer const int myOldLen = stringLen; char* myOldPtr = stringPtr; // now copy the length and pointer from that other string stringLen = from.stringLen; stringPtr = from.stringPtr; // copy remembered length and pointer to that other string from.StringLen = myOldLen; from.StringPtr = myOldPtr; // done swapping } Both will work even when called fro self-swapping: myString string; string.swap( string );

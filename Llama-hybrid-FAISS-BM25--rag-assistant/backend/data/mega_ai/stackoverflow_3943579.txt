@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3943579
+[parent_id]: 3943428
+[tags]: 
+The struct only contains a pointer. You need to allocate some storage for that pointer to point at before you can use it. As it is, the pointer almost certainly just contains a (more or less) random value. When you use that as a target in your call to strcpy , you're overwriting that random memory location -- which can and will lead to major problems elsewhere. h_addr_list is pretty much the same way -- it's just a pointer to a pointer. That'll (normally) be used to refer to an array of strings, but something has to allocate that array of strings before it can be put to any meaningful use. Given the similarity to a hostent structure, along with this structure there's presumably some analog to (or wrapper around) gethostbyname and/or gethostbyaddress that initializes this. In the case of the wrapper (which I'd judge the more likely of the two), it probably gets the correct data in a hostent , and then copies data from the hostent to this structure.

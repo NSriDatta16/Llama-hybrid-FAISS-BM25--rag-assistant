@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3885918
+[parent_id]: 3885550
+[tags]: 
+Depending on your client (eg, I use SequelPro on a Mac), you might be able to import CSVs. This is generally pretty shaky, but you can also export your Excel document as a CSV... how convenient. However, this doesn't really help with your database structure. Granted, using foreign keys is a good idea, but importing that data unobtrusively (and easily) is something that will need to likely be done a row at a time. However, you could try modifying something like this to suit your needs, by first exporting your Excel document as a CSV, removing the header row (the first one), and then using regular expressions on it to change it into a big chunk of SQL. For example: Your CSV: myval1.1,myval1.2,myval1.3,myval1.4 myval2.1,myval2.2,myval2.3,myval2.4 ... At which point, you could do something like: myCsvText.replace(/^(.+),(.+),(.+)$/mg, 'INSERT INTO table_name(col1, col2, col3) VALUES($1, $2, $3)') where you know the number of columns, their names, and how their values are organized (via the regular expression & replacement). Might be a good place to start.

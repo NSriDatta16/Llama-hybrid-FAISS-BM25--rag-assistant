@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5101996
+[parent_id]: 5101970
+[tags]: 
+$params = unserialize($string); $testarray = array(); foreach($params as $key => $value) { $testarray[]= compact('key', 'value'); } See unserialize documentation. UPDATE. You could also inherit/patch sess_read() from system/libraries/Session.php to make it accept custom session ID: Before: function sess_read() { ... // Unserialize the session array $session = $this->_unserialize($session); ... } After: function sess_read($session_id = null) { ... // Unserialize the session array $session = $this->_unserialize($session); if ($session_id) $session['session_id'] = $session_id; ... } Also remember to set sess_match_useragent = false in session config file, otherwise request from Uploadify will be rejected, because Flash's user agent is different from broswer's user agent. And now you can load any session by ID: $this->session->sess_read($custom_session_id) Much less of a hack than parsing data from DB manually.

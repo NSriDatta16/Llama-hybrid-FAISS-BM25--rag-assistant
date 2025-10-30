@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3585562
+[parent_id]: 
+[tags]: 
+protobuf-csharp-port
+
+I'm using Jon Skeet's (excellent) port of Google's Protocol Buffers to C#/.Net. For practice, I have written a dummy Instant Messenger app that sends some messages down a socket. I have a message definition as follows:- message InstantMessage { required string Message = 1; required int64 TimeStampTicks = 2; } When the sender serialises the message, it sends it really elegantly:- ... InstantMessage.Builder imBuild = new InstantMessage.Builder(); imBuild.Message = txtEnterText.Text; imBuild.TimeStampTicks = DateTime.Now.Ticks; InstantMessage im = imBuild.BuildPartial(); im.WriteTo(networkStream); ... This works great. But at the other end, I'm having trouble getting the ParseFrom to work. I want to use:- InstantMessage im = InstantMessage.ParseFrom(networkStream); But instead I have had to read it to bytes and then parse it from here. This is obviously not ideal for a number of reasons. Current code is:- while (true) { Byte[] byteArray = new Byte[10000000]; int intMsgLength; int runningMsgLength = 0; DateTime start = DateTime.Now; while (true) { runningMsgLength += networkStream.Read(byteArray, runningMsgLength, 10000000 - runningMsgLength); if (!networkStream.DataAvailable) break; } InstantMessage im = InstantMessage.ParseFrom(byteArray.Take(runningMsgLength).ToArray()); When I try to use ParseFrom , control does not return to the calling method even when I know a valid GB message is on the wire. Any advice would be gratefully received, PW

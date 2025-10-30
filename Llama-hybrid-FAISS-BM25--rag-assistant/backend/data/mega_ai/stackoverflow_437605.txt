@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 437605
+[parent_id]: 437432
+[tags]: 
+You need to inspect the PE header of the .dll, since that's ultimately what Windows does anyways. Assuming you have a pointer to the .dll's IMAGE_OPTIONAL_HEADER (you can either use dbghelp's ImageNtHeader function with a handle to a .dll loaded via LoadLibrary or attempt to find it yourself if you know the layout of the .dll yourself), you'll want to look at optional_header->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT] , find the export table relative to the optional header with the offset in there, then walk the export table (it's a IMAGE_EXPORT_DIRECTORY ). For funsies, a backwards compatible PE image starts out with a IMAGE_DOS_HEADER ; the offset to the IMAGE_NT_HEADER is IMAGE_DOS_HEADER::e_lfanew , and the IMAGE_OPTIONAL_HEADER is embedded in the NT header.

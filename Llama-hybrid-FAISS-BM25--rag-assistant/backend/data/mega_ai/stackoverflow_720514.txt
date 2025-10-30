@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 720514
+[parent_id]: 713032
+[tags]: 
+Something to remember about transaction replication is that a single update now requires several operations to happen for that change to occur. First you update the source table. Next the log readers sees the change and writes the change to the distribution database. Next the distribution agent sees the new entry in the distribution database and reads that change, then runs the correct stored procedure on the subscriber to update the row. If you monitor the statement run times on the two servers you'll probably see that they are running in just a few milliseconds. However it is the lag time while waiting for the log reader and distribution agent to see that they need to do something which is going to kill you. If you truly need sub second processing time then you will want to look into writing your own processing engine to handle data moving from one server to another. I would recommend using SQL Service Broker to handle this as this way everything is native to SQL Server and no third party code has to be written.

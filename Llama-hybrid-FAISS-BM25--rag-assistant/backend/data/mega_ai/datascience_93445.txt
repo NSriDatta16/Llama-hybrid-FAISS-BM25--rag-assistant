@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 93445
+[parent_id]: 93376
+[tags]: 
+The code in the question does not work very well because TensorFlow automatic differentiation can't make sense of the weighted_average function. Though it's possible to define a custom gradient with @tf.custom_gradient , a simpler and more robust solution is to instead use a softmax based weighted average layer: @tf.function def weighted_average(x): values = x[:, :, 0] weights = x[:, :, 1] return tf.math.reduce_sum(values * tf.nn.softmax(weights), 1) L_lam = Lambda(weighted_average) This also avoids issues with dividing by zero.

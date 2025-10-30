@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5098261
+[parent_id]: 5097806
+[tags]: 
+My guess is that one of your arguments is an overloaded object, and that overloading is throwing the error. Check to see exactly what your arguments are: print "$_: ", ref, $/ for $self, $self->path, $status; Which should print something like: HASH(0x12341234)=Self::Object: Self::Object some/path: 4: If instead you are getting: HASH(0x12341234)=Self::Object: Self::Object some/path: Some::Object 4: Some::Other::Object Then you should look at each of those packages to see if there is overloading present. You can also write a bool function which will force a value into a non-overloaded bool: sub bool {$_[0] ? 1 : 0} And then: my $cond1 = bool $self->path ne 'contact_us'; my $cond2 = bool !grep { $status == $_ } 2, 3, 8; if ($cond1 && $cond2) { If that fixes the problem, chances are at least one of your arguments is an overloaded object that is misbehaving. This also could possibly be caused by one of the autoboxing pragmas like use bigint; or use bignum; which convert literal numbers like 2, 3, 8 into overloaded objects. Are any pragmas like this in effect?

@@ -1,0 +1,154 @@
+The Java programming language and Java software platform have been criticized for design choices including the implementation of generics, forced object-oriented programming, the handling of unsigned numbers, the implementation of floating-point arithmetic, and a history of security vulnerabilities in the primary Java VM implementation, HotSpot. Software written in Java, especially its early versions, has been criticized for its performance compared to software written in other programming languages. Developers have also remarked that differences in various Java implementations must be taken into account when writing complex Java programs that must work with all of them.
+
+Language syntax and semantics
+
+Checked exceptions
+
+Java introduced checked exceptions where a method must declare the checked exceptions it throws in the method signature. This can result in unnecessarily verbose boilerplate code. No major language has followed Java in implementing checked exceptions.
+
+Generics 
+
+When generics were added to Java 5.0, there was already a large framework of classes (many of which were already deprecated), so generics were implemented using type erasure to allow for migration compatibility and re-use of these existing classes. This limited the features that could be provided, compared to other languages.
+
+Because generics are implemented using type erasure the actual type of a template parameter E is unavailable at run time. Thus, the following operations are not possible in Java:
+public class MyClass<E> {
+    public static void myMethod(Object item) {
+        if (item instanceof E) {  //Compiler error
+            ...
+        }
+        E item2 = new E();   //Compiler error
+        E[] iArray = new E[10]; //Compiler error
+    }
+}
+
+Additionally, in 2016, the following example was found revealing Java to be unsound and in turn making JVMs which threw ClassCastExceptions or any other kind of runtime error technically non-conforming. This was corrected in Java 10.
+
+class Nullless<T, U> {
+  class Constrain<B extends U> {}
+  final Constrain<? super T> constrain;
+  final U u;
+
+  Nullless(T t) {
+    u = coerce(t);
+    constrain = getConstrain();
+  }
+
+  <B extends U>
+  U upcast(Constrain<B> constrain, B b) {
+    return b;
+  }
+  U coerce(T t) {
+    return upcast(constrain, t);
+  }
+  Constrain<? super T> getConstrain() {
+    return constrain;
+  }
+
+  public static void main(String[] args) {
+    String zero = new Nullless<Integer,String>(0).u;
+  }
+}
+
+Noun-orientedness 
+
+By design, Java encourages programmers to think of a solution in terms of nouns (classes) interacting with each other, and to think of verbs (methods) as operations that can be performed on or by that noun. Steve Yegge argues that this causes an unnecessary restriction on language expressiveness because a class can have multiple functions that operate on it, but a function is bound to a class and can never operate on multiple types.
+
+Many other multi-paradigm languages support functions as a top-level construct. When combined with other features such as function overloading (one verb, multiple nouns) and generic functions (one verb, a family of nouns with certain properties), the programmer can decide whether to solve a specific problem in terms of nouns or verbs. Java version 8 introduced some functional programming features.
+
+Unsigned integer types 
+Java lacks native unsigned integer types. Unsigned data is often generated from programs written in C, and the lack of these types prevents direct data interchange between C and Java. Unsigned large numbers are also used in a number of numeric processing fields, including cryptography, which can make Java more inconvenient to use for these tasks.
+Although it is possible to get around this problem using conversion code and larger data types, it makes using Java cumbersome for handling unsigned data. While a 32-bit signed integer may be used to hold a 16-bit unsigned value losslessly, and a 64-bit signed integer a 32-bit unsigned integer, there is no larger type to hold a 64-bit unsigned integer. In all cases, the memory consumed may double, and typically any logic relying on two's complement overflow must be rewritten. If abstracted, function calls become necessary for many operations which are native to some other languages. Alternatively, it is possible to use Java's signed integers to emulate unsigned integers of the same size, but this requires detailed knowledge of bitwise operations. Some support for unsigned integer types was provided in JDK 8, but not for unsigned bytes and with no support in the Java language.
+
+Operator overloading 
+Java has been criticized for not supporting user-defined operators. Operator overloading improves readability, so its absence can make Java code less readable, especially for classes representing mathematical objects, such as complex numbers and matrices. Java has only one non-numerical use of an operator: + and += for string concatenation. However, this is implemented by the compiler, which generates code to create StringBuilder instances. It is impossible to create user-defined operator overloads.
+
+Compound value types
+Java lacks compound value types, such as structs in C, bundles of data that are manipulated directly instead of indirectly via references.  Value types can sometimes be faster and smaller than classes with references. For example, Java's HashMap is implemented as an array of references to HashMap.Entry objects, which in turn contain references to key and value objects. Looking something up requires inefficient double dereferencing. If Entry were a value type, the array could store key-value pairs directly, eliminating the first indirection, increasing locality of reference and reducing memory use and heap fragmentation. Further, if Java supported generic primitive types, keys and values could be stored in the array directly, removing both levels of indirection.
+
+Large arrays
+Java has been criticized for not supporting arrays of 231 (about 2.1 billion) or more elements. This is a limitation of the language; the Java Language Specification, Section 10.4, states that:
+Arrays must be indexed by int values... An attempt to access an array component with a long index value results in a compile-time error. 
+Supporting large arrays would also require changes to the JVM. This limitation manifests itself in areas such as collections being limited to 2 billion elements and the inability to memory map continuous file segments larger than 2 GB.  Java also lacks (outside of its 2D arrays) multidimensional arrays (contiguously allocated single blocks of memory accessed by a single indirection), which limits performance for scientific and technical computing.
+
+There is no efficient way to initialize arrays in Java. When declaring an array, the JVM compiles it to bytecodes with instructions that set its elements one by one at run time. Because Java methods cannot be bigger than 64KB, arrays of even modest sizes with values assigned directly in the code will throw the message "Error: code too large" on compilation.
+
+Integration of primitives and arrays 
+Arrays and primitives are somewhat special and need to be treated differently from classes. This has been criticized because it requires many variants of functions when creating general-purpose libraries.
+
+Parallelism 
+Per Brinch Hansen argued in 1999 that Java's implementation of parallelism in general, and monitors in particular, does not provide the guarantees and enforcements required for secure and reliable parallel programming.  While a programmer can establish design and coding conventions, the compiler can make no attempt to enforce them, so the programmer may unwittingly write insecure or unreliable code.
+
+Serialization 
+Java provides a mechanism for object serialization, where an object can be represented as a sequence of bytes that includes its data fields, together with type information about itself and its fields. After an object is serialized, it can later be deserialized; that is, the type information and bytes that represent its data can be used to recreate the object in memory. This raises very serious theoretical and actual security risks.
+
+Floating point arithmetic 
+Although Java's floating point arithmetic is largely based on IEEE 754 (Standard for Binary Floating-Point Arithmetic), some mandated standard features are not supported even when using the strictfp modifier, such as Exception Flags and Directed Roundings. The extended precision types defined by IEEE 754 (and supported by many processors) are not supported by Java.
+
+Lack of tuples
+Java does not natively support tuples, resulting in a proliferation of third-party implementations which must be imported and handled by the programmer.
+
+Lambda expressions
+
+Until Java 8 introduced lambda expressions, it was difficult to pass a method as a parameter to another method.
+
+Abstracted relationship between code and hardware 
+In 2008 the United States Department of Defense's Center Software Technology Support published an article in the "Journal of Defense Software Engineering" discussing the unsuitability of Java as the first language taught. Disadvantages were that students "had no feeling for the relationship between the source program and what the hardware would actually do" and the impossibility "to develop a sense of the run-time cost of what is written because it is extremely hard to know what any method call will eventually execute". In 2005 Joel Spolsky criticized Java as an overfocused part of universities' curricula in his essay The Perils of JavaSchools. Others, like Ned Batchelder, disagree with Spolsky for criticizing the parts of the language that he found difficult to understand, claiming that Spolsky's commentary was more of a 'subjective rant'.
+
+Performance 
+
+Before 2000, when the HotSpot VM was implemented in Java 1.3, there were many criticisms of its performance. Java has been demonstrated to run at a speed comparable with optimized native code, and modern JVM implementations are regularly benchmarked as one of the fastest language platforms available – typically no more than three times slower than C and C++.
+
+Performance has improved substantially since early versions. Performance of JIT compilers relative to native compilers has been shown to be quite similar in some optimized tests.
+
+Java bytecode can either be interpreted at run time by a virtual machine, or be compiled at load time or run time into native code which runs directly on the computer's hardware. Interpretation is slower than native execution, but compilation at load time or run time has an initial performance penalty. Modern JVM implementations all use the compilation approach, so after the initial startup time the performance is similar to native code.
+
+Game designer and programmer John D. Carmack concluded in 2005 about Java on cell-phones: "The biggest problem is that Java is really slow. On a pure cpu / memory / display / communications level, most modern cell phones should be considerably better gaming platforms than a Game Boy Advance. With Java, on most phones you are left with about the CPU power of an original 4.77 mhz (sic) IBM PC, and lousy control over everything."
+
+Security 
+
+The Java platform provides a security architecture which is designed to allow the user to run untrusted bytecode in a "sandboxed" manner to protect against malicious or poorly written software. This "sandboxing" feature is intended to protect the user by restricting access to platform features and APIs which could be exploited by malware, such as accessing the local filesystem or network, or running arbitrary commands.
+
+In 2010, there was a significant rise in malicious software targeting security flaws in the sandboxing mechanisms used by Java implementations, including Oracle's. These flaws allow untrusted code to bypass the sandbox restrictions, exposing the user to attacks. Flaws were fixed by security updates, but were still exploited on machines without the updates.
+
+Critics have suggested that users do not update their Java installations because they don't know they have them, or how to update them. Many organisations restrict software installation by users, but are slow to deploy updates.
+
+Oracle has been criticized for not promptly providing updates for known security bugs. When Oracle finally released a patch for widely-exploited flaws in Java 7, it removed Java 6 from users' machines, despite it being widely used by enterprise applications that Oracle had stated were not impacted by the flaws.
+
+In 2007, a research team led by Marco Pistoia exposed another important flaw of the Java security model, based on stack inspection. When a security-sensitive resource is accessed, the security manager triggers code that walks the call stack, to verify that the codebase of each method on it has authority to access the resource.  This is done to prevent confused deputy attacks, which take place every time a legitimate, more privileged program is tricked by another into misusing its authority. The confused-deputy problem is a specific type of privilege escalation.  Pistoia observed that when a security-sensitive resource is accessed, the code responsible for acquiring the resource may no longer be on the stack.  For example, a method executed in the past may have modified the value of an object field that determines which resource to use.  That method call may no longer be on the stack when it is inspected.
+
+Some permissions are implicitly equivalent to Java's AllPermission.  These include the permission to change the current security manager (and replace it with one that could potentially bypass the stack inspection), the permission to instantiate and use a custom class loader (which could choose to associate AllPermission to a malicious class upon loading it), and the permission to create a custom permission (which could declare itself as powerful as AllPermission via its implies method).  These issues are documented in Pistoia's two books on Java Security.
+
+Parallel installations  
+
+Before Java 7, the installers would not remove older Java installations. It was common on a Windows system to see multiple installations of Java on the same computer. Multiple installations were permitted and could be used by programs that rely on specific versions, including malicious programs. This issue was addressed in Java 7: with the user's permission, the installer removes earlier installations.
+
+Automatic updates  
+
+As of 2014, common third-party tools (such as Adobe Flash and Adobe Reader) have been the subject of scrutiny for security vulnerabilities. Adobe and others have moved to automatic updates on Windows. These don't need any user action, and assure that security issues are promptly resolved with minimal effort by users or administrators.
+
+As of 2015, Java 8 still requires users to update Java themselves. But on Windows only those with administrator privileges can update software. The Windows Java updater frequently triggers a disruptive User Account Control elevation prompt: whatever users choose, they still get the same "Java needs to be updated" message.
+
+JIT related security challenges and possible exploits 
+
+JIT compilation fundamentally uses executable data, and thus poses security challenges and possible exploits.
+
+See also 
+
+ Comparison of Java and C++
+ Comparison of Java and C#
+ Comparison of the Java and .NET platforms
+ Java performance
+ Write once, run anywhere
+ Scala, a programming language designed to address criticisms of Java
+
+Notes
+
+External links
+ Free But Shackled - The Java Trap, an essay by Richard Stallman of the free software movement (dated April 12, 2004)
+ Computer Science Education: Where Are the Software Engineers of Tomorrow?  (dated January 8, 2008)
+ What are Bad features of Java?  
+
+Java (programming language)
+Java
+
+de:Java (Technik)#Kritik

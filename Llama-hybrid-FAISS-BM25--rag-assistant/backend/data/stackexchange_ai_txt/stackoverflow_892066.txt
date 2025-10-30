@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 892066
+[parent_id]: 892024
+[tags]: 
+The implicit operator only works for assignment. You want to overload the equality ( == ) operator, as such: class a { public static bool operator ==(a x, b y) { return x == y.a; } public static bool operator !=(a x, b y) { return !(x == y); } } class b { public a a{get;set;} public static implicit operator a(b b) { return b.a; } } This should then allow you to compare two objects of type a and b as suggested in your post. var x = new a(); var y = new b(); bool c = (x == y); // compiles Note: I recommmend simply overriding the GetHashCode and Equals method, as the compiler warns, but as you seem to want to supress them, you can do that as follows. Change your class declaration of a to: #pragma warning disable 0660, 0661 class a #pragma warning restore 0660, 0661 { // ... }

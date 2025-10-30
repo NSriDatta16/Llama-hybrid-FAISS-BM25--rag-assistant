@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 560251
+[parent_id]: 
+[tags]: 
+Best way to combine the output of 2 neural networks?
+
+I have 2 neural network models (pre-trained transformers BERT, but the input data (fine-tuning data) is different in each model) it's a binary classification task (1 or 0). Model 1 --> achieves an overall 45% F-measure (which is not that good of course) Model 2 ---> achieves overall 80% F-measure (which is better). However, most of the sentences which are wrongly classified in model 2 (the 80% one) are correctly classified in model 1 (although it achieves a low F-measure but it gets what model2 doesn't get). What is the best way to combine the output of model1 and model2 ? The output can either be 0 or 1, or we could look at the probability of each score [3.2,0.5] the former is the probability of 0 the latter is prob. of 1 (i.e: soft-max layer output). What I did is soft-voting with the probability of each model output for each label as seen in the code below, but it only improved 1% so the F-measure is 81% instead of 80%, that why I want to check if there's a better way to go? soft_voting=[] import collections for model1, model2 in zip(model_outputs,model_outputs2): prob_zero=max(model1[0],model2[0]) prob_one=max(model1[1],model2[1]) soft_voting_result=0 if prob_zero>prob_one else 1 soft_voting.append(soft_voting_result) I also tried replacing max with average or weighted average but didn't notice much of a difference.

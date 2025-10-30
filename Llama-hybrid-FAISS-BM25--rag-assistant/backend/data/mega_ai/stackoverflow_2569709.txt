@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2569709
+[parent_id]: 2569695
+[tags]: 
+Your proposed solution surely still results in a race condition, since a "write" may come in at any time, even halfway through a new event being queued. A solution you might try is atomic database state value: you do your processing, then compare to an atomic state value to ensure that you are reading from a database that is in the state that is the same as when began the read. If it's different, you start over. This may be subject to starvation, but that's a separate issue. Every time you change the database, you must compare and swap the atomic state value you used, indicating a change.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4180490
+[parent_id]: 4180475
+[tags]: 
+There is no direct equivalent in the .NET Framework. If you create a custom class, I recommend you create a class that extends TextReader and wraps a TextReader instance, so it can be used with any TextReader subclass ( StreamReader , StringReader ). At a minimum, you need to override the TextReader.Read and TextReader.Peek methods. For efficiency, you should also override all the other virtual methods of the TextReader class. class LineNumberTextReader : TextReader { private readonly TextReader reader; private int b; private int line; public LineNumberTextReader(TextReader reader) { if (reader == null) throw new ArgumentNullException("reader"); this.reader = reader; } public int Line { get { return this.line; } } public override int Peek() { return this.reader.Peek(); } public override int Read() { int b = this.reader.Read(); if ((this.b == '\n') || (this.b == '\r' && b != '\n')) this.line++; return this.b = b; } protected override void Dispose(bool disposing) { if (disposing) this.reader.Dispose(); } }

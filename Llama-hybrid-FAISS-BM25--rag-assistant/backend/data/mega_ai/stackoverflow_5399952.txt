@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5399952
+[parent_id]: 5399921
+[tags]: 
+Most OSes don't actually release memory back to the OS when a free() is done (Linux does sometimes for large deallocations). Instead, application's use the OS sbreak() function to grow memory, maintaining a "high water mark". As long as you're doing the free() for each malloc() then memory's not being leaked, and future allocations will come from the same memory. Of course, it may be that something inside TinyXML's not doing such matching frees, deliberately or otherwise, e.g.: some function in the TinyXML class, or called by it, could have a static local pointer variable that is initialised to point to newly allocated heap when the function is first called. If that happens after other routines have allocated a lot of memory for more transient data, then even after the latter memory is freed the static pointer's allocation may cause some fragmentation, preventing allocation of a huge contiguous block in the reclaimed space.

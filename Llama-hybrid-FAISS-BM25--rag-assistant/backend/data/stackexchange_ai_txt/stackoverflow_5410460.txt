@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5410460
+[parent_id]: 5396440
+[tags]: 
+Long story short: You cannot do this with a vertex shader. The interpolator (or rasterizer) is one of the components of the graphics pipeline that is not programmable. Given how the graphics pipe works, neither a vertex shader nor a fragment shader are allowed access to anything but their vertex (or fragment, respectively), for reasons of speed, simplicity, and parallelism. The workaround is to use a texture lookup, which has already been noted in previous answers. In newer versions of OpenGL (3.0 and up I believe?) there is now the concept of a geometry shader. Geometry shaders are more complicated to implement than the relatively simple vertex and fragment shaders, but geometry shaders are given topological information. That is, they execute on a primitive (triangle, line, quad, etc) rather than a single point. With that information, they could create additional geometry in order to resolve your alternate color interpolation method. However, that's far more complicated than necessary. I'd stick with a 4 texel texture map and implement your logic in your fragment lookup.

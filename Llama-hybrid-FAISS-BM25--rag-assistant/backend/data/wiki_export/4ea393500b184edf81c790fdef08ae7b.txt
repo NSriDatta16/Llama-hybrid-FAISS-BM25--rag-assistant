@@ -1,0 +1,198 @@
+In numerical linear algebra, the tridiagonal matrix algorithm, also known as the Thomas algorithm (named after Llewellyn Thomas), is a simplified form of Gaussian elimination that can be used to solve tridiagonal systems of equations. A tridiagonal system for n unknowns may be written as
+
+where  and .
+
+For such systems, the solution can be obtained in  operations instead of  required by Gaussian elimination. A first sweep eliminates the 's, and then an (abbreviated) backward substitution produces the solution. Examples of such matrices commonly arise from the discretization of 1D Poisson equation and natural cubic spline interpolation.
+
+Thomas' algorithm is not stable in general, but is so in several special cases, such as when the matrix is diagonally dominant (either by rows or columns) or symmetric positive definite; for a more precise characterization of stability of Thomas' algorithm, see Higham Theorem 9.12. If stability is required in the general case, Gaussian elimination with partial pivoting (GEPP) is recommended instead.
+
+Method
+The forward sweep consists of the computation of new coefficients as follows, denoting the new coefficients with primes:
+
+ 
+
+and
+
+ 
+
+The solution is then obtained by back substitution:
+ 
+ 
+
+The method above does not modify the original coefficient vectors, but must also keep track of the new coefficients. If the coefficient vectors may be modified, then an algorithm with less bookkeeping is:
+
+For  do
+ 
+ 
+ 
+
+followed by the back substitution
+
+ 
+ 
+
+The implementation in a VBA subroutine without preserving the coefficient vectors:
+Sub TriDiagonal_Matrix_Algorithm(N%, A#(), B#(), C#(), D#(), X#())
+    Dim i%, W#
+    For i = 2 To N
+        W = A(i) / B(i - 1)
+        B(i) = B(i) - W * C(i - 1)
+        D(i) = D(i) - W * D(i - 1)
+    Next i
+    X(N) = D(N) / B(N)
+    For i = N - 1 To 1 Step -1
+        X(i) = (D(i) - C(i) * X(i + 1)) / B(i)
+    Next i
+End Sub
+
+Derivation
+The derivation of the tridiagonal matrix algorithm is a special case of Gaussian elimination.
+
+Suppose that the unknowns are , and that the equations to be solved are:
+
+Consider modifying the second () equation with the first equation as follows:
+
+which would give:
+
+Note that  has been eliminated from the second equation. Using a similar tactic with the modified second equation on the third equation yields:
+
+This time  was eliminated. If this procedure is repeated until the  row; the (modified)  equation will involve only one unknown, . This may be solved for and then used to solve the  equation, and so on until all of the unknowns are solved for.
+
+Clearly, the coefficients on the modified equations get more and more complicated if stated explicitly. By examining the procedure, the modified coefficients (notated with tildes) may instead be defined recursively:
+
+To further hasten the solution process,  may be divided out (if there's no division by zero risk), the newer modified coefficients, each notated with a prime, will be:
+
+This gives the following system with the same unknowns and coefficients defined in terms of the original ones above:
+
+The last equation involves only one unknown. Solving it in turn reduces the next last equation to one unknown, so that this backward substitution can be used to find all of the unknowns:
+
+Variants
+In some situations, particularly those involving periodic boundary conditions, a slightly perturbed form of the tridiagonal system may need to be solved:
+
+In this case, we can make use of the Sherman–Morrison formula to avoid the additional operations of Gaussian elimination and still use the Thomas algorithm. The method requires solving a modified non-cyclic version of the system for both the input and a sparse corrective vector, and then combining the solutions. This can be done efficiently if both solutions are computed at once, as the forward portion of the pure tridiagonal matrix algorithm can be shared.
+
+If we indicate by:
+
+Then the system to be solved is: 
+
+In this case the coefficients  and  are, generally speaking, non-zero, so their presence does not allow to apply the Thomas algorithm directly. We can therefore consider  and  as following:
+
+Where  is a parameter to be chosen. The matrix  can be reconstructed as . The solution is then obtained in the following way: first we solve two tridiagonal systems of equations applying the Thomas algorithm:
+ 
+
+Then we reconstruct the solution  using the Shermann-Morrison formula:
+
+The implementation in C without preserving the coefficient vectors:
+typedef struct{
+	double A[n+2]; 
+	double B[n+2];
+	double C[n+2];
+	double D[n+2];
+} COEFFICIENTS;
+
+//Apply Thomas Alg., unknowns x[1],...,x[n]
+void ThomasAlg(double x[n+1], COEFFICIENTS* coeff){
+	double u[n+1]={},v[n+1]={};
+	double y[n+1]={},q[n+1]={};
+	double* A=coeff->A, *B=coeff->B,*C=coeff->C,*D=coeff->D;
+	double value=0;
+	double w;
+	int i;
+	
+	u[1]=gamma;
+	u[n]=C[n];
+	
+	v[1]=1;
+	v[n]=A[1]/gamma;
+	
+	//create matrix B
+	A[1]=0;
+	B[1]=B[1]-gamma;
+	B[n]=B[n]-(C[n]*A[n])/gamma;
+	C[n]=0;
+	
+	for(i=2;i<n+1;i++){
+		w=A[i]/B[i-1];	
+		B[i]=B[i]-w*C[i-1];
+		D[i]=D[i]-w*D[i-1];
+		u[i]=u[i]-w*u[i-1];
+	}
+	y[n]=D[n]/B[n];
+	q[n]=u[n]/B[n];
+	
+	for(i=n-1;i>0;i--){
+		y[i]=(D[i]-C[i]*y[i+1])/B[i];
+		q[i]=(u[i]-C[i]*q[i+1])/B[i];
+	}
+	value=(v[1]*y[1]+v[n]*y[n])/(1+v[1]*q[1]+v[n]*q[n]);
+	
+	for(i=1;i<n+1;i++){
+		x[i]=y[i]-q[i]*value;
+	}
+}
+
+There is also another way to solve the slightly perturbed form of the tridiagonal system considered above. Let us consider two auxiliary linear systems of dimension :
+
+For convenience, we additionally define  and . We can now find the solutions  and  applying Thomas algorithm to the two auxiliary tridiagonal system.
+
+The solution  can be then represented in the form:
+
+Indeed, multiplying each equation of the second auxiliary system by , adding with the corresponding equation of the first auxiliary system and using the representation , we immediately see that equations number  through  of the original system are satisfied; it only remains to satisfy equation number . To do so, consider formula for  and  and substitute and  into the first equation of the original system. This yields one scalar equation for :
+
+As such, we find:
+
+The implementation in Dev-C++ without preserving the coefficient vectors:
+typedef struct{
+	double A[n+2]; 
+	double B[n+2];
+	double C[n+2];
+	double D[n+2];
+} COEFFICIENTS;
+
+//Apply Thomas Alg., unknowns x[1],...,x[n]
+void ThomasAlg(double x[n+1],COEFFICIENTS* coeff){
+	double u[n+1]={},v[n+1]={};
+	double* A=coeff->A, *B=coeff->B,*C=coeff->C,*D=coeff->D;
+	double w,F[n+1]={};
+	F[2]=-A[2];
+	F[n]=-C[n];
+	int i;
+	u[1]=0;
+	v[1]=1;
+	for(i=3;i<n+1;i++){
+		w=A[i]/B[i-1];	
+		B[i]=B[i]-w*C[i-1];
+		D[i]=D[i]-w*D[i-1];
+		F[i]=F[i]-w*F[i-1];
+	}
+	u[n]=D[n]/B[n];
+	v[n]=F[n]/B[n];
+	for(i=n-1;i>1;i--){
+		u[i]=(D[i]-C[i]*u[i+1])/B[i];
+		v[i]=(F[i]-C[i]*v[i+1])/B[i];
+	}
+	x[1]=(D[1]-A[1]*u[n]-C[1]*u[2])/(B[1]+A[1]*v[n]+C[1]*v[2]);
+	
+	for(i=2;i<n+1;i++){
+		x[i]=u[i]+x[1]*v[i];
+	}
+}
+
+In both cases the auxiliary systems to be solved are genuinely tri-diagonal, so the overall computational complexity of solving system  remains linear with the respect to the dimension of the system , that is  arithmetic operations.
+
+In other situations, the system of equations may be block tridiagonal (see block matrix), with smaller submatrices arranged as the individual elements in the above matrix system (e.g., the 2D Poisson problem). Simplified forms of Gaussian elimination have been developed for these situations.
+
+The textbook Numerical Mathematics by Alfio Quarteroni, Sacco and Saleri, lists a modified version of the algorithm which avoids some of the divisions (using instead multiplications), which is beneficial on some computer architectures.
+
+Parallel tridiagonal solvers have been published for many vector and parallel architectures, including GPUs
+
+For an extensive treatment of parallel tridiagonal and block tridiagonal solvers see
+
+References
+
+ 
+ 
+ 
+
+Numerical linear algebra
+Articles with example BASIC code

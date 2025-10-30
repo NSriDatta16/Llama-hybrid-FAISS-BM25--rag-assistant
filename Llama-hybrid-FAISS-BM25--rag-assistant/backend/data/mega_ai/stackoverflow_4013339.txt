@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4013339
+[parent_id]: 4013231
+[tags]: 
+The Paint method is wrong here since it does not paint the so-called non-client area of the form, e.g. the border and the title bar. To hide the title bar, you need to set the ControlBox property to false and clear the form's Text property. Set the border to FixedDialog to make the form unresizable. To retain the ability to move the form without the title bar, you need to override WndProc . protected override void WndProc(ref Message m) { switch (m.Msg) { case 0x84: m.Result = new IntPtr(0x2); return; } base.WndProc(ref m); } Basically this is the standard way of handling WM_NCHITTEST message and cheating, saying - the mouse cursor is on the window's caption [return value 0x2], so you will be able to move your form even if you click in the client area and drag it.

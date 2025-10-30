@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2312198
+[parent_id]: 2312075
+[tags]: 
+The obvious way to do it is to pass the XPath as a third parameter and build it as you dig deeper. You have to account for siblings having the same name, so you have to keep track of the number of precedent siblings with the same name as current child while iterating. Working example: function xmlRecurse($xmlObj,$depth=0,$xpath=null) { if (!isset($xpath)) { $xpath='/'.$xmlObj->getName().'/'; } $position = array(); foreach($xmlObj->children() as $child) { $name = $child->getName(); if(isset($position[$name])) { ++$position[$name]; } else { $position[$name]=1; } $path=$xpath.$name.'['.$position[$name].']'; echo str_repeat('-',$depth).">".$name.": $path\n"; foreach($child->attributes() as $k=>$v){ echo "Attrib".str_repeat('-',$depth).">".$k." = ".$v."\n"; } xmlRecurse($child,$depth+1,$path.'/'); } } Attention though, the whole idea of mapping a whole document and storing XPath along the way seems weird. You might actually be working on the wrong solution to a totally different problem.

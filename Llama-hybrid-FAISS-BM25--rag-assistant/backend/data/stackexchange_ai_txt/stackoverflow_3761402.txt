@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3761402
+[parent_id]: 3751871
+[tags]: 
+I think the SortedList uses a array as backing field, which means that large SortedList get allocated on the Large object heap. The large object heap can get defragmentated, which can cause an out of memory exception while in principle there is still enough memory available. See this link . This might be your problem, as intermediate calls to GC.collect prevent the LOH from getting badly defragmented in some scenarios, which explains why calling it helps you reduce the problem. The problem can be mitigated by splitting large objects into smaller fragments.

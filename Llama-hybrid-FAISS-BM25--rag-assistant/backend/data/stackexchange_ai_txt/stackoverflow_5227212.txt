@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5227212
+[parent_id]: 5112519
+[tags]: 
+There are 2 bugs here. One in MonkeyRunner, the other in your code. I'm testing on Nexus S, and the screen size is 480x800. Driod is pretty close to that size I checked it like this: print device.getProperty('display.width'), device.getProperty('display.height') So when you're dragging to the right, your last segment (at x=500) is off the edge of the screen. When the framework gets that "up" event at the end of the drag, it seems to recover OK. When you're dragging to the right, your first segment is off the screen, which the framework doesn't like. Since it got a "down" event off-screen, it drops all the move events that complete the drag. Doing you drags like this should work: device.drag((100,400),(400,400),0.15,5) time.sleep(0.5) device.drag((400,400),(100,400),0.15,5) The bug in MonkeyRunner is that it dropped the last section of your drag command. So it looked like it was finishing the drag on the screen, but actually wasn't. The fix to this is here: https://review.source.android.com/21635

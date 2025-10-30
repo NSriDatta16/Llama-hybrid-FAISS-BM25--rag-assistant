@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4618667
+[parent_id]: 
+[tags]: 
+Problem with nHibernate Distinct and paging
+
+I have this Repository method which uses QueryOver API public IList ListMessagesBy(string text, IList tags, int pageIndex, out int count, out int pageSize) { pageSize = 10; var likeString = string.Format("%{0}%", text); var query = session.QueryOver () .Where(Restrictions.On (m => m.Text).IsLike(likeString) || Restrictions.On (m => m.Fullname).IsLike(likeString)); if (tags.Count > 0) { var tagIds = tags.Select(t => t.Id).ToList(); query .JoinQueryOver (m => m.Tags) .WhereRestrictionOn(t => t.Id).IsInG(tagIds) .TransformUsing(Transformers.DistinctRootEntity); } count = 0; if(pageIndex ().Value; pageIndex = 0; } return query.OrderBy(m => m.Created).Desc.Skip(pageIndex * pageSize).Take(pageSize).List(); } I've tried both .TransformUsing(Transformers.DistinctRootEntity); and .RootCriteria.SetResultTransformer(new DistinctEntityRootTransformer()) It screws up both the total count (It returns result none distinct) and the actual paging (Skip / Take) How can I fix this? Thanks in advance, Anders

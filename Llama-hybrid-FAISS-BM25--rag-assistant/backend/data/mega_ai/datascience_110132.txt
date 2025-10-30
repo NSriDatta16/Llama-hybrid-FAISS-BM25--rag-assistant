@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 110132
+[parent_id]: 
+[tags]: 
+Meassage "AUC-PR: the dataset only contains pos or neg samples"
+
+My goal is to fit column name 'My_Val' using columns 'B1','B2', I tried XGboost function as below. And "AUC-PR: the dataset only contains pos or neg samples" shows. I have no idea what went wrong? (※Dataset is organized as 'My_Val' is bigger when 'B2' is 'special' for all the categoies such as a,b,c,d,e,f in 'B1' column) Dataset 'dataset.csv' file is as below. B B1 B2 My_Val a_normal a normal 1.0 a_special a special 2.0 b_normal b normal 2.0 b_special b special 4.0 c_normal c normal 3.0 c_special c special 6.0 d_normal d normal 4.0 d_special d special 8.0 e_normal e normal 5.0 e_special e special 10.0 f_normal f normal 6.0 f_special f special 20.0 And my code is import pandas as pd import xgboost as xgb from sklearn.model_selection import train_test_split df = pd.read_csv('M001_IN.csv') df['My_Val'] = df['My_Val'].astype(float) df.drop(columns=['B'], inplace=True) X = df.drop('My_Val', axis =1).copy() y = df['My_Val'].copy() X_encoded = pd.get_dummies(X, columns=['B1', 'B2']) X_train, X_test, y_train, y_test = train_test_split(X_encoded, y, random_state=42) reg_xgb = xgb.XGBRegressor(verbosity=0, learning_rate=0.8, reg_lambda=10, seed=42) reg_xgb.fit(X_train, y_train, verbose= True, eval_metric='aucpr', early_stopping_rounds=10, eval_set=[(X_test,y_test)])

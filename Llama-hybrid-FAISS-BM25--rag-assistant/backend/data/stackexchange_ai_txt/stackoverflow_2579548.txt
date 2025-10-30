@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2579548
+[parent_id]: 2579515
+[tags]: 
+This fragment should read like so: using (SqlConnection objSqlConn = new SqlConnection(connStr)) { objSqlConn.Open(); using (SqlTransaction objSqlTrans = objSqlConn.BeginTransaction()) { try { // code // more code // and more code } catch (Exception ex) { // What happens if RollBack() has an exception? try { objSqlTrans.Rollback(); } catch (Exception ex2) { /* can't roll back -- db gone? db will do it for us since we didn't commit. */ } throw; } } } EDIT: Come to think of it there's no need for the whole try/catch at all in this particular case as closing a connection with an uncommitted transaction rolls back the transaction, so the block can look like this: using (SqlConnection objSqlConn = new SqlConnection(connStr)) { objSqlConn.Open(); using (SqlTransaction objSqlTrans = objSqlConn.BeginTransaction()) { // code // more code // and more code } }

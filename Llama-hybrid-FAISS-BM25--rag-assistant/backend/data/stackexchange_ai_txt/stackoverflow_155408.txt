@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 155408
+[parent_id]: 154722
+[tags]: 
+Hash group (and hash joins, as well as other operations such as sorts etc.) can use either optimal (i.e. in-memory), one-pass or multi-pass methods. The last two methods use TEMP storage and is thus much slower. By increasing the number of possible items you might have exceeded the number of items that will fit in memory reserved for this type of operations. Try looking at v$sql_workarea_active whilst the query is running, to see if this is the case. Or look at v$sql_workarea for historical information. It will also give you an indication of how much memory and/or temp space is needed for the operation. If turns out to be the actual problem - try increasing the pga_aggregate_target initialization parameter, if possible. The amount of memory available for optimal hash/sort operations is usually around a 5% fraction of the pga_aggregate_target. See the Performance Tuning Guide for more detail.

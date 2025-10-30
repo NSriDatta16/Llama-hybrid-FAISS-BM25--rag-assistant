@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 858118
+[parent_id]: 858035
+[tags]: 
+Consider the case of accessing individual bytes within a large variable: UInt32 x; x = 0x12345678; int byte_3 = x & 0x000000FF; // 0x78 int byte_2 = (x & 0x0000FF00) >> 8; // 0x56 int byte_1 = (x & 0x00FF0000) >> 16; // 0x34 int byte_0 = (x & 0xFF000000) >> 24; // 0x12 This can be far more elegant with a union: typedef union { UInt32 value; // 32 bits Byte byte[4]; // 4 * 8 bits } UInt32_Bytes; UInt32_Bytes x; x.value = 0x12345678; int byte_3 = x.byte[3]; // 0x78 int byte_2 = x.byte[2]; // 0x56 int byte_1 = x.byte[1]; // 0x34 int byte_0 = x.byte[0]; // 0x12 The use of a union means you no longer have to use bit masks and shift operators in order to access the individual bytes. It also makes the byte access explicit.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4410095
+[parent_id]: 4407123
+[tags]: 
+As you stated, you can't call presentModalViewController in a UIView class. This seems like a great opportunity to use a delegate. You could do something along the lines of: In MyGameView.h @protocol MyGameViewDelegate - (void)showSecondView; @end @interface MyGameView { } @property (nonatomic, assign) id delegate; ... @end In MyGameView.m, when you need to show the second view: [self.delegate showSecondView]; In MyGameViewController.h: #import "MyGameView.h" @interface MyGameViewController : UIViewController { ... In MyGameViewController.m: #pragma mark MyGameViewDelegate methods - (void)showSecondView { [self goToSecondView]; } Note that you'll also need to set MyGameViewController to be the delegate of MyGameView. You could do that in Interface Builder, or in code, depending on where you create the two objects. To do it in code, for example in the MyGameViewController.h viewDidLoad method: myGameView.delegate = self;

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4178790
+[parent_id]: 4178183
+[tags]: 
+MS VC embeds the name of a "default" library into most object files. That library (or those libraries) will be linked unless you specify otherwise with the linker's -nodefaultlib option. If you use that by itself, it doesn't link any default libraries. Alternatively, you can specify a particular library, something like -nodefaultlib:mylib.lib , in which case it links all the default libraries except those you specify here. To use your example, if you use: cl simple.c It'll compile and link correctly. If, however, you use: cl simple.c -link -nodefaultlib You'll get: simple.obj : error LNK2019: unresolved external symbol printf referenced in function main LINK : error LNK2001: unresolved external symbol mainCRTStartup simple.exe : fatal error LNK1120: 2 unresolved externals Just to be complete, you can also use the compiler's /Zl switch to create the object without embedding the name of any library. This is intended (primarily) for creating static libraries, so they won't embed the name of a library that could conflict with however you build code that uses your library.

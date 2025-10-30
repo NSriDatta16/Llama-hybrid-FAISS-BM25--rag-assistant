@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3197522
+[parent_id]: 1766061
+[tags]: 
+You can achieve this by fetching all groups that contain the user in their member attribute, or better the user's LDAP path (distinguishedName). Here's a simple procedure doing that job. CREATE PROCEDURE dbo.GetLdapUserGroups ( @LdapUsername NVARCHAR(256) ) AS BEGIN DECLARE @Query NVARCHAR(1024), @Path NVARCHAR(1024) SET @Query = ' SELECT @Path = distinguishedName FROM OPENQUERY(ADSI, '' SELECT distinguishedName FROM ''''LDAP://DC=domain,DC=com'''' WHERE objectClass = ''''user'''' AND sAMAccountName = ''''' + @LdapUsername + ''''' '') ' EXEC SP_EXECUTESQL @Query, N'@Path NVARCHAR(1024) OUTPUT', @Path = @Path OUTPUT SET @Query = ' SELECT name AS LdapGroup FROM OPENQUERY(ADSI,'' SELECT name FROM ''''LDAP://DC=domain,DC=com'''' WHERE objectClass=''''group'''' AND member=''''' + @Path + ''''' '') ORDER BY name ' EXEC SP_EXECUTESQL @Query END -- Hilbert

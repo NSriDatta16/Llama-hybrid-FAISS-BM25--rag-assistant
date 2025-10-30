@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1824470
+[parent_id]: 1824363
+[tags]: 
+You can also allocate one array and compute individual indices. This requires fewer allocator calls and results in both less fragmentation and better cache use. typedef struct { int a; int b; int* data; } Int2d; Int2d arr2d = { 2, 3 }; arr2d.data = malloc(arr2d.a * arr2d.b * sizeof *arr2d.data); Now arr2d[r][c] becomes arr2d.data[r * arr2d.b + c] . Deallocation is a single free() away. As a bonus you're sure to always keep your dynamic array sizes with you. Extrapolating to 3d: typedef struct { int a; int b; int c; int* data; } Int3d; Int3d arr3d = { 2, 3, 4 }; arr3d.data = malloc(arr3d.a * arr3d.b * arr3d.c * sizeof *arr3d.data); //arr3d[r][c][d] // becomes: arr3d.data[r * (arr3d.b * arr3d.c) + c * arr3d.c + d]; You should encapsulate these index operations (and the (de-)allocations for that matter) in a separate function or macro. (The names for r, c, and d could be better—I was going for row, column, and depth. While a, b, and c are the limits of their corresponding dimensions, you might prefer something like n1, n2, n3 there, or even use an array for them.)

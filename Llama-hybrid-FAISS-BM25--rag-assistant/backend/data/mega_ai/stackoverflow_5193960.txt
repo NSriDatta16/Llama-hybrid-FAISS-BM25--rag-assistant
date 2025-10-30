@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5193960
+[parent_id]: 5193421
+[tags]: 
+You can replace your forest of mkdir s with this: $(Release_target_OBJDIR)/%.o: %.cpp $(foreach d,$(subst /, ,${@D}),mkdir $d && cd $d && ): ∶ This will create a shell command somethng like this: mkdir projects && cd projects && mkdir htc && cd htc && mkdir arm && cd arm && : This runs for every compile. Not very elegant. You could optimise this by using some sort of sentinel file. For instance: $(Release_target_OBJDIR)/%.o: %.cpp ${Release_target_OBJDIR}/.sentinel ∶ %/.sentinel: $(foreach d,$(subst /, ,$*),mkdir $d && cd $d && ): touch $@ .sentinel gets created once before all objects, and is make -j friendly. In fact you should do it this way even if mkdir -p works for you (in which case you would use mkdir -p rather than the $(foreach) hack solution).

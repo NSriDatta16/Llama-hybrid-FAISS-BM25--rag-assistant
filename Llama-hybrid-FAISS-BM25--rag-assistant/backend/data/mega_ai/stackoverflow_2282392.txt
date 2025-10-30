@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2282392
+[parent_id]: 936751
+[tags]: 
+A bit of necromancy here, but I was receiving the exact same bug. Same JVM version, same line of code it was trying to compile (crazy 'coincidence' eh?). Different distro but still linux. It appears to be a bug in the HotSpot compiler included with 1.6.0_17. The good news is that update 18 claims to fix the problem (haven't rolled it out yet): http://java.sun.com/javase/6/webnotes/6u18.html The documented bug is for "SIGSEGV during compilation of method involving loop over CharSequence": https://bugs.java.com/bugdatabase/view_bug?bug_id=6855164 Funnily enough, that's exactly what that method of OpenNLP is doing, cut & paste: private static final int previousSpaceIndex(CharSequence sb, int seek) { seek--; while (seek > 0) { if (sb.charAt(seek) == ' ') { while (seek > 0 && sb.charAt(seek - 1) == ' ') seek--; return seek; } seek--; } return 0; }

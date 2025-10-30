@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5098152
+[parent_id]: 5091101
+[tags]: 
+This cannot be done directly using the ContainerBuilder , unless you start over with a new one. Mind you, having first built a container you should be able to construct a new container filtering away unwanted types and reusing the registrations from the first container. Like this: ... var container = builder.Build(); builder = new ContainerBuilder(); var components = container.ComponentRegistry.Registrations .Where(cr => cr.Activator.LimitType != typeof(LifetimeScope)) .Where(cr => cr.Activator.LimitType != typeof(MyType)); foreach (var c in components) { builder.RegisterComponent(c); } foreach (var source in container.ComponentRegistry.Sources) { cb.RegisterSource(source); } container = builder.Build(); This is hardly very elegant but it works. Now, if you could elaborate on why you want to do this, perhaps there is a better way.

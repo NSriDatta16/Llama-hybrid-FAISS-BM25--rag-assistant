@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1574978
+[parent_id]: 
+[tags]: 
+What is wrong with this auto-generated t-sql query?
+
+I'm having trouble executing a stored proc... I've got C# code that tries to call the stored proc. It looks somewhat like this: DataTable myDataTable = new DataTable(); using (SqlConnection connection = new SqlConnection(myConnectionString)) { SqlCommand selectCommand = new SqlCommand("MyStoredProc", connection); selectCommand.Parameters.Add(new SqlParameter("@myGuid", myGuid)); SqlDataAdapter da = new SqlDataAdapter(selectCommand); da.Fill(myDataTable); } When I execute it, I get an error that reads "Incorrect syntax near 'MyStoredProc'". If I run SqlProfiler, I see that it's attempting to run my stored proc like this: exec sp_executesql N'MyStoredProc', N'@myGuid uniqueidentifier', @myGuid='FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF' And sure enough, if I try to do the same thing, I get the same error. So my questions are: What's wrong with the generated query? Why is C# generating an invalid query? Did I do something wrong in my C# code? EDIT: Agent_9191 nailed it...I was foolishly leaving out the statement to set the selectCommand type to StoredProcedure. The new generated query is: exec MyStoredProc @myGuid='FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF' and this (of course) works fine.

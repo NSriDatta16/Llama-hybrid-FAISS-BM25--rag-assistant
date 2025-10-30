@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4521168
+[parent_id]: 4520999
+[tags]: 
+If you want to show the data side by side, then you don't want to use UNION. Instead, you could use derived tables or CTE's and then join the 2 queries on SDESCR, DYYYY, Division. Looking at your queries, the only (apparent) difference is that one includes a where clause on the Booked column. We can move this where clause criteria in to the sum aggregate which should allow us to get all of the data we need in one pass through the tables. Something like this: ALTER PROCEDURE [dbo].[MyStoredProcedure1] @YearToGet int AS SET NOCOUNT ON Declare @Booked Int Set @Booked = CONVERT(int,DateAdd(year, @YearToGet - Year(getdate()), DateAdd(day, DateDiff(day, 1, getdate()), 0) ) ) Select Division, SDESCR, DYYYY, Sum(Case When Booked I encourage you to try this procedure. I think it will return the data you are looking for. Edited to put Less than or equal for the Booked criteria.

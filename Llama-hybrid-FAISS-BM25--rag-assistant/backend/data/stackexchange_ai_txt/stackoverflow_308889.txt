@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 308889
+[parent_id]: 300986
+[tags]: 
+Not all C++ classes are suitable for use as a base class with dynamic polymorphism. If you want your class to be suitable for dynamic polymorphism, then its destructor must be virtual. In addition, any methods which a subclass could conceivably want to override (which might mean all public methods, plus potentially some protected ones used internally) must be virtual. If your class is not suitable for dynamic polymorphism, then the destructor should not be marked virtual, because to do so is misleading. It just encourages people to use your class incorrectly. Here's an example of a class which would not be suitable for dynamic polymorphism, even if its destructor were virtual: class MutexLock { mutex *mtx_; public: explicit MutexLock(mutex *mtx) : mtx_(mtx) { mtx_->lock(); } ~MutexLock() { mtx_->unlock(); } private: MutexLock(const MutexLock &rhs); MutexLock &operator=(const MutexLock &rhs); }; The whole point of this class is to sit on the stack for RAII. If you're passing around pointers to objects of this class, let alone subclasses of it, then you're Doing It Wrong.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1823752
+[parent_id]: 
+[tags]: 
+in protocol with regard to sequence
+
+How is this implemented at a python level? I've got an object that pretends to be a dict for the most part (in retrospect I should have just subclassed dict, but I'd rather not refactor the codebase, and I'd also like to know this for future reference), which looks something a bit like class configThinger(object): _config = {} def __getitem__(self, key): return self._config[key] def __setitem__(self, key, value): self._config[key] = value Which works exactly as it's supposed to and behaves correctly when I try to access it's elements as configThingerInstance['whatever'] But a call like t = configThinger() t.populate() # Internal method that fills it with some useful data if 'DEBUG' in t: doStuff() results in a KeyError being raised because presumably the `in' protocol does a getitem () lookup for the key in question. Do I need to raise some other exception to tell in that it's not there? I'd rather not do something like this. try: t['DEBUG'] except KeyError: pass else: doStuff() Also, where in the documentation is this? I was looking around http://docs.python.org/tutorial/datastructures.html http://docs.python.org/library/stdtypes.html but tragically trying to google for something specific to the word 'in' is folly :( EDIT 1: With a stack of trace prints, I can see that the program calls configThingerInstance. getitem (0) however t = {'rawk': 1, 'rawr': 2, } t[0] # Raises KeyError 'thing' in t # returns False

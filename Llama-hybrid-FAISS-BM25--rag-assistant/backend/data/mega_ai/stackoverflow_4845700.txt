@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4845700
+[parent_id]: 4845613
+[tags]: 
+There are two solutions to this problem that I can think of. The simplest is to make it a static method after you're done using it in the parent class: class Command(object): def subcommand(method): # Regular function in class definition scope. method.is_subcommand = True return method @subcommand def common(self): print "this subcommand is available to all child classes" subcommand = staticmethod(subcommand) # Now a static method. Can no longer be called during class definition phase. This is somewhat fragile in that you can't use it in the parent class after you make it a static method. The more robust way to do this is to add an intermediate class: class Command(object): @staticmethod def subcommand(method): method.is_subcommand = True return method class CommandBase(Command): @Command.subcommand def common(self): print "this subcommand is available to all child classes" You can now inherit all of your classes from CommandBase instead of Command .

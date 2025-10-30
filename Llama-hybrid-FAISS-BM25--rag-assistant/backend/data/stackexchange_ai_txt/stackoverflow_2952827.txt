@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2952827
+[parent_id]: 2952815
+[tags]: 
+Use a SortedList and iterate over it until you find a value that is higher than the value you are searching for. You can do it using a simple iteration as in the answer you have already accepted. Or it can be done elegantly using LINQ (at a slight performance cost): SortedList levels = new SortedList { {0, 1}, {100, 2}, {200, 3}, {400, 4}, {600, 5}, }; public int Experience; public int Level { get { return levels.Last(kvp => Experience >= kvp.Key).Value; } } Note that storing the 'level' is actually not strictly necessary as you can derive it from the index of the item in the list. It may be advantageous to use a simple List that is sorted instead to prevent errors where you accidentally miss out a level, as in the solution you have already accepted. If you want better performance you could use List.BinarySearch but I think the extra complexity is not worth it unless you have performance profiled and found that this is the bottleneck. List levels = new List { 0, 100, 200, 400, 600 /* etc... */ }; int index = levels.BinarySearch(Experience); int level; if (index

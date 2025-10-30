@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 588917
+[parent_id]: 588914
+[tags]: 
+Assuming your MAPE is on a test set and not based on the fitted values: Yeah using features that are your lagged target variable is pretty common when doing time series forecasting with LightGBM although it does require looping which is typically called a 'recursive' model. It typically gives you good results in the short term although could be significantly worse in the long term because you are feeding it's predictions back to it. If you are just fitting a single time series at a time you could look at a package I created: LazyProphet which handles the looping for you. Also uses piece wise linear basis functions to fit local trends which may be more stable in the long run than using AR lags. If you are fitting your model to multiple series then you will have to forecast one step, then use that as your lag_1 and just keep appending to that for each step. There really is no super nice way to do it. If you are looking at the MAPE of your fitted values then pivot instead to time series cross validation or using a holdout set, although you can overfit those too!

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4241203
+[parent_id]: 4240107
+[tags]: 
+In Ruby you can parse the HTML in Nokogiri, which will let you check for errors, then have it output the HTML, which will clean up missing closing tags and such. Notice in the following HTML that the title and p tags are not closed correctly, but Nokogiri adds the ending tags. require 'nokogiri' html = ' the title a paragraph ' doc = Nokogiri::HTML(html) puts "Errors found" if (doc.errors.any?) puts doc.to_html # >> # >> # >> # >> # >> the title # >> # >> a paragraph # >> Alternately you can open a connection to /usr/bin/tidy and tell it to do the dirty work: require 'open3' html = ' the title a paragraph ' stdin, stdout, stderr = Open3.popen3('/usr/bin/tidy -qi') stdin.puts html stdin.close puts stdout.read # >> # >> # >> # >> # >> > "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 15.3.6), see www.w3.org"> # >> # >> the title # >> # >> # >> # >> a paragraph # >> # >>

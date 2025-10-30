@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 74598
+[parent_id]: 
+[tags]: 
+Using BERT for input embeddings in a seq2seq model
+
+I'm currently trying to implement a paper that describes using BERT to embed inputs into a seq2seq model. "For word vectors, we use the deep contextualized word vectors from ELMo (Peters et al., 2018) or BERT (Devlin et al., 2018). The answer tag follows the BIO2 tagging scheme." source The issue I'm running into is the first input into the decoder. Traditionally this is the start token, but BERT's start token is both a sentence representation & not consistent. Depending on what is being embedded the start token representation will change. e.g. embed("101") will have a different representation of "101" than embed("101 2000 2004 1102"). This creates issues for the model during inference as there is no ground truth to get a start token from. Using just the embed("101") as the start token causes the model to predict the same thing every time when otherwise it would not. It seems like there is a good number of people who use BERT to embed their inputs but I don't see anyone addressing this particular issue. I have considered the possibility of using BERT exclusivity as the encoder of a model and taking the [cls] token from that embedding as the first input to the decoder. However, this contradicts the paper listed above.

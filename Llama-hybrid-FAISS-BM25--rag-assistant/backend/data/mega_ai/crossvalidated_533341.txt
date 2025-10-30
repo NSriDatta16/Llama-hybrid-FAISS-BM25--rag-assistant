@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 533341
+[parent_id]: 502314
+[tags]: 
+Update: I already found the error. It was pretty silly actually. The point is that, when training VAEs, you should compute the sum error per each feature, and not the average as it's usual. This means to use the reduction='sum' parameter. torch.nn.MSELoss(reduction='sum') https://pytorch.org/docs/stable/generated/torch.nn.MSELoss.html If this is not done, the reconstruction error will stuck up in a point of the search space in which the average MSE Loss is good for all the features, but not good enough to accurately reconstruct the data.

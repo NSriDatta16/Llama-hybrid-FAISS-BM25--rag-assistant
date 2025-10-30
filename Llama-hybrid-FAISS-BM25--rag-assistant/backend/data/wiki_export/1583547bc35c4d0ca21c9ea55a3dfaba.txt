@@ -1,0 +1,87 @@
+In the context of the Microsoft Windows NT line of operating systems, a Security Identifier (SID) is a unique, immutable identifier of a user, user group, or other security principal. A security principal has a single SID for life (in a given domain), and all properties of the principal, including its name, are associated with the SID. This design allows a principal to be renamed (for example, from "Jane Smith" to "Jane Jones") without affecting the security attributes of objects that refer to the principal.
+
+Overview
+Windows grants or denies access and privileges to resources based on access control lists (ACLs), which use SIDs to uniquely identify users and their group memberships. When a user logs into a computer, an access token is generated that contains user and group SIDs and user privilege level. When a user requests access to a resource, the access token is checked against the ACL to permit or deny particular action on a particular object.
+
+SIDs are useful for troubleshooting issues with security audits, Windows server and domain migrations.
+
+The format of a SID can be illustrated using the following example: "S-1-5-21-3623811015-3361044348-30300820-1013":
+
+Identifier Authority Values
+
+Identifier Authority Value 
+Known identifier authority values are:
+
+Identifying a capability SID:
+
+ If a user finds the SID in the registry data, then it is a capability SID. By design, it will not resolve into a friendly name.
+ If the user does not find the SID in the registry data, then it is not a known capability SID.  It can still be troubleshooted as a normal unresolved SID. There is a small chance that the SID could be a third-party capability SID, in which case it will not resolve into a friendly name.
+
+Per Microsoft Support: Important - DO NOT DELETE capability SIDS from either the Registry or file system permissions. Removing a capability SID from file system permissions or registry permissions may cause a feature or application to function incorrectly. After you remove a capability SID, you cannot use the UI to add it back.
+
+S-1-5 Subauthority Values 
+
+Virtual Accounts are defined for a fixed set of class names, but the account name isn't defined. There are a nearly infinite number of accounts available within a Virtual Account. The names work like "Account Class\Account Name" so "AppPoolIdentity\Default App Pool". The SID is based on a SHA-1 hash of the lower-case name. Virtual Accounts can each be given permissions separately as each maps to a distinct SID. This prevents the "cross-sharing permissions" problem where each service is assigned to the same NT AUTHORITY class (such as "NT AUTHORITY\Network Service").
+
+Machine SIDs
+The machine SID (S-1-5-21) is stored in the SECURITY registry hive located at SECURITY\SAM\Domains\Account, this key has two values F and V.  The V value is a binary value that has the computer SID embedded within it at the end of its data (last 96 bits). (Some sources state that it is stored in the SAM hive instead.) A backup is located at SECURITY\Policy\PolAcDmS\@.
+
+The machine SID subauthority format is used for domain SIDs too. A machine is considered its own local domain in this case.
+
+Decoding Machine SID 
+The machine SID is stored in a raw-bytes form in the registry. To convert it into the more common numeric form, one interprets it as three little endian 32-bit integers, converts them to decimal, and add hyphens between them.
+
+Other Uses 
+The machine SID is also used by some free-trial programs, such as Start8, to identify the computer so that it cannot restart the trial.
+
+Service SIDs
+Service SIDs are a feature of service isolation, a security feature introduced in Windows Vista and Windows Server 2008. Any service with the "unrestricted" SID-type property will have a service-specific SID added to the access token of the service host process. The purpose of Service SIDs is to allow permissions for a single service to be managed without necessitating the creation of service accounts, an administrative overhead.
+
+Each service SID is a local, machine-level SID generated from the service name using the following formula:
+
+S-1-5-80-{SHA-1(service name in upper case encoded as UTF-16)}
+
+The sc.exe command can be used to generate an arbitrary service SID:
+
+The service can also be referred to as NT SERVICE\<service_name> (e.g. "NT SERVICE\dnscache").
+
+Duplicated SIDs
+
+In a Workgroup of computers running Windows NT/2K/XP, it is possible for a user to have unexpected access to shared files or files stored on a removable storage. This can be prevented by setting access control lists on a susceptible file, such that the effective permissions is determined by the user SID. If this user SID is duplicated on another computer, a user of a second computer having the same SID could have access to the files that the user of a first computer has protected. This can often happen when machine SIDs are duplicated by a disk clone, common for pirate copies. The user SIDs are built based on the machine SID and a sequential relative ID.
+
+When the computers are joined into a domain (Active Directory or NT domain for instance), each computer is provided a unique Domain SID which is recomputed each time a computer enters a domain. This SID is similar to the machine SID. As a result, there are typically no significant problems with duplicate SIDs when the computers are members of a domain, especially if local user accounts are not used. If local user accounts are used, there is a potential security issue similar to the one described above, but the issue is limited to the files and resources protected by local users, as opposed to by domain users.
+
+Duplicated SIDs are usually not a problem with Microsoft Windows systems, although other programs that detect SIDs might have problems with its security.
+
+Microsoft used to provide Mark Russinovich's "NewSID" utility as a part of Sysinternals to change a machine SID. It was retired and removed from download on November 2, 2009. Russinovich's explanation is that neither him nor the Windows security team could think of any situation where duplicate SIDs could cause any problems at all, because machine SIDs are never responsible for gating any network access.
+
+At present, the only supported mechanism for duplicating disks for Windows operating systems is through use of SysPrep, which generates new SIDs.
+
+See also 
+ Access control
+ Access Control Matrix
+ Discretionary Access Control (DAC)
+ Globally Unique Identifier (GUID)
+ Mandatory Access Control (MAC)
+ Role-Based Access Control (RBAC)
+ Capability-based security
+ Post-cloning operations
+
+References
+
+External links 
+ Official
+ObjectSID and Active Directory
+ Microsoft TechNet: Server 2003: Security Identifiers Technical Reference
+ MSKB154599: How to Associate a Username with a Security Identifier
+ MSKB243330: Well-known security identifiers in Windows operating systems
+ Support tools for Windows Server 2003 and Windows XP
+ Security Identifiers - Windows Security docs
+ Other
+Why Understanding SIDs is Important
+ Microsoft Security Descriptor (SID) Attributes : Tutorial Article about SID handling / converting in scripts
+
+Identifiers
+Microsoft Windows security technology
+Unique identifiers
+Windows NT architecture

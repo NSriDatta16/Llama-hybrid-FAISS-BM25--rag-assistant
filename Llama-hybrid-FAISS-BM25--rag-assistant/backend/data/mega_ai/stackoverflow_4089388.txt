@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4089388
+[parent_id]: 4088999
+[tags]: 
+Without looking at the actual implementation of std::queue you're using, my guess is that its memory allocation looks something like this: if (new element won't fit) { double the size of the backing storage realloc the buffer (which will probably copy all elements) } The reason for doubling rather than being more conservative is that you want the queue.push_pack operation to have O(1) average time. Since the reallocation may copy the existing elements, a version that only grew the array as needed (1 element at a time) would be O(n^2) as you initially push all of your values into the queue. I'll leave it as an exercise for the reader how the doubling version gives constant average time. Since you are quoting the size of the entire process, your estimate of about 2x overhead when you push slightly more than a power of 2 (2^26

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3045315
+[parent_id]: 3035292
+[tags]: 
+I'd like to second Kirill's answer. If fun() functions are implemented very similarly (same code involving different types), it's a good idea to rewrite them as one single template function. As an additional plus, you would get a possibility to elegantly specify the function you need. It's usually recommended to use the C++ equivalent to the C-style type cast: for_each(vec.begin(), vec.end(), reinterpret_cast (fun)); Even more appropriate is to use static_cast in this case: for_each(vec.begin(), vec.end(), static_cast (fun)); since we want to hint the compiler to the proper type. Although much more verbose, it's better simply for code maintenance reasons -- it's easier to search for such constructs in the code than for C-style type casts. There is also a possibility to avoid using type casts in favor of an explicit template argument specification: for_each ::iterator, void(*)(Type1&)>(vec.begin(), vec.end(), fun); -- although it's not very big improvement from the original code. As you can see, you have to explicitly specify the first template parameter as well.

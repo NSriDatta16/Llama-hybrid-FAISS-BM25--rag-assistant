@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3638127
+[parent_id]: 3637973
+[tags]: 
+As noted you need to save the value of the fork call. You should really use more than an if on the fork. There are three cases: 0: you're the child process 0: you're the parent and got a child PID back -1: something horrible happened and fork failed You really want to know about case 3, it'll ruin your whole day. (also the exec call) int main() { int pid = fork(); if(-1 == pid) { fprintf(stderr, "Big problems forking %s\n", strerror(errno); exit(-1);//or whatever } else if (0 == pid) { if (-1 == execvp(cmdName,cmdParam)) { //like above, get some output about what happened } } //no need to else here, execvp shouldn't return // if it does you've taken care of it above waitpid(pid, NULL, 0); printf("Resuming main()..."); } return(0); }

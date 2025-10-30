@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3377066
+[parent_id]: 3377041
+[tags]: 
+From the docs for OleDbCommand.Parameters : The OLE DB .NET Provider does not support named parameters for passing parameters to an SQL statement or a stored procedure called by an OleDbCommand when CommandType is set to Text. In this case, the question mark (?) placeholder must be used. There's an example on the same page. However, you're not even using parameters in your SQL query. You're inviting a SQL injection attack by embedding the user input directly into the SQL and then also adding parameters. Your query should just be: String query = "insert into LOGIN_TABLE (UserName, Password) VALUES (?, ?)"; It looks like you can still give parameters names, even if they're not used - so just the change above may be enough. EDIT: Is it possible that UserName or Password are reserved names? Try escaping them - I know in SQL Server it would be [UserName], [Password] but I don't know if that's true in Access. What happens if you try to execute the same SQL in Access, by the way?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2260832
+[parent_id]: 1475285
+[tags]: 
+My advice is to find some other way to solve the problem. You really do not want to execute long running tasks in the ASP.NET worker process, as discussed several times before . One of the major problems is the risk of the worker process gets recycled by the web server, killing your job without giving you any chance to automatically restart it. Consider moving the long running processing to a seperate service application, which runs in the background and waits for some signal to start processing. Your web application could write to a message queue or touch a file on disk to wake up the service. If the task to be run is only dealing with the database, you could use the SQL Server Agent , rather than building your own service.

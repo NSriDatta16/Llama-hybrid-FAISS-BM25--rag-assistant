@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4461956
+[parent_id]: 
+[tags]: 
+destroy method does not appear to be working
+
+I'm using ruby 1.8.7 and rails 3.0.3 going through the Agile Rails dev book from PragProg This destroy method on my ProductsController does not delete my product and I don't understand why. Here is my first cut that I expected to 'just work' def destroy @product = Product.find(params[:id]) @product.destroy respond_to do |format| format.html { redirect_to(products_url) } format.xml { head :ok } end end But my test to assert the Product.count went down failed. If I change to use the delete class method like this: def destroy Product.delete(params[:id]) respond_to do |format| format.html { redirect_to(products_url) } format.xml { head :ok } end end my test passes. Here is the test test "should destroy product" do assert_difference('Product.count', -1) do if @product.referenced_by_line_item @product.line_items.remove_all end delete :destroy, :id => @product.to_param end assert_redirected_to products_path end I have a before_destroy method on my Product model class def referenced_by_line_item if line_items.count.zero? return true else errors.add(:base, 'Line Items present') return false end end Any ideas what I'm doing wrong here? From reading the docs (and searching other questions here) I expect @product.destroy and Product.delete(id) to do the same thing. Thanks!

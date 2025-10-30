@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4876246
+[parent_id]: 
+[tags]: 
+counting values, consecutive and not on a grouped table
+
+I have an SQL Table named samples, defined like this: sampledate (datetime, 24 records per day per parameter) parameterID (int) value (decimal) valid (bit, 1=valid data, 0=invalid data) the couple sampledate and parameterid are unique. each sampledate is in the format 02/02/2011 12:00, so there are 24 rows per parameterid per day or less (a probe can fail or be in maintenance, for example, and it will output less than 24 samples). I have to calculate the average daily values per parameter. The average is valid for a given day only if at least 18 valid values are present no more than 5 invalid consecutive values are present Condition 1) is pretty simple to achieve, for a given @parameter: SELECT CONVERT(DATETIME, FLOOR(CONVERT(FLOAT, sampledate))) as avgdate, AVG(value) as avg, parameterID, isValid = CASE WHEN COUNT(value) > 17 THEN 1 ELSE 0 END FROM samples WHERE parameterId=@parameter GROUP BY parameterId, CONVERT(DATETIME, FLOOR(CONVERT(FLOAT, sampledate))), valid HAVING valid = 1 ORDER BY sampledate How can I add condition 2, which boils down to counting consecutive 0s in a 24hrs span, possibly with the best performances? we have millions of samples, and cursors are slow.

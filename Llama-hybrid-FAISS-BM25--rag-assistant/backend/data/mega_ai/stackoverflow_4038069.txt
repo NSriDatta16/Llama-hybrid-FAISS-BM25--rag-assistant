@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4038069
+[parent_id]: 4027311
+[tags]: 
+Looks like the keyword prior is the solution. http://esper.codehaus.org/esper-2.1.0/doc/reference/en/html/functionreference.html See: Section 7.1.9 In terms of the example I described in the original post, here's the corresponding solution I found. It seems to be working correctly. INSERT INTO ScoreInfo SELECT 'ScoreInfo' as a_Label, average AS curAvg, prior(1, average) AS prevAvg FROM ScoreEvent.win:time_batch(5 sec).stat:uni(score); SELECT * FROM ScoreInfo.win:length(1); .. And then it's nice, because you can do stuff like this: SELECT 'GT curAvg > prevAvg' as a_Label, curAvg, prevAvg FROM ScoreInfo.win:length(1) WHERE curAvg > prevAvg; SELECT 'LTE curAvg

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2856253
+[parent_id]: 2856156
+[tags]: 
+You can also allocate just the memory you need to copy the name when you want to set it. Also, don't forget to free the allocated buffer when the object gets destroyed! class Person { char* name; int age; public: Person(){ this->name = NULL; this->age = 0; // no need to allocate memory for basic types } ~Person(){ delete [] name; } set(char* c, int i){ this->age = i; // copy name if input pointer name is valid if (c != NULL){ // if memory have already been allocated : delete first if (this->name != NULL){ delete [] name; name = NULL; } // allocate memory : 1 more char for the trailing '\0' this->name = new char[strlen(c)+1]; // copy string strcpy(this->name,c); } } }; Edit and answer to remarks : simplified destructor following suggestion by Konrad Rudolf I tend to always set unallocated and deallocated pointers to NULL to avoid picking random memory locations when the pointer is not used right, and unallocated pointers are also easier to spot in the debbuger. I didn't pay attention that the second method was a constructor, I thought it was a setter... changed it.

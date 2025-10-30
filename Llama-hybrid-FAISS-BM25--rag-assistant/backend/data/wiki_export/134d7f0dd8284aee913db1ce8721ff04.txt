@@ -1,0 +1,297 @@
+Oxygene (formerly known as Chrome) is a programming language developed by RemObjects Software for Microsoft's Common Language Infrastructure, the Java Platform and Cocoa. Oxygene is based on Delphi's Object Pascal, but also has influences from  C#, Eiffel, Java, F# and other languages.
+
+Compared to the now deprecated Delphi.NET, Oxygene does not emphasize total backward compatibility, but is designed to be a "reinvention" of the language, be a good citizen on the managed development platforms, and leverage all the features and technologies provided by the .NET and Java runtimes.
+
+Oxygene is a commercial product and offers full integration into Microsoft's Visual Studio IDE on Windows, as well as its own IDE called Fire for use on macOS. Oxygene is one of six languages supported by the underlying Elements Compiler toolchain, next to C#, Swift, Java, Go and Mercury (based on Visual Basic.NET).
+
+From 2008 to 2012, RemObjects Software licensed its compiler and IDE technology to Embarcadero to be used in their Embarcadero Prism product. Starting in the Fall of 2011, Oxygene became available in two separate editions, with the second edition adding support for the Java and Android runtimes.  Starting with the release of XE4, Embarcadero Prism is no longer part of the RAD Studio SKU. Numerous support and upgrade paths for Prism customers exist to migrate to Oxygene. As of 2016, there is only one edition of Oxygene, which allows development on Windows or macOS, and which can create executables for Windows, Linux, WebAssembly .NET, iOS, Android, Java and macOS.
+
+The language 
+The Oxygene language has its origins in Object Pascal in general and Delphi in particular, but was designed to reflect the guidelines of .NET programming and to create fully CLR-compliant assemblies. Therefore, some minor language features known from Object Pascal / Delphi have been dropped or revised, while a slew of new and more modern features, such as Generics or Sequences and Queries have been added to the language.
+
+Oxygene is an object-oriented language, which means it uses classes, which can hold data and execute code, to design programs. Classes are "prototypes" for objects, like the idea of an apple is the prototype for the apple one can actually buy in a shop. It is known that an apple has a colour, and that it can be peeled: those are the data and executable "code" for the apple class.
+
+Oxygene provides language-level support for some features of parallel programming. The goal is to use all cores or processors of a computer to improve performance. To reach this goal, tasks have to be distributed among several threads. The .NET Framework's ThreadPool class offered a way to efficiently work with several threads. The Task Parallel Library (TPL) was introduced in .NET 4.0 to provide more features for parallel programming.
+
+Operators can be overloaded in Oxygene using the class operator syntax:
+
+class operator implicit(i : Integer) : MyClass;
+
+Note, that for operator overloading each operator has a name, that has to be used in the operator overloading syntax, because for example "+" would not be a valid method name in Oxygene.
+
+Program structure 
+Oxygene does not use "Units" like Delphi does, but uses .NET namespaces to organize and group types. A namespace can span multiple files (and assemblies), but one file can only contain types of one namespace. This namespace is defined at the very top of the file:
+ namespace ConsoleApplication1;
+
+Oxygene files are separated into an interface and an implementation section, which is the structure known from Delphi. The interface section follows the declaration of the namespace. It contains the uses clause, which in Oxygene imports types from other namespaces:
+uses
+  System.Linq;
+Imported namespaces have to be in the project itself or in referenced assemblies. Unlike in C#, in Oxygene alias names cannot be defined for namespaces, only for single type names (see below).
+
+Following the uses clause a file contains type declarations, like they are known from Delphi:
+interface
+
+type
+  ConsoleApp = class
+  public
+    class method Main;
+  end;
+As in C#, the Main method is the entry point for every program. It can have a parameter args : Array of String for passing command line arguments to the program.
+
+More types can be declared without repeating the type keyword.
+
+The implementation of the declared methods is placed in the implementation section:
+implementation
+
+class method ConsoleApp.Main;
+begin
+  // add your own code here
+  Console.WriteLine('Hello World.');
+end;
+
+end.
+Files are always ended with end.
+
+Types 
+As a .NET language, Oxygene uses the .NET type system: There are value types (like structs) and reference types (like arrays or classes).
+
+Although it does not introduce own "pre-defined" types, Oxygene offers more "pascalish" generic names for some of them, so that for example the System.Int32 can be used as Integer and Boolean (System.Boolean), Char (System.Char), Real (System.Double) join the family of pascal-typenames, too. The struct character of these types, which is part of .NET, is fully preserved.
+
+As in all .NET languages types in Oxygene have a visibility. In Oxygene the default visibility is assembly, which is equivalent to the internal visibility in C#. The other possible type visibility is public.
+type
+  MyClass = public class
+end;
+The visibility can be set for every type defined (classes, interfaces, records, ...).
+
+An alias name can be defined for types, which can be used locally or in other Oxygene assemblies.
+type
+  IntList = public List<Integer>; //visible in other Oxygene-assemblies
+  SecretEnumerable = IEnumerable<String>; //not visible in other assemblies
+Public type aliases won't be visible for other languages.
+
+Records 
+Records are what .NET structs are called in Oxygene. They are declared just like classes, but with the record keyword:
+type
+  MyRecord = record
+    method Foo;
+  end;
+As they're just .NET structs, records can have fields, methods and properties, but do not have inheritance and cannot implement interfaces.
+
+Interfaces 
+Interfaces are a very important concept in the .NET world, the framework itself makes heavy use of them. Interfaces are the specification of a small set of methods, properties and events a class has to implement when implementing the interface. For example, the interface IEnumerable<T> specifies the GetEnumerator method which is used to iterate over sequences.
+
+Interfaces are declared just like classes:
+type
+  MyInterface = public interface
+    method MakeItSo : IEnumerable;
+    property Bar : String read write;
+  end;
+Please notice, that for properties the getter and setter are not explicitly specified.
+
+Delegates 
+Delegates define signatures for methods, so that these methods can be passed in parameters (e.g. callbacks) or stored in variables, etc. They're the type-safe NET equivalent to function pointers. They're also used in events. When assigning a method to a delegate, one has to use the @ operator, so the compiler knows, that one doesn't want to call the method but just assign it.
+
+Oxygene can create anonymous delegates; for example methods can be passed to the Invoke method of a control without declaring the delegate:
+method MainForm.MainForm_Load(sender: System.Object; e: System.EventArgs);
+begin
+  Invoke(@DoSomething);
+end;
+An anonymous delegate with the signature of the method DoSomething will be created by the compiler.
+
+Oxygene supports polymorphic delegates, which means, that delegates which have parameters of descending types are assignment compatible. Assume two classes MyClass and MyClassEx = class(MyClass), then in the following code BlubbEx is assignment compatible to Blubb.
+type
+  delegate Blubb(sender : Object; m : MyClass);
+  delegate BlubbEx(sender : Object; mx : MyClassEx);
+
+Fields can be used to delegate the implementation of an interface, if the type they're of implements this interface:
+Implementor = public class(IMyInterface)
+  // ... implement interface ...
+end;
+
+MyClass = public class(IMyInterface)
+  fSomeImplementor : Implementor; public implements IMyInterface; //takes care of implementing the interface
+end;
+In this example the compiler will create public methods and properties in MyClass, which call the methods / properties of fSomeImplementor, to implement the members of IMyInterface. This can be used to provide mixin-like functionality.
+
+Anonymous methods 
+Anonymous methods are implemented inside other methods. They are not accessible outside of the method unless stored inside a delegate field. Anonymous methods can use the local variables of the method they're implemented in and the fields of the class they belong to.
+
+Anonymous methods are especially useful when working with code that is supposed to be executed in a GUI thread, which is done in .NET by passing a method do the Invoke method (Control.Invoke in WinForms, Dispatcher.Invoke in WPF):
+method Window1.PredictNearFuture;  //declared as async in the interface
+begin
+  // ... Calculate result here, store in variable "theFuture"
+    Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, method; begin
+      theFutureTextBox.Text := theFuture;
+    end);
+end;
+
+Anonymous methods can have parameters, too:
+method Window1.PredictNearFuture;  //declared as async in the interface
+begin
+  // ... Calculate result here, store in variable "theFuture"
+    Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, method(aFuture : String); begin
+      theFutureTextBox.Text := aFuture ;
+    end, theFuture);
+end;
+
+Both source codes use anonymous delegates.
+
+Property notification 
+Property notification is used mainly for data binding, when the GUI has to know when the value of a property changes. The .NET framework provides the interfaces INotifyPropertyChanged and INotifyPropertyChanging (in .NET 3.5) for this purpose. These interfaces define events which have to be fired when a property is changed / was changed.
+
+Oxygene provides the notify modifier, which can be used on properties. If this modifier is used, the compiler will add the interfaces to the class, implement them and create code to raise the events when the property changes / was changed.
+
+property Foo : String read fFoo write SetFoo; notify;
+property Bar : String; notify 'Blubb'; //will notify that property "Blubb" was changed instead of "Bar"
+
+The modifier can be used on properties which have a setter method. The code to raise the events will then be added to this method during compile time.
+
+Code examples
+
+Hello World 
+namespace HelloWorld;
+
+interface
+
+type
+  HelloClass = class
+  public
+    class method Main;
+  end;
+
+implementation
+
+class method HelloClass.Main;
+begin
+  writeLn('Hello World!');
+end;
+
+end.
+
+Generic container 
+namespace GenericContainer;
+
+interface
+
+type
+  TestApp = class
+  public
+    class method Main;
+  end;
+
+  Person = class
+  public
+    property FirstName: String;
+    property LastName: String;     
+  end;
+
+implementation
+
+uses
+  System.Collections.Generic;
+
+class method TestApp.Main;
+begin
+  var myList := new List<Person>; //type inference
+  myList.Add(new Person(FirstName := 'John', LastName := 'Doe')); 
+  myList.Add(new Person(FirstName := 'Jane', LastName := 'Doe'));
+  myList.Add(new Person(FirstName := 'James', LastName := 'Doe')); 
+  Console.WriteLine(myList[1].FirstName);  //No casting needed
+  Console.ReadLine;       
+end;
+
+end.
+
+Generic method 
+namespace GenericMethodTest;
+
+interface
+
+type
+GenericMethodTest = static class
+public
+  class method Main;
+private
+  class method Swap<T>(var left, right : T);
+  class method DoSwap<T>(left, right : T);
+end;
+
+implementation
+
+class method GenericMethodTest.DoSwap<T>(left, right : T);
+begin
+  var a := left;
+  var b := right;
+  Console.WriteLine('Type: {0}', typeof(T));
+  Console.WriteLine('-> a = {0}, b = {1}', a , b);
+  Swap<T>(var a, var b);
+  Console.WriteLine('-> a = {0}, b = {1}', a , b);
+end;
+
+class method GenericMethodTest.Main;
+begin
+  var a := 23;// type inference
+  var b := 15;
+  DoSwap<Integer>(a, b); // no downcasting to Object in this method.
+
+  var aa := 'abc';// type inference
+  var bb := 'def';
+  DoSwap<String>(aa, bb); // no downcasting to Object in this method.
+
+  DoSwap(1.1, 1.2); // type inference for generic parameters
+  Console.ReadLine();
+end;
+
+class method GenericMethodTest.Swap<T>(var left, right : T);
+begin
+  var temp := left;
+  left:= right;
+  right := temp;
+end;
+
+end.
+
+Program output:
+
+ Type: System.Int32
+ -> a = 23, b = 15
+ -> a = 15, b = 23
+ Type: System.String
+ -> a = abc, b = def
+ -> a = def, b = abc
+ Type: System.Double
+ -> a = 1,1, b = 1,2
+ -> a = 1,2, b = 1,1
+
+Differences between Delphi and Oxygene 
+ : Replaced with the namespace keyword. Since Oxygene doesn't compile per-file but per-project, it does not depend on the name of the file. Instead the unit or namespace keyword is used to denote the default namespace that all types are defined in for that file
+  and :  is the preferred keyword, though  and  still work.
+ : In Oxygene all methods are overloaded by default, so no special keyword is needed for this
+ : This constructor call has been replaced by the  keyword. It can still be enabled in the  for legacy reasons
+ : Characters in strings are zero-based and read-only. Strings can have nil values, so testing against empty string is not always sufficient.
+
+Criticism 
+Some people would like to port their Win32 Delphi code to Oxygene without making major changes. This is not possible because while Oxygene looks like Delphi, there are enough changes so as to make it incompatible for a simple recompile. While the name gives it the appearance of another version of Delphi, that is not completely true.
+
+On top of the language difference, the Visual Component Library framework is not available in Oxygene. This makes porting even more difficult because classic Delphi code relies heavily on the VCL.
+
+See also 
+
+ C#
+ Object Pascal
+ Embarcadero Delphi
+ Free Pascal
+ Eiffel
+ Java
+
+References
+
+External links 
+ 
+
+.NET programming languages
+Class-based programming languages
+Mono (software)
+Object-oriented programming languages
+Pascal (programming language) compilers
+Pascal programming language family

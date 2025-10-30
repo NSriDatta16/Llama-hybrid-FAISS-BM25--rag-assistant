@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 448079
+[parent_id]: 447899
+[tags]: 
+In addition to what the others have already written: malloc() allocates bigger chunks from the OS and spits it out in smaller pieces as you malloc() it. When free()ing, the piece first goes into a free-list, for quick reuse by another malloc if the size fits. It may at this time be merged with another free item, to form bigger free blocks, to avoid fragmentation (a whole bunch of different algorithms exist there, from freeLists to binary-sized-fragments to hashing and what not else). When freed pieces arrive so that multiple fragments can be joined, free() usually does this, but sometimes, fragments remain, depending on size and orderof malloc() and free(). Also, only when a big such free block has been created will it be (sometimes) returned to the OS as a block. But usually, malloc() keeps things in its pocket, dependig on the allocated/free ratio (many heuristics and sometimes compile or flag options are often available). Notice, that there is not ONE malloc/free algotrithm. There is a whole bunch of different implementations (and literature). Highly system, OS and library dependent.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1021993
+[parent_id]: 1021962
+[tags]: 
+There might be a cleaner way of achieving this, but I think your problem is that C++ methods get "mangled" to allow additional information about the method (argument & return types etc) to be encoded. For example; the method int A::foo(void) will get mangled to something like __ZN1A3fooEv . So you need to find the mangled name of a method in the library. You can do this by using the nm command on Unix-like OSs: $ nm libifc++.so | grep ITString It's worth mentioning that the exact mangling format varies across different compilers; and so by embedding a certain compiler's mangled symbol in your configure.in it may not work on other platforms - YMMV. Note: you can use the c++filt utility to demangle a name back to it's human-readable form; so for the example I gave previously: $ c++filt __ZN1A3fooEv A::foo() See Name Mangling in C++ on Wikipedia for more information.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1653254
+[parent_id]: 1627131
+[tags]: 
+Have you tried to use a different name for the cache fragment? There could be a problem with using request.user.username for a couple of reasons: If a user is not signed in, request.user.username could be empty, resulting in a non-named cache fragment If a user is signed in, this will call the 3rd party template tag at least once for each user every 3 mintues Maybe it's worth trying to rename the cache fragment name to test: {% cache 500 customxml %} I'd also try loading of the 3rd party template tag outside the cache tag like so: {% load cache third_party_custom_tags %} {% cache 500 request.user.username %} {% expensive custom tag set that gets stuff from a third party server via xml %} {{ some.stuff}} {% endcache %} What I'm not sure of is if the cache framework caches the results of a template tag. If that doesn't work, I'd take a look at what the template tag is doing under the hood and re-implement the template tag using Django's low-level cache .

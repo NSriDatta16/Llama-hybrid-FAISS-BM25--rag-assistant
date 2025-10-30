@@ -1,0 +1,48 @@
+ZRTP (composed of Z and Real-time Transport Protocol) is a cryptographic key-agreement protocol to negotiate the keys for encryption between two end points in a Voice over IP (VoIP) phone telephony call based on the Real-time Transport Protocol. It uses Diffie–Hellman key exchange and the Secure Real-time Transport Protocol (SRTP) for encryption. ZRTP was developed by Phil Zimmermann, with help from Bryce Wilcox-O'Hearn, Colin Plumb, Jon Callas and Alan Johnston and was submitted to the Internet Engineering Task Force (IETF) by Zimmermann, Callas and Johnston on March 5, 2006 and published on April 11, 2011 as .
+
+Overview
+ZRTP ("Z" is a reference to its inventor, Zimmermann; "RTP" stands for Real-time Transport Protocol) is described in the Internet Draft as a "key agreement protocol which performs Diffie–Hellman key exchange during call setup in-band in the Real-time Transport Protocol (RTP) media stream which has been established using some other signaling protocol such as Session Initiation Protocol (SIP). This generates a shared secret which is then used to generate keys and salt for a Secure RTP (SRTP) session." One of ZRTP's features is that it does not rely on SIP signaling for the key management, or on any servers at all. It supports opportunistic encryption by auto-sensing if the other VoIP client supports ZRTP.
+
+This protocol does not require prior shared secrets or rely on a Public key infrastructure (PKI) or on certification authorities, in fact ephemeral Diffie–Hellman keys are generated on each session establishment: this allows the complexity of creating and maintaining a trusted third-party to be bypassed.
+
+These keys contribute to the generation of the session secret, from which the session key and parameters for SRTP sessions are derived, along with previously shared secrets (if any): this gives protection against man-in-the-middle (MiTM) attacks, so long as the attacker was not present in the first session between the two endpoints.
+
+ZRTP can be used with any signaling protocol, including SIP, H.323, Jingle, and distributed hash table systems. ZRTP is independent of the signaling layer, because all its key negotiations occur via the RTP media stream.
+
+ZRTP/S, a ZRTP protocol extension, can run on any kind of legacy telephony networks including GSM, UMTS, ISDN, PSTN, SATCOM, UHF/VHF radio, because it is a narrow-band bitstream-oriented protocol and performs all key negotiations inside the bitstream between two endpoints.
+
+Alan Johnston named the protocol ZRTP because in its earliest Internet drafts it was based on adding header extensions to RTP packets, which made ZRTP a variant of RTP. In later drafts the packet format changed to make it syntactically distinguishable from RTP. In view of that change, ZRTP is now a pseudo-acronym.
+
+Authentication
+
+The Diffie–Hellman key exchange by itself does not provide protection against a man-in-the-middle attack. To ensure that the attacker is indeed not present in the first session (when no shared secrets exist), the Short Authentication String (SAS) method is used: the communicating parties verbally cross-check a shared value displayed at both endpoints. If the values do not match, a man-in-the-middle attack is indicated. A specific attack theorized against the ZRTP protocol involves creating a synthetic voice of both parties to read a bogus SAS which is known as a "Rich little attack", but this class of attack is not believed to be a serious risk to the protocol's security.
+The SAS is used to authenticate the key exchange, which is essentially a cryptographic hash of the two Diffie–Hellman values. The SAS value is rendered to both ZRTP endpoints. To carry out authentication, this SAS value is read aloud to the communication partner over the voice connection. If the values on both ends do not match, a man-in-middle attack is indicated; if they do match, a man-in-the-middle attack is highly unlikely. The use of hash commitment in the DH exchange constrains the attacker to only one guess to generate the correct SAS in the attack, which means the SAS may be quite short. A 16-bit SAS, for example, provides the attacker only one chance out of 65536 of not being detected.
+
+Key continuity
+ZRTP provides a second layer of authentication against a MitM attack, based on a form of key continuity. It does this by caching some hashed key information for use in the next call, to be mixed in with the next call's DH shared secret, giving it key continuity properties analogous to SSH. If the MitM is not present in the first call, he is locked out of subsequent calls. Thus, even if the SAS is never used, most MitM attacks are stopped because the MitM was not present in the first call.
+
+Operating environment
+ ZRTP protocol has been implemented and used on the following platforms: Windows, Linux, Android
+ ZRTP protocol has been implemented in the following languages: C, C++, Java
+ ZRTP protocol has been used successfully on the following transport media: WiFi, UMTS, EDGE, GPRS, Satellite IP modem, GSM CSD, ISDN
+
+Implementations
+ZRTP has been implemented as 
+ GNU ZRTP which is used in Twinkle
+ GNU ZRTP4J which is used in Jitsi (formerly SIP Communicator).
+ ortp for use in Linphone. 
+ libzrtp which can be used in FreeSWITCH.
+ Signal and its predecessor, RedPhone, used ZRTP for encrypted calls on Android and iOS. As of March 2017, Signal's voice and video calling functionality uses the app's Signal Protocol channel for authentication instead of ZRTP.
+ CSipSimple is a free application for Android OS which fully supports ZRTP
+ PhonerLite softphone for Windows supports ZRTP
+
+Commercial implementations of ZRTP are available in RokaCom from RokaCom, and PrivateWave Professional from PrivateWave and more recently in Silent Phone from Silent Circle, a company founded by Zimmermann. There is also Softphone from Acrobits. Draytek support ZRTP in some of their VoIP hardware and software.
+
+A list of free SIP Providers with ZRTP support has been published.
+
+References
+
+External links
+ RFC 6189 — ZRTP: Media Path Key Agreement for Unicast Secure RTP
+
+Cryptographic protocols

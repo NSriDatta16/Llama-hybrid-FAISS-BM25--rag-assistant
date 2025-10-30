@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2315557
+[parent_id]: 
+[tags]: 
+How do I use SharpSVN to programatically "add to ignore list" for a folder
+
+How do I use SharpSVN to programatically to add a folder to the ignore list? EDIT: Attempted: Here's what I've tried svnClient.GetProperty(new SvnUriTarget("svn://svn.foo.com/" + DatabaseName + "/"), SvnPropertyNames.SvnIgnore, out ignores); ignores += " Artifacts"; var args = new SvnSetPropertyArgs() { BaseRevision = ???, LogMessage = "update ignore list" }; svnClient.SetProperty(new Uri("svn://svn.foo.com/" + DatabaseName + "/"), SvnPropertyNames.SvnIgnore, ignores, args); But I don't know how to get the BaseRevision (I can get it manually, and that works, but all the combinations of GetProperty I tried don't seem to give it to me.) SOLUTION: Based on Bert's Answer SvnGetPropertyArgs getArgs = new SvnGetPropertyArgs(){}; string ignores = "Artifacts"; string result; if(svnClient.GetProperty(new SvnUriTarget("svn://svn.foo.com/" + ProjectName + "/trunk/"), SvnPropertyNames.SvnIgnore,out result)) { ignores = result + " Artifacts"; //TODO: check for existing & tidy formatting. } svnClient.SetProperty(UncPath.TrimEnd('\\'), SvnPropertyNames.SvnIgnore, ignores); SvnCommit(svnClient);

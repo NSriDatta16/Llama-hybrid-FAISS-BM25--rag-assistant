@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4110345
+[parent_id]: 4110253
+[tags]: 
+The SQL does not match your description, because the SQL will also find Megan McAllister when "Megan" and "F" ist entered because OR firstname LIKE '$firstname%' is enough to satisfy the condition. Your description translates to SQL like this: WHERE firstname LIKE '$firstname%' AND lastname LIKE '$lastname%' I think you have to put the "full match" logic in another SQL or you have to break out of the loop/iterate over the results in a first pass to check if it's a full match. Think of the case when there is a Mega Fox and a Megana Foxy: You will get two rows, although there is a full match. Here's a suggestion for a "full match" logic: unset($name); unset($id); while ($get = mysql_fetch_array($qur)) { $name []= $get["firstname"]." ".$get["lastname"]; if ($get['full']) { $id = $get['id']; break; } } if ($id) echo $id; elseif ($name) echo implode(' ', $name); else echo 'Nothing found';

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 92046
+[parent_id]: 87021
+[tags]: 
+I suggest using a XmlSimple for a start. After you run the XmlSimple#xml_in on your input file, you get a hash. Then you can recurse into it (obj.instance_variables) and turn all internal hashes (element.is_a?(Hash)) to the objects of the same name, for example: obj.instance_variables.find {|v| obj.send(v.gsub(/^@/,'').to_sym).is_a?(Hash)}.each do |h| klass= eval(h.sub(/^@(.)/) { $1.upcase }) Perhaps a cleaner way can be found to do this. Afterwards, if you want to make an xml from this new object, you'll probably need to change the XmlSimple#xml_out to accept another option, which distinguishes your object from the usual hash it's used to receive as an argument, and then you'll have to write your version of XmlSimple#value_to_xml method, so it'll call the accessor method instead of trying to access a hash structure. Another option, is having all your classes support the [] operator by returning the wanted instance variable.

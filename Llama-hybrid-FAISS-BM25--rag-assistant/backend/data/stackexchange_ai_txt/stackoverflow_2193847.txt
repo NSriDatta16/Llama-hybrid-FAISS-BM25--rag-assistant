@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2193847
+[parent_id]: 2193628
+[tags]: 
+Okay, I think I have a partial answer for you. From here : Output cache module populates the IHttpCachePolicy intrinsic in BeginRequest stage if a matching profile is found. Other modules can still change cache policy for the current request which might change user-mode or kernel mode caching behavior. Output cache caches 200 responses to GET requests only. If some module already flushed the response by the time request reaches UpdateRequestCache stage or if headers are suppressed, response is not cached in output cache module . That article is IIS7 specific, so not sure how this translates across to other versions, but it's probably similar. UpdateRequestCache is one of the HttpApplication pipeline events , and it occurs after an IHttpHandler (e.g. your Page object) has finished handling the request. So... it doesn't look good for performing a flush inside your Page.

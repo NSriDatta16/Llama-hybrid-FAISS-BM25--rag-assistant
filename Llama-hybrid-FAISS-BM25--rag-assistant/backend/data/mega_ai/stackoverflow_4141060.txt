@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4141060
+[parent_id]: 4134925
+[tags]: 
+The standard sockets API does not provide a way for applications to directly change the individual flags in the TCP Header. I can think of a couple of possible ways to approach this: Write a TUN/TAP network device that performs the required header modifications on the packets that pass through it, before forwarding them on to the real network device. The kernel is configured to send all outgoing packets though your TUN/TAP device. Use a PF_PACKET socket to construct and send completely custom TCP packets from userspace. You'll be responsible for implementing all of IP and TCP yourself, though, including things like IP fragment reassembly. I don't recommend this, unless you just want to fire off a few packets rather than establish a full TCP connection. Create a netfilter (iptables) module that implements a TCP-flag-modification target. You could do this quite easily based on the existing ipt_ECN.c module, which is only 146 lines.

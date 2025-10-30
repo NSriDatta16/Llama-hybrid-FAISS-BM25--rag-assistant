@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5570809
+[parent_id]: 5567754
+[tags]: 
+Getting it down to 1 query is tough (i.e. I don't know a portable solution), but getting it down to 2 queries (irrespective of n) is pretty simple: Criteria criteria = this.getSession().createCriteria(Mother.class); criteria.addOrder(Order.asc("title")) .setMaxResults(details.getMaxRows()) .setFirstResult(details.getStartResult()) .setProjection(Projections.id()); List ids = criteria.list(); criteria = getSession().createCriteria(Mother.class) .add(Restrictions.in("id", ids)) .setFetchMode("children", FetchMode.JOIN) .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY) return criteria.list(); For some databases, subselect fetching children might work, too.

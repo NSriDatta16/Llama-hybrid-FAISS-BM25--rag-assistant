@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 23312
+[parent_id]: 23303
+[tags]: 
+There is nothing wrong with infinite variance distributions, per se ... For instance, simulating a Cauchy using rcauchy(10^3) produces a sample truly from a Cauchy distribution! Hence MCMC has no specific feature to "fight" for or against infinite variance distributions. The difficulty with infinite variance distributions is at the Monte Carlo level, for instance if you want to compute $$ \mathfrak{I} = \int_0^\infty \sqrt{x} \dfrac{1}{\pi}\dfrac{1}{1+x^2} \,\text{d}x $$ the integral exists (and is finite), but using $$ \dfrac{1}{N} \sum_{i=1}^N \sqrt{|x_i|} $$ when the $x_i$'s are Cauchy leads to an infinite variance estimate. See, e.g., > expl=matrix(abs(rcauchy(10^6)),ncol=1000) > est=apply(expl,2,mean)/2 > quantile(est,c(.9,.99,.999)) 90% 99% 99.9% 6.484375 37.393755 160.869406 which shows that the estimator can get very large! And away from the true value > integrate(function(x){sqrt(x)*dcauchy(x)},low=0,up=Inf) 0.7071078 with absolute error In this case, you need to use importance sampling.

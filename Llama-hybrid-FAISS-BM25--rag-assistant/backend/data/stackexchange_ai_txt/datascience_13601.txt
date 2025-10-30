@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 13601
+[parent_id]: 
+[tags]: 
+Pandas Data Frame: Calculating custom moving average
+
+I have a time series containing stock price data. I would like to calculate the Money Flow Index (MFI) for each row. Given that the MFI, uses the previous approx. 14 rows to calculate the current MFI, what would be the best approach to doing this? The below calculates the current MFI for a given DataFrame, but I would like to implement this for each row in the data frame # Typical Price =(high price + low price + closing price) / 3 tp=(hst['High']+hst['Low']+hst['Close'])/3 tp=tp.to_frame(name='Price') # Raw money flow = typical price x volume tp['Raw']=tp['Price'] * hst['Volume'] # Identify flow (upwards or downwards) tp['Direction'] = np.where(np.nan_to_num(tp['Raw'].shift(1))>tp['Raw'], 'up', 'down') mfr=0 # Money flow ratio = (14-day Positive Money Flow) / (14-day Negative Money Flow) if tp.loc[tp['Direction']=='down']['Price'].sum(axis=0) != 0: mfr=tp.loc[tp['Direction']=='up']['Price'].sum(axis=0) / tp.loc[tp['Direction']=='down']['Price'].sum(axis=0) # MFI = 100 - 100 / (1 + money flow ratio) 100-(100/(1+ mfr)) I managed to work this using the 'apply' function, but this function only allows for 1 argument, whilst I would need to pass more than 1 argument to compute the above.

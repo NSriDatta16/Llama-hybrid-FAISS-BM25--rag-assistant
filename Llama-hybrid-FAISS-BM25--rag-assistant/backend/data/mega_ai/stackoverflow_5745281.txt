@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5745281
+[parent_id]: 
+[tags]: 
+Service locator free architecture with Ninject WCF Extenstion
+
+I finally got some understanding of how Ninject handles DI, but have faced the following problem: Let's consider we have a class that takes two WCF ServiceHost objects as a constructor parameters: public ActivitySinkServer(IDataProvider dataProvider, ServiceHost posClients, ServiceHost activitySinkOperatorClients) At first I had only one ServiceHost dependency, so I easily have handled the binding like this: public class CommunicationModule: NinjectModule { public override void Load() { Bind ().ToSelf().WithConstructorArgument("posManager", Kernel.Get ()); this.Bind ().ToMethod(ctx => ctx.Kernel.Get (new ConstructorArgument("singletonInstance", c => c.Kernel.Get ()))); } } In this scenario my ActivitySinkServer could resolve it's ServiceHost dependency with a NinjectServiceHost initialized with a singleton object. Now, that I have two ServiceHost dependencies, how can I tell Ninject which one to feed at which constructor parameter, still having my inner code Ninject-unaware. (I know I could have used Ninject attributes and other stuff from the manual). UPDATE: I went ahead and just used .When(request => request.Target.Name == "posClients"); .When(request => request.Target.Name == "activitySinkOperatorClients"); to explicitly specify the target constructor variable names. Don't see any harm in that. However, if someone has a more elegant and object-oriented aproach - you are welcome to answer.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 77562
+[parent_id]: 65607
+[tags]: 
+For pre-increment, there's already incf, but you can define your own with (define-modify-macro my-incf () 1+) For post-increment, you could use this (from fare-utils): (defmacro define-values-post-modify-macro (name val-vars lambda-list function) "Multiple-values variant on define-modify macro, to yield pre-modification values" (let ((env (gensym "ENV"))) `(defmacro ,name (,@val-vars ,@lambda-list &environment ,env) (multiple-value-bind (vars vals store-vars writer-form reader-form) (get-setf-expansion `(values ,,@val-vars) ,env) (let ((val-temps (mapcar #'(lambda (temp) (gensym (symbol-name temp))) ',val-vars))) `(let* (,@(mapcar #'list vars vals) ,@store-vars) (multiple-value-bind ,val-temps ,reader-form (multiple-value-setq ,store-vars (,',function ,@val-temps ,,@lambda-list)) ,writer-form (values ,@val-temps)))))))) (defmacro define-post-modify-macro (name lambda-list function) "Variant on define-modify-macro, to yield pre-modification values" `(define-values-post-modify-macro ,name (,(gensym)) ,lambda-list ,function)) (define-post-modify-macro post-incf () 1+)

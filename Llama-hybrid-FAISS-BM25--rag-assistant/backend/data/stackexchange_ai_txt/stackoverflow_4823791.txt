@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4823791
+[parent_id]: 
+[tags]: 
+How can I load an unnamed function in Lua?
+
+I want users of my C++ application to be able to provide anonymous functions to perform small chunks of work. Small fragments like this would be ideal. function(arg) return arg*5 end Now I'd like to be able to write something as simple as this for my C code, // Push the function onto the lua stack lua_xxx(L, "function(arg) return arg*5 end" ) // Store it away for later int reg_index = luaL_ref(L, LUA_REGISTRY_INDEX); However I dont think lua_loadstring will do "the right thing". Am I left with what feels to me like a horrible hack? void push_lua_function_from_string( lua_State * L, std::string code ) { // Wrap our string so that we can get something useful for luaL_loadstring std::string wrapped_code = "return "+code; luaL_loadstring(L, wrapped_code.c_str()); lua_pcall( L, 0, 1, 0 ); } push_lua_function_from_string(L, "function(arg) return arg*5 end" ); int reg_index = luaL_ref(L, LUA_REGISTRY_INDEX); Is there a better solution?

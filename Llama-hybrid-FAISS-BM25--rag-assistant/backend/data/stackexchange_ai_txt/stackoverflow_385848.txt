@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 385848
+[parent_id]: 385809
+[tags]: 
+You could put the entire operation in a transaction, using a TransactionScope class, like below: using (TransactionScope scope = new TransactionScope()){ var maxId = dc.Logs.Max(s => s.ID); var newEntity = new Log(){ ID = maxId, Note = "Test" }; dc.Logs.InsertOnSubmit(newEntity); dc.SubmitChanges(); scope.Complete(); } By putting both the retrieval of the maximum ID and the insertion of the new records within the same transaction, you should be able to pull off an insert without having to retry in your manner. One problem you might face with this method will be transaction deadlocks, especially if the table is heavily used. Do test it out to see if you require additional error-handling. P.S. I included Jon Skeet's code to get the max ID in my code, because I'm pretty sure it will work correctly. :)

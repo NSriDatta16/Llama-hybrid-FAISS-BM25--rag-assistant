@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4580118
+[parent_id]: 
+[tags]: 
+Guarded Blocks with Join
+
+I need to synchronize over several threads. I don't create the threads, but I do know how many there are. So I wrote this inner guarded block: private class Guard { int waiters = 0; boolean wait; synchronized void addWaiter() { ++waiters; wait = true; while (wait && waiters != threadNum()) { try { wait(); } catch (InterruptedException e) {} } waiters = 0; wait = false; notifyAll(); } } This guarded block is executed in a loop. So the problem is that it might get called a second time before all the threads from the first call are released from the wait() loop, which obviously screws up the whole logic of the guard. So I need to have the threads join somehow before they are released from the guard. Is there a design for this? What is the most elegant way of accomplishing it. Keep in mind that the threads are not created by me. Thanks.

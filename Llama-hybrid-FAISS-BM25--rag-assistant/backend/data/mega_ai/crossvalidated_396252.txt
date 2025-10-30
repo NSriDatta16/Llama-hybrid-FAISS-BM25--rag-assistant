@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 396252
+[parent_id]: 
+[tags]: 
+Train model on "bootstrapped" target?
+
+Question I'd like to train a model in scikit-learn with the following input. Instead of having (X, y) , I have (X, dy) where dy is the amount by which y ought to shift upon an update. What I'm thinking is that I could define my target y recursively: y_hat = model.predict(X) model.partial_fit(X, y_hat + dy) Would you guys be able to weigh in on this? Do you think the approach makes sense? Context The context of my question is policy gradient updates in reinforcement learning. There, we know the amount by which the policy must be updated by doing gradient descent in function space (similar to gradient boosting). What I mean by gradient descent in function space is the following. Suppose I start with the objective $J$ (cf. Sutton&Barto Ch.13), which is a functional of $\pi$ : $$ J[\pi]\ =\ \sum_{s,a}p(s, a)\,Q(s,a) \ =\ \sum_{s,a}p(s)\,\pi(a|s)\,Q(s,a) $$ Here, $p(s)$ and $Q(s,a)$ only depend on the policy $\pi$ implicitly . The gradient $g[\pi]$ is the functional derivative of $J$ w.r.t. $\pi$ , or for practical convenience $\ln\pi$ : $$ g[\pi](s,a)\ =\ \frac{\delta J}{\delta \ln\pi}(s,a)\ =\ p(s)\,\pi(a|s)\,Q(s,a) $$ This suggests that we can update our policy as (modulo some normalization): $$ \ln\pi\ \leftarrow\ \ln\pi + \alpha\,g[\pi] $$ where $\alpha>0$ is a learning rate. Now it's this $\alpha g[\pi]$ that I called dy in the main question above.

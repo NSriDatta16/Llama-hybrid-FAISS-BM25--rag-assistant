@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3649311
+[parent_id]: 3649247
+[tags]: 
+In addition to @Marko's suggestion to use a better timer, the key trick for a smoothly varying and better approximate evaluation of the frame rate is to use a moving average -- don't consider only the very latest delay you've observed, consider the average of (say) the last five. You can compute the latter as a floating-point number, to get more possible values for the frame rate (which you can still round to the nearest integer of course). For minimal computation, consider a "fifo queue" of the last 5 delays (pseudocode)...: array = [16, 16, 16, 16, 16] # initial estimate totdelay = 80 while not Done: newest = latestDelay() oldest = array.pop(0) array.append(newest) totdelay += (newest - oldest) estimatedFramerate = 200 / totdelay ...

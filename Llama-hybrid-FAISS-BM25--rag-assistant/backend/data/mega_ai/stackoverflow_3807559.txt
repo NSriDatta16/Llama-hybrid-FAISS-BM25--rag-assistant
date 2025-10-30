@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3807559
+[parent_id]: 3753004
+[tags]: 
+Finally I found the answer: ISession session = NHibernateHelper.Session; ISQLQuery query = session.CreateSQLQuery("select m.MedicineTypeID as ID, t.Name, m.IsDeleted from MedicineType m left outer join Translation t on m.Code = t.Code and t.Language = :language"); query.setString("language", language); IList lookup = query.SetResultTransformer(Transformers.AliasToBean()).List(); return lookup; And the lookup is a POCO class with a parameterless constructor and 3 properties ID, Name and IsDeleted. I would like to thank Kelly and Diego Mijelshon for their hints. Although they don't provide the full answer the but using Session.CreateSqlQuery() was a very useful hint. So the complete solution is Session.CreateSQLQuery and query.SetResultTransformer Note: Transformers.AliasToBean() is so java. Edit: http://docs.jboss.org/hibernate/orm/3.2/api/org/hibernate/impl/SQLQueryImpl.html for correct method of setString()

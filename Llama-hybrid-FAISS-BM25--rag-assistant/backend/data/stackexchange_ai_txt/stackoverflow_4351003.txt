@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4351003
+[parent_id]: 
+[tags]: 
+C# SQL Server script change database problem
+
+I need to run a sql script that is in a file from my c# application. The problem is that it creates objects an executes commands on different databases. In the script, every time i need to change the current database it uses the command USE [databasename] and since there are many object creations it uses the command GO a lot of times, so I read the file until i find a GO command and run the sentence in the database; so far so good, but after the command runs the connection returns to the default database (master in this case) ignoring the last USE sentence. This is the code I use to read the file and execute the script. using (StreamReader reader = new StreamReader(databaseScriptFile)) { DatabaseFactory.CreateDatabase() Database db = new SqlDatabase(connectionstring); txbuilder = new StringBuilder(); bool lastExecute = true; while (!reader.EndOfStream) { text = reader.ReadLine(); if (text.Trim().ToUpper() != "GO") { lastExecute = false; txbuilder.AppendLine(text); } else { lastExecute = true; db.ExecuteNonQuery(CommandType.Text, txbuilder.ToString()); txbuilder.Length = 0; } } //Make sure that the last sentence is executed if (!lastExecute) db.ExecuteNonQuery(CommandType.Text, txbuilder.ToString()); } It seems that it clears the connection after each ExecuteNonQuery command executing sp_reset_conection (that's what I get in the profiler) Is there any elegant and simple way to acomplish this? Thanks

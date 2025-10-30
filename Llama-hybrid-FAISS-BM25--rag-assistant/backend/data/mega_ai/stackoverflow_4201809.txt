@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4201809
+[parent_id]: 3772027
+[tags]: 
+There isn't a way to configure this using URLScan, but it can be done with a custom ISAPI filter on your IIS server. Here it is in C++: DWORD WINAPI __stdcall HttpFilterProc(HTTP_FILTER_CONTEXT *pfc, DWORD NotificationType, VOID *pvData) { char buffer[256]; DWORD buffSize = sizeof(buffer); HTTP_FILTER_PREPROC_HEADERS *p; switch (NotificationType) { case SF_NOTIFY_PREPROC_HEADERS : p = (HTTP_FILTER_PREPROC_HEADERS *)pvData; BOOL bHeader = p->GetHeader(pfc,"User-Agent:",buffer,&buffSize); CString UserAgent(buffer); if(UserAgent.GetLength() == 0) { // reject blank user agents p->SetHeader(pfc, "url", "/rejected-blank-user-agent"); } return SF_STATUS_REQ_HANDLED_NOTIFICATION; } return SF_STATUS_REQ_NEXT_NOTIFICATION; }

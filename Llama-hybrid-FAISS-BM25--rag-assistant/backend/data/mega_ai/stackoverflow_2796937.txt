@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2796937
+[parent_id]: 2796755
+[tags]: 
+I completely agree that having a unique identifier will save you a lot of time. But if you can't use one (or if this is purely hypothetical), here's an alternative: Determine the number of rows to delete (the count of each distinct value -1), then loop through and delete top X for each distinct value. Note that I'm not responsible for the number of kittens that are killed every time you use dynamic SQL. declare @name varchar(50) declare @sql varchar(max) declare @numberToDelete varchar(10) declare List cursor for select name, COUNT(name)-1 from #names group by name OPEN List FETCH NEXT FROM List INTO @name,@numberToDelete WHILE @@FETCH_STATUS = 0 BEGIN IF @numberToDelete > 0 BEGIN set @sql = 'delete top(' + @numberToDelete + ') from #names where name=''' + @name + '''' print @sql exec(@sql) END FETCH NEXT FROM List INTO @name,@numberToDelete END CLOSE List DEALLOCATE List Another alternative would to be create a view with a generated identity. In this way you could map the values to a unique identifer (allowing for conventional delete) without making a permanent addition to your table.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4322581
+[parent_id]: 4322352
+[tags]: 
+The only thing that should work out of the box is to test the gcc version and hoping that this is consistently done on all architectures. This is not guaranteed, though, I recently had a similar problem not with builtin functions but with __thread for thread local storage. This is implemented on some architectures (linux) but not not on others (OS X, bsd?) and there was no way to find this out with a macro. If you have gnu make you can do something similar to detect existence of a particular function in your Makefile: __THREAD := $(shell echo '__thread int i;' | ${CC} ${CFLAGS} -xc -c -o /dev/null - 2> /dev/null || echo "NO") ifeq (${__THREAD},NO) ${warning thread local storage (TLS) with '__thread' is not supported, switching to pthread_getkey} CFLAGS += -D__GNUC_NO_TLS__ endif This avoids to use more complex configuration utilities.

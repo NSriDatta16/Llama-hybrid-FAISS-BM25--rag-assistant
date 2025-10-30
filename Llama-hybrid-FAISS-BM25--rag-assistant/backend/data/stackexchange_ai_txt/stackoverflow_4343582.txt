@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4343582
+[parent_id]: 4326096
+[tags]: 
+To run PhluffyFotos example on Azure SKD 1.3 you have to the following: Change reference Microsoft.WindowsAzure.StorageClient from 1.0 to 1.1 Move "GetConfigurationSettingValue" to the Global.asax "Application_Start" event. Move Role related initialization to the Global.asax "Application_BeginRequest" event, but you have to ensure that it executes only once. Example: private static object gate = new object(); private static bool initialized = false; protected void Application_BeginRequest() { if (initialized) { return; } lock (gate) { if (!initialized) { // We need to check if this is the first launch of the app and pre-create // the admin role and the first user to be admin (still needs to register). if (!Roles.GetAllRoles().Contains("Administrator")) { Roles.CreateRole("Administrator"); } if (!Roles.GetUsersInRole("Administrator").Any()) { Roles.AddUserToRole(RoleEnvironment.GetConfigurationSettingValue("DefaultAdminRoleUser"), "Administrator"); } initialized = true; } } }

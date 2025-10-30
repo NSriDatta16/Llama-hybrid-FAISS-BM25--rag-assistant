@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1935342
+[parent_id]: 1935164
+[tags]: 
+Setting a field won't cause property change notifications, so that's not the reason. I would guess that this design choice was driven by something like the following: That string is an immutable reference type. Therefore the original and new instances are interchangeable. However the original instance may have been around longer and on average may therefore be slightly more expensive to collect (*). So performance may be better if the original instance is retained rather than being replaced by a new identical instance. (*) The new value has in most cases only just been allocated, and won't be reused after the property is set. So it is very often a Gen0 object that is efficient to collect, whereas the original value's GC generation is unknown. If this reasoning is correct, I wouldn't expect to see the same pattern for value-type properties (int, double, DateTime, ...). But of course this is only speculation and I may be completely wrong.

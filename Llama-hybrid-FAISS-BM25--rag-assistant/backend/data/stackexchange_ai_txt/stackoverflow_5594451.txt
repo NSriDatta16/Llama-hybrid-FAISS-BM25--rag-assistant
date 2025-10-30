@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5594451
+[parent_id]: 4884176
+[tags]: 
+My app is based on the default framework and I was getting this issue when running on a Retina based device. Specifically my framebuffer was being created at 320x480 rather than 640x960 as I wanted. Sorry James but this is NOT automatic because the problem is with the framebuffer created by renderBufferStorage:fromDrawable: (which calls glRenderbufferStorage on our behalf but specifies layout pixels rather than native device pixels for width and height by default). I added the following code below line lines which set eaglLayer.drawableProperties in initWithCoder: in EAGLView.m : UIScreen *mainScreen = [UIScreen mainScreen]; if ([mainScreen respondsToSelector:@selector(scale)]) { // iOS 4.0 and up (further to simeon's comment) const CGFloat scale = mainScreen.scale; self.contentScaleFactor = scale; eaglLayer.contentsScale = scale; } Thanks to David Amador's post for pointing me in the right direction. Thanks, more recently, to simeon's helpful comments.

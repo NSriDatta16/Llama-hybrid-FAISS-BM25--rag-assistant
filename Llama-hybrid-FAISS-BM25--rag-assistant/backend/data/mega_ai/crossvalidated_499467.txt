@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 499467
+[parent_id]: 
+[tags]: 
+KL divergence of Variational Autoencoder not decreasing
+
+I have been trying to train a VAE to generate cat pictures. The images are of size 64 by 64. But upon training my reconstruction loss decreases whereas my KL loss remains constant/slightly increases. My code is based on the Keras tutorial shown here here But my code for the training step has been modified as so def train_step(self,data): if isinstance(data, tuple): data = data[0] with tf.GradientTape() as tape: mean, logvar = encoder(data) z = self.sampling(mean,logvar) x_logit = self.decoder(z) reconstruction_loss = tf.reduce_mean(keras.losses.MSE(data, x_logit)) reconstruction_loss*= 64*64 #KL_div_loss = -0.5*tf.reduce_mean(1 + logvar - tf.square(mean) - tf.exp(logvar)) KL_div_loss = tf.math.reduce_mean(-0.5*tf.math.reduce_sum(1 + logvar - tf.square(mean) - tf.exp(logvar),axis=1)) loss = reconstruction_loss + KL_div_loss grads = tape.gradient(loss, self.trainable_weights) self.optimizer.apply_gradients(zip(grads, self.trainable_weights)) return { "total loss": loss, "reconstruction loss": reconstruction_loss, "kl divergence loss": KL_div_loss, } I have seen a few articles on weighting the KL loss, but have no idea how to start. Also is my code above the correct implementation?

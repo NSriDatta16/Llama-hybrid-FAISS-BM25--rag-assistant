@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2712653
+[parent_id]: 2712393
+[tags]: 
+You need to detect that you have used the same object more than once in your object graph, tag each object in the output, and when you come to occurance #2 or higher, you need to output a "reference" to an existing tag instead of the object once more. Pseudo-code for serialization: for each object if object seen before output tag created for object with a special note as "tag-reference" else create, store, and output tag for object output tag and object Pseudo-code for deserialization: while more data if reference-tag to existing object get object from storage keyed by the tag else construct instance to deserialize into store object in storage keyed by deserialized tag deserialize object It is important that you do the last steps there in the order they're specified, so that you can correct handle this case: SomeObject obj = new SomeObject(); obj.ReferenceToSomeObject = obj; ie. you cannot store the object into your tag-storage after you've completely deserialized it, since you might need a reference to it in the storage while you are deserializing it.

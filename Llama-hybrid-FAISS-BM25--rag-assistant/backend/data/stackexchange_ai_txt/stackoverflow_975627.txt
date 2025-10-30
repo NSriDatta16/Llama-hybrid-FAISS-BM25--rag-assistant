@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 975627
+[parent_id]: 975574
+[tags]: 
+AFAIK, MetadataTypeAttribute is not supported by XmlSerializer (although it would be nice - I've simply never checked). And as you say, you can't add member attributes in a partial class. One option may be to make the generated properties non-public ( private , protected or internal ) - and name it something like TimestampStorage (etc) - then re-expose them (in the partial class) on the public API: [XmlIgnore] public object Timestamp { get {return TimestampStorage; } set {TimestampStorage = value; } } // and other properties (since XmlSerializer only looks at the public API). The biggest problem here is that LINQ-to-SQL queries ( Where etc) will only work against the generated columns ( TimestampStorage etc). I've used this approach before with the member as internal , allowing my DAL class to use the internal property... but it is a bit of a fudge.

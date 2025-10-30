@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 603296
+[parent_id]: 601806
+[tags]: 
+According to the mmap(2) man page on a recent Linux system, MAP_PRIVATE allocates the memory using copy-on-write (COW). This means, your memory will not be duplicated unless you make changes to it. As COW is an efficient method to implement this, I assume it is also done this way in other *NIX systems. The memory for mmap is organized in equal-sized chunks, so called pages. Memory will always be mapped in multiples of the page size, i.e. whole pages. Each page can be swapped independently. So if you write something to this mmap'ed memory range, only at least one page has to be copied. The page size depends on your system, on x86 it is usually 4096 bytes. If you are interested in the page size of your system, you can use sysconf(3) . #include long pagesize = sysconf(_SC_PAGESIZE); The pointer you get from mmap() will already point to a multiple of the page size and you should pass mprotect() an address being aligned to a page boundary.

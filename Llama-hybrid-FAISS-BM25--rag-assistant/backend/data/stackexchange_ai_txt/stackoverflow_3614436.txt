@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3614436
+[parent_id]: 3605985
+[tags]: 
+I don't believe you can achieve that this way, you need to change your dsl a bit to be able to capture that information. Here's how you could achieve that: class Foo { static plan = { vplan_testing { dir 'global_storage' } } } def closure = Foo.plan closure.delegate = this closure() def methodMissing(String name, Object args) { println "$name $args" if(args[0] instanceof Closure) args[0].call() } The output will be dir [global_storage] or you could defined you dsl this way: class Foo { static plan = { vplan_testing { test dir:'global_storage' } } } replace "test" by something meaningful to you domain. In this case the output would be test [[dir:global_storage]] Hope this helps -ken

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 604271
+[parent_id]: 604089
+[tags]: 
+I'll simulate some data similar to your problem and will fit a logistic regression model in R, and only look into three way interactions to compare all the combinations: # simulate data income = sample(c("low", "middle", "high"), 1000, replace = T) race = sample(c("white", "non-white"), 1000, replace = T) education = sample(c("low", "middle", "high"), 1000, replace = T) y = rbinom(1000,1,c(0.1, 0.5, 0.9, 0.8, 0.4)) df = data.frame(y=y, income = income, race=race, education = education) fit = glm(y ~ (income+race+education)^3 - (income+race+education)^2 - 1, data = df, family = binomial(link = 'logit')) summary(fit) You can visually compare the effects using GGally package like this: GGally::ggcoef_model(fit)

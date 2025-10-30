@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2958396
+[parent_id]: 2958314
+[tags]: 
+Using strncpy instead of strcpy is normally safer, but here you alloc eachtime the right amount of memory needed to store inPoint into mPoint, so I cant see what's the point. The max length of a string you can store in mPoint is limited by the amount of malloc-able memory. Add : you can realloc as suggested, and likely you can add a check on the length to avoid realloc-ing if the string is shorter; so mPoint would be able to hold always strings less than the longest string met so far, or equal to: // somewhere altogether with mPoints size_t mPointsCurrenStorage = INITVAL; // e.g. INITVAL is 256, and you pre-malloc-ate mPoints to 256 chars // ... in the func size_t cl = strlen(inPoints); if ( cl >= mPointsCurrentStorage ) { mPoints = realloc(mPoints, cl+1); mPointsCurrentStorage = cl+1; } strcpy(mPoints, inPoints); this way the storage grows only...

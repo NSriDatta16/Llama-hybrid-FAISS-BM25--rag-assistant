@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5344819
+[parent_id]: 5344477
+[tags]: 
+With your current architecture I am afraid you need to feed your DeleteAgentCommandHandler with a second repository ( IRepository , I guess) and then call something like Delete(command.AgentId) on that second repository. Or you could extend your IUnitOfWork to be a factory of repositories, so the interface would get an additional method like T CreateRepository () which allows you to pull any instance of your generic repository from the unit of work. (Then you only need to inject IUnitOfWork into the DeleteAgentCommandHandler , and not the repositories anymore.) Or stay away from generic repositories in your business/UI layer. If Agent is completely dependent on Tour it doesn't need to have a repository at all. A non-generic ITourRepository could have methods to handle the case of removing an agent from a tour in the database layer appropriately.

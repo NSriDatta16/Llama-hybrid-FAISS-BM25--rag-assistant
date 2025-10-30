@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4788157
+[parent_id]: 
+[tags]: 
+Fluent NHibernate mapping for read only properties
+
+I have recently migrated to Fluent NHibernate 1.1 from 1.0 and the migration has some breaking changes. For instance, fields in domain model like public virtual string CustomerType { get { return /*computed value based on _Type which is a column in database */; } } public virtual string MemberType { get { return _Type; } set { _Type = value; } } used to work fine without specifying any configuration/convention. Now it throws an error stating "Could not find setter". I see solutions where one creates a member variable such as customerType or _customerType or for that matter putting in a protected setter. Note that the CustomerType is dependent on another value retrieved from database. I have also seen alternatives like http://support.fluentnhibernate.org/discussions/help/269-fluentnhibernate-11-automapper-doesnt-accept-read-only-properties-anymore where the DefaultAutoMappingConfiguration is overridden such as public override bool ShouldMap(Member member) { if (member.IsProperty && !member.CanWrite) { return false; } return base.ShouldMap(member); } But this means other fields with private or protected setters are altogether skipped in the mapping. I am looking for a solution where Fluent NHibernate does not look for setter when it is not specified but maps private/protected setters. Any directions on how to go about with this?

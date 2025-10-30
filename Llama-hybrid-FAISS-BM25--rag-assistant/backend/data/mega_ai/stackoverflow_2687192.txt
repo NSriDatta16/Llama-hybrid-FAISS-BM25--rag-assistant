@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2687192
+[parent_id]: 2686812
+[tags]: 
+I found the answer. the right way is to implement thees methods in your MYWindow : NSWindow BOOL needsEnableUpdate; -(void)disableUpdatesUntilFlush { if(!needsEnableUpdate) NSDisableScreenUpdates(); needsEnableUpdate = YES; } -(void)flushWindow { [super flushWindow]; if(needsEnableUpdate) { needsEnableUpdate = NO; NSEnableScreenUpdates(); } } and in NSSplitterView delegate implement #pragma mark NSSplitView Delegate -(void)splitViewWillResizeSubviews:(NSNotification *)notification { [window disableUpdatesUntilFlush]; } my problem was that i tried to use carbon calls: DisableScreenUpdates(); EnableScreenUpdates(); instead of cocoa ones: NSDisableScreenUpdates(); NSEnableScreenUpdates();

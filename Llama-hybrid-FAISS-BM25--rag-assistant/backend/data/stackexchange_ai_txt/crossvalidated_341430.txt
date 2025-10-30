@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 341430
+[parent_id]: 
+[tags]: 
+Reinforcement Learning, Policy iteration terminal state issue
+
+The code of computing the state-value function $V^{\pi_{n}}$ is def compute_vpi(mdp, policy, gamma): """ Computes V^pi(s) FOR ALL STATES under given policy. :param policy: a dict of currently chosen actions {s : a} :returns: a dict {state : V^pi(state) for all states} """ all_states, n = mdp.get_all_states(), len(mdp.get_all_states()) state_index = {s: i for i, s in enumerate(all_states)} a, b = np.zeros((n, n)), np.zeros(n) for i, state in enumerate(all_states): vs = [1] + [0] * (n-1) # current line of state next_state = mdp.get_next_states(state, policy[state]) b[i] = sum([mdp.get_transition_prob(state, policy[state], next_s) * mdp.get_reward(state, policy[state], next_s) for next_s in next_state]) for next_s in next_state: vs[state_index[next_s]] = - mdp.get_transition_prob(state, policy[state], next_s) a[i] = vs return {state: v for v, state in zip(np.linalg.solve(a, b), all_states)} And I found that some states are the terminal state that if agent steps into these states, current episode ends. But in the policy , I don't konw how to set actions, since in mdp , there are no possible actions in the terminal state. How can I taking into consideration the terminal state when computing the state-value function $V^{\pi_{n}}$ at each iteration?

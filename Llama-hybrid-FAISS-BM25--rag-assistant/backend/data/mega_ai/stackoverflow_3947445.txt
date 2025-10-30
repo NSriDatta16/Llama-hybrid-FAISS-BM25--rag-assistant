@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3947445
+[parent_id]: 3947004
+[tags]: 
+Just started writing from scratch, turned out similar to OMG's answer: UPDATE a SET CountOfAA=dt.CountOfAA, CountOfBB=dt.CountOfBB FROM @MediaResurce a INNER JOIN ( SELECT aa.sku, SUM(CASE WHEN aa.somecol = 0 THEN 1 ELSE 0 END) AS CountOfAA, SUM(CASE WHEN aa.somecol = 1 THEN 1 ELSE 0 END) AS CountOfBB FROM @MediaResurce_Pics bb INNER JOIN @MediaResurce aa ON aa.sku = bb.sku GROUP BY aa.sku ) dt ON dt.sku = a.sku Points of attention: I assumed that 'somecol' is in @MediaResurce. If it exists in @MediaResurce_Pics, I see no reason for the second INNER JOIN For bigger tables, a significant speed boost to such a query can be made by setting appropriate indexes on the source tables, such as on 'sku' and 'somecol'. But table variables don't support indexes. Can you change them into temporary or fixed tables? How big is this table?

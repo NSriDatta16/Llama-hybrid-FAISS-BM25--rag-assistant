@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1572757
+[parent_id]: 1572290
+[tags]: 
+Here is a trick to speed up the search by a factor of 32, if neither the Knuth-Morris-Pratt algorithm on the alphabet of two characters {0, 1} nor reinier's idea are fast enough. You can first use a table with 256 entries to check for each byte in your bit stream if it is contained in the 16-bit word you are looking for. The table you get with unsigned char table[256]; for (int i=0; i > i) & 0xff] = 1; // mark contained bytes with true You can then find possible positions for matches in the bit stream using for (i=0; i As at most 8 of the 256 table entries are not zero, in average you have to take a closer look only at every 32th position. Only for this byte (combined with the bytes one before and one after) you have then to use bit operations or some masking techniques as suggested by reinier to see if there is a match. The code assumes that you use little endian byte order. The order of the bits in a byte can also be an issue (known to everyone who already implemented a CRC32 checksum).

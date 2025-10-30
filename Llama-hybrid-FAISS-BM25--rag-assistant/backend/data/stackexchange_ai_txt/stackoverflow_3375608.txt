@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3375608
+[parent_id]: 3375436
+[tags]: 
+Select Users.UserID, Users.FirstName, Users.LastName , PhoneNumbers.HomePhone , PhoneNumbers.WorkPhone , PhoneNumbers.FaxNumber From Users Left Join ( Select UPN.UserId , Min ( Case When PN.PhoneNumberType = 'Home' Then UPN.PhoneNumber End ) As HomePhone , Min ( Case When PN.PhoneNumberType = 'Work' Then UPN.PhoneNumber End ) As WorkPhone , Min ( Case When PN.PhoneNumberType = 'Fax' Then UPN.PhoneNumber End ) As FaxPhone From UserPhoneNumbers As UPN Join ( Select Min(UPN1.UserPhoneNumberId) As MinUserPhoneNumberId , UPNT1.PhoneNumberType From UserPhoneNumbers As UPN1 Join UserPhoneNumberTypes As UPNT1 On UPNT1.UserPhoneNumberTypeID = UPN1.UserPhoneNumberTypeID Where UPNT1.PhoneNumberType In('Home', 'Work', 'Fax') Group By UPN1.UserID, UPNT.PhoneNumberType ) As PN On PN.MinUserPhoneNumberId = UPN.UserPhoneNumberId Group By UPN.UserId ) As PhoneNumbers On PhoneNumbers.UserId = Users.UserId In this solution, for each user and phone number type, I'm picking the lowest primary key value from the UserPhoneNumbers table (I guessed that the column was named UserPhoneNumberId ).

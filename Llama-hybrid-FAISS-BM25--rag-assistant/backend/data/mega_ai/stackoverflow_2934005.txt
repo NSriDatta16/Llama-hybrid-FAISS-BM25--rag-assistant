@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2934005
+[parent_id]: 2933727
+[tags]: 
+For those interested. The method I decided on is to use NSURLConnection delegate method connection:didReceiveResponse: . Then I processed the response headers and store the PHPSESS cookie in the singleton NSHttpCookieStorage: - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response { [super connection:connection didReceiveResponse:response]; NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse *)response; NSArray *allCookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[urlResponse allHeaderFields] forURL:[response URL]]; if ([allCookies count]) { [connection cancel]; [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookies:allCookies forURL:[response URL] mainDocumentURL:nil]; } }

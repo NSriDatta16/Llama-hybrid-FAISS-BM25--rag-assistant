@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 60662
+[parent_id]: 
+[tags]: 
+ValueError: Expected 2D array, got 1D array instead:
+
+I was following this example online for simple text classification And when I create the classifier object like this from sklearn.datasets import fetch_20newsgroups twenty_train = fetch_20newsgroups(subset='train', shuffle=True) from sklearn.feature_extraction.text import CountVectorizer count_vect = CountVectorizer() X_train_counts = count_vect.fit_transform(twenty_train.data) X_train_counts.shape from sklearn.feature_extraction.text import TfidfTransformer tfidf_transformer = TfidfTransformer() X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts) X_train_tfidf.shape from sklearn.naive_bayes import MultinomialNB clf = MultinomialNB().fit(X_train_tfidf, twenty_train.target) and run predict on the test data it gives an error import numpy as np twenty_test = fetch_20newsgroups(subset='test', shuffle=True) predicted = clf.predict(twenty_test.data) np.mean(predicted == twenty_test.target) ValueError: Expected 2D array, got 1D array instead: But when I do the same thing using Pipeline it works as in the example from sklearn.pipeline import Pipeline text_clf = Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('clf', MultinomialNB())]) text_clf = text_clf.fit(twenty_train.data, twenty_train.target) twenty_test = fetch_20newsgroups(subset='test', shuffle=True) predicted = text_clf.predict(twenty_test.data) np.mean(predicted == twenty_test.target) Out[37]: 0.7738980350504514 Why is that?

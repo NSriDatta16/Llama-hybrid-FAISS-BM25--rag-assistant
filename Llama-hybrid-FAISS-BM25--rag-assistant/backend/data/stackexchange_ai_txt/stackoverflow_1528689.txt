@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1528689
+[parent_id]: 1323856
+[tags]: 
+There are two things to remember... Cocos2D coordinate system's origin is bottom left corner. By default, the anchor points of display elements are their centers. So this is how I solved this problem: Set the anchor points of the elements to be bottom left as well. [block setAnchorPoint:ccp(0, 0)]; Use convertCoordinate in ccTouchesBegan. -(BOOL)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { UITouch *touch = [touches anyObject]; CGPoint pt = [touch locationInView:[touch view]]; CGPoint ptConv = [[Director sharedDirector] convertCoordinate:pt]; } Calculate the rectangle of the element and compare... CGSize size = [block contentSize]; CGPoint point = [block position]; rect = CGRectMake(point.x, point.y, size.width, size.height); if (CGRectContainsPoint(rect, ptConv)) { // touched } It looks like the only step you are missing is to change the anchor point. If you prefer not to change the anchor point, you need to change the way rectangle is calculated; adding and subtracting the half of width and height. Hope it helps.

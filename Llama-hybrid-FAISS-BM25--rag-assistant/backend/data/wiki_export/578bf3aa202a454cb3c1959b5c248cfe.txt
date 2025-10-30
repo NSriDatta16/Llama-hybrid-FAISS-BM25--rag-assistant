@@ -1,0 +1,192 @@
+The tz database is a collaborative compilation of information about the world's time zones, primarily intended for use with computer programs and operating systems. Paul Eggert has been its editor and maintainer since 2005, with the organizational backing of ICANN. The tz database is also known as tzdata, the zoneinfo database or the IANA time zone database (after the Internet Assigned Numbers Authority), and occasionally as the Olson database, referring to the founding contributor, Arthur David Olson.
+
+Its uniform naming convention for time zones, such as America/New_York and Europe/Paris, was designed by Paul Eggert. The database attempts to record historical time zones and all civil changes since 1970, the Unix time epoch. It also includes transitions such as daylight saving time, and also records leap seconds.
+
+The database, as well as some reference source code, is in the public domain. New editions of the database and code are published as changes warrant, usually several times per year.
+
+Data structure
+
+File formats 
+The tz database is published as a set of text files which list the rules and zone transitions in a human-readable format.  For use, these text files are compiled into a set of platform-independent binary files—one per time zone.  The reference source code includes such a compiler called zic (zone information compiler), as well as code to read those files and use them in standard APIs such as localtime() and mktime().
+
+Definition of a time zone 
+Within the tz database, a time zone is any national region where local clocks have all agreed since 1970. This definition concerns itself first with geographic areas which have had consistent local clocks.  This is different from other definitions which concern themselves with consistent offsets from a prime meridian.  Therefore, each of the time zones defined by the tz database may document multiple offsets from UTC, typically including both standard time and daylight saving time.
+
+In the time zone text files, each time zone has one or more "zone lines" in one of the time zone text files.  The first zone line for a time zone gives the name of the time zone; any subsequent zone lines for that time zone leave the name blank, indicating that they apply to the same zone as the previous line.  Each zone line for a zone specifies, for a range of date and time, the offset to UTC for standard time, the name of the set of rules that govern daylight saving time (or a hyphen if standard time always applies), the format for time zone abbreviations, and, for all but the last zone line, the date and time at which the range of date and time governed by that line ends.
+
+Daylight saving time (DST) rules 
+The rules for daylight saving time are specified in named rule sets.  Each rule set has one or more rule lines in the time zone text files.  A rule line contains the name of the rule set to which it belongs, the first year in which the rule applies, the last year in which the rule applies (or "only" if it applies only in one year or "max" if it is the rule then in effect), the type of year to which the rule applies ("-" if it applies to all years in the specified range, which is almost always the case, otherwise a name used as an argument to a script that indicates whether the year is of the specified type), the month in which the rule takes effect, the day on which the rule takes effect (which could either be a specific day or a specification such as "the last Sunday of the month"), the time of day at which the rule takes effect, the amount of time to add to the offset to UTC when the rule is in effect, and the letter or letters to use in the time zone abbreviation (for example, "S" if the rule governs standard time and "D" if it governs daylight saving time).
+
+Names of time zones 
+The time zones have unique names in the form "Area/Location", e.g. "America/New_York". A choice was also made to use English names or equivalents, and to omit punctuation and common suffixes.  The underscore character is used in place of spaces. Hyphens are used where they appear in the name of a location.  The Area and Location names have a maximum length of 14 characters.
+
+Area 
+Area is the name of a continent, an ocean, or "Etc". The continents and oceans used are Africa, America, Antarctica, Arctic, Asia, Atlantic, Australia, Europe, Indian, and Pacific.
+
+The oceans are included since some islands are hard to connect to a certain continent. Some are geographically connected to one continent and politically to another. See also Boundaries between continents.
+
+The special area of "Etc" is used for some administrative zones, particularly for "Etc/UTC" which represents Coordinated Universal Time. In order to conform with the POSIX style, those zone names beginning with "Etc/GMT" have their sign reversed from the standard ISO 8601 convention.  In the "Etc" area, zones west of GMT have a positive sign and those east have a negative sign in their name (e.g "Etc/GMT-14" is 14 hours ahead of GMT).
+
+Location 
+Location is the name of a specific location within the area – usually a city or small island.
+
+Country names are not normally used in this scheme, primarily because they would not be robust, owing to frequent political and boundary changes. The names of large cities tend to be more permanent.  Usually the most populous city in a region is chosen to represent the entire time zone, although another city may be selected if it is more widely known, and another location, including a location other than a city, may be used if it results in a less ambiguous name. In the event that the name of the location used to represent the time zone changes, the convention is to create an alias in future editions so that both the old and new names refer to the same database entry.
+
+In some cases the Location is itself represented as a compound name, for example the time zone "America/Indiana/Indianapolis". Three-level names include those under "America/Argentina/...", "America/Kentucky/...", "America/Indiana/...", and "America/North_Dakota/...".
+
+The location selected is representative for the entire area.  However, if there were differences within the area before 1970, the time zone rules only apply in the named location.
+
+Examples
+
+Example zone and rule lines 
+These are rule lines for the standard United States daylight saving time rules, rule lines for the daylight saving time rules in effect in the US Eastern Time Zone (called "NYC" as New York City is the city representing that zone) in some years, and zone lines for the America/New_York time zone, as of release version tzdata2011n of the time zone database.  The zone and rule lines reflect the history of DST in the United States.
+# Rule  NAME    FROM    TO      TYPE    IN      ON      AT      SAVE    LETTER/S
+Rule    US      1918    1919    -       Mar     lastSun 2:00    1:00    D
+Rule    US      1918    1919    -       Oct     lastSun 2:00    0       S
+Rule    US      1942    only    -       Feb     9       2:00    1:00    W # War
+Rule    US      1945    only    -       Aug     14      23:00u  1:00    P # Peace
+Rule    US      1945    only    -       Sep     30      2:00    0       S
+Rule    US      1967    2006    -       Oct     lastSun 2:00    0       S
+Rule    US      1967    1973    -       Apr     lastSun 2:00    1:00    D
+Rule    US      1974    only    -       Jan     6       2:00    1:00    D
+Rule    US      1975    only    -       Feb     23      2:00    1:00    D
+Rule    US      1976    1986    -       Apr     lastSun 2:00    1:00    D
+Rule    US      1987    2006    -       Apr     Sun>=1  2:00    1:00    D
+Rule    US      2007    max     -       Mar     Sun>=8  2:00    1:00    D
+Rule    US      2007    max     -       Nov     Sun>=1  2:00    0       S
+....
+# Rule  NAME    FROM    TO      TYPE    IN      ON      AT      SAVE    LETTER
+Rule    NYC     1920    only    -       Mar     lastSun 2:00    1:00    D
+Rule    NYC     1920    only    -       Oct     lastSun 2:00    0       S
+Rule    NYC     1921    1966    -       Apr     lastSun 2:00    1:00    D
+Rule    NYC     1921    1954    -       Sep     lastSun 2:00    0       S
+Rule    NYC     1955    1966    -       Oct     lastSun 2:00    0       S
+# Zone  NAME            GMTOFF  RULES   FORMAT  [UNTIL]
+Zone America/New_York   -4:56:02 -      LMT     1883 November 18, 12:03:58
+                        -5:00   US      E%sT    1920
+                        -5:00   NYC     E%sT    1942
+                        -5:00   US      E%sT    1946
+                        -5:00   NYC     E%sT    1967
+                        -5:00   US      E%sT
+
+Data stored for each zone 
+For each time zone that has multiple offsets (usually due to daylight saving time), the tz database records the exact moment of transition. The format can accommodate changes in the dates and times of transitions as well. Zones may have historical rule changes going back many decades (as shown in the example above).
+
+Zone.tab 
+The file zone.tab is in the public domain and lists the zones. Columns and row sorting are described in the comments of the file, as follows:
+ # This file contains a table with the following columns:
+ # 1.  ISO 3166 2-character country code.  See the file `iso3166.tab'.
+ # 2.  Latitude and longitude of the zone's principal location
+ #     in ISO 6709 sign-degrees-minutes-seconds format,
+ #     either +-DDMM+-DDDMM or +-DDMMSS+-DDDMMSS,
+ #     first latitude (+ is north), then longitude (+ is east).
+ # 3.  Zone name used in value of TZ environment variable.
+ # 4.  Comments; present if and only if the country has multiple rows.
+ #
+ # Columns are separated by a single tab.
+ # The table is sorted first by country, then an order within the country that
+ # (1) makes some geographical sense, and
+ # (2) puts the most populous zones first, where that does not contradict (1).
+
+Data before 1970 
+Data before 1970 aims to be correct for the city identifying the region, but is not necessarily correct for the entire region. This is because new regions are created only as required to distinguish clocks since 1970.
+
+For example, between 1963-10-23 and 1963-12-09 in Brazil only the states of Minas Gerais, Espirito Santo, Rio de Janeiro, and São Paulo had summer time. However, a requested split from America/Sao_Paulo was rejected in 2010 with the reasoning that, since 1970, the clocks were the same in the whole region.
+
+Time in Germany, which is represented by Europe/Berlin, is incorrect for the year 1945 when the Trizone used daylight saving time rules different from Berlin's.
+
+Coverage
+
+Zones covering multiple post-1970 countries 
+There are two zones that cover an area that was covered by two countries after 1970. The database follows the definitions of countries as per ISO 3166-1, whose predecessor, ISO 3166, was first published in 1974.
+ Asia/Aden – two countries until 1990: North Yemen (ISO 3166-1: YE; capital Sana'a) and South Yemen (People's Republic, ISO 3166-1: YD, ISO 3166-3: YDYE; capital: Aden).
+ Europe/Berlin – two countries until 1990: East Germany (ISO 3166-1: DD, ISO 3166-3: DDDE) and West Germany (ISO 3166-1: DE)
+
+Maintenance 
+
+The tz reference code and database is maintained by a group of volunteers. Arthur David Olson makes most of the changes to the tz reference code. Paul Eggert makes most of the changes to the tz database. Proposed changes are sent to the tz mailing list, which is gatewayed to the comp.time.tz Usenet newsgroup. Source files are distributed via the IANA FTP server. Typically, these files are taken by a software distributor like Debian, compiled, and then the source and binaries are packaged as part of that distribution. End users can either rely on their software distribution's update procedures, which may entail some delay, or obtain the source directly and build the binary files themselves. The IETF has published , "Procedures for Maintaining the Time Zone Database" documenting best practices based on similar principles.
+
+Unix-like systems 
+The standard path for the timezone database is /usr/share/zoneinfo/ in Linux distributions, macOS, and some other Unix-like systems.
+
+Usage and extensions
+
+Boundaries of time zones 
+Geographical boundaries in the form of coordinate sets are not part of the tz database, but boundaries are published by Eric Muller in the form of vector polygons. Using these vector polygons, one can determine, for each place on the globe, the tz database zone in which it is located.
+
+Use in other standards 
+The Unicode Common Locale Data Repository (CLDR) refers to zones in the tz database.  However, as the name for a zone can change from one tz database release to another, the CLDR assigns the UN/LOCODE for the city used in the name for the zone, or an internally-assigned code if there is no such city for the zone, to a tzdb zone.
+
+Use in software systems 
+The tz database is used for time zone processing and conversions in many computer software systems, including:
+
+ BSD-derived systems, including FreeBSD, NetBSD, OpenBSD, DragonFly BSD, macOS, and iOS (they also use the reference TZ database processing code as their TZ POSIX API implementation);
+ the GNU C Library and systems that use it, including GNU, most Linux distributions, BeOS, Haiku, Nexenta OS, and Cygwin;
+ System V Release 4-derived systems, such as Solaris and UnixWare;
+ AIX 6.1 and later (earlier versions of AIX, starting with AIX 5.2, include zoneinfo, for support of third-party applications such as MySQL, but do not use it themselves);
+ Android
+ several other Unix systems, including IRIX, Tru64, SunOS 4.x, and UNICOS/mp;
+ OpenVMS;
+ the Java Runtime Environment since release 1.8 (2014), see java.time.ZoneId
+ the Perl modules DateTime::TimeZone and DateTime::LeapSecond since 2003;
+ PHP releases since 5.1.0 (2005);
+ the Ruby Gem TZInfo;
+ the Python standard library zoneinfo module, and the third-party pytz package;
+ the JavaScript language specification for Internationalization explicitly specifies the usage of IANA Time Zone names for API, and recommends the usage of the time zone data as well.
+ Numerous libraries also available: timezone-js, BigEasy/TimeZone, WallTime-js and moment-timezone;
+ the Pandas (Python) module pandas – Python Data Analysis Library;
+ the .NET Framework libraries NodaTime, TZ4Net and zoneinfo ;
+ the Haskell libraries timezone-series and timezone-olson;
+ the Erlang module ezic;
+ The Go standard library time package;
+ The Rust crate chrono-tz;
+ The Squeak Smalltalk time package;
+ The C++ libraries Boost and Qt, and C++20 chrono standard library's std::chrono::tzdb;
+ The Delphi and Free Pascal library TZDB;
+ The Free Pascal library PascalTZ;
+ The Tool Command Language has a clock command using tzdata;
+ Oracle releases since 10g (2004);
+ PostgreSQL since release 8.0 (2005);
+ the Microsoft SQL Server library SQL Server Time Zone Support
+ MongoDB since release 3.6;
+ the Dart/Flutter Timezone package in pub;
+ embedded software such as the firmware used in IP clocks.
+
+The Olson timezone IDs are also used by the Unicode Common Locale Data Repository (CLDR) and International Components for Unicode (ICU). For example, the CLDR Windows–Tzid table maps Microsoft Windows time zone IDs to the standard Olson names, although such a mapping cannot be perfect because the number of time zones in Windows systems is significantly lower than in the IANA TZ database.
+
+History 
+The project's origins go back to 1986 or earlier.
+
+2011 lawsuit 
+On 30 September 2011, a lawsuit, Astrolabe, Inc. v. Olson et al., was filed concerning copyright in the database.  As a result, on 6 October 2011, the database's mailing list and FTP site were shut down.  The case revolved around the database maintainers' use of The American Atlas, by Thomas G. Shanks, and The International Atlas, by Thomas G. Shanks and Rique Pottenger.  It complained of unauthorised reproduction of atlas data in the timezone mailing list archive and in some auxiliary link collections maintained with the database, though it did not actually point at the database itself.  The complaint related only to the compilation of historical timezone data, and did not cover extant tzdata world timezone tables.
+
+This lawsuit was resolved on 22 February 2012 after the involvement of the Electronic Frontier Foundation, when Astrolabe voluntarily moved to dismiss the lawsuit without having ever served the defendants and agreed to a covenant not to sue in the future.
+
+Move to ICANN
+ICANN took responsibility for the maintenance of the database on 14 October 2011.  The full database and a description of plans for its maintenance are available online from IANA.
+
+See also 
+ List of tz database time zones
+ Time zone
+ Daylight saving time
+
+References
+
+External links
+
+General
+ .
+  (deprecated, see Official IANA sources below)
+ .
+ .
+ tz mailing list at ICANN
+ "A literary appreciation of the Olson/Zoneinfo/tz database" by Jon Udell
+
+Official IANA sources
+Home page
+FTP
+ rsync, at rsync://rsync.iana.org/tz/
+
+Man pages
+  (gives the syntax of source files for the tz database)
+  (gives the format of compiled tz database files)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2290559
+[parent_id]: 2263417
+[tags]: 
+It sounds like you need transactions and/or locking, just like a database. your client code would read something like: function add_item($group, $item) { $soap = new SoapClient(...); $transaction = $soap->startTransaction(); # or: # $lock = $soap->lockGroup($group, "w"); # strictly to prevent duplication of the rest of the code: # $transaction = $lock; $capacity = $soap->getGroupCapacity($transaction, $group); $itemsInGroup = $soap->getNumberOfItemsInGroup($transaction, $group); if ($itemsInGroup == $capacity) { $soap->setGroupCapacity($transaction, $group, $capacity + 1); } $soap->addItemToGroup($transaction, $group, $item); $transaction->commit(); # or: $lock->release(); } Of course, you'll need to handle misbehaving clients, such as those that crash before committing/releasing or those that lock too much, causing other clients to unnecessarily fail. This is possible with inactivity and maximum timeouts, and maximum number of locks per client.

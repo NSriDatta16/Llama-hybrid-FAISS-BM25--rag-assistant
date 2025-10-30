@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5053704
+[parent_id]: 5053449
+[tags]: 
+I have found a method that seems to do what I want. I was inspired by http://www.autoitscript.com/forum/topic/66508-peekmessage-and-wm-close/ by Valik to investigate subclassing. First, I replace the Window Procedure of the window that I want to a special "PostQuitMessage" procedure. Original_WindowProc = (WNDPROC)GetWindowLongPtr(hWnd, GWL_WNDPROC); SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)&WindowProc); The window procedure looks like this: LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { if(uMsg == WM_DESTROY) { PostQuitMessage(0); } return CallWindowProc(Original_WindowProc, hWnd, uMsg, wParam, lParam); } This allows me to convert any window class (including system ones) into the main window for my application.

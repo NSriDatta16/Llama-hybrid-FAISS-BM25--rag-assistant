@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 47435
+[parent_id]: 
+[tags]: 
+Weight update to fully convolutional network when supervision is only for a patch
+
+I had a fundamental question, that is independent of any DL framework. In a fully convolutional network, if we forward an image of size 1000 x 1000, but only provide supervision signal for a 100 x 100 crop of the output, how are the weights of the convolution filters expected to be updated? Because the same filters were applied to all pixels. Should they - update all the filters with the average of the update derived by backproping the 100x100 pixel crop? Or should they take the average for all the pixels. This means the update will be scaled down by 1e-2, because the gradient from most other pixels is zero. Finally, I do this in PyTorch, so does anyone know which approach they use? Thanks Edit 1 - More information - When computing the scalar loss, I take the average over the patch that I chose. Under the assumption that the error is evenly distributed, the scalar loss will have the same value. But, this loss will only give gradients to a 100 x 100 patch. Say the the receptive field is x, it'll impact a max of (100 + 2x) * (100 + 2x) pixels at the shallowest layer. Since the conv filter was applied across 1000 x 1000, many of indexes will receive no grad. Does PyTorch ignore these for update calculation or consider them 0? And which is the correct way?

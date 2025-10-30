@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4758087
+[parent_id]: 521687
+[tags]: 
+I just figured out interesting solution: public class DepthAware : IEnumerable { private readonly IEnumerable source; public DepthAware(IEnumerable source) { this.source = source; this.Depth = 0; } public int Depth { get; private set; } private IEnumerable GetItems() { foreach (var item in source) { yield return item; ++this.Depth; } } public IEnumerator GetEnumerator() { return GetItems().GetEnumerator(); } IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); } } // Generic type leverage and extension invoking public static class DepthAware { public static DepthAware AsDepthAware (this IEnumerable source) { return new DepthAware (source); } public static DepthAware New (IEnumerable source) { return new DepthAware (source); } } Usage: var chars = new[] {'a', 'b', 'c', 'd', 'e', 'f', 'g'}.AsDepthAware(); foreach (var item in chars) { Console.WriteLine("Char: {0}, depth: {1}", item, chars.Depth); }

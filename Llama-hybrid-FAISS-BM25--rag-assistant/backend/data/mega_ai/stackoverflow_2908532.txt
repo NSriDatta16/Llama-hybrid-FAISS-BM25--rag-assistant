@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2908532
+[parent_id]: 2908176
+[tags]: 
+The problem there is reads in mysql by default don't pay attention to transactions. So a highly trafficked webpage will have inaccurate counts. Indeed. I would use a DML style operation here (see chapter 13.4. DML-style operations ): Session session = sessionFactory.openSession(); Transaction tx = session.beginTransaction(); String hqlUpdate = "update webPage wp set wp.visitCount = wp.visitCount + 1 where wp.id = :id"; int updatedEntities = s.createQuery( hqlUpdate ) .setLong( "newName", 1234l ) .executeUpdate(); tx.commit(); session.close(); Which should result in update Web_Page set Visit_Count=Visit_Count+1 where Id=12345; And secondly, how can I do an update like this in Hibernate which is a bit more complex? Hmm... I'm tempted to say "you're screwed"... need to think more about this.

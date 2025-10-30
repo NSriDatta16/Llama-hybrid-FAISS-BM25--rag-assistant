@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2181767
+[parent_id]: 2181736
+[tags]: 
+I might not have fully understood your architecture, but my understanding is that a client calls you by passing it's ID and a char * and wants you to write it to disk. Is there a reason you have to copy the original buffer? By doing that, you have everything in memory twice and an opportunity to mess up memory management. If possible, just work off of the original buffer. Is there some threading happening here? If this is all single threaded (from the point of view of this "server" code at least... one thread to poll and write results), you don't really need a FIFO since things will just happen in the order you poll clients. If there is a thread (or multiple ones) to poll clients and a separate thread to write the results, a FIFO is a great way to organize thread communication.

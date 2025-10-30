@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 549503
+[parent_id]: 549393
+[tags]: 
+It may be easier if you leave the User class alone and allow the IDE handle it's creation. Often I prefer to have a separate class handle the data retrieval. Let's say you call it the UserDataProvider and all calls to get a User instance eventually go through this class. The constructor of UserDataProvider could instantiate a global instance of the data context object for reuse. It would look something like this (in C# and untested code so bear with me): public class UserDataProvider { private UserDataContext _data = null; public UserDataProvider() { _data = new UserDataContext(); } public User GetUser(int userID) { return _data.Users.FirstOrDefault(u => u.UserID == userID); } } Alternatively, you might place initialization in a property and access that property for data context usage. public class UserDataProvider { private UserDataContext _dataContext; private UserDataContext DataContext { get { if (_data == null) _data = new UserDataContext(); return _data; } } public User GetUser(int userID) { return DataContext.Users.FirstOrDefault(u => u.UserID == userID); } }

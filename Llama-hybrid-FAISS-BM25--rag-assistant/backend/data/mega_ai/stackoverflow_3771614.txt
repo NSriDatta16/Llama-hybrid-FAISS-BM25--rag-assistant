@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3771614
+[parent_id]: 3771401
+[tags]: 
+I think your best bet would be to write a custom CLR function , perhaps using XmlDocument.Load . In the CLR you could trap the error on a failed load and return an appropriate result. EDIT : The code below would also work although it's not as elegant as a UDF. Unfortunately, we can't use TRY/CATCH in a UDF. create procedure dbo.usp_IsValidXML(@XMLCandidate varbinary(max), @Return bit output) as begin declare @x xml begin try set @x = cast(@XMLCandidate as xml) set @Return = 1 end try begin catch set @Return = 0 end catch end go declare @test1 varbinary(max) declare @test2 varbinary(max) set @test1 = cast(' asdf ' as varbinary(max)) set @test2 = cast(' asdf

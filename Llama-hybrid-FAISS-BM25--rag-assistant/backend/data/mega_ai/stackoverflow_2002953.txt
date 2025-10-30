@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2002953
+[parent_id]: 1977742
+[tags]: 
+In this situation I would do a couple of things. First and foremost I would re-structure the work that the main thread is doing to be broken into as small of pieces as possible. That gives you a series of safe places to break execution at. Then you want to create a work queue, probably using the microsoft slist. The slist will give you the ability to have one thread adding while another reads without the need for locking. Once you have that in place you can essentially make your main thread run in a loop over each piece of work, checking periodically to see if there are requests to handle in the queue. Long-term what is nice about an architecture like that is that you could fairly easily eliminate the thread localized storage and parallelize the main thread by converting the slist to a work queue (probably still using the slist), and making the small pieces of work and the responses into work objects which can be dynamically distributed across any available threads.

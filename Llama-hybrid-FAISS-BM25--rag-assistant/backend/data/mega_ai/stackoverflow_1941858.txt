@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1941858
+[parent_id]: 1941777
+[tags]: 
+The code of a function only applies to the class it is defined in, even if it is virtual. So, the following function always applied to class A and therefore appends to A::children : void A::AddToChildren(A *obj) { children.push_back(obj); } If you want distinct vectors for every class, you have no choice but to repeat code from one class to another (the static variable, its initialization, and either an add-to-children function or a get-children-list function). I would advise against calling virtual functions in constructors, though. Another approach you might be interested in would be to have a distinct class template for such storage: template struct children { static std::vector list; static void add(T* t) { list.push_back(t); } }; B::B() : A() { children ::add(this); } C::C() : B() { children ::add(this); }

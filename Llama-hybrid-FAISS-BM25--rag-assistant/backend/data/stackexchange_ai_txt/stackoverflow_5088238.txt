@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5088238
+[parent_id]: 5087864
+[tags]: 
+Well, there's perhaps a more elegant way to do this (something hints at me that there is), but here's an approach that will work if you're using a version of SQL Server that accepts common table expressions: use Tempdb go create table [Test] ( [id] int not null, [Seq] int not null, [Amt] int not null ) insert into [Test] values (1, 1, 500), (1, 2, 500), (1, 3, 500), (1, 5, 500), (2, 10, 600), (2, 11, 600), (3, 1, 700), (3, 3, 700) ;with lower_bound as ( select * from Test where not exists ( select * from Test as t1 where t1.id = Test.id and t1.Seq = Test.Seq - 1 ) ), upper_bound as ( select * from Test where not exists ( select * from Test as t1 where t1.id = Test.id and t1.Seq = Test.Seq + 1 ) ), bounds as ( select id, (select MAX(seq) from lower_bound where lower_bound.id = upper_bound.id and lower_bound.Seq

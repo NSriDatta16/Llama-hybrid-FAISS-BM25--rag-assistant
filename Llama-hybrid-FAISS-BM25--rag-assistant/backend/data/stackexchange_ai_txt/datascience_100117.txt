@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 100117
+[parent_id]: 55928
+[tags]: 
+Might be late but I found this question interesting: Try: import pandas as pd from sklearn.datasets import load_iris from sklearn.pipeline import Pipeline from sklearn.compose import make_column_transformer, make_column_selector as selector from sklearn.preprocessing import FunctionTransformer, MinMaxScaler iris = load_iris() X, _ = iris.data, iris.target X = pd.DataFrame(X, columns= iris.feature_names) valores = ['Smith', 'Jones', 'Johnson'] np.random.seed(42) X["categoria"] = np.random.choice(a = valores, size = X.shape[0]) Gives: To validate results: X.categoria.value_counts() def f(series): mapeo = series.value_counts().to_dict() series = series.replace(mapeo) return series preprocessor = make_column_transformer((MinMaxScaler(), selector(dtype_exclude= "object")), (FunctionTransformer(lambda x: f(x)), selector(dtype_include= "object"))).fit(X) pd.DataFrame(preprocessor.transform(X)) Returns: Hope it helps!

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 25180
+[parent_id]: 
+[tags]: 
+Parameter Tuning by Cross Validation for Random Forest
+
+I train a binary random forest classifier on scikit-learn's 20 newsgroups dataset. I want to tune the parameters and try so by gridsearch and 3-fold cross validation on the training data. Is there any problem with this methodology? For the max_depth parameter I get a really high value of 500 and that seems too high. Any advice? The code is: from __future__ import print_function import sklearn import sklearn.ensemble import sklearn.metrics from sklearn.datasets import fetch_20newsgroups from sklearn.grid_search import GridSearchCV categories = ['sci.med', 'soc.religion.christian'] newsgroups_train = fetch_20newsgroups(subset='train', categories=categories, remove=('headers', 'footers', 'quotes')) newsgroups_test = fetch_20newsgroups(subset='test', categories=categories, remove=('headers', 'footers', 'quotes')) class_names = ['medicine', 'christian'] vectorizer = sklearn.feature_extraction.text.TfidfVectorizer(lowercase=False) train_vectors = vectorizer.fit_transform(newsgroups_train.data) test_vectors = vectorizer.transform(newsgroups_test.data) rf = sklearn.ensemble.RandomForestClassifier(max_features='sqrt') param_grid = { "n_estimators" : [10, 100, 1000], "max_depth" : [5, 100, 500], "min_samples_leaf" : [1, 20, 40]} CV_rf = GridSearchCV(estimator=rf, param_grid=param_grid) CV_rf.fit(train_vectors, newsgroups_train.target) print(CV_rf.best_params_)

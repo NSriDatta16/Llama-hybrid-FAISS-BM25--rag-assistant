@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2984313
+[parent_id]: 2984286
+[tags]: 
+I repro, smells like the WF logic that hunts for a focusable item is running after the event and messes up the focus. These kind of problems can be elegantly solved by running code after the event is processed by using Control.BeginInvoke(). This worked well: private void toolStripButton1_Click(object sender, EventArgs e) { Form child = new Form2(); child.MdiParent = this; child.FormClosed += new FormClosedEventHandler(child_FormClosed); child.Show(); } void child_FormClosed(object sender, FormClosedEventArgs e) { if (this.MdiChildren.Length == 1) { this.BeginInvoke(new MethodInvoker(() => treeView1.Focus())); } }

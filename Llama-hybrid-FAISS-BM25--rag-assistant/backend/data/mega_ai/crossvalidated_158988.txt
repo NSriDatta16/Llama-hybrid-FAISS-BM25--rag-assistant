@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 158988
+[parent_id]: 158136
+[tags]: 
+There are two things that you can do: Check coef_ param and detect which column was ignored Use the same model for input data transformation using method transform Small modifications for your example >>> from sklearn.svm import LinearSVC >>> from sklearn.datasets import load_iris >>> from sklearn.cross_validation import train_test_split >>> >>> iris = load_iris() >>> x_train, x_test, y_train, y_test = train_test_split( ... iris.data, iris.target, train_size=0.7 ... ) >>> >>> svc = LinearSVC(C=0.01, penalty="l1", dual=False) >>> >>> X_train_new = svc.fit_transform(x_train, y_train) >>> print(X_train_new.shape) (105, 3) >>> >>> X_test_new = svc.transform(x_test) >>> print(X_test_new.shape) (45, 3) >>> >>> print(svc.coef_) [[ 0. 0.10895557 -0.20603044 0. ] [-0.00514987 -0.05676593 0. 0. ] [ 0. -0.09839843 0.02111212 0. ]] As you see method transform do all job for you. And also from coef_ matrix you can see that last column just a zero vector, so you model ignore last column from data

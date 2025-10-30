@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5034706
+[parent_id]: 
+[tags]: 
+Using custom form builders with nested models in Ruby on Rails
+
+I'm using nested model form technique from Railscast 197 (ASCIIcast here ). But I'm running into a problem with my setup, I need to use a custom form builder for one of my nested models' partials. I've got it working, sort of, by modifiying the link_to_add_fields_helper, like so... def link_to_add_fields(name, f, association) new_object = f.object.class.reflect_on_association(association).klass.new fields = f.fields_for(association, new_object, :child_index => "new_#{association}", :builder => AnswerFormBuilder) do |builder| #was... #fields = f.fields_for(association, new_object, :child_index => "new_#{association}") do |builder| render(association.to_s.singularize + "_fields", :f => builder) end link_to_function(name, h("add_fields(this, \"#{association}\", \"#{escape_javascript(fields)}\")")) end So you see by setting both nested models the AnswerFormBuilder I kinda solved my problem, but it's not very elegant since both Questions and Answers don't need them. Additionally I've gotten to a point where I'd like to do an Application wide form builder. Which brings me to my second question, how can I "nest" custom form builders? I.e. have AnswerFormBuilder implement all the methods that the ApplicationFormBuilder would have, plus some other special ones for Answers. Thanks so much, I've looked everywhere and asked on other blogs but no answer yet.

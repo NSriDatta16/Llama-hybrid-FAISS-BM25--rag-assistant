@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1423366
+[parent_id]: 1423308
+[tags]: 
+I have written something similar before. There is a way using AT commands to tell the modem to signal you each time an SMS is received. For reference, I was using a Maestro 100 GSM Modem in an embedded application. First you have to initialize the modem properly. I was using text mode for the SMS, but you might be using something different. Pick from these what you want. AT+CNMI is the most important. AT&F0 # Restore factory defaults ATE0 # Disable command echo AT+CMGF=1 # Set message format to text mode AT+CNMI=1,1,0,1,0 # Set new message indicator AT+CPMS="SM","SM","SM" # Set preferred message storage to SIM You would then wait for a message notification, that will look like this. (Don't match on the index number, that might differ between notifications) +CMTI: "SM",0 # Message notification with index When you get that notification, retrieve the unread SMS's: AT+CMGL="REC UNREAD" # Retrieve unread messages I would recommend you also add a poll, maybe every 5 minutes or so, just in case you miss a notification. With serial comms you can never be sure!

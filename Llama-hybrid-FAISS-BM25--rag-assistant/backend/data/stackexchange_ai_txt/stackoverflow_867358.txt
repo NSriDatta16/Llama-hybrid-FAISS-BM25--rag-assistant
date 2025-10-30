@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 867358
+[parent_id]: 866060
+[tags]: 
+Yes, we use collections as arguments to stored procs. That makes it possible to select all the records that have a certain id (often called variable in list ) without using a temporary table. For example: create or replace type numbertype as object(nr number(20,10) ) / create or replace type number_table as table of numbertype / create or replace procedure tableselect(p_numbers in number_table, p_ref_result out sys_refcursor) is begin open p_ref_result for select * from employees , (select /*+ cardinality(tab 10) */ tab.nr from table(p_numbers) tab) tbnrs where id = tbnrs.nr; end; / You can also use this technique with mutli column objects.

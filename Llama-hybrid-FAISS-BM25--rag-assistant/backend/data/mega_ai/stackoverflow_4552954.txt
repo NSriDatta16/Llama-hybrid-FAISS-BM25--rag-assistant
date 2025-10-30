@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4552954
+[parent_id]: 4550862
+[tags]: 
+You could use a Rack Middleware, but it will require that you fork it on Github first. https://github.com/roja/rack-geo At the moment this project gives you City and Organisation names based on the IP address of the computer making the request - you need Country Code too. You could add it to the code relatively easily here: https://github.com/roja/rack-geo/blob/master/lib/rack/geo.rb You could then set a Rack environment variable to indicate if the request is from the USA, in the call method: Rack::Request.new(env)["born"] = "...in the USA" Add it to your config file: config.middleware.use Rack::Geo And then in your controller you can test if the request has this environment variable set appropriately and redirect to a 'sorry you must be from the USA' page: if params['born'] == "...in the USA" redirect_to "/not_from_round_here" end Bear in mind that IP address sniffing is fallible. I often take trains in the UK and end up with Google in German.

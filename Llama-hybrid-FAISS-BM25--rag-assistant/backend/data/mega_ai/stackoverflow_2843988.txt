@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2843988
+[parent_id]: 2843730
+[tags]: 
+This seems to get pretty close: sed '/^$/! {:a;N;s/\(.\{75\}[^\n]*\)\n\(.\{75\}\)/\1 \2/;ta}' ebook.txt It doesn't get the last line of a paragraph if it's shorter than 75 characters. Edit: This version should do it all: sed '/^.\{0,74\}$/ b; :a;N;s/\(.\{75\}[^\n]*\)\n\(.\{75\}\)/\1 \2/;ta; s/\n/ /g' ebook.txt Edit 2: If you want to re-wrap at word/sentence boundaries at a different width (here 65, but choose any value) to prevent words from being broken at the margin (or long lines from being truncated): sed 's/^.\{0,74\}$/&\n/' ebook.txt | fmt -w 65 | sed '/^$;s/\n//}' To change from DOS to Unix line endings, just add dos2unix to the beginning of any of the pipes above: dos2unix

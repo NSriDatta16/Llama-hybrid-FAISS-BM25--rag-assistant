@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5134087
+[parent_id]: 5132224
+[tags]: 
+Jon's answer is fine -- pay particular attention to the bit about decimal -- but I thought I'd add that you can "lift" methods to nullable using higher-order programming. For example: public static Func Lift (Func func) where T : struct { return (T? t)=>t.HasValue ? (T?)func(t.Value) : (T?)null; } public static Func LiftRef (Func func) where A : struct where R : class { return (A? a)=>a.HasValue ? func(a.Value) : null; } And now you can say: Func round2 = x=>Math.Round(x, 2); Func liftedRound2 = Lift(round2); Func liftedToString = LiftRef(decimal.ToString); ... public static void SetPrice(decimal? value) { this.TextBoxPrice.Text == liftedToString(liftedRound2(value)) ?? "No Price"; }

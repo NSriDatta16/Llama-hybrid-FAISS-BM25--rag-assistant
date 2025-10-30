@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 556190
+[parent_id]: 556155
+[tags]: 
+You should use a sampling frequency (a-la MRTG). Say you only need one second precision and to maintain the average for the past minute, you will have a fixed table of 60 entries referring to the past 60 seconds (including the present one). And also maintain the current global entry. Each entry consists of an average value and a number of events. Every entry starts at 0 for both value. When you receive a new event, you change the current and the global entry like that: average = ((number * average) + 1) / (number + 1) number = number + 1 At each sampling interval you change the global entry using the oldest entry: global.average = ((global.number * global.average) - (oldest.number * oldest.average)) / (global.number - oldest.number) global.number = global.number - oldest.number And you reset the oldest entry to 0 and start using it as the current one.

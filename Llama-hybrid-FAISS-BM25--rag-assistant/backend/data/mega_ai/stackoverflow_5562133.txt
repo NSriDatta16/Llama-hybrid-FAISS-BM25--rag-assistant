@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5562133
+[parent_id]: 
+[tags]: 
+How do I use NPAPI to receive calls from javascript on the page?
+
+I am working on a plugin that needs to receive calls from javascript. Specifically, it needs to be able to give a callback function to javascript, and the javascript needs to be able to call that function later with at least a string argument. The javascript looks something like this (ideally): var callback = null; var setCallback = function(cb) { var callback = cb; }; var input = document.getElementById('my_text_input_field'); input.onkeypress = function(ev) { // Did the user press enter? if (ev && ev.which == 13) { callback(input.value); return false; } }; I'm imagining my C code looks something like this, so far: void SetCallback(void (*callback)(const char*)) { NPVariant npCallback; OBJECT_TO_NPVARIANT(callback, npCallback); NPVariant args[] = { npCallback }; size_t nargs = 1; NPVariant result; // gFuncs is an NPNetscapeFuncs pointer NPIdentifier method = gFuncs->getstringidentifier("setCallback"); // gJavaScriptAPI is an NPObject pointer gFuncs->invoke(gInstance, gJavaScriptAPI, method, args, nargs, &result); } Is this a reasonable start? If so, what do I need to do in the callback function to handle calls to it? If not, what is the correct way to do something like this, or is it not possible in NPAPI? Thank you in advance.

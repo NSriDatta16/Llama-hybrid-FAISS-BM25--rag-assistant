@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 940001
+[parent_id]: 939831
+[tags]: 
+Edit: I googled to check my answer: "Processing Data Queues in SQL Server with READPAST and UPDLOCK" . It's been years since I read about and played with this solution. Original: If you use the READPAST hint, then locked rows are skipped. You've used ROWLOCK so you should avoid lock escalation. You also need UPDLOCK, as I found out. So process 1 locks 20 rows, process 2 will take the next 20, process 3 takes rows 41 to 60, etc The update can also be written like this: UPDATE TOP (20) foo SET ProcessorID = @PROCID FROM OrderTable foo WITH (ROWLOCK, READPAST, UPDLOCK) WHERE ProcessorID = 0 Refresh, Oct 2011 This can be done more elegantly with the OUTPUT clause if you need a SELECT and an UPDATE in one go.

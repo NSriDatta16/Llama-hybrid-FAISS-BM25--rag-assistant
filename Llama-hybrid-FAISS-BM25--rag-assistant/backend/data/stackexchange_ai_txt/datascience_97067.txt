@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 97067
+[parent_id]: 
+[tags]: 
+Using Subsequent Mask in Transformer Leads to NaN Outputs
+
+I am trying to implement an autoregressive transformer model similar to the paper attention is all you need . From what I have understood, in order to replicate the architecture fully, I need to give the transformer decoder 3 masks. Target subsequent mask: this is for causality. Target padding indexes: just to look at non-padded indices. Encoder padding indices: just to look at non-padded inputs from the encoder. The snippet is here: y = self.decoder(y, x, tgt_mask=tgt_causal_mask, tgt_key_padding_mask=tgt_padding_mask, memory_key_padding_mask=src_padding_mask) With masks being generated like this: def generate_no_peek_mask(self, sz): mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1) mask = mask.float().masked_fill(mask == 0, float("-inf")).masked_fill(mask == 1, float(0.0)) mask = mask.to(self.device) return mask def generate_padding_mask(self, seq, pad_idx): return (seq != pad_idx).to(self.device) The problem is that using these masks leads to issues with the Softmax function because of NaN values. Without these masks, the model does not generate any NaN value. I have tried toying with various input lengths and seeing what happens when I make sure my inputs are moderately big, but it still does not work. The only thing that works is not giving the decoder the masks.

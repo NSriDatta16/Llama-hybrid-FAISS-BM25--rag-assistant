@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4762811
+[parent_id]: 4148023
+[tags]: 
+Good thought on the Form-1, Form-2 scenario - I'm not sure if that would work or not. But here is a much easier way without having to fumble around with coordinating forms being hidden and running stuff, and coming to the forefront when the function actually returns...etc, etc. Rewrite your function that runs the database jobs to run as an AUTONOMOUS_TRANSACTION . Have a look at the compiler directive PRAGMA AUTONOMOUS_TRANSACTION for more details on that. You must use this within a database function/package/procedure - it is not valid with Forms (at least forms 10, not sure about 11). You can then store the jobs result somewhere from your function (package variable, table, etc) and then use the built-in called CREATE_TIMER in conjunction with the form level trigger WHEN-TIMER-EXPIRED to go and check your storage location every 10 seconds or so - you can then display a message to the user about the jobs, and kill the timer using DELETE_TIMER .

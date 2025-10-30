@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 124779
+[parent_id]: 
+[tags]: 
+Bayes HyperParameter tuning using wandb
+
+Here in below code, I'm trying to use wandb sweep to find optimal lr, weight-decay using the below code: import wandb import os , sys sys.path.append(os.getcwd()) from Preprocessing.utils import load_config def train(): from xception import tr_loader, val_loader, tst_loader from model import HSIModel from train_eval import Classifier from pytorch_lightning import Trainer from callbacks import early_stop_callback, rich_progress_bar, rich_model_summary import torch torch.set_float32_matmul_precision('high') config_defaults = load_config('models/hsi/xception/config.yaml') wandb.init(config=config_defaults) model_obj = HSIModel(config_defaults) model = Classifier(model_obj) trainer = Trainer(callbacks=[ early_stop_callback ,rich_progress_bar, rich_model_summary], accelerator = 'gpu' ,max_epochs=60) trainer.fit(model, tr_loader, val_loader) trainer.test(model, tst_loader) sweep_config = load_config('models/hsi/xception/sweep.yaml') sweep_id = wandb.sweep(sweep_config , project='hsi_xception') wandb.agent(sweep_id,function=train , project='hsi_xception' ,count=50) The problem is that the (lr, weight-decay) given by agent is not used in any run but those stored in default_config is used. One more problem is, in agent I have used count=30 , but in each run it is not starting afresh , like it is continuing from epoch to next to with which previous run ended with. Please tell what is the hidden bug in it?

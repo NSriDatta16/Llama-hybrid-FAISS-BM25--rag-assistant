@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2619859
+[parent_id]: 2619830
+[tags]: 
+This is an example of undefined behavior. You're passing the result of string::c_str() , a const char* , to strtok, which takes a char* . By modifying the contents of the std::string data, you're invoking undefined behavior (you should be getting warnings for this unless you're casting). When are you checking the value of a and b? In get_string, or in main? get_string is passed copies of a and b, so strtok will most likely not alter the originals in main. However, it could, as you are invoking undefined behavior. The "right way" to do this is to use malloc/free or new[]/delete[]. You're using a C function, so you're already guilty of the same crime as you would be using malloc/free. A relatively elegant yet safe way to approach this is: char *ap = strdup(a.c_str()); const char *a_ch = strtok(ap, ","); /* do whatever it is you do */ free(ap); Also bear in mind that strtok uses global state, so it won't play well with threads.

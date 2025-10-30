@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1778491
+[parent_id]: 
+[tags]: 
+How does one return a local CComSafeArray to a LPSAFEARRAY output parameter?
+
+I have a COM function that should return a SafeArray via a LPSAFEARRAY* out parameter. The function creates the SafeArray using ATL's CComSafeArray template class. My naive implementation uses CComSafeArray ::Detach() in order to move ownership from the local variable to the output parameter: void foo(LPSAFEARRAY* psa) { CComSafeArray ret; ret.Add(CComVariant(42)); *psa = ret.Detach(); } int main() { CComSafeArray sa; foo(sa.GetSafeArrayPtr()); std::cout The problem is that CComSafeArray::Detach() performs an Unlock operation so that when the new owner of the SafeArray (main's sa in this case) is destroyed the lock isn't zero and Destroy fails to unlock the SafeArray with E_UNEXPECTED (this leads to a memory leak since the SafeArray isn't deallocated). What is the correct way to transfer ownership between to CComSafeArrays through a COM method boundary? Edit: From the single answer so far it seems that the error is on the client side ( main ) and not from the server side ( foo ), but I find it hard to believe that CComSafeArray wasn't designed for this trivial use-case, there must be an elegant way to get a SafeArray out of a COM method into a CComSafeArray .

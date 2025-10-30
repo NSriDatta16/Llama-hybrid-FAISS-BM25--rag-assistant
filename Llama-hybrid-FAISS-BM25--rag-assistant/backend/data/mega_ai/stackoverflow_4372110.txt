@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4372110
+[parent_id]: 4372073
+[tags]: 
+Recursion is perfectly elegant. List comprehensions don't apply as you're altering the structure in place, rather than producing a new sequence. As for generators, you could write a DFS or BFS traverser. def dfs(nodes): if nodes is not None: for node in nodes: yield node yield from dfs(node['children']) for node in dfs(tree): node['selected'] = node['id'] in selected Python 3.3 and later can use the recursive yield above ( yield from syntax). Earlier versions would instead loop over the recursive results, yielding those: def dfs(nodes): if nodes is not None: for node in nodes: yield node for child in dfs(node['children']): yield child If the list of IDs to select is large, it would be more performant to convert it from a list to a set, which will speed up lookup (the node['id'] in selected ). selected = set(selected)

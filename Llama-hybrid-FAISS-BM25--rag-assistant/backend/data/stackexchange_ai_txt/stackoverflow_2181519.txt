@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2181519
+[parent_id]: 2181463
+[tags]: 
+It's actually filling in a major inconsistency, if your deserializer is aware of the convention and works with it nicely. It makes an array-of-one-thing look different from a thing-on-its-own. Old: foo: "bar" maps to "foo=bar" maps to foo: "bar" . foo: ["bar"] maps to "foo=bar" maps to foo: "bar" . foo: ["bar", "baz"] maps to "foo=bar&foo=baz" maps to foo: ["bar", "baz"] . New: foo: "bar" maps to "foo=bar" maps to foo: "bar" . foo: ["bar"] maps to "foo[]=bar" maps to foo: ["bar"] . foo: ["bar", "baz"] maps to "foo[]=bar&foo[]=baz" maps to foo: ["bar", "baz"] . And now everything roundtrips nicely and you don't have to worry about receiving array data or non-array data depending on how many elements were in the array to begin with. For maximum elegance, foo: [] should also serialize to foo[] (a key with no value), indicating a 0-ary list, but jQuery 1.4 doesn't do that. Maybe it should. :)

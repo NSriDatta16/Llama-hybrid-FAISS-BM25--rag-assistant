@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5622848
+[parent_id]: 5622574
+[tags]: 
+I believe it's guaranteed to work. According to the standard ($3.6.2/1): "Objects with static storage duration (3.7.1) shall be zero-initialized (8.5) before any other initialization takes place." Since nifty_counter has static storage duration, it gets initialized before initializer is created, regardless of distribution across translation units. Edit: After rereading the section in question, and considering input from @Tadeusz Kopec's comment, I'm less certain about whether it's well defined as it stands right now, but it is quite trivial to ensure that it is well-defined: remove the initialization from the definition of nifty_counter , so it looks like: static int nifty_counter; Since it has static storage duration, it will be zero-initialized, even without specifying an intializer -- and removing the initializer removes any doubt about any other initialization taking place after the zero-initialization.

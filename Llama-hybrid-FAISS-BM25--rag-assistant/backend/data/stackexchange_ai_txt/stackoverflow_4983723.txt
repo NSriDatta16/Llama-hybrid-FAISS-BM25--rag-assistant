@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4983723
+[parent_id]: 4983716
+[tags]: 
+I don't know the answer to your direct question. However, the compiler would only ever be able to vectorize a loop for std::vector , as it's the only container (I think) that has contiguous storage, and no dependencies between successive storage locations (unlike e.g. std::list ). I don't know how to make it do so, though. Update After some experimentation (which may or may not be relevant to the overall goal), I discovered that in ICC, the following does not vectorise: typedef std::vector V; V vec(4096); for (V::iterator it = vec.begin(); it != vec.end(); ++it) { *it *= *it; } whereas the following does: V vec(4096); V::iterator it2 = vec.end(); for (V::iterator it = vec.begin(); it != it2; ++it) { *it *= *it; } So apparently, the problem is not so much iterators, but the call to vec.end() inside the loop construct, which apparently cannot be factored out, even though it's clear that the loop body doesn't affect the vector bounds. In GCC, I couldn't get anything to vectorise. This isn't surprising, because GCC is much worse than ICC at spotting SSE opportunities.

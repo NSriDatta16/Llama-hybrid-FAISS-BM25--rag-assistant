@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1544827
+[parent_id]: 
+[tags]: 
+Is there a way to run unit tests sequentially with MSTests?
+
+I am working in an application that is mostly single-thread, single user. There are a few worker threads here and there, and they are only using thread safe objects and classes. The unit tests are actually testing those with multiple threads (explicitly created for the tests), and they test fine. The VSTS unit tests fail when testing business objects and sub-systems that are not thread safe. It is okay for them not to be thread-safe, that's the way the application uses them. But the 'one thread per TestMethod' approach of MS tests kills us. I've had to implement object locks in many unit test classes just to ensure that the tests are run one after the other (I don't really care about the order, but I can't have two test methods hitting the same object at the same time). The code looks like this: [TestClass] public class TestSomeObject { static object turnStile = new object(); ... [TestMethod] public void T01_TestThis() { lock(turnStile) { .. actual test code } } [TestMethod] public void T02_TestThat() { lock(turnStile) { -- actual test code } } } Is there a better/more elegant way to make the test run sequentially?

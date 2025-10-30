@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1038931
+[parent_id]: 1038919
+[tags]: 
+No. read() reads 8 bits / 1 byte at a time. You can get byte, word, int, long, utf-8 string etc. from DataInputStream if you use a DataInputStream typed reference further on. Have DataInputStream r = new DataInputStream(socket.getInputStream()); r.readLong(); r.readShort(); instead of InputStream r = new DataInputStream(socket.getInputStream()); However, for words, int and long the the 'Endiannes' of the data matters. DataInputStream combines bytes in Big endian format where as you might have your data in little endian format. You might need to swap the bytes in the short/int/long after you read from the DIS. This is where Integer.reverseBytes() and its friends come in handy. If you need bit sized data retrieval (for example read 6 bits, then 4, then 12, etc) you might want to check out the answers to this recent question . Edit: Removed the 8 bits as it is misleading in this context. Edit 2: Rephrased my 3rd sentence.

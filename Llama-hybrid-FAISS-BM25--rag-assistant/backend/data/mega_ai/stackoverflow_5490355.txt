@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5490355
+[parent_id]: 685284
+[tags]: 
+We had the same problem, and after a long time figuring out what could be happening, we discovered that the problem occurred because the semaphore was defined inside a struct that had its byte alignment changed to 1 (in this case using the pragma pack(1) directive). The POSIX semaphores implementation on Linux uses the futex syscall. According to the futex man page, EINVAL is returned when "An operation was not defined or error in page alignment." In our case, either removing the pragma pack(1) directive or defining the semaphore as the first element of the struct, solved the problem.

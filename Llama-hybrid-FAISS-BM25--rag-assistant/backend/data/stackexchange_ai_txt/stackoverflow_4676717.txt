@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4676717
+[parent_id]: 4669490
+[tags]: 
+You typically don't draw directly in the touch detection methods. Usually, you'd just store new points/lines there and draw all of them in drawRect: . Let's assume you have a custom subclass of UIView which has an instance variable paths of type NSMutableArray and a property currentPath of type UIBezierPath . You could then implement the touch detection and drawRect methods roughly like this: - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { self.currentPath = [UIBezierPath bezierPath]; currentPath.lineWidth = 3.0; [currentPath moveToPoint:[touch locationInView:self]]; [paths addObject:self.currentPath]; } - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event { [self.currentPath addLineToPoint:[touch locationInView:self]]; [self setNeedsDisplay]; } - (void)drawRect:(CGRect)rect { [[UIColor redColor] set]; for (UIBezierPath *path in paths) { [path stroke]; } } Note that this is simplified a lot. If you draw many lines, performance will suffer and eventually, you'll want to cache the drawing in a bitmap image, but this should get you started.

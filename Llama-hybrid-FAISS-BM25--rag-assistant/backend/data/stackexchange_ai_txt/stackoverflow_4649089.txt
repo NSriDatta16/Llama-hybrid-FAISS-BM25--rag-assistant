@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4649089
+[parent_id]: 
+[tags]: 
+Help on MySQL table indexing when GROUP BY is used in a query
+
+Thank you for your attention. There are two INNODB tables: Table authors id INT nickname VARCHAR(50) status ENUM('active', 'blocked') about TEXT Table books author_id INT title VARCHAR(150) I'm running a query against these tables, to get each author and a count of books he has: SELECT a. * , COUNT( b.id ) AS book_count FROM authors AS a, books AS b WHERE a.status != 'blocked' AND b.author_id = a.id GROUP BY a.id ORDER BY a.nickname This query is very slow (takes about 6 seconds to execute). I have an index on books.author_id and it works perfectly, but I do not know how to create an index on authors table, so that this query could use it. Here is how current EXPLAIN looks: id select_type table type possible_keys key key_len ref rows Extra 1 SIMPLE a ALL PRIMARY,id_status_nickname NULL NULL NULL 3305 Using where; Using temporary; Using filesort 1 SIMPLE b ref key_author_id key_author_id 5 a.id 2 Using where; Using index I've looked at MySQL manual on optimizing queries with group by , but could not figure out how I can apply it on my query. I'll appreciate any help and hints on this - what must be the index structure, so that MySQL could use it? Edit I have tried: (id, status, nickname) (status, nickname) Both resulted in the same situation.

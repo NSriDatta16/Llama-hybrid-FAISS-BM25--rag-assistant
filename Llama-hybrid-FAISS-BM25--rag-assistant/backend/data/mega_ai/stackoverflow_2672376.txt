@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2672376
+[parent_id]: 2672354
+[tags]: 
+copy and pasting from a php.net comment After searching how to extend the DOMDocument and DOMElement I found a way in the bug: http://bugs.php.net/bug.php?id=35104 . The following code shows how: createDocumentFragment(); // lightweight container maintains "ownerDocument" $docFragment->appendChild($orphan); // attach $ret = $docFragment->removeChild($orphan); // remove return $ret; // ownerDocument set; won't be destroyed on method exit } // .. more class definition } class extDOMElement extends DOMElement { function __construct($name, $value='', $namespaceURI=null) { parent::__construct($name, $value, $namespaceURI); } // ... more class definition here } $doc = new extDOMDocument('test'); $el = $doc->createElement('tagname'); $el->setAttribute("attr", "val"); $doc->appendChild($el); // append discards the DOMDocumentFragment and just adds its child nodes, but ownerDocument is maintained. echo get_class($el)." "; echo get_class($doc->documentElement)." "; echo " ".$doc->saveXML()." "; ?>

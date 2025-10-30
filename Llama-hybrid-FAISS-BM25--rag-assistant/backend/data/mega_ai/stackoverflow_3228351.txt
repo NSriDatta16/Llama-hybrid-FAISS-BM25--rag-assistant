@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3228351
+[parent_id]: 
+[tags]: 
+Ruby's *args causing seg fault when no args supplied
+
+I'm trying to do some scripted GUI testing in Windows using Ruby. I'm leveraging the guidance of a pragprog book and I'm hitting a bit of a snag. I've factored out some code to help with the repeatitive mapping of win32api functions. The code is as follows: module WindowsGui def self.def_api(function, parameters, return_value) api = Win32API.new 'user32', function, parameters, return_value define_method(function.snake_case) do |*args| api.call *args end end end ...So I can use that block to define several win32APIs in the module in the following fashion: def_api 'FindWindow', ['P', 'P'], 'L' I've got some RSpec tests to ensure this behaves as it should. it 'wraps a Windows call with a method' do find_window(nil, nil).should_not == 0 end it 'enforces the argument count' do lambda {find_window}.should raise_error end Everything works fine as for the first test, the second results in a seg fault. Seems that if I call this with no args, I can't touch *args - but I can do a args.length to see that it's empty. Why would this result in a seg fault and not an exception? Would it be acceptable to resolve this through something like.. raise BadArgs if args.length == 0 Yet another question that is way too long - sorry for that. TIA! Bob

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4651041
+[parent_id]: 
+[tags]: 
+TMG SF_NOTIFY_POLICY_CHECK_COMPLETED Event
+
+According to http://msdn.microsoft.com/en-us/library/ff823993%28v=VS.85%29.aspx , during this event the web filter can request GUID of the matching rule. I am assuming that is done by performing a GetServerVariable with type of SELECTED_RULE_GUID, since I could find no other readily identifiable means of doing so. My problem comes from the fact that I want to see if the rule is allowing or blocking the request. If it's being blocked then my filter doesn't have to take any action, but if it's being allowed I need to do some work. SF_NOTIFY_POLICY_CHECK_COMPLETED seems to be the best event to watch, since it occurs last enough that authentication and various ms_auth traffic has been handled, but just before the request either gets routed or fetched from cache. I had thought that perhaps I needed to use COM and the IFPC interfaces (following along with example code for registering Web Filters to TMG) to get details on the rule. However, going down via FPC -> FPCArray -> FPCArrayPolicy -> FPCPolicyRules, the only element-returning function takes either an index or a name. Which is problematic given that I only have a GUID. The FPCPolicyRule object (singular) doesn't seem have any field related to GUID either, which eliminates just iterating over the collection for it. So my question boils down to, from the SF_NOTIFY_POLICY_CHECK_COMPLETED event, how would a web filter determine if the request has been allowed or denied?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5696800
+[parent_id]: 5696387
+[tags]: 
+In case of input like ";" or "45;" , the token STMTEND will never be created. ";" will create a single token: SEMICOLON , and "45;" will produce: INT SEMICOLON . What you (probably) want is that SEMICOLON and NEWLINE never make it to real tokens themselves, but they will always be a STMTEND . You can do that by making them so called "fragment" rules: program: statement+; statement : STMTEND | INT STMTEND ; INT : '0'..'9'+; STMTEND : SEMICOLON NEWLINE* | NEWLINE+; fragment SEMICOLON : ';'; fragment NEWLINE : '\r' '\n' | '\n' | '\r'; Fragment rules are only available for other lexer rules, so they will never end up in parser (production) rules. To emphasize: the grammar above will only ever create either INT or STMTEND tokens.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3267046
+[parent_id]: 3266949
+[tags]: 
+Well, those BlockingQueues were really meant to be serviced by their own Threads. Something I'd consider trying is to set up a 4th queue for much smaller items, say Boolean s, and have the offer() calls on each of the 3 other queues accompany their insertion by inserting a Boolean into that 4th queue. Your thread can then go to sleep on the 4th queue, and when it wakes up it can peek() in the other 3 to find out where to get the goods. Highly inelegant solution, I think, and I suspect there are possible race conditions where you won't be cleanly woken up some times. But it should basically work.

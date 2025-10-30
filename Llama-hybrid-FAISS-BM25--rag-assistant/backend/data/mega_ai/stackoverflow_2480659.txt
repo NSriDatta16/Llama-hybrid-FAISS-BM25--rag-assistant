@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2480659
+[parent_id]: 
+[tags]: 
+Why does defined(X) not work in a preprocessor definition without a space?
+
+A preprocessor definition that includes defined(X) will never evaluate to true, but (defined X) will. This occurs in MSVC9; I have not tested other preprocessors. A simple example: #define FEATURE0 1 #define FEATURE1 0 #define FEATURE2 1 #define FEATURE3 (FEATURE0 && !FEATURE1 && (defined(FEATURE2))) #define FEATURE4 (FEATURE0 && !FEATURE1 && (defined FEATURE2)) #define FEATURE5 (FEATURE0 && !FEATURE1 && (defined (FEATURE2))) #if FEATURE3 #pragma message("FEATURE3 Enabled") #elif (FEATURE0 && !FEATURE1 && (defined(FEATURE2))) #pragma message("FEATURE3 Enabled (Fallback)") #endif #if FEATURE4 #pragma message("FEATURE4 Enabled") #elif (FEATURE0 && !FEATURE1 && (defined FEATURE2)) #pragma message("FEATURE4 Enabled (Fallback)") #endif #if FEATURE5 #pragma message("FEATURE5 Enabled") #elif (FEATURE0 && !FEATURE1 && (defined (FEATURE2))) #pragma message("FEATURE5 Enabled (Fallback)") #endif The output from the compiler is: 1>FEATURE3 Enabled (Fallback) 1>FEATURE4 Enabled 1>FEATURE5 Enabled Working cases: defined (X) , defined( X ) , and defined X . Broken case: defined(X) Why is defined evaluated differently when part of a definition, as in the #if cases in the example, compared to direct evaluation, as in the #elif cases in the example?

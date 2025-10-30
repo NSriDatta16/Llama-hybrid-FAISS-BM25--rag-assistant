@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3839682
+[parent_id]: 3839673
+[tags]: 
+You can do this using INFORMATION_SCHEMA tables, as well as the system catalog. http://www.alberton.info/postgresql_meta_info.html E.g., List Sequences SELECT relname FROM pg_class WHERE relkind = 'S' AND relnamespace IN ( SELECT oid FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema' ); List Triggers SELECT trg.tgname AS trigger_name FROM pg_trigger trg, pg_class tbl WHERE trg.tgrelid = tbl.oid AND tbl.relname !~ '^pg_'; -- or SELECT tgname AS trigger_name FROM pg_trigger WHERE tgname !~ '^pg_'; -- with INFORMATION_SCHEMA: SELECT DISTINCT trigger_name FROM information_schema.triggers WHERE trigger_schema NOT IN ('pg_catalog', 'information_schema');

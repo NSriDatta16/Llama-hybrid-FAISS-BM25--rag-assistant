@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4526498
+[parent_id]: 
+[tags]: 
+SQLAlchemy declarative syntax with autoload (reflection) in Pylons
+
+I would like to use autoload to use an existings database. I know how to do it without declarative syntax (model/_ init _.py): def init_model(engine): """Call me before using any of the tables or classes in the model""" t_events = Table('events', Base.metadata, schema='events', autoload=True, autoload_with=engine) orm.mapper(Event, t_events) Session.configure(bind=engine) class Event(object): pass This works fine, but I would like to use declarative syntax: class Event(Base): __tablename__ = 'events' __table_args__ = {'schema': 'events', 'autoload': True} Unfortunately, this way I get: sqlalchemy.exc.UnboundExecutionError: No engine is bound to this Table's MetaData. Pass an engine to the Table via autoload_with= , or associate the MetaData with an engine via metadata.bind= The problem here is that I don't know where to get the engine from (to use it in autoload_with) at the stage of importing the model (it's available in init_model()). I tried adding meta.Base.metadata.bind(engine) to environment.py but it doesn't work. Anyone has found some elegant solution?

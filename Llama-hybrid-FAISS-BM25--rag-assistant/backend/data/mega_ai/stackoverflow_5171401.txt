@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5171401
+[parent_id]: 5171091
+[tags]: 
+It's much better to store the amounts as unscaled integers, and just format them when needed for display. You get more compact storage, and easier and faster addition. Using integers avoids the risk of rounding errors in floating-point representations. By unscaled , I mean $1.23 would be stored as the integer 123. (Use long in your Java code, and INTEGER in the SQL.) You can format amounts for display by querying the locale for the relevant info: // implement this any way you like! long amount = getAmountFromDb(); // use default locale if you want Locale locale = getLocaleFromSomewhere(); Currency currency = Currency.getInstance(locale); NumberFormat format = NumberFormat.getCurrencyInstance(locale); int scale = currency.getDefaultFractionDigits(); BigDecimal scaledAmount = new BigDecimal(unscaledBalance).movePointLeft(scale); String textAmount = format.format(scaledAmount);

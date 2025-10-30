@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 609421
+[parent_id]: 609390
+[tags]: 
+I think we're lacking a bit of context here. Is the data HTML, XML, or just fragments of text with tags? If it is HTML or XML, as mentioned often, regexps are not safe, unless you control exactly the format of the data, and you know that you will always control it. And you document it. I would use an appropriate parser if I were you. If you have Perl and XML::Twig installed, the following one-liner will do: perl -MXML::Twig -e'XML::Twig->parse( keep_spaces => 1, "my_file.xml")->subs_text( "/", " / ")->print' If you're dealing with well-formed XML with no comments and no CDATA sections, then a more efficient way would be to use PYX (you need to install XML::PYX): pyx my_file.xml | perl -p -e's{/}{ / }g if m{-}' | pyxw

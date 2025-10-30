@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4880736
+[parent_id]: 4879575
+[tags]: 
+I don't get that error; instead I get a "range out of order" error, for the reason @CanSpice gave. To get the other error, I have to remove the first backslash in the character class ( [/\.- ] instead of [\/\.- ] ). Then it interprets the / as a regex delimiter, and it expects the next character to be a modifier (like i for case-insensitive , or m for multiline ). So you've got two problems: the - being treated as a range operator, and the / being treated as a regex delimiter. You can deal with both problems by escaping the offending characters with backslashes (i.e., [\/.\- ] ), but each problem has a more elegant solution. If you move the - to the first or last position where it couldn't form a range, it gets treated as a literal - . As for the / , you can use something else for the regex delimiter. For example: '~^(0?[1-9]|[12][0-9]|3[01])[/. -](0?[1-9]|1[0-2])[/. -](19|20)\d{2}$~' FYI, the . never needed to be escaped at all. In character classes, most regex metacharacters lose their special meanings. You just happened to run afoul of two special cases. :-/

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 399639
+[parent_id]: 398641
+[tags]: 
+You say "the provider and the App object to share the same lifetime" but beware that in in C++, the following code fragment ... App app(clientA, clientB); return app; ... is returning a copy of the App object: and therefore you may (depending on the compiler, see http://msdn.microsoft.com/en-us/library/ms364057(VS.80).aspx for example) actually have two App object instances (one inside the AppFactory::buildApp() method and another inside the main function). To answer your question, I think I agree with your edit: pass the pointer-to-Provider into your App constructor, store it as member data of the App instance, and delete it when you destroy the App instance. As well as this, though, you might also change your code to ensure you don't copy the App instance: for example, allocate the App instance on the heap, change the AppFactory::buildApp() method to return a pointer to the App, and delete the App instance at the end of the main function.

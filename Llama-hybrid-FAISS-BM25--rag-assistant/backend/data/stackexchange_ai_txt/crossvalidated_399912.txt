@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 399912
+[parent_id]: 399908
+[tags]: 
+OK, here are some guidelines (a pseudocode not specific to R) to do it. A modular approach, using functions to divide up the task is best for you I think: # 'folds' is a list having two elements [0] train-set, [1] validation-set folds = get_folds(data, K, ) params = results = ind = 1 for param in params: mean_AUC = 0 for fold in folds: # a train function that trains a random forest model and returns it # so, wrap your RF model with this method model = train(fold[0], param, ) # an evaluate func. that gets test data and model and returns your metric AUC = evaluate(model, fold[1]) mean_AUC += AUC # when all folds are finished, save your mean result results[ind] = mean_AUC / length(params) ind += 1 # when you're here, choose the best parameter wrt results array This pseudocode should give you a start, although several optimizations can be applied (e.g. preventing data replication across folds etc.)

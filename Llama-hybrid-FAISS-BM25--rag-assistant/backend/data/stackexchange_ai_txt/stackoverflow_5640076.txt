@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5640076
+[parent_id]: 5639603
+[tags]: 
+I have two solutions and a suggestion: First solution: You can guarantee that this won't be optimized out with two helper functions and the NOINLINE pragma: norm1 x h = x+h {-# NOINLINE norm1 #-} norm2 x tmp = tmp-x {-# NOINLINE norm2 #-} normh x h = norm2 x (norm1 x h) This will work, but will introduce a small cost. Second solution: Write the normalization function in C using volatile and call it through the FFI. The performance penalty will be minimal. Now for the suggestion: Currently the math isn't optimized out, so it will work properly at present. You're afraid it will break in a future compiler. I think this is unlikely, but not so unlikely that I wouldn't want to guard against it also. So write some unit tests that cover the cases in question. Then if it does break in the future (for any reason), you'll know exactly why.

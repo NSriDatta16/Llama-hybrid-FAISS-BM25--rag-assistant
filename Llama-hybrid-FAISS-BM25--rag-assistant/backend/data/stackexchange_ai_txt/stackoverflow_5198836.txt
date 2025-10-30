@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5198836
+[parent_id]: 
+[tags]: 
+grails find objects by many parameters
+
+I have rather big form where a user can choose any number of parameters (from 1 to 10). Example: Cities - NYC, LA ; age - 18 Cities - null (nothing was chosen) ; age - 23, 57 How should I implement a find method at the GORM level (bad way - method that composes query string, add params if not null, etc)? Then I should search in my database for appropriate objects. Another limitation - should use executeQuery ? ** [EDITED] ** * I remembered that i didn`t post my own answer. There it is: def resultList = Organization.createCriteria().list(max: params.max, offset: params.offset) { and { if (params.chosenNomenc != null) { nomenclatures { ilike("title", params.chosenNomenc)//for string } } if (params.chosenCountries != null) { countries { 'in'("title", params.chosenCountries)//for list } } cache true order("id", "asc") } } println("resultList:" + resultList) [organizationList: resultList, total: resultList.totalCount, params: params] } Regards, Dmitry.

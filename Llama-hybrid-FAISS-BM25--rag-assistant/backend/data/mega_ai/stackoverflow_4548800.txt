@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4548800
+[parent_id]: 
+[tags]: 
+define a grammar in Antlr
+
+I have defined the following grammar. grammar Sample_1; @header { package a; } @lexer::header { package a; } program : define* implement* ; define : IDENT '=(' INTEGER',' INTEGER ')' ; implement :IDENT '=(' (IDENT ','?)* ')' ; fragment LETTER : ('a'..'z' | 'A'..'Z') ; fragment DIGIT : '0'..'9'; INTEGER : DIGIT+ ; IDENT : LETTER (LETTER | DIGIT)*; WS : (' ' | '\t' | '\n' | '\r' | '\f')+ {$channel = HIDDEN;}; COMMENT : '//' .* ('\n'|'\r') {$channel = HIDDEN;}; How to check in this grammar so that when I have the example A=(1,1) B=(1,2) G=(A,B) the result is successful but if I write A=(1,1) B=(1,2) G=(A,E) it gives an error that E is not defined thanks the result: i got it working thanks a lot: grammar Sample_1; @members{ int level=0; } @header { package a; } @lexer::header { package a; } program : block ; block scope { List symbols; } @init { $block::symbols=new ArrayList(); level++; } @after { System.err.println("Hello"); level--; } : (define* implement+) ; define : IDENT {$block::symbols.add($IDENT.text);} '=(' INTEGER',' INTEGER ')' ; implement :IDENT '=(' (a=IDENT {if (!$block::symbols.contains($a.text)){ System.err.println("undefined"); }}','?)* ')' ; fragment LETTER : ('a'..'z' | 'A'..'Z') ; fragment DIGIT : '0'..'9'; INTEGER : DIGIT+ ; IDENT : LETTER (LETTER | DIGIT)*; WS : (' ' | '\t' | '\n' | '\r' | '\f')+ {$channel = HIDDEN;}; COMMENT : '//' .* ('\n'|'\r') {$channel = HIDDEN;};

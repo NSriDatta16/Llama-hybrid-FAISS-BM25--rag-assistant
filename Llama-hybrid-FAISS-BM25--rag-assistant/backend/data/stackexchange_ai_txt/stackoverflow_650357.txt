@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 650357
+[parent_id]: 
+[tags]: 
+HttpRequest.ServerVariables throws ArgumentException in WCF with IIS7
+
+We have a WCF (.NET 3.5 SP1) service running in IIS7, which is marked to allow ASP.NET compatibility mode so we can access HttpContext.Current : [AspNetCompatibilityRequirements( RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)] However, when trying to access any server variable it throws an ArgumentException : System.ArgumentException: Value does not fall within the expected range. at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo) at System.Web.Hosting.IIS7WorkerRequest.GetServerVariableInternal(String name) at System.Web.Hosting.IIS7WorkerRequest.GetServerVariable(String name) at System.Web.Hosting.IIS7WorkerRequest.GetRemoteAddress() at System.Web.HttpRequest.get_UserHostAddress() e.g. Any of the following lines throw this exception: ha = HttpContext.Current.Request.UserHostAddress; ip = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]; us = HttpContext.Current.Request.UserAgent; This appears to be the result of an internal framework call, which means the calling code is not at fault. Presumably there is something in our configuration that is causing this problem, but I don't know what. Any ideas? Or any ideas how else I can retrieve these three bits of data (they don't appear to be exposed by WCF natively, unfortunately).

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3900595
+[parent_id]: 3897814
+[tags]: 
+As has been pointed out the as.Date(as.character(t), "%Y") is incorrect as it does not give the desired month and day. If we wanted to convert years to "Date" class we could do this as.Date(as.yearmon(t)) using zoo's as.yearmon ; however, then we would have the further problem that different years have different numbers of days so there is no way to have a regular series using dates to represent years. Really we don't want dates in the first place. We just want to work with years in which case it simplifies to just: > z > as.ts(z) Time Series: Start = 1981 End = 1985 Frequency = 1 [1] 1 NA NA 3 6 or if we want to be safe we could do this which will force it to be annual even if the input has, by chance, a lower frequency: frequency(z) or just define the original zoo series to have a frequency of 1 right from the beginning: > z as.ts(z) Time Series: Start = 1981 End = 1985 Frequency = 1 [1] 1 NA NA 3 6 With this example it does not make a difference but in this case z the explicit frequency would be needed to prevent it from having a frequency of 0.5 .

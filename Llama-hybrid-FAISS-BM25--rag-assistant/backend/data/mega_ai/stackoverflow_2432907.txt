@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2432907
+[parent_id]: 2432197
+[tags]: 
+Ideally, a ViewModel should be totally independent from the UI technology used. We should theoretically be able to reuse it for Windows Forms (if we pimp up the Windows Forms controls a little bit to support better binding), for Web pages (I envision some kind of fancy mechanism here that would compile the ViewModel also into Javascript ), and for any future technologies. Not all of these technologies will use the Dispatcher model. That said, i consider it as a pragmatic compromise to include the Dispatcher in the ViewModel nowadays. In my ViewModel base class, I check for the current Dispatcher : protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e) { if (Deployment.Current.Dispatcher == null || Deployment.Current.Dispatcher.CheckAccess()) { base.OnPropertyChanged(sender, e); } else { Deployment.Current.Dispatcher.BeginInvoke(() => base.OnPropertyChanged(sender, e)); } } I still have the dependency on System.Windows of course, but oh well. :->

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 784760
+[parent_id]: 784582
+[tags]: 
+I included Apple's Reachability.h & .m from their Reachability example, plus the SystemConfiguration framework mentioned above, and then added the following code to my app, which has two advantages over the above answer - it gives you more information, and you get asynchronous notifications of network status changes. In your app delegate, or similar, add this when you start up: [self startReachability]; Then add this method, which gets called when the network changes: #pragma mark Reachability changed - (void)reachabilityChanged:(NSNotification*)aNote { self.remoteHostStatus = [[Reachability sharedReachability] remoteHostStatus]; switch (self.remoteHostStatus) { case NotReachable: debugForComponent(kDebugMaskApp,@"Status changed - host not reachable"); break; case ReachableViaCarrierDataNetwork: debugForComponent(kDebugMaskApp,@"Status changed - host reachable via carrier"); break; case ReachableViaWiFiNetwork: debugForComponent(kDebugMaskApp,@"Status changed - host reachable via wifi"); break; default: debugForComponent(kDebugMaskApp,@"Status changed - some new network status"); break; } }

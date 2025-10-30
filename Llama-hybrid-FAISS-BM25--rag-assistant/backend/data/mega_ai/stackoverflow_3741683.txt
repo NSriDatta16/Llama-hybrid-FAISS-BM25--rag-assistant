@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3741683
+[parent_id]: 
+[tags]: 
+Cross-thread calls to WF controls
+
+I am work with SharpPcap library. I have following code: private void button1_Click(object sender, EventArgs e) { LivePcapDevice device = deviceList[cbDeviceList.SelectedIndex]; device.OnPacketArrival += new PacketArrivalEventHandler(device_OnPacketArrival); device.Open(DeviceMode.Promiscuous, 1000); device.StartCapture(); btStop.Enabled = true; btStartCapture.Enabled = false; } void device_OnPacketArrival(object sender, CaptureEventArgs e) { dgvPacketInfo.Rows.Add(e.Packet.Data, e.Packet.Timeval, e.Packet.LinkLayerType); } I've got an exception is thrown:InvalidOperationException with the message, "Control dgvPacketInfo accessed from a thread other than the thread it was created on." I read this . And rewrite my code like this: private delegate void GetPacketInfoCallback(CaptureEventArgs packet); void device_OnPacketArrival(object sender, CaptureEventArgs e) { Thread newThread = new Thread(delegate() { GetPacketInfoCallback getPacketInfoCallback = new GetPacketInfoCallback(PrintIntoGridView); this.Invoke(getPacketInfoCallback, new object[] {e}); }); } private void PrintIntoGridView(CaptureEventArgs captureEventArgs) { dgvPacketInfo.Rows.Add("1", "2", "3"); // simple for test dgvPacketInfo.Rows.Add(captureEventArgs.Packet.Data, captureEventArgs.Packet.Timeval, captureEventArgs.Packet.LinkLayerType); } But method PrintIntoGridView not called. What's problem? PS. Sorry for my English.

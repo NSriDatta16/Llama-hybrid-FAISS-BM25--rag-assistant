@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 40599
+[parent_id]: 
+[tags]: 
+Default parameters for decision trees give better results than parameters optimised using GridsearchCV
+
+I am using Gridsearch for a DecisionTreeClassifier predicting a binary outcome. When I run fit and predict with default parameters, I get the following results: Accuracy: 0.9602242115860793 F1: 0.9581087077004674 Then I try GridsearchCV: from sklearn.model_selection import GridSearchCV param_grid = {"criterion": ["gini", "entropy"], "min_samples_split": [2, 10], "max_depth": [2, 5, 10] } grid = GridSearchCV(dtc, param_grid, cv=3, scoring='neg_mean_squared_error') grid.fit(X_train, y_train.values.ravel()) y_pred_class = grid.predict(X_test) When I check the results in y_pred, they only contain one class (0) and thus I get a warning when I try to look at F1: site-packages\sklearn\metrics\classification.py:1135: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no predicted samples. 'precision', 'predicted', average, warn_for) Could anyone please suggest what could be the issue here and why the best parameters give the same prediction for the whole set? Answer : With that many features in my dataset, restricting max depth and min samples split with the specified values could not give adequate results. Adding None and increasing the range fixed the issue.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5411833
+[parent_id]: 5411791
+[tags]: 
+As you are using jQuery, easier is to use delay() : $("#notificaciones").slideDown(1000).delay(2000).fadeOut(2000); Animation functions are automatically queued. But to answer your actual question: You are not setting the callback correctly. This $("#notificaciones").slideDown(1000, setTimeout('cerrar()',2000)); will set the return value of setTimeout as callback for slideDown . A proper callback would be $("#notificaciones").slideDown(1000, function() { setTimeout('cerrar()',2000); }); But this does not explain why the cerrar is not called as obviously setTimout is called. This brings us to the second point: If you pass a string to setTimeout , then it is evaluated in global scope. If you have this piece of code inside the ready handler, then cerrar is not in global scope and thus not found by JavaScript. For this reason, passing strings is discouraged. You should pass a function reference instead: setTimeout(cerrar, 2000);

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3126469
+[parent_id]: 3126383
+[tags]: 
+Another approach ;WITH Discounts AS ( SELECT ResourceID, CustomerID, SUM(Discounts) AS TotalDiscount FROM dbo.hgm_Discounts GROUP BY ResourceID, CustomerID ) SELECT DailyProduction.CustomerId as CustomerId, SUM((Resource.CostPerUnit - COALESCE(Discounts.TotalDiscount ,0)) * DailyProduction.UnitsToStorage + (Resource.CostPerUnit - COALESCE(Discounts.TotalDiscount ,0)) * DailyProduction.UnitsToMarket) AS TotalCost FROM dbo.hgm_ResourceTypes Resource INNER JOIN dbo.hgm_ResourceDailyProduction DailyProduction ON Resource.ResourceId = DailyProduction.ResourceId LEFT OUTER JOIN Discounts ON Resource.ResourceId = Discounts.ResourceId AND DailyProduction.CustomerId = Discounts.CustomerId GROUP BY DailyProduction.CustomerId

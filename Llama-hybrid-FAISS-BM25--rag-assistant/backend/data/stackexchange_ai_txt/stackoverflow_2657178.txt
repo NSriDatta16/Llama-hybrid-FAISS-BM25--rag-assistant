@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2657178
+[parent_id]: 
+[tags]: 
+Returning 'c_str' from a function
+
+This is from a small library that I found online: const char* GetHandStateBrief(const PostFlopState* state) { static std::ostringstream out; // ... rest of the function ... return out.str().c_str() } In my code I am doing this: const char *d = GetHandStateBrief(&post); std::cout Now, at first d contained garbage. I then realized that the C string I am getting from the function is destroyed when the function returns because std::ostringstream is allocated on the stack. So I added: return strdup( out.str().c_str()); And now I can get the text I need from the function. I have two questions: Am I understanding this correctly? I later noticed that out (of type std::ostringstream ) was allocated with static storage. Doesn't that mean that the object is supposed to stay in memory until the program terminates? And if so, then why can't the string be accessed?

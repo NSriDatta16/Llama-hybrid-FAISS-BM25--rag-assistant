@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3184953
+[parent_id]: 3180661
+[tags]: 
+I presume that this must be happening because if you order the records by MessageCounter descending there are 6,500,000 that it has to plough through before it finds the first one with DeviceId=4 whereas for the other DeviceId 's there is a much better spread I presume that the DeviceId=4 predicate doesn't come into play until the Filter operator on the execution plan. A composite index on DeviceId, MessageCounter would resolve this. But is the Device with DeviceId=4 a legacy device for which new data is no longer being recorded? If so you may be able to get away with extracting the DeviceId=4 records into a table of their own and using a partitioned View so that queries on that device don't scan a load of unrelated records. Below Corrected Also What is the reason for choosing Guid.Comb as a clustered index? I presume a clustered index on DeviceId, MessageCounter would have similar characteristics in terms of fragmentation and avoiding hot spots but be more useful.

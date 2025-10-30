@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5586097
+[parent_id]: 
+[tags]: 
+MySQL adds column name to beginning of the result
+
+Hopefully this is just quick fix, but when I execute any select query, such as, SELECT table_name FROM table_info WHERE load_order IS NOT NULL ORDER BY load_order; it always prepends the column name to the result. In this case, the result is, table_name settings tax tax_rate sales_tax_zone sic naics exempt_reason wh pack pcat route supply_point point credit_status fuel_type participant site salesman driver truck profit terms vendor product pump customer card card_fuel_type tax_certificate prodware prodware_price Here is a snippet from the bash script: TABLES=` ( echo -n "select table_name from table_info " echo -n "where load_order is not null " echo "order by load_order;" ) | mysql -uuser -ppassword database` Parsing it via: for TABLE in ${TABLES} do if [ $TABLE != 'table_name' ] do_table #Start the load process fi done The problem is the script is quite large (~2000) lines and there are many select queries. Is there an option I can pass to mysql that will exclude the column name? Found the solution: I needed to use the --skip-column-names option when invoking mysql. Thanks for all the answers.

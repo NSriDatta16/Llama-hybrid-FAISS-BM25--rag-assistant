@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2413177
+[parent_id]: 2410031
+[tags]: 
+(Note: Potentially useless answer once a real answer has been found…) While you're figuring out the XML problem (keep working on it!) know that you can also get the YQL response back as JSON. Here's a quickie example: $url = "http://query.yahooapis.com/v1/public/yql?q=select+%2A+" . "from+html+where+xpath%3D%22%2F%2Fmeta%5B%40name%3D%27" . "Keywords%27+or+%40name%3D%27Description%27%5D%22+and+" . "url%3D%22http%3A%2F%2Fwww.cnn.com%22&format=json&diagnostics=false"; // Grab YQL response and parse JSON $json = file_get_contents($url); $result = json_decode($json, TRUE); // Loop over meta results looking for what we want $items = $result['query']['results']['meta']; $metas = array(); foreach ($items as $item) { $metas[$item['name']] = $item['content']; } print_r($metas); Giving an array like (text truncated for the screen): Array ( [Description] => CNN.com delivers the latest breaking news and … [Keywords] => CNN, CNN news, CNN.com, CNN TV, news, news online … ) Note that the YQL query ( try it in the console ) is slightly different to yours, to make the PHP simpler.

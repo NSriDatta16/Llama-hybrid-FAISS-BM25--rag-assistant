@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 820804
+[parent_id]: 
+[tags]: 
+How to hook external process with SetWindowsHookEx and WH_KEYBOARD
+
+I am trying to hook for example Notepad without sucess. Making a global hook seems to work fine. Testing on XP SP2. Edit: Amended code works now. MyDLL code #include #include #include HINSTANCE hinst; #pragma data_seg(".shared") HHOOK hhk; #pragma data_seg() //#pragma comment(linker, "/SECTION:.shared,RWS") compiler error in VC++ 2008 express LRESULT CALLBACK wireKeyboardProc(int code, WPARAM wParam,LPARAM lParam) { if (code My program #include unsigned long GetTargetThreadIdFromWindow(char *className, char *windowName) { HWND targetWnd; HANDLE hProcess; unsigned long processID = 0; targetWnd = FindWindow(className, windowName); return GetWindowThreadProcessId(targetWnd, &processID); } int _tmain(int argc, _TCHAR* argv[]) { unsigned long threadID = GetTargetProcessIdFromWindow("Notepad", "Untitled - Notepad"); printf("TID: %i", threadID); HINSTANCE hinst = LoadLibrary(_T("MyDLL.dll")); if (hinst) { typedef void (*Install)(unsigned long); typedef void (*Uninstall)(); Install install = (Install) GetProcAddress(hinst, "install"); Uninstall uninstall = (Uninstall) GetProcAddress(hinst, "uninstall"); install(threadID); Sleep(20000); uninstall(); } return 0; }

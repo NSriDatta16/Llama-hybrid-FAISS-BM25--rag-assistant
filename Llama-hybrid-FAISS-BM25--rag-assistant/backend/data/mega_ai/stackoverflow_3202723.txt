@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3202723
+[parent_id]: 
+[tags]: 
+what is ruby-on-rails' order of operations when constructing from a hash?
+
+I have an Attendance model that allows the user to enter a starting, ending and break time, each as a ruby Time object. Each attendance also has a day (ruby Date object). I want the 'Date' elements of the times to be the same, so I override the assignment operators like this: def startTime= (t) self[:startTime] = Time.mktime(day.year, day.month, day.day, t.hour, t.min) end def endTime= (t) self[:endTime] = Time.mktime(day.year, day.month, day.day, t.hour, t.min) end def breakTime= (t) self[:breakTime] = Time.mktime(day.year, day.month, day.day, t.hour, t.min) end My problem is that my tests fail only when I override the breakTime= function. They all fail on calls to new , i.e. att = Attendance.new @valid_attributes , specifically at breakTime= : undefined method `year' for nil:NilClass Apparently, breakTime= is getting called before the day is defined on the object, even though, startTime= and endTime= are not getting called so early. I realize this overriding is probably inelegant, but I'm pretty new to rails, so I imagine someone has made this mistake before. How should I be doing this differently?

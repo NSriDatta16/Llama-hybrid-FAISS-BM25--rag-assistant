@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5557120
+[parent_id]: 
+[tags]: 
+EXC_BAD_ACCESS with using dispatch_async
+
+I'm attempting to execute a block via an asynchronous dispatch queue in Objective-C++. Here's a class fragment of what I'm trying to do... class Blah { public: void dispatch(const EventPtr& event) { dispatch_queue_t queue = dispatch_queue_create(_queueName.c_str(), NULL); dispatch_async(queue, ^{ this->dispatchEventToSubscribers(event); }); dispatch_release(queue); } protected: Dude _dude; void dispatchEventToSubscribers(const EventPtr& event) { _dude.dispatchToSubscribers(event); } } I get a EXC_BAD_ACCESS within the dispatchEventToSubscribers method. When I check to see what the value of _dude is, XCode tells me it is out of scope. I can only assume that I'm losing this somehow. Checking the concurrency docs: For blocks that you plan to perform asynchronously using a dispatch queue, it is safe to capture scalar variables from the parent function or method and use them in the block. However, you should not try to capture large structures or other pointer-based variables that are allocated and deleted by the calling context. By the time your block is executed, the memory referenced by that pointer may be gone. Of course, it is safe to allocate memory (or an object) yourself and explicitly hand off ownership of that memory to the block. So how do I dispatch asynchronously a method on this object? Thanks!

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 417806
+[parent_id]: 
+[tags]: 
+Calibration curve of XGBoost for binary classification
+
+I'm working on a binary classification problem, with imbalanced classes (10:1). Since for binary classification, the objective function of XGBoost is 'binary:logistic' , the probabilities should be well calibrated. However, I'm getting a very puzzling result: xgb_clf = xgb.XGBClassifier(n_estimators=1000, learning_rate=0.01, max_depth=3, subsample=0.8, colsample_bytree=1, gamma=1, objective='binary:logistic', scale_pos_weight = 10) y_score_xgb = cross_val_predict(estimator=xgb_clf, X=X, y=y, method='predict_proba', cv=5) plot_calibration_curves(y_true=y, y_prob=y_score_xgb[:,1], n_bins=10) It seems like a "nice" (linear) reliability curve, however, the slope is less than 45 degrees. and here is the classification report: However, if I do calibration, the resulting curve looks even worse: calibrated = CalibratedClassifierCV(xgb_clf, method='sigmoid', cv=5) y_score_xgb_clb = cross_val_predict(estimator=calibrated, X=X, y=y, method='predict_proba', cv=5) plot_calibration_curves(y_true=y, y_prob=y_score_xgb_clb[:,1], n_bins=10) What is more strange is that the outputted probabilities now clipped at ~0.75 (I don't get scores higher than 0.75). Any suggestions / flaws in my approach?

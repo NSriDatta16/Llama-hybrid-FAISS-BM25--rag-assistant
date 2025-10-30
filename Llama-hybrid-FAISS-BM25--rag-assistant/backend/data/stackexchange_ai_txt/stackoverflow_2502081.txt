@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2502081
+[parent_id]: 2502052
+[tags]: 
+The 'compiler' doesn't delete anything. It creates code that does things at runtime. When you write delete somePointer; the compiler, in essence, writes: if ( has_virtual_destructor( * somePointer ) ) { // virtual dispatch to a compiler-generated function dynamic_cast (somePointer)->destroy_dynamic_type(); /* contents of true_dynamic_type::destroy_dynamic_type() { this->~true_dynamic_type(); operator delete( this); // executed within class context } */ } else { somePointer->~ClassName(); operator delete(somePointer); } In other words, the destructor gets called, and then operator delete gets called to free the storage. If the destructor is virtual, a virtual dispatch is used to perform the entire operation on the object in its most-derived form. A common way of implementing this is to add hidden arguments to every virtual destructor. Note that the top-level if statement isn't really part of the generated code; the compiler makes that decision at compile-time.

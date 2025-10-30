@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1494940
+[parent_id]: 1493080
+[tags]: 
+An excellent question. The easiest option that springs to mind (if you'll pardon the expression) is to wire your session-scoped bean into the controller that is invoked when the first request of the session comes in (and to do this, the controller would have to either be a session-scoped bean itself, or your bean would need to use aop:scoped-proxy ). If different controllers could be invoked at the start of the session, then you could wire the bean into a session-scoped interceptor instead, and configure your url mapping to pass the requests through the interceptor, ensuring that the bean is initialized right at the start of the session. I can't really think of a more elegant way to do this. You could potentially create a custom HttpSessionListener which calls getBean("my-session-scoped-bean") on the app context when sessionCreated() is called, but that's a bit clunky.

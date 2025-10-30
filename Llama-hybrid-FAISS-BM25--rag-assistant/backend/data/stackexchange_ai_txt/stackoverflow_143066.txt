@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 143066
+[parent_id]: 143032
+[tags]: 
+There is not any way to force VB6 to not pad UDT's, similar to the #pragma pack directive available in many C/C++ compilers, but you can do it the other way around. According to Q194609 Visual Basic uses 4 bytes alignment and Visual C++ uses 8 bytes by default. When using VB6 to call out to a C DLL, I used the MS "pshpack4.h" header files to handle the alignment because various compilers do this in different ways, as shown in this (rather edited) example: // this is in a header file called vbstruct.h ... # define VBSTRING char # define VBFIXEDSTRING char # define VBDATE double # define VBSINGLE float # ifdef _WIN32 # define VBLONG long # define VBINT short # else // and this was for 16bit code not 64bit!!!! # define VBLONG long # define VBINT int # endif ... # include "pshpack4.h" ... typedef struct VbComputerNameStruct { VBLONG sName; VBSTRING ComputerName[VB_COMPUTERNAME_LENGTH]; } VbComputerNameType; typedef struct VbNetwareLoginInfoStruct { VBLONG ObjectId; VBINT ObjectType; VBSTRING ObjectName[48]; } VbNetwareLoginInfoType; ... # include "poppack.h"

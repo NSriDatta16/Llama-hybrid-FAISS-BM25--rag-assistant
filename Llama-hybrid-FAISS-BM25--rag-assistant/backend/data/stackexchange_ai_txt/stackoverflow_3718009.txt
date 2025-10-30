@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3718009
+[parent_id]: 
+[tags]: 
+Strange #define in Template?
+
+I've got a small bit of code from a library that does this: #define VMMLIB_ALIGN( var ) var template class vector { ... private: // storage VMMLIB_ALIGN( T array[ M ] ); }; And you can call it by doing //(vector myVector) myVector.array; No parenthesis or anything. what? After reading the answers, it appears I should've done more looking. XCode's "Jump to Definition" gave me only one result. Searching the library gave me another: #ifndef VMMLIB_CUSTOM_CONFIG # ifndef NDEBUG # define VMMLIB_SAFE_ACCESSORS # endif # define VMMLIB_THROW_EXCEPTIONS # ifdef VMMLIB_DONT_FORCE_ALIGNMENT # define VMMLIB_ALIGN( var ) var # else # ifdef __GNUC__ # define VMMLIB_ALIGN( var ) var __attribute__((aligned(16))) # elif defined WIN32 # define VMMLIB_ALIGN( var ) __declspec (align (16)) var # else # error "Alignment macro undefined" # endif # endif #endif This offers different settings, depending on what system it's building for. Regardless, thanks. Can't believe I got confused over a member access!

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 908939
+[parent_id]: 908875
+[tags]: 
+Here's a suggestion: You can read data using a DataReader , create a update command for current row and add it to a list of commands.Then run update commands in a transaction. something like this: var commands=new List (); while(dr.Read()) { var cmd=new SqlCommand(); cmd.CommandText="Add your command text here"; commands.Add(cmd); } using(var cnn=new SqlConnection("Connection String")) { IDbTransaction transaction; try { cnn.Open(); transaction=cnn.BeginTransaction(); foreach(var cmd in commands) { cmd.Transaction=transaction; cmd.ExecuteNonQuery(); cmd.Dispose(); } transaction.Commit(); } catch(SqlException) { if(transaction!=null) transaction.Rollback(); throw; } }

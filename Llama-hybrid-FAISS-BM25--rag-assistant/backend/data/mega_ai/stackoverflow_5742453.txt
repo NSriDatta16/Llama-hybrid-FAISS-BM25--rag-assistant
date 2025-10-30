@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5742453
+[parent_id]: 5733255
+[tags]: 
+This whole doesn't make sense. You can validate the file name and file size in the first request and the client can send another one after that. That would require you to make the hash from the file name and the size and keep the hash on the server. In the next request you would need to validate the hash = compute the hash again which goes to decision: Why to validate these values in a separate request if you have to do it again in the main request? If you don't do it your whole design is fragile and useless. My approach would be: Use only upload method. Place file name and file size as SOAP header and use streaming (you will probably use it anyway). Streaming allows you reading SOAP headers before you start processing (and loading) the stream so you can validate them and throw exception back to the client without loading the file.

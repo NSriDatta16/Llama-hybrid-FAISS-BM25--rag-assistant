@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4208535
+[parent_id]: 4208451
+[tags]: 
+An ORA-00942 error is generally going to be a compile time error. Oracle has to resolve the name(s) of the tables at compile time. Exception handlers will trap errors at runtime, not compile time. If you used dynamic SQL, you can postpone the resolution of names to runtime at which point you can catch the exception, i.e. SQL> ed Wrote file afiedt.buf 1 declare 2 no_such_table exception; 3 pragma exception_init( no_such_table, -942 ); 4 l_cnt integer; 5 begin 6 execute immediate 'select count(*) from emps' into l_cnt; 7 exception 8 when no_such_table 9 then 10 dbms_output.put_line( 'No such table' ); 11* end; SQL> / No such table PL/SQL procedure successfully completed. But that is not a sensible way, in general, to write stored procedures. Your procedures should know what tables actually exist and syntax errors should be identified and resolved during development, not at runtime.

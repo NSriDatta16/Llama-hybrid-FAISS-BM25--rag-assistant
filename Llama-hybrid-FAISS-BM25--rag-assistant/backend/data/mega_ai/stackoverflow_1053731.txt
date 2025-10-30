@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1053731
+[parent_id]: 1053705
+[tags]: 
+The _average[sample] expression is a huge bottleneck, since it contains an implicit bounds check on each iteration. Use a pointer to the "_average" array (and the unsafe keyword). Then avoid calling any functions, so get rid of the Math.Min/Max calls and do that checks yourself. Without any compiler at my hands right now, I think this is how it should look: unsafe { fixed ( int* paverage = _average ) { int* p = paverage + firstSample + 1; for ( int sample = firstSample+1 ; sample maxY ) maxY = *p; p++; } } } Then finally, since "sample" is not actually used in the loop, you can change it to a loop variable that counts down to zero, so that the loop termination check is done against a constant (zero) instead of a variable.

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 522122
+[parent_id]: 
+[tags]: 
+Lightgbm with binary log loss does not compute mean in leaves
+
+I have encountered a behavior pattern of lightgbm (same for xgboost), which I do not understand. Below is a code snippet (Python) followed by my explanations: x = list(range(1000)); y = [0]*500 + [1]*500 import numpy as np X = np.array(x); X.shape = (len(x), 1) import lightgbm as lgb data = lgb.Dataset(X, y) params = {"objective": "binary", "learning_rate": 1, "num_leaves": 2} model = lgb.train(params, data, num_boost_round=1) model.trees_to_dataframe()[["threshold","value"]] Out[1]: threshold value 0 500.5 0.000000 1 NaN -1.992016 2 NaN 2.000000 set(model.predict(X)) Out[2]: {0.12004374604851242, 0.8807970779778823} set(np.array(y)[model.predict(X) > 0.5]) Out[3]: {1} This is a simple case of a single decision tree with two leaves, on a single variable which perfectly separates y to 0 and 1. I use binary log loss (the same effect does not happen with l2 loss). What I do not understand is why the values in the leaves are not perfectly 0 and 1, rather they are ~0.12 and ~0.88. The output Out[1] shows the split threshold and the values in the leaves, after logistic transform. The output Out[2] shows that the tree's predictions are ~0.12 and ~0.88. The output Out[3] shows that the observations for which the tree predicted ~0.88, are all labeled y=1, and so a prediction equal to 1 for this leaf would have been a better fit.

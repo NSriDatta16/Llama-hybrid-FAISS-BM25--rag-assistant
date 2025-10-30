@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1316781
+[parent_id]: 1316600
+[tags]: 
+You can reference a computed column in the WHERE clause if you define that column in a subquery: SELECT p.* FROM ( SELECT [some fields], CONCAT(firstname, ' ', 'lastname') as fullname FROM people ) p WHERE p.firstname LIKE '%user_submitted_data%' OR p.lastname LIKE '%user_submitted_data%' OR p.fullname LIKE '%user_submitted_data%'; But honestly, for the type of search you're doing, LIKE with wildcards is a terrible solution. You should think about using a FULLTEXT index: CREATE FULLTEXT INDEX people_names ON people(firstname, lastname); SELECT * FROM people WHERE MATCH(firstname, lastname) AGAINST( ? ); PS: FULLTEXT indexes work only with the MyISAM storage engine. Another solution, even more speedy, is to use Sphinx Search for fulltext indexing.

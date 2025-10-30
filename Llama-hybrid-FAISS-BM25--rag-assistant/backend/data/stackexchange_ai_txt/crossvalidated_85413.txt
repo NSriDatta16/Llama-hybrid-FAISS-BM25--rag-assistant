@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 85413
+[parent_id]: 67560
+[tags]: 
+To elaborate on Frank Harrell's answer, what the Epi package did was to fit a logistic regression, and make a ROC curve with outcome predictions of the following form: $$ outcome = \frac {1}{1+e^{-(\beta_0 + \beta_1 s100b + \beta_2 ndka)}} $$ In your case, the fitted values are $\beta_0$ (intercept) = -2.379, $\beta_1$ (s100b) = 5.334 and $\beta_2$ (ndka) = 0.031. As you want your predicted outcome to be 0.312 (the "optimal" cutoff), you can then substitute this as (hope I didn't introduce errors here): $$ 0.312 = \frac {1}{1+e^{-(-2.379 + 5.334 s100b + 0.031 ndka)}} $$ $$ 1.588214 = 5.334 s100b + 0.031 ndka $$ or: $$ s100b = \frac{1.588214 - 0.031 ndka}{5.334} $$ Any pair of (s100b, ndka) values that satisfy this equality is "optimal". Bad luck for you, there are an infinity of these pairs. For instance, (0.29, 1), (0, 51.2), etc. Even worse, most of them don't make any sense. What does the pair (-580, 10000) mean? Nothing! In other words, you can't establish cut-offs on the inputs - you have to do it on the outputs, and that's the whole point of the model.

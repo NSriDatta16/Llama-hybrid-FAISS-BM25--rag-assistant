@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5434577
+[parent_id]: 
+[tags]: 
+Strange Closure Compiler issue
+
+I'm using Google's Closure Compiler in advanced mode, and I'm having a strange issue. Here is the uncompiled code, with returned log statement from the compiled version running: goog.provide('frame.store'); goog.require('frame.storeBack.LocalStore'); goog.require('frame.storeBack.Mem'); frame.store = (function() { /** prioritised list of backends **/ var backends = [ frame.storeBack.LocalStore, frame.storeBack.Mem ]; frame.log(backends); // [function rc(){}, function tc(){this.q={}}] frame.log(frame.storeBack.LocalStore === backends[0]); // true frame.log(frame.storeBack.LocalStore.isAvailable === backends[0].isAvailable); // false frame.log(frame.storeBack.LocalStore.isAvailable); // function sc(){try{return"localStorage"in window&&window.localStorage!==k}catch(a){return l}} frame.log(backends[0].isAvailable); // undefined for (var i=0, len=backends.length; i For some reason the static method isAvailable is not present when LocalStore is accessed via the backends array, and is present when it's accessed via it's global namespace. Can anyone see why? EDIT: for reference, here is the method declaration: frame.storeBack.LocalStore.isAvailable = function() { try { return 'localStorage' in window && window['localStorage'] !== null; }catch (e) { return false; } };

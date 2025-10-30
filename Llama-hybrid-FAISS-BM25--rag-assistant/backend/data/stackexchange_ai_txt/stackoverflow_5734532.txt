@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5734532
+[parent_id]: 5734146
+[tags]: 
+In your code here: Fixture *newFixture = [[Fixture alloc] init]; newFixture = [fixtures objectAtIndex:index]; dragCell.icon = [UIImage imageNamed:newFixture.fixtureStringPath]; [newFixture release]; It looks like you're releasing an autorelease object ( newFixture ). When you get an object out of the array, it's autorelease. You also have a memory leak, when you allocate the newFixture at the first line, that object is never released because you replace the pointer to it in your 2nd line. Fixture *newFixture = [[Fixture alloc] init]; // THIS OBJECT IS NEVER RELEASED newFixture = [fixtures objectAtIndex:index]; // YOU'RE REPLACING THE newFixture POINTER WITH AN OBJECT FROM THE ARRAY dragCell.icon = [UIImage imageNamed:newFixture.fixtureStringPath]; [newFixture release]; // YOU'RE RELEASING AN AUTORELEASED OBJECT So the code should be like Fixture *newFixture = [fixtures objectAtIndex:index]; dragCell.icon = [UIImage imageNamed:newFixture.fixtureStringPath]; Then your property should retain the image correctly.

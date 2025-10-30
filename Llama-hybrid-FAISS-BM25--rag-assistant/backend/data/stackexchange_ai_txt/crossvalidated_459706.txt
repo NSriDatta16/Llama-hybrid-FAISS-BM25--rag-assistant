@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 459706
+[parent_id]: 459699
+[tags]: 
+sklearn.decomposition.PCA assumes that the model applied to a sample taken from a population, therefore when estimating the variances (actually the covariance matrice, but the variance sits in the diagonal) for unbiased estimation it uses $n - 1$ instead of $n$ as a divisor. On the other hand, numpy.var with the default parameters calculates the population variance (with a divisor $n$ ), hence applied to a sample it's a biased estimation of the population variance. To overcome this you have to use variances = np.var(data, axis=0, ddof=1) which is the same as n= len(data) variances = np.var(data, axis=0) * n / (n - 1) In case if it's not a sample, but a full population (which is not a common use case), you have to amend the variances provided by the PCA model to be population variance by multiplying them with $\frac{n - 1}{n}$ : n= len(data) sum(model.explained_variance_ * (n - 1) / n)

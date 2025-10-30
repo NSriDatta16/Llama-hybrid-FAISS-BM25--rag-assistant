@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3231766
+[parent_id]: 
+[tags]: 
+How can I set custom property of an Entity type in LINQ to Entities query and still return a IQueryable ?
+
+I have a EF4 model where I have Product entity that have one-to-many relation with Task entity (ChildTasks). I have to get some Projects from db based on some user criteria. The Project has one custom property (not associated with any column) named EstimatedProgress where I have to store additional information about Project - computed weighted average progress of each child task. The problem is that finally I can't return an IEnumerable but IQueryable . The code below demonstrates what I want to achieve (I know it does not compile). var q = from p in ObjectContext.ProjectSet.Include("ProjectBase") where p.ProjectBase.IsTemplate == false from ct in p.ProjectBase.ChildTasks where ct.Progress != null && ct.EstimatedTime != null group ct by ct.prjProjectBase.Project into g select new { Project = g.Key, EstimatedProgress = g.Sum(oo => oo.Progress.Value * oo.EstimatedTime.Value) / g.Sum(oo => oo.EstimatedTime.Value), }; var sortedQ = q.OrderByDescending(o => o.Project.ProjectBase.Status) .ThenBy(o => o.Project.ProjectBase.Name); // this is where I want to return IQueryable // where each project has set custom property EstimatedProgress return sortedQ.Select(o => { o.Project.EstimatedTime = o.EstimatedProgress; return o.Project; }); The question is: Is it possible to do something similiar with EF4 linq query or maybe some of you have a workaround ;) Thanks in advance.

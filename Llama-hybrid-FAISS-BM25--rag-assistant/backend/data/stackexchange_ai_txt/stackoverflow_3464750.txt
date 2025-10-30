@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3464750
+[parent_id]: 
+[tags]: 
+Postgres UPSERT (INSERT or UPDATE) only if value is different
+
+I'm updating a Postgres 8.4 database (from C# code) and the basic task is simple enough: either UPDATE an existing row or INSERT a new one if one doesn't exist yet. Normally I would do this: UPDATE my_table SET value1 = :newvalue1, ..., updated_time = now(), updated_username = 'evgeny' WHERE criteria1 = :criteria1 AND criteria2 = :criteria2 and if 0 rows were affected then do an INSERT: INSERT INTO my_table(criteria1, criteria2, value1, ...) VALUES (:criteria1, :criteria2, :newvalue1, ...) There is a slight twist, though. I don't want to change the updated_time and updated_username columns unless any of the new values are actually different from the existing values to avoid misleading users about when the data was updated. If I was only doing an UPDATE then I could add WHERE conditions for the values as well, but that won't work here, because if the DB is already up to date the UPDATE will affect 0 rows and then I would try to INSERT. Can anyone think of an elegant way to do this, other than SELECT, then either UPDATE or INSERT?

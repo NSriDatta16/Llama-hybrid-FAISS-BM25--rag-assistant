@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5421956
+[parent_id]: 
+[tags]: 
+Static const variable is not constant in child class
+
+I am using Visual Studio 2008 and have two classes Parent and Child. Parent declares some static const variables in the header, which are then defined in the cpp file. When I try to use the defines as cases in a switch statement in a child class I get the error: C2051: case expression not constant . So I've done some testing and the behavior I'm seeing is somewhat inconsistent. // Parent.h class Parent { public: Parent(); ~Parent(void) { } static const unsigned long A = 1; static const unsigned long B; }; // Parent.cpp #include "Parent.h" const unsigned long Parent::B = 2; Parent::Parent() { // Everything works fine here unsigned long l; switch(l) { case A: break; case B: break; default: break; } } // Child.h #pragma once #include "Parent.h" class Child : public Parent { public: Child(void); virtual ~Child(void) { } static const int C = 3; static const int D; }; // Child.cpp #include "Child.h" const int Child::D = 4; Child::Child(void) { unsigned long l; switch(l) { case A: break; case B: // C2051: case expression not constant break; case C: break; case D: break; default: break; } } I've also tried specifying Parent::B directly, which doesn't solve the issue. Is there some reason why the expression is constant in all cases except when the variable is inherited from a parent class?

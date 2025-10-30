@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2214450
+[parent_id]: 2214274
+[tags]: 
+There are essentially three different ways to accomplish this. The first is to sacrifice static typing by upcasting to obj as you suggested: let func x y = match box x, box y with | (:? MyType1 as x), (:? MyType1 as y) -> ... This is virtually always an awful solution because it results in the introduction of unnecessary run-time type checks: | _ -> invalidArg "x" "Run-time type error" The only place I have seen this work well is library code designed specifically for users to invoke from F# interactive sessions where compile-time and run-time type errors effectively occur at the same time and dynamic typing can be more concise. For example, our F# for Visualization library allows the user to try to visualize any value of any type using this technique to invoke custom visualization routines for different (known) types ( read more ). The second is to replace your two separate types with a single type: type MyType1 = A | B of float | C | D of int The third solution is to introduce a new type that unifies just those two types: type MyType = MyType1 of MyType1 | MyType2 of MyType2

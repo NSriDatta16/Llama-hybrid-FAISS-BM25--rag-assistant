@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2195901
+[parent_id]: 2195743
+[tags]: 
+Your call to Mage::getSingleton('sales/order') isn't returning an object. Try var_dump(Mage::getSingleton('sales/order')); to confirm. I haven't dived into the checkout code recently, but I'm pretty sure that's because sales/order will get you the order in progress. Once the order's been placed it's no longer in progress. The "right" way to do this would be to create an observer for one of the events that Magento fires during checkout. The checkout_onepage_controller_success_action event should be sufficient, assuming you haven't done too much customization of the checkout process. There's a terse explaination of how to do this on the Wiki (for a different event) Once you get your event setup and responding, do a $event = $observer->getEvent(); var_dump($event->getData()); to see what kind of information you have available. Chances are there's an order object in there which will let you get the ID you're after.

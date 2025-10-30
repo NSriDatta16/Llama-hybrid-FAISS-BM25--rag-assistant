@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1298449
+[parent_id]: 
+[tags]: 
+Create Active Directory user in .NET (C#)
+
+I need to create a new user in Active Directory. I have found several examples like the following: using System; using System.DirectoryServices; namespace test { class Program { static void Main(string[] args) { try { string path = "LDAP://OU=x,DC=y,DC=com"; string username = "johndoe"; using (DirectoryEntry ou = new DirectoryEntry(path)) { DirectoryEntry user = ou.Children.Add("CN=" + username, "user"); user.Properties["sAMAccountName"].Add(username); ou.CommitChanges(); } } catch (Exception exc) { Console.WriteLine(exc.Message); } } } } When I run this code I get no errors, but no new user is created. The account I'm running the test with has sufficient privileges to create a user in the target Organizational Unit. Am I missing something (possibly some required attribute of the user object)? Any ideas why the code does not give exceptions? EDIT The following worked for me: int NORMAL_ACCOUNT = 0x200; int PWD_NOTREQD = 0x20; DirectoryEntry user = ou.Children.Add("CN=" + username, "user"); user.Properties["sAMAccountName"].Value = username; user.Properties["userAccountControl"].Value = NORMAL_ACCOUNT | PWD_NOTREQD; user.CommitChanges(); So there were actually a couple of problems: CommitChanges must be called on user (thanks Rob) The password policy was preventing the user to be created (thanks Marc)

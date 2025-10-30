@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2251336
+[parent_id]: 2249888
+[tags]: 
+Apparently the pages are been requested from the browser cache. You'll need to disable the client-side caching of the pages in question. You can do this by creating a Filter which listens on an url-pattern of the pages you'd like to disable the cache for, such as *.jsp . Do the following in the doFilter() method: HttpServletResponse httpres = (HttpServletResponse) response; httpres.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1. httpres.setHeader("Pragma", "no-cache"); // HTTP 1.0. httpres.setDateHeader("Expires", 0); // Proxies. chain.doFilter(request, response); This way, the client side application will be instructed to not cache the requests matching the url-pattern of this filter. Pressing the back button would then force a real request from the server, with the proposed fresh data. To retain certain server-side data between the requests, you'll need to grab the session scope or use GET requests only. Oh, don't forget to clear the browser cache first after implementing and before testing ;)

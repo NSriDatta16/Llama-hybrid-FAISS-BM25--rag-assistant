@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2767443
+[parent_id]: 
+[tags]: 
+How to Elegantly convert switch+enum with polymorphism
+
+I'm trying to replace simple enums with type classes.. that is, one class derived from a base for each type. So for example instead of: enum E_BASE { EB_ALPHA, EB_BRAVO }; E_BASE message = someMessage(); switch (message) { case EB_ALPHA: applyAlpha(); case EB_BRAVO: applyBravo(); } I want to do this: Base* message = someMessage(); message->apply(this); // use polymorphism to determine what function to call. I have seen many ways to do this which all seem less elegant even then the basic switch statement. Using dyanimc_cast, inheriting from a messageHandler class that needs to be updated every time a new message is added, using a container of function pointers, all seem to defeat the purpose of making code easier to maintain by replacing switches with polymorphism. This is as close as I can get: (I use templates to avoid inheriting from an all-knowing handler interface) class Base { public: template virtual void apply(T* sandbox) = 0; }; class Alpha : public Base { public: template virtual void apply(T* sandbox) { sandbox->applyAlpha(); } }; class Bravo : public Base { public: template virtual void apply(T* sandbox) { sandbox->applyBravo(); } }; class Sandbox { public: void run() { Base* alpha = new Alpha; Base* bravo = new Bravo; alpha->apply(this); bravo->apply(this); delete alpha; delete bravo; } void applyAlpha() { // cout Obviously, this doesn't compile but I'm hoping it gets my problem accross.

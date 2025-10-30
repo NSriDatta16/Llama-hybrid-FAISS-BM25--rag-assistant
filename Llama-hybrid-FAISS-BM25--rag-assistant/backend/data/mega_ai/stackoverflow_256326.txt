@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 256326
+[parent_id]: 256282
+[tags]: 
+I guess you could have a hits_day_count column, which is incremented on each view, and a hits_day_current. On each page-view, you check if the hits_day_current column is today. If not, reset the hit count.. Then you increment the hits_day_count column, and set hits_day_current to the current datetime. Pseudo-code: if article_data['hits_day_current'] == datetime.now(): article_data['hits_day_count'] ++ else: article_data['hits_day'] = 0 article_data['hits_day_current'] = datetime.now() The obvious problem with this is simple - timezones. The totals get reset at 00:00 wherever the server is located, which may not be useful. A better solution would be a rolling-24-hour total.. Not quite sure how to do this neatly. The easiest (although not so elegant) way would be to parse your web-server logs periodically. Get the last 24 hours of logs, count the number of requests to each article, and put those numbers in the database.

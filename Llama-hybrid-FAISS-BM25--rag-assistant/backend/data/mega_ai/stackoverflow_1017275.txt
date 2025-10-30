@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1017275
+[parent_id]: 1017259
+[tags]: 
+Firstly, the stop() operation on java.util.Thread is deprecated, and its use is strongly discouraged, since it can leave things in an unstable state. It's much preferred that you send a message to the Thread's Runnable asking it to stop itself safely. The problem you have is that your thread is doing blocking I/O operations, and so it won't receive your message until the I/O is complete. The best you can hope for, unless someone else comes up with a better option, is to interrupt() the Thread, and hope that the I/O classes notice and stop the download. Edit: The javadoc for Thread.interrupt() does say that I/IO can be interrupted if you use java.nio, but it's very unlikely that you are. "Normal" java.io traffic is blocking, and cannot be interrupted. Why are Thread.stop, Thread.suspend and Thread.resume Deprecated?

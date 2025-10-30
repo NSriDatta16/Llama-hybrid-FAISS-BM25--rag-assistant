@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3088881
+[parent_id]: 
+[tags]: 
+Symfony user framework design problem
+
+I'm looking for advice on how to tackle a design problem I've came up with. I'm currently using Symfony framework so I'll be using the names of Symfony classes. When a user becomes "authenticated" or their "credentials" change in the Symfony user class, a regenerate() gets called on the currently used storage class. The store class extends sfStorage. Now, when this regenerate() command is ran, we need to do some business logic. The following are options I've came up with so far: Modify the three functions that addCredential, removeCredential, setAuthenticated and tell them to dispatch an event (setAuthenticated already does) so we know to do our business logic. Second option would be to extend the sfSessionStorage class and tell it to throw an event on each regenerate. The problem I have with this is that sfUser asks for the interface sfStorage. Unless we modify sfStorage then if someone passed any kind of class that extends sfStorage that didn't know to add the event, it wouldn't work. The third option would be the second option, but we would still extend the user object to say that we require the interface of a custom sfStorage abstract class that sends out a notification on regenerate. Then we would know for sure that any class that passes through would follow this notification method. Anyone have any suggestions?

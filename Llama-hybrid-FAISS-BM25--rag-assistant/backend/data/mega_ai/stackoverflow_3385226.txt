@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3385226
+[parent_id]: 
+[tags]: 
+How do I pass _SESSION('userName') from this Zend_Auth method to the layout?
+
+I'm having a difficult time understanding how Zend_Session_Namespace is integrated with Zend_Auth. I have this method I'm using as the action to Authenticate my login page-it is working correctly and redirecting to the /monthly view: public function authAction(){ $request = $this->getRequest(); $registry = Zend_Registry::getInstance(); $auth = Zend_Auth::getInstance(); $DB = $registry['DB']; $authAdapter = new Zend_Auth_Adapter_DbTable($DB); $authAdapter->setTableName('users') ->setIdentityColumn('UserName') ->setCredentialColumn('Password'); // Set the input credential values $uname = $request->getParam('UserName'); $paswd = $request->getParam('Password'); $authAdapter->setIdentity($uname); $authAdapter->setCredential($paswd); // Perform the authentication query, saving the result $result = $auth->authenticate($authAdapter); // TRYING TO SET THE NAMESPACE $this->session = new Zend_Session_Namspace('UserName'); if($result->isValid()){ $data = $authAdapter->getResultRowObject(null,'password'); $auth->getStorage()->write($data); $this->_redirect('/monthly'); }else{ $this->_redirect('/login'); } } But I need to be able to store UserName as a Zend_session and call it from monthly controller. I'm not doing things right because I just get a blank screen when I try and do this: public function indexAction() { $this->view->userName = Zend_Session_Namespace('UserName'); }

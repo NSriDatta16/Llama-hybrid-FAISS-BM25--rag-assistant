@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 763159
+[parent_id]: 
+[tags]: 
+Should I bother detecting OOM (out of memory) errors in my C code?
+
+I've devoted a large number of lines of C code to cleanup-labels/conditionals for failed memory allocation (indicated by the alloc family returning NULL ). I was taught that this was a good practice so that, on memory failure, an appropriate error status could be flagged and the caller could potentially perform "graceful memory cleanup" and retry. I now have some doubts about this philosophy that I'm hoping to clear up. I guess it's possible that a caller could deallocate excessive buffer space or strip relational objects of their data, but I find the caller rarely has the capability (or is at the appropriate level of abstraction) to do so. Also, early-returning from the called function without side effects is often non-trivial. I also just discovered the Linux OOM killer, which seems to make these efforts totally pointless on my primary development platform. By default, Linux follows an optimistic memory allocation strategy. This means that when malloc() returns non-NULL there is no guarantee that the memory really is available. This is a really bad bug. In case it turns out that the system is out of memory, one or more processes will be killed by the infamous OOM killer. I figure there are probably other platforms out there that follow the same principle. Is there something pragmatic that makes checking for OOM conditions worthwhile?

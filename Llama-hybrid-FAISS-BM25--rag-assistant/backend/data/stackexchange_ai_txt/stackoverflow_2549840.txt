@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2549840
+[parent_id]: 2549400
+[tags]: 
+I figured it out by extrapolation (and reading sources): agent = Mechanize.new ... cookie = Mechanize::Cookie.new(key, value) cookie.domain = ".oddity.com" cookie.path = "/" agent.cookie_jar.add(cookie) ... page = agent.get("https://www.oddity.com/etc") Seems to do the job just fine. update As @Benjamin Manns points out, Mechanize now wants a URL in the add method. Here's the amended recipe, making the assumption that you've done a GET using the agent, and that the last page visited is the domain for the cookie (saves a URI.parse() ): agent = Mechanize.new ... cookie = Mechanize::Cookie.new(key, value) cookie.domain = ".oddity.com" cookie.path = "/" agent.cookie_jar.add(agent.history.last.uri, cookie)

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 429777
+[parent_id]: 
+[tags]: 
+ORA-28579: network error during callback from external procedure agent
+
+Has anyone seen this error when trying to call an external C function from an Oracle query? I'm using Oracle 10g and get this error every time I try to call one of the two functions in the library. A call to the other function returns fine every time, though the function that works is all self-contained, no calls to any OCI* functions. Here's the stored procedure that is used to call the failing C code: CREATE OR REPLACE PROCEDURE index_procedure(text in clob, tokens in out nocopy clob, location_needed in boolean) as language c name "c_index_proc" library lexer_lib with context parameters ( context, text, tokens, location_needed ); Any help would be appreciated. Everything I've found on this error message says that the action to take is: Contact Oracle customer support. Edit: I've narrowed it down to the point that I know that there is a segfault deep in libclntsh after I call OCILobTrim (to truncate it down to 0 length) on the tokens clob. Here is the code I've been using to call this procedure. declare text CLOB; tokens CLOB; begin dbms_lob.createtemporary(tokens, TRUE); dbms_lob.append(tokens, 'token'); dbms_lob.createtemporary(text, TRUE); dbms_lob.append(text, ' Test Document '); index_procedure(text, tokens, FALSE); dbms_output.put_line(tokens); end; / Is there something wrong with this setup that might be causing OCILobTrim problems?

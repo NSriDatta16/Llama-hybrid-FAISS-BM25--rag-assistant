@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1743058
+[parent_id]: 1742940
+[tags]: 
+Since your warning message shows that this is in Main(), I'll assume that in lower levels, you do catch only more specific Exceptions. For Main(), I'd consider two cases: Your own (debugging) build, where you want all the exception information you can get: Do not catch any Exceptions here, so the debugger breaks and you have your call stack, Your public releases, where you want the application to behave normally: Catch Exception and display a nice message. This is always better (for the average user) than the 'send report' window. To do this nicely, just check if DEBUG is defined (and define it, if VS doesn't do this automatically): #if DEBUG yadda(); // Check only specific Exception types here #else try { yadda(); } catch (Exception e) { ShowMessage(e); // Show friendly message to user } #endif I'd disable the warning about catching general Exceptions, but only for your Main() function, catching Exception in any other method is unwise, as other posters have said already.

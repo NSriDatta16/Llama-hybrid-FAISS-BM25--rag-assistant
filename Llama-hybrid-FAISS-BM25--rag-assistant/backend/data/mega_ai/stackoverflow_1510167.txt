@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1510167
+[parent_id]: 1507091
+[tags]: 
+@nosklo's twisted-based solution is elegant and workable, but if you want to avoid the dependency on twisted, the task is still doable, e.g: import multiprocessing def query_with_timeout(dbc, timeout, query, *a, **k): conn1, conn2 = multiprocessing.Pipe(False) subproc = multiprocessing.Process(target=do_query, args=(dbc, query, conn2)+a, kwargs=k) subproc.start() subproc.join(timeout) if conn1.poll(): return conn1.recv() subproc.terminate() raise TimeoutError("Query %r ran for >%r" % (query, timeout)) def do_query(dbc, query, conn, *a, **k): cu = dbc.cursor() cu.execute(query, *a, **k) return cu.fetchall()

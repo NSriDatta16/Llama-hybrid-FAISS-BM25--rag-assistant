@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4220323
+[parent_id]: 4219978
+[tags]: 
+djacobson and igor explain pretty well why this happens. The way I personally use the Entity Framework, I avoid using Include altogether. Depending on what you're planning to do with the data, you could do something like this: var beverages = from p in db.Products select new {p, p.Category} into pc where pc.Category.CategoryName == "Beverages" select pc; return beverages.ToList().Select(pc => pc.p); ... which, at least in EF 4.0, will produce just a single inner join. Entity Framework is smart enough to make it so that the product's Category property is populated with the category that came back from the database with it. Of course, it's very likely that SQL Server optimizes things away so this won't actually gain you anything.

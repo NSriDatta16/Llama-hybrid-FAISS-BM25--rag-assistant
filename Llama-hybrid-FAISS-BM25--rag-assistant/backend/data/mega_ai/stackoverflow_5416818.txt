@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5416818
+[parent_id]: 5416656
+[tags]: 
+This is a very common paradigm in C. The last char is just a placeholder for variable data, and in reality you will allocate a larger buffer and overrun the 1 character. This is perfectly legal. You cannot change the struct but when you call malloc() to allocate it you allocate some extra bytes. What you need in place of the char[1] is a pointer (to the other struct). Let us give your struct a name: typedef struct{ Variable a; Variable 2; char ch[1]; } Element; in your code: Element * elt = malloc( sizeof( Element ) + sizeof( CharArrayStruct* ) - 1); /* fill your struct */ *(CharArrayStruct **)elt.ch = &myCharArrayStruct; /* later on reading it back */ CharArrayStruct * pcas = *(CharArrayStruct **)elt.ch; Note elt.ch is the address of the start of an array, not a char. Note that its contents are an OtherStruct* therefore it must be cast to CharArrayStruct**

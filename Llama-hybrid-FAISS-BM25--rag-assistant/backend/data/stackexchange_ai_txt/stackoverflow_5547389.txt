@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5547389
+[parent_id]: 5547336
+[tags]: 
+One approach, off the top of my head, would be to create your own ViewEngine and override FindView, it has access to the controller context and therefore the HttpContext. You can use that to choose different views based on the user agent, using some kind of pattern, like appending _ipad or something. Quick Example: Global.asax protected void Application_Start() { RegisterRoutes(RouteTable.Routes); ViewEngines.Engines.Clear(); ViewEngines.Engines.Add(new CustomViewEngine()); AreaRegistration.RegisterAllAreas(); } CustomViewEngine: public class CustomViewEngine : WebFormViewEngine { protected override IView CreateView(ControllerContext controllerContext, string viewPath,string masterPath) { if (controllerContext.HttpContext.Request.UserAgent.Contains("ipad")) { return base.CreateView(controllerContext, viewPath.Replace(".aspx","_ipad.aspx").Replace(".ascx","_ipad.ascx"), masterPath); } else { return base.CreateView(controllerContext, viewPath, masterPath); } } }

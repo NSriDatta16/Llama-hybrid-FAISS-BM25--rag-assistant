@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2305753
+[parent_id]: 2305726
+[tags]: 
+Shallow copy isn't discouraged, exactly - it's a matter of knowing when it's appropriate. The issue here is one of "ownership". Does the "Student" class "own" the pointed-to data, and therefore take responsibility (in its destructor) for deleting that data. Basically, if you take a shallow copy of an object that owns some pointed-to data, then destruct either the original or the copy, the pointed-to data is deleted (by the destructor). But you still have a reference in the object that wasn't destructed - a dangling pointer. OTOH, if the object doesn't own the pointed-to data, the destructor doesn't delete the pointed-to data, and there is no problem. Though you do have to ensure that something owns the pointed-to data, or you'll have a memory leak. Keeping track of ownership of pointed-to data is a key skill in non-garbage-collected languages like C++, and is fundamental to applying the Resource Allocation Is Initialisation pattern.

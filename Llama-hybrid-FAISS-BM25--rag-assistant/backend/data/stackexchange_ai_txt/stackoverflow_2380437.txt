@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2380437
+[parent_id]: 2376981
+[tags]: 
+The question has been very well answered by Dons, I thought I might add something. When calculating the average this way : average xs = realToFrac (sum xs) / genericLength xs What your code will do is to traverse the list twice, once to calculate the sum of its elements, and once to get its length. As far as I know, GHC isn't able yet to optimize this and compute both the sum and length in a single pass. It doesn't hurt even as a beginner to think about it and about possible solutions, for example the average function might be written using a fold that computes both the sum and length; on ghci : :set -XBangPatterns import Data.List let avg l=let (t,n) = foldl' (\(!b,!c) a -> (a+b,c+1)) (0,0) l in realToFrac(t)/realToFrac(n) avg ([1,2,3,4]::[Int]) 2.5 avg ([1,2,3,4]::[Double]) 2.5 The function doesn't look as elegant, but the performance is better. More information on Dons blog: http://donsbot.wordpress.com/2008/06/04/haskell-as-fast-as-c-working-at-a-high-altitude-for-low-level-performance/

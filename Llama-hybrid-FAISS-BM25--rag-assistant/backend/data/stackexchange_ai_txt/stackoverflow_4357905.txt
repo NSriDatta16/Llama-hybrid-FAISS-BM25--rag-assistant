@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4357905
+[parent_id]: 4356304
+[tags]: 
+You might want to consider using MyISAM tables in a tmpfs instead. The downside is that you'll have to re-create them on each server restart (memory handler tables persist themselves over a restart). MyISAM is a lot more space-efficient than the memory engine, and probably just as fast on some workloads (you'll want to test it on a non-production system) You probably want to try to diagnose exactly what is using the memory - it might not be the memory tables. Unfortunately knowing what's using the memory in MySQL is difficult. Memory from memory tables should be released, but it is possible that it's not able to release it due to fragmentation, i.e. other kinds of memory being allocated in gaps in between. Normally the "big" allocations in MySQL appear at startup (e.g. innodb buffer pool) but if you've mis-tuned my.cnf, they could happen later too. Try posting this question with your my.cnf on serverfault.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2573251
+[parent_id]: 2565075
+[tags]: 
+The following should help you do what you want. From my brief look at things, it appears Magento doesn't think of things strictly in a Category/Sub-Category kind of way. Rather, there's a bunch of categories, and some categories have parents, some have children, and some have both. //get a collection of all the categories Mage::app($mageRunCode, $mageRunType); //... //get a collection of all the categories $categories = Mage::getModel('catalog/category') ->getCollection() ->addAttributeToSelect('*'); foreach($categories as $category) { //get an array of parent ids for this category $array = $category->getParentIds(); //get an array of children ids $children = explode(',',$category->getChildren()); //get a list of all the products in a category $products = $category->getProductCollection(); } //pull collection of categories with a parent whose id is 13 $categories = Mage::getModel('catalog/category') ->getCollection() ->addFieldToFilter('parent_id','13') ->addAttributeToSelect('*');

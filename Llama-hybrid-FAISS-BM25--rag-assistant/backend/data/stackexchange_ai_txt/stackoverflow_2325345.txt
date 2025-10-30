@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2325345
+[parent_id]: 
+[tags]: 
+How to handle conditional-imports-dependent exceptions?
+
+I'm wondering what is the most elegant way to handle exceptions that depend on a conditional import. For example: import ldap try: ... l = ldap.open(...) l.simple_bind_s(...) ... except ldap.INVALID_CREDENTIALS, e: pass except ldap.SERVER_DOWN, e: pass In the real-world scenario (the one that made me think of this), we have a cherrypy server with a 'login' page. And the login method does a lot of stuff - one of them is authentication. However, I can use something else than LDAP to do authentication, in which case I do not want to import ldap at all. But if I make the 'import ldap' statement conditional (e.g. it only gets imported when USE_LDAP value is True in a config file), I have to do something with the 'except's too. The question is: what? Catch a generic Exception, use an if statement to check whether we use LDAP (i.e., ldap is imported) and then use isinstance to check, whether the Exception is the correct type (ldap.INVALID_CREDENTIALS)? Try to concentrate the code that depends on ldap at one place and re-raise a user defined exception that finally gets caught in the login method? What would you suggest as the most pythonic?

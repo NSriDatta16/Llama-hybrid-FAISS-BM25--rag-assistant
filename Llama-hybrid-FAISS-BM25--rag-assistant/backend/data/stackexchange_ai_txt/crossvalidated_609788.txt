@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 609788
+[parent_id]: 609726
+[tags]: 
+@Doctor Milt's response is on the right track, but I think this is much more naturally handled using a multilevel logistic (or probit) regression, each person's response to each item ( 0 or 1 ) as the outcome variable. You would definitely want to allow the average probability of a 1 vary across participants and across questions (random intercept). You would probably also allow the influence of your predictors to vary across questions (random slopes), although depending on your data set this model might be too complicated to estimate. This is a class of item response theory model. With a data frame containing one row per response, the random intercepts and slope model would be coded in R as glmer(response ~ predictor1 + predictor2 + (1 | participant_id) + (1 + predictor1 + predictor2 | question_id), data = your_data, family = binomial) You might also consider using brms to fit this model. brms has excellent support for item response theory models (see https://arxiv.org/pdf/1905.09501.pdf ).

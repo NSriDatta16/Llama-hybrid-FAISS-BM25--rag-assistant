@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1150446
+[parent_id]: 
+[tags]: 
+Convert ESRI projection coordinates to lat-lng
+
+I have a large dataset of x,y coordinates in "NAD 1983 StatePlane Michigan South FIPS 2113 Feet" (aka ESRI 102690 ). I'd like to convert them to lat-lng points. In theory, this is something proj is built to handle, but the documentation hasn't given me a clue -- it seems to describe much more complicated cases. I've tried using a python interface , like so: from pyproj import Proj p = Proj(init='esri:102690') sx = 13304147.06410000000 #sample points sy = 288651.94040000000 x2, y2 = p(sx, sy, inverse=True) But that gives wildly incorrect output. There's a Javascript library, but I have ~50,000 points to handle, so that doesn't seem appropriate. What worked for me: I created a file called ptest with each pair on its own line, x and y coordinates separated by a space, like so: 13304147.06410000000 288651.94040000000 ... Then I fed that file into the command and piped the results to an output file: $>cs2cs -f %.16f +proj=lcc +lat_1=42.1 +lat_2=43.66666666666666 +lat_0=41.5 +lon_0=-84.36666666666666 +x_0=4000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +to_meter=0.3048006096012192 +no_defs +zone=20N +to +proj=latlon ptest > out.txt

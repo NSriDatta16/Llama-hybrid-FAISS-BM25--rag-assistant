@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4815256
+[parent_id]: 
+[tags]: 
+HTTP::Daemon and threads
+
+I have the following code on Windows XP and ActiveState ActivePerl 5.8. What could be the problem with it? Why does it not work? I tried to set it as a proxy to my IE but when I connect to some URLs from my IE nothing happens. The code enters the thread function and nothing happens. use HTTP::Daemon; use threads; use HTTP::Status; use LWP::UserAgent; my $webServer; my $d = HTTP::Daemon->new( LocalAddr => '127.0.0.1', LocalPort => 80, Listen => 20 ) || die; print "Web Server started!\n"; print "Server Address: ", $d->sockhost(), "\n"; print "Server Port: ", $d->sockport(), "\n"; while (my $c = $d->accept) { threads->create(\&process_one_req, $c)->detach(); } sub process_one_req { STDOUT->autoflush(1); my $c = shift; while (my $r = $c->get_request) { if ($r->method eq "GET") { print "Session info\n", $r->header('Host'); my $ua = LWP::UserAgent->new; my $response = $ua->request($r); $c->send_response($response); } else { $c->send_error(RC_FORBIDDEN); } } $c->close; undef($c); }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5652882
+[parent_id]: 5652716
+[tags]: 
+Just count the results of your query by embedding it as a sub-query. As a side note, an inner join would be more appropriate than an outer join for your query. In fact, you only need the join if there are invalid group_id values in the members table. With inner join: select count(*) from ( select groups.id from groups inner join members on groups.id=members.group_id group by groups.id having count(members.id)=1 ) as sub Without join (assuming no orphans): select count(*) from ( select group_id from members group_id having count(*) = 1 ) as sub

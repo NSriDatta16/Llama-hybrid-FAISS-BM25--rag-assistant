@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 554165
+[parent_id]: 524491
+[tags]: 
+If the structural break only affect a subset of the model parameters, you could use the whole time series to model all other parameters (carrying over info) and only use post-break info to infer the new parameters. The r pacakge mcp can do this. As a simple example, here's a model with an intercept change but with no change in 2nd-order autoregressive coefficients. # Simulate some AR(2) data with a break at time 130/150 data = data.frame( x = 1:150, y = c(rep(10, 130), rep(13, 20)) + arima.sim(list(ar = c(0.7, -0.4)), 150) ) # Model it as two intercepts with AR(2) model = list( y ~ 1 + ar(2), ~ 1 ) # Explore results fit = mcp(model, data, par_x = "x") summary(fit) plot(fit) predict(fit, newdata = data.frame(x = 200), arma = FALSE) If you know when the change took place, we can set it rather than inferring it. Just set that value as a prior: cp_1 = 130 . Unfortunately, the current CRAN version of mcp (v. 0.3.1) has a bug here, so you can approximate it with a very narrow interval: fit2 = mcp(model, data, par_x = "x", prior = list(cp_1 = "dunif(129.9, 130.1)"))

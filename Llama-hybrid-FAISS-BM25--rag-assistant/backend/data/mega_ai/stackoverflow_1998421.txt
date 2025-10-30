@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1998421
+[parent_id]: 1998094
+[tags]: 
+Generally, if you want to transfer a pointer from C to Java, it's recommended to use long so that there are enough bits to hold the pointer value in case the platform is 64 bits. Then, have a look at ByteBuffer.allocateDirect() which creates a ByteBuffer instance which memory can be shared with C. You can allocate such a direct ByteBuffer from the Java side then pass it as a jobject to a JNI function and inside this JNI function you use the GetDirectBufferAddress function. Another way is to wrap a native area of memory with the NewDirectByteBuffer JNI function from the native side. It gives you a jobject you pass back to the Java side (pay attention to local and global references). Pay attention to the fact that once the direct ByteBuffer that wraps the native memory has been created, you are still responsible for managing the native memory: at some point, you will have to call delete buf; in your native code, Java won't do it for you.

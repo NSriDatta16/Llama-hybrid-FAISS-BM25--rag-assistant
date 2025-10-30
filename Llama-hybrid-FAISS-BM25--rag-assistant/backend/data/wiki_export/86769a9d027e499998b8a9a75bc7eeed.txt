@@ -1,0 +1,67 @@
+A box blur (also known as a box linear filter) is a spatial domain linear filter in which each pixel in the resulting image has a value equal to the average value of its neighboring pixels in the input image. It is a form of low-pass ("blurring")  filter. A 3 by 3 box blur ("radius 1") can be written as matrix
+
+Due to its property of using equal weights, it can be implemented using a much simpler accumulation algorithm, which is significantly faster than using a sliding-window algorithm.
+
+Box blurs are frequently used to approximate a Gaussian blur. By the central limit theorem, repeated application of a box blur will approximate a Gaussian blur.
+
+In the frequency domain, a box blur has zeros and negative components. That is, a sine wave with a period equal to the size of the box will be blurred away entirely, and wavelengths shorter than the size of the box may be phase-reversed, as seen when two bokeh circles touch to form a bright spot where there would be a dark spot between two bright spots in the original image.
+
+Extensions 
+ Gwosdek, et al. has extended Box blur to take a fractional radius: the edges of the 1-D filter are expanded with a fraction. It makes slightly better gaussian approximation possible due to the elimination of integer-rounding error.
+ Mario Klingemann has a "stack blur" that tries to better emulate gaussian's look in one pass by stacking weights:  The triangular impulse response it forms decomposes to two rounds of box blur.
+ Stacked Integral Image by Bhatia et al. takes the weighted average of a few box blurs to fit the gaussian response curve.
+
+Implementation 
+
+The following pseudocode implements a 3x3 box blur.
+Box blur (image)
+{
+    set newImage to image;
+
+    For x /*row*/, y/*column*/ on newImage do:
+    {
+        // Kernel would not fit!
+        If x < 1 or y < 1 or x + 1 == width or y + 1 == height then:
+            Continue;
+        // Set P to the average of 9 pixels:
+           X X X
+           X P X
+           X X X
+        // Calculate average.
+        Sum = image[x - 1, y + 1] + // Top left
+              image[x + 0, y + 1] + // Top center
+              image[x + 1, y + 1] + // Top right
+              image[x - 1, y + 0] + // Mid left
+              image[x + 0, y + 0] + // Current pixel
+              image[x + 1, y + 0] + // Mid right
+              image[x - 1, y - 1] + // Low left
+              image[x + 0, y - 1] + // Low center
+              image[x + 1, y - 1];  // Low right
+
+        newImage[x, y] = Sum / 9;
+    }
+
+    Return newImage;
+}
+
+The example does not handle the edges of the image, which would not fit inside the kernel, so that these areas remain unblurred. In practice, the issue is better handled by:
+
+ Introducing an alpha channel to represent the absence of colors;
+ Extending the boundary by filling in values, ranked by quality:
+ Fill in a mirrored image at the border
+ Fill in a constant color extending from the last pixel
+ Pad in a fixed color
+
+A number of optimizations can be applied when implementing the box blur of a radius r and N pixels:
+ The box blur is a separable filter, so that only two 1D passes of averaging  pixels will be needed, one horizontal and one vertical, for each pixel. This lowers the complexity from  to . In digital signal processing terminology, each pass is a moving-average filter.
+ Accumulation. Instead of discarding the sum for each pixel, the algorithm re-uses the previous sum, and updates it by subtracting away the old pixel and adding the new pixel in the blurring range. A summed-area table can be used similarly. This lowers the complexity from  to .
+ When being used in multiple passes to approximate a Gaussian blur, the cascaded integrator–comb filter construction allows for doing the equivalent operation in a single pass.
+
+See also
+ Gaussian blur
+ Gaussian filter
+ Median filter
+
+References
+
+Image processing

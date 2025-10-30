@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 401526
+[parent_id]: 401432
+[tags]: 
+The other answers are correct, but the pattern of having a yield return inside a foreach loop with a recursive call will make the running time to iterate through the tree something like O(number of nodes * average depth of a node). See this blog post for more details about the problem. Here is an attempt at a generator which is efficient in both runtime and memory usage: class Node { List _children; public bool IsLeaf { get { return _children.Count == 0; } } public IEnumerable Children { get { return _children; } } public IEnumerable EnumerateLeaves() { if (IsLeaf) { yield return this; yield break; } var path = new Stack >(); path.Push(Children.GetEnumerator()); while(!path.Empty) { var cur = path.Pop(); if (cur.MoveNext()) { path.Push(cur); if (cur.IsLeaf) { yield return cur; } else { path.Push(cur.Children.GetEnumerator()); } } } } }

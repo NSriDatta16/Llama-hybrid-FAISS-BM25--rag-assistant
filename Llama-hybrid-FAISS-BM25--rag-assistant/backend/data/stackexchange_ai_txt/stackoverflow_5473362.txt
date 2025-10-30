@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5473362
+[parent_id]: 2806756
+[tags]: 
+I guess your AsyncImageView class uses asynchronous connections to load the image (which is a good thing), so that means that when you add it as a subview of your scroll view, it might be "removedFromSuperview" before the image loads completely. Check in the implementation of your class if the delegates are properly nil'd when it's been dealloc'd, and also that any connections are cancelled and so on. Pay attention to the fact that a class should never retain its delegate, an "assign" kind of property is perfect for these situations. Some tips: Instead of alloc/init'ing and release'ing so many instances while you scroll, try to keep three ivars in your class, and just change the "frame" property of the instances as you scroll. You will avoid lots of allocation and releases if the user scrolls fast, and that's a good thing on an iPhone. Avoid direct ivar accesses like that in your code; use properties, there are many advantages to them beyond the simple "correctness" thing (KVO being one of them).

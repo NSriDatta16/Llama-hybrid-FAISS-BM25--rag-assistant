@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3861045
+[parent_id]: 3857603
+[tags]: 
+Were you hoping that the Drivers collection for each Car would only contain People who matched your criteria (i.e. are over 25)? In other words, you don't want the Drivers collection containing people who are over 25? If that is the case then you will need to use a ResultTransformer (see section 15.4 of the Hibernate documentation) because Hibernate does not pre-filter collections before returning the results. If however the problem is the Drivers collection is being lazy loaded and that is not desirable then setting the fetch mode (I typically use JOIN since IIRC FetchMode.EAGER was deprecated) should solve the problem: baz = persistenceManager.createCriteria(Car.class, "myCarAlias") .setFetchMode("drivers", FetchMode.JOIN) // add additional restrictions here .list();

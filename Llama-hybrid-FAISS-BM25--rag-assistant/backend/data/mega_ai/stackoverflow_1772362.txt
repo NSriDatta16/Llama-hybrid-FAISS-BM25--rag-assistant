@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1772362
+[parent_id]: 1770702
+[tags]: 
+This will work well for almost any native C++ code. It will get translated to IL, just like managed code, and get JIT compiled at runtime. You can freely call managed code, thanks to C++ interop. The only unmanaged code construct I know that can't be compiled is the __fastcall keyword. There's an issue with the const keyword, it is imperfectly simulated with attributes, but that's only an issue when you import metadata. Just keep using header files like you do now. A .NET assembly is capable of storing machine code as well as IL. You can take advantage of this by selectively turning off IL generation for cases where the compiler has trouble or when you suspect generated code isn't optimal. Wrap your code with a #pragma: #pragma managed(push,off) void CompiledToMachineCode() { // etc.. } #pragma managed(pop) You will also need to use this #pragma when you #include headers for .libs that were compiled separately without the /clr compile option.

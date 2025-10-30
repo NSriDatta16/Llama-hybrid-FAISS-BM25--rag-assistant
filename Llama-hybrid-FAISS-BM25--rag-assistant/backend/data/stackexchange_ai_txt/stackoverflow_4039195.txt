@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4039195
+[parent_id]: 4038774
+[tags]: 
+From the backtrace, your problem appears to be in Dot2DotVC directly. In its -dealloc, it's calling -setCurrentImages: on self, which releases the old value, which appears to be containing a garbage object. In other words, the array property currentImages on your Dot2DotVC contains at least one invalid object by the time -dealloc is called on the view controller. As a side note, I strongly encourage you to not use property access in -dealloc. The -dealloc you have listed in your question would be better off as: - (void)dealloc { [menuVC release]; [dot2DotVC release]; [super dealloc]; } This avoids any potential issues with overridden setters or lingering KVO observers.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4532862
+[parent_id]: 
+[tags]: 
+Understanding output in Clojure using swank/slime
+
+When I run Clojure code from the Swank repl in emacs, the main thread will print out messages using printf to the repl. But if I run agents or explicitly create other threads which also print, sometimes the output doesn't show up, and other times it shows up in the console window where I'm running Swank. I'd love to understand why. Edit: Thanks to Daniel's answer below I now know that the other threads do not have out bound to the output of the REPL. This code works because you pass in the out from where you run from. However my new problem is that this code now blocks per thread so rather than running in parallel it runs each thread one at a time, so I need a more thread aware output method. (defn sleeper-thread [out id t] "Sleep for time T ms" (binding [*out* out] (printf "%d sleeping for time %d\n" id t) (Thread/sleep t) (printf "%d slept\n" id))) (defn test-threads [n out] (dotimes [x n] (.start (Thread. (#(sleeper-thread %1 %2 %3) out x (+ 2000 (rand-int 5000)))))))

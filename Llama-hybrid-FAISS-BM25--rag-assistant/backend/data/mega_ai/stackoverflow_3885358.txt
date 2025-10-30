@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3885358
+[parent_id]: 3884967
+[tags]: 
+The way you can accomplish this is to use the Post-Get-Redirect pattern. It's not asp-mvc specific but as Wiki says it a common design pattern for web developers to help avoid certain duplicate form submissions and allow user agents to behave more intuitively with bookmarks and the refresh button. Clicking the back is not safe way to handle this. Some browsers don't maintain the form state after submission. This pattern directly address the accidentally re-submit data issue. In terms of code, have a look at this blog post by Jag Reehal concerning how to unit test controllers. [HttpPost] public ActionResult Create(SomeViewModel model) { if (ModelState.IsValid) { // do some stuff that saves your data and then... return RedirectToAction("Success"); } else { // your model is not valid so return the form back to the user for // additional modifications. return View(model); } } Note: while the above uses ModelState for data validation, you may have your own set of validations and error checking routines which can also be used in this pattern.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5027146
+[parent_id]: 5026828
+[tags]: 
+This is a variant of the "islands" problem. My first answer uses Itzik Ben Gan's double row_number trick to identify contiguous groups of data efficiently. The combination of Type,Grp identifies each individual island in the data. You can read more about the different approaches to tackling this problem here. ;WITH T AS ( SELECT *, ROW_NUMBER() OVER(ORDER BY Date) - ROW_NUMBER() OVER(PARTITION BY Type ORDER BY Date) AS Grp FROM YourTable ) SELECT COUNT(DISTINCT Grp) FROM T WHERE Type=0 My second answer requires a single pass through the data. It is not guaranteed to work but is on the same principle as a technique that many people successfully use to concatenate strings without problems. DECLARE @Count int = 0 SELECT @Count = CASE WHEN Type = 0 AND @Count 0 THEN - @Count ELSE @Count END FROM YourTable ORDER BY Date SELECT ABS(@Count)

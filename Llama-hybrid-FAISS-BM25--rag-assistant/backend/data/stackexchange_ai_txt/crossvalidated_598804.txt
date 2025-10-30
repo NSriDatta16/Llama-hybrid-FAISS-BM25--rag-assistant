@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 598804
+[parent_id]: 
+[tags]: 
+Support vector regression prediction: issue with the output
+
+I want to apply support vector regression (SVR) model parameters to a higher spatial scale using the predict function, but the results are wrong. Here is how the resulting raster is: The steps I followed were: perform regression using the svm function at a coarser spatial scale using the predict function and a fine resolution raster I produced the raster showing in the image above. Here is the code: library(e1071) library(terra) library(raster) ntl = rast("path/ntl.tif") # coarse resolution raster tirs = rast("path/tirs.tif") # fine resolution raster tirs_res = resample(tirs, ntl, method = "bilinear") a = c(ntl, tirs_res) # Regression with SVM modelsvm = svm(ntl ~ tirs, data = a) # Predict using SVM regression predYsvm = as.data.frame(predict(modelsvm, tirs)) # here I am just converting the result of the predict to a raster tirsdf = as.data.frame(tirs, xy = TRUE) svrpred = as.data.frame(cbind(tirsdf, as.data.frame(predYsvm))) svr_pred = subset(svrpred, select = -tirs) colnames(svr_pred)[3] = "tirs" svr_pred $x, svr_pred$ y)) gridded(svr_pred) Any ideas why the resulting raster looks like this? The data: ntl = rast(ncols=11, nrows=21, nlyrs=1, xmin=581428.888, xmax=603703.888, ymin=1004925.5202, ymax=1047450.5202, names=c('ntl'), crs='EPSG:7767') tirs = rast(ncols=48, nrows=93, nlyrs=1, xmin=582525, xmax=604125, ymin=1005525, ymax=1047375, names=c('tirs'), crs='EPSG:7767')

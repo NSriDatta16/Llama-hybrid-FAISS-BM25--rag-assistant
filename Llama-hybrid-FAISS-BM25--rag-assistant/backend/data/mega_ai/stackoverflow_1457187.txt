@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1457187
+[parent_id]: 1451849
+[tags]: 
+I ended up using python's ftplib on the phone and FileZilla, an ftp sever, on the computer. Advantages are high degree of simplicity, although there may be security issues. In case anyone cares, here's the guts of the client side code to send and receive files. Actual implementation has a bit more infrastructure. from ftplib import FTP import os ftp = FTP() ftp.connect(server, port) ftp.login(user, pwd) files = ftp.nlst() # get a list of files on the server # decide which file we want fn = 'test.py' # filename on server and for local storage d = 'c:/temp/' # local directory to store file path = os.path.join(d,fn) r = ftp.retrbinary('RETR %s' % fn, open(path, 'wb').write) print(r) # should be: 226 Transfer OK f = open(path, 'rb') # send file at path r = ftp.storbinary('STOR %s' % fn, f) # call it fn on server print(r) # should be: 226 Transfer OK f.close() ftp.quit()

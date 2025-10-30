@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 535356
+[parent_id]: 
+[tags]: 
+Frequentist vs bayesian and P(data | H0) vs P(H0 | data) giving same result
+
+In hypothesis testing using a frequentist approach, we usually compute a p-value = $P(data\ or\ more\ extreme | H0)$ . Moving to a bayesian approach, we are then able to compute different things, such as $P(H0 | data)$ . Suppose I have two biased coins $A$ and $B$ with heads probabilities $p(A)$ , $p(B)$ : $H0: p(A) $H1: p(B) > p(A)$ I flip $N$ times each coin, observing number of heads $H(A)$ and $H(B)$ . With this info I can go on the compute a p-value giving $P(data | H0) = P(H(A), H(B) | p(A) . Moving with a bayesian approach, assuming $\theta_A$ and $\theta_B \sim Beta$ , we can get the Posteriors $\theta_A \sim Beta(H(A),N-H(A))$ and $\theta_B \sim Beta(H(B),N-H(B))$ . We can then compute $P(H0 | data) = P(p(A) . I would expect these to not be the same, but doing a quick simulation in python: from scipy.stats import beta, norm import numpy as np N = 100 sample_size = 100000 for H_A, H_B in zip(np.random.randint(1,N,N), np.random.randint(1,N,N)): a_beta = beta(H_A, N-H_A) b_beta = beta(H_B, N-H_B) prob = (a_beta.rvs(sample_size) > b_beta.rvs(sample_size)).mean() z = (H_A/N - H_B/N)/np.sqrt((H_A/N*(1-H_A/N)/N) + (H_B/N*(1-H_B/N)/N)) print(round(prob, 3), "\t", round(norm.cdf(z),3)) """ 1.0 1.0 1.0 1.0 0.0 0.0 0.132 0.133 0.001 0.001 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 0.0 0.0 0.742 0.74 1.0 1.0 0.0 0.0 1.0 1.0 0.127 0.129 1.0 1.0 0.953 0.952 ... """

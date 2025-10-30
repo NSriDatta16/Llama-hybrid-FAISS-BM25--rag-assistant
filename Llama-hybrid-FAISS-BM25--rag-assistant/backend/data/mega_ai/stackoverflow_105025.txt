@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 105025
+[parent_id]: 104983
+[tags]: 
+In Python, everything is shared, except for function-local variables (because each function call gets its own set of locals, and threads are always separate function calls.) And even then, only the variables themselves (the names that refer to objects) are local to the function; objects themselves are always global, and anything can refer to them. The Thread object for a particular thread is not a special object in this regard. If you store the Thread object somewhere all threads can access (like a global variable) then all threads can access that one Thread object. If you want to atomically modify anything that another thread has access to, you have to protect it with a lock. And all threads must of course share this very same lock, or it wouldn't be very effective. If you want actual thread-local storage, that's where threading.local comes in. Attributes of threading.local are not shared between threads; each thread sees only the attributes it itself placed in there. If you're curious about its implementation, the source is in _threading_local.py in the standard library.

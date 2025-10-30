@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4592033
+[parent_id]: 
+[tags]: 
+Destruction of static class members in Thread local storage
+
+I'm writing a fast multi-thread program, and I want to avoid syncronization (the function which would need to be syncronized must be called something like 5,000,000 times per second, so even a mutex would be too heavy). The scenario is: I have a single global instance of a class, and each thread can access it. In order to avoid syncronization, all the data inside the class is accessed read-only, except for a bunch of class members, which are then declared in TLS (with __thread or __declspec(thread)). Unfortunately, in order to use the __thread interface offered by the compiler, the class members have to be static and without constructors/deconstructors. The classes I use of course have custom constructors, so I'm declaring, as class members, a pointer to that classes (something like static __thread MyClass* _object). Then, the first time a thread calls a method from the global instance, I'll do something like "(if _object == NULL) object = new MyClass(...)". My biggest problem is: is there a smart way to free this allocated memory? This global class is from a library, and it is used by many threads in the program, and each thread is created in a different way (i.e. each thread executes a different function) and I can't put a snipplet of code each time the thread is going to terminate. Thank you guys.

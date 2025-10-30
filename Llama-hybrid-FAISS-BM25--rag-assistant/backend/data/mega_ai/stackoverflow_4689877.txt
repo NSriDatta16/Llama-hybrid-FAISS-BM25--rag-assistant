@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4689877
+[parent_id]: 4689854
+[tags]: 
+It's not the same thing from the C#'s point of view at all... but in the compiled code, a variable declared as type dynamic will usually (possibly always) correspond with a CLR field or local variable of type object . The C# compiler is responsible for making sure that any source code using that value has the dynamic behaviour applied to it. object is simply the compiler the representation uses for storage. It also applies the [Dynamic] attribute where appropriate, so that other code knows it's to be treated dynamically. For example, consider this: public class Foo { public dynamic someField; } I believe that will be compiled into IL equivalent to: public class Foo { [Dynamic] public object someField; } now if you write: Foo foo = new Foo(); foo.someField = "hello"; Console.WriteLine(foo.someField.Length); the compiler uses the attribute to know that foo.someField is dynamic, so the Length property should be dynamically bound.

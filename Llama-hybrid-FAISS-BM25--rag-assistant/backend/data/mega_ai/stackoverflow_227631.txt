@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 227631
+[parent_id]: 227566
+[tags]: 
+Many older sources of advice on this imply that IDisposable is linked in some way to finalizers. Pay very close attention to the comments of Herb Sutter on this subject. Do NOT leap to the conclusion that you need to write a finalizer if you implement IDisposable, to "make sure that Dispose runs eventually in case the client forgets to call it". This is generally not the case. A class may implement IDisposable so that it can make various calls on managed objects that it owns, e.g. Dispose those objects in turn. This is absolutely pointless to do from a finalizer because finalizers can't reliably access other managed objects. Also anything a finalizer does must be capable of being called from any thread. Finalizers are a very obscure advanced thing, whereas IDisposable is a simple pattern that ought to be ubiquitous. And the advent of SafeHandle changes the situation further .

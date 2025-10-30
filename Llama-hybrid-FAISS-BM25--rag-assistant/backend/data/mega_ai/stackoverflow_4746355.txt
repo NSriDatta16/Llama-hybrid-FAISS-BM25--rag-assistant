@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4746355
+[parent_id]: 4746338
+[tags]: 
+Looks like you don't need to perform these tasks in separate threads at all, but if you really want to you could do something like this: A a = new A(); a.start(); a.join(); // Will wait until thread A is done B b = new B(); b.start(); b.join(); // Will wait until thread B is done Assuming that A and B are subclasses of Thread, which is discouraged in favor of implementing Runnable and using new Thread(Runnable).start(). A better way to do this would be to use an Executor and have A and B implement Runnable (not extend Thread). Like this: ExecutorService ex = Executors.newSingleThreadExecutor(); ex.execute(new A()); ex.execute(new B()); A and B will now execute sequentially on a separate thread.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 407924
+[parent_id]: 407855
+[tags]: 
+The actual answer to this is implementation dependent. The Sun JVM keeps track of some set of root objects (threads and the like), and when it needs to do a garbage collection, traces out which objects are reachable from those and saves them, discarding the rest. It's actually more complicated than that to allow for some optimizations, but that is the basic principle. This version does not care about circular references: as long as no live object holds a reference to a dead one, it can be GCed. Other JVMs can use a method known as reference counting. When a reference is created to the object, some counter is incremented, and when the reference goes out of scope, the counter is decremented. If the counter reaches zero, the object is finalized and garbage collected. This version, however, does allow for the possibility of circular references that would never be garbage collected. As a safeguard, many such JVMs include a backup method to determine which objects actually are dead which it runs periodically to resolve self-references and defrag the heap.

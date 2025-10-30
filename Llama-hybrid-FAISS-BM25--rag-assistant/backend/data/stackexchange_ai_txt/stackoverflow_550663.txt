@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 550663
+[parent_id]: 398215
+[tags]: 
+We ran into this problem at work. I fixed it, as Robert suggests, by creating a connection provider (ie, an implementation of DataSource), called ""OracleSchemaRemappingDataSource" and using spring to do the plumbing. Basically, this datasource implements getConnection(). The implementation of that method works by getting a connection from some other data source by spring injection, which it assumes to be an oracle connection, and then executing ALTER SESSION SET CURRENT_SCHEMA = 'someotherschema' and them passing that connection back. All of the hibernate config is careful to use names without specifying schemas for them. Also: with this, you don't want to disable caching - allow hibernate to manage connections as normal, as we are not doing any magic within the app such as using different connections on a per-user basis.

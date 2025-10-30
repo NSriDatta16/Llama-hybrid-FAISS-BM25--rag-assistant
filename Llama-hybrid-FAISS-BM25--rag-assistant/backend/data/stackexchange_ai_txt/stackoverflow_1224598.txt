@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1224598
+[parent_id]: 1223899
+[tags]: 
+2PC shouldn't be necessary, as you say, since the appserver should take care of it. However, you'll pretty much have to use JTA (i.e. JavaEE container) transactions, rather than vanilla DataSource transactions, since JMS only works with JTA. This isn't a big deal, it's just a bit more fiddly: Your Spring config should use to get a reference to your container's DataSource , and you inject that data source into your spring-managed hibernate SessionFactory. You then need to introduce a transaction manager into the context ( should work in most app-servers). In your Spring JMS MessageListenerContainer , plug the above transaction manager reference into it. Does that all make sense, or should I elaborate? This setup should ensure that the container-managed transactions are held across JMS and Hibernate interactions.

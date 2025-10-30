@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3779693
+[parent_id]: 3779568
+[tags]: 
+This sounds like something you can wrap with your own API which makes the guarantee from the final paragraph. Essentially, each callback should atomically register that it's running, and check whether it's still okay to run - and then either quit immediately (equivalent to never being called) or do its stuff and deregister that it's running. Your Dispose method just needs to block until it finds a time when nothing's running, atomically checking whether anything's running and invalidating if not. I can imagine this being done reasonably simply using a simple lock, monitor, Wait / Pulse approach. Your API wrapper would wrap any callback it's given inside another callback which does all this, so you only need to put the logic in one place. Do you see what I mean? I don't have time to implement it for you right now, but I can elaborate on the ideas if you like.

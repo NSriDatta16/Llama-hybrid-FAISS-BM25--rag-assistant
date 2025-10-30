@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5183400
+[parent_id]: 5163598
+[tags]: 
+I have found the solution. It exploites again elegant hack by Todd Gayley . Here it is (of course, it must be evaluated in the slave kernel): $globalMessageList = {}; Unprotect[Message]; Message[args___] := Block[{$inMsg = True, $MessageList = $globalMessageList}, Message[args]; $globalMessageList = $MessageList; ] /; ! TrueQ[$inMsg]; Protect[Message]; One can fully emulate standard behavior of Messages in the slave kernel by checking the current value of $Line and comparing it with previous value: If[TrueQ[$Line > lastLine], LinkWrite[$kern, Unevaluated[ExpressionPacket[$globalMessageList = {};]]]; LinkRead[$kern]]; lastLine = $Line; :)

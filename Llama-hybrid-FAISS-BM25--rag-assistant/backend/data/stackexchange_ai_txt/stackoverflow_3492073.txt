@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3492073
+[parent_id]: 
+[tags]: 
+Find Stuff (but not in production)
+
+Using the tutorial "Find Stuff (quick and Dirty)" in "Advance Rails Recipes", I can find stuff in the development environment but not in the production environment. NoMethodError: undefined method `searchable_by' I have this code in "lib/searchable.rb" module Searchable def searchable_by(*_column_names) @search_columns = [] [column_names].flatten.each do |name| @search_columns { :conditions => search_conditions(query, fields) } do find :all, options end end def search_conditions(query, fields=nil) return nil if query.blank? fields ||= @search_columns words = query.split(",").map(&:split).flatten binds = {} or_frags = [] count = 1 words.each do |word| like_frags = [fields].flatten.map { |f| "LOWER(#{f}) LIKE :word#{count}" } or_frags and this in my 'config/initializers/core_extensions.rb' ActiveRecord::Base.extend Searchable I have roamed the internet and found people saying that if I change config.cache_classes to false then it should work: but it doesn't. I've never tried using extra scripts in my apps, so I'm probably missing out something pretty basic here. Any help will be appreciated! UPDATE: Additional Info I specify this in the model (app/models/candidate.rb) class Candidate And I call it in the controller (app/controllers/candidates_controller.rb) class CandidatesController (visible is just a named_scope) Any help would be really appreciated.

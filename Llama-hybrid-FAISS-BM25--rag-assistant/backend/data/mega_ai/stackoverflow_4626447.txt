@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4626447
+[parent_id]: 
+[tags]: 
+Need corrections or better ways to read data via SQL ADO.NET
+
+currently I use DataSet to read data from ADO.NET SQL provider, but I read that DataReader is more efficient for some cases. Many a times I only read single/few records and don't need in-memory data or multiple table relation manipulations. Are there more clean and efficient ways to read ? Can I in simple way map the full record directly to the Agent class, without having to parse out each column like I do now? EDIT: - I have investigated somewhat on ORMs and used Linq2SQL a little, but the familiarity curve seems little steep, so left it at that. Please suggest other ways available within .NET and not any external tools. public override Agent GetAgentByAgentId(string agentId) { Agent agent; try { ArrayList paramList = new ArrayList(); paramList.Add(_dbUtilities.CreateSqlParamater("@agent_id", SqlDbType.VarChar, 10, ParameterDirection.Input, agentId)); // Query the database for an agent with given agentId DataSet ds = _dbLib.ExecuteProcedureDS("sp_dbc_agentsSelect", paramList); if (ds != null && ds.Tables != null && ds.Tables.Count > 0) { DataTable dt = ds.Tables[0]; if (dt.Rows.Count > 0) { agent = new Agent(); DataRow dr = dt.Rows[0]; // Get the agent data agent.IsActive = bool.Parse(dr["is_active"].ToString()); agent.UserId = dr["user_id"].ToString(); .... } }

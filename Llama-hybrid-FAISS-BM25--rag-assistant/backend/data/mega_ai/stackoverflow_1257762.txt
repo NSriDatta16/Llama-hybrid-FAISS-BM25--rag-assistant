@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1257762
+[parent_id]: 1257282
+[tags]: 
+I assume by "valid URL" you mean HTTP response 200. This might work. It requires clojure-contrib . Change map to pmap to attempt to make it parallel, like Arthur Ulfeldt mentioned. (use '(clojure.contrib duck-streams java-utils str-utils)) (import '(java.net URL URLConnection HttpURLConnection UnknownHostException)) (defn check-url [url] (str (re-sub #"^(?i)http:/+" "" url) ":" (try (let [c (cast HttpURLConnection (.openConnection (URL. url)))] (if (= 200 (.getResponseCode c)) 1 0)) (catch UnknownHostException _ 0)))) (defn check-urls-from-file [filename] (doseq [line (map check-url (read-lines (as-file filename)))] (println line))) Given your example as input: user> (check-urls-from-file "urls.txt") www.google.com:1 www.cnn.com:1 www.msnbc.com:1 www.abadurlisnotgood.com:0

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5217811
+[parent_id]: 
+[tags]: 
+How can I avoid a warning about division-by-zero in this template code?
+
+I have a class for fixed-point arithmetic, of which this is the salient portion: template struct fixed { I value; fixed(I i) : value(i * S) {} template fixed(const fixed &fx) { if (S % T == 0) value = fx.value * (S / T); else if (T % S == 0) value = fx.value / (T / S); else value = S * fx.value / T; } static_assert(S >= 1, "Fixed-point scales must be at least 1."); }; On GCC 4.4.5, the following line of code: fixed f = fixed (1); Generates an error: fixed.hpp: In constructor ‘fixed ::fixed(const fixed &) [with J = int, J T = 2, I = int, I S = 8]’: fixed.hpp:81: error: division by zero While there is a division by constant zero in the code - one of T/S or S/T must be zero for unequal scales - if S%T == 0 (and S is not 0), then S/T is not zero. GCC seems to be doing just enough optimization to figure out that one of my branches is guaranteed to divide by zero, but not enough optimization to figure out that branch guaranteed to not run. I can throw #pragma GCC diagnostic ignored "-Wdiv-by-zero" in the file, but that risks masking real warnings. What's the appropriate way to handle this situation? (Or is my analysis totally wrong and I do have a real runtime division by zero?)

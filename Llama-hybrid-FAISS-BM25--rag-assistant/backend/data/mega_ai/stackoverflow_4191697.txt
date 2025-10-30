@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4191697
+[parent_id]: 4191679
+[tags]: 
+That's because the compiler is free to insert padding to honour alignment requirement. You have a couple of options. The first is inherently non-portable but many implementations provide something like: #pragma pack which will attempt to pack structures as tight as possible. Just be aware that this may slow down your code, depending on the architecture The other is to put all the most-aligned elements up front such as: typedef struct { ULONGLONG BaseFileRecord; // 0x00 ULONG BytesInUse; // 0x08 ULONG BytesAllocated; // 0x0c ULONG MFTRecordNumber; // 0x10 USHORT NextAttributeNumber; // 0x14 USHORT SequenceNumber; // 0x16 USHORT LinkCount; // 0x18 USHORT AttributeOffset; // 0x1a USHORT Flags; // 0x1c USHORT Padding; // 0x1e USHORT UpdateSeqNum; // 0x20 } FILE_RECORD_HEADER, *PFILE_RECORD_HEADER; with likely offsets in comments, asuming that ULONGLONG is 8 bytes, ULONG is 4 and USHORT is 2. This won't necessarily remove all padding but it will make it easier for the compiler to minimise it.

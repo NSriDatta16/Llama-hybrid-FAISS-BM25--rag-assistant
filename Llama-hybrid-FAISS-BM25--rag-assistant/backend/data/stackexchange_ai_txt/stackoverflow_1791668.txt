@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1791668
+[parent_id]: 1791630
+[tags]: 
+The first line is declaring an NSString literal. It has storage that lasts the lifetime of the process, so doesn't need to be released. The call to stringByAppendingString returns an autoreleased NSString. That should not be released either, but will last until it gets to the next autorelease pool drain. So assigning the result of the the stringByAppendingString call back to the fileName pointer is perfectly fine in this case . In general, however, you should check what your object lifetimes are, and handle them accordingly (e.g. if fileName had been declared as a string that you own the memory to you would need to release it, so using a temp going to be necessary). The other thing to check is if you're doing anything with fileName after this snippet - e.g. holding on to it in a instance variable - in which case your will need to retain it.

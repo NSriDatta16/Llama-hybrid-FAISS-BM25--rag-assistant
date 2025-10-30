@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 465594
+[parent_id]: 465517
+[tags]: 
+To understand better, you have to imagine (or look at) how are these operators implemented. Typically, the prefix operator++ will be written more or less like this: MyType& operator++() { // do the incrementation return *this; } Since this has been modified "in-place", we can return a reference to the instance in order to avoid a useless copy. Now, here's the code for the postfix operator++: MyType operator++(int) { MyType tmp(*this); // create a copy of 'this' ++(*this); // use the prefix operator to perform the increment return tmp; // return the temporary } As the postfix operator returns a temporary, it has to return it by value (otherwise, you'll get a dangling reference). The C++ Faq Lite also has a paragraph on the subject.

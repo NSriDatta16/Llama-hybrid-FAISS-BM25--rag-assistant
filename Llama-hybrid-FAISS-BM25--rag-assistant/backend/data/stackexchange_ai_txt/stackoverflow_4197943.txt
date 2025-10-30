@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4197943
+[parent_id]: 4190432
+[tags]: 
+Interesting problem. I dont believe that it is possible to just get the keys alone. One approach would be to store the keys in their own database with zero data. If you cant stand the duplication, I think the best approach would be to bulk read, since you have by definition good locality of reference for your range of values. Use the DB_MULTIPLE_KEY flag in your DBC::get() call, and a large DBT buffer for data. Use a DbMultipleKeyDataIterator to iterate the bulk retrieved block. This should improve things as the consecutive leaf items in your retrieval will result in efficient page copies to the DBT temporary buffer you use in DBC::get.

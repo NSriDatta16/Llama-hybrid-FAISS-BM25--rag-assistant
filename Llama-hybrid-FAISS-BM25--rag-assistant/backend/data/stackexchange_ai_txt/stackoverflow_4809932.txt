@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4809932
+[parent_id]: 4809750
+[tags]: 
+The InvalidateEx() method isn't correct, you need to map the rectangle from panel coordinates to parent coordinates. Like this: protected void InvalidateEx() { if (Parent != null) { Rectangle rc = new Rectangle(0, 0, this.ClientSize.Width - SystemInformation.VerticalScrollBarWidth, this.ClientSize.Height); rc = this.RectangleToScreen(rc); rc = Parent.RectangleToClient(rc); Parent.Invalidate(rc, false); } } The best way to get the scroll bar is to use the AutoScrollMinSize property: public SkinnedList() { this.AutoScroll = true; this.AutoScrollMinSize = new Size(0, 1000); this.Scroll += delegate { this.InvalidateEx(); }; } This should fix your problems, except one. You'll notice the effect of the "Show window content while dragging" system option. It is best described as 'doing the pogo'. No fix for this, you cannot reasonably turn the system option off. This just can't work well.

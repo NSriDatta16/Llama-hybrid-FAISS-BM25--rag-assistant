@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3217141
+[parent_id]: 
+[tags]: 
+Custom Sort Order - How to not duplicate the Case statement
+
+I have the following Db and query. The query takes two parameters: the sort column and the direction. However, I have to add custom sorting to the query (based on the Fuji should come first and Gala second, etc.). This part also work but it create duplicated code in my query. Because of that, I am pretty sure people will not let me check this in. So my question is: is there a way to not duplicate the CASE statement? CREATE TABLE Fruits ( [type] nvarchar(250), [variety] nvarchar(250), [price] money ) GO INSERT INTO Fruits VALUES ('Apple', 'Gala', 2.79) INSERT INTO Fruits VALUES ('Apple', 'Fuji', 0.24) INSERT INTO Fruits VALUES ('Apple', 'Limbertwig', 2.87) INSERT INTO Fruits VALUES ('Orange', 'Valencia', 3.59) INSERT INTO Fruits VALUES ('Pear', 'Bradford', 6.05) DECLARE @sortColumnName nvarchar(MAX) = 'Variety' DECLARE @sortDirection nvarchar(MAX) = 'ASC' SELECT ROW_NUMBER() OVER (ORDER BY CASE WHEN @sortColumnName = 'Variety' AND @sortDirection = 'ASC' THEN CASE f.Variety WHEN 'Fuji' THEN 1 WHEN 'Gala' THEN 2 ELSE 3 END END ASC, CASE WHEN @sortColumnName = 'Variety' AND @sortDirection = 'DESC' THEN CASE f.Variety WHEN 'Fuji' THEN 1 WHEN 'Gala' THEN 2 ELSE 3 END END DESC), * FROM Fruits f

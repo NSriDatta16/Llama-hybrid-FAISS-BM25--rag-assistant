@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4249675
+[parent_id]: 4249348
+[tags]: 
+Would it work? It appears so. However, this is going to be hell on your database server. In a nutshell, you will not be able to leverage any indexing, cached query plans, or any other optimization hints. It will result in full table scans. The database server (doesn't matter which one) is incapable of optimizing LIKE '%{some value}%' The problem is the first %, which means match anywhere in the column. Of course, all of the OR statements would throw out the query plans anyway, so maybe that isn't as big a deal as the whole design. You might consider using Full Text Indexing on those fields. Another idea would be to go back and take a hard look at the requirements to see if it wouldn't be better to implement a regular field based search that allowed multiple where clauses with distinct values entered for the criteria.

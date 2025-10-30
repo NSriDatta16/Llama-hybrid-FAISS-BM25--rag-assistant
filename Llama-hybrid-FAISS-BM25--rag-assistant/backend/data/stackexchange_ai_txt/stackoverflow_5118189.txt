@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5118189
+[parent_id]: 5112404
+[tags]: 
+For this use case I would create an XSLT that will convert the XML document. Then using the javax.xml.transform.* APIs, transform the XML to a JAXBResult to unmarshal the object: import java.io.File; import javax.xml.bind.JAXBContext; import javax.xml.bind.util.JAXBResult; import javax.xml.transform.Transformer; import javax.xml.transform.TransformerFactory; import javax.xml.transform.stream.StreamSource; public class Demo { public static void main(String[] args) throws Exception { TransformerFactory tf = TransformerFactory.newInstance(); File xsltFile = new File("transform.xsl"); StreamSource xsltSource = new StreamSource(xsltFile); Transformer transformer = tf.newTransformer(xsltSource); File xml = new File("input.xml"); StreamSource xmlSource = new StreamSource(xml); JAXBContext jc = JAXBContext.newInstance(Filter.class); JAXBResult jaxbResult = new JAXBResult(jc); transformer.transform(xmlSource, jaxbResult); Filter filter = (Filter) jaxbResult.getResult(); } } transform.xsl

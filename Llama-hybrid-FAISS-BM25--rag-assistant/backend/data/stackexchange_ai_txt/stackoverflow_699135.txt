@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 699135
+[parent_id]: 696256
+[tags]: 
+If you are using reference-counted memory management (not Garbage Collection) you should use [obj copyWithZone:zone] . In addition, you should (in the same circumstances) use +allocWithZone: instead of +alloc to allocate the copies. This allocates memory for the instances in a specified memory zone (see NSZone). Developers might use a separate zone if they are going to allocate many objects which will be no longer needed at roughly the same time. The entire zone can then be reclaimed in one operation with NSRecylceZone , helping to prevent memory fragmentation. In general, using a private zone is not needed (and will generally hurt performance; profile your code!). Assuming the developer wants a copy in a particular zone, I think you would assume they would want all related instances in the same zone. The -copy and +alloc methods call the -copyWithZone: and +allocWithZone: methods respectively, passing the default zone.

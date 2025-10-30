@@ -1,0 +1,106 @@
+Content-addressable storage (CAS), also referred to as content-addressed storage or fixed-content storage, is a way to store information so it can be retrieved based on its content, not its name or location. It has been used for high-speed storage and retrieval of fixed content, such as documents stored for compliance with government regulations. Content-addressable storage is similar to content-addressable memory.
+
+CAS systems work by passing the content of the file through a cryptographic hash function to generate a unique key, the "content address". The file system's directory stores these addresses and a pointer to the physical storage of the content. Because an attempt to store the same file will generate the same key, CAS systems ensure that the files within them are unique, and because changing the file will result in a new key, CAS systems provide assurance that the file is unchanged.
+
+CAS became a significant market during the 2000s, especially after the introduction of the 2002 Sarbanes–Oxley Act which required the storage of enormous numbers of documents for long periods and retrieved only rarely. Ever-increasing performance of traditional file systems and new software systems have eroded the value of legacy CAS systems, which have become increasingly rare after roughly 2018. However, the principles of content addressability continue to be of great interest to computer scientists, and form the core of numerous emerging technologies, such as peer-to-peer file sharing, cryptocurrencies, and distributed computing.
+
+Description
+
+Location-based approaches
+Traditional file systems generally track files based on their filename. On random-access media like a floppy disk, this is accomplished using a directory that consists of some sort of list of filenames and pointers to the data. The pointers refer to a physical location on the disk, normally using disk sectors. On more modern systems and larger formats like hard drives, the directory is itself split into many subdirectories, each tracking a subset of the overall collection of files. Subdirectories are themselves represented as files in a parent directory, producing a hierarchy or tree-like organization. The series of directories leading to a particular file is known as a "path".
+
+In the context of CAS, these traditional approaches are referred to as "location-addressed", as each file is represented by a list of one or more locations, the path and filename, on the physical storage. In these systems, the same file with two different names will be stored as two files on disk and thus have two addresses. The same is true if the same file, even with the same name, is stored in more than one location in the directory hierarchy. This makes them less than ideal for a digital archive, where any unique information should only be stored once.
+
+As the concept of the hierarchical directory became more common in operating systems especially during the late 1980s, this sort of access pattern began to be used by entirely unrelated systems. For instance, the World Wide Web uses a similar pathname/filename-like system known as the URL to point to documents. The same document on another web server has a different URL in spite of being identical content. Likewise, if an existing location changes in any way, if the filename changes or the server moves to a new domain name service name, the document is no longer accessible. This leads to the common problem of link rot.
+
+CAS and FCS
+Although location-based storage is widely used in many fields, this was not always the case. Previously, the most common way to retrieve data from a large collection was to use some sort of identifier based on the content of the document. For instance, the ISBN system is used to generate a unique number for every book. If one performs a web search for "ISBN 0465048994", one will be provided with a list of locations for the book Why Information Grows on the topic of information storage. Although many locations will be returned, they all refer to the same work, and the user can then pick whichever location is most appropriate. Additionally, if any one of these locations changes or disappears, the content can be found at any of the other locations.
+
+CAS systems attempt to produce ISBN like results automatically and on any document. They do this by using a cryptographic hash function on the data of the document to produce what is sometimes known as a "key" or "fingerprint". This key is strongly tied to the exact content of the document, adding a single space at the end of the file, for instance, will produce a different key. In a CAS system, the directory does not map filenames onto locations, but uses the keys instead.
+
+This provides several benefits. For one, when a file is sent to the CAS for storage, the hash function will produce a key and then check to see if that key already exists in the directory. If it does, the file is not stored as the one already in storage is identical. This allows CAS systems to easily avoid duplicate data. Additionally, as the key is based on the content of the file, retrieving a document with a given key ensures that the stored file has not been changed. The downside to this approach is that any changes to the document produces a different key, which makes CAS systems unsuitable for files that are often edited. For all of these reasons, CAS systems are normally used for archives of largely static documents, and are sometimes known as "fixed content storage" (FCS).
+
+Because the keys are not human-readable, CAS systems implement a second type of directory that stores metadata that will help users find a document. These almost always include a filename, allowing the classic name-based retrieval to be used. But the directory will also include fields for common identification systems like ISBN or ISSN codes, user-provided keywords, time and date stamps, and full-text search indexes. Users can search these directories and retrieve a key, which can then be used to retrieve the actual document.
+
+Using a CAS is very similar to using a web search engine. The primary difference is that a web search is generally performed on a topic basis using an internal algorithm that finds "related" content and then produces a list of locations. The results may be a list of the identical content in multiple locations. In a CAS, more than one document may be returned for a given search, but each of those documents will be unique and presented only once.
+
+Another advantage to CAS is that the physical location in storage is not part of the lookup system. If, for instance, a library's card catalog stated a book could be found on "shelf 43, bin 10", if the library is re-arranged the entire catalog has to be updated. In contrast, the ISBN number will not change and the book can be found by looking for the shelf with those numbers. In the computer setting, a file in the DOS filesystem at the path A:\myfiles\textfile.txt points to the physical storage of the file in the myfiles subdirectory. This file disappears if the floppy is moved to the B: drive, and even moving its location within the disk hierarchy requires the user-facing directories to be updated. In CAS, only the internal mapping from key to physical location changes, and this exists in only one place and can be designed for efficient updating. This allows files to be moved among storage devices, and even across media, without requiring any changes to the retrieval.
+
+For data that changes frequently, CAS is not as efficient as location-based addressing. In these cases, the CAS device would need to continually recompute the address of data as it was changed. This would result in multiple copies of the entire almost-identical document being stored, the problem that CAS attempts to avoid. Additionally, the user-facing directories would have to be continually updated with these "new" files, which would become polluted by many similar documents that would make searching more difficult. In contrast, updating a file in a location-based system is highly optimized, only the internal list of sectors has to be changed and many years of tuning have been applied to this operation.
+
+Because CAS is used primarily for archiving, file deletion is often tightly controlled or even impossible under user control. In contrast, automatic deletion is a common feature, removing all files older than some legally defined requirement, say ten years.
+
+In distributed computing 
+The simplest way to implement a CAS system is to store all of the files within a typical database to which clients connect to add, query, and retrieve files. However, the unique properties of content addressability mean that the paradigm is well suited for computer systems in which multiple hosts collaboratively manage files with no central authority, such as distributed file sharing systems, in which the physical location of a hosted file can change rapidly in response to changes in network topology, while the exact content of the files to be retrieved are of more importance to users than their current physical location. In a distributed system, content hashes are often used for quick network-wide searches for specific files, or to quickly see which data in a given file has been changed and must be propagated to other members of the network with minimal bandwidth usage. In these systems, content addressability allows highly variable network topology to be abstracted away from users who wish to access data, compared to systems like the World Wide Web, in which a consistent location of a file or service is key to easy use.
+
+Content-addressable networks
+
+History 
+A hardware device called the Content Addressable File Store (CAFS) was developed by International Computers Limited (ICL) in the late 1960s and put into use by British Telecom in the early 1970s for telephone directory lookups. The user-accessible search functionality was maintained by the disk controller with a high-level application programming interface (API) so users could send queries into what appeared to be a black box that returned documents. The advantage was that no information had to be exchanged with the host computer while the disk performed the search.
+
+Paul Carpentier and Jan van Riel coined the term CAS while working at a company called FilePool in the late 1990s. FilePool was purchased by EMC Corporation in 2001 and was released the next year as Centera. The timing was perfect; the introduction of the Sarbanes–Oxley Act in 2002 required companies to store huge amounts of documentation for extended periods and required them to do so in a fashion that ensured they were not edited after-the-fact.
+
+A number of similar products soon appeared from other large-system vendors. In mid-2004, the industry group SNIA began working with a number of CAS providers to create standard behavior and interoperability guidelines for CAS systems.
+
+In addition to CAS, a number of similar products emerged that added CAS-like capabilities to existing products; notable among these was IBM Tivoli Storage Manager. The rise of cloud computing and the associated elastic cloud storage systems like Amazon S3 further diluted the value of dedicated CAS systems. Dell purchased EMC in 2016 and stopped sales of the original Centera in 2018 in favor of their elastic storage product.
+
+CAS was not associated with peer-to-peer applications until the 2000s, when rapidly proliferating Internet access in homes and businesses led to a large number of computer users who wanted to swap files, originally doing so on centrally managed services like Napster. However, an injunction against Napster prompted the independent development of file-sharing services such as BitTorrent, which could not be centrally shut down. In order to function without a central federating server, these services rely heavily on CAS to enforce the faithful copying and easy querying of unique files. At the same time, the growth of the open-source software movement in the 2000s led to the rapid proliferation of CAS-based services such as Git, a version control system that uses numerous cryptographic functions such as Merkle trees to enforce data integrity between users and allow for multiple versions of files with minimal disk and network usage. Around this time, individual users of public-key cryptography used CAS to store their public keys on systems such as key servers.
+
+The rise of mobile computing and high capacity mobile broadband networks in the 2010s, coupled with increasing reliance on web applications for everyday computing tasks, strained the existing location-addressed client–server model commonplace among Internet services, leading to an accelerated pace of link rot and an increased reliance on centralized cloud hosting. Furthermore, growing concerns about the centralization of computing power in the hands of large technology companies, potential monopoly power abuses, and privacy concerns led to a number of projects created with the goal of creating more decentralized systems. Bitcoin uses CAS and public/private key pairs to manage wallet addresses, as do most other cryptocurrencies. IPFS uses CAS to identify and address communally hosted files on its network. Numerous other peer-to-peer systems designed to run on smartphones, which often access the Internet from varying locations, utilize CAS to store and access user data for both convenience and data privacy purposes, such as secure instant messaging.
+
+Implementations
+
+Proprietary 
+The Centera CAS system consists of a series of networked nodes (typically large servers running Linux), divided between storage nodes and access nodes.  The access nodes maintain a synchronized directory of content addresses, and the corresponding storage node where each address can be found.  When a new data element, or blob, is added, the device calculates a hash of the content and returns this hash as the blob's content address. As mentioned above, the hash is searched to verify that identical content is not already present.  If the content already exists, the device does not need to perform any additional steps; the content address already points to the proper content.  Otherwise, the data is passed off to a storage node and written to the physical media.
+
+When a content address is provided to the device, it first queries the directory for the physical location of the specified content address.  The information is then retrieved from a storage node, and the actual hash of the data recomputed and verified.  Once this is complete, the device can supply the requested data to the client.  Within the Centera system, each content address actually represents a number of distinct data blobs, as well as optional metadata.  Whenever a client adds an additional blob to an existing content block, the system recomputes the content address.
+
+To provide additional data security, the Centera access nodes, when no read or write operation is in progress, constantly communicate with the storage nodes, checking the presence of at least two copies of each blob as well as their integrity. Additionally, they can be configured to exchange data with a different, e.g., off-site, Centera system, thereby strengthening the precautions against accidental data loss.
+
+IBM has another flavor of CAS which can be software-based, Tivoli Storage manager 5.3, or hardware-based, the IBM DR550.  The architecture is different in that it is based on hierarchical storage management (HSM) design which provides some additional flexibility such as being able to support not only WORM disk but WORM tape and the migration of data from WORM disk to WORM tape and vice versa.  This provides for additional flexibility in disaster recovery situations as well as the ability to reduce storage costs by moving data off the disk to tape.
+
+Another typical implementation is iCAS from iTernity. The concept of iCAS is based on containers. Each container is addressed by its hash value. A container holds different numbers of fixed content documents. The container is not changeable, and the hash value is fixed after the write process.
+
+Open-source 
+One of the first content-addressed storage servers, Venti, was originally developed for Plan 9 from Bell Labs and is now also available for Unix-like systems as part of Plan 9 from User Space.
+
+The first step towards an open-source CAS+ implementation is Twisted Storage.
+
+Tahoe Least-Authority File Store is an open source implementation of CAS.
+
+Git is a userspace CAS filesystem. Git is primarily used as a source code control system.
+
+git-annex is a distributed file synchronization system that uses content-addressable storage for files it manages. It relies on Git and symbolic links to index their filesystem location.
+
+Project Honeycomb is an open-source API for CAS systems.
+
+The XAM interface was developed under the auspices of the Storage Networking Industry Association. It provides a standard interface for archiving CAS (and CAS like) products and projects.
+
+Perkeep is a recent project to bring the advantages of content-addressable storage "to the masses". It is intended to be used for a wide variety of use cases, including distributed backup, a snapshotted-by-default, a version-controlled filesystem, and decentralized, permission-controlled filesharing.
+
+Irmin is an OCaml "library for persistent stores with built-in snapshot, branching and reverting mechanisms"; the same design principles as Git.
+
+Cassette is an open-source CAS implementation for C#/.NET.
+
+Arvados Keep is an open-source content-addressable distributed storage system. It is designed for large-scale, computationally intensive data science work such as storing and processing genomic data.
+
+Infinit is a content-addressable and decentralized (peer-to-peer) storage platform that was acquired by Docker Inc.
+
+InterPlanetary File System (IPFS), is a content-addressable, peer-to-peer hypermedia distribution protocol.
+
+casync is a Linux software utility by Lennart Poettering to distribute frequently-updated file system images over the Internet.
+
+See also
+Content Addressable File Store
+Content-centric networking / Named data networking
+Data Defined Storage
+Write Once Read Many
+
+References
+
+External links 
+ Fast, Inexpensive Content-Addressed Storage in Foundation
+ Venti: a new approach to archival storage
+
+Associative arrays
+Computer storage devices

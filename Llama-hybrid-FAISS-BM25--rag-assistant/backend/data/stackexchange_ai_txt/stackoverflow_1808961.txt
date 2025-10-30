@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1808961
+[parent_id]: 
+[tags]: 
+Synchronization on the local variables
+
+I have a multithreaded Java code in which: several threads read stateful objects from the synchronized shared storage (i.e. as a result of this, some threads may reference the same objects); each thread then invokes a method process() and passes its object there; process() processes objects in some way, which may result changing the objects state; these state changes should be synchronized. I've created a method like that: public void process(Foo[] foos) { for (final Foo foo : foos) { if (foo.needsProcessing()) { synchronized (foo) { foo.process(); // foo's state may be changed here } } } } To the best of my knowledge, this looks legit. However, IntelliJ's inspection complains about synchronizing on the local variable because "different threads are very likely to have different local instances" (this is not valid for me, as I'm not initializing foos in the method). Essentially what I want to achieve here is the same as having method Foo.process() synchronized (which is not an option for me, as Foo is a part of 3rd party library). I got used to the code without yellow marks, so any advice from the community is appreciated. Is this really that bad to do synchronization on locals? Is there an alternative which will work in my situation? Thanks in advance!

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1105360
+[parent_id]: 
+[tags]: 
+How do I add an array as an Object Property to a class declared within a PHP extension?
+
+I want my PHP extension to declare a class equivalent to the following PHP: class MyClass { public $MyMemberArray; __construct() { $this->MyMemberArray = array(); } } I'm following the examples in " Advanced PHP Programming " and " Extending and Embedding PHP " and I'm able to declare a class that has integer properties in PHP_MINIT_FUNCTION . However, when I use the same approach to declare an array property in PHP_MINIT_FUNCTION , I get the following error message at runtime: PHP Fatal error: Internal zval's can't be arrays, objects or resources in Unknown on line 0 There's an example on page 557 of Advanced PHP Programming of how to declare a constructor which creates an array property, but the example code doesn't compile (the second "object" seems to be redundant). I fixed the bug and adapted it to my code: PHP_METHOD(MyClass, __construct) { zval *myarray; zval *pThis; pThis = getThis(); MAKE_STD_ZVAL(myarray); array_init(myarray); zend_declare_property(Z_OBJCE_P(pThis), "MyMemberArray", sizeof("MyMemberArray"), myarray, ZEND_ACC_PUBLIC TSRMLS_DC); } And this compiles, but it gives the same runtime error on construction.

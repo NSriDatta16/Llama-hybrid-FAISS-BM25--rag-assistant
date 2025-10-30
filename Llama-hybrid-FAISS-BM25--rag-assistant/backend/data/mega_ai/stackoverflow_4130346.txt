@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4130346
+[parent_id]: 4128284
+[tags]: 
+Agree with @Robert Harvey and @djacobson. DAL should handle the context, with one exception: If you're using the Unit of Work pattern. The UoW is a wrapper for the context, so when you "Create a new UoW", you are actually creating a new data context. As a Unit of Work handles many repositories, it cannot be instantiated in the DAL itself. UoW (in the context of MVC) would get passed to the Controllers, which gets passed to the Repository, which is then queried upon. In this case, you would new up the UoW (and hence the context) during application events (global.asax) begin request, and dispose of at end of request (preferably using a DI container).

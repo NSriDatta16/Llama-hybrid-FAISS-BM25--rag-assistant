@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5430141
+[parent_id]: 5429964
+[tags]: 
+Facebook uses a redirect to allow for easy embedding on websites. It accomplishes this by sending a HTTP 302 redirect header. Since I see you are using a CURL, I have written my example based on a guide I have found online. I also posted how to send the user agent via cURL. Here's my getFBResponse() function for you, and can be used to replace $userpicpath's assignment. Try this: $userpicpath = getFBRedirect(); // Only calling the head curl_setopt($ch, CURLOPT_HEADER, true); // header will be at output curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD'); // HTTP request is 'HEAD' $content = curl_exec ($ch); // The response should be: /* HTTP/1.1 302 Found Location: http://www.iana.org/domains/example/ */ // So splitting on "Location: " should give an array of index 2, the URL you want being the second index (1) $theUrl = split($content, "Location: "); return $content[1]; }

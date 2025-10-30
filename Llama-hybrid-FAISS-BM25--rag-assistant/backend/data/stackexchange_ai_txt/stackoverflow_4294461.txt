@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4294461
+[parent_id]: 
+[tags]: 
+Find device address with libpcap
+
+I am trying to find address of devices in my computer. So far i managed to get list of devices(with pcap_findalldevs) but i can`t figure out how to get to those addresses. I saw this manpage - http://www.tcpdump.org/pcap3_man.html where is written something like this addresses a pointer to the first element of a list of addresses for the interface And then this Each element of the list of addresses is of type pcap_addr_t, and has the following members: So I have this code pcap_if_t *alldevsp , *device; char *devname , **devs; int count = 1 , n; if(pcap_findalldevs(&alldevsp, errbuf)) { printf("Error: %s" , errbuf); exit(1); } device = alldevsp; pcap_addr_t list; printf("\nDevices:\n"); while(device != NULL) { printf("%d. %s - %s", count++ , device->name , device->description); list = device->addresses[0]; printf("address: %s\n",(char *) inet_ntoa(list.addr)); device = device->next; } Compilation is OK, but when i try to run it i get this: Devices: 1. eth0 - (null)addres: 144.208.30.8 2. wlan0 - (null)addres: 128.213.30.8 Segmentation fault I can understand that segfault, because third device is usb and it doesnt have address, but those IP for eth0 and wlan0 are wrong, they doesnt match. What am I doing wrong?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 448128
+[parent_id]: 448034
+[tags]: 
+For your use case one approach could be to write a file subclass that locks: class LockedWrite(file): """ Wrapper class to a file object that locks writes """ def __init__(self, *args, **kwds): super(LockedWrite, self).__init__(*args, **kwds) self._lock = Lock() def write(self, *args, **kwds): self._lock.acquire() try: super(LockedWrite, self).write(*args, **kwds) finally: self._lock.release() To use in your code just replace following functions: def main(): f = LockedWrite('foo.txt', 'a') for i in range(20): agent = Agent(i, f) agent.start() class Agent(Thread): def __init__(self, thread_num, fileobj): Thread.__init__(self) self.thread_num = thread_num self._file = fileobj # ... def write_result(self): self._file.write('hello from thread %s\n' % self.thread_num) This approach puts file locking in the file itself which seems cleaner IMHO

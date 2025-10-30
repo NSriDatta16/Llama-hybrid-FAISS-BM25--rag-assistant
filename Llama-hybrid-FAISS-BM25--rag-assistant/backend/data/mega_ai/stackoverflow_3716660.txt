@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3716660
+[parent_id]: 3716513
+[tags]: 
+At the moment, the only way you can be sure to pick up every change in input contents straight away is to poll for it. This is because there are many possible ways an input can get edited without generating a keyup or immediate change event. As well as cut-and-paste there's drag-and-drop, undo/redo, autocomplete, spellchecker changes... HTML5 proposes an input event that will fire in all cases like this, but browser support isn't there yet, unfortunately. You can of course back up the polling with quicker checking for the common case where you do get an event. For example: function watchInput(input, callback) { var value= input.value; function check() { if (input.value!==value) callback.call(input, value); value= input.value; } input.onchange=input.onkeyup= check; setInterval(check, 400); }; watchInput(document.getElementById('mytextarea', function(oldvalue) { document.getElementById('mybutton').className= this.value===''? 'buttonDisabled' : 'buttonEnabled'; });

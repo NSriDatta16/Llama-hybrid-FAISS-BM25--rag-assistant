@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3448922
+[parent_id]: 3440899
+[tags]: 
+Your question is DBMS dependent. In most situations, the rowid is a surrogate for the address of the row, in database space. Some DBMSes store the actual address in the index, and not the rowid, even if all you can see is a rowid. If a DBMS stores a rowid in an index, some mechanism still has to translate that into an address before direct retrieval of the row can be done. In almost any DBMS, the update to the table and the update to the index will be done in the context of the same transaction. That means that it doesn't matter to you whether the index gets updated before the table, or the table gets updated before the index. For the only DBMS whose internals I know, index entries are updated on a row by row basis, immediately after the update of the row itself. And the index entries contain row addresses, not row ids. I never had to worry about this in practice, because by the end of the transaction it's all been done anyway. In none of these cases would I call it "index rebuilding". It's really index update. "Index rebuilding" suggests a massive rewrite.

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 225963
+[parent_id]: 
+[tags]: 
+Multilevel Ordered Logistic regression in Stan
+
+I'm trying to create a multilevel ordinal logistic regression model in Stan and the following converges: stanmodel K; int N; int y[N]; int Ntests; int tests[N]; } parameters { ordered[K-1] CutpointsMean; real CutpointsSigma[K-1]; ordered[K-1] Cutpoints[Ntests]; } model { CutpointsSigma ~ exponential(1); CutpointsMean ~ normal(2, 3); for (i in 1:Ntests) { Cutpoints[i][1] ~ normal(CutpointsMean[1] , CutpointsSigma[1]); Cutpoints[i][2] ~ normal(CutpointsMean[2] , CutpointsSigma[2]); Cutpoints[i][3] ~ normal(CutpointsMean[3] , CutpointsSigma[3]); } for (i in 1:N) y[i] ~ ordered_logistic(0, Cutpoints[tests[i]]); } 'CutpointsMean' and 'CutpointsSigma' define the population global ordinal response while Cutpoints[i][1:3] is the ordinal response for group i. As Cutpoints[i] is an ordered vector of 3 elements, what happens when I write directly into Cutpoints[i][2] ? Is the write operation rejected if the constraints are not satisfied or simply the entry in written in the vector and and the results is sorted? Is this the correct way of modelling a multilevel ordinal response in Stan?

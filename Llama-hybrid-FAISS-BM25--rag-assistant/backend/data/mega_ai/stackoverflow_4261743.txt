@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4261743
+[parent_id]: 4261708
+[tags]: 
+++i is slightly more efficient due to its semantics: ++i; // Fetch i, increment it, and return it i++; // Fetch i, copy it, increment i, return copy For int-like indices, the efficiency gain is minimal (if any). For iterators and other heavier-weight objects, avoiding that copy can be a real win (particularly if the loop body doesn't contain much work). As an example, consider the following loop using a theoretical BigInteger class providing arbitrary precision integers (and thus some sort of vector-like internals): std::vector vec; for (BigInteger i = 0; i That i++ operation includes copy construction (i.e. operator new, digit-by-digit copy) and destruction (operator delete) for a loop that won't do anything more than essentially make one more copy of the index object. Essentially you've doubled the work to be done (and increased memory fragmentation most likely) by simply using the postfix increment where prefix would have been sufficient.

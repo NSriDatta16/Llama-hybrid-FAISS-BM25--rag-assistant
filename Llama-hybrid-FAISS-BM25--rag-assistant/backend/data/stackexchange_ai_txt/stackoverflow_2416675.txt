@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2416675
+[parent_id]: 2409870
+[tags]: 
+EDIT: added some details about explain(). Some general introduction: The Lucene Highlighter is meant to find text snippets from a hit document, and to highlight tokens matching the query. Therefore, The TokenStream parameter is used to break the hit text into tokens. The highlighter's scorer then scores each token, in order to score fragments and choose snippets and tokens to be highlighted. I believe you are doing it wrong. If all you want to do is understand which query terms were matched in the document, you should use the explain() method. Basically, after you have instantiated a searcher, use: Explanation expl = searcher.explain(query, docId); String asText = expl.toString(); String asHtml = expl.toHtml(); docId is the raw document id from the search results. Only if you do need the snippets and/or highlights, you should use the Highlighter. If you still want to use the highlighter, follow Nicholas Hrychan's advice . Beware, though, as he describes the Lucene 2.4.1 API - If you use a more advanced version, you should use "QueryScorer" where he says "SpanScorer" .

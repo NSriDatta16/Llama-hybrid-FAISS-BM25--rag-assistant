@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 684790
+[parent_id]: 
+[tags]: 
+Activerecord - callback after all associated objects are saved
+
+I have a model and I would like to store ids of associated objects (denormalize) for performance reasons. I have a method which looks like this: def cache_ids self._tag_ids = self.tag_ids end I thought I could just run it on before_save, however there is a problem - some of the associated objects might be new records, and therefore they will not have ids. Then I switched to after_save, but apparently this callback is also triggered before the transaction is committed, so ids are still not set. At the moment I ended up with: def save_with_idcache(*args) return false unless save_without_idcache(*args) cache_ids return save_without_idcache(false) end alias_method_chain :save, :idcache Which seems to work but doesn't look very elegant. Is there any better way? Like, a callback after the object and associated objects are all saved? Maybe I am missing something obvious.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1422697
+[parent_id]: 
+[tags]: 
+Find most recent SQL Server database activity
+
+Data from another system is replicated into a SQL Server 2005 database in real-time (during the day, it's hundreds of transactions/second) using Goldengate. I'd like to be able to tell if there's been a transaction recently, which will tell me if replication is currently happening. Even in the off-hours, I can expect a transaction every few minutes, though I won't know which of the 400 tables it will go into. Here's my current process: IUD trigger on most popular replicated table Updates date in "Sync Notification" table every time there's any activity on that table SQL Agent job runs every few minutes and compares this date with GETDATE(). If it's been too long, it emails me. This works for the most part, but I get false positives if there's activity in other tables, but not the monitored one, which can happen overnight. Any other suggestions short of adding this same trigger to every table in the database? If I do add the triggers, how to I prevent deadlocks and contention on the "Sync notification" table? Since I don't care about the most recent date being exact during high-contention periods, is there a way I can have SQL try to update the date but just skip it if some other process has locked it? The only "application-level" choice I have is to TELNET to the Goldengate monitor and ask for the replica lag, then screen scrape the results. I'm open to that, but I'd like to do something SQL-side if it's more feasible.

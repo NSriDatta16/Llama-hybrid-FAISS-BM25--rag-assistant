@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4659278
+[parent_id]: 4658874
+[tags]: 
+Honestly, I'd do this with DomDocument and Xpath: //First, create a simple html string around the text. $html = ' '.$text.' '; $dom = new DomDocument(); $dom->loadHtml($html); $xpath = new DomXpath($dom); $query = '//*[not(name() = "a") and contains(., "TEST")]'; $nodes = $xpath->query($query); //Force it to an array to break the reference so iterating works properly $nodes = iterator_to_array($nodes); $replaceNode = function ($node) { $text = $node->wholeText; $text = str_replace('TEST', ' TEST ', ''); $fragment = $node->ownerDocument->createDocumentFragment(); $fragment->appendXML($text); $node->parentNode->replaceChild($fragment, $node); } foreach ($nodes as $node) { if ($node instanceof DomText) { $replaceNode($node, 'TEST'); } else { foreach ($node->childNodes as $child) { if ($child instanceof DomText) { $replaceNode($node, 'TEST'); } } } } This should work for you, since it ignores all text inside of a elements, and only replaces the text directly inside of the matching tags.

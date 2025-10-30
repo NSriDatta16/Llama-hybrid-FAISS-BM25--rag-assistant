@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5052539
+[parent_id]: 5052477
+[tags]: 
+Are you familiar with object IDs? This might be what you're looking for: http://msdn.microsoft.com/en-us/library/aa363997.aspx You may also want to use file IDs. You can get this from the FileId field of FILE_ID_BOTH_DIR_INFO you get by calling GetFileInformationByHandleEx or the nFileIndexLow and nFileIndexHigh fields of BY_HANDLE_FILE_INFORMATION you get by calling GetFileInformationByHandle . Although it would require you to redesign your system, NTFS has a feature called a change journal that was designed for just this situation. It keeps track of every file that was changed, even across reboots. When your program runs, it would read the change journal from whenever it left off. For every file that was deleted, delete that file on your backup. For every file that was renamed, rename that file on your backup. For every file that was created or changed, copy that file to your backup. Now, instead of having to traverse both directory trees in parallel, you can simply traverse the list of files you'll actually have to pay attention to.

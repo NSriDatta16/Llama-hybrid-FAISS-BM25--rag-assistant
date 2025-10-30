@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4594270
+[parent_id]: 
+[tags]: 
+MongoDB: automatically generated IDs are zeroes
+
+I'm using MongoDB and official C# driver 0.9 I'm just checking how embedding simple documents works. There are 2 easy classes: public class User { public ObjectId _id { get; set; } public string Name { get; set; } public IEnumerable Addresses { get;set; } } public class Address { public ObjectId _id { get; set; } public string Street { get; set; } public string House { get; set; } } I create a new user: var user = new User { Name = "Sam", Addresses = (new Address[] { new Address { House = "BIGHOUSE", Street = "BIGSTREET" } }) }; collection.Insert(user.ToBsonDocument()); The user is successfully saved, so is his address. After typing db.users.find() in MongoDB shell, I got the following result: { "_id" : ObjectId("4e572f2a3a6c471d3868b81d"), "Name" : "Sam", "Addresses" : [ { "_id" : ObjectId("000000000000000000000000"), "Street" : "BIGSTREET", "House" : "BIGHOUSE" } ] } Why is address' object id 0? Doing queries with the address works though: collection.FindOne(Query.EQ("Addresses.Street", streetName)); It returns the user "Sam".

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4018384
+[parent_id]: 
+[tags]: 
+STL and UTF-8 file input/output. How to do it?
+
+I use wchar_t for internal strings and UTF-8 for storage in files. I need to use STL to input/output text to screen and also do it by using full Lithuanian charset. It's all fine because I'm not forced to do the same for files , so the following example does the job just fine: #include # include # include _setmode (_fileno(stdout), _O_U16TEXT); wcout But I became curious and attempted to do the same with files with no success. Of course I could use formatted input/output, but that is... discouraged . FILE* fp; _wfopen_s (&fp, L"utf-8_out_test.txt", L"w"); _setmode (_fileno (fp), _O_U8TEXT); _fwprintf_p (fp, L"AaĄą\nﬂ"); fclose (fp); _wfopen_s (&fp, L"utf-8_in_test.txt", L"r"); _setmode (_fileno (fp), _O_U8TEXT); wchar_t text[256]; fseek (fp, NULL, SEEK_SET); fwscanf (fp, L"%s", text); wcout This snippet works perfectly (although I am not sure how it handles malformed chars). So, is there any way to: get FILE* or integer file handle form a std::basic_*fstream ? simulate _setmode () on it? extend std::basic_*fstream so it handles UTF-8 I/O? Yes, I am studying at an university and this is somewhat related to my assignments, but I am trying to figure this out for myself. It won't influence my grade or anything like that.

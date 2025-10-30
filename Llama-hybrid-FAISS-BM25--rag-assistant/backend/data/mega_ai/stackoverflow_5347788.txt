@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5347788
+[parent_id]: 
+[tags]: 
+How do I query embedded documents by a referenced document?
+
+I'm using Doctrine ODM and am having trouble querying embedded documents by a referenced document. Consider the follow documents: Now I am wondering how I could find a TopCategory (or SubCategory) by product, I've tried a few different ways to achieve this, one method works but is a bit hackish. First way, doesn't work: $category = $dm->createQueryBuilder('TopCategory') ->field('subCategories.products')->includesReferenceTo($someProduct) ->getQuery()->execute(); // ... gives Doctrine\ODM\MongoDB\MongoDBException: No mapping found for field 'subCategories.products' in class 'TopCategory'.' Second way, doesn't work: $category = $dm->createQueryBuilder('SubCategory') ->field('products')->includesReferenceTo($someProduct) ->getQuery()->execute(); // ... returns null Third, working workaround: $category = $dm->createQueryBuilder('SubCategory') ->field('products.$id')->equals(new \MongoId($someProduct->getId())) ->getQuery()->execute(); // .. works, but seems hackish I am using the latest from GitHub and MognoDB v1.8.0 What's the go with this? NOTE: Interesting how Doctrine ODM lets you return an embedded document directly.

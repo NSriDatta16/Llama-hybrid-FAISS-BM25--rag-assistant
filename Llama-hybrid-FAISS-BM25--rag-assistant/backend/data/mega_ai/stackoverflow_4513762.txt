@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4513762
+[parent_id]: 4513350
+[tags]: 
+On the technical side, foo_1 and foo_3 are required to initialize their arrays before any functions, including class constructors, are called. That guarantee is essentially as good as no runtime. And in practice, most implementations don't need any runtime to initialize them. This guarantee applies only to objects of POD type with static storage duration which are initialized with "constant expressions". A few more contrasting examples: void foo_4() { static const int v[4] = { firstv(), 2, 3, 4 }; } namespace { // anonymous const int foo_5_data[4] = { firstv(), 2, 3, 4 }; } void foo_5() { const int (&v)[4] = foo_5_data; } The data for foo_4 is initialized the first time foo_4 is called. (Check your compiler documentation to find out whether this is thread-safe!) The data for foo_5 is initialized at some time before main() but might be after some other dynamic initializations. But none of this really answers questions about performance, and I'm not qualified to comment on that. @DeadMG's answer looks helpful.

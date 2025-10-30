@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2471766
+[parent_id]: 2471678
+[tags]: 
+It's not really the best job for a single regexp - have you considered, for example, making a copy of the string and then deleting everything in between the square brackets instead? It would then be fairly straight forward to extract things from inside the parenthesis. Alternatively, you could write a very basic parser that tokenises the line (into normal text, square bracket text, and parenthesised text, I imagine) and then parses the tree that produces; it'd be more work initially but would make life much simpler if you later want to make the behaviour any more complicated. Having said that, /(?:(?:^|\])[^\[]*)\((.*?)\)/ does the trick for your test case (but it will almost certainly have some weird behaviour if your [ and ] aren't matched properly, and I'm not convinced it's that efficient). A quick (PHP) test case: preg_match_all('/(?:(?:^|\])[^\[]*)\((.*?)\)/', "My name is ... (Jill)", $m); print(implode(", ", $m[1])); Outputs: Richard, Robert, Jill

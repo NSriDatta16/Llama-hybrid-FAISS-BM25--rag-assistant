@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1274421
+[parent_id]: 1274260
+[tags]: 
+You might want to check into the FILLFACTOR parameter for indices - this can strongly influence your index fragmentation. On a "busy" index with lots of insert, updates, delete, you should typically go for a fillfactor of between 70 and 90 percent - depending on how many varchar() fields you have. On an index (especially clustered index) which is ever-increasing (INT IDENTITY, typically), you can use FILLFACTOR 0 (or 100 - both means the same) and you'll only see fragmentation from deletes. To specify FILLFACTOR, use this syntax: ALTER INDEX (indexname) ON myTable REBUILD WITH (ONLINE = ON, FILLFACTOR = 80) Here's some more info on fillfactors and the influence on performance: Create and modify SQL Server indexes properly Index fill factor and performance considerations Who cares about fill factors Fill factor option on MSDN Hope this helps a bit! Marc

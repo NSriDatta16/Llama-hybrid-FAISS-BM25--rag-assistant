@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4754753
+[parent_id]: 4753574
+[tags]: 
+You need to loop over the rows and add the desired columns manually. var dt = new DataTable(); dt.Columns.Add("Id", typeof(int)); dt.Columns.Add("Name", typeof(string)); dt.Rows.Add(1, "Hello"); dt.Rows.Add(2, "World"); dt.Rows.Add(1, "Foo"); // dupe key var nvc = new NameValueCollection(); foreach (DataRow row in dt.Rows) { string key = row[0].ToString(); // tidy up key here nvc.Add(key, row[1].ToString()); } // display nvc foreach (var key in nvc.AllKeys) Console.WriteLine("{0}: {1}", key, nvc[key]); If you're interested in a Dictionary you could use ToDictionary , however this won't work if duplicate keys are allowed. In that case another elegant solution would be to use ToLookup . // optionally use a Func to do the tidying up // or call an existing method or do it inline for simple operations Func tidyFunc = (s) => s.Trim(); var lookup = dt.Rows.Cast () .ToLookup(r => tidyFunc(r[0].ToString()), r => r[1].ToString()); foreach (var g in lookup) { Console.WriteLine("Key: " + g.Key); foreach (var item in g) Console.WriteLine(item); }

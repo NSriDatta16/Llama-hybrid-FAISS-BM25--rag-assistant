@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3345695
+[parent_id]: 3345412
+[tags]: 
+Pretty much all the answers here state that x += y; is "equivalent" to "x = x + y;". This is not actually true. They are not exactly equivalent for several reasons. First, side effects are only performed once. Suppose you have class C { public string S { get; set; } } class D { private static C c = new C(); static C M() { Console.WriteLine("hello!"); return c; } } The first line below prints "hello" once, as you would expect. The second prints it twice. D.M().S += "abc"; D.M().S = D.M().S + "abc"; Second, the type system works differently for compound assignment than for regular assignment. short b = 1; short c = 2; b += c; b = b + c; The third line is legal. The fourth line is not; a short plus a short is an int in C#, so b = b + c is an illegal assigning of an int to a short. In this case the compound assignment is actually equivalent to b = (short)(b + c); If this subject interests you I encourage you to read sections 7.17.2 and 7.17.3 of the C# specification.

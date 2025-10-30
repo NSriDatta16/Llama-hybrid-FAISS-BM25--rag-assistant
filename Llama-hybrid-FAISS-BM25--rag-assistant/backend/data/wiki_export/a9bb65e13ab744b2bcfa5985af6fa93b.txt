@@ -1,0 +1,96 @@
+The anemic domain model is described as a programming anti-pattern where the domain objects contain little or no business logic like validations, calculations, rules, and so forth. The business logic is thus baked into the architecture of the program itself, making refactoring and maintenance more difficult and time-consuming.
+
+Overview
+This anti-pattern was first described by Martin Fowler, who considers the practice an anti-pattern. He says:
+
+In an anemic domain design, business logic is typically implemented in separate classes which transform the state of the domain objects. Fowler calls such external classes transaction scripts. This pattern is a common approach in Java applications, possibly encouraged by technologies such as early versions of EJB's Entity Beans, as well as in .NET applications following the Three-Layered Services Application architecture where such objects fall into the category of "Business Entities" (although Business Entities can also contain behavior).
+
+Fowler describes the transaction script pattern thus:
+
+In his book "Patterns of Enterprise Application Architecture", Fowler noted that the transaction script pattern may be proper for many simple business applications, and obviates a complex OO-database mapping layer.
+
+An anemic domain model might occur in systems that are influenced from Service-Oriented Architectures, where behaviour does not or tends to not travel, such as messaging/pipeline architectures, or SOAP/REST APIs. Architectures like COM+ and Remoting allow behaviour, but increasingly the web has favoured disconnected and stateless architectures.
+
+Criticism 
+There is some criticism as to whether this software design pattern should be considered an anti-pattern, since many see also benefits in it, for example:
+
+ Clear separation between logic and data.
+ Works well for simple applications.
+ Results in stateless logic, which facilitates scaling out.
+ Avoids the need for a complex OO-Database mapping layer.
+ More compatibility with mapping and injection frameworks expecting dumb properties rather than a specific constructor or property population order. 
+A common criticism is the idea that anemic domain model makes it easier to follow the SOLID principles: "The ‘S’ refers to the Single Responsibility Principle, which suggests that a class should do one thing, and do it well (...)" . But, according to Robert C. Martin, this is a misunderstanding of that principle: "Of all the SOLID principles, the Single Responsibility Principle (SRP) might be the least well understood. That’s likely because it has a particularly inappropriate name. It is too easy for programmers to hear the name and then assume that it means that every module should do just one thing. Make no mistake, there is a principle like that. A function should do one, and only one, thing. We use that principle when we are refactoring large functions into smaller functions; we use it at the lowest levels. But it is not one of the SOLID principles—it is not the SRP. (...) the final version of the SRP is: A module should be responsible to one, and only one, actor."
+
+Liabilities
+Certain liabilities the programmer must consider are introduced by using an anemic domain model:
+
+ Logic cannot be implemented in a truly object-oriented way.
+ Violation of the encapsulation and information hiding principles.
+ Needs a separate business layer to contain the logic otherwise located in a domain model. It also means that domain model's objects cannot guarantee their correctness at any moment, because their validation and mutation logic is placed somewhere outside (most likely in multiple places).
+ Needs a service layer when sharing domain logic across differing consumers of an object model.
+ Makes a model less expressive.
+
+Example 
+An anemic domain model would have one write code like the following (written in C#), which by itself does not implement any of the business concerns, in this case, that a height or a width cannot be zero or negative, or that somewhere else there is a requirement for the area of the rectangle. This means that those functionalities are implemented somewhere else, no longer on the "business" side of the program, but somewhere else hidden within its architecture.
+
+class Rectangle
+{
+    public int Height { get; set; }
+    public int Width { get; set; }
+}
+
+A non-anemic rewrite of the above class could look like the following. The business concerns are now handled in the domain object, while the architecture can be more domain-agnostic. This allows the program to assume certain attributes are true about objects without implementing validity checks elsewhere within the architecture.
+
+class Rectangle
+{
+    public int Height { get; private set; }
+    public int Width { get; private set; }
+
+    public Rectangle(int height, int width)
+    {
+        SetHeight(height);
+        SetWidth(width);
+    }
+
+    public void SetHeight(int height)
+    {
+        if (height <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(height));
+        }
+
+        Height = height;
+    }
+
+    public void SetWidth(int width)
+    {
+        if (width <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(width));
+        }
+
+        Width = width;
+    }
+
+    public int CalculateArea()
+    {
+        return Height * Width;
+    }
+}
+
+See also
+ Plain old Java object
+ Domain-driven design
+ GRASP information expert, an anemic domain model is the typical result of not applying the information expert principle, i.e. you can avoid an anemic domain model by trying to assign responsibilities to the same classes that contain the data
+
+References
+
+External links
+Anemic Domain Model by Martin Fowler
+Three-Layered Services Application
+Application Architecture for .NET: Designing Applications and Services
+Article on why anemic model may be considered good design
+Writing Clean Code in ASP.NET
+How to Avoid Anemic Domain Model
+Software architecture
+Anti-patterns

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4766541
+[parent_id]: 4765247
+[tags]: 
+It looks like adsense detects flash by looking at the content of navigator.plugins["Shockwave Flash"]. Unfortunately, you can't just set just that to a different value, as browsers won't let you. Similarly, you can't set navigator.plugins. Some browsers let you delete navigator.plugins, but not all of them. However, you can set navigator. So the path to do what you want involves creating a fake navigator object. var real_navigator = navigator; navigator = { plugins:[], mimeTypes:[] }; for (var k in real_navigator) { var t = typeof real_navigator[k]; if (t == "string" || t == "function") { navigator[k] = real_navigator[k]; } } At that point, you can still have scripts that inspect your user-agent and such, but plugins and mimetypes won't show up. It's not fool-proof, and you'd have to stub ActiveXObject if you want IE to play along, but overall, this should get you closer to your goal.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2788861
+[parent_id]: 2788736
+[tags]: 
+Don't do your LoadAllData() directly in a UI thread, instead start up a background thread to do it. The in your Form_Loaded event handler, use an AutoResetEvent and wait till it becomes signalled by the background data retrieving thread. Once it is signalled you can then continue to do whatever you need to do with the data, like bind it into the UI. This method is still a little clunky for various reasons, but it will get you started. Edit: i was being lazy with my answer above... a better option is to pass a delegate (callback) to the background thread, when the delegate is invoked (upon completion of the data retrieval) it marshals itself back on to the UI thread, and starts doing the required work with the data.

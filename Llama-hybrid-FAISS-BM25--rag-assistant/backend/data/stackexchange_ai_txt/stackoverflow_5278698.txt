@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5278698
+[parent_id]: 5278404
+[tags]: 
+For really small tables, indexes will probably not be used for simple access - the cost of a table scan is less than the index lookup followed by the actual data retrieval/reference. If that table will most likely be used in sub-queries that run against significantly larger tables, index it anyway. The cost of hundreds or thousands of table scans will quickly dwarf any other costs associated with the table. We manually unrolled a reference to one such table (approx 20 rows) that was used in a correlated subquery against a much larger table. At one client, this query used 4.2 billion reads because it was doing a table scan for every single linked row in the larger table. Unrolling that operation resulted in a 99%+ reduction in reads (approx 380 000 afterwards) and an 18 hour reduction in runtime. EDIT : Make join reference specific to subqueries.

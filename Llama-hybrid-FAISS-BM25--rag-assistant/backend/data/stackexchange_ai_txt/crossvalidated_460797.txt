@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 460797
+[parent_id]: 460787
+[tags]: 
+They are almost similar, if you run a pca using FactoMineR, you need the principal component score and they are stored under $svd$U because FactoMineR performs a pca using svd (you can see how they are related ). So for example using mtcars: library(FactoMineR) mpg = mtcars[,"mpg"] pca.res = PCA(mtcars[,-1],graph=FALSE) To get back the so called principal component scores, normally used in prcomp etc you do: PCs = pca.res $svd$ u %*% diag(pca.res $svd$ d) Because this is essentially multiplying the U matrix by its corresponding eigen value, for a regression this is not quite essential. However for complete sake, we can do: PCs = PCs[,1:5] Or you can do: PCs = pca.res $ind$ coord[,1:5] followed by: fit_PCs = lm(mpg ~ PCs) If you use pcr() from pls: fit_pls = pcr(mpg ~ .,data=mtcars,ncomp=5, validation="none",scale=TRUE,center=TRUE) The fitted values for 5 components are in: fitted(fit_pls)[,,5] So we check the fitted values from both: plot(fitted(fit_pls)[,,5],fitted(fit_PCs),xlab="pls_5comp",ylab="PCA+lm")

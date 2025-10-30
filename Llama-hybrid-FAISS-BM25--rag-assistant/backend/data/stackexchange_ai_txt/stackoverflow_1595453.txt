@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1595453
+[parent_id]: 1595424
+[tags]: 
+*/* means that the user-agent accepts all formats and doesn't care what format you give it. I believe Safari does this, among others. By default, curl sends an Accept header of */* . Here is a dump of the headers curl sends by default: User-Agent: curl/7.18.1 (i386-apple-darwin9.6.0) libcurl/7.18.1 zlib/1.2.3 Host: example.com Accept: */* Content-Type: However, in this case, it looks like you want to send back XML if the payload sent to you was XML? If that's the case, you want to check the request's Content-Type header directly. i.e., request.content_type is the method you want. Addenda: I thought a bit more about this, and I think the best approach is to first check request.format and only if that is inconclusive check request.content_type . Essentially, the HTTP spec provides for clients being able to tell servers that "I'm giving you XML, but I want JSON back." The Accept header is how clients tell you what they want back, and if someone actually sends it, you should honor that. Only use the request's Content-Type as a hint if the client didn't specify.

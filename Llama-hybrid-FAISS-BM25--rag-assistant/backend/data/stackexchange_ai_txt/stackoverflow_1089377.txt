@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1089377
+[parent_id]: 1089364
+[tags]: 
+To begin with Java strings are UTF-16 (i.e. 2 bytes per character), so assuming your input file is ASCII or a similar one-byte-per-character format then holder will be ~2x the size of the input data, plus the extra \r\n per line and any additional overhead. There's ~800MB straight away, assuming a very low storage overhead in StringBuffer. I could also believe that the contents of your file is buffered twice - once at the I/O level and once in the BufferedReader. However, to know for sure, it's probably best to look at what's actually on the heap - use a tool like HPROF to see exactly where your memory has gone. I terms of solving this, I suggest you process a line at a time, writing out each line after your have added the line termination. That way your memory usage should be proportional to the length of a line, instead of the entire file.

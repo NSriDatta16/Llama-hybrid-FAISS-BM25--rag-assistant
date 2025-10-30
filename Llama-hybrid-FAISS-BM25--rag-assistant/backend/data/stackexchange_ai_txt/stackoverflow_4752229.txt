@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4752229
+[parent_id]: 
+[tags]: 
+Python dict update from my custom dict not using my overridden methods
+
+I have a custom implementation of dict custom_dict , which overrides and is by-and-large supported by the native Python dict. I override setting ( __setitem__ ) to do some preprocessing to the value, and store it in some proprietary object. When getting( __getitem__ ), this proprietary object is then converted to a more natural format. All features when invoked from this custom_dict behave as I like. The problem is that when you call something like {'a': 1}.update(custom_dict({'b': 2})) , the value for 'b' in the updated dict is the proprietary internal storage object, and not the processed value. How does Python's native dict.update() work? I've overridden all the methods I could think of it using, items , iteritems , values , itervalues , get , and __getitem__ , but I haven't seemed to nail any of the ones update() tries to access, which leads me to believe it might be using the c code. Thoughts? UPDATE: I just found this in the CPython source code: if (PyDict_Check(b)) { ... } else { /* Do it the generic, slower way */ ... } Perhaps this is a bug, and that should be PyDict_CheckExact(b) as shows up in various other places in the code. Any idea how to beat this check?

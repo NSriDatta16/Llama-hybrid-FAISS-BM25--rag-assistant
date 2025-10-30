@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5741507
+[parent_id]: 3712827
+[tags]: 
+I was facing the same issue. Using query hint FORCE ORDER will fix this issue. The downside is you won't be able to leverage best plan that query optimizer has for your query, but this will prevent the deadlock. So (this is from "Bill the Lizard" user) if you have a query FROM table1 LEFT JOIN table2 and your WHERE clause only contains columns from table2 the execution plan will normally first select the rows from table2 and then look up the rows from table1. With a small result set from table2 only a few rows from table1 have to be fetched. With FORCE ORDER first all rows from table1 have to be fetched, because it has no WHERE clause, then the rows from table2 are joined and the result is filtered using the WHERE clause. Thus degrading performance. But if you know this won't be the case, use this. You might want to optimize the query manually. The syntax is SELECT ... FROM table1 LEFT JOIN table2 ON table1.id = table2.id WHERE ... OPTION (FORCE ORDER)

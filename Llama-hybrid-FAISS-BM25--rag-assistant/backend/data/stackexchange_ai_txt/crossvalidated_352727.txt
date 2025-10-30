@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 352727
+[parent_id]: 352133
+[tags]: 
+If you are doing Bayesian inference, wouldn't it make more sense to infer the variance as well? Let's first try the case when the variance (or equivalently, standard deviation) is specified. Generate the data: import numpy as np import pymc3 as pm true_mu = 1.0 true_sd = 0.05 n_obs = 20 np.random.seed(1234) data = np.random.normal(loc=true_mu, scale=true_sd, size=n_obs) Case 1, when the standard deviation is specified. Let's assume std=0.1 assumed_sd = 0.1 with pm.Model() as model: mu = pm.Uniform('mu', lower=-10, upper=10) center = pm.Normal('obs', mu=mu, sd=assumed_sd, observed=data) start_MAP = pm.find_MAP() trace = pm.sample(3000, start=start_MAP, step=pm.NUTS()) trace = trace[1000:] Case 2, infer both mean and the standard deviation with pm.Model() as model: mu = pm.Uniform('mu', lower=-10, upper=10) sd = pm.HalfCauchy('sigma', beta=10, testval=1.0) center = pm.Normal('obs', mu=mu, sd=sd, observed=data) start_MAP = pm.find_MAP() trace = pm.sample(3000 start=start_MAP, step=pm.NUTS()) trace = trace[1000:]

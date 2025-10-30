@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2556883
+[parent_id]: 
+[tags]: 
+Delphi Exception handling problem with multiple Exception handling blocks
+
+I'm using Delphi Pro 6 on Windows XP with FastMM 4.92 and the JEDI JVCL 3.0. Given the code below, I'm having the following problem: only the first exception handling block gets a valid instance of E. The other blocks match properly with the class of the Exception being raised, but E is unassigned (nil). For example, given the current order of the exception handling blocks when I raise an E1 the block for E1 matches and E is a valid object instance. However, if I try to raise an E2, that block does match, but E is unassigned (nil). If I move the E2 catching block to the top of the ordering and raise an E1, then when the E1 block matches E is is now unassigned. With this new ordering if I raise an E2, E is properly assigned when it wasn't when the E2 block was not the first block in the ordering. Note I tried this case with a bare-bones project consisting of just a single Delphi form. Am I doing something really silly here or is something really wrong? Thanks, Robert type E1 = class(EAbort) end; E2 = class(EAbort) end; procedure TForm1.Button1Click(Sender: TObject); begin try raise E1.Create('hello'); except On E: E1 do begin OutputDebugString('E1'); end; On E: E2 do begin OutputDebugString('E2'); end; On E: Exception do begin OutputDebugString('E(all)'); end; end; // try() end;

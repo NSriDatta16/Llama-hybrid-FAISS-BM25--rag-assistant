@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2267818
+[parent_id]: 
+[tags]: 
+Why/when are session writes vulnerable to thread termination?
+
+THE CODE: Session["foo"] = "bar"; Response.Redirect("foo.aspx"); THE PROBLEM: When foo.aspx reads "foo" from the session, it's not there. The session is there, but there's no value for "foo". I've observed this intermittently in our production environment. But I don't mean here to ask a question about Response.Redirect() . THE EXPLANATION: Bertrand Le Roy explains (the bolding is mine): Now, what Redirect does is to send a special header to the client so that it asks the server for a different page than the one it was waiting for. Server-side, after sending this header, Redirect ends the response. This is a very violent thing to do. Response.End actually stops the execution of the page wherever it is using a ThreadAbortException. What happens really here is that the session token gets lost in the battle. My takeaway there is that Response.Redirect() can be heavy-handed with ending threads. And that can threaten my session writes if they occur too near that heavy-handedness. THE QUESTION: What about ASP.NET session management makes it so vulnerable to this? The Response.Redirect() line of code doesn't begin its execution until the session write line is "finished" -- how can it be such a threat to my session write? What about the session write doesn't "finish" before the next line of code executes? Are there other scenarios in which session writes are similarly (as though they never occurred) lost?

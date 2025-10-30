@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4062689
+[parent_id]: 4062682
+[tags]: 
+As you point out in the other question, the allocators shouldn't have any state. Use thread-local storage or a pointer in each allocator object to the memory pool: the allocators merely become a type-specific interface to that pool. struct MemoryPool { // none of this depends on the type of objects being allocated }; template struct MyAllocator { template struct rebind { typedef MyAllocator other; }; MemoryPool *_pool; // copied to any allocator constructed template MyAllocator(MyAllocator const &other) : _pool(other._pool) {} // allocate, deallocate use _pool // construct, destruct deal with T };

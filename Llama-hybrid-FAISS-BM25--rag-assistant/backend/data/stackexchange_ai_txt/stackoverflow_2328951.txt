@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2328951
+[parent_id]: 
+[tags]: 
+Merge array of keys and array of values with an exception to the mapping
+
+I've got two arrays, one with IDs and one with Names: $ids = [4, 13, 6, 8, 10]; $names = ['alice', 'bob', 'charles', 'david', 'elizabeth']; I need to update the db so that the rows with the ids have the names in the array. Here's the tricky bit: I also have two integers: $special_name = 2; // the index in $names, in this case we mean 'charles' $special_id = 13; // the id value I don't care about which name goes to which id, except that the name with the $special_name should go on the $special_id . What's the most elegant way to get there? All of the methods that I'm thinking of seem pretty messy. The best I've thought of is to extract out the special items from each array, and do those first, and then do the rest, perhaps building a new array like this: $mapped = []; $mapped[$special_id] = $names[$special_name]; foreach ($ids as $id) { if ($id != $special_id) { $mapped[$id] = current($names); } // advance $names pointer $next_name = next($names); if ($next_name == $special_name) { next($names); } } I haven't tested that yet (I'm about to) but it's meant to produce something like: $mapped = [ 13 => 'charles', 4 => 'alice', 6 => 'bob', 8 => 'david', 10 => 'elizabeth' ]; and then running through that to do the actual update. Got a better idea?

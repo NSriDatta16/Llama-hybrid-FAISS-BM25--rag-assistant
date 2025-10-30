@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 332991
+[parent_id]: 
+[tags]: 
+How to interpret the following GAN training losses?
+
+I am training a GAN using the following loss functions: _, d_real_logit = discriminator(x_d) _, d_fake_logit = discriminator(generator(z_g)) loss_d_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.ones_like(d_real_logit), logits=d_real_logit)) loss_d_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.zeros_like(d_fake_logit), logits=d_fake_logit)) loss_d = loss_d_fake + loss_d_real _, g_logit = discriminator(generator(z_g)) loss_g = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels = tf.ones_like(g_logit), logits=g_logit)) where discriminator is defined as: def discriminator(x): y1_d = tf.nn.leaky_relu(tf.matmul(x, w_d_1) + b_d_1) y2_d = tf.nn.leaky_relu(tf.matmul(y1_d, w_d_2) + b_d_2) y3_d = tf.nn.leaky_relu(tf.matmul(y2_d, w_d_3) + b_d_3) y4_d = tf.nn.leaky_relu(tf.matmul(y3_d, w_d_4) + b_d_4) logits = tf.matmul(y4_d, w_d_5) + b_d_5 y5_d = tf.nn.sigmoid(logits) return y5_d, logits The plots of loss functions obtained are as follows: I understand that g_loss = 0.69 and d_loss = 1.38 are ideal situations, since that corresponds to discriminator output being 0.5 for both real and fake samples. But, for some reason the 2 loss values move away from these desired values as the training goes on. Does anyone know why this happens? (x axis is number of epochs/100)

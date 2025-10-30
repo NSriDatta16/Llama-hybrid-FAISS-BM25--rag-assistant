@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 285759
+[parent_id]: 284952
+[tags]: 
+Do you have access to the link map? If so, maybe you can hack your way around the wonky function-pointer table: unsigned long addr_get_dhcp = 0x1111111; unsigned long addr_set_dhcp = 0x2222222; //make these unique numbers. /* Relevant parts of header file */ typedef struct command { const char *code; unsigned long set_dispatcher; unsigned long get_dispatcher; const char *_description; } command_t; #define COMMAND_ENTRY(label,dispatcher,description) {(const char*)label, addr_set_##dispatcher, addr_get_##dispatcher, (const char*)description} Now compile, grab the relevant addresses from the link map, replace the constants, and recompile. Nothing should move, so the map ought to stay the same. (Making the original constants unique should prevent the compiler from collapsing identical values into one storage location. You may need a long long, depending on the architecture) If the concept works, you could probably add a post-link step running a script to do the replacement automagically. Of course, this is just a theory, it may fail miserably.

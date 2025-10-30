@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 774993
+[parent_id]: 774902
+[tags]: 
+If you are using Sql Server 2005 then Common Table Expressions (CTEs) provide an elegant solution. You create a CTE with the most recent test score for each student and then left join to the student table. Where a result exists in the test table that is used, otherwise the score from the student table is used. I've assumed that your tables are called Student and TestResult respectively, and also assumed that test_id is an auto incrementing ID WITH RecentResults as ( SELECT student_id, test_score FROM TestResult tr WHERE tr.test_id = (SELECT MAX(test_id) FROM TestResult WHERE student_id = tr.student_id) ) SELECT s.ID as 'Student ID', isnull(rr.test_score, s.test_score) FROM Students s LEFT JOIN RecentResults rr ON s.ID = rr.student_id I'm unable to test the code on this machine - if you provide DB schema will be easier to refine.

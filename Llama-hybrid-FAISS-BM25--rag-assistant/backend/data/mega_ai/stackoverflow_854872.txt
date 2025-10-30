@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 854872
+[parent_id]: 854722
+[tags]: 
+This code will loop all adapters and check for the first which is up. #include #include #include u_long GetFirstIpAddressUp(SOCKET s) { #define MAX_ADAPTERS 30 #pragma comment(lib, "Iphlpapi.lib") IP_ADAPTER_ADDRESSES AdapterAddresses[MAX_ADAPTERS]; PIP_ADAPTER_ADDRESSES pAdapterAddresses = AdapterAddresses; DWORD dwBufLen = sizeof(AdapterAddresses); if (GetAdaptersAddresses(AF_INET, 0, NULL, AdapterAddresses,&dwBufLen) == ERROR_SUCCESS) { do { if ((pAdapterAddresses->OperStatus == IfOperStatusUp)) { sockaddr_in* pAdr = (sockaddr_in*)pAdapterAddresses->FirstUnicastAddress->Address.lpSockaddr; return pAdr->sin_addr.S_un.S_addr; } pAdapterAddresses = pAdapterAddresses->Next; } while(pAdapterAddresses); } return INADDR_ANY; // No adapters are up }

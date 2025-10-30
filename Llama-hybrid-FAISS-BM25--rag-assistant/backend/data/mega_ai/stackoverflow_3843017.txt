@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3843017
+[parent_id]: 
+[tags]: 
+Efficiently detect sign-changes in python
+
+I want to do exactly what this guy did: Python - count sign changes However I need to optimize it to run super fast. In brief I want to take a time series and tell every time it crosses crosses zero (changes sign). I want to record the time in between zero crossings. Since this is real data (32 bit float) I doubt I'll every have a number which is exactly zero, so that is not important. I currently have a timing program in place so I'll time your results to see who wins. My solution gives (micro seconds): open data 8384 sign data 8123 zcd data 415466 As you can see the zero-crossing detector is the slow part. Here's my code. import numpy, datetime class timer(): def __init__(self): self.t0 = datetime.datetime.now() self.t = datetime.datetime.now() def __call__(self,text='unknown'): print text,'\t',(datetime.datetime.now()-self.t).microseconds self.t=datetime.datetime.now() def zcd(data,t): sign_array=numpy.sign(data) t('sign data') out=[] current = sign_array[0] count=0 for i in sign_array[1:]: if i!=current: out.append(count) current=i count=0 else: count+=1 t('zcd data') return out def main(): t = timer() data = numpy.fromfile('deci.dat',dtype=numpy.float32) t('open data') zcd(data,t) if __name__=='__main__': main()

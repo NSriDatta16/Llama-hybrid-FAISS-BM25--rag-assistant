@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1052593
+[parent_id]: 1052508
+[tags]: 
+Frustratingly, all IQueryably implementations are, essentially, leaky abstractions - and it is not safe to assume that something that works in LINQ-to-Objects will still work under any other provider. Apart from the obvious function mappings, things like: LINQ-to-SQL can't possibly support all functions / overloads - listed here Data Types and Functions (LINQ to SQL) plus it depends on the actual database server; Skip/Take etc work differently on SQL Server 2000 than 2005+, and not every such translation works on SQL Server 2000 EF doesn't support Single or Expression.Invoke (sub-expression invocation), or UDF usage Astoria supports different use of Single/First; as I recall it supports Where(pred).Single() - but not Single(pred) (which is the preferred usage for LINQ-to-SQL ) So you can't really use IEnumerable for your unit tests simulating a database, even via AsQueryable() - it simply isn't robust. Personally, I keep IQueryable and Expression away from the repository interface for this reason - see Pragmatic LINQ .

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2112682
+[parent_id]: 2112618
+[tags]: 
+You can do it like this: SELECT o.id, o.orgName, d.intCount FROM ( SELECT orgName, COUNT(*) as intCount FROM organizations GROUP BY orgName HAVING COUNT(*) > 1 ) AS d INNER JOIN organizations o ON o.orgName = d.orgName If you want to return just the records that can be deleted (leaving one of each), you can use: SELECT id, orgName FROM ( SELECT orgName, id, ROW_NUMBER() OVER (PARTITION BY orgName ORDER BY id) AS intRow FROM organizations ) AS d WHERE intRow != 1 Edit: SQL Server 2000 doesn't have the ROW_NUMBER() function. Instead, you can use: SELECT o.id, o.orgName, d.intCount FROM ( SELECT orgName, COUNT(*) as intCount, MIN(id) AS minId FROM organizations GROUP BY orgName HAVING COUNT(*) > 1 ) AS d INNER JOIN organizations o ON o.orgName = d.orgName WHERE d.minId != o.id

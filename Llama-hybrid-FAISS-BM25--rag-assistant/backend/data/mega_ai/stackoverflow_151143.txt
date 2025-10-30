@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 151143
+[parent_id]: 150900
+[tags]: 
+The OnPaint won't normally get called in a UserControl unless you set the appropriate style when it is constructed using the SetStyle method. You need to set the UserPaint style to true for the OnPaint to get called. SetStyle(ControlStyles::UserPaint, true); Update I recently encountered this issue myself and went digging for an answer. I wanted to perform some calculations during a paint (to leverage the unique handling of paint messages) but I wasn't always getting a call to OnPaint . After digging around with Reflector, I discovered that OnPaint is only called if the clipping rectangle of the corresponding WM_PAINT message is not empty. My UserControl instance had a child control that filled its entire client region and therefore, clipped it all. This meant that the clipping rectangle was empty and so no OnPaint call. I worked around this by overriding WndProc and adding a handler for WM_PAINT directly as I couldn't find another way to achieve what I wanted.

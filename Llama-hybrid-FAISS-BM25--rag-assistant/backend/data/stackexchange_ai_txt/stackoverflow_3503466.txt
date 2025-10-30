@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3503466
+[parent_id]: 3499981
+[tags]: 
+This was long enough that I admit I didn't read everything scrupulously, but it seems like you might actually want to leverage generics here. If you type Intf1 I think you can maintain binary compatibility while introducing specializations: public interface Intf1 { T entity(); //erasure is still Entity so binary compatibility } public interface Intf2 extends Intf1 { //if even needed } public interface Main { Intf1 intf(); //erasure is still Intf1, the raw type } Edit #1: There are some caveats when trying to maintain binary compatibility. See the Generics Tutorial chapters 6 and 10 for more information. Edit #2: You can extend this concept to typing Main as well: public interface Main > { I intf(); //still has the same erasure as it used to, so binary compatible } Old clients would then be able to use the raw Main type as they used to with no recompilation needed, and new clients would type their references to Main: Main myMain = Factory.getMeAMain(); Intf2 intf = myMain.intf();

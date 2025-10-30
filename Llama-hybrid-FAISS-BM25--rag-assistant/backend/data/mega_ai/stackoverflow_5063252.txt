@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5063252
+[parent_id]: 5061394
+[tags]: 
+Any time you find yourself thinking "I need to do [this complex thing] in a template", your first answer should be to write a custom tag or filter. In this case, you probably want an inclusion tag - that is, move the if block with the #Render Item Data In This Space#" markup into its own separate template fragment file, and write a tag along these lines: @register.inclusion_tag('_render_item_location.html') def render_item_location(locations, x, y): key = "%s-%s" % (x, y) if key in locations: context = {'location': location[key]} else: context = {} return context Now your template fragment can just do {% if location %}whatever{% endif %} , and your original template has {% render_item_location itemLocations x y %} . Note I've made a tweak to your code - with a dictionary, x in my_dict searches the keys anyway, so no need to explicitly call keys() .

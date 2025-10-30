@@ -1,0 +1,194 @@
+In computational complexity theory, Polynomial Local Search (PLS) is a complexity class that models the difficulty of finding a locally optimal solution to an optimization problem. The main characteristics of problems that lie in PLS are that the cost of a solution can be calculated in polynomial time and the neighborhood of a solution can be searched in polynomial time. Therefore it is possible to verify whether or not a solution is a local optimum in polynomial time.
+Furthermore, depending on the problem and the algorithm that is used for solving the problem, it might be faster to find a local optimum instead of a global optimum.
+
+Description
+When searching for a local optimum, there are two interesting issues to deal with: First how to find a local optimum, and second how long it takes to find a local optimum. For many local search algorithms, it is not known, whether they can find a local optimum in polynomial time or not. So to answer the question of how long it takes to find a local optimum, Johnson, Papadimitriou and Yannakakis   introduced the complexity class PLS in their paper "How easy is local search?". It contains local search problems for which the local optimality can be verified in polynomial time.
+
+A local search problem is in PLS, if the following properties are satisfied:
+ The size of every solution is polynomially bounded in the size of the instance .
+ It is possible to find some solution of a problem instance in polynomial time. 
+ It is possible to calculate the cost of each solution in polynomial time.
+ It is possible to find all neighbors of each solution in polynomial time.
+
+With these properties, it is possible to find for each solution  the best neighboring solution or if there is no such better neighboring solution, state that  is a local optimum.
+
+Example
+Consider the following instance  of the Max-2Sat Problem: . The aim is to find an assignment, that maximizes the sum of the satisfied clauses.
+
+A solution  for that instance is a bit string that assigns every  the value 0 or 1. In this case, a solution consists of 3 bits, for example , which stands for the assignment of  to  with the value 0. The set of solutions  is the set of all possible assignments of ,  and .
+
+The cost of each solution is the number of satisfied clauses, so  because the second and third clause are satisfied.
+
+The Flip-neighbor of a solution  is reached by flipping one bit of the bit string , so the neighbors of  are  with the following costs:
+
+There are no neighbors with better costs than , if we are looking for a solution with maximum cost. Even though  is not a global optimum (which for example would be a solution  that satisfies all clauses and has ),  is a local optimum, because none of its neighbors has better costs.
+
+Intuitively it can be argued that this problem lies in PLS, because:
+ It is possible to find a solution to an instance in polynomial time, for example by setting all bits to 0.
+ It is possible to calculate the cost of a solution in polynomial time, by going once through the whole instance and counting the clauses that are satisfied.
+ It is possible to find all neighbors of a solution in polynomial time, by taking the set of solutions that differ from  in exactly one bit.
+
+If we are simply counting the number of satisfied clauses, the problem can be solved in polynomial time since the number of possible costs is polynomial.  However, if we assign each clause a positive integer weight (and seek to locally maximize the sum of weights of satisfied clauses), the problem becomes PLS-complete (below).
+
+Formal Definition
+
+A local search problem  has a set  of instances which are encoded using strings over a finite alphabet . For each instance  there exists a finite solution set . Let  be the relation that models . The relation  is in PLS  if:
+ The size of every solution  is polynomial bounded in the size of 
+ Problem instances  and solutions  are polynomial time verifiable
+ There is a polynomial time computable function  that returns for each instance  some solution 
+ There is a polynomial time computable function   that returns for each solution  of an instance  the cost 
+ There is a polynomial time computable function  that returns the set of neighbors for an instance-solution pair
+ There is a polynomial time computable function  that returns a neighboring solution  with better cost than solution , or states that  is locally optimal
+ For every instance ,  exactly contains the pairs  where  is a local optimal solution of 
+
+An instance  has the structure of an implicit graph (also called Transition graph ), the vertices being the solutions with two solutions  connected by a directed arc iff .
+
+A local optimum is a solution , that has no neighbor with better costs. In the implicit graph, a local optimum is a sink. A neighborhood where every local optimum is a global optimum, which is a solution with the best possible cost, is called an exact neighborhood.
+
+Alternative Definition
+
+The class PLS is the class containing all problems that can be reduced in polynomial time to the problem Sink-of-DAG (also called  Local-Opt ):
+Given two integers  and  and two Boolean circuits  such that  and , find a vertex  such that  and either  or .
+
+Example neighborhood structures
+
+Example neighborhood structures for problems with boolean variables (or bit strings) as solution:
+
+ Flip - The neighborhood of a solution  can be achieved by negating (flipping) one arbitrary input bit . So one solution  and all its neighbors  have Hamming distance one: .
+ Kernighan-Lin  - A solution  is a neighbor of solution  if  can be obtained from  by a sequence of greedy flips, where no bit is flipped twice. This means, starting with , the Flip-neighbor  of  with the best cost, or the least loss of cost, is chosen to be a neighbor of s in the Kernighan-Lin structure. As well as best (or least worst) neighbor of  , and so on, until  is a solution where every bit of  is negated. Note that it is not allowed to flip a bit back, if it once has been flipped.
+ k-Flip - A solution  is a neighbor of solution  if the Hamming distance  between  and  is at most , so .
+
+Example neighborhood structures for problems on graphs:
+
+ Swap - A partition   of nodes in a graph is a neighbor of a partition  if  can be obtained from  by swapping one node  with a node .
+ Kernighan-Lin - A partition  is a neighbor of  if  can be obtained by a greedy sequence of swaps from nodes in  with nodes in . This means the two nodes  and  are swapped, where the partition  gains the highest possible weight, or loses the least possible weight. Note that no node is allowed to be swapped twice.
+ Fiduccia-Matheyses  - This neighborhood is similar to the Kernighan-Lin neighborhood structure, it is a greedy sequence of swaps, except that each swap happens in two steps. First the  with the most gain of cost, or the least loss of cost, is swapped to , then the node  with the most cost, or the least loss of cost is swapped to  to balance the partitions again. Experiments have shown that Fiduccia-Mattheyses has a smaller run time in each iteration of the standard algorithm, though it sometimes finds an inferior local optimum.
+ FM-Swap - This neighborhood structure is based on the Fiduccia-Mattheyses neighborhood structure. Each solution  has only one neighbor, the partition obtained after the first swap of the Fiduccia-Mattheyses.
+
+The standard Algorithm
+
+Consider the following computational problem:
+Given some instance  of a PLS problem , find a locally optimal solution  such that  for all .
+
+Every local search problem can be solved using the following iterative improvement algorithm:
+
+ Use  to find an initial solution 
+ Use algorithm  to find a better solution . If such a solution exists, replace  by  and repeat step 2, else return 
+
+Unfortunately, it generally takes an exponential number of improvement steps to find a local optimum even if the problem  can be solved exactly in polynomial time. It is not necessary always to use the standard algorithm, there may be a different, faster algorithm for a certain problem. For example a local search algorithm used for Linear programming is the Simplex algorithm.
+
+The run time of the standard algorithm is pseudo-polynomial in the number of different costs of a solution.
+
+The space the standard algorithm needs is only polynomial. It only needs to save the current solution , which is polynomial bounded by definition.
+
+Reductions
+
+A Reduction of one problem to another may be used to show that the second problem is at least as difficult as the first. In particular, a PLS-reduction is used to prove that a local search problem that lies in PLS is also PLS-complete, by reducing a PLS-complete Problem to the one that shall be proven to be PLS-complete.
+
+PLS-reduction
+
+A local search problem  is PLS-reducible to a local search problem  if there are two polynomial time functions  and  such that:
+ if  is an instance of  , then  is an instance of 
+ if  is a solution for  of  , then  is a solution for  of 
+ if  is a local optimum for instance  of  , then  has to be a local optimum for instance  of 
+
+It is sufficient to only map the local optima of  to the local optima of , and to map all other solutions for example to the standard solution returned by .
+
+PLS-reductions are transitive.
+
+Tight PLS-reduction
+
+Definition Transition graph
+
+The transition graph  of an instance  of a problem  is a directed graph. The nodes represent all elements of the finite set of solutions  and the edges point from one solution to the neighbor with strictly better cost. Therefore it is an acyclic graph. A sink, which is a node with no outgoing edges, is a local optimum.
+The height of a vertex  is the length of the shortest path from  to the nearest sink.
+The height of the transition graph is the largest of the heights of all vertices, so it is the height of the largest shortest possible path from a node to its nearest sink.
+
+Definition Tight PLS-reduction
+
+A PLS-reduction  from a local search problem  to a local search problem  is a
+tight PLS-reduction if for any instance  of , a subset  of solutions
+of instance  of  can be chosen, so that the following properties are satisfied:
+
+  contains, among other solutions, all local optima of 
+ For every solution  of  , a solution  of  can be constructed in polynomial time, so that 
+ If the transition graph  of  contains a direct path from  to , and , but all internal path vertices are outside , then for the corresponding solutions  and  holds either  or  contains an edge from  to
+
+Relationship to other complexity classes
+
+PLS lies between the functional versions of P and NP: FP ⊆ PLS ⊆ FNP.
+
+PLS also is a subclass of TFNP, that describes computational problems in which a solution is guaranteed to exist and can be recognized in polynomial time. For a problem in PLS, a solution is guaranteed to exist because the minimum-cost vertex of the entire graph is a valid solution, and the validity of a solution can be checked by computing its neighbors and comparing the costs of each one to another.
+
+It is also proven that if a PLS problem is NP-hard, then NP = co-NP.
+
+PLS-completeness
+
+Definition
+A local search problem  is PLS-complete, if
+
+  is in PLS
+ every problem in PLS can be PLS-reduced to 
+
+The optimization version of the circuit problem under the Flip neighborhood structure has been shown to be a first PLS-complete problem.
+
+List of PLS-complete Problems
+
+This is an incomplete list of some known problems that are PLS-complete.  The problems here are the weighted versions; for example, Max-2SAT/Flip is weighted even though Max-2SAT ordinarily refers to the unweighted version.
+
+Notation: Problem / Neighborhood structure
+
+ Min/Max-circuit/Flip has been proven to be the first PLS-complete problem.
+ Sink-of-DAG is complete by definition.
+ Positive-not-all-equal-max-3Sat/Flip has been proven to be PLS-complete via a tight PLS-reduction from Min/Max-circuit/Flip to Positive-not-all-equal-max-3Sat/Flip. Note that Positive-not-all-equal-max-3Sat/Flip can be reduced from Max-Cut/Flip too.
+ Positive-not-all-equal-max-3Sat/Kernighan-Lin has been proven to be PLS-complete via a tight PLS-reduction from Min/Max-circuit/Flip to Positive-not-all-equal-max-3Sat/Kernighan-Lin.
+ Max-2Sat/Flip has been proven to be PLS-complete via a tight PLS-reduction from Max-Cut/Flip to Max-2Sat/Flip.
+ Min-4Sat-B/Flip has been proven to be PLS-complete via a tight PLS-reduction from Min-circuit/Flip to Min-4Sat-B/Flip.
+ Max-4Sat-B/Flip(or CNF-SAT) has been proven to be PLS-complete via a PLS-reduction from Max-circuit/Flip to Max-4Sat-B/Flip.
+ Max-4Sat-(B=3)/Flip has been proven to be PLS-complete via a PLS-reduction from Max-circuit/Flip to Max-4Sat-(B=3)/Flip.
+ Max-Uniform-Graph-Partitioning/Swap has been proven to be PLS-complete via a tight PLS-reduction from Max-Cut/Flip to Max-Uniform-Graph-partitioning/Swap.
+ Max-Uniform-Graph-Partitioning/Fiduccia-Matheyses is stated to be PLS-complete without proof.
+ Max-Uniform-Graph-Partitioning/FM-Swap has been proven to be PLS-complete via a tight PLS-reduction from Max-Cut/Flip to Max-Uniform-Graph-partitioning/FM-Swap.
+ Max-Uniform-Graph-Partitioning/Kernighan-Lin has been proven to be PLS-complete via a PLS-reduction from Min/Max-circuit/Flip to Max-Uniform-Graph-Partitioning/Kernighan-Lin. There is also a tight PLS-reduction from Positive-not-all-equal-max-3Sat/Kernighan-Lin to Max-Uniform-Graph-Partitioning/Kernighan-Lin.
+ Max-Cut/Flip has been proven to be PLS-complete via a tight PLS-reduction from Positive-not-all-equal-max-3Sat/Flip to Max-Cut/Flip.
+ Max-Cut/Kernighan-Lin is claimed to be PLS-complete without proof.
+ Min-Independent-Dominating-Set-B/k-Flip has been proven to be PLS-complete via a tight PLS-reduction from Min-4Sat-B/Flip to Min-Independent-Dominating-Set-B/k-Flip.
+ Weighted-Independent-Set/Change is claimed to be PLS-complete without proof.
+ Maximum-Weighted-Subgraph-with-property-P/Change is PLS-complete if property P = "has no edges", as it then equals Weighted-Independent-Set/Change. It has also been proven to be PLS-complete for a general hereditary, non-trivial property P via  a tight PLS-reduction from Weighted-Independent-Set/Change to Maximum-Weighted-Subgraph-with-property-P/Change.
+ Set-Cover/k-change has been proven to be PLS-complete for each k ≥ 2 via a tight PLS-reduction from (3, 2, r)-Max-Constraint-Assignment/Change to Set-Cover/k-change.
+ Metric-TSP/k-Change has been proven to be PLS-complete via a PLS-reduction from Max-4Sat-B/Flip to Metric-TSP/k-Change.
+ Metric-TSP/Lin-Kernighan has been proven to be PLS-complete via a tight PLS-reduction from Max-2Sat/Flip to Metric-TSP/Lin-Kernighan.
+ Local-Multi-Processor-Scheduling/k-change has been proven to be PLS-complete via a tight PLS-reduction from Weighted-3Dimensional-Matching/(p, q)-Swap to Local-Multi-Processor-scheduling/(2p+q)-change, where (2p + q) ≥ 8.
+ Selfish-Multi-Processor-Scheduling/k-change-with-property-t has been proven to be PLS-complete via a tight PLS-reduction from Weighted-3Dimensional-Matching/(p, q)-Swap to (2p+q)-Selfish-Multi-Processor-Scheduling/k-change-with-property-t, where (2p + q) ≥ 8.
+ Finding a pure Nash Equilibrium in a General-Congestion-Game/Change has been proven PLS-complete via a tight PLS-reduction from Positive-not-all-equal-max-3Sat/Flip to General-Congestion-Game/Change.
+ Finding a pure Nash Equilibrium in a Symmetric General-Congestion-Game/Change has been proven to be PLS-complete via a tight PLS-reduction from an asymmetric General-Congestion-Game/Change to symmetric General-Congestion-Game/Change.
+ Finding a pure Nash Equilibrium in an Asymmetric Directed-Network-Congestion-Games/Change has been proven to be PLS-complete via a tight reduction from Positive-not-all-equal-max-3Sat/Flip to Directed-Network-Congestion-Games/Change  and also via a tight PLS-reduction from 2-Threshold-Games/Change to Directed-Network-Congestion-Games/Change.
+ Finding a pure Nash Equilibrium in an Asymmetric Undirected-Network-Congestion-Games/Change has been proven to be PLS-complete via a tight PLS-reduction from 2-Threshold-Games/Change to Asymmetric Undirected-Network-Congestion-Games/Change.
+ Finding a pure Nash Equilibrium in a Symmetric Distance-Bounded-Network-Congestion-Games has been proven to be PLS-complete via a tight PLS-reduction from 2-Threshold-Games to Symmetric Distance-Bounded-Network-Congestion-Games.
+ Finding a pure Nash Equilibrium in a 2-Threshold-Game/Change has been proven to be PLS-complete via a tight reduction from Max-Cut/Flip to 2-Threshold-Game/Change.
+ Finding a pure Nash Equilibrium in Market-Sharing-Game/Change with polynomial bounded costs has been proven to be PLS-complete via a tight PLS-reduction from 2-Threshold-Games/Change to Market-Sharing-Game/Change.
+ Finding a pure Nash Equilibrium in an Overlay-Network-Design/Change has been proven to be PLS-complete via a reduction from 2-Threshold-Games/Change to Overlay-Network-Design/Change. Analogously to the proof of asymmetric Directed-Network-Congestion-Game/Change, the reduction is tight.
+ Min-0-1-Integer Programming/k-Flip has been proven to be PLS-complete via a tight PLS-reduction from Min-4Sat-B/Flip to Min-0-1-Integer Programming/k-Flip.
+ Max-0-1-Integer Programming/k-Flip is claimed to be PLS-complete because of PLS-reduction to Max-0-1-Integer Programming/k-Flip, but the proof is left out.
+ (p, q, r)-Max-Constraint-Assignment
+ (3, 2, 3)-Max-Constraint-Assignment-3-partite/Change has been proven to be PLS-complete via a tight PLS-reduction from Circuit/Flip to (3, 2, 3)-Max-Constraint-Assignment-3-partite/Change.
+ (2, 3, 6)-Max-Constraint-Assignment-2-partite/Change has been proven to be PLS-complete via a tight PLS-reduction from Circuit/Flip to (2, 3, 6)-Max-Constraint-Assignment-2-partite/Change.
+ (6, 2, 2)-Max-Constraint-Assignment/Change has been proven to be PLS-complete via a tight reduction from Circuit/Flip to (6,2, 2)-Max-Constraint-Assignment/Change.
+ (4, 3, 3)-Max-Constraint-Assignment/Change equals Max-4Sat-(B=3)/Flip and has been proven to be PLS-complete via a PLS-reduction from Max-circuit/Flip. It is claimed that the reduction can be extended so tightness is obtained.
+ Nearest-Colorful-Polytope/Change has been proven to be PLS-complete via a PLS-reduction from Max-2Sat/Flip to Nearest-Colorful-Polytope/Change.
+ Stable-Configuration/Flip in a Hopfield network has been proven to be PLS-complete if the thresholds are 0 and the weights are negative via a tight PLS-reduction from Max-Cut/Flip to Stable-Configuration/Flip.
+ Weighted-3Dimensional-Matching/(p, q)-Swap has been proven to be PLS-complete for p ≥9 and q ≥ 15 via a tight PLS-reduction from (2, 3, r)-Max-Constraint-Assignment-2-partite/Change to Weighted-3Dimensional-Matching/(p, q)-Swap.
+ The problem Real-Local-Opt (finding the ɛ local optimum of a λ-Lipschitz continuous objective function  and a neighborhood function ) is PLS-complete.
+ Finding a local fitness peak in a biological fitness landscapes specified by the NK-model/Point-mutation with K ≥ 2  was proven to be PLS-complete via a tight PLS-reduction from Max-2SAT/Flip.
+
+Relations to other complexity classes 
+Fearnley, Goldberg, Hollender and Savani proved that a complexity class called CLS is equal to the intersection of PPAD and PLS.
+
+Further reading 
+
+ Equilibria, fixed points, and complexity classes: a survey.
+
+References 
+ .
+
+Complexity classes

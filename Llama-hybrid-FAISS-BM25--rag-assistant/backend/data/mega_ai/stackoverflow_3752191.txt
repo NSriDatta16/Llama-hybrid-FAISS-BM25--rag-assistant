@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3752191
+[parent_id]: 3751871
+[tags]: 
+You are fighting the "There's no free lunch" principle. You cannot assume that stuffing millions of items in a list isn't going to affect perf. Only the SortedList<> should be a problem, it is going to start allocating memory in the Large Object Heap. That allocation isn't going to be freed soon, it takes a gen #2 collection to chuck stuff out of the LOH again. This delay should not otherwise affect the perf of your program. One thing you can do is avoiding the multiple of copies of the internal array that SortedList<> will jam into the LOH when it keeps growing. Try to guess a good value for Capacity so it pre-allocates the large array up front. Next, use Perfmon.exe or TaskMgr.exe and looks at the page fault delta of your program. It should be quite busy while you're allocating. If you see low values (100 or less) then you might have a problem with the paging file being fragmented. A common scourge on older machines that run XP. Defragging the disk and using SysInternals' PageDefrag utility can do extraordinary wonders.

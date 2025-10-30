@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3098938
+[parent_id]: 3098926
+[tags]: 
+I think the problem is that this line: c.sin_port = htons(*argv[2]); Is not doing what you think it's doing. argv[2] is a string, *argv[2] is the first character of the string. So if you passed "4567" as the second command-line argument, then *argv[2] will be '4' which has ASCII value 52. That means you'll be attempting to connect to port 52, not "4567" as you would expect. Change the line to: c.sin_port = htons(atoi(argv[2])); The atoi function takes a string and converts it to an integer. So "4567" would become 4567. Also, in general, you should check the value of errno when a function call like that fails (it'll usually tell you in the documentation whether errno is set and the possible values it can be set to). That should help to give you some clue in the future. Edit As others have noted, make sure you pay attention to your braces. It's usually easier if you just always use braces around if , while , and so on. That is, this: if ( connect ( s, (struct sockaddr*)&c, sizeof c ) != 0 ) cout Is completely different to this: if ( connect ( s, (struct sockaddr*)&c, sizeof c ) != 0 ) { cout

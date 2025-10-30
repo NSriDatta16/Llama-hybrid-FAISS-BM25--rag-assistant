@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4830499
+[parent_id]: 1057670
+[tags]: 
+You can use metaprogramming to do this, although it does seem like quite a hack. Here is an example that uses a couple of helper functions (omitted for brevity): Public Function CreateInstance(typeName As String) As Object Dim module As VBComponent Set module = LazilyCreateMPCache() If Not FunctionExists(typeName, module) Then Call AddInstanceCreationHelper(typeName, module) End If Dim instanceCreationHelperName As String instanceCreationHelperName = module.name & ".GetInstanceOf" & typeName Set CreateInstance = Application.Run(instanceCreationHelperName) End Function Sub AddInstanceCreationHelper(typeName As String, module As VBComponent) Dim strCode As String strCode = _ "Public Function GetInstanceOf" & typeName & "() As " & typeName & vbCrLf & _ "Set GetInstanceOf" & typeName & " = New " & typeName & vbCrLf & _ "End Function" Call AddFunction(strCode, module) End Sub

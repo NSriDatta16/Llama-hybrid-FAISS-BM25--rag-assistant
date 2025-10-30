@@ -1,0 +1,85 @@
+Causal consistency is one of the major memory consistency models.  In concurrent programming, where concurrent processes are accessing a shared memory, a consistency model restricts which accesses are legal.  This is useful for defining correct data structures in distributed shared memory or distributed transactions.
+
+Causal Consistency is “Available under Partition”, meaning that a process can read and write the memory (memory is Available) even while there is no functioning network connection (network is Partitioned) between processes; it is an asynchronous model.  Contrast to strong consistency models, such as sequential consistency or linearizability, which cannot be both safe and live under partition, and are slow to respond because they require synchronisation.  
+
+Causal consistency was proposed in 1990s  as a weaker consistency model for shared memory models.  Causal consistency is closely related to the concept of Causal Broadcast in communication protocols.  In these models, a distributed execution is represented as a partial order, based on Lamport's happened-before concept of potential causality. 
+
+Causal consistency is a useful consistency model because it matches programmers' intuitions about time, is more available than strong consistency models, yet provides more useful guarantees than eventual consistency.  For instance, in distributed databases, causal consistency supports the ordering of operations, in contrast to eventual consistency. Also, causal consistency helps with the development of abstract data types such as queues or counters. 
+
+Since time and ordering are so fundamental to our intuition, it is hard
+to reason about a system that does not enforce causal consistency.
+However, many distributed databases lack this guarantee, even ones that
+provide serialisability.
+Spanner does guarantee causal consistency, but it also forces strong consistency, thus eschewing availability under partition.
+More available databases that ensure causal consistency include MongoDB
+and AntidoteDB.
+
+Definition
+
+Causal consistency captures the potential causal relationships between operations, and guarantees that all processes observe causally-related operations in a common order. In other words, all processes in the system agree on the order of the causally-related operations.  They may disagree on the order of operations that are causally unrelated.  
+
+Let us define the following relation.  If some process performs a write operation A, and some (the same or another) process that observed A then performs a write operation B, then it is possible that A is the cause of B; we say that A “potentially causes” or “causally precedes” B.  
+Causal Consistency guarantees that if A causally-precedes B, then every process in the system observes A before observing B.  Conversely, two write operations C and D are said concurrent, or causally independent, if neither causally precedes the other.  In this case, a process may observe either C before D, or D before C.  The Causal Precedence relation in shared memory is related to the happened-before relation in message-based communication. 
+
+Thus, a system provides causal consistency if this following condition holds: write operations that are related by potential causality are seen by each process of the system in their causal precedence order.  Different processes may observe concurrent writes in different orders. 
+
+The Causal Consistency model is weaker than sequential consistency, which ensures that all processes observe all write operations in common order, whether causally related or not.  However, causal consistency is stronger than PRAM consistency, which requires only the write operations that are done by a single process to be observed in common order by each other process.  It follows that when a system is sequentially consistent, it is also causally consistent. Additionally, causal consistency implies PRAM consistency, but not vice versa.
+
+Example
+
+Here is an example of causal consistency. 
+
+Causal relations are respected in the following event sequence:
+
+Process P2 observes, reads, the earlier write W(x)1 that is done by process P1.  Therefore, the two writes W(x)1 and W(x)2 are causally related. Under causal consistency, every process observes W(x)1 first, before observing W(x)2. Notice that the two write operations W(x)2 and W(x)3, with no intervening read operations, are concurrent, and processes P3 and P4 observe (read) them in different orders.
+
+Session Guarantees
+The causal consistency model can be refined into four session guarantees. They can be summarised as follows:
+
+ Read Your Writes: If a process performs a write, the same process later observes the result of its write.
+
+ Monotonic Reads: the set of writes observed (read) by a process is guaranteed to be monotonically non-decreasing.
+
+Writes Follow Reads: if some process performs a read followed by a write, and another process observes the result of the write, then it can also observe the read (unless it has been overwritten).
+
+ Monotonic Writes: If some process performs a write, followed some time later by another write, other processes will observe them in the same order.
+
+Transactional session guarantees for serialisability and snapshot isolation are presented by Daudjee and Salem.
+
+Implementation
+
+The system is abstracted as a set of communicating processes.
+When a process writes into the shared memory, the implementation sends this event to the other processes (via shared memory or as a message).
+Because of concurrency and failures, a process might receive events in any order.
+The implementation delivers an event, i.e., makes it visible to the process, only if all the events that causally precede it have themselves been delivered.
+This requires the implementation to maintain meta-data that represents the causal relationships between memory accesses.
+
+In brief, the implementation includes the following steps:
+(1) Maintain causal context meta-data at every process to summarise what updates causally precede the current state.
+(2) When a process updates memory, tag the update event with the causal context of that process, to summarise what updates causally precede this update.
+(3) A process that has received some update event may deliver it only if the event's tag causally precedes the causal context of the receiving process.
+(As a side effect of delivery, add the new event to the causal context of the receiving process.)
+Otherwise, the update was received too early, and must remain buffered until event matches the context.
+In the meantime, the implementation either passively waits to receive the missing events, or actively fetches them from their source.
+
+This approach enables availability under partition.
+
+There are two common representations for the causal context meta-data.
+One is to maintain an explicit dependency graph of the causal dependence relation.
+Because such a graph can grow arbitrarily large, an event is often tagged with only its immediate predecessors; determining its transitive predecessors requires a distributed graph traversal.
+The other is to maintain a vector clock, with one entry per process (or group of processes), counting the number of events generated by the process or group.
+This representation has a fixed size, and the ordering of events can be inferred by a simple comparison of the vectors.
+
+To precisely determine which events are dependent and which are concurrent in a fully peer-to-peer system, the size of the metadata is at least proportional to the number of active writers.
+However, a precise determination of concurrency is generally overkill.
+Causal consistency requires only that causally-dependent events be delivered in order; it does not matter if two concurrent events end up being ordered.
+Therefore, the size can be decreased arbitrarily by using safe approximation techniques. 
+In the limit, a single scalar (a Lamport clock) suffices, at the cost of removing any concurrency.
+The size of metadata can also be decreased by restricting the communication topology; for instance, in a star, tree or linear topology, a single scalar suffices.
+
+The search for efficient implementations of causal consistency is a very
+active research area.
+
+References 
+
+Consistency models

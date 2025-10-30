@@ -1,0 +1,143 @@
+Minix 3 is a small, Unix-like operating system. It is published under a BSD-3-Clause license and is a successor project to the earlier versions, Minix 1 and 2.
+
+The project's main goal is for the system to be fault-tolerant by detecting and repairing its faults on the fly, with no user intervention. The main uses of the system are envisaged to be embedded systems and education.
+
+, Minix 3 supports IA-32 and ARM architecture processors. It can also run on emulators or virtual machines, such as Bochs, VMware Workstation, Microsoft Virtual PC, Oracle VirtualBox, and QEMU. A port to PowerPC architecture is in development.
+
+The distribution comes on a live CD and does not support live USB installation.
+
+Minix 3 is believed to have inspired the Intel Management Engine (ME) OS found in Intel's Platform Controller Hub, starting with the introduction of ME 11, which is used with Skylake and Kaby Lake processors.
+
+It was debated that Minix could have been the most widely used OS on x86/AMD64 processors, with more installations than Microsoft Windows, Linux, or macOS, because of its use in the Intel ME.
+
+The project has been dormant since 2018, and the latest release is 3.4.0 rc6 from 2017, although the Minix 3 discussion group is still active.
+
+Goals of the project 
+
+Reflecting on the nature of monolithic kernel based systems, where a driver (which has, according to Minix creator Tanenbaum, approximately 3–7 times as many bugs as a usual program) can bring down the whole system, Minix 3 aims to create an operating system that is a "reliable, self-healing, multiserver Unix clone".
+
+To achieve that, the code running in kernel must be minimal, with the file server, process server, and each device driver running as separate user-mode processes. Each driver is carefully monitored by a part of the system named the reincarnation server. If a driver fails to respond to pings from this server, it is shut down and replaced by a fresh copy of the driver.
+
+In a monolithic system, a bug in a driver can easily crash the whole kernel. This is far less likely to occur in Minix 3.
+
+History 
+
+Minix 3 was publicly announced on 24 October 2005 by Andrew Tanenbaum during his keynote speech on top of the Association for Computing Machinery (ACM) Symposium Operating Systems Principles conference. Although it still serves as an example for the new edition of Tanenbaum and Woodhull's textbook, it is comprehensively redesigned to be "usable as a serious system on resource-limited and embedded computers and for applications requiring high reliability."
+
+Initially released under the same BSD-3-Clause license that Minix was licensed under since 2000. In late 2005, the copyright owner was changed and a fourth clause was added.
+
+Reliability policies 
+One of the main goals of Minix 3 is reliability. Below, some of the more important principles that enhance its reliability are discussed.
+
+Reduce kernel size
+Monolithic operating systems such as Linux and FreeBSD and hybrids like Windows have millions of lines of kernel code. In contrast, Minix 3 has about 6,000 lines of executable kernel code, which can make problems easier to find in the code.
+
+Cage the bugs
+In monolithic kernels, device drivers reside in the kernel. Thus, when a new peripheral is installed, unknown, untrusted code is inserted in the kernel. One bad line of code in a driver can bring down the system.
+
+Instead, in Minix 3, each device driver is a separate user-mode process. Drivers cannot execute privileged instructions, change the page tables, perform arbitrary input/output (I/O), or write to absolute memory. They must make kernel calls for these services and the kernel checks each call for authority.
+
+Limit drivers' memory access
+In monolithic kernels, a driver can write to any word of memory and thus accidentally corrupt user programs.
+
+In Minix 3, when a user expects data from, for example, the file system, it builds a descriptor telling who has access and at what addresses. It then passes an index to this descriptor to the file system, which may pass it to a driver. The file system or driver then asks the kernel to write via the descriptor, making it impossible for them to write to addresses outside the buffer.
+
+Survive bad pointers
+Dereferencing a bad pointer within a driver will crash the driver process, but will have no effect on the system as a whole. The reincarnation server will restart the crashed driver automatically. Users will not notice recovery for some drivers (e.g., disk and network) but for others (e.g., audio and printer), they might. In monolithic kernels, dereferencing a bad pointer in a driver normally leads to a system crash.
+
+Tame infinite loops
+If a driver gets into an infinite loop, the scheduler will gradually lower its priority until it becomes idle. Eventually the reincarnation server will see that it is not responding to status requests, so it will kill and restart the looping driver. In a monolithic kernel, a looping driver could hang the system.
+
+Limit damage from buffer overflows
+Minix 3 uses fixed-length messages for internal communication, which eliminates certain buffer overflows and buffer management problems. Also, many exploits work by overrunning a buffer to trick the program into returning from a function call using an overwritten stack return address pointing into attacker controlled memory, usually the overrun buffer. In Minix 3, this attack is mitigated because instruction and data space are split and only code in (read-only) instruction space can be executed, termed executable space protection. However, attacks which rely on running legitimately executable memory in a malicious way (return-to-libc, return-oriented programming) are not prevented by this mitigation.
+
+Restrict access to kernel functions
+Device drivers obtain kernel services (such as copying data to users' address spaces) by making kernel calls. The Minix 3 kernel has a bit map for each driver specifying which calls it is authorized to make. In monolithic kernels, every driver can call every kernel function, authorized or not.
+
+Restrict access to I/O ports
+The kernel also maintains a table telling which I/O ports each driver may access. Thus, a driver can only touch its own I/O ports. In monolithic kernels, a buggy driver can access I/O ports belonging to another device.
+
+Restrict communication with OS components
+Not every driver and server needs to communicate with every other driver and server. Accordingly, a per-process bit map determines which destinations each process may send to.
+
+Reincarnate dead or sick drivers
+A special process, called the reincarnation server, periodically pings each device driver. If the driver dies or fails to respond correctly to pings, the reincarnation server automatically replaces it with a fresh copy. Detecting and replacing non-functioning drivers is automatic, with no user action needed. This feature does not work for disk drivers at present, but in the next release the system will be able to recover even disk drivers, which will be shadowed in random-access memory (RAM). Driver recovery does not affect running processes.
+
+Integrate interrupts and messages 
+When an interrupt occurs, it is converted at a low level to a notification sent to the appropriate driver. If the driver is waiting for a message, it gets the interrupt immediately; otherwise it gets the notification the next time it does a RECEIVE to get a message. This scheme eliminates nested interrupts and makes driver programming easier.
+
+Architecture 
+
+As can be seen, at the bottom level is the microkernel, which is about 4,000 lines of code (mostly in C, plus a small amount of assembly language). It handles interrupts, scheduling, and message passing. It also supports an application programming interface (API) of about 30 kernel calls that authorized servers and drivers can make. User programs cannot make these calls. Instead, they can issue POSIX system calls which send messages to the servers. The kernel calls perform functions such as setting interrupts and copying data between address spaces.
+
+At the next level up, there are the device drivers, each one running as a separate userland process. Each one controls some I/O device, such as a disk or printer. The drivers do not have access to the I/O port space and cannot issue I/O instructions directly. Instead, they must make kernel calls giving a list of I/O ports to write to and the values to be written. While there is a small amount of overhead in doing this (typically 500 ns), this scheme makes it possible for the kernel to check authorization, so that, for example, the audio driver cannot write on the disk.
+
+At the next level there are the servers. This is where nearly all the operating system functionality is located. User processes obtain file service, for example, by sending messages to the file server to open, close, read, and write files. In turn, the file server gets disk I/O performed by sending messages to the disk driver, which controls the disk.
+
+One of the key servers is the reincarnation server. Its job is to poll all the other servers and drivers to check on their health periodically. If a component fails to respond correctly, or exits, or gets into an infinite loop, the reincarnation server (which is the parent process of the drivers and servers) kills the faulty component and replaces it with a fresh copy. In this way the system is automatically made self-healing without interfering with running programs.
+
+Currently the reincarnation server, the process server, and the microkernel are part of the trusted computing base.  If any of them fail, the system crashes. Nevertheless, reducing the trusted computing base from 3-5 million lines of code, as in Linux and Windows systems, to about 20,000 lines greatly enhances system reliability.
+
+Differences between Minix 3 and prior versions 
+
+Minix 1.0, 1.5, and 2.0 were developed as tools to help people learn about the design of operating systems.
+
+Minix 1.0, released in 1987, was 12,000 lines of C and some x86 assembly language. Source code of the kernel, memory manager, and file system of Minix 1.0 are printed in the book. Tanenbaum originally developed Minix for compatibility with the IBM PC and IBM PC/AT microcomputers available at the time.
+
+Minix 1.5, released in 1991, included support for MicroChannel IBM PS/2 systems and was also ported to the Motorola 68000 and SPARC architectures, supporting the Atari ST, Commodore Amiga, Apple Macintosh and Sun Microsystems SPARCstation computer platforms. A version of Minix running as a user process under SunOS was also available.
+
+Minix 2.0, released in 1997, was only available for the x86 and Solaris-hosted SPARC architectures. Minix-vmd was created by two Vrije Universiteit researchers, and added virtual memory and support for the X Window System.
+
+Minix 3 does the same, and provides a modern operating system with many newer tools and many Unix applications. Prof. Tanenbaum once said:
+
+Many improvements have also been made in the structure of the kernel since the Minix 2 release, making the system more reliable. Minix version 3.1.5 was released 5 Nov 2009. It contains X11, Emacs, vi, cc, GCC, Perl, Python, Almquist shell, Bash, Z shell, FTP client, SSH client, Telnet client, Pine, and over 400 other common Unix utility programs. With the addition of X11, this version marks the transition away from a text-only system.  Another feature of this version, which will be improved in future ones, is the ability of the system to withstand device driver crashes, and in many cases having them automatically replaced without affecting running processes. In this way, Minix is self-healing and can be used in applications demanding high reliability.
+
+Minix 3.2.0 was released in February 2012. This version has many new features, including the Clang compiler, experimental symmetric multiprocessing support, procfs and ext2fs filesystem support, and GNU Debugger (GDB). Several parts of NetBSD are also integrated in the release, including the bootloader, libc and various utilities and other libraries.
+
+Minix 3.3.0 was released in September 2014. This release is the first version to support the ARM architecture in addition to x86. It also supports a NetBSD userland, with thousands of NetBSD packages running right out of the box.
+
+Mascot 
+
+Rocky Raccoon is the mascot of Minix 3.
+
+MINIXCon 
+MINIXCon is a conference on sharing talks, efforts and researches related to Minix.
+
+It was held once in 2016. MINIXCon2017 was cancelled due to lack of talks submitted.
+
+See also 
+
+ Comparison of operating system kernels
+ MINIX file system
+ List of computing mascots
+ :Category:Computing mascots
+
+Notes
+
+References
+
+Further reading 
+
+Building a dependable operating system: fault tolerance in MINIX 3 by Jorrit N. Herder (PDF)
+Reorganizing Unix for Reliability by Jorrit N. Herder, Herbert Bos, Ben Gras, Philip Homburg, and Andrew S. Tanenbaum (PDF)
+Modular system programming in MINIX 3 by Jorrit N. Herder, Herbert Bos, Ben Gras, Philip Homburg, and Andrew S Tanenbaum (PDF)
+J. N. Herder et al., Modular System Programming in MINIX 3, ;Login, April 2006 (PDF)
+Pablo A Pessolani. MINIX4RT: A Real-Time Operating System Based on MINIX
+Building Performance Measurement Tools for the MINIX 3 Operating System, by Rogier Meurs (PDF)
+Design and implementation of the MINIX virtual file system (PDF)
+Reference manual for MINIX 3 Kernel API (PDF)
+Towards a true microkernel operating system (PDF)
+Construction of a Highly Dependable Operating System (PDF)
+Minix 3 and the microkernel experience: Smart Kernel by Rüdiger Weis (PDF) 
+Safe and Automatic Live Update by Cristiano Giuffrida (PDF)
+
+External links
+
+2005 software
+Computer science in the Netherlands
+Computing platforms
+Educational operating systems
+Information technology in the Netherlands
+Microkernels
+MINIX
+Operating system distributions bootable from read-only media

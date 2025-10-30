@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1143829
+[parent_id]: 1143671
+[tags]: 
+from operator import itemgetter from functools import partial def _neg_itemgetter(key, d): return -d[key] def key_getter(key_expr): keys = key_expr.split(",") getters = [] for k in keys: k = k.strip() if k.startswith("-"): getters.append(partial(_neg_itemgetter, k[1:])) else: getters.append(itemgetter(k)) def keyfunc(dct): return [kg(dct) for kg in getters] return keyfunc def multikeysort(dict_list, sortkeys): return sorted(dict_list, key = key_getter(sortkeys) Demonstration: >>> multikeysort([{u'TOT_PTS_Misc': u'Utley, Alex', u'Total_Points': 60.0}, {u'TOT_PTS_Misc': u'Russo, Brandon', u'Total_Points': 96.0}, {u'TOT_PTS_Misc': u'Chappell, Justin', u'Total_Points': 96.0}], "-Total_Points,TOT_PTS_Misc") [{u'Total_Points': 96.0, u'TOT_PTS_Misc': u'Chappell, Justin'}, {u'Total_Points': 96.0, u'TOT_PTS_Misc': u'Russo, Brandon'}, {u'Total_Points': 60.0, u'TOT_PTS_Misc': u'Utley, Alex'}] The parsing is a bit fragile, but at least it allows for variable number of spaces between the keys.

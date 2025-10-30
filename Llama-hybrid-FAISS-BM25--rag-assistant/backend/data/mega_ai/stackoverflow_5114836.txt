@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5114836
+[parent_id]: 5110114
+[tags]: 
+The change-dependency you describe is already part of Make, but Make is flexible enough that it can be used in an inefficient way. If the slowness really is caused by the recursion ( make -C commands) -- which it probably is -- then you should reduce the recursion. (You could try putting in your own conditional logic to decide whether to execute make -C , but that would be a very inelegant solution.) Roughly speaking, if your makefiles look like this # main makefile foo: make -C bar baz and this # makefile in bar/ baz: quartz do something you can change them to this: # main makefile foo: bar/quartz cd bar && do something There are many details to get right, but now if bar/quartz has not been changed, the foo rule will not run.

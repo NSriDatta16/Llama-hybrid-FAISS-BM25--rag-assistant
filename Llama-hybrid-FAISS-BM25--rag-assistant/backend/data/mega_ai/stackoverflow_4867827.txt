@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4867827
+[parent_id]: 4867716
+[tags]: 
+Try freeing your inside sql result at the end of each loop, using mysql_free_result($result2); , the PHP script may not do it for you, depending on the PHP version (the garbage collector may not be enabled or may be useless due to a too old PHP version). Do not instanciate the two temporary variables inside the loop, use the mysql_fetch_array result directly such as $graph[$rows["something"]][$rows2["something2"]] = 1000000; , you will save 2 memory allocations per loop.. PS: This is micro -optimization, therefore it may help you to save enough memory to fit into your 64M of memory. Don't forget that with 64 * 1024 * 1024 bytes of memory, you have an average 104 bytes maximum size for each of your 644 809 elements, plus the array size itself, plus the rest of the temporary data you may allocate for your algorithm. If it doesn't fit, consider splitting your matrix and doing batched jobs or such to split your work in lesser memory consuming but more than one script run.

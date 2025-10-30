@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5208339
+[parent_id]: 5208290
+[tags]: 
+There's several ways to do something like this. The simplest way to make something like that globally available to your app is to define a constant within config/environment.rb (or config/environments/production.rb . However, with sensitive data it's important that they're decoupled from your primary SCM and only available within the production environment - at least this way, if your code is compromised, your encryption key is safe. There's a couple of methods of doing this that I know of - one would be to set they key in an environment variable, which can then be accessed in Ruby through ENV['variable_name] . Another option is to store it in an external file that's de-coupled from your code repository, then have that read in with an initializer. Whichever way you do it, you can combine this approach with a constant declaration in config/environment.rb : # config/environment.rb ENCRYPTION_KEY = ENV['encryption_key'] This way, should you change the storage location of your key, you only need to change one line of code.

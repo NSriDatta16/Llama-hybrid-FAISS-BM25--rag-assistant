@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5484905
+[parent_id]: 5380108
+[tags]: 
+GETs for fragment identifiers don't/shouldn't (some buggy clients may send them) appear in an HTTP request, so you can't have a rewrite rule to match them, regardless of webserver. The HTTP engine cannot make any assumptions about it. The server is not even given it. If you tried to make the initial request for / redirect to /#! rather than serving the root index, you'd end up with a "too many redirects" error, as the client would come back asking for / again (remember that it won't send the # with its request). You'll need to do this with javascript instead for the index document . The bottom line is that it's not available server-side in the GET request. Even curl has been patched not to send it any more. You could have nginx location directives to make everything else hit the front controller though: location = / { } location = /index.html { } location ~ / { rewrite ^ /#!$uri redirect; break; } Beware of this approach though; http://jenitennison.com/blog/node/154 goes into a lot more detail about the hashbang debacle at Gawker and other issues surrounding its use.

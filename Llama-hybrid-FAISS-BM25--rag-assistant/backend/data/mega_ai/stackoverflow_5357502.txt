@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5357502
+[parent_id]: 5319405
+[tags]: 
+I would actually advise against encapsulating data into json and then putting it into the hash. The reason is that JSON itself needs a lot of markup and will actually open some security holes as you'll have to later eval code that comes directly from the user. As a better alternative, I would advise using x-www-form-urlencoded as encapsulation. For example if this is your state object: var stateObject = { userName: 'John Doe', age: 31 } Then you would create a hash fragment like this: // Create an array to build the output string. var hashPartBuffer = []; for (var k in stateObject) { hashPartBuffer.push( encodeURIComponent(k), '=', encodeURIComponent(stateObject[k]), '&'); } if (hashPartBuffer.length) { // Remove the last element from the string buffer // which is '&'. hashPartBuffer.pop(); } var hashPartString = hashPartBuffer.join(''); // This will now be 'userName=John%20Doe&age=31' Then you will parse this back by: var hashPartString = 'userName=John%20Doe&age=31'; var pairs = hashPartString.split(/&/); var stateObject = {}; for (var i = 0; i

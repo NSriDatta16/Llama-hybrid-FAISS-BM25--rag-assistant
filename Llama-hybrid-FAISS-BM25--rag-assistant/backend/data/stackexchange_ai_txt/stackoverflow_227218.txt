@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 227218
+[parent_id]: 202013
+[tags]: 
+You need to use application scoped, rather than domain scoped, isolated storage. This can be done by using one of IsolatedStorageFileStream's overloaded constructors. Example: using System.IO; using System.IO.IsolatedStorage; ... IsolatedStorageFile appScope = IsolatedStorageFile.GetUserStoreForApplication(); using(IsolatedStorageFileStream fs = new IsolatedStorageFileStream("data.dat", FileMode.OpenOrCreate, appScope)) { ... However, now you will run into the issue of this code only working when the application has been launched via ClickOnce because that's the only time application scoped isolated storage is available. If you don't launch via ClickOnce (such as through Visual Studio), GetUserStoreForApplication() will throw an exception. The way around this problem is to make sure AppDomain.CurrentDomain.ActivationContext is not null before trying to use application scoped isolated storage.

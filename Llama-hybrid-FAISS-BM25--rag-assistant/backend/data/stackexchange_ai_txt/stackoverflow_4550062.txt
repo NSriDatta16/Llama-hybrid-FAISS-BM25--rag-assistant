@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4550062
+[parent_id]: 4549815
+[tags]: 
+I don't exactly understand what you're trying to achieve, but I've quickly tested the performance of valueForKey: versus your invocation method. In my tests, code below, valueForKey: is almost 5 times faster than the NSInvocation method. 1.620685 millisec 30.357355 millisec 7.593611 millisec Code: #import #include @interface Foo : NSObject { NSNumber *value; } @property (nonatomic, retain) NSNumber *value; @end @implementation Foo @synthesize value; - (void) dealloc { [value release]; [super dealloc]; } @end #pragma mark MAIN int main (int argc, const char * argv[]) { NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init]; // prepare loops NSUInteger i; NSUInteger max = 10000; Foo *target = [[[Foo alloc] init] autorelease]; target.value = [NSNumber numberWithFloat:12.345f]; NSString *valueKey = @"value"; // prepare mach timebase mach_timebase_info_data_t timebase; mach_timebase_info(&timebase); double ticksToNanoseconds = (double)timebase.numer / timebase.denom; // old-fashioned uint64_t startTime = mach_absolute_time(); for (i = 0; i

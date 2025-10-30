@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3304215
+[parent_id]: 3303848
+[tags]: 
+It probably doesn't matter, but average is holding onto the head of the seq of lengths. The following is a wholly untested, but lazier way to do what I think you want. (use 'clojure.java.io) ;' since 1.2 (defn lazy-avg [coll] (let [f (fn [[v c] val] [(+ v val) (inc c)]) [sum cnt] (reduce f [0 0] coll)] (if (zero? cnt) 0 (/ sum cnt))) (defn fasta-avg [f] (->> (reader f) line-seq (filter #(not (.startsWith % ">"))) (map #(.length %)) lazy-avg))

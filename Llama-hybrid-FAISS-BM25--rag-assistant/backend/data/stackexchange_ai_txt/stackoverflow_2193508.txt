@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2193508
+[parent_id]: 2192529
+[tags]: 
+It's quite kludgy (self referencing, etc; just put a few minutes writing it, nothing really elegant), but it does what you want if you're still interested in using gzip instead of zlib directly. Basically, GzipWrap is a (very limited) file-like object that produces a gzipped file out of a given iterable (e.g., a file-like object, a list of strings, any generator...) Of course, it produces binary so there was no sense in implementing "readline". You should be able to expand it to cover other cases or to be used as an iterable object itself. from gzip import GzipFile class GzipWrap(object): # input is a filelike object that feeds the input def __init__(self, input, filename = None): self.input = input self.buffer = '' self.zipper = GzipFile(filename, mode = 'wb', fileobj = self) def read(self, size=-1): if (size 0 and len(self.buffer) >= size: self.zipper.flush() break else: self.zipper.close() if size

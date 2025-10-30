@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4033894
+[parent_id]: 4033848
+[tags]: 
+Why doesn't it work? - By using Dragging(this) you're calling the function immediately, not running it when bound. Also the first parameter the function gets when run as an event handler is the event object . It should look like this: $(document).ready(function(){ $(".draggable").mousedown(Dragging); function Dragging() { $(this).bind("mousemove", function(){ $(this).css(/*alters the position of the div*/) }); } }); In an event handler this already refers to the element, there's no need to pass it around. You can also shorten it down like this: $((function(){ $(".draggable").mousedown(function () { $(this).mousemove(function(){ $(this).css(/*alters the position of the div*/) }); }); }); Note we're not using .live() here, it's not for this case (and can't be used without a selector), you just want .bind() directly (the .mousemove() shortcut above uses .bind() as well).

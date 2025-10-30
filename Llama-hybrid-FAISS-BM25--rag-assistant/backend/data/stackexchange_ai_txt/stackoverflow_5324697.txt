@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5324697
+[parent_id]: 5324671
+[tags]: 
+No, you don't free it. It's usually static storage within the function, or thread-specific data if you're running in a threaded environment. From the definitive POSIX man page : The return value of inet_ntoa() may point to static data that may be overwritten by subsequent calls to inet_ntoa() . That page also states: The inet_ntoa() function need not be reentrant. A function that is not required to be reentrant is not required to be thread-safe. That means that, even in a threaded environment, it may not be thread-safe at all. In other words, it can be implemented something like: char *inet_ntoa (struct in_addr xyz) { static char buff[50]; // Do something with xyz to populate buff. return buff; }

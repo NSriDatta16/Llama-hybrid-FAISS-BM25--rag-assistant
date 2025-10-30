@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4232751
+[parent_id]: 4232654
+[tags]: 
+Using raw pointers for your arrays like this is more C style than C++. Use vector of vector (indexing is still very efficient). size_t rows(5); size_t columns(15); vector row(columns); vector > matrix(rows, row); matrix[0][0] = 0.1f; Better yet wrap the underlying storage in a Matrix class that implements the required matrix operations, holds and enforces dimensions, ensures matrices are compatible for the multiplication, and so on. class Matrix { public: Matrix(const int _rows, const int _cols) : rows(_rows), cols(_cols) { } Matrix Multiply(const Matrix& rhs); private: vector > storage; size_t rows; size_t cols; }; Matrix Matrix::multiply(const Matrix& rhs) { Matrix result(*this, rhs); // construct matrix of right dimensions // multiply the operands return result; // modern compilers do not copy construct the result } If your matrix demands are complex you could consider a library like Boost.UBlas versus roll your own. This is templated code and supports specializations for sparse, diagonal and other common types of matrix.

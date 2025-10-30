@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 712534
+[parent_id]: 712334
+[tags]: 
+Writing to a const object through a cast that removes the const is undefined behavior - so at the point where you do this: (*pTOCONST) = 7; all bets are off. From the C++ standard 7.1.5.1 (The cv-qualifiers): Except that any class member declared mutable (7.1.1) can be modified, any attempt to modify a const object during its lifetime (3.8) results in undefined behavior. Because of this, the compiler is free to assume that the value of IAMCONST will not change, so it can optimize away the access to the actual storage. In fact, if the address of the const object is never taken, the compiler may eliminate the storage for the object altogether. Also note that (again in 7.1.5.1): A variable of non-volatile const-qualified integral or enumeration type initialized by an integral constant expression can be used in integral constant expressions (5.19). Which means IAMCONST can be used in compile-time constant expressions (ie., to provide a value for an enumeration or the size of an array). What would it even mean to change that at runtime?

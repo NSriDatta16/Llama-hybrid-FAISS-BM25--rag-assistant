@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1304829
+[parent_id]: 1304771
+[tags]: 
+Don't try and second-guess memory management. It's usually cleverer than you ;-) The only thing you can achieve is the first scenario to 'deallocate' the last 1K char * foo = malloc(4096); foo = realloc(foo, 4096-1024); However, even in this case, there is NO GUARANTEE that "foo" will be unchanged. Your entire 4K may be freed, and realloc() may move your memory elsewhere, thus invalidating any pointers to it that you may hold. This is valid for both C and C++ - however, use of malloc() in C++ is a bad code smell, and most folk would expect you to use new() to allocate storage. And memory allocated with new() cannot be realloc()ed - or at least, not in any kind of portable way. STL vectors would be a much better approach in C++

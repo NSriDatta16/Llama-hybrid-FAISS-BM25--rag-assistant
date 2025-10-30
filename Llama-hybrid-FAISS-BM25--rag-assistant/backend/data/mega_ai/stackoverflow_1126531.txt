@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1126531
+[parent_id]: 1126514
+[tags]: 
+Remember, each and every time you do a postback (for any reason, including just to process server events) you are working with a brand new instance of your page class. The old one is dead and gone- it was eligible for disposable as soon as the page was last rendered to the browser. It "works" when you change it to static because static variables aren't associated with any particular instance. However, I suspect you'll be surprised when you start testing that in a wider environment. Since all users of the page for that site are in the same AppDomain, they'll all be setting the same showLabels variable. To fix this, you need to store this variable somewhere that persists for just that user. Options include ViewState, Session, a database, or some other long-term storage mechanism. My preference leans toward the database (perhaps using the ASP.Net Personalization provider with sql server), because users will likely want you to remember this every time they come to your site. How 'bout: ShowLabels = !ShowLabels; imgShowLabels.ImageUrl = string.Format("label-{0}.png", (ShowLabels)?"on":"off");

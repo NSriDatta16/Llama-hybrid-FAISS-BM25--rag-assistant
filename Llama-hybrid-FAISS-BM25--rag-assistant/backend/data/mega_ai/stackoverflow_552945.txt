@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 552945
+[parent_id]: 504402
+[tags]: 
+Here is how I accomplished this in the JSON parser I wrote. STRING @init{StringBuilder lBuf = new StringBuilder();} : '"' ( escaped=ESC {lBuf.append(getText());} | normal=~('"'|'\\'|'\n'|'\r') {lBuf.appendCodePoint(normal);} )* '"' {setText(lBuf.toString());} ; fragment ESC : '\\' ( 'n' {setText("\n");} | 'r' {setText("\r");} | 't' {setText("\t");} | 'b' {setText("\b");} | 'f' {setText("\f");} | '"' {setText("\"");} | '\'' {setText("\'");} | '/' {setText("/");} | '\\' {setText("\\");} | ('u')+ i=HEX_DIGIT j=HEX_DIGIT k=HEX_DIGIT l=HEX_DIGIT {setText(ParserUtil.hexToChar(i.getText(),j.getText(), k.getText(),l.getText()));} ) ;

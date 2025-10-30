@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1565802
+[parent_id]: 1565496
+[tags]: 
+If you do this when compiling in 64-bit mode, your returned pointer will be truncated to 32-bits. EDIT: Sorry for being too brief. Here's an example code fragment for discussion purposes. main() { char * c = (char *)malloc(2) ; printf("%p", c) ; } Suppose that the returned heap pointer is something bigger than what is representable in an int, say 0xAB00000000. If malloc is not prototyped to return a pointer, the int value returned will initially be in some register with all the significant bits set. Now the compiler say, "okay, how do I convert and int to a pointer". That's going to be either a sign extension or zero extension of the low order 32-bits that it has been told malloc "returns" by omitting the prototype. Since int is signed I think the conversion will be sign extension, which will in this case convert the value to zero. With a return value of 0xABF0000000 you'll get a non-zero pointer that will also cause some fun when you try to dereference it.

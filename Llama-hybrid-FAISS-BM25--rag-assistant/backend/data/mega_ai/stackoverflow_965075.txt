@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 965075
+[parent_id]: 
+[tags]: 
+NHibernate Exception: No collection snapshot for orphan delete
+
+I'm having an issue with NHibernate when I try to save an entity that has a collection of other entities. The example, Order and OrderLine. OrderLine is associated to Order with a Bag. Its cascade is set to Delete-Orphan and when I call SaveOrUpdate for an Order I call SaveOrUpdate for its OrderLines. The exception occurs in the Order's SaveOrUpdate, but only if my OrderLine's collection is not null. Before having the cascade set to "delete-orphan" I had "all-delete-orphan" and I thought I could leverage the OrderLine's SaveOrUpdate to NHibernate. The problem is that each OrderLine has a Number that must be unique. If I remove an OrderLine with Number=2 and add a new OrderLine with Number=2 it will throw an exception when I attempt to save again, because NHibernate inserts and updates new registries before deleting the old orphans. Because of this, I thought that saving my Order entity (which had its Number=2 OrderLine removed from the collection) would delete that OrderLine and then, calling SaveOrUpdate for the current OrderLines would save them correctly with no unique key violations. Turns out it didn't, because i get an exception when saving the Order itself. Any help would be very appreciated. Thanks

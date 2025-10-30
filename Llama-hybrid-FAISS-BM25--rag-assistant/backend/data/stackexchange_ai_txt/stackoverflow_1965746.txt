@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1965746
+[parent_id]: 1013721
+[tags]: 
+I'm a bit late, but I just faced the same problem. Try this: use LWP::UserAgent; use LWP::Debug; use SOAP::Lite on_action => sub { "$_[0]$_[1]"; }; import SOAP::Data 'name', 'value'; our $sp_endpoint = 'http://sp.example.com/sites/mysite/_vti_bin/lists.asmx'; our $sp_domain = 'sp.example.com:80'; our $sp_username = 'DOMAIN\username'; our $sp_password = 'xyz'; if ($debug) { LWP::Debug::level('+'); SOAP::Lite->import(+trace => 'all'); } my @ua_args = (keep_alive => 1); my @credentials = ($sp_domain, "", $sp_usernam, $sp_password); my $schema_ua = LWP::UserAgent->new(@ua_args); $schema_ua->credentials(@credentials); $soap = SOAP::Lite->proxy($sp_endpoint, @ua_args, credentials => \@credentials); $soap->schema->useragent($schema_ua); $soap->uri("http://schemas.microsoft.com/sharepoint/soap/");

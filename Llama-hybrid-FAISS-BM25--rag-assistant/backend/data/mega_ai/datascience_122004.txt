@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 122004
+[parent_id]: 
+[tags]: 
+Why is the target output in GPT (Andrej Karpathy's course) contains copies of tokens from the input?
+
+The question is based on Andrej Karpathy lecture on training a toy GPT model on Tiny Shakespeare dataset ( youtube link ). In this model, tokens are single characters with a dictionary of around 60 elements. He creates training and validation datasets as follows def get_batch(...): ... ix = torch.randint(len(data) - block_size, (batch_size,)) x = torch.stack([data[i:i+block_size] for i in ix]) y = torch.stack([data[i+1:i+block_size+1] for i in ix]) ... return x, y Why does he make the target output y a sequence of bytes data[i+1:i+block_size+1] instead of just a single byte data[i+block_size+1] ? We are trying to predict the next single byte (token) after all. It looks to me like gpt is trained to predict N (N is the block_size ) characters of Y from N characters of X , but the first (N-1) characters in Y are just a copy of (N-1) characters in X . Surely the NN can be trained to do that, but isn't it a waste of weights and GPU cycles on essentially just copying (N-1) characters? I ran the script in debugger to confirm that's what indeed happens in training. In the code, after the first breakpoint class GPTLanguageModel(nn.Module): ... def forward(self, idx, targets=None): >>> B, T = idx.shape idx is something like tensor([[ 1, 16, 24, 40, 26, 32, 43, 41],...]) , while target is tensor([[16, 24, 40, 26, 32, 43, 41, 1],...])

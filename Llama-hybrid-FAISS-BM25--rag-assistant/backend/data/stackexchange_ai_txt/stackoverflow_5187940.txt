@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5187940
+[parent_id]: 3799583
+[tags]: 
+There are three ways to achieve what you want, although it is not truly asynchronous communication. 1) Use non-blocking send/recvs. Replace your send/recv calls with irecv/isend and wait. The sender can issue an isend and continue working on the next problem. At some point, you will have to issue a mpi-wait to make sure your previous send was received. Your process2 can issue a recv ahead of time using irecv and continue doing its work. Again, at some point you will call mpi-wait to make sure your irecv was received. this may be a bit cumbersome if I understand you requirement correctly. 2) A Elegant way would be to use One-Sided communication. MPI_Put, Get. 3) Restructure your algorithm in such a way that at certain intervals of time, process 1 & 2 exchange information and state.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3526263
+[parent_id]: 3525884
+[tags]: 
+The code below uses a "tally table" of values to find the first non-numeric character and the last space. KM's solution using PATINDEX is probably more elegant! DECLARE @t TABLE ( c VARCHAR(MAX) ); INSERT INTO @t VALUES('1234abc'); INSERT INTO @t VALUES('1234abcde456757'); INSERT INTO @t VALUES('1234abc Supervisor'); INSERT INTO @t VALUES('1234abc456 Administrator'); WITH Tally AS ( SELECT ROW_NUMBER() OVER (ORDER BY s1.[id]) AS i FROM sys.sysobjects s1 CROSS JOIN sys.sysobjects s2 CROSS JOIN sys.sysobjects s3 ), NumPart AS ( SELECT c, MIN(i) AS firstNonNumber FROM @t CROSS JOIN Tally WHERE i '9' GROUP BY c ), SpacePart AS ( SELECT c, MAX(i) AS spacePos FROM @t t CROSS JOIN Tally WHERE i 0 THEN RIGHT(n.c, LEN(n.c) - s.SpacePos + 1) ELSE '' END FROM @t t INNER JOIN NumPart n ON t.c = n.c LEFT JOIN SpacePart s ON n.c = s.c; SELECT * FROM @t;

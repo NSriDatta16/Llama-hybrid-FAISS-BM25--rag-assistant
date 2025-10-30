@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5576577
+[parent_id]: 5575627
+[tags]: 
+You have two problems with your gcc command-line. First, you're specifying the -S flag, which causes gcc to emit assembly code, rather than object code. Second, you're missing the -c flag, which tells gcc to compile the file to an object file, but not link it. If you just remove -S and change nothing else, you'll end up with an executable program named file1.o and another named file2.o , rather than two object files. Besides those errors, you could simplify your makefile by the use of pattern rules. I suggest you try the following instead: all: exFile exFile: file1.o file2.o gcc -Wall -g -m32 $^ -o $@ %.o: %.c gcc -Wall -g -m32 -c $ Or, as EmployedRussian points out, you can go with something even more minimal that leverages more of the built-in features of GNU make: CC=gcc CFLAGS=-Wall -g -m32 all: exFile exFile: file1.o file2.o $(LINK.c) $^ -o $@ file1.o: file1.h

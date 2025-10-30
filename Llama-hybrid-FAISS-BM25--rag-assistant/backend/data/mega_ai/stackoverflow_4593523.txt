@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4593523
+[parent_id]: 4592993
+[tags]: 
+First thing is that the DCount (and other ‘D’ functions) are generally considered to be a bit of a performance drag. Try replacing it with this quick function. You just pass it a query and it will return the record count Private Function GetRecordCount(strSearch as String) as Long Dim rst As ADODB.Recordset Dim RecCount As Long Set rst = New ADODB.Recordset With rst .ActiveConnection = CodeProject.Connection .CursorType = adOpenForwardOnly .LockType = adLockReadOnly .Source = strSearch .Open Options:=adCmdText if .EOF = true then RecCount=0 else RecCount=.Collect(0) End If .Close End With GetRecordCount = RecCount Set rst = Nothing End Function This uses ADO but could/should use DAO if you are just using access tables but that is another question for another time!

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 88604
+[parent_id]: 73526
+[tags]: 
+A simple Matlab code using adaBoost+SVM, probably you can start from here... N = length(X); % X training labels W = 1/N * ones(N,1); %Weights initialization M = 10; % Number of boosting iterations for m=1:M C = 10; %The cost parameters of the linear SVM, you can... perform a grid search for the optimal value as well %Calculate the error and alpha in adaBoost with cross validation cmd = ['-c ', num2str(C), ' -w ', num2str(W)]; model = svmtrain(X, Y, cmd); [Xout, acc, ~] = svmpredict(X,Y,cmd); err = sum(.5 * W .* acc * N)/sum(W); alpha = log( (1-err)/err ); % update the weight W = W.*exp( - alpha.*Xout.*X ); W = W/norm(W); end In Wang's et al's Boosting Support Vector Machines for Imbalanced Data Sets , they applied a slightly different formula in the weight update, aiming at dealing with class imbalance. Weights for data instances instruction is also shown in Prof. Lin's website. Hope it helps.

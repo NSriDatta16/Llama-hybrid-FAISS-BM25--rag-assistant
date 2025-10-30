@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5424436
+[parent_id]: 5423590
+[tags]: 
+This is a rough idea of how it should work. # define a form class QuestionForm(forms.Form): id = forms.IntegerField(widget=forms.HiddenInput) # make it hidden- i know, not very elegant question = forms.CharField() answer = forms.CharField() # views.py def display(request): quiz = Quiz.objects.get(creator=request.user) # or some definition of quiz questions = quiz.question_set.all().values('id','question') # to get question text # define a formset QuestionFormSet = formset_factory(QuestionForm) # add initial data formset = QuestionFormSet(initial=questions) # should work because the field names are the same as that of form if request.method == 'POST': formset = QuestionFormSet(request.POST) if formset.is_valid(): # associate answers here, note that you have access to the question id, # which is a hidden field in your form

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3646242
+[parent_id]: 3646007
+[tags]: 
+I don't know if my solution is very elegant but I believe it works as you demand. Consider class Test with a property p of type java.awt.Point : @XmlRootElement public class Test { @XmlElement @XmlJavaTypeAdapter(PointAdapter.class) public Point p; } The class PointAdapter is as follows: class PointAdapter extends XmlAdapter { @Override public String marshal(Point v) throws Exception { return String.format("%d;%d", v.x, v.y); } @Override public Point unmarshal(String v) throws Exception { String[] coords = v.split(";"); return new Point(Integer.parseInt(coords[0]), Integer.parseInt(coords[1])); } } If you don't create your Java classes by hand but let them generate by xjc there is a possibility to specify the XmlAdapter in the schema too; either through a seperate binding file that you can specify with the -b option of xjc or embedded in your XSD. Personally I prefer the first solution as this keeps the schema clean. Since it has been a while since I played with this I refer you to the JAXB documentation (look for MyDatatypeConverter ; this should be the most relevant part).

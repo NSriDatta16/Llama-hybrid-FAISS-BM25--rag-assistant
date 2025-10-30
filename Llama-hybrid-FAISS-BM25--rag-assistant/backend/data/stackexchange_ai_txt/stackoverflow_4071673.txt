@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4071673
+[parent_id]: 
+[tags]: 
+"thread-local storage not supported for this target", suitable #ifdef?
+
+Since every compiler has its own version of thread local storage, I ended up creating a macro for it. The only problem now is GCC (with pthreads turned off), which gives me: "thread-local storage not supported for this target" Fair enough, given that pthreads are actually turned off in this case. The question is, is there a generic way of detecting this using some macro e.g. #ifdef __GCC_XXX_NO_THREADS_XXX ? EDIT: See the accepted answer below. Also, here's my lazy solution: $ touch test.c $ gcc -E -dM test.c > out.1 $ gcc -pthread -E -dM test.c > out.2 $ diff out.* 28a29 > #define _REENTRANT 1 This is on Mac OS X. I am not sure if it's portable or anything...

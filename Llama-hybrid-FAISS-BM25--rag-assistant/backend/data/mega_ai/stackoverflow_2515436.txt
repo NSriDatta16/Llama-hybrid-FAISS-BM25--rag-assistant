@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2515436
+[parent_id]: 2514688
+[tags]: 
+I would encourage you to try this for yourself. For example: using System; class Program { static void Main(string[] args) { var t = new Test(); throw new Exception("kaboom"); } } class Test { ~Test() { Console.WriteLine("finalizer called"); } } Run this at the command prompt so you can see the last gasp. First with the throw statement commented out. Like any unhandled exception in Windows, the default exception filter that Windows provides invokes the Windows Error Reporting dialog, displayed by WerFault.exe. If you click "Close program", WerFault will use TerminateProcess() to kill the program. That's a quick end, there is no opportunity to run the finalizer thread, as would happen when a program exits normally. Windows then takes care of cleanup up the shrapnel. It automatically closes any operating system handles your program might have opened but didn't get a chance to close in the finalizer. Files are the trickier problem here, their buffers don't get flushed and you'll easily end up with a partially written file on disk.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4491523
+[parent_id]: 4491260
+[tags]: 
+They talk about the pause that inevitably occurs when compacting the heap. You see, when you allocate and deallocate lots of objects of different sizes as you go, you fragment the heap (much like you fragment your harddrive). When fragmentation becomes too extreme, you have to clean up/defragment/compact the heap by reserving a huge chunk of memory, moving all objects there (without any fragmentation) and use their former locations as a fresh chunk of memory without any objects in it, i.e. without fragmentation. When you do that, you invalidate all references to all objects you moved around. To prevent this, you must prevent that a reference that refers to a pre-compaction object location is used. The by far easiest way to do so is to pause the whole application, move the objects around and then go and update all references. Of course this can incur a significant overhead. So the solution Azul proposes goes like this: They establish a "read barrier" that allows the GC to intercept dereferencing, and this way they can lazily update the references that are actually used.

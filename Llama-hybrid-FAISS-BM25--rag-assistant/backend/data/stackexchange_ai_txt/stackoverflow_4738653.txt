@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4738653
+[parent_id]: 4737753
+[tags]: 
+Try this: > Reduce("+", results) / length(results) DataSet iteration lines loadTime query1 query2 query3 1 1 2 1e+05 158.1000 0.4333333 5.7 3.033333 2 2 2 1e+05 236.8000 0.4000000 3.4 2.633333 3 3 2 5e+04 155.2667 0.3333333 5.9 1.300000 An aggregate solution which also works for the unbalanced case follows. Assume that the ith row of any iteration is for data set i and that we simply average within datasets. Using aggregate is straight forward. The only tricky part is getting the assignment of rows to data sets correct so that it works in the unbalanced case too. That is done by the list(data.set = ...) expression. > it aggregate(all_results, list(data.set = seq_along(it) - match(it, it) + 1), mean) data.set iteration lines loadTime query1 query2 query3 1 1 2 1e+05 158.1000 0.4333333 5.7 3.033333 2 2 2 1e+05 236.8000 0.4000000 3.4 2.633333 3 3 2 5e+04 155.2667 0.3333333 5.9 1.300000

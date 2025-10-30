@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3145221
+[parent_id]: 3144881
+[tags]: 
+Your third argument to addEventListener is true , which makes the listener run during capture phase (see http://www.w3.org/TR/DOM-Level-3-Events/#event-flow for a visualization). This means that it will capture the events intended for its descendants - and for the body that means all elements on the page. In your handlers, you'll have to check if the element they're triggered for is the body itself. I'll give you my very dirty way of doing it. If anyone knows a simpler way that actually compares elements , I'd love to see it. this.dragenter = function() { if ($('body').not(this).length != 0) return; ... functional code ... } This finds the body and removes this from the set of elements found. If the set isn't empty, this wasn't the body, so we don't like this and return. If this is body , the set will be empty and the code executes. You can try with a simple if (this == $('body').get(0)) , but that will probably fail miserably.

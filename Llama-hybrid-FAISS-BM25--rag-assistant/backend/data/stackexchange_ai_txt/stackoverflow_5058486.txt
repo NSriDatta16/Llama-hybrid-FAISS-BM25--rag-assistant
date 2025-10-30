@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5058486
+[parent_id]: 
+[tags]: 
+T-SQL FETCH_STATUS Alternative
+
+I have a stored procedure below. In it is a nested loop. Instead of using FETCH_STATUS I want to use something else to mark my cursor as being finished, so that I can do a nested loop. But it's never picking up @Client_ID in the cursor and I don't know why. ALTER PROCEDURE [dbo].[Import_Agent_Client_Bucket_2010] AS BEGIN -- Loop Through Each Agent, Create a Bucket, Add their Clients to the Bucket DECLARE Agent_Cursor CURSOR FOR SELECT TOP 10 Agent_GUID, Agent_ID FROM realforms_2011.dbo.Agent DECLARE @Agent_GUID uniqueidentifier DECLARE @Agent_ID int OPEN Agent_Cursor; FETCH NEXT FROM Agent_Cursor INTO @Agent_GUID, @Agent_ID; DECLARE @MaxAgentCount int SELECT @MaxAgentCount = COUNT(Agent_ID) FROM Agent DECLARE @AgentCounter int SET @AgentCounter = 0 WHILE (1 = @MaxClientCreateDate) BREAK FETCH NEXT FROM Client_Cursor INTO @Client_ID; END; CLOSE Client_Cursor; DEALLOCATE Client_Cursor; IF (@AgentCounter >= @MaxAgentCount) BREAK FETCH NEXT FROM Agent_Cursor INTO @Agent_GUID, @Agent_ID; END; CLOSE Agent_Cursor; DEALLOCATE Agent_Cursor; ERR_HANDLER: PRINT 'ERROR' END It breaks on @Client_ID

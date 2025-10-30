@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1055026
+[parent_id]: 1054839
+[tags]: 
+You need to normalize the size before sorting. The easiest way to do this would be to use a programming language like Perl or Python, but you have already stated that is not an option (although I find it odd that Perl isn't already on the machine). You can use shell code to normalize that data, but it is a pain in the tuckus: #!/bin/bash ECHO=/bin/echo TR=/usr/bin/tr BC=/usr/bin/bc while read dir size; do bytes=`$ECHO $size | $TR -d "[A-Z]"` case $size in *B) bytes=$bytes ;; *K) bytes=`$ECHO "$bytes * 1024" | $BC` ;; *M) bytes=`$ECHO "$bytes * 1024 * 1024" | $BC` ;; *G) bytes=`$ECHO "$bytes * 1024 * 1024 * 1024" | $BC` ;; *) $ECHO unknown size type ;; esac echo $bytes $dir $size done This shell script accepts a filename as an argument and prints out the a normalized size, the directory name, and the size. This makes it easy to sort. To get the original fields back, you can just cut off the first field: ./mk_sortable.sh file_to_sort | sort -nr | cut -f2- -d" " For those paying attention, yes, I did just write a Schwartzian Transform in shell.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2447936
+[parent_id]: 2447821
+[tags]: 
+As other answers have said, you're not allocing here anything but on stack. But even if you modify code as follows, it will not necessarily change the allocation address. This depends on libc that is used, malloc is usually located there, but some applications (most notably firefox) override it for their use (memory fragmentation issues etc.). #include #include int main() { int i=3; while (i--) { int *j = (int *) malloc(sizeof(int)); printf("%p\n", j); free (j); } return 0; } if you comment out the free(j) you'll note that j's address does change. But depending on your libc the j's address may always change.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2128748
+[parent_id]: 1617191
+[tags]: 
+https://glassfish.dev.java.net/issues/show_bug.cgi?id=10592 From the bug: Ok, found the cause (thanks much for providing the test case!): EjbSniffer was retrieved after scanning the archive: one (or more) of the library jars packaged in the archive contains EJBs with component annotations. So the ejb container was asked to load the module later. The ejb container was not able to find the corresponding metadata because the web.xml is 2.4 version so the meta-data processing skipped the annotation processing (we only process annotations for Java EE 5+ schema versions). After I changed the web.xml to reference 2.5 schema (you can do 3.0 schema as well): http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"> The app deployed successfully. Please give it a try and let me know if it works for you.

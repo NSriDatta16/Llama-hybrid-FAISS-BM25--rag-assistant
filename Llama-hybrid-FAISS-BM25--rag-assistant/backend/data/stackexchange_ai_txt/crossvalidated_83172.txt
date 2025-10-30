@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 83172
+[parent_id]: 
+[tags]: 
+Generate two variables with precise pre-specified correlation
+
+UPDATE: Solution Thanks to Greg Snow for pointing out the empirical = TRUE command in mvrnorm (multivariate random normal stuff)! Here's the explicit code: samples = 200 r = 0.83 library('MASS') data = mvrnorm(n=samples, mu=c(0, 0), Sigma=matrix(c(1, r, r, 1), nrow=2), empirical=TRUE) X = data[, 1] # standard normal (mu=0, sd=1) Y = data[, 2] # standard normal (mu=0, sd=1) # Assess that it works cor(X, Y) # yay, r = 0.83! cor(X*0.01 + 42, Y*3 - 1) # Linear transformations of X and Y won't change r. Original question I want to generate two variables with (pseudo-) random numbers with an exact pearson's r. How do I do that? Python and/or R solutions would be nice! I am able to generate random data that approximates a pre-specified r in python in the following way. I'm not searching for approximations but for data that with an exact pre-specified r, i.e. with r=0.83000 in the example below: samples = 200 r = 0.83 # Generate pearson correlated data with approximately cor(X, Y) = r import numpy as np data = np.random.multivariate_normal([0, 0], [[1, r], [r, 1]], size=samples) X, Y = data[:,0], data[:,1] # That's it! Now let's take a look at the actual correlation: import scipy.stats as stats print 'r=', stats.pearsonr(X, Y)[0] The motivation for knowing r is that I'm testing out (bayesian) statistical models that can infer r from data and they are a lot easier to evaluate when r is well specified.

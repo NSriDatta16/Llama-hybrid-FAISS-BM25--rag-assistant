@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5742645
+[parent_id]: 5742427
+[tags]: 
+It appears that the RandomAccessFile.writeLong() doesn't minimise the number of calls to the OS. The cost increases dramatically by using "rwd" instead of "rw" which should be enough to indicate its not the calls themselves which cost the time. (its the fact the OS is try to commit every write to disk and the disk only spins so fast) { RandomAccessFile raf = new RandomAccessFile("test.dat", "rwd"); int longCount = 10000; long start = System.nanoTime(); for (long l = 0; l >> 56); aux[1] = (byte) (l >>> 48); aux[2] = (byte) (l >>> 40); aux[3] = (byte) (l >>> 32); aux[4] = (byte) (l >>> 24); aux[5] = (byte) (l >>> 16); aux[6] = (byte) (l >>> 8); aux[7] = (byte) l; raf.write(aux); } long time = System.nanoTime() - start; System.out.printf("write byte[8] took %,d us on average%n", time / longCount / 1000); raf.close(); } prints writeLong() took 2,321 us on average write byte[8] took 576 us on average It would appear to me that you have no disk write caching on. Without disk caching, I would expect each commited write to take about 11 ms for a 5400 RPM disk ie 60000 ms/5400 => 11 ms.

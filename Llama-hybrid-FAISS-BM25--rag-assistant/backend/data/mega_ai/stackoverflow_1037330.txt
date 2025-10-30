@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1037330
+[parent_id]: 1035847
+[tags]: 
+I was under impression that altering an array from a fetch request won't make a difference to the actual data in storage. But I was wrong. I tried and it worked! Thanks Peter, and everyone elsewhere! Here's what I replaced my image removal function for currently selected entity having a unique attribute: - (IBAction)removeImage:(id)sender { // Fetch the entity in question. NSManagedObjectContext *context = [self managedObjectContext]; NSManagedObjectModel *model = [self managedObjectModel]; NSEntityDescription *entity = [[model entitiesByName] valueForKey:@"myEntity"]; NSPredicate *predicate = [NSPredicate predicateWithFormat: @"unique_attr == %@", [unique_attr_outlet stringValue]]; NSFetchRequest *fetch = [[NSFetchRequest alloc] init]; [fetch setEntity:entity]; [fetch setPredicate:predicate]; // Load it into NSArray object and remove the binary data attribute. NSArray *contextArray = [context executeFetchRequest:fetch error:nil]; if ([contextArray count] > 0) [[contextArray objectAtIndex:0] setValue:nil forKey:@"myImage"]; [fetch release]; }

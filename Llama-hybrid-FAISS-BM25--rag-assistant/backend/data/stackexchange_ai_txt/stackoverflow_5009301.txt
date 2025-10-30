@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5009301
+[parent_id]: 4999710
+[tags]: 
+The server may be giving you only default results without an HTTP_REFERER. I've seen some setups do this deliberately to discourage scraping. Try this: Before the while loop, add in: my $referer; Right before you have: # grab the result of... Add in: $referer = $url That way you save the previous URL before resetting it to the next one. Then, in your UserAgent header settings, add that in: $ua->default_header(pragma => "no-cache", max-age => 0, Referer => $referer); I won't say for sure that this is the problem, but in my experience that's where I'd start. Another option is to try it outside of LWP. Log all of your URLs into a file and try wget-ting them or lynx --source-ing them from the command line to see if you get different results than LWP gives you. If not, it's certainly somehting the server is doing and the trick is to find a way to work around it, is all... and the solution to the trick is just to more closely duplicate what a regular web browser does (thus, comparing your headers sent to the headers sent by Firebug in Firefox or the Inspector in Safari can help a lot)

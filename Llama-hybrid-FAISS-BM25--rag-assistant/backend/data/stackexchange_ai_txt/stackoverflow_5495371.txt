@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5495371
+[parent_id]: 5483009
+[tags]: 
+I figured out the problem and how to fix it, but it's not pretty. The problem is in the mouse moved event for a QAbstractItemView. After much debugging and searching through the source code I found this in qabstractitemview.cpp: void QAbstractItemView::mouseMoveEvent(QMouseEvent *event) ... if (index.isValid() && (index != d->selectionModel->currentIndex()) && d->isIndexEnabled(index)) d->selectionModel->setCurrentIndex(index, QItemSelectionModel::NoUpdate); } I fixed it by giving my class a QModelIndex member which stores the last location of the top left QModelIndex (set in my overriden version of setSelection like above) and then I overrode the mouseMoveEvent with this: void SampleTable::mouseMoveEvent(QMouseEvent *event) { QTableView::mouseMoveEvent(event); if (state() == ExpandingState || state() == CollapsingState || state() == DraggingState || state() == EditingState) return; if ((event->buttons() & Qt::LeftButton)) { if (m_topLeft.isValid()) { selectionModel()->setCurrentIndex(m_topLeft, QItemSelectionModel::NoUpdate); } } } Not a pretty solution, but it works.

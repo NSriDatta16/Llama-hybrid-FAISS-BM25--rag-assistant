@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3023890
+[parent_id]: 3022600
+[tags]: 
+This code actually does two different things: 1) Get the database version 2) Get the application version The only commonality is the data storage method I would suggest refactoring to have three methods: // Get the entire dataset from the database using the SettingsSelAll command. private DataTable GetVersionData() {...} // Parse a version from the dataset. private Version GetVersion(string versionName, DataTable dataSet) { ... } public Version GetVersion(string versionName) { DataTable table = GetVersionData(); return GetVersion(versionName, table); } This enforces seperation between getting the data and actually doing stuff with it, which is always something to aim for. A form of caching would be recommended to avoid doing the query twice, and I would suggest maybe having method that did both the database and application version calls in one step.

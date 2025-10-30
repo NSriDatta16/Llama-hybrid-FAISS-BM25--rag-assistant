@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1103400
+[parent_id]: 
+[tags]: 
+Best practice: multiple entities to single entity
+
+This is a very hard to explain question and I hope my code extract explains most of it. Let's say you have the following database design: musicstyle relations http://img190.yfrog.com/img190/2080/musicstylerelations.jpg And you want to build one generic interface to modify the musicstyle relations between all three entities. Currently I have created a MusicStyleController which requires the type of Entity it is related to (Member, Event or Band). [AcceptVerbs(HttpVerbs.Post)] public JsonResult DeleteMusicStyle(int id, string type, int typeid) { if (!(Session["MemberLoggedIn"] is Member)) return Json(string.Empty); Member member = (Member)Session["MemberLoggedIn"]; switch (type) { case "member": _memberService.DeleteMusicStyle(member, id); break; case "band": Band band = _bandService.GetBand(typeid); _bandService.DeleteMusicStyle(band, id); break; case "event": Event @event = _eventService.GetEvent(typeid); _bandService.DeleteMusicStyle(@event, id); break; } return SelectedMusicStyles(); } I make myself sick writing such code, but can't find another, more elegant way. Note that this function is called using jquery.post(). The question How would you refactor this code, and would you normalize the database even more? Keep in mind that I'm using the Entity Framework as a data model.

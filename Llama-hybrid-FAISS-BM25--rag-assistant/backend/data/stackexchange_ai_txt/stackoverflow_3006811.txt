@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3006811
+[parent_id]: 3005695
+[tags]: 
+As @Idigas identified, a problem was arrays were being indexed past their bounds. When developing Fortran programs, it is useful to 1) always turn on all compiler debugging options, and especially bounds checking, and 2) put your subroutines and functions into modules and "use" them -- this will allow the compiler to check the consistency of actual and dummy arguments. These two steps will catch a very large fraction of mistakes. The elegant way to handle the array-size problem in modern Fortran is to declare the arrays as allocatable and then set their size at run-time, after receiving the user input, rather than guessing the maximum size when you write the program. If you have some reason to set the size at compile time, and user input might cause it to be exceeded, it is wise to test that input. A sketch of parts of an allocatable solution: real, dimension (:), allocatable :: st, stmean read (*, *) n allocate (st (0:n)) allocate (stmean (0:n))

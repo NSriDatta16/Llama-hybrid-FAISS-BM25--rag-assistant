@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2667206
+[parent_id]: 2666625
+[tags]: 
+You can't insert an automatic variable; you have to allocate memory for the data to store in a dynamic way, i.e. using g_malloc() or equivalent. Then you need to figure out a way to compute a hash value from your data, to help the table be efficient. Using g_direct_hash() is not very good here; it will use the pointer to your data as the hash value. It seems as if you want to use the member a of your structure as the key; what type is this field? If it's integer, you can use g_int_hash() . I think this is more along the lines of what your actual code should look like: GHashtable *table; struct mystruct *my; table = g_hash_table_new_full(g_int_hash, g_int_equal, NULL, g_free); my = g_malloc(sizeof *my); my->a = 1; my->b = "hello"; my->c = 5; my->d = "test"; g_hash_table_insert(table, GINT_TO_POINTER(my->a), my); Note that this assumes that the b and d members are simply character pointers, since no storage is dynamically allocated for the strings.

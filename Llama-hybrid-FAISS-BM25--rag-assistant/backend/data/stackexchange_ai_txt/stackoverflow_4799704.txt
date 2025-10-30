@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4799704
+[parent_id]: 4799506
+[tags]: 
+The approach you outlined is correct, but it turns out ruby is very well suited for doing that kind of approach elegantly. This would do it, for example: stamps = values.map{ |logs| logs.map{ |row| row[:timestamp] } }.flatten.uniq.sort values.map!{ |logs| stamps.map { |ts| logs.select{ |row| row[:timestamp] == ts }.first || { :timestamp => ts, :value => nil } } } The first line gets a list of unique timestamps (maps all the logs into just arrays of timestamps, flattens the arrays into a single array, keeps only uniques, and sorts the timestamps). The second line fills in the gaps (loops through the logs, and for each timestamp in that log use what's there if there's something there, otherwise insert the new nil-valued row).

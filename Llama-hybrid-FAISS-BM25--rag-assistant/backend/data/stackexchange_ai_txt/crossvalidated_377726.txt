@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 377726
+[parent_id]: 377723
+[tags]: 
+Note first of all that your plot does not come from a call to auto.arima() , but from one to arima() . There is a difference. By supplying order=c(0,1,0) to arima() , you tell it to fit a model of the following type: $$ y_t-y_{t-1} = \epsilon_t, $$ or $$ y_t=y_{t-1} + \epsilon_t. $$ That is, you believe that the increments over the last observation follow a normal distribution, $\epsilon_t\sim N(0,\sigma^2)$ . For your point forecast, forecast() will use the expected value for $\epsilon_t$ . Which is zero. So your next forecast is simply the last observation: $$ \hat{y}_t=y_{t-1}. $$ And this is iterated. You end up with a flat line. Try actually fitting using auto.arima() . However, your time series does not exhibit any obvious structure, like trend or seasonality. (Autoregressive or moving average behavior are harder to spot by eye.) In such a situation, a flat line may well be the best forecast: Is it unusual for the MEAN to outperform ARIMA? You may be interested in the excellent free online book Forecasting: Principles and Practice (2nd ed.) by Athanasopoulos & Hyndman .

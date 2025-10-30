@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1284965
+[parent_id]: 1284946
+[tags]: 
+I don't understand what this has to do with templates. You just need to display a link to a view that takes the book id as a parameter, gets the user from the request, and adds a UserFavourite using the two. Update after edit : OK, I understand your issue now. Well, as you've found, this sort of thing is too complex to put into template logic. It really needs to go either in your view, or in a template tag. Probably a template tag is best, as you will no doubt want to use this functionality in multiple views/templates. You will probably want to use an inclusion tag, as that has the benefit of being able to take the context automatically. Something like (untested): @register.inclusion_tag('add_to_favourites.html', takes_context=True) def favourite_links(context): user = context['request'].user books = Book.objects.exclude(userfavourite__in=user) return {'books': books, 'user':user} Now you just need a template fragment which renders a list using the values in books returned by the tag above. And in your main template, just use favourite_links to show the book links.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5702501
+[parent_id]: 
+[tags]: 
+MySql SUM and JOIN
+
+I am trying to count sales made by a list of sales agents, this count is made every few minutes and updates a screen showing a 'sales leader board' which is updates using a Ajax call in the background. I have one table which is created and populated every night containing the agent_id and the total sales for the week and month. I create a second, temporary table, on the fly which counts the sales for the day. I need to combine the two tables to create a current list of sales for all agents in agent_count. Table agent_count; agent_id (varchar), team_id (varchar), name (varchar), day(int), week(int), month(int) Table sales; agent_id (varchar), day(int) I can't figure out how to combine these tables. I think I need to use a join as all agents must be returned - even if they don't appear in the agent_count table. First I make a simple call to get the week and month totals for all agents SELECT agent_id, team_id, name, week, month FROM agent_count; the I create a temporary table of todays sales, and then I count the sales for each agent for the day CREATE TEMPORARY TABLE temp_todays_sales SELECT s.id, s.agent_id FROM sales s WHERE DATEDIFF(s.uploaded, NOW()) = 0 AND s.valid = 1; SELECT tts.agent_id, COUNT(tts.id) as today FROM temp_todays_sales tts GROUP BY tts.agent_id; What is the best/easiet way to combine these to end up with a resultset such as agent_id, team_id, name, day, week, month where week and month also include the daily totals thanks for any help! Christy

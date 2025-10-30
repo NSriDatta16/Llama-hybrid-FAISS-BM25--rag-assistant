@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 503541
+[parent_id]: 
+[tags]: 
+Can Principal Components have unit length?
+
+Consider the following pieces of code and their associated outputs. from sklearn.decomposition import PCA from sklearn.preprocessing import StandardScaler from sklearn.datasets import load_iris iris = load_iris() X = iris.data y = iris.target data = X n_components = data.shape[1] scaler = StandardScaler().fit(data) data = scaler.transform(data) pca = PCA(n_components=n_components, random_state=4) pca = pca.fit(data) pca.singular_values_ pca.components_ array([20.92306556, 11.7091661 , 4.69185798, 1.76273239]) array([[ 0.52106591, -0.26934744, 0.5804131 , 0.56485654], [ 0.37741762, 0.92329566, 0.02449161, 0.06694199], [-0.71956635, 0.24438178, 0.14212637, 0.63427274], [-0.26128628, 0.12350962, 0.80144925, -0.52359713]]) for row in pca.components_: print(np.linalg.norm(row, ord=2)) 0.9999999999999997 0.9999999999999994 1.0 1.0 I noticed that the length (=euclidean norm) of all my principal components is 1. Why is that? I thought that the principal components are the eigenvectors of the covariance matrix and do not necessarily have unit length. Update: Added the singular values. They are indeed all different. However, when applying PCA in order to transform data, they are not used. See relevant code here: https://github.com/scikit-learn/scikit-learn/blob/dfc5e16066b3a3bbf34238cc0f67639d0965f1a8/sklearn/decomposition/_base.py#L129 Only self.components_ are used, which all have length one.

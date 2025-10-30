@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2550109
+[parent_id]: 2550052
+[tags]: 
+As far as I know the map class doesn't have a MapCanvasProjection property. It's not in the specs if they've recently added one. There's a work around you can do by creating a dummy OverlayView which will have a projection: /**@private * In V3 it is quite hard to gain access to Projection and Panes. * This is a helper class * @param {google.maps.Map} map */ function ProjectionHelperOverlay(map) { google.maps.OverlayView.call(this); this.setMap(map); } ProjectionHelperOverlay.prototype = new google.maps.OverlayView(); ProjectionHelperOverlay.prototype.draw = function () { if (!this.ready) { this.ready = true; google.maps.event.trigger(this, 'ready'); } }; Which was taken from this open source code . You can use it like this: var proj = new ProjectionHelperOverlay(map); proj.getProjection().fromContainerPixelToLatLng(new LatLng(x,y));

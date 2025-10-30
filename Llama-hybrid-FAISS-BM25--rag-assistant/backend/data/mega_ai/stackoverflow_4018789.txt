@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4018789
+[parent_id]: 3675538
+[tags]: 
+If you need to sum up to 480 8-bit values then you would technically need 17 bits of intermediate storage. However, if you perform the additions in two stages, ie, top 240 rows then bottom 240 rows, you can do it in 16-bits each. Then you can add the results from the two halves to get the final answer. There is actually a NEON instruction that is suitable for your algorithm called vaddw. It will add a dword vector to a qword vector, with the latter containing elements that are twice as wide as the former. In your case, vaddw.u8 can be used to add 8 pixels to 8 16-bit accumulators. Then, vaddw.u16 can be used to add the two sets of 8 16-bit accumulators into one set of 8 32-bit ones - note that you must use the instruction twice to get both halves. If necessary, you can also convert the values back to 16-bit or 8-bit by using vmovn or vqmovn.

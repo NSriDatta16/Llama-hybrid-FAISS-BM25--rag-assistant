@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1505185
+[parent_id]: 1504470
+[tags]: 
+Starting a trace adds a row into msdb.sys.traces , stopping the trace removes the row. However msdb.sys.traces is a view over an internal table valued function and is not backed by any physical storage. To prove this, set msdb to read_only , start a trace, observer the new row in msdb.sys.traces , stop the trace, remember to turn msdb back read_write . Since a trace can be started in the Profiler event when msdb is read only it is clear that normally there is no write into msdb that can occur. Now before you go and grin to your dba, she is actually right. Profiler traces can pose a significant stress on a live system because the traced events must block until they can generate the trace record. Live, busy, systems may experience blocking on resources of type SQLTRACE_BUFFER_FLUSH , SQLTRACE_LOCK , TRACEWRITE and other. Live traces (profiler) are usualy worse, file traces (sp_trace_create) are better, but still can cause issues. So starting new traces should definetly something that the DBa should be informed about and very carefully considered.

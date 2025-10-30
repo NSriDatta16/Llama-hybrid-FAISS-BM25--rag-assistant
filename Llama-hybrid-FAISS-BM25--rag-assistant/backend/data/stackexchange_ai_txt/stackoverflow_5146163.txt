@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5146163
+[parent_id]: 
+[tags]: 
+Django optimize queries with for loops
+
+Is it possible to optimize Django to not run so many queries on something like this for student in Student.objects.all(): for course in student.course_set.all(): for grade in course.grade_set.filter(student=student): # do stuff The amount of queries is students * courses * grades which can get huge. *edit One possibility after getting some ideas from roseman's blog. for grade in student.grade_set.order_by('course', 'marking_period').select_related(): if grade.marking_period_id in some_report_input: # do stuff That's just a snippet but basically I replaced the for loops with just one for loops for the last item I care about (grades) Grades has references to everything I need (student, course, marking period). It was key to use things like marking_period_id instead of grade.marking_period (which does another query). The trade off is code readability. I wanted to filter out grades and organize based on a criteria. This goes from trivial to convoluted. This is by no means a generic solution. I'm sure there are times when this won't help at all. Please comment if you know a better way. Another example: for student in students: print student for department in departments: print department failed_grades = Grade.objects.filter(course__department=department,course__courseenrollment__user=student,grade__lte=70) for failed_grade in failed_grades: print grade.course print grade.grade A student gets enrolled in a course. A course has a department.

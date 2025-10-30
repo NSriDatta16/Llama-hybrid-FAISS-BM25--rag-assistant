@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3623019
+[parent_id]: 3622832
+[tags]: 
+It appears that Code Analysis considers it possible for an exception to occur during the Dispose() method. Were that to be the case, you would enter the finally block with an already-disposed-albeit-non-null reference to begin . Note that I would only prefer this approach to @Dan's if you plan to wrap the call to begin.Dispose() in additional error trapping and handling. IMO, Dan's solution is more elegant. Here is a try-finally approach that removes the warning: MyObject begin = GetFirst(); MyObject next = null; while (begin != null) { try { next = begin.Next(); // do something with begin } finally { begin.Dispose(); begin = next; } }

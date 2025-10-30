@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 288873
+[parent_id]: 288871
+[tags]: 
+When you convolve a layer of size 128x128x3 by 3 kernels, you actually end up with a 128x128x3 tensor. This is because each kernel is a 3x3x3 tensor, so you don't end up with exponential growth you described. Each kernel compresses all 3 of the "feature maps" in the last layer into one value. If you only had one kernel, a 128x128x3 input would result in a 128x128x1 output. Mathematically, if single channel convolution was $$Y_{i,j} = \sum_{\delta_i, \delta_j} X_{i+\delta_i, j+\delta_j} \cdot K_{\delta_i, \delta_j} $$ Then with multiple channels and one kernel we have $$Y_{i,j} = \sum_{\delta_i, \delta_j,k} X_{i+\delta_i, j+\delta_j,k} \cdot K_{\delta_i, \delta_j,k} $$ Second, yes, flattening the tensor at the end of the convolutional layers into a vector which is input into fully connected layers is standard practice. Alternatively, you can also average across each feature map, so that a 8x8x1024 tensor is transformed into a 1024 dimension vector.

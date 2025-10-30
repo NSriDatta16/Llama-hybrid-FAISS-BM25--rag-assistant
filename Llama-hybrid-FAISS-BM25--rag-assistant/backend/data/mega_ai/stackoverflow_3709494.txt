@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3709494
+[parent_id]: 
+[tags]: 
+How would you model this in MongoDB?
+
+There are products with a name and price. Users log about products they have bought. # option 1: embed logs product = { id, name, price } user = { id, name, logs : [{ product_id_1, quantity, datetime, comment }, { product_id_2, quantity, datetime, comment }, ... , { product_id_n, quantity, datetime, comment }] } I like this. But if product ids are 12 bytes long, quantity and datetime are 32-bit (4 bytes) integers and comments 100 bytes on average, then the size of one log is 12+4+4+100 = 120 bytes. The maximum size of a document is 4MB, so maximum amount of logs per user is 4MB/120bytes = 33,333. If assumed that a user logs 10 purchases per day, then the 4MB limit is reached in 33,333/10 = 3,333 days ~ 9 years. Well, 9 years is probably fine, but what if we needed to store even more data? What if the user logs 100 purchases per day? What is the other option here? Do I have to normalize this fully? # option 2: normalized product = { id, name, price } log = { id, user_id, product_id, quantity, datetime, comment } user = { id, name } Meh. We are back to relational.

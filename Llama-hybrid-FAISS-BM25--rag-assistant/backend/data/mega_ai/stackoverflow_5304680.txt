@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5304680
+[parent_id]: 
+[tags]: 
+What's the difference between these two schemes code (macro)
+
+I try to understand by playing around with some code I found in MIT-Scheme documentation . one piece of code about sc-macro-transformer: (define-syntax let1 (sc-macro-transformer (lambda (form env) (let ((id (cadr form)) (init (caddr form)) (exp (cadddr form))) `((lambda (,id) ,(make-syntactic-closure env (list id) exp)) ,(make-syntactic-closure env '() init)))))) ;(let1 a 1 (+ a 1)) ;Value: 2 but I wonder if can I take the part of " make-syntactic-closure " from `lambda ... to the body of "let.." and the program becomes : (define-syntax let1-error (sc-macro-transformer (lambda (form env) (let ((id (cadr form)) (init (make-syntactic-closure env '() (caddr form))) (exp (make-syntactic-closure env '(id) (cadddr form)))) ;; (pp `(id:,id)) ;; (pp `(init:, init)) ;; (pp `(exp:, exp)) `((lambda (,id) ,exp) ,init))))) ;(let1-error a 1 (+ a 1)) ;Unbound variable: a Can someone told me why that these two program is different?

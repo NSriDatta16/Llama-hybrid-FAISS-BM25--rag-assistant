@@ -1,0 +1,281 @@
+In combinatorics, the Eulerian number  is the number of permutations of the numbers 1 to  in which exactly  elements are greater than the previous element (permutations with  "ascents"). 
+
+Leonhard Euler investigated them and associated polynomials in his 1755 book Institutiones calculi differentialis.
+
+Other notations for  are  and .
+
+Definition
+The Eulerian polynomials are defined by the exponential generating function
+
+The Eulerian numbers may be defined as the coefficients of the Eulerian polynomials:
+
+An explicit formula for  is
+
+Basic properties
+ For fixed  there is a single permutation which has 0 ascents: . Indeed, as  for all , . This formally includes the empty collection of numbers, . And so .
+ For  the explicit formula implies , a sequence in  that reads .
+ Fully reversing a permutation with  ascents creates another permutation in which there are  ascents. Therefore . So there is also a single permutation which has  ascents, namely the rising permutation . So also  equals .
+ A lavish upper bound is . Between the bounds just discussed, the value exceeds . 
+ For , the values are formally zero, meaning many sums over  can be written with an upper index only up to . It also means that the polynomials  are really of degree  for .
+
+A tabulation of the numbers in a triangular array is called the Euler triangle or Euler's triangle. It shares some common characteristics with Pascal's triangle. Values of   for  are:
+
+{| class="wikitable" style="text-align:right;"
+|-
+! 
+! width="50" | 0
+! width="50" | 1
+! width="50" | 2
+! width="50" | 3
+! width="50" | 4
+! width="50" | 5
+! width="50" | 6
+! width="50" | 7
+! width="50" | 8
+|-
+! 0
+| 1 || || || || || || || ||
+|-
+! 1
+| 1 || || || || || || || ||
+|-
+! 2
+| 1 || 1 || || || || || || ||
+|-
+! 3
+| 1 || 4 || 1 || || || || || ||
+|-
+! 4
+| 1 || 11 || 11 || 1 || || || || ||
+|-
+! 5
+| 1 || 26 || 66 || 26 || 1 || || || ||
+|-
+! 6
+| 1 || 57 || 302 || 302 || 57 || 1 || || ||
+|-
+! 7
+| 1 || 120 || 1191 || 2416 || 1191 || 120 || 1 || ||
+|-
+! 8
+| 1 || 247 || 4293 || 15619 || 15619 || 4293 || 247 || 1 ||
+|-
+! 9
+| 1 || 502 || 14608 || 88234 || 156190 || 88234 || 14608 || 502 || 1
+|}
+
+Computation
+For larger values of ,  can also be calculated using the recursive formula
+
+This formula can be motivated from the combinatorial definition and thus serves as a natural starting point for the theory.
+
+For small values of  and , the values of  can be calculated by hand. For example
+
+{| class="wikitable"
+|-
+! n! k! Permutations
+! A(n, k)
+|-
+| 1
+| 0
+| (1)
+| A(1,0) = 1
+|-
+|rowspan="2" | 2
+| 0
+| (2, 1)
+| A(2,0) = 1
+|-
+| 1
+| (1, 2)
+| A(2,1) = 1
+|-
+|rowspan="3" | 3
+| 0
+| (3, 2, 1)
+| A(3,0) = 1
+|-
+| 1
+| (1, 3, 2), (2, 1, 3), (2, 3, 1) and (3, 1, 2)
+| A(3,1) = 4
+|-
+| 2
+| (1, 2, 3)
+| A(3,2) = 1
+|}
+
+Applying the recurrence to one example, we may find
+
+Likewise, the Eulerian polynomials can be computed by the recurrence
+
+The second formula can be cast into an inductive form, 
+
+The following is a python implementation.
+import math  # python 3.8
+
+def Ank(n, k) -> int:
+    """
+    Compute A(n, k) using the explicit formula.
+    """
+    def summand(i):
+        return (-1) ** i * math.comb(n + 1, i) * (k + 1 - i) ** n
+    return sum(map(summand, range(k + 1)))
+
+def Anks(n) -> list:
+    """
+    Coefficient list for the n'th polynomial A_n(t).
+    """
+    return [1] if n == 0 else [Ank(n, k) for k in range(n)]
+
+def eval_polynomial(coeffs, t):
+    """
+    Polynomial evaluation function.
+    """
+    return sum(c * t ** k for k, c in enumerate(coeffs))
+
+def An(n, t: float) -> float:
+    """
+    Polynomial A_n(t).
+    """
+    return eval_polynomial(Anks(n), t)
+
+# Print the first few polynomials
+sup = lambda n: str(n).translate(str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹"))
+sub = lambda n: str(n).translate(str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉"))
+
+NUM = 8
+for n in range(NUM):
+    print(f"A{sub(n)}(t) = " + " + ".join(f"{ank} t{sup(k)}" for k, ank in enumerate(Anks(n))))
+    # E.g. A₇(t) = 1 t⁰ + 120 t¹ + 1191 t² + 2416 t³ + 1191 t⁴ + 120 t⁵ + 1 t⁶
+
+    # Sanity checks
+    assert Ank(n, 1) == 2 ** n - (n + 1)
+    assert n == 0 or An(n, 1) == math.factorial(n)  # Cardinality check
+    alternating_sum: float = sum((-1)**k * Ank(n, k) / math.comb(n - 1, k) for k in range(n))
+    assert n < 2 or abs(alternating_sum) < 1e-13
+
+Identities
+For any property partitioning a finite set into finitely many smaller sets, the sum of the cardinalities of the smaller sets equals the cardinality of the bigger set. The Eulerian numbers partition the permutations of  elements, so their sum equals the factorial . I.e.
+
+as well as . To avoid conflict with the empty sum convention, it is convenient to simply state the theorems for  only.
+
+Much more generally, for a fixed function  integrable on the interval 
+
+Worpitzky's identity expresses  as the linear combination of Eulerian numbers with binomial coefficients:
+
+From it, it follows that 
+
+Formulas involving alternating sums
+The alternating sum of the Eulerian numbers for a fixed value of  is related to the Bernoulli number 
+
+Furthermore,
+
+and
+
+Formulas involving the polynomials
+The symmetry property implies:
+
+The Eulerian numbers are involved in the generating function for the sequence of nth powers:
+
+An explicit expression for Eulerian polynomials is 
+
+Where  is the Stirling numbers of the second kind.
+Eulerian numbers of the second order
+The permutations of the multiset  which have the property that for each k, all the numbers appearing between the two occurrences of k in the permutation are greater than k are counted by the double factorial number . 
+The Eulerian number of the second order, denoted , counts the number of all such  permutations  that have exactly m ascents. For instance, for n = 3 there are 15 such permutations, 1 with no ascents, 8 with a single ascent, and 6 with two ascents:
+
+ 332211, 
+ 221133, 221331, 223311, 233211, 113322, 133221, 331122, 331221,  
+ 112233, 122133, 112332, 123321, 133122, 122331. 
+
+The Eulerian numbers of the second order satisfy the recurrence relation, that follows directly from the above definition:
+
+with initial condition for n = 0, expressed in Iverson bracket notation:
+
+Correspondingly, the Eulerian polynomial of second order, here denoted Pn (no standard notation exists for them) are
+
+and the above recurrence relations are translated into a recurrence relation for the sequence Pn(x):
+
+with initial condition . The latter recurrence may be written in a somewhat more compact form by means of an integrating factor:
+
+so that the rational function
+
+satisfies a simple autonomous recurrence:
+
+Whence one obtains the Eulerian polynomials of second order as , and the Eulerian numbers of second order as their coefficients.
+
+The following table displays the first few second-order Eulerian numbers:
+
+{| class="wikitable" style="text-align:right;"
+|-
+! 
+! width="50" | 0
+! width="50" | 1
+! width="50" | 2
+! width="50" | 3
+! width="50" | 4
+! width="50" | 5
+! width="50" | 6
+! width="50" | 7
+! width="50" | 8
+|-
+!0
+|1
+|
+|
+|
+|
+|
+|
+|
+|
+|-
+! 1
+| 1 || || || || || || || ||
+|-
+! 2
+| 1 || 2 || || || || || || ||
+|-
+! 3
+| 1 || 8 || 6 || || || || || ||
+|-
+! 4
+| 1 || 22 || 58 || 24 || || || || ||
+|-
+! 5
+| 1 || 52 || 328 || 444 || 120 || || || ||
+|-
+! 6
+| 1 || 114 || 1452 || 4400 || 3708 || 720 || || ||
+|-
+! 7
+| 1 || 240 || 5610 || 32120 || 58140 || 33984 || 5040 || ||
+|-
+! 8
+| 1 || 494 || 19950 || 195800 || 644020 || 785304 || 341136 || 40320 ||
+|-
+! 9
+| 1 || 1004 || 67260 || 1062500 || 5765500 || 12440064 || 11026296 || 3733920 || 362880
+|}
+The sum of the n-th row, which is also the value , is .
+
+Indexing the second-order Eulerian numbers comes in three flavors: 
+  following Riordan and Comtet, 
+  following Graham, Knuth, and Patashnik,
+ , extending the definition of Gessel and Stanley.
+
+References
+ Eulerus, Leonardus [Leonhard Euler] (1755). Institutiones calculi differentialis cum eius usu in analysi finitorum ac doctrina serierum [Foundations of differential calculus, with applications to finite analysis and series]''. Academia imperialis scientiarum Petropolitana; Berolini: Officina Michaelis.
+
+Citations
+
+External links
+Eulerian Polynomials at OEIS Wiki. 
+ 
+
+Euler-matrix (generalized rowindexes, divergent summation)
+
+Enumerative combinatorics
+Factorial and binomial topics
+Integer sequences
+Triangles of numbers

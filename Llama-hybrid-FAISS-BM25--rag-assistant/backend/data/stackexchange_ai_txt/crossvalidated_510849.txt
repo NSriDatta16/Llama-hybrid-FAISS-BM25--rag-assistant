@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 510849
+[parent_id]: 
+[tags]: 
+patsy dmatrices() and statsmodels Logit() - the reference group and the intercept?
+
+I want to understand what's going on with a categorical variable reference group generated using dmatrices() , when building logistic regression models with sm.Logit() . In my toy model I'm predicting the type of transmission ( am ) from fuel consumption ( mpg ) and the engine type ( vs ) using the mtcars data set. am and vs are categorical variables (0 or 1), and mpg is a continuous variable. When using dmatrices() and not removing the intercept from dmatrices() , I get the following output for the model (model1): When using dmatrices() and removing the intercept from dmatrices() , I get the following output for the model (model2): The problem is that I don't understand why C(vs)[0] is in model2. I thought it was the reference group and therefore should have been dropped like in model1? Thanks for any help! # libraries import pandas as pd from patsy import dmatrices import statsmodels.api as sm # dataset mtcars = sm.datasets.get_rdataset("mtcars", "datasets", cache=True).data df = pd.DataFrame(mtcars) # model 1 (with intercept) Y1, x1 = dmatrices('am ~ mpg + C(vs)', df, return_type = 'dataframe') mod1 = sm.Logit(Y1, x1).fit() mod1.summary() # model 2 (without intercept) Y2, x2 = dmatrices('am ~ 0 + mpg + C(vs)', df, return_type = 'dataframe') mod2 = sm.Logit(Y2, x2).fit() mod2.summary()

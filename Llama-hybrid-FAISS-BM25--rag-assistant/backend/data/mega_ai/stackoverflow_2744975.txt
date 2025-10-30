@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2744975
+[parent_id]: 
+[tags]: 
+How do I deal with different requests that map to the same response?
+
+I'm designing a Web service. The request is idempotent, so I chose the GET method. The response is relatively expensive to calculate and not small, so I want to get caching (on the protocol level) right. (Don't worry about memoisation at my part, I have that already covered; my question here is actually also paying attention to the Web as a whole.) There's only one mandatory parameter and a number of optional parameter with default values if missing. For example, the following two map to the same representation of the response. (If this is a dumb way to go about it the interface, propose something better.) GET /service?mandatory_parameter=some_data HTTP/1.1 GET /service?mandatory_parameter=some_data;optional_parameter=default1;another_optional_parameter=default2;yet_another_optional_parameter=default3 HTTP/1.1 However, I imagine clients do not know this and would treat them separate and therefore waste cache storage. What should I do to avoid violating the golden rule of caching ? Make up a canonical form, document it (e.g. all parameters are required after all and need to be sorted in a specific order) and return a client error unless the required form is met? Instead of an error, redirect permanently to the canonical form of a request? Or is it enough to not mind how the request looks like, and just respond with the same ETag for same responses?

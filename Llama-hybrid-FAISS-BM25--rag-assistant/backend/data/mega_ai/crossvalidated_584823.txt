@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 584823
+[parent_id]: 
+[tags]: 
+ALS vs SGD in parallelization
+
+So given the standard objective in matrix factorization for collaborative filtering of minimizing: $$ L = \sum_{u,i \in S} (r_{ui}-q_i^Tp_u)^2 + \lambda(\sum_i||q_i^2||+\sum_u||p_u^2||) $$ , where $r_{ui}$ is the rating by user $u$ on movie $i$ , $p_u$ is the $u$ th row of user embedding matrix $P$ and $q_i$ is the $i$ th row of the movie embedding matrix $Q$ . The two most common way to solve are Alternating Least Squares and Stochastic Gradient Descent . ALS does so by alternating between holding $p_u$ or $q_i$ fixed and solves the least-squares problem: $$ q_i=R_uP(P^TP+\lambda I)^{-1} $$ $$ p_u=R_iQ(Q^TQ+\lambda I)^{-1} $$ SGD does so by iterating through each training case and update accordingly: $$q_i = q_i + \gamma(e_{ui}*p_u - \lambda*q_i)$$ $$p_u = p_u + \gamma(e_{ui}*q_i - \lambda*p_u)$$ $$e_{ui} = r_{ui}-q_i^Tp_u$$ A lot of the literatures I came across, such as this and this , say that ALS can be parallelized but implies SGD has difficulty doing so. I'm quite confused by this. It seems from the formula I could easily compute, for example, $q_1$ , $q_2$ , $q_3$ in parallel using the SGD formula. So what's the reason for SGD being difficult to parallelize here ? Literatures also mention that ALS has cubic time complexity in target rank? Could someone also explain this?

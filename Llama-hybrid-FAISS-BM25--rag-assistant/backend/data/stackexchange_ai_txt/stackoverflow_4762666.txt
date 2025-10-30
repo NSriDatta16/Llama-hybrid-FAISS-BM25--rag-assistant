@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4762666
+[parent_id]: 2705008
+[tags]: 
+It might at that point be too late to change the response headers. They will simply be ignored. You can verify the presence of response headers in a HTTP debugger tool like Firebug . In the JSP, you need to ensure that they are set before the response is committed (i.e. all headers are already sent; you cannot send another headers afterwards). I.e. ensure that they are in the very top of the JSP file and that no template text is before that piece of scriptlet . Template text may cause a commit of the response. The normal practice, however, is to use a Filter for this. Implement javax.servlet.Filter wherein doFilter() method look like follows: HttpServletResponse httpResponse = (HttpServletResponse) response; httpResponse.setHeader("Cache-Control", "no-cache", "no-store", "must-revalidate"); // HTTP 1.1 httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0 httpResponse.setDateHeader("Expires", 0); // Proxies. chain.doFilter(request, response); Map this in web.xml on an url-pattern of *.jsp and it ought to work. See also: Making sure a webpage is not cached, across all browsers

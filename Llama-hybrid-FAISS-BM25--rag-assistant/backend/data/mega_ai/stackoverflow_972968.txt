@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 972968
+[parent_id]: 972950
+[tags]: 
+memcached will be faster for simple uses, hands down -- connection setup is so much cheaper on memcached, since there's no auth, buffer allocation, etc. Also, memcached is designed to easily distribute keys between multiple servers. However, memcached is only a simple key/value store. If you need to do anything more complex to your data (even something like SELECT * WHERE x > 5), a HEAP table is much more powerful. Robert Munteanu brings up a good point though. Your cache hierarchy should be: Globals (local to the request/process) APC (local to the server) memcache (global) If you don't need to propagate global changes to this data, then storing it in APC makes sense. If you need to access it several times during script execution, you should also cache it in globals in your script.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4827674
+[parent_id]: 
+[tags]: 
+new[] expression does not respect alignment in Microsoft VC++
+
+If new[] expression is used to create an array of objects having destructors, the objects in the array may not be properly alligned #include #include #pragma pack(8) struct A{ int64_t i; char dummy; ~A(){} }; int main(){ A* pa= new A[2]; printf("sizeof(A)= %d, pointer= %p", sizeof(A), pa); } (I build 32-bit target with VC++ 2010 express) The output (on my computer) is: sizeof(A)= 16 pointer= 00344f4c (sizeof(A)= 16 shows that compiler undrstand the alignment requirements for A and the struct is padded with 7 bytes [ edited: __alignof(A) also returns 8 ] ) I understand why it happens: new[] needs to store array length and it use for this purpose first 4 bytes of allocated memory, then it allocates the array itself without proper padding. From a practical viewpoint such a behaviour is definitely poor, but is it standard compliant or not?

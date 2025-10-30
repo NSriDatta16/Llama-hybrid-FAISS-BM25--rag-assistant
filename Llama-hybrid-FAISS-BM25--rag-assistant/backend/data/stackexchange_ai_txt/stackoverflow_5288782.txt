@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5288782
+[parent_id]: 5288375
+[tags]: 
+That free sure does look constant time to me. Perhaps the author of the post was referring to ordered_free, which has this implementation: void ordered_free(void * const chunk) { // This (slower) implementation of 'free' places the memory // back in the list in its proper order. // Find where "chunk" goes in the free list void * const loc = find_prev(chunk); // Place either at beginning or in middle/end if (loc == 0) (free)(chunk); else { nextof(chunk) = nextof(loc); nextof(loc) = chunk; } } Where find_prev is as follows template void * simple_segregated_storage ::find_prev(void * const ptr) { // Handle border case if (first == 0 || std::greater ()(first, ptr)) return 0; void * iter = first; while (true) { // if we're about to hit the end or // if we've found where "ptr" goes if (nextof(iter) == 0 || std::greater ()(nextof(iter), ptr)) return iter; iter = nextof(iter); } }

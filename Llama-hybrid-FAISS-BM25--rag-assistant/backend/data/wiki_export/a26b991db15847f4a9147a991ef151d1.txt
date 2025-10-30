@@ -1,0 +1,52 @@
+The FLAGS register is the status register that contains the current state of an x86 CPU. The size and meanings of the flag bits are architecture dependent. It usually reflects the result of arithmetic operations as well as information about restrictions placed on the CPU operation at the current time. Some of those restrictions may include preventing some interrupts from triggering, prohibition of execution of a class of "privileged" instructions. Additional status flags may bypass memory mapping and define what action the CPU should take on arithmetic overflow.
+
+The carry, parity, auxiliary carry (or half carry), zero and sign flags are included in many architectures.
+
+In the i286 architecture, the register is 16 bits wide. Its successors, the EFLAGS and RFLAGS registers, are 32 bits and 64 bits wide, respectively. The wider registers retain compatibility with their smaller predecessors.
+
+FLAGS
+
+Note: The mask column in the table is the AND bitmask (as hexadecimal value) to query the flag(s) within FLAGS register value.
+
+Usage
+All FLAGS registers contain the condition codes, flag bits that let the results of one machine-language instruction affect another instruction. Arithmetic and logical instructions set some or all of the flags, and conditional jump instructions take variable action based on the value of certain flags. For example, jz (Jump if Zero), jc (Jump if Carry), and jo (Jump if Overflow) depend on specific flags. Other conditional jumps test combinations of several flags.
+
+FLAGS registers can be moved from or to the stack. This is part of the job of saving and restoring CPU context, against a routine such as an interrupt service routine whose changes to registers should not be seen by the calling code. Here are the relevant instructions:
+The PUSHF and POPF instructions transfer the 16-bit FLAGS register.
+PUSHFD/POPFD (introduced with the i386 architecture) transfer the 32-bit double register EFLAGS.
+PUSHFQ/POPFQ (introduced with the x64 architecture) transfer the 64-bit quadword register RFLAGS.
+In 64-bit mode, PUSHF/POPF and PUSHFQ/POPFQ are available but PUSHFD/POPFD are not.
+
+The lower 8 bits of the FLAGS register is also open to direct load/store manipulation by SAHF and LAHF (load/store AH into flags).
+
+Example
+The ability to push and pop FLAGS registers lets a program manipulate information in the FLAGS in ways for which machine-language instructions do not exist. For example, the cld and std instructions clear and set the direction flag (DF), respectively; but there is no instruction to complement DF. This can be achieved with the following assembly code:
+
+               ; This is 8086 code, with 16-bit registers pushed onto the stack,
+               ; and the flags register is only 16 bits with this CPU.
+pushf          ; Use the stack to transfer the FLAGS
+pop   ax       ; … into the AX register
+push  ax       ; and copy them back onto the stack for storage
+xor   ax, 400h ; Toggle (invert, ‘complement’) the DF only; other bits are unchanged
+push  ax       ; Use the stack again to move the modified value
+popf           ; … into the FLAGS register
+; Insert here the code that required the DF flag to be complemented
+popf          ; Restore the original value of the FLAGS
+
+By manipulating the FLAGS register, a program can determine the model of the installed processor. For example, the alignment flag can only be changed on the 486 and above. If the program tries to modify this flag and senses that the modification did not persist, the processor is earlier than the 486.
+
+Starting with the Intel Pentium, the CPUID instruction reports the processor model. However, the above method remains useful to distinguish between earlier models.
+
+See also
+ Bit field
+ Control register
+ CPU flag (x86)
+ Program status word
+ Status register
+ x86 assembly language
+ x86 instruction listings
+
+References
+
+Digital registers
+X86 architecture

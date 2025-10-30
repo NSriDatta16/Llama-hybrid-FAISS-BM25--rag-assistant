@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3034998
+[parent_id]: 3026875
+[tags]: 
+After doing some experimentation, I've discovered what my issue was. I was using a for loop to draw single-pixel lines across a view, each with a hue value greater than the previous one. I was doing this to create a color spectrum to be used for a color picker. My issue arose because I was using CGContext paths, not rects, to do the drawing. Paths, by default, "straddle" the created path with pixels. Because I was setting the width to one, CoreGraphics was forced to average between pixels, creating a desaturated effect. Setting the width to two set the saturation correctly, but the gradient of the spectrum was no longer smooth. My fix for this issue was to use rects instead of paths. They did not blend between pixels, and the saturation issue was fixed.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3667750
+[parent_id]: 3667368
+[tags]: 
+As soon as the other dll has re-subclassed your window you are in for a world of pain. There is nothing you can do and you are entirely at the mercy of their buggy code :- because they re-subclassed the window, their old-proc is now you, and your old-proc is them. The only way you can sanely get out of this situation would be to set a flag to detect recursion: // declare a variable with static storage. // Should make it thread local if theres any chance you are // subclassing multiple thread's windows __declspec(thread) int gRecursive=0; // in your windowproc, inhibit the recursive call. if(!gRecursive++){ ret = CallWndProc(OldProc,...); gRecursive--; } return ret;

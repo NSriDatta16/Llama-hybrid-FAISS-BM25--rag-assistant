@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2074231
+[parent_id]: 2066321
+[tags]: 
+1) You don't need to instantiate m_version as null in this context. You usually only need to do this when declaring a local variable, to avoid the 'Use of unassigned local variable [name] ' compile error. So private string m_version; will suffice. 2) For checking null and empty values, what you have with String.IsNullOrEmpty() is fine. If you want to go check your property returns strings in the correct format, you can use Regex.IsMatch() to ensure the property only ever returns strings in version number-format. [DefaultValue("0.0.0.0")] public string AgentVersion { get { return System.Text.RegularExpressions.Regex.IsMatch(m_version ?? String.Empty, @"\A\d+[.]\d+[.]\d+[.]\d+\z") ? m_version : "0.0.0.0"; } } private string m_version; My regular expressions are a bit rusty, so someone can probably improve on what I have here, but it's the general gist of what you need.

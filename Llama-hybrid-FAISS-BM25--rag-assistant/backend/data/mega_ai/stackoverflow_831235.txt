@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 831235
+[parent_id]: 830613
+[tags]: 
+The bug is in the function addNumbers. When you add a node to store the sum you pass a pointer to the variable currN1N2Sum which is a local variable (stored on the stack). When the addNumbers function terminates, the storage of the local variable is set free. The value found at that location will remain unchanged and thus apparently valid as long as the storage is not reused. This is why you had the impression the addNumbers function was correct. When calling the printNumber function the storage is overwritten and you find a different value in there. This explain your bug. There is another problem with addNumbers. When you will try to add two digit numbers, the content of the currN1N2Sum will be overwritten by a new value. What you should do is allocate a buffer (malloc) and store the value contained into currN1N2Sum into it. Pass the pointer to the buffer into the new node. BTW: you may change (*lst).head in lst->head. It will make your code more readable.

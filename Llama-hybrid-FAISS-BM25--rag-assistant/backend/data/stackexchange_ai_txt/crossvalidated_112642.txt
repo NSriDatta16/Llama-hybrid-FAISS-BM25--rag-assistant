@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 112642
+[parent_id]: 
+[tags]: 
+Mean squared error / Max error squared
+
+I'm use this metric for variation that is similar to CV, but it is guaranteed to be on a 0 to 2 scale for positive numbers, where 2 is "all over the place" and 0 is "perfectly even". Since its dimensionless and bounded, it's useful to me in ways that CV really isn't. Does this have a standard name? It's the mean squared error divided by the maximum error squared. I use it all the time, but don't know if it's called anything: function(v) {(sum((v-mean(v))**2))/((sum(v)-mean(v))**2)} And a skewed version that deals with low-counts: function(v) {(min(2,(max(0,sum(floor(abs(v-mean(v)))**2)-2*sum(v)))/max(1,((sum(v)-mean(v))**2-2*sum(v)))))} It only reports things as "out of whack" when they are out of sync/not balanced enough. It works perfectly. When the data are fairly uniform, you get zero. When there's a spike of some kind (size of the spike relative to length of vector), you get a larger value. I need to explain why I'm using it. I know that it works, empirically, in my situation, because we get better results than using things like maximum likelihood, or a cutoff with CV alone. Essentially it signals outliers, which are nicely removed. But is there a better way of describing these functions for dimensionless coverage summary statistics? IE: Is there a better function to use to detect a spike proportional to the size of the vector?

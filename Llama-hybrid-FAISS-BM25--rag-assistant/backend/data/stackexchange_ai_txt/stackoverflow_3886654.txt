@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3886654
+[parent_id]: 3886535
+[tags]: 
+Generally speaking, APIs like this one return autorelease d instances. That would mean that when the Autorelease pool drains, the object will be destructed. If you don't manage the Autorelease pool yourself, then it should be destructed when you next return to the message queue (assuming you're on the UI thread). Internally, the OS pushes and pops an autorelease pool around each event that calls into your code. So, if you have a -touchBegan , there will be a new pool pushed before -touchBegan gets called, and it will be popped as soon as -touchBegan returns. If that's not what you want, you'll have to retain yourself.

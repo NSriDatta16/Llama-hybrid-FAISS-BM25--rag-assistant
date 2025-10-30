@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5399588
+[parent_id]: 
+[tags]: 
+DRY approach to accessing instance value in custom Django ImageField form field?
+
+I'm using django-storages to save images uploaded to S3, and I want to create a custom form field that will display the image when editing, along with an option to change it. The problem I'm running into is the path's value that is stored in my database is not the full path to the image, as django-storages does the generating of the full path. Settings.py: DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage' AWS_STORAGE_BUCKET_NAME = 'myBucketName' AWS_LOCATION = 'mySubBucketName' models.py: class MyModel(models.Model): my_image = ImageField(upload_to='upload/path') Example of accessing full url: >>> mymod = MyModel.objects.get(id=1) >>> print mymod.my_image upload/path/somefile.jpg >>> print mymod.my_image.url https://s3.amazonaws.com/myBucketName/mySubBucketName/upload/path/somefile.jpg I am not seeing how I can access mymod.my_image.url() from within a custom Widget (where I would be render()'ing something like this: class ImageViewWidget(forms.Widget): markup = """ """ def render(self, name, value, attrs=None): output = self.markup % { "name": name, "imagepath": " >>>" } return mark_safe(output) Update: I'm looking for a DRY approach to this problem. My apologies for not clarifying this from the beginning

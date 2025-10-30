@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1602279
+[parent_id]: 1602070
+[tags]: 
+One possibility: instead of calling a web role, just load the queue directly. (It sounds like this is the sort of application you'll want to automatically spin up to do some work and then shut down again... if you're automating that, it should be trivial to also automate loading the queue.) A (perhaps) better option: Use some sort of locking mechanism to make sure only one worker instance does the initialization work. One way to do this is to try to create the queue (or a blob, or an entity in a table). If it already exists, then the other instance is handling initialization. If the create succeeds, then it's this instance's job. Note that it's always better to use a lease than a lock, in case the instance that's doing the initialization fails. Consider using a timeout (e.g. storing a timestamp in table storage or in the metadata of the blob or in the name of the queue...).

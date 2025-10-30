@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1677424
+[parent_id]: 
+[tags]: 
+Overriding the newline generation behaviour of Python's print statement
+
+I have a bunch of legacy code for encoding raw emails that contains a lot of print statements such as print >>f, "Content-Type: text/plain" This is all well and good for emails, but we're now leveraging the same code for outputting HTTP request. The problem is that the Python print statement outputs '\n' whilst HTTP requires '\r\n' . It looks like Python (2.6.4 at least) generates a trailing PRINT_NEWLINE byte code for a print statement which is implemented as ceval.c:1582: err = PyFile_WriteString("\n", w); Thus it appears there's no easy way to override the default newline behaviour of print. I have considered the following solutions After writing the output simply do a .replace('\n', '\r\n') . This will interfere with HTTP messages that use multipart encoding. Create a wrapper around the destination file object and proxy the .write method def write(self, data): if data == '\n': data = '\r\n' return self._file.write(data) Write a regular expression that translates print >>f, text to f.write(text + line_end) where line_end can be '\n' or '\r\n' . I believe the third option would be the most appropriate. It would be interesting to hear what your Pythonic approach to the problem would be.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 238861
+[parent_id]: 238662
+[tags]: 
+using CookiePair = KeyValuePair ; using CookieDictionary = Dictionary ; Func , IEnumerable > getCookies = ( files, pairGetter ) => files.SelectMany( filename => { try { return new[] { pairGetter( filename ) }; } catch { Console.WriteLine( "..." ); return new CookiePair[0]; } } ); var type1Cookies = getCookies( filesOfType1, GetType1FileCookiePair ).ToArray( ); var type1CookieNames = type1Cookies.Select( p => p.Key ).ToArray( ); var type2Cookies = getCookies( filesOfType2, GetType2FileCookiePair ) .Where( p => !type1CookieNames.Contains( p.Key ) ); var cookieMap = type1Cookies.Concat( type2Cookies ) .Aggregate( new CookieDictionary( ), ( d, p ) => { if( !d.ContainsKey( p.Key ) || p.Value.Count > d[p.Key].Count ) d[p.Key] = p.Value; return d; } ); Edit: Updated cookie retrieval to satisfy the "files of type 1 are more important than those of type 2" requirement.

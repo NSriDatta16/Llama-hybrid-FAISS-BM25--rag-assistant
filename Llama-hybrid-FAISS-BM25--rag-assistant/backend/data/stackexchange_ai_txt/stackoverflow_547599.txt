@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 547599
+[parent_id]: 
+[tags]: 
+Java's default JAXB implementation is chosen over my classpath
+
+I've written a java application that utilizes JAXB for XSL transforms. I've included the saxon9.jar in my classpath so that I can use XSLT 2.0 rather than XSLT 1.0 on the command line. java -classpath ./lib/saxon9.jar:./ -jar myApp.jar I've included code in my XSL to report the XSLT used. XSLT Version: XSLT Vendor: XSLT Vendor URL: It reports. XSLT Version: 1.0 XSLT Vendor: Apache Software Foundation (Xalan XSLTC) XSLT Vendor URL: http://xml.apache.org/xalan-j This is the default implementation that is part of the JVM. How do I get it to use the Saxon that I specified? Follow up: So none of these methods worked (except placing the saxon jar in the endorsed directory), but they all should have worked. It seems the combination of my using the "-jar myApp.jar" and wanting an alternative XSLT implementation were incompatible. In other words... java -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl -classpath ./lib/saxon9.jar:./ -jar myApp.jar ...does not work, but this does... java -Djavax.xml.transform.TransformerFactory=net.sf.saxon.TransformerFactoryImpl -classpath ./lib/saxon9.jar:./myApp.jar org.dacracot.myApp ...interestingly, I don't even have to specify the factory and I get the saxon version... java -classpath ./lib/saxon9.jar:./myApp.jar org.dacracot.myApp

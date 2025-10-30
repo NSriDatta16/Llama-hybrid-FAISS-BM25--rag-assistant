@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2070981
+[parent_id]: 686950
+[tags]: 
+Great question, I learned by reading the questions. I think other bit of the deserialisation code path are also using the large object heap, hence the fragmentation. If all the strings were interned at the SAME time, I think you would be ok. Given how good the .net garbage collector is, just letting the deserialisation code path create normal string object is likely to be good enough. Don't do anything more complex until the need is proven. I would at most look at keeping a hash table of the last few strings you have seen and reusing these. By limiting the hash table size and passing the size in when you create the table you can stop most fragmentation. You then need a way to remove strings you have not seen recently from the hash table to limit it’s size. But if the strings the deserialisation code path create are short lived anyway you will not gain much if anything.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3283686
+[parent_id]: 3281403
+[tags]: 
+I just want to add some geek minutia: The Query plan cache leverages the general caching mechanism of SQL Server. These caches use the Clock algorithm for eviction, see Q and A: Clock Hands - what are they for . For query plan caches, the cost of the entry takes into consideration the time, IO and memory needed to create the cache entry. For ones that are cached, how long do they stay in the cache? A valid object stays in cache until the clock hand decrements the cost to 0. See sys.dm_os_memory_cache_clock_hands . There is no absolute time answer to this question, the clock hand could decrement an entry to 0 in a second, in a hour, in a week or in a year. It all depends on the initial cost of the entry (query/schema complexity), on the frequency of reusing the plan, and the clock hands speed (memory pressure). Cached object may be invalidated though. The various reasons why a Query plan gets invalidated are explained in great detail the white paper linked by Mitch: Plan Caching in SQL Server 2008 .

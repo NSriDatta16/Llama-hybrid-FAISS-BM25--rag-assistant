@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3285931
+[parent_id]: 3259291
+[tags]: 
+I found a similar thread that was describing the same problem I was having. http://forums.java.net/jive/thread.jspa?threadID=53362 I also found a bug at https://github.com/javaee/jaxb-v2/issues/581 Basically, the problem was that I was doing a new JAXBContext("your.class.xsd") every time my bean was invoked. According to the bug "Calling JAXBContext.newInstance(...) implies reloading of everything since either the current or the specified class loader is to be (re-)used." The solution was to create a singleton which worked great. public enum JAXBContextSingleton { INSTANCE("your.class.xsd"); private JAXBContext context; JAXBContextSingleton(String classToCreate) { try { this.context = JAXBContext.newInstance(classToCreate); } catch (JAXBException ex) { throw new IllegalStateException("Unbale to create JAXBContextSingleton"); } } public JAXBContext getContext(){ return context; } } And to use the singleton JAXBContext context = JAXBContextSingleton.INSTANCE.getContext();

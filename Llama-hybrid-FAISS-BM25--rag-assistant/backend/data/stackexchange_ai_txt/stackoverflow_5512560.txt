@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5512560
+[parent_id]: 
+[tags]: 
+Is there a workaround for this C4702 link-time warning?
+
+I'm using boost::variant and am having trouble compiling in release mode. I am working in VC2010 with warning level 4 and warnings as errors. The code below compiles fine in debug mode, but in release mode I get a bunch of "Unreachable code" C4702 warnings emitted at link time (presumably I'm getting compiler warnings here because there is link time code generation when optimisations are enabled.) Has anybody successfully disabled these warnings in this situation? I would prefer to keep the high warning level and warnings as errors if possible. #pragma warning( disable:4702 ) ... doesn't seem to work here. Here is some sample code: #include struct null{}; typedef boost::variant variant_t; class addition_visitor : public boost::static_visitor { public: template variant_t operator()( const T&, const U& ) const { throw( "Bad types" ); } variant_t operator()( const double& left, const double& right ) const { return variant_t( left * right ); } }; int main(int /*argc*/, char** /*argv*/) { variant_t a( 3.0 ), b( 2.0 ); variant_t c = boost::apply_visitor( addition_visitor(), a, b ); return 0; } The warning is triggered by the templated operator(), which I'm using to catch attempts to apply the visitor to bad variant types.

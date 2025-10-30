@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4847138
+[parent_id]: 4847025
+[tags]: 
+Firstly, you should consider using sendfile() or the equivalent for your system. That is, rather than read a chunk of the file into your memory only to write it back out somewhere, you should memory-map your file descriptor and send everything in one go. As for chunking, TCP takes care of splitting the stream into packets for you. Ideally the remote node should know exactly how much to expect upfront so it can handle pre-mature termination (that's why HTTP headers contain a content length). So use some sort of handshake before sending the data. Then the sender should just call sendfile() in a loop, paying attention to the amount of sent data and the returned offet . The receiver should call recv() in a loop to make sure it all arrives (there is no standard " recvfile() ").

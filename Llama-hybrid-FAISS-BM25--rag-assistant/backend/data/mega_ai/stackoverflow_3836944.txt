@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3836944
+[parent_id]: 3711027
+[tags]: 
+You need to do a reduction. Sum the elements assigned to each thread and place the result in an array, cache[threadsPerBlock] then __Syncthreads Now reduce the resulting sub totals by adding successive neighboring subtotals: int cacheIndex = threadIdx.x; int i = blockDim.x / 2; while (i != 0) { if (cacheIndex The following deck explains this in some detail: http://developer.download.nvidia.com/compute/cuda/1_1/Website/projects/reduction/doc/reduction.pdf Sample code for this is here: http://www.nvidia.com/object/cuda_sample_data-parallel.html It's also very well explained in "CUDA BY Example" (which is where the code fragment comes from). There is one big caveat with this approach. The additions will not occur in the same order they would with serial code. Addition of floats is not commutative so rounding errors may lead to slightly different results.

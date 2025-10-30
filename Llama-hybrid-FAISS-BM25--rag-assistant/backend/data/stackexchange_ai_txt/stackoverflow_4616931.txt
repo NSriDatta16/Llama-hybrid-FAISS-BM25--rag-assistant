@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4616931
+[parent_id]: 
+[tags]: 
+Can an exception be thrown upwards
+
+I have these two methods I am working on. One saves and one loads. Obviously both need some sort of error handling so I have implemented some "catch all handling". Now the heel of the hunt is, what happens next is contextual to where, during runtime, the error occurs. Because of this I would like to handle the error in the caller, one level above. That way I can have different logic for different situations. An example would be. If I check the load on first run and it fails I can assume that they memory may have been cleared. But if I try to load during execution I can assume the memory wasn't cleared (by correct means) and something must be up. public void SaveToStorage(AccountCollection Collection) { try { var storage = IsolatedStorageSettings.ApplicationSettings; storage["defaultCollection"] = Collection; storage.Save(); } catch (Exception ex) { // Do something meaningful here } } public AccountCollection LoadFromStorage() { try { AccountCollection collection; var storage = IsolatedStorageSettings.ApplicationSettings; storage.TryGetValue("defaultCollection", out collection); return collection; } catch (Exception ex) { // Do something meaningful here } return null; } Essentially I am asking can I throw the error up to the caller but still retain the original error details. EDIT: Both John and Andrew having given correct answers. Andrew will get the green tick as I would like to do some other generic clean up in the original class.

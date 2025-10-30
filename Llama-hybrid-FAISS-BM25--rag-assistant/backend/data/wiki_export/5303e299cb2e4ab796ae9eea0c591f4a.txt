@@ -1,0 +1,99 @@
+In computer science and mathematical logic, satisfiability modulo theories (SMT) is the problem of determining whether a mathematical formula is satisfiable. It generalizes the Boolean satisfiability problem (SAT) to more complex formulas involving real numbers, integers, and/or various data structures such as lists, arrays, bit vectors, and strings. The name is derived from the fact that these expressions are interpreted within ("modulo") a certain formal theory in first-order logic with equality (often disallowing quantifiers). SMT solvers are tools that aim to solve the SMT problem for a practical subset of inputs. SMT solvers such as Z3 and cvc5 have been used as a building block for a wide range of applications across computer science, including in automated theorem proving, program analysis, program verification, and software testing.
+
+Since Boolean satisfiability is already NP-complete, the SMT problem is typically NP-hard, and for many theories it is undecidable. Researchers study which theories or subsets of theories lead to a decidable SMT problem and the computational complexity of decidable cases. The resulting decision procedures are often implemented directly in SMT solvers; see, for instance, the decidability of Presburger arithmetic. SMT can be thought of as a constraint satisfaction problem and thus a certain formalized approach to constraint programming.
+
+Basic terminology
+Formally speaking, an SMT instance is a formula in first-order logic, where some function and predicate symbols have additional interpretations, and SMT is the problem of determining whether such a formula is satisfiable. In other words, imagine an instance of the Boolean satisfiability problem (SAT) in which some of the binary variables are replaced by predicates over a suitable set of non-binary variables. A predicate is a binary-valued function of non-binary variables. Example predicates include linear inequalities (e.g., ) or equalities involving uninterpreted terms and function symbols (e.g.,  where  is some unspecified function of two arguments). These predicates are classified according to each respective theory assigned. For instance, linear inequalities over real variables are evaluated using the rules of the theory of linear real arithmetic, whereas predicates involving uninterpreted terms and function symbols are evaluated using the rules of the theory of uninterpreted functions with equality (sometimes referred to as the empty theory). Other theories include the theories of arrays and list structures (useful for modeling and verifying computer programs), and the theory of bit vectors (useful in modeling and verifying hardware designs). Subtheories are also possible: for example, difference logic is a sub-theory of linear arithmetic in which each inequality is restricted to have the form  for variables  and  and constant .
+
+Most SMT solvers support only quantifier-free fragments of their logics.
+
+Expressive power
+An SMT instance is a generalization of a Boolean SAT instance in which various sets of variables are replaced by predicates from a variety of underlying theories. SMT formulas provide a much richer modeling language than is possible with Boolean SAT formulas. For example, an SMT formula allows one to model the datapath operations of a microprocessor at the word rather than the bit level.
+
+By comparison, answer set programming is also based on predicates (more precisely, on atomic sentences created from atomic formulas).  Unlike SMT, answer-set programs do not have quantifiers, and cannot easily express constraints such as linear arithmetic or difference logic—answer set programming is best suited to Boolean problems that reduce to the free theory of uninterpreted functions.  Implementing 32-bit integers as bitvectors in  answer set programming suffers from most of the same problems that early SMT solvers faced: "obvious" identities such as x+y=y+x are difficult to deduce.
+
+Constraint logic programming does provide support for linear arithmetic constraints, but within a completely different theoretical framework. SMT solvers have also been extended to solve formulas in higher-order logic.
+
+Solver approaches
+Early attempts for solving SMT instances involved translating them to Boolean SAT instances (e.g., a 32-bit integer variable would be encoded by 32 single-bit variables with appropriate weights and word-level operations such as 'plus' would be replaced by lower-level logic operations on the bits) and passing this formula to a Boolean SAT solver. This approach, which is referred to as the eager approach, has its merits: by pre-processing the SMT formula into an equivalent Boolean SAT formula existing Boolean SAT solvers can be used "as-is" and their performance and capacity improvements leveraged over time. On the other hand, the loss of the high-level semantics of the underlying theories means that the Boolean SAT solver has to work a lot harder than necessary to discover "obvious" facts (such as  for integer addition.) This observation led to the development of a number of SMT solvers that tightly integrate the Boolean reasoning of a DPLL-style search with theory-specific solvers (T-solvers) that handle conjunctions (ANDs) of predicates from a given theory. This approach is referred to as the lazy approach.
+
+Dubbed DPLL(T), this architecture gives the responsibility of Boolean reasoning to the DPLL-based SAT solver which, in turn, interacts with a solver for theory T through a well-defined interface. The theory solver only needs to worry about checking the feasibility of conjunctions of theory predicates passed on to it from the SAT solver as it explores the Boolean search space of the formula. For this integration to work well, however, the theory solver must be able to participate in propagation and conflict analysis, i.e., it must be able to infer new facts from already established facts, as well as to supply succinct explanations of infeasibility when theory conflicts arise. In other words, the theory solver must be incremental and backtrackable.
+
+SMT for undecidable theories
+Most of the common SMT approaches support decidable theories. However, many real-world systems, such as an aircraft and its behavior, can only be modelled by means of non-linear arithmetic over the real numbers involving transcendental functions. This fact motivates an extension of the SMT problem to non-linear theories, such as determining whether the following equation is satisfiable:
+
+ 
+
+where
+
+ 
+
+Such problems are, however, undecidable in general.  (On the other hand, the theory of real closed fields, and thus the full first order theory of the real numbers, are decidable using quantifier elimination.  This is due to Alfred Tarski.)  The first order theory of the natural numbers with addition (but not multiplication), called Presburger arithmetic, is also decidable.  Since multiplication by constants can be implemented as nested additions, the arithmetic in many computer programs can be expressed using Presburger arithmetic, resulting in decidable formulas.
+
+Examples of SMT solvers addressing Boolean combinations of theory atoms from undecidable arithmetic theories over the reals are ABsolver, which employs a classical DPLL(T) architecture with a non-linear optimization packet as (necessarily incomplete) subordinate theory solver, and iSAT, building on a unification of DPLL SAT-solving and interval constraint propagation called the iSAT algorithm.
+
+Solvers
+The table below summarizes some of the features of the many available SMT solvers. The column "SMT-LIB" indicates compatibility with the SMT-LIB language; many systems marked 'yes' may support only older versions of SMT-LIB, or offer only partial support for the language.  The column "CVC" indicates support for the  language. The column "DIMACS" indicates support for the DIMACS format.
+
+Projects differ not only in features and performance, but also in the viability of the surrounding community, its ongoing interest in a project, and its ability to contribute documentation, fixes, tests and enhancements.
+
+Standardization and the SMT-COMP solver competition 
+There are multiple attempts to describe a standardized interface to SMT solvers (and automated theorem provers, a term often used synonymously). The most prominent is the SMT-LIB standard, which provides a language based on S-expressions. Other standardized formats commonly supported are the DIMACS format supported by many Boolean SAT solvers, and the CVC format used by the CVC automated theorem prover.
+
+The SMT-LIB format also comes with a number of standardized benchmarks and has enabled a yearly competition between SMT solvers called SMT-COMP. Initially, the competition took place during the Computer Aided Verification conference (CAV), but as of 2020 the competition is hosted as part of the SMT Workshop, which is affiliated with the International Joint Conference on Automated Reasoning (IJCAR).
+
+Applications
+SMT solvers are useful both for verification, proving the correctness of programs, software testing based on symbolic execution, and for synthesis, generating program fragments by searching over the space of possible programs. Outside of software verification, SMT solvers have also been used for type inference and for modelling theoretic scenarios, including modelling actor beliefs in nuclear arms control.
+
+Verification
+Computer-aided verification of computer programs often uses SMT solvers. A common technique is to translate preconditions, postconditions, loop conditions, and assertions into SMT formulas in order to determine if all properties can hold.
+
+There are many verifiers built on top of the Z3 SMT solver. Boogie is an intermediate verification language that uses Z3 to automatically check simple imperative programs. The VCC verifier for concurrent C uses Boogie, as well as Dafny for imperative object-based programs, Chalice for concurrent programs, and Spec# for C#. F* is a dependently typed language that uses Z3 to find proofs; the compiler carries these proofs through to produce proof-carrying bytecode. The Viper verification infrastructure encodes verification conditions to Z3. The sbv library provides SMT-based verification of Haskell programs, and lets the user choose among a number of solvers such as Z3, ABC, Boolector, cvc5, MathSAT and Yices.
+
+There are also many verifiers built on top of the Alt-Ergo SMT solver. Here is a list of mature applications:
+ Why3, a platform for deductive program verification, uses Alt-Ergo as its main prover;
+ CAVEAT, a C-verifier developed by CEA and used by Airbus; Alt-Ergo was included in the qualification DO-178C of one of its recent aircraft;
+ Frama-C, a framework to analyse C-code, uses Alt-Ergo in the Jessie and WP plugins (dedicated to "deductive program verification");
+ SPARK uses CVC4 and Alt-Ergo (behind GNATprove) to automate the verification of some assertions in SPARK 2014;
+ Atelier-B can use Alt-Ergo instead of its main prover (increasing success from 84% to 98% on the ANR Bware project benchmarks);
+ Rodin, a B-method framework developed by Systerel, can use Alt-Ergo as a back-end;
+ Cubicle, an open source model checker for verifying safety properties of array-based transition systems.
+ EasyCrypt, a toolset for reasoning about relational properties of probabilistic computations with adversarial code.
+
+Many SMT solvers implement a common interface format called SMTLIB2 (such files usually have the extension ".smt2"). The LiquidHaskell 
+tool implements a refinement type based verifier for Haskell that can use any SMTLIB2 compliant solver, e.g. cvc5, MathSat, or Z3.
+
+Symbolic-execution based analysis and testing
+
+An important application of SMT solvers is symbolic execution for analysis and testing of programs (e.g., concolic testing), aimed particularly at finding security vulnerabilities. Example tools in this category include SAGE from Microsoft Research, KLEE, S2E, and Triton. SMT solvers that have been used for symbolic-execution applications include Z3, STP , the Z3str family of solvers, and Boolector.
+
+See also
+ Answer set programming
+ Automated theorem proving
+ SAT solver
+ First-order logic
+ Theory of pure equality
+
+Notes
+
+References
+
+, pp. , .
+
+ 
+
+ SMT-LIB: The Satisfiability Modulo Theories Library
+ SMT-COMP: The Satisfiability Modulo Theories Competition
+ Decision procedures - an algorithmic point of view
+
+ 
+
+This article was originally adapted from a column in the ACM SIGDA  e-newsletter by Prof. Karem A. Sakallah. Original text is available here
+
+Constraint programming
+Electronic design automation
+Formal methods
+Logic in computer science
+NP-complete problems
+Satisfiability problems
+SMT solvers

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5763384
+[parent_id]: 
+[tags]: 
+Throwing an exception from an abstract Runnable.run() in Java
+
+I've made an abstract Thread that processes some streams in its run() method. I'd like to be able to have the subclasses handle these exceptions rather than the abstract parent class, but I don't know the most elegant way to do that. Right now, I'm doing something like this: import org.apache.logging.log4j; // (I use log4j for logging) public interface Loggable { Logger getLogger(); } public abstract class ParentThread extends Thread implements Loggable { private final static Logger logger = Logger.getLogger(ParentThread.class); // Logger with no Appenders @Override public void run() { try { // Do some stuff that throws exceptions doAbstractStuff(); } catch (SomeSortOfException ex) { getLogger().error("Oh noes!", ex); } catch (SomeOtherException ex) { getLogger().error("The sky is falling!", ex); } } public Logger getLogger() { return logger; } protected abstract void doAbstractStuff(); } public class ChildThread extends ParentThread { @Override public Logger getLogger() { /* return a logger that I actually use */ } @Override public void doAbstractStuff() { /* Implementation */ } } I guess I should mention that the ChildThread is actually an inner class of my main form, and that its logger belongs to that form. Another approach I thought of was to have an abstract void handleException(Exception ex); in ParentThread, but then I'm not able to handle individual exceptions from the ChildThread.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4147110
+[parent_id]: 
+[tags]: 
+Optimal way to join three tables in SQLite
+
+A (simplified) database of Internet bookmarks. I thought it'd make sense to organize the tables logically, like so: Bookmarks (id, title, url; basically external data) +------+------------+-----+ | suid | Title | ... | +------+------------+-----+ User (user-specific data: favorites, ratings, etc) +------+------------+-----+ | suid | IsFavorite | ... | + + (0 or 1) + + +------+------------+-----+ History (last used, use count etc) +------+------------+-----+ | suid | LastUsed | ... | + +(TDateTime) + + +------+------------+-----+ ('suid' is unique ID, integer primary key) From bookmarks flagged as favorite I need to select N most recently used (to populate a menu at runtime as a convenience). SELECT Bookmarks.suid, Title from Bookmarks INNER JOIN User USING (suid) INNER JOIN History USING (suid) WHERE IsFavorite = 1 ORDER BY LastUsed DESC LIMIT 15; The statement works, and seems sufficiently readable, but is it optimal? The Bookmarks table is intended to hold 20-50k records on average (i.e, not your standard browser bookmark manager :-) The app will execute 3 or 4 similar statements at startup to populate controls. All fields used in the example are indexed. I'm teaching myself SQL and came up with the above code, but maybe I'm overlooking a syntax or an idiom that could improve it?

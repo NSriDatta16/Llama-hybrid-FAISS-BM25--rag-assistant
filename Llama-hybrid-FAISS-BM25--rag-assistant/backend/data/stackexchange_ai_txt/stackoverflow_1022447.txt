@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1022447
+[parent_id]: 1021346
+[tags]: 
+You're missing a couple of important pieces. You need to update your model (data stcuture) in response to the tableValue:setObjectValue:forTableColumn:row: message, so that you can correctly return the new value from tableView:objectValueForTableColumn:row: method. Here are some table data source methods assuming you have a 'myRows' array filled with objects with a 'booleanAttribute' property. - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView { return [myRows count]; } - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row { BOOL value = [[myRows objectAtIndex:row] booleanAttribute]; return [NSNumber numberWithInteger:(value ? NSOnState : NSOffState)]; } - (void)tableView:(NSTableView *)tableView setObjectValue:(id)value forTableColumn:(NSTableColumn *)column row:(NSInteger)row { [[myRows objectAtIndex:row] setBooleanAttribute:[value booleanValue]]; } You should also setup your table cell in interface builder. You can drag a button cell configured like a standard check box directly onto one of your table columns.

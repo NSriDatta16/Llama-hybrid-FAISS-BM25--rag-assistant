@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 603871
+[parent_id]: 603130
+[tags]: 
+Stack tracing on exceptions etc. requires mapping in-memory code addresses to virtual addresses as stored in the executable, so that they can be correlated with either a .map file or debug info which indicates the function or source file and line. Normally, the mapping is straight-forward and relatively linear. Executable compression mucks this up because it doesn't have a straight-forward mapping, particularly not one in line with the PE spec. This is because the executable compression replaces the initialization routine in the executable with one that extracts data from disk into memory (this also means that compressed executables don't share pages with other instances, and use more memory than uncompressed executables, since they need to page in everything all at once), before forwarding to the newly-expanded original initialization routine. So, without quite clever relative-address storage of code locations in the stack tracing, it's unlikely that the two techniques will work together. FWIW, I personally don't recommend using executable packers.

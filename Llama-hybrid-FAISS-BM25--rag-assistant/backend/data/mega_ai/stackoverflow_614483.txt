@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 614483
+[parent_id]: 614476
+[tags]: 
+I would use VARCHAR for variable length data, but not with fixed length data. Because a SHA-1 value is always 160 bit long, the VARCHAR would just waste an additional byte for the length of the fixed-length field . And I also wouldn’t store the value the SHA1 is returning. Because it uses just 4 bit per character and thus would need 160/4 = 40 characters. But if you use 8 bit per character, you would only need a 160/8 = 20 character long field. So I recommend you to use BINARY(20) and the UNHEX function to convert the SHA1 value to binary. I compared storage requirements for BINARY(20) and CHAR(40) . CREATE TABLE `binary` ( `id` int unsigned auto_increment primary key, `password` binary(20) not null ); CREATE TABLE `char` ( `id` int unsigned auto_increment primary key, `password` char(40) not null ); With million of records binary(20) takes 44.56M, while char(40) takes 64.57M. InnoDB engine.

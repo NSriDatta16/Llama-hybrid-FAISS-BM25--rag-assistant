@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3323823
+[parent_id]: 
+[tags]: 
+Equivalent expressions produce different results in a function?
+
+I have a function (exercise 10.11 in Thompson's The Craft of Functional Programming ) which computes an approximation to the value of the definite integral of a function over a domain (a, b). It might not be the most elegant function, but I'm still a a beginner: import Data.Ratio (Rational, (%), denominator, numerator) type R = Rational integrate :: (R -> R) -> R -> (R, R) -> R integrate f d (a, b) = foldr (+) 0 $ zipWith (*) (map f [a, a + d..b]) (widths d) where widths :: R -> [R] widths = \n -> n : widths n eval :: R -> Double eval = \r -> (/) (fromIntegral $ numerator r) (fromIntegral $ denominator r) For instance, eval $ integrate (\x -> 20 + x^2) (1%10000) (-3%1, 3%1) = ~> 138.00290001 Now, widths d should be equivalent to the expression [d..] . However, if I replace widths by [d..] in integrate, my function outputs incorrect values. For instance: integrate' :: (R -> R) -> R -> (R, R) -> R integrate' f d (a, b) = foldr (+) 0 $ zipWith (*) (map f [a, a+d..b]) [d..] eval $ integrate' (\x -> 20 + x^2) (1%10000) (-3%1, 3%1) ~> 41400870141.0029 Why is this?

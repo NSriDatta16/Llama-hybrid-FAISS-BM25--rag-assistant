@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3283586
+[parent_id]: 
+[tags]: 
+Running a MATLAB code fragment without namespace pollution
+
+I'm writing a version of Python's doctest test-runner, for MATLAB (it partly works...). For this to work, I need to run the code in people's examples in their m-file help. I want variables to carry over from one line to the next, e.g. % >> I = 5 + 33; % expect no output % >> I % % I = % % 38 % To run the tests, I have a loop over matches to the REGEX that searches for the tests. For each match, I evalc the example and make sure the result matches: for I = 1:length(examples) try got = evalc(examples(I).source); catch exc got = ['??? ' exc.message]; end % process the result... end The problem is that the example's definition of I has now clobbered the loop variable in my loop , since the assignments carry over from the eval into the outer scope. I looked around for something capable of creating a new scope/workspace, but evalin can only re-use the caller's workspace, which is even worse. I've also considered options with calling a sub-function or save / load , but not gotten anywhere, but maybe I just haven't thought hard enough. So I guess I need to just name all my variables doctest__system__* and live with the namespace problems... unless you have another idea for a strategy to avoid variable name conflicts ?

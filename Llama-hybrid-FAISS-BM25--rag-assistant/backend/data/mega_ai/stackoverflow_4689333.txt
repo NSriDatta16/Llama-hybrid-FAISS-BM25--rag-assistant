@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4689333
+[parent_id]: 
+[tags]: 
+create dimmed icon with magick++ (ImageMagick)
+
+I’m trying to use ImageMagick for what I believed would be a simple task. I want to generate a dimmed version of an image/icon at runtime in the application. I use the magick++ c plus api. I have found some commands that give me an ok result when run from the command line. Converting the commands to the c++ api was a bit challenging, and the result is then not as hoped. // Command example convert -size 32x32 xc:"#999999" gray32.png composite -dissolve 50% logo32.png gray32.png dim_logo32.png How would this look in c++? I came up with this. Magick::Image gray; gray.size( Magick::Geometry(image.columns(), image.rows())); gray.read( "xc:#999999"); gray.label( "gray" ); if(gray.isValid()) { gray.opacity(QuantumRange/2); image.composite(gray, Magick::Geometry(image.columns(),image.rows()), Magick::DissolveCompositeOp ); But the transparency in the picture is lost. A other suggestion as to make a dimmed image, is to make the full image semi transparent. convert input.png -channel Alpha -evaluate Set 50% output.png This could work. The transparency is kept when I tried this from command line. Changing this to c++ api confused me a lot. I ended up with this single line. image.opacity(QuantumRange/ 2); Now the result from this confuses me. The image is semi transparent, but the background that was originally transparent is now magenta. I was not allowed to post the images, to show the result. :(

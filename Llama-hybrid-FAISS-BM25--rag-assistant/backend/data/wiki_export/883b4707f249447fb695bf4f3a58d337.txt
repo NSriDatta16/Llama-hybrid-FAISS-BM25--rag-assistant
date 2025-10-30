@@ -1,0 +1,95 @@
+In computer science, weight-balanced binary trees (WBTs) are a type of self-balancing binary search trees that can be used to implement dynamic sets, dictionaries (maps) and sequences. These trees were introduced by Nievergelt and Reingold in the 1970s as trees of bounded balance, or BB[α] trees. Their more common name is due to Knuth.
+
+A well known example is a Huffman coding of a corpus.
+
+Like other self-balancing trees, WBTs store bookkeeping information pertaining to balance in their nodes and perform rotations to restore balance when it is disturbed by insertion or deletion operations. Specifically, each node stores the size of the subtree rooted at the node, and the sizes of left and right subtrees are kept within some factor of each other. Unlike the balance information in AVL trees (using information about the height of subtrees) and red–black trees (which store a fictional "color" bit), the bookkeeping information in a WBT is an actually useful property for applications: the number of elements in a tree is equal to the size of its root, and the size information is exactly the information needed to implement the operations of an order statistic tree, viz., getting the 'th largest element in a set or determining an element's index in sorted order.
+
+Weight-balanced trees are popular in the functional programming community and are used to implement sets and maps in MIT Scheme, SLIB and implementations of Haskell.
+
+Description
+A weight-balanced tree is a binary search tree that stores the sizes of subtrees in the nodes. That is, a node has fields
+
+ key, of any ordered type
+ value (optional, only for mappings)
+ left, right, pointer to node
+ size, of type integer.
+
+By definition, the size of a leaf (typically represented by a  pointer) is zero. The size of an internal node is the sum of sizes of its two children, plus one: (). Based on the size, one defines the weight to be .
+
+Operations that modify the tree must make sure that the weight of the left and right subtrees of every node remain within some factor  of each other, using the same rebalancing operations used in AVL trees: rotations and double rotations. Formally, node balance is defined as follows:
+
+A node is -weight-balanced if  and .
+
+Here,  is a numerical parameter to be determined when implementing weight balanced trees. Larger values of  produce "more balanced" trees, but not all values of  are appropriate; Nievergelt and Reingold proved that
+
+is a necessary condition for the balancing algorithm to work. Later work showed a lower bound of  for , although it can be made arbitrarily small if a custom (and more complicated) rebalancing algorithm is used.
+
+Applying balancing correctly guarantees a tree of  elements will have height
+
+The number of balancing operations required in a sequence of  insertions and deletions is linear in , i.e., balancing takes a constant amount of overhead in an amortized sense.
+
+While maintaining a tree with the minimum search cost requires four kinds of double rotations (LL, LR, RL, RR as in an AVL tree) in insert/delete operations, if we desire only logarithmic performance, LR and RL are the only rotations required in a single top-down pass.
+
+Set operations and bulk operations
+Several set operations have been defined on weight-balanced trees: union, intersection and set difference. Then fast bulk operations on insertions or deletions can be implemented based on these set functions. These set operations rely on two helper operations, Split and Join. With the new operations, the implementation of weight-balanced trees can be more efficient and highly-parallelizable.
+
+Join: The function Join is on two weight-balanced trees  and  and a key  and will return a tree containing all elements in ,  as well as . It requires  to be greater than all keys in  and smaller than all keys in . If the two trees have the balanced weight, Join simply create a new node with left subtree , root  and right subtree . Suppose that  has heavier weight than  (the other case is symmetric). Join follows the right spine of  until a node  which is balanced with . At this point a new node with left child , root  and right child  is created to replace c. The new node may invalidate the weight-balanced invariant. This can be fixed with a single or a double rotation assuming 
+Split: To split a weight-balanced tree into two smaller trees, those smaller than key x, and those larger than key x, first draw a path from the root by inserting x into the tree. After this insertion, all values less than x will be found on the left of the path, and all values greater than x will be found on the right. By applying Join, all the subtrees on the left side are merged bottom-up using keys on the path as intermediate nodes from bottom to top to form the left tree, and the right part is symmetric. For some applications, Split also returns a boolean value denoting if x appears in the tree. The cost of Split is , order of the height of the tree. This algorithm actually has nothing to do with any special properties of a weight-balanced tree, and thus is generic to other balancing schemes such as AVL trees.
+
+The join algorithm is as follows:
+
+ function joinRightWB(TL, k, TR)
+     (l, k', c) = expose(TL)
+     if balance(|TL|, |TR|) return Node(TL, k, TR)
+     else 
+         T' = joinRightWB(c, k, TR)
+         (l', k', r') = expose(T')
+         if (balance(|l|,|T'|)) return Node(l, k', T')
+         else if (balance(|l|,|l'|) and balance(|l|+|l'|,|r'|))
+              return rotateLeft(Node(l, k', T'))
+         else return rotateLeft(Node(l, k', rotateRight(T'))
+ function joinLeftWB(TL, k, TR)
+     /* symmetric to joinRightWB */
+ function join(TL, k, TR)
+     if (heavy(TL, TR)) return joinRightWB(TL, k, TR)
+     if (heavy(TR, TL)) return joinLeftWB(TL, k, TR)
+     Node(TL, k, TR)
+
+Here balance means two weights  and  are balanced. expose(v)=(l, k, r) means to extract a tree node 's left child , the key of the node  and the right child . Node(l, k, r) means to create a node of left child , key  and right child .
+
+The split algorithm is as follows:
+
+ function split(T, k)
+     if (T = nil) return (nil, false, nil)
+     (L, (m, c), R) = expose(T)
+     if (k = m) return (L, true, R)
+     if (k < m) 
+        (L', b, R') = split(L, k)
+        return (L', b, join(R', m, R))
+     if (k > m) 
+        (L', b, R') = split(R, k)
+        return (join(L, m, L'), b, R))
+
+The union of two weight-balanced trees  and  representing sets  and , is a weight-balanced tree  that represents . The following recursive function computes this union:
+
+ function union(t1, t2):
+     if t1 = nil:
+         return t2
+     if t2 = nil:
+         return t1
+     t<, t> ← split t2 on t1.root
+     return join(union(left(t1), t<), t1.root, union(right(t1), t>))
+
+Here, Split is presumed to return two trees: one holding the keys less its input key, one holding the greater keys. (The algorithm is non-destructive, but an in-place destructive version exists as well.)
+
+The algorithm for intersection or difference is similar, but requires the Join2 helper routine that is the same as Join but without the middle key. Based on the new functions for union, intersection or difference, either one key or multiple keys can be inserted to or deleted from the weight-balanced tree. Since Split and Union call Join but do not deal with the balancing criteria of weight-balanced trees directly, such an implementation is usually called the join-based algorithms.
+
+The complexity of each of union, intersection and difference is  for two weight-balanced trees of sizes  and . This complexity is optimal in terms of the number of comparisons. More importantly, since the recursive calls to union, intersection or difference are independent of each other, they can be executed in parallel with a parallel depth . When , the join-based implementation has the same computational directed acyclic graph (DAG) as single-element insertion and deletion if the root of the larger tree is used to split the smaller tree.
+
+Notes
+
+References
+
+Search trees
+
+de:Balancierter Baum#Balance der Knotenzahl

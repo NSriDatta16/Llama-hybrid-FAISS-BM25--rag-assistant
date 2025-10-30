@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2589013
+[parent_id]: 
+[tags]: 
+Nhibernate, can i improve my MAPPING or Query
+
+take this simple example A staff class which references other instances of the staff class public class Staff { public Staff() { Team = new List (); } public virtual int Id { get; set; } public virtual string Name { get; set; } public virtual IList Team { get; set; } public virtual Staff Manager { get; set; } } The Fluent Mapping public class StaffMap : ClassMap { public StaffMap() { Id(x => x.Id); Map(x => x.Name); References(x => x.Manager).Column("ManagerId"); HasMany(x => x.Team).KeyColumn("ManagerId").Inverse(); } } Now I want to run a query, which will load all the Staff and eager load the manager and Team members. This is what I came up with IList resutls = session.CreateCriteria () .SetFetchMode("Team", FetchMode.Eager) .SetResultTransformer(Transformers.DistinctRootEntity) .List (); however the SQL (does what i want) has duplicate columns, 2 team2_.ManagerId and 2 team2_.Id SELECT this_.Id as Id0_1_, this_.Name as Name0_1_, this_.ManagerId as ManagerId0_1_, team2_.ManagerId as ManagerId3_, team2_.Id as Id3_, team2_.Id as Id0_0_, team2_.Name as Name0_0_, team2_.ManagerId as ManagerId0_0_ FROM [SelfRef].[dbo].[Staff] this_ left outer join [SelfRef].[dbo].[Staff] team2_ on this_.Id=team2_.ManagerId The question is, should this be happening? did i do something wrong in the query or map? or is it a feature of the HHib im using (which is Version 2.1.0.4000)? many thanks in advance

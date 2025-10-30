@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 87640
+[parent_id]: 87626
+[tags]: 
+If you use a per-observation explanation, you could just average (or aggregate in some other way) the importances of features across the samples for each Dealer . For example, using shap to generate the per-observation explanation: import pandas as pd from sklearn.linear_model import LogisticRegression import shap data = [['Alex',10,13,1,0],['Bob',11,14,12,0],['Clarke',13,15,13,1],['Bob',12,15,1,1]] df = pd.DataFrame(data, columns=["dealer","x","y","z","loss"]) lr = LogisticRegression() lr.fit(df[['x', 'y', 'z']], df['loss']) # Whatever explainer you prefer: explainer = shap.explainers.Permutation(lr.predict_proba, df[['x', 'y', 'z']]) shap_values = explainer(df[['x', 'y', 'z']]) # get just the explanations for the positive class shap_values = shap_values[...,1] shap_df = pd.DataFrame(abs(shap_values.values)) shap_df.columns = ['x_shap', 'y_shap', 'z_shap'] shap_df['dealer'] = df['dealer'] shap_df.groupby('dealer').mean() produces dealer x_shap y_shap z_shap Alex 0.260427 0.140054 0.075176 Bob 0.106593 0.069035 0.091146 Clarke 0.268328 0.083706 0.085807

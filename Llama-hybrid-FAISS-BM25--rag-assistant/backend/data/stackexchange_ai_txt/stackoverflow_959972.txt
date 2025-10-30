@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 959972
+[parent_id]: 959951
+[tags]: 
+The two functions are not itself illegal. First, you in both case return a copy of a pointer, which points to an object having static storage duration: The string literal will live, during the whole program duration. But your main function is all about undefined behavior. You are not allowed to write into a string literal's memory :) What your main function does can be cut down to equivalent behavior "hello"[0] = '5'; "why am I not legal?"[0] = '5'; Both are undefined behavior and on some platforms crash (good!). Edit : Note that string literals have a const type in C++ (not so in C): char const[N] . Your assignment to a pointer to a non-const character triggers a deprecated conversion (which a good implementation will warn about, anyway). Because the above writings to that const array won't trigger that conversion, the code will mis-compile. Really, your code is doing this ((char*)"hello")[0] = '5'; ((char*)"why am I not legal?")[0] = '5'; Read C++ strings: [] vs *

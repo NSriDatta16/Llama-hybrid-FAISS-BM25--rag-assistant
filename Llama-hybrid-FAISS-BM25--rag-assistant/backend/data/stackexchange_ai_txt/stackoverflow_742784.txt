@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 742784
+[parent_id]: 742682
+[tags]: 
+A very elegant and intention revealing option is to define a new extension method on IEnumerable So you have: list = list.Distinct(foo => foo.id).ToList(); And ... public static IEnumerable Distinct (this IEnumerable list, Func lookup) where TKey : struct { return list.Distinct(new StructEqualityComparer (lookup)); } class StructEqualityComparer : IEqualityComparer where TKey : struct { Func lookup; public StructEqualityComparer(Func lookup) { this.lookup = lookup; } public bool Equals(T x, T y) { return lookup(x).Equals(lookup(y)); } public int GetHashCode(T obj) { return lookup(obj).GetHashCode(); } } A similar helper class can be built to compare objects. (It will need to do better null handling)

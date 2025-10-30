@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4910796
+[parent_id]: 
+[tags]: 
+Scope error - Call to a member function prepare() on a non-object
+
+So the scenario is simple. I use class that does something in database but in that class I call another class that also does something in DB. Thanks, include_once changed to include and it works! This is what I get: Fatal error: Call to a member function prepare() on a non-object -> mLog.php on line 20 I use db_config.php to create PDO object and then include it in my classes. db_config.php try { $DBH = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass); $DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); } catch (PDOException $e) { echo $e->getMessage(); } 1st class mLog.php prepare("INSERT INTO log (ip, action, time) VALUES (?, ?, ?)"); $STH->execute($values); $DBH = null; $STH = null; } catch (PDOException $e) { echo $e->getMessage(); } } } second class that uses first class (fragment because it's big and has many functions) public static function Add($catName, $catDescr = "", $catImgURL = "", $catSubLevel = 0, $catSubID = 0) { try { include_once "db_config.php"; include_once "mLog.php"; $values = array($catName, $catDescr, $catImgURL, $catSubLevel, $catSubID); $STH = $DBH->prepare("INSERT INTO cat (catName, catDescr, catImg, catSubLevel, catSubID) VALUES (?, ?, ?, ?, ?)"); $STH->execute($values); $DBH = null; $STH = null; //HERE IT IS Log::Add("Added category 111" . $catName); return true; } catch (PDOException $e) { echo $e->getMessage(); } }

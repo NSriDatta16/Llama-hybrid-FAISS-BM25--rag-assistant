@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2599817
+[parent_id]: 2586579
+[tags]: 
+I've found a solution that, in my opinion is just terrible but worked on my case. Well: reading the source code of the JasperViewer class, I found a protected field named viewer on that class. So, all I had to do was write a code like this: Field jrViewerField; try { jrViewerField = viewer.getClass().getDeclaredField("viewer"); jrViewerField.setAccessible(true); JRViewer jrViewer = (JRViewer) jrViewerField.get(viewer); List savers = new ArrayList (); for (JRSaveContributor sc : jrViewer.getSaveContributors()) { savers.add(sc); } for (JRSaveContributor sc : savers) { if (! sc.getClass().getName().toLowerCase().contains("pdf")) { jrViewer.removeSaveContributor(sc); } } } catch (Exception ex) { ex.printStackTrace(); } It's not a beautiful solution, but at least it worked with the 3.7.1 version of Jasper Reports. It have NO WARRANTY that may work with another versions of the system, so I highly discourage anyone to use this solution, only if that is your last resource.

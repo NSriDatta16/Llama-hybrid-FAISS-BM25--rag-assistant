@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 640838
+[parent_id]: 
+[tags]: 
+What's the best method for passing AWS credentials as user data to an EC2 instance?
+
+I have a job processing architecture based on AWS that requires EC2 instances query S3 and SQS. In order for running instances to have access to the API the credentials are sent as user data (-f) in the form of a base64 encoded shell script. For example: $ cat ec2.sh ... export AWS_ACCOUNT_NUMBER='1111-1111-1111' export AWS_ACCESS_KEY_ID='0x0x0x0x0x0x0x0x0x0' ... $ zip -P 'secret-password' ec2.sh $ openssl enc -base64 -in ec2.zip Many instances are launched... $ ec2run ami-a83fabc0 -n 20 -f ec2.zip Each instance decodes and decrypts ec2.zip using the 'secret-password' which is hard-coded into an init script. Although it does work, I have two issues with my approach. 'zip -P' is not very secure The password is hard-coded in the instance (it's always 'secret-password') The method is very similar to the one described here Is there a more elegant or accepted approach? Using gpg to encrypt the credentials and storing the private key on the instance to decrypt it is an approach I'm considering now but I'm unaware of any caveats. Can I use the AWS keypairs directly? Am I missing some super obvious part of the API?

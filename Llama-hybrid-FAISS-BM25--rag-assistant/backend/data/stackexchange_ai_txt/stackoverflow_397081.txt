@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 397081
+[parent_id]: 397075
+[tags]: 
+abort() exits your program without calling functions registered using atexit() first, and without calling objects' destructors first. exit() does both before exiting your program. It does not call destructors for automatic objects though. So A a; void test() { static A b; A c; exit(0); } Will destruct a and b properly, but will not call destructors of c . abort() wouldn't call destructors of neither objects. As this is unfortunate, the C++ Standard describes an alternative mechanism which ensures properly termination: Objects with automatic storage duration are all destroyed in a program whose function main() contains no automatic objects and executes the call to exit() . Control can be transferred directly to such a main() by throwing an exception that is caught in main() . struct exit_exception { int c; exit_exception(int c):c(c) { } }; int main() { try { // put all code in here } catch(exit_exception& e) { exit(e.c); } } Instead of calling exit() , arrange that code throw exit_exception(exit_code); instead.

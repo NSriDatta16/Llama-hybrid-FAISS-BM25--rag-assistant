@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1812675
+[parent_id]: 1812572
+[tags]: 
+Another possibility is to use a configured ThreadPoolExecutor. I believe this will work but strongly encourage readers to test it for themselves. Executor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue ()); The above is approx what newSingleThreadExecutor does in the Executors class. To satisfy the "error on concurrent task" requirement I think you can just change the queue implementation to a SynchronousQueue. Executor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new SynchronousQueue ()); This should allow one task to run and if a second if submitted before the first finishes the ThreadPoolExecutor RejectedExecutionHandler will get called, which by default throws a RejectedExecutionException.

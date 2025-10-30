@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2753117
+[parent_id]: 2751485
+[tags]: 
+Rails sets the log level in production mode to :info , hence it does not log cache hits and misses. If you set config.log_level = :debug in your config/enviroments/production.rb , then you see messages like: Cached fragment hit: views/test (0.2ms) Cached fragment miss: views/test (1.8ms) in your log. The second solution is to configure your development environment to perform caching, since :debug is the default log level in this environment. This can be done by setting: config.action_controller.perform_caching = true config.cache_store = :file_store, File.join(RAILS_ROOT, 'tmp', 'cache') This is the best way to do this, since if your app goes into production, you won't log that much. BTW: You don't have to call read_fragment in your controller. The cache helper method will do this for you.

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 308837
+[parent_id]: 
+[tags]: 
+Probability function from two random variables in PyMC3
+
+I'm new to Bayesian and PyMC3 and I am trying to predict a chance of failure very similar to this example (the part example:Challenger Space Shuttle Disaster ): http://nbviewer.jupyter.org/github/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/blob/master/Chapter2_MorePyMC/Ch2_MorePyMC_PyMC3.ipynb In this example the chance of failure is modeled with respect to the outside temperature. As a probability function, the logistic function is used. The pymc3 model is as follows: import pymc3 as pm temperature = challenger_data[:, 0] D = challenger_data[:, 1] # defect or not? #notice the`value` here. We explain why below. with pm.Model() as model: beta = pm.Normal("beta", mu=0, tau=0.001, testval=0) alpha = pm.Normal("alpha", mu=0, tau=0.001, testval=0) p = pm.Deterministic("p", 1.0/(1. + tt.exp(beta*temperature + alpha))) observed = pm.Bernoulli("bernoulli_obs", p, observed=D) # Mysterious code to be explained in Chapter 3 start = pm.find_MAP() step = pm.Metropolis() trace = pm.sample(120000, step=step, start=start) burned_trace = trace[100000::2] Now I want to make the probability function dependent of two stochastic variables, like outside temperature and O-Rings size for instance. I believe I should draw from two beta and alpha distributions, but I cannot see which probability function I should use.

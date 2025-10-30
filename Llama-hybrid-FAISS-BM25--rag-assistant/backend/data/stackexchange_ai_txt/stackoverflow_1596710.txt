@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1596710
+[parent_id]: 1596653
+[tags]: 
+Having thought about it a couple minutes, it seems very likely git-mv would do what you need to. I'm fairly sure that it will attempt the rename (which might be a no-op on a a case-insensitive OS) then add the rename to the index. This should be based on the arguments, not on the actual file - I see rename_cache_entry_at(pos, dst); in builtin-mv.c. I'm not sure if this is part of what you're asking or not, but with respect to your branch chaos, here's the general approach you probably want to take: Commit the rename fix to all of your "farthest downward" branches. These are probably topic and maintenance branches - the ones that are merged into other branches, but never have branches merged to them Merge these branches as per your normal workflow, fixing any conflicts that may result from the rename. Encourage everyone to pull soon, just in case the issue has a way to propagate further. For example, someone could work on the renamed file, then pull, and fix the rename conflict the wrong way, resulting in a state which would recreate the problem when pushed/pulled.

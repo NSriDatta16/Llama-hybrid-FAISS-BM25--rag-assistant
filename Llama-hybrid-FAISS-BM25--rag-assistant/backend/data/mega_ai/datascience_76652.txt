@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 76652
+[parent_id]: 
+[tags]: 
+Why does English ELMo model give embeddings for non-English words?
+
+Here's the code from my notebook: %tensorflow_version 1.x import tensorflow as tf import tensorflow_hub as hub elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True) tf.logging.set_verbosity(tf.logging.ERROR) def elmo_vectors(x): embeddings = elmo(x, signature="default", as_dict=True)["elmo"] with tf.Session() as sess: sess.run(tf.global_variables_initializer()) sess.run(tf.tables_initializer()) return sess.run(embeddings) Output for non-English language: (Hindi in this example) words = ['गोकुल'] v = elmo_vectors(words) print(v.shape) # (1,1,1024) print(v[0][0]) # Output: [ 0.3731584 0.5700774 -0.48072845 ... -0.1241736 0.5961436 -0.6986947 ] The documentation of the pre-trained ELMo on Tensorflow Hub shows that it was trained only on the English language. That is, the dataset from 1 billion word benchmark is based on monolingual English data. ( Source ) So, how/why am I getting embeddings for non-English vocabulary words from ELMo using the TF Hub model?

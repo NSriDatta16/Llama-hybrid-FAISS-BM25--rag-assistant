@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5586018
+[parent_id]: 
+[tags]: 
+Can F# type members reference each other?
+
+I was wondering if there is a way to let type members reference each other. I would like to write the following program like this: type IDieRoller = abstract RollDn : int -> int abstract RollD6 : int abstract RollD66 : int type DieRoller() = let randomizer = new Random() interface IDieRoller with member this.RollDn max = randomizer.Next(max) member this.RollD6 = randomizer.Next(6) member this.RollD66 = (RollD6 * 10) + RollD6 But, this.RollD66 is unable to see this.RollD6. I can sort of see why, but it seems most functional languages have a way of letting functions know that they exist ahead of time so that this or similar syntax is possible. Instead I've had to do the following, which isn't much more code, but it seems that the former would look more elegant than the latter, especially if there are more cases like that. type DieRoller() = let randomizer = new Random() let rollD6 = randomizer.Next(6) interface IDieRoller with member this.RollDn max = randomizer.Next(max) member this.RollD6 = rollD6 member this.RollD66 = (rollD6 * 10) + rollD6 Any tips? Thanks!

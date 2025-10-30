@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 479072
+[parent_id]: 479061
+[tags]: 
+When you use the scale function on a variable, this will apply to the whole variable. That is not what you want here. You need to try to disentangle the within-whale associations from the between-whale associations. One good way to do this is by mean-centering the variable(s) in question by group - that is, by whale in your case. Then you ALSO have to include the mean variable in the model. In R I would suggest using the dplyr package to create the whale means, and the built-in merge function to add the means to your data. Then you simply create the whale mean-centred variable by duducting the whale mean from it. For example: mydata % group_by(id) %>% summarise(duration_whale_mean = mean(duration))) mydata $duration_mean_cent duration - mydata$duration_whale_mean Then in your model you will have: foraging ~ duration_mean_cent + duration_whale_mean + ... (and you will not use the duration variable in the model.

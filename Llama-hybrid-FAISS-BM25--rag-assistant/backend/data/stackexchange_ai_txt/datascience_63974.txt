@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 63974
+[parent_id]: 
+[tags]: 
+What does the collate function in pytorch (geometric)?
+
+I am creating a message passing neural network and have some issues with the dataset creation. In pytorch (geometric) it is recommended to create a dataset with the following class. I wonder what is the meaning of the collate function that is called at the end of the process method? In what cases should I use my own collate function? My graphs have mostly different sizes. import torch from torch_geometric.data import InMemoryDataset class MyOwnDataset(InMemoryDataset): def __init__(self, root, transform=None, pre_transform=None): super(MyOwnDataset, self).__init__(root, transform, pre_transform) self.data, self.slices = torch.load(self.processed_paths[0]) @property def raw_file_names(self): return ['some_file_1', 'some_file_2', ...] @property def processed_file_names(self): return ['data.pt'] def download(self): # Download to `self.raw_dir`. def process(self): # Read data into huge `Data` list. data_list = [...] if self.pre_filter is not None: data_list = [data for data in data_list if self.pre_filter(data)] if self.pre_transform is not None: data_list = [self.pre_transform(data) for data in data_list] data, slices = self.collate(data_list) torch.save((data, slices), self.processed_paths[0]) The error I get is: RuntimeError: invalid argument 0: Sizes of tensors must match except in dimension 0. Got 4422 and 4032 in dimension 1 at /opt/conda/conda-bld/pytorch_1573049304260/work/aten/src/THC/generic/THCTensorMath.cu:71

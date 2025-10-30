@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3834886
+[parent_id]: 3834508
+[tags]: 
+Hm. I think I got something nasty. The code is not very pretty or good, but you probably get the idea. You should be able to use templates to recursively store objects of any type, and also recurse through them when calling the function. #include template class Event { public: Event(void (*fn)(first_arg, args...), first_arg first, args... in) : m_func(fn), var(first, in...) {} void operator()() { var(m_func); } private: void (*m_func)(first_arg, args...); template struct storage; template struct storage { storage(t_arg t) : m_var(t) {} template void operator()(t_func fn, tt_args... p) { fn(p..., m_var); } t_arg m_var; }; template struct storage { storage(t_arg t, t_arg2 t2, t_args... p) : m_var(t), m_storage(t2, p...) {} template void operator()(t_func fn, tt_args... p) { m_storage(fn, p..., m_var); } t_arg m_var; storage m_storage; }; storage var; }; void test(int a, float b) { std::cout event(test, 10, 100.0); event(); } Also, I think std::bind does something similar, but not sure :D

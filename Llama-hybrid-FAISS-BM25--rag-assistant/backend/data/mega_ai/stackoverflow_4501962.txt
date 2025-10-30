@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4501962
+[parent_id]: 4501607
+[tags]: 
+I agree with leveraging the common base class when you can, but you can't always add a method to the base class for every usage that might call for selecting between different subclasses. Your "map" solution is a decent approach for cases where the selection logic is specific to a piece of code, like matching user action to an object (e.g. popup), and you can't find a way to leverage the common base class. One drawback is initialization all the popups. but it is require only when valueChange You should defer the instantiation until you need it: interface Showable { void show(); } map() { map.put("p1", new Showable() { void show() { new Popup1().show(); } } ); map.put("p2", new Showable() { void show() { new Popup2().show(); } } ); map.put("p3", new Showable() { void show() { new Popup3().show(); } } ); } onValueChange() { map.get(selectedItem).show(); } The anonymous classes are stateless, so if you wanted to be extra efficient, you could create the anonymous instances once and reuse them.

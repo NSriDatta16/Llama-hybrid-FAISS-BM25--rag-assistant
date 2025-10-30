@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3736334
+[parent_id]: 3736270
+[tags]: 
+Could you send them as an XML blob or, failing that, pack the strings into a single string separater by a nonprinting character such as \n then split them at the other end? The latter is not exactly elegant but could work. Since you can't change the client perhaps you can fool it by forcing Soap to use RPC mode with literal binding: namespace WebTest { public struct UploadResponse { public string wwretval; public string wwrettext; } [WebService(Namespace = "http://tempuri.org/")] [WebServiceBinding(ConformsTo = WsiProfiles.None)] [System.ComponentModel.ToolboxItem(false)] public class Service1 : System.Web.Services.WebService { [SoapRpcMethod(ResponseElementName = "UploadResponse",Use=SoapBindingUse.Literal)] [WebMethod] public UploadResponse Upload() { UploadResponse ww = new UploadResponse(); ww.wwretval = "Hello"; ww.wwrettext = "World"; return ww; } } } That will generate a response with two strings inside of an UploadResponse element. You can then generate a fake wsdl as described here: How do I include my own wsdl in my Webservice in C#

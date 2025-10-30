@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 584132
+[parent_id]: 
+[tags]: 
+PCA reconstruction error of Sinusoids
+
+I'm using PCA to reconstruct a pair of sinusoidal signals. The second signal differs from the first in that its frequency is higher but I've kept the variance of the signals the same. I want to find out why the reconstruction error is higher for the higher frequency signal when using PCA to reconstruct it even though the variance is the same? Also why would the reconstruction error for a white noise signal be higher when its variance is the same as the sinusoids? I've also included a code snippet: import numpy as np from sklearn.decomposition import PCA def genSine(A,f0,fs,dur): t = np.arange(dur) sinusoid = A*np.sin(2*np.pi*t*(f0/fs)) return sinusoid def pca_reconstruction(X): pca = PCA(n_components = 1) latent=pca.fit_transform(X) X_projected = pca.inverse_transform(latent) return np.sum((X_projected-X)**2) amplitude=1.415 f0=1 fs=100 duration=20480 df1 = genSine(amplitude,f0,fs,duration) X1=np.reshape(df1,(2048,10)) print(pca_reconstruction(X1)) fs2=50 #higher frequency sinusoid df2 = genSine(amplitude,f0,fs2,duration) X2=np.reshape(df2,(2048,10)) print(pca_reconstruction(X2)) df3 = np.random.normal(scale=1, size=20480) X3=np.reshape(df3,(2048,10)) print(pca_reconstruction(X3)) #variance=1 #Reconstruction Error: #sinusoid: 654.8819222758402, sinusoid increasing frequency: 2473.0607892191633 #white noise: 18229.17924740033

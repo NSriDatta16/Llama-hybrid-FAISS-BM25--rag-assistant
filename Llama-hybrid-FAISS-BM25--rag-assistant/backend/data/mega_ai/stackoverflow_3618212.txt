@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3618212
+[parent_id]: 
+[tags]: 
+Performing a left outer join when an nhibernate filter is applied
+
+I am trying to perform a LEFT OUTER JOIN with nhibernate criteria. I also have a filter that gets applied to my queries. The problem I have is the filter stops the left outer join working properly if the join result is null. As a very simple example I want to return all the musicians, and if they are in a band then also their band NHibernate generates the following sql SELECT this_.Name, band2_.Name FROM Musicians this_ left outer join [Band] band2_ on this_.BandID = band2_.ID WHERE (band2_.IsDeleted = 0) which won't return the musicians if they aren't in a band. What I want is something like SELECT this_.Name, band2_.Name FROM Musicians this_ left outer join [Band] band2_ on this_.BandID = band2_.ID WHERE this_.ID = 4894 /* @p3 */ (band2_.ID IS NULL OR band2_.IsDeleted = 0) Is this possible with nhibernate? UPDATE var projections = new[] { Projections.Property("Musician.Name").As("MusicianName"), Projections.Property("Band.Name").As("BandName") }; return this.sessionProvider.GetSession().CreateCriteria ("Musician") .CreateCriteria("Musician.Band", "Band", JoinType.LeftOuterJoin) .SetProjection(projections) .Add(Restrictions.Eq("Musician.ID", parameters.MusicianId)) .SetResultTransformer(Transformers.AliasToBean ()) .UniqueResult (); The filter is defined with FluentNHibernate this.WithName(FilterName).WithCondition("IsDeleted = 0")

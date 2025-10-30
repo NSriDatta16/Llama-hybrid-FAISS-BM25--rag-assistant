@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2390192
+[parent_id]: 
+[tags]: 
+Outlook Interop: Password protected PST file headache
+
+Okay, I have no problem identifying the .PST file using the Outlook Interop assemblies in a C# app. But as soon as I hit a password protected file, I am prompted for a password. We are in the process of disabling the use of PSTs in our organization and one of the steps is to unload the PST files from the users' Outlook profile. I need to have this app run silently and not prompt the user. Any ideas? Is there a way to create the Outlook.Application object with no UI and then just try to catch an Exception on password protected files? // create the app and namespace Application olApp = new Application(); NameSpace olMAPI = olApp.GetNamespace("MAPI"); // get the storeID of the default inbox string rootStoreID = olMAPI.GetDefaultFolder(OlDefaultFolders.olFolderInbox).StoreID; // loop thru each of the folders foreach (MAPIFolder fo in olMAPI.Folders) { // compare the first 75 chars of the storeid // to prevent removing the Inbox folder. string s1 = rootStoreID.Substring(1, 75); string s2 = fo.StoreID.Substring(1, 75); if (s1 != s2) { // unload the folder olMAPI.RemoveStore(fo); } } olApp.Quit();

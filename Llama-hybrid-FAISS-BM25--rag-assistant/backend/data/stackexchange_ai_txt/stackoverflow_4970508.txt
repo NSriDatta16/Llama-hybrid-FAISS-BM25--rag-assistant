@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4970508
+[parent_id]: 4970216
+[tags]: 
+You want to be creating hashes, not arrays - e.g. instead of: my @params = ( 'a' => '0', 'b' => '1', ); You should use: my %params = ( a => 0, b => 1, ); When passing the params to the LWP::UserAgent post method, you need to pass a reference to the hash, e.g.: $response = $browser->post($url, \%params, %headers); You could also look at the request you're sending to the server with: print $response->request->as_string; You can also use a handler to automatically dump requests and responses for debugging purposes: $ua->add_handler("request_send", sub { shift->dump; return }); $ua->add_handler("response_done", sub { shift->dump; return });

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2764688
+[parent_id]: 
+[tags]: 
+FreeRTOS queues for IO before scheduler starts (or after it stops)
+
+I'm looking for advice on how to best implement thread-safe IO (e.g. for printf going to a debug serial port) in an environment in which the operating system scheduler may yet to have started, be running, suspended or may have stopped or crashed. I'm using Newlib and FreeRTOS. At the moment, I'm doing the (seemingly-standard) FreeRTOS approach of having the _write system call (Newlib) queue characters into a FreeRTOS queue which is then emptied from an interrupt service routine (filling the serial port hardware FIFO then waiting for the FIFO empty interrupt). This has the disadvantage that (at least on FreeRTOS) the queue can only be used safely when the scheduler is running, and debug output can not be printed when interrupts are disabled (as they are during boot until the scheduler starts, or after a fatal error condition (exactly where debug printf output would be most useful :-). Would it be best to have the _write system call query the scheduler and/or interrupt status, and use queues if the scheduler is running and use blocking/polling serial IO when interrupts are disabled? Is there a more elegant idea I haven't thought of yet? Thanks

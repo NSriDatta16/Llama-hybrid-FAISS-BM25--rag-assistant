@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 227994
+[parent_id]: 
+[tags]: 
+SQL stored procedure temporary table memory problem
+
+We have the following simple Stored Procedure that runs as an overnight SQL server agent job. Usually it runs in 20 minutes, but recently the MatchEvent and MatchResult tables have grown to over 9 million rows each. This has resulted in the store procedure taking over 2 hours to run, with all 8GB of memory on our SQL box being used up. This renders the database unavailable to the regular queries that are trying to access it. I assume the problem is that temp table is too large and is causing the memory and database unavailablity issues. How can I rewrite the stored procedure to make it more efficient and less memory intensive? Note: I have edited the SQL to indicate that there is come condition affecting the initial SELECT statement. I had previously left this out for simplicity. Also, when the query runs CPU usage is at 1-2%, but memoery, as previously stated, is maxed out CREATE TABLE #tempMatchResult ( matchId VARCHAR(50) ) INSERT INTO #tempMatchResult SELECT MatchId FROM MatchResult WHERE SOME_CONDITION DELETE FROM MatchEvent WHERE MatchId IN (SELECT MatchId FROM #tempMatchResult) DELETE FROM MatchResult WHERE MatchId In (SELECT MatchId FROM #tempMatchResult) DROP TABLE #tempMatchResult

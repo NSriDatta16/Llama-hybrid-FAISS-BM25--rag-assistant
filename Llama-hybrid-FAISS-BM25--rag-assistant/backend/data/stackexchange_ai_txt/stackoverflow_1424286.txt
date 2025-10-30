@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1424286
+[parent_id]: 236171
+[tags]: 
+No KB article can give you an upper bound. Upper bounds can vary depending on the hardware available - what is an upperbound for a 2G memory machine will be different for a machine with 16g of ram. It will also depend on the size of the GC heap, how fragmented it is etc. What you should do is come up with a metric of your own using back of envelope calculations. Figure out how many pages you want to download per minute. That should determine how many async requests you want outstanding (N). Once you know N, create a piece of code (like the consumer end of a producer-consumer pipeline) that can create N outstanding async download requests. As soon as a request finishes (either due to timeout or due to success), kick off another async request by pulling a workitem from the queue. You also need to make sure that the queue does not grow beyond bounds, if for eg, the download becomes slow for whatever reason.

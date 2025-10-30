@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2742226
+[parent_id]: 2742196
+[tags]: 
+No instance of a namespace is ever "created" at runtime. Think of it as a way of organizing code, like a directory on the hard disk. I think of shared method as just a chunk of code that can be run without instantiating an object. So every user will be having their own logical independent process running thru the code. If you want a single object that is shared by each user it can be done like the following: public class cApp { static readonly cDB _cDB = new cDB(ConfigurationManager.ConnectionStrings["MyConnString"].ConnectionString); public static cDB DB { get { return _cDB; } } } This instantiates a single object of type cDB the first time it is touched in a thread save way. It will be called _cDB that can be used in code thru the property DB. Like: cApp.DB.MyMethod(); This will only have one instance instantiated, but again each user will execute the code independently. So the value of the private variables are seen by each process (like the connection string in the example), but a local method setting a local variable will not affect any other process running through that same code.

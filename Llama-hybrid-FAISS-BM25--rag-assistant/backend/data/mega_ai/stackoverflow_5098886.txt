@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5098886
+[parent_id]: 5083328
+[tags]: 
+The problem with Azure Storage is that there is no way to ensure atomic operations, so there is no way to "lock" a resource in a straightforward way. I mean, you cannot execute this atomically: Check if locked. If not locked, lock. Fetch If locked, return "Is Locked, try again later" So then, you can try to set a "locked" flag in your table entity, but when the query comes back saying "is locked", webrole can lock it. Of course you cannot lock straightaway w/o check. Azure Blobs have something called "leases" but are for minimum one minute, not very suitable for webpages where each page can write and read. As there is no way to lock resources, you end with an app that runs when you have very few users... if not you're the only one :D. But when you make some load test, you see a lot of concurrency issues related with ETags. I tried to use the session provider and I gave up . The examples runs quite neat, but if you put several webroles in parallel and execute some heavy load test, you will see the issues.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3992428
+[parent_id]: 383324
+[tags]: 
+Stefan S. said: I understand that .NET FileStream's Flush method only writes the current buffer to disk No, .NET FileStream's Flush only writes the .NET buffers to the OS cache, it does not flush the OS cache to disk. Sadly the MSDN doc on this class doesn't say that. For .NET using System.Runtime.InteropServices; . . . // start of class: [DllImport("kernel32", SetLastError=true)] private static extern bool FlushFileBuffers(IntPtr handle); . . . stream.Flush(); // Flush .NET buffers to OS file cache. #pragma warning disable 618,612 // disable stream.Handle deprecation warning. if (!FlushFileBuffers(stream.Handle)) // Flush OS file cache to disk. #pragma warning restore 618,612 { Int32 err = Marshal.GetLastWin32Error(); throw new Win32Exception(err, "Win32 FlushFileBuffers returned error for " + stream.Name); } For .NET 4.0, you can instead use the new flush(true) method. 11/09/2012 update: MS bug report here says it's broken, then fixed, but doesn't say what version or service pack it was fixed in! Sounds like bug was if internal .NET FileStream buffer is empty, the Flush(true) did nothing??

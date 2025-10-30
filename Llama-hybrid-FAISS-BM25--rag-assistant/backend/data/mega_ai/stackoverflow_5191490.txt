@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5191490
+[parent_id]: 5191322
+[tags]: 
+This program invokes undefined behavior. It both modifies and uses the value of *q without a sequence point between. C99 standard, Section 6.5, paragraph 2: Between the previous and next sequence point an object shall have its stored value modified at most once by the evaluation of an expression. Furthermore, the prior value shall be read only to determine the value to be stored. *q is read in the sub-expression (*p + *q) , and this is not done to determine the value to store in the sub-expression (*q = *p) . The intent appears to be to swap the two values pointed to, but a completely reasonable alternate interpretation also exists: evaluate (*q = *p) first, then (*p + *q) (which would equal *p + *p thanks to the assignment). This would result in *p being assigned *p + *p - *p , or just *p . As a result, z would be assigned the value of y (15), while y would remain 15. I must emphasize that because this is undefined, your compiler can do pretty much whatever it wants, not just limited to this interpretation or swapping the two.

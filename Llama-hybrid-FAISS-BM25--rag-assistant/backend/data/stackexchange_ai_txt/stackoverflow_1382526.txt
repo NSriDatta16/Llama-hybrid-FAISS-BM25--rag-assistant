@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1382526
+[parent_id]: 1382492
+[tags]: 
+The problem you are running into is that 1, an integer, is a value type in .NET and when it is passed around it is copied (pass by value). So you successfully modified a copy of 1 but not the original one in the array. You can see this if you box (or cast) the 1 to an object (reference type) e.g.: $p = @([psobject]1) $p[0] | %{ add-member NoteProperty isPrime $true; $_ | gm } $p[0] | gm OP (spoon16) Answer This is how my code in my script actually ended up looking. If this can be optimized please feel free to edit. $p = @() #declare array 2..$n | %{ $p += [psobject] $_ } #initialize $p | add-member -membertype noteproperty -name isPrime -value $true

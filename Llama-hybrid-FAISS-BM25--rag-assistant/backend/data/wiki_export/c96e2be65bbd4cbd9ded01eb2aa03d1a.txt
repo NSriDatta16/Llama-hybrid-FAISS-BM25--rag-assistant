@@ -1,0 +1,61 @@
+Maekawa's algorithm is an algorithm for mutual exclusion on a distributed system. The basis of this algorithm is a quorum-like approach where any one site needs only to seek permissions from a subset of other sites.
+
+Algorithm
+
+Terminology 
+ A site is any computing device which runs the Maekawa's algorithm
+ For any one request of entering the critical section:
+ The requesting site is the site which is requesting to enter the critical section.
+ The receiving site is every other site which is receiving the request from the requesting site.
+ ts refers to the local time stamp of the system according to its logical clock
+
+Algorithm
+Requesting site:
+ A requesting site  sends a message  to all sites in its quorum set .
+
+Receiving site:
+ Upon reception of a  message, the receiving site  will:
+ If site  does not have an outstanding  message (that is, a  message that has not been released), then site  sends a  message to site .
+ If site  has an outstanding  message with a process with higher priority than the request, then site  sends a  message to site  and site  queues the request from site .
+ If site  has an outstanding  message with a process with lower priority than the request, then site  sends an  message to the process which has currently been granted access to the critical section by site . (That is, the site with the outstanding  message.)
+ Upon reception of a  message, the site  will:
+ Send a  message to site  if and only if site  has received a  message from some other site or if  has sent a yield to some other site but have not received a new .
+ Upon reception of a  message, site  will:
+ Send a  message to the request on the top of its own request queue. Note that the requests at the top are the highest priority.
+ Place  into its request queue.
+ Upon reception of a  message, site  will:
+ Delete  from its request queue.
+ Send a  message to the request on the top of its request queue.
+
+Critical section:
+ Site  enters the critical section on receiving a  message from all sites in .
+ Upon exiting the critical section,  sends a  message to all sites in .
+
+Quorum set ():
+A quorum set must abide by the following properties:
+ 
+ 
+ 
+ Site  is contained in exactly  request sets
+
+Therefore:
+
+Performance
+ Number of network messages;  to 
+ Synchronization delay: 2 message propagation delays
+ The algorithm can deadlock without protections in place.
+
+See also
+ Lamport's bakery algorithm
+ Lamport's Distributed Mutual Exclusion Algorithm
+ Ricart–Agrawala algorithm
+ Raymond's algorithm
+
+References
+
+ M. Maekawa, "A √N algorithm for mutual exclusion in decentralized systems”, ACM 
+Transactions in Computer Systems, vol. 3., no. 2., pp. 145–159, 1985.
+ Mamoru Maekawa, Arthur E. Oldehoeft, Rodney R. Oldehoeft (1987). Operating Systems: Advanced Concept. Benjamin/Cummings Publishing Company, Inc.
+ B. Sanders (1987). The Information Structure of Distributed Mutual Exclusion Algorithms. ACM Transactions on Computer Systems, Vol. 3, No. 2, pp. 145–59.
+
+Concurrency control algorithms

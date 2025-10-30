@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4548320
+[parent_id]: 4548190
+[tags]: 
+File dir = new File(System.getProperty("catalina.base"), "uploads"); It won't work on environments where catalina.base property is absent. So you need to either document it properly in the installation manual of the webapp to ensure that this property is been set on the server machine in question, or to look for an alternative approach. ServletActionContext.getServletContext().getRealPath("uploads"); This is not a good choice as permanent storage. Everything will get lost whenever you redeploy the WAR. Rather store it in a known and fixed path outside your webapp and add its path as in Tomcat's /conf/server.xml so that it's available online as well. If you don't want to alter the Tomcat's /conf/server.xml for some reason, then you need to create a servlet which reads the file from disk using FileInputStream and writes it to the OutputStream of the response. You can find here a basic example. Related questions: Simplest way to serve static files from outside application server

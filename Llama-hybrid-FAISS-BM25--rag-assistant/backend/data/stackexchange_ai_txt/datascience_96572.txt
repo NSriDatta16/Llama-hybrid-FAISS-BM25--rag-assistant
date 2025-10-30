@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 96572
+[parent_id]: 
+[tags]: 
+Deep learning model is giving strange metrics
+
+I am trying to build a deep learning model for automatic short answer scoring using TensorFlow. I am using this dataset: https://www.kaggle.com/c/asap-sas/data I am trying to build a model that suits every question alone, and I am using quadratic weighted kappa(qwk) as a metric. The model gives a great qwk for questions 1,2 and 3. However, for the rest of the questions, it gives a qwk of 0. Here is my model: tf.keras.backend.clear_session() epochs = 3000 callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=30) rnn_e_model = tf.keras.Sequential([ tf.keras.layers.Input(shape=(1,513)), tf.keras.layers.LSTM(64,activation="tanh", return_sequences=True, dropout=0.2), tf.keras.layers.LSTM(128,activation="tanh", return_sequences=True, dropout=0.2), tf.keras.layers.LSTM(64,activation="tanh", return_sequences=True, dropout=0.2), tf.keras.layers.LSTM(32 ,activation="tanh", dropout=0.2), tf.keras.layers.Dense(4, activation="softmax"), ]) op = keras.optimizers.Adam(learning_rate=0.0001) loss = keras.losses.SparseCategoricalCrossentropy() rnn_e_model.compile(optimizer=op, loss=loss, metrics=[tfa.metrics.CohenKappa(weightage="quadratic", sparse_labels=True, num_classes=4)]) rnn_e_history = rnn_e_model.fit(X_train, y_train,epochs=epochs, validation_split=0.1, callbacks=[callback], batch_size=64) I am using google's universal sentence encoder to embed the answers as well.

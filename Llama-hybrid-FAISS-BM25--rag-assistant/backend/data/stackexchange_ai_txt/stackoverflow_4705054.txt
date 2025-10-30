@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4705054
+[parent_id]: 4704585
+[tags]: 
+Unicode string literals support began in GCC 4.5. Maybe that's the problem. [edit] After some digging I've found that streams for this new unicode literals are described in N2035 and it was included in a draft of the standard. According to this document you need u32ofstream to output you string but this class is absent in GCC 4.5 C++0x library. As a workaround you can use ordinary fstream: std::ofstream fout2("output2.txt", std::ios::out | std::ios::binary); fout2.write((const char *)str.c_str(), str.size() * 4); This way I've output your string in UTF-32LE on my Intel machine (which is little-endian). [edit] I was a little bit wrong about the status of u32ofstream : according to the latest draft on the The C++ Standards Committee's web site you have to use std::basic_ofstream as you did. This class would use codecvt class (see end of §27.9.1.1) which has to be implemented in the standard library (search codecvt in the document), but it's not available in GCC 4.5.

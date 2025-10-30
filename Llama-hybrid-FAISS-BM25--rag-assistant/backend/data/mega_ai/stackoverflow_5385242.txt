@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5385242
+[parent_id]: 5347293
+[tags]: 
+I figured out the blocks seem to be missing because the namenode server was temporarily unavailable, thus corrupting the filesystem for that file. It appeared the part of the file without the missing blocks could still be read/copied. Some more information on dealing with corruption in hdfs is available at https://twiki.grid.iu.edu/bin/view/Storage/HadoopRecovery (mirror: http://www.webcitation.org/5xMTitU0r ) Edit: It seems this issue was due to an issue with Scribe (or more specifically the DFSClient used by Scribe) hanging when trying to write to HDFS. We manually patched the source of our hadoop cluster with HADOOP-6099 and HDFS-278, rebuilt the binaries and restarted the cluster with the new version. There have been no issues in the two months we have been running with the new version.

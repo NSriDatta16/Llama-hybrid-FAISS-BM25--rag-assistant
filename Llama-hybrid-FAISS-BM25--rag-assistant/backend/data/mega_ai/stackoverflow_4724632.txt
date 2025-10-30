@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4724632
+[parent_id]: 4675784
+[tags]: 
+may I ask how do you load your html source from the local FS ? Also what does your MailCompose class do, to interact with the document loaded into the UIWebView ? If you are reading the contents of an html file into a string and then load it into the UIWebView, then you have to change it, and load it using the file:// protocol. Instead of loading the html source as a string : NSString *html = [NSString stringWithContentsOfFile:[path stringByAppendingString:@"path to the html file"] encoding:NSUTF8StringEncoding error:NULL]; [webView loadHTMLString:html baseURL:baseURL]; Go ahead and load the actual html file via an NSURLRequest (file:// url) NSString *path = [[NSBundle mainBundle] bundlePath]; NSURL *baseURL = [NSURL fileURLWithPath:[path stringByAppendingString:@"path and file name of the file"]]; NSURLRequest *request = [NSURLRequest requestWithURL:baseURL]; [webView loadRequest:request]; Doing so, enables access to window.localStorage, window.openDatabase and other objects. Cheers

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 693158
+[parent_id]: 692975
+[tags]: 
+Assuming you are using composite-element to map your UserBook class: var top10Books = session .CreateQuery(@"select b.Book from User u join fetch u.Books b where b.Status = :status") .SetParameter("status", "Read") .SetMaxResults(10) .SetResultTransformer(CriteriaSpecification.DistinctRootEntity) .List (); And here's the link to the complete source code. EDIT: I see that you require the number of times a book has been read. Here's the query: var top = session .CreateQuery(@"select b.Book, count(b.Book.Id) from User u join fetch u.Books b where b.Status = :status group by b.Book") .SetParameter("status", "Read") .SetMaxResults(10) .List (); foreach (var item in top) { var book = (Book)item[0]; var readCount = (long)item[1]; Console.WriteLine("book id: {0}, read count: {1}", book.Id, readCount); }

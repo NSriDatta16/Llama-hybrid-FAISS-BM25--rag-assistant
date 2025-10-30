@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 219393
+[parent_id]: 219385
+[tags]: 
+I'm not familiar with JAGS but your problem is quite straight forward. The reason we do MCMC is to estimate the posterior distribution of a particular parameter(s). As a result, once you finished running the MCMC, you have a full posterior distribution of your parameters. You can use R's quantile function and the posterior distribution as the input to estimate the parameter values at the $.025$ and $.0975$ quantiles. Then just use those parameter values to plot using something similar to cf[1] + cf[2]*x1 + cf[3]*x2 code. There is likely a cleaner, quicker way or even a built-in function but here's my quick and dirty take on it. #plot relationship plot(z.fit~ x1.range, cex=0) lines(smooth.spline(z.fit~x1.range), lwd=2, col='purple') #get quantiles quant.matrix = summary(jags.out)$quantiles[,c(1,2,4,5)] #make convenience plotting function plotL = function(idx){ cf = c(quant.matrix[1,idx[1]], quant.matrix[2,idx[2]], quant.matrix[3,idx[3]]) lines(x1.range, z.fit

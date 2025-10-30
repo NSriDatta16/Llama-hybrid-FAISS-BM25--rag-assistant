@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 667290
+[parent_id]: 
+[tags]: 
+SQLite database - cannot see updates
+
+I have a sqlite database and I am adding to it new words. The problem is that I can see them added to a table only after restarting application. The "SELECT" statement doesn't "see" newly added elements before restarting application. Why may this happen? I am creating some kind of a dictionary. Here is how I add new items: const char *sql_query = "INSERT INTO words(word) VALUES(?)"; if(sqlite3_prepare_v2(database, sql_query, -1, &addWordsStmt, NULL) != SQLITE_OK) { return FALSE; } sqlite3_bind_text(addWordsStmt, 1, [ word UTF8String], -1, SQLITE_TRANSIENT); if( sqlite3_step(addWordsStmt) != SQLITE_DONE) NSAssert1(0, @"Error while inserting data. '%s'", sqlite3_errmsg(database)); sqlite3_reset(addWordsStmt); sqlite3_finalize(addWordsStmt); And here is my retrieval code: const char *sql_query = "SELECT word FROM words WHERE id=?"; if(sqlite3_prepare_v2(database, sql_query, -1, &getWordsStmt, NULL) != SQLITE_OK) { return; } sqlite3_bind_int(getWordsStmt, 1, wordid); if( sqlite3_step(getWordsStmt) != SQLITE_ROW) { NSLog(@"Error while getting data. '%s'", sqlite3_errmsg(database)); sqlite3_reset(getWordsStmt); return; } NSString *word = [NSString stringWithUTF8String:(char *)sqlite3_column_text(getWordsStmt, 0)]; sqlite3_reset(getWordsStmt); sqlite3_finalize(getWordsStmt);

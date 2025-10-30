@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1588574
+[parent_id]: 
+[tags]: 
+How to refactor this?
+
+I'm struggling with a small issue with regard to how I go about refactoring this to a decent pattern. public class DocumentLibrary { private IFileSystem fileSystem; private IDocumentLibraryUser user; public DocumentLibrary(IDocumentLibraryUser user) : this(user, FileSystemFrom(user)) { } public DocumentLibrary(IDocumentLibraryUser user, IFileSystem fileSystem) { this.user = user; this.fileSystem = fileSystem; } public void Create(IWorkerDocument document) { document.SaveTo(fileSystem); } public IWorkerDocument AttemptContractRetrieval() { return new Contract(fileSystem, user); } public IWorkerDocument AttemptAssignmentRetrieval() { return new Assignment(fileSystem, user); } private static IFileSystem FileSystemFrom(IDocumentLibraryUser user) { var userLibraryDirectory = new DirectoryInfo("/DocLib/" + EnvironmentName() + "/" + user.Id); return new FileSystem(userLibraryDirectory); } private static string EnvironmentName() { using (var edmxContext = new Entities()) { return (from setting in edmxContext.EnvironmentSettings where setting.Name == "EnvironmentName" select setting.Value).First(); } } } I have two types of worker documents, but I can't seem to easily refactor the two methods above ( AttemptContractRetrieval and AttemptAssignmentRetrieval ) to a decent form. Any help would be much appreciated. Regards, Jim.

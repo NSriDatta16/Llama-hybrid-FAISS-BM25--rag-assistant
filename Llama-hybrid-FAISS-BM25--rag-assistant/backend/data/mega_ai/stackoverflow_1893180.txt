@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1893180
+[parent_id]: 1893168
+[tags]: 
+On testing, the foreign keys are not created on my machine using this syntax: CREATE TABLE bugs ( ... reported_by VARCHAR(100) REFERENCES accounts(account_name), ... ) ENGINE = INNODB; But they are when I use this create statement: CREATE TABLE bugs ( ... reported_by VARCHAR(100), ... FOREIGN KEY (reported_by) REFERENCES accounts(account_name) ) ENGINE = INNODB; An easy way to see if foreign keys exist on a table is: show create table bugs_products Or you can query the information schema: select table_schema , table_name , column_name , referenced_table_schema , referenced_table_name , referenced_column_name from information_schema.KEY_COLUMN_USAGE where table_name = 'bugs' Also check you're using the InnoDB storage engine. The MyISAM engine does not support foreign keys. You can find the engine like: select table_schema, table_name, engine from information_schema.TABLES where table_name = 'bugs' If you try to create a foreign key on a MyISAM table, it will silently discard the references and pretend to succeed.

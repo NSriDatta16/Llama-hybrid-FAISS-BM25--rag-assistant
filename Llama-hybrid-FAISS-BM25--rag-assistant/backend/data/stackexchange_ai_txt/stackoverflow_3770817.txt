@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3770817
+[parent_id]: 3770781
+[tags]: 
+Most modern std::string implementations 1 save very small strings directly on the stack in a statically sized char array instead of using dynamic heap storage. This is known as Small (or Short) String Optimisation (SSO). It allows implementations to avoid heap allocations for small string objects and improves locality of reference. Furthermore, there will be a std::size_t member to save the strings size and a pointer to the actual char storage. How this is specifically implemented differs but something along the following lines works: template struct basic_string { char* begin_; size_t size_; union { size_t capacity_; char sso_buffer[16]; }; }; On typical architectures where sizeof (void*) = 8, this gives us a total size of 32 bytes. 1 The “big three” (GCC’s libstdc++ since version 5, Clang’s libc++ and MSVC’s implementation) all do it. Others may too.

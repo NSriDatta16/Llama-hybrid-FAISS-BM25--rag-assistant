@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2793644
+[parent_id]: 2793293
+[tags]: 
+Take a look at the documentation for g_thread_create() . Also read this tutorial and this blog post for more information on multithreaded GTK programs. Basically you'll want to call gtk_main() first when you've built your user interface and started your program. Then in the callback for the "start" button, create a new thread with g_thread_create() in which you call pcap_loop() . The "stop" button is a little more difficult since GLib doesn't allow you to interrupt a thread from a different thread. You'll have to create some signaling mechanism; for example, a boolean abort flag protected by a GMutex . In your stop button callback, lock the flag with g_mutex_lock() , set it, and unlock it with g_mutex_unlock() . In your packet_handler , also lock the flag, read it, and unlock it. If the flag was set, then call whatever it is you call to make pcap break out of the loop.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2226348
+[parent_id]: 2226025
+[tags]: 
+Ok, I found a solution. Not sure this is the best , so I will leave it open for a little while if some one wants to provide a better answer / refine my solution. What I did was extend org.hibernate.criterion.Order thusly: package com.mycorp.common.hibernate; import org.hibernate.Criteria; import org.hibernate.HibernateException; import org.hibernate.criterion.CriteriaQuery; import org.hibernate.criterion.Order; import org.hibernate.engine.SessionFactoryImplementor; import com.mycorp.LocalizationUtil; public class LocalStringOrder extends Order { private static final long serialVersionUID = 1L; private boolean ascending; private String propName; public LocalStringOrder(String prop, boolean asc) { super(prop, asc); ascending = asc; propName = prop; } public String toSqlString(Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException { String[] columns = criteriaQuery.getColumnsUsingProjection(criteria, propName); StringBuffer fragment = new StringBuffer(); for ( int i=0; i Then it was just a matter of saying criteria.addOrder(LocalStringOrder.asc('prop')) .

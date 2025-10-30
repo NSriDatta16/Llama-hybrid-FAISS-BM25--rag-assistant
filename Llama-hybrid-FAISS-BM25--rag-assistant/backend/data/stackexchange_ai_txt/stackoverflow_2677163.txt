@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2677163
+[parent_id]: 2674123
+[tags]: 
+In multi.py on line 96 "self.classifiers[i].train(datai)" is called without passing "**args", so that if you call "mc.train(data, saveSpace=False)", this saveSpace-Argument gets lost. This is why you get an error message if you try to save the classifiers in your multiclass-classifier individually. But if you change this line to pass all arguments, you can save each classifier individually: #!/usr/bin/python import numpy from PyML.utils import misc from PyML.evaluators import assess from PyML.classifiers.svm import SVM, loadSVM from PyML.containers.labels import oneAgainstRest from PyML.classifiers.baseClassifiers import Classifier from PyML.containers.vectorDatasets import SparseDataSet from PyML.classifiers.composite import CompositeClassifier class OneAgainstRestFixed(CompositeClassifier) : '''A one-against-the-rest multi-class classifier''' def train(self, data, **args) : '''train k classifiers''' Classifier.train(self, data, **args) numClasses = self.labels.numClasses if numClasses

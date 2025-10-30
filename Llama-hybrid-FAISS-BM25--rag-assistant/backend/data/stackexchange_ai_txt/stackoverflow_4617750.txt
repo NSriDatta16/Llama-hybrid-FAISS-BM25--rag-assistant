@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4617750
+[parent_id]: 4617419
+[tags]: 
+The data frame you made has a header (col.names) which is not compatible with the rnorm function. See: > dat dat c.10..100..50. mean sd 1 10 5 1 2 100 5 2 3 50 10 1 And the m*pply function do not know what to do with the 'c.10..100..50...' column. As you can see in the docs ( ?mdply ), the following example works like a charm: > mdply(data.frame(mean = 1:5, sd = 1:5), rnorm, n = 2) mean sd V1 V2 1 1 1 0.09919179 0.6083586 2 2 2 0.92787891 -0.1139743 3 3 3 2.21236781 0.8029677 4 4 4 4.16506428 9.2477373 5 5 5 1.26558507 12.0633377 If you really want different number of observations with the different parameters, you should not use mdply, because the matrix/data.frame must have the same number of columns. Insted use mlply , e.g.: > mlply(data.frame(n=1:5, mean = 1:5, sd = 1:5), rnorm) $`1` [1] 1.053083 $`2` [1] -1.650090 2.239547 $`3` [1] -0.94697908 -1.11479730 -0.03467497 $`4` [1] 6.427796 1.482655 1.436822 -5.993420 $`5` [1] 4.557689 6.217015 2.105255 -1.309664 -2.969184 attr(,"split_type") [1] "array" attr(,"split_labels") n mean sd 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5

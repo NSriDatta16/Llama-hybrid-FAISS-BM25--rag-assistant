@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4219169
+[parent_id]: 4219057
+[tags]: 
+It's that you have many terms undefined, because it relies on several variables defined outside of the function. Instead just import django.utils.termcolors as termcolors red_hello = termcolors.colorize("Hello", fg='red') # '\x1b[31mHello\x1b[0m' print red_hello Or just also copy the first few lines of django/utils/termcolors.py specifically: color_names = ('black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white') foreground = dict([(color_names[x], '3%s' % x) for x in range(8)]) background = dict([(color_names[x], '4%s' % x) for x in range(8)]) RESET = '0' def colorize( ... ): ... print colorize("Hello", fg='red') # '\x1b[31mHello\x1b[0m' Also note: >>> from django.utils.termcolors import colorize >>> red_hello = colorize("Hello", fg="red") >>> red_hello # by not printing; it will not appear red; special characters are escaped '\x1b[31mHello\x1b[0m' >>> print red_hello # by print it will appear red; special characters are not escaped Hello

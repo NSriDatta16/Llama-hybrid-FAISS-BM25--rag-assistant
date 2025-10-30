@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 432871
+[parent_id]: 432832
+[tags]: 
+I don't think there's a function called CreateConsole , but there's AllocConsole . Assuming that's what you meant, I think the difference is that AttachConsole(ATTACH_PARENT_PROCESS) can return ERROR_INVALID_HANDLE if the parent process doesn't have a console. Try running this code from both a command prompt and Start -> Run: #include #pragma comment ( lib, "user32.lib" ) int main() { BOOL b; char msg[1024]; b = FreeConsole(); sprintf(msg, "%d", b); MessageBox(NULL, msg, "FreeConsole", 0); b = AttachConsole(ATTACH_PARENT_PROCESS); sprintf(msg, "%d", b); MessageBox(NULL, msg, "AttachConsole", 0); return 0; } When run from a command prompt, two message boxes containing a 1 are displayed, meaning both calls succeeded. When run from Start -> Run, the first box contains 1 and the second contains 0 , meaning that only the first call succeeded. The second one fails because explorer.exe (which is the parent of a process launched from Start -> Run) doesn't have a console.

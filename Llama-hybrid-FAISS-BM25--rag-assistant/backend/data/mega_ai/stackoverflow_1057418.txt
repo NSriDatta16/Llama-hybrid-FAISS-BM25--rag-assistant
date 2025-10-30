@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1057418
+[parent_id]: 1057252
+[tags]: 
+The usual aproach is to store the request object in a thread-local reference using a middleware. Then you can access this from anywhere in you app, including the Form.clean() method. Changing the signature of the Form.clean() method means you have you own, modified version of Django, which may not be what you want. Thank middleware count look something like this: import threading _thread_locals = threading.local() def get_current_request(): return getattr(_thread_locals, 'request', None) class ThreadLocals(object): """ Middleware that gets various objects from the request object and saves them in thread local storage. """ def process_request(self, request): _thread_locals.request = request Register this middleware as described in the Django docs

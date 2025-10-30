@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 659315
+[parent_id]: 659231
+[tags]: 
+There is no way to forward-declare member functions. I'm not sure if there is a more elegant way than this to get what you want (I've never had reason to do something like this), but what would work would be to make for the second class a non-member function that is a friend to both classes, and delegate copying to it. Note that operator= cannot be itself a non-member, but something like this should work: class B; class A { public: A& operator = ( const B &b ); friend B& do_operator_equals ( B& b, const A& b); }; class B { public: B &operator = ( const A &a ); friend A& A::operator = ( const B &b ); friend B& do_operator_equals ( B& b, const A& a); }; And then in your implementation file A& A::operator= (const B& b) { // the actual code to copy a B into an A return *this; } B& B::operator= (const A& a) { return do_operator_equals(*this, a); } B& do_operator_equals(B& b, const A& a) { // the actual code to copy an A into a B return b; } Edit: Got the A's and B's backwards, oops. Fixed.

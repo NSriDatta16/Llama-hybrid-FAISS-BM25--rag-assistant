@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4107881
+[parent_id]: 4106168
+[tags]: 
+If you want to do a conditional eager load, then you should NOT be using the Include method. For loading your school object containing only the students that belong to the first class You can do a Filtered Projection which returns an Anonymous Type object: var school = context.School .Where(s => s.SchoolID == 1) // or any other predicate .Select(s => new { School = s, Students = s.Student.Where(st => st.ClassID == 1) }).ToList(); Another way would be to Leverage Attach Method which returns EntityObject: var school = context.School.Where(s => s.SchoolID == 1).First() var sourceQuery = school.Students.CreateSourceQuery() .Where(st => st.ClassID == 1); school.Students.Attach(sourceQuery); For a more detailed discussion about this, you can also check: Entity Framework: How to query data in a Navigation property table

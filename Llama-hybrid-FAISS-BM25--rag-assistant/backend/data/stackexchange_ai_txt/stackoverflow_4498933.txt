@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4498933
+[parent_id]: 
+[tags]: 
+ANTLR Tree Grammar and StringTemplate Code Translation
+
+I am working on a code translation project with a sample ANTLR tree grammar as: start: ^(PROGRAM declaration+) -> program_decl_tmpl(); declaration: class_decl | interface_decl; class_decl: ^(CLASS ^(ID CLASS_IDENTIFIER)) -> class_decl_tmpl(cid={$CLASS_IDENTIFIER.text}); The group template file for it looks like: group My; program_decl_tmpl() ::= > class_decl_tmpl(cid) ::= {} >> Based on this, I have these questions: Everything works fine apart from that what I should express in WHAT? to say that a program is simply a list of class declarations to get the final generated output? Is this approach averagely suitable for not so a high-level language? I have also studied ANTLR Code Translation with String Templates , but it seems that this approach takes much advantage of interleaving code in tree grammar. Is it also possible to do it as much as possible just in String Templates? SOLUTION , I add the solution based on what Terence proposed: start: ^(PROGRAM d+=declaration+) -> program_decl_tmpl(decls={$d}); declaration: cd = class_decl -> decl_tmpl(decl={$cd.st}) | id = interface_decl -> decl_tmpl(decl={$id.st}); class_decl: ^(CLASS ^(ID CLASS_IDENTIFIER)) -> class_decl_tmpl(cid={$CLASS_IDENTIFIER.text}); And the templates would be: group My; program_decl_tmpl(decls) ::= >> decl_tmpl(decl) ::= >> class_decl_tmpl(cid) ::= {} >>

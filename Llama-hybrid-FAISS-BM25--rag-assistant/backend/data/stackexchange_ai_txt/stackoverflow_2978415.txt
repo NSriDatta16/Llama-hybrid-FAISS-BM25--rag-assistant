@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2978415
+[parent_id]: 2973559
+[tags]: 
+I generally agree with the previous answer, however things are more complex. Although processes are not execution units, threads belonging to the same process should be treated differently. There're two reasons for this: Same address space. Means - when switching the context between such threads no need to setup the address translation registers. Threads of the same process are much more likely to access the same memory. The (2) has a great impact on the cache state. If threads read the same memory location - they reuse the L2 cache, hence the whole things speeds up. There's however the drawback too: once a thread changes a memory location - that address is invalidated in both L2 cache and L2 cache of both processors, so that the other processor invalidates its cache too. So there're pros and cons with running the threads of the same process simultaneously (on different processors). BTW this situation has a name: "Gang scheduling".

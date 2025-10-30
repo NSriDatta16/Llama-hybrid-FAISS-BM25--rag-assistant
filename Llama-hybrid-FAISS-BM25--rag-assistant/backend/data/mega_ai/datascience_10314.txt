@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 10314
+[parent_id]: 
+[tags]: 
+Regarding Class Balancing in Deep Neural Network
+
+I was trying to do class balancing on the image semantic segmentation problem for some classes in the images are in the minority. The weight for each class is calculated as mentioned in this paper . we weight each pixel by αc = median_freq / freq(c) where freq(c) is the number of pixels of class c divided by the total number of pixels in images where c is present, and median_freq is the median of these frequencies. Then I weighted the cross entropy loss as follows, the size of the label is (img_col, img_row, num_class) for the labels are one-hot-labels: def weighted_cce(coding_dist, true_dist, weights): # calculate weighted cross entropy loss # true_dist: ground truth, coding_dist: predicted coding_dist = T.clip(coding_dist, 10e-8, 1.0-10e-8) return -T.sum(weights * true_dist * T.log(coding_dist), axis=coding_dist.ndim-1) What's strange is that instead of producing a more balanced output, the result is even more biased than without class balancing, namely the network now can only recognize the most dominant classes in the images. Could anyone share some thoughts on this? Thanks in advance!

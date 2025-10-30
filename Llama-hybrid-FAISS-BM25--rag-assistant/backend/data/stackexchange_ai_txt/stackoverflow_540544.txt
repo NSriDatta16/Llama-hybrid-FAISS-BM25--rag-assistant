@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 540544
+[parent_id]: 540125
+[tags]: 
+OK, You can do this one slightly more elegant using filtering iterators. As I see on your question, the indices on the array start in reverse order than that of the number (index of position "0" of the number corresponds to position "3" in the array). So you have to go in reverse looking at the array to select the correct elements. Also, as the return value may contain 0, 1, 2, 3, or 4 elements, I suggest you to return a list. Here is a hint: struct filter { filter (int n) :number (n) { } bool operator()(int other_number) { bool result = number & 1; number>>=1; return result; } int number; }; int main(void) { using namespace std; vector my_v (4); my_v[0] = 123; my_v[1] = 356; my_v[2] = 678; my_v[3] = 890; int bin_num = 10; // 1010 list out_list; std::copy(boost::make_filter_iterator (filter (bin_num), my_v.rbegin(), my_v.rend()), boost::make_filter_iterator(filter (bin_num), my_v.rend(), my_v.rend()), std::front_inserter (out_list)); // out_list will have 123 678 } Hope this helps,

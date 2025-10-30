@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 483386
+[parent_id]: 
+[tags]: 
+Indexing ServiceEndpointElementCollection
+
+In the following config file excerpt, the WCF service has two endpoints. In my code there is discovery logic, which responds to a UDP request by replying with the connection Uri for the WCF service. Obtaining a collection of endpoints is straightforward. System.Configuration.Configuration config = System.Configuration .ConfigurationManager .OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None); ServicesSection section = config.SectionGroups["system.serviceModel"] .Sections["services"] as ServicesSection; ServiceEndpointElementCollection seec = section.Services["AtomTcpHub.HubTcp"].Endpoints; The problem is extracting the ServiceEndpointElement . We can have it by index: ServiceEndpointElement see = seec[0]; but this is brittle; if the order of nodes changes it will break. Visual Studio tells me there is another indexer permitting an object value, but there is no further indication. Experimentation tells me that it isn't the value of the name attribute. The following code works , but it's just hideous . string serviceEndpointUri; foreach(ServiceEndpointElement serviceEndpointElement in seec) if (serviceEndpointElement.Name == "AtomHubEndpoint") { _serviceEndpointUri = serviceEndpointElement.Address.AbsoluteUri; break; } Is there a more direct or more elegant way to do this?

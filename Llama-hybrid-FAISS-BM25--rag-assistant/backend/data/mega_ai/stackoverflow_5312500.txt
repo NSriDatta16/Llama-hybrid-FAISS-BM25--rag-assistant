@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5312500
+[parent_id]: 5312157
+[tags]: 
+Take a look at this link It contains a lot of sample scripts, you will need to add a reference (COM) to GPO Admin 1.0 Type Library from GPOAdmin.dll. There is a similar issue discussed here with a sample script in C# EDIT : Reference gpmgmt.dll as COM interop and use the code as below: Public Function CreateAndLinkGPO(ByVal strDomain As String, ByVal strOU As String, ByVal strGPOName As String) Dim gpm As New GPM() Dim gpmConst As GPMConstants = gpm.GetConstants() Dim domain As GPMDomain = gpm.GetDomain(strDomain, "", gpmConst.UseAnyDC) Dim som As GPMSOM = domain.GetSOM(strOU) 'create new GPO Dim gpo As GPMGPO = domain.CreateGPO() gpo.DisplayName = strGPOName 'create link to OU som.CreateGPOLink(-1, gpo) CreateAndLinkGPO = gpo End Function This is in VB.NET, but can be easily ported to C# posted by a MSFT poster from here . I think the key is . CreateGPOLink , GPMSOM is your OU (Retrieves the IGPMSOM interface that represents the domain or the organizational unit (OU) at the specified path.)

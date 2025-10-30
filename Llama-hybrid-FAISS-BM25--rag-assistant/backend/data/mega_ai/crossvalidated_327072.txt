@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 327072
+[parent_id]: 327060
+[tags]: 
+The problem with oversampling from a smaller part of the dataset is potential overfitting: most of the data the network is going to see is from a small dataset. I say potential, because in some cases it really works the best (see for instance this discussion: How to improve F1 score with skewed classes? ), it's just you should be aware of this. An alternative way of dealing with highly skewed binary data is to use weighted cross-entropy that assigns bigger loss to the rare class error. For instance, in tensorflow it can be done with tf.nn.weighted_cross_entropy_with_logits : This is like sigmoid_cross_entropy_with_logits() except that pos_weight , allows one to trade off recall and precision by up- or down-weighting the cost of a positive error relative to a negative error. This is in many cases a better approach because the network learns from a bigger sample and is paying more attention to the minor class at the same time. But you should try both approaches or the mix. I would also suggest using F1 score for final performance evaluation, because raw accuracy can be pretty misleading.

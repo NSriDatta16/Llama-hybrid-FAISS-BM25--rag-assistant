@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 246772
+[parent_id]: 
+[tags]: 
+Why are bidirectional RNNs outperforming unidirectional for h-step-ahead-forecast regression?
+
+So, I have macroeconomic data, for multiple countries. I want for year t, to predict select (continuous) variables for time period t+1. I wrote a simple keras model to do that: def dense_gradient_model(X_train, y_train, epochs=5000): print X_train.shape, y_train.shape n_samples, n_timesteps, n_feat = X_train.shape main_input = Input(shape=(n_timesteps, n_feat), name='main_input') lstm = Bidirectional(LSTM(90, return_sequences=True))(main_input) lstm2 = Bidirectional(LSTM(40, return_sequences=True))(lstm) outputs = TimeDistributed(Dense(7))(lstm) model = Model(input=main_input, output=outputs) model.compile(optimizer='rmsprop', loss='mse') early_stopping = EarlyStopping(monitor='val_loss', patience=50) history = model.fit(X_train, y_train, nb_epoch=epochs, validation_split=0.1, callbacks = [early_stopping]) return history, model Notice how the LSTM layers are bidirectional. I actually left that there as a mistake. However, when I remove the Bidirectional wrapper, and multiply the number of hidden units by 2 (so that there is the same number of parameters), the loss is almost double. This is reproduced in the test score too. Why is the bidirectional model better for regression? After all, I'm predicting data ahead, what is the benefit of backward-going LSTMs?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3474873
+[parent_id]: 3474658
+[tags]: 
+The submit handler is called by the drupal fapi, so you can't do something like that. Instead what you can do, is to add what you need, either to the $form , or to the $form_state . The usual approaches is to: Added a field to the form, type value to store the value. Don't do this if you have the value in the form definition. $form['store'] = array( '#type' => 'value', '#value' => $value ); This will be available in $form_state['values']['store'] . Add the value to $form_state['storage'] , done if you variables in your validation handle you want to transfer to your submit handler: // Validation. $form_state['storage']['value'] = $value; ... // Submit $value = $form_state['storage']['value']; // Need to unset stored values when not used anymore. unset($form_state['storage']['value']);

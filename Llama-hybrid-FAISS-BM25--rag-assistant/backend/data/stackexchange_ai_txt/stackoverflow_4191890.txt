@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4191890
+[parent_id]: 4152064
+[tags]: 
+While sending a message through java client usually it is publish to a channel like CHANNEL.basicPublish(EXCHANGE_NAME, QUEUE_ROUTING_KEY, MessageProperties.PERSISTENT_TEXT_PLAIN, "message".getBytes) Here you can set message properties You can get the msg by using a delivery agent You have to first bind the queue like this Channel channel = conn.createChannel(); String exchangeName = "myExchange"; String queueName = "myQueue"; String routingKey = "testRoute"; boolean durable = true; channel.exchangeDeclare(exchangeName, "direct", durable); channel.queueDeclare(queueName, durable,false,false,durable, null); channel.queueBind(queueName, exchangeName, routingKey); boolean noAck = false; QueueingConsumer consumer = new QueueingConsumer(channel); channel.basicConsume(queueName, noAck, consumer); Then use delivey to get msg QueueingConsumer.Delivery delivery; try { delivery = consumer.nextDelivery(); } catch (InterruptedException ie) { continue; }

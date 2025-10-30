@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 89476
+[parent_id]: 89473
+[tags]: 
+First of all, the score_samples function of SKLearn's Kernel Density object returns the log of the probability density, not of probability. Therefore, its exponent isn't exactly probability - e.g. in your example you have a probability above 1, which can't be. Second, apparently the log-probability-density is normalized by the number of points the kernel was trained on (see line 210 here , where log_density -= np.log(N) . This effectively changes the expression $\rho_K(y) = \sum_{i=1}^{N} K(y - x_i; h)$ (from the User Guide ) to $\rho_K(y) = {1 \over N} \sum_{i=1}^{N} K(y - x_i; h)$ , i.e. turning the sum across points in the train set to an average across the train set. By the way, I think that this is what they meant to say in this line in the function's description : This is normalized to be a probability density, so the value will be low for high-dimensional data. But I agree that it's a bit unclear.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5445591
+[parent_id]: 5422583
+[tags]: 
+Here's the code that I used to solve the problem while giving the user good feedback on the why the save failed. Please forgive my inelegant ruby code. One small problem remains . . . if the package and the location both fail validation, only the location error message is displayed on reload. If the user then corrects the location error but not the package error, he is shown the package error message. I'm working on how to show all of the errors on the first reload def create @package= current_user.package.build(params[:package]) if package_location && @package.save flash[:success] = "Package created!" redirect_to root_path else render 'pages/home' end end def package_location gps_processing if !session[:gps_aware] location = @package.locations.build(:address => session[:address]) if !location.valid? @package.errors.add(:address, "You have entered an invalid address") return false else return true end end def gps_processing session[:address] = [params[:story][:street_address], params[:story][:city], params[:story][:state], params[:story][:country]].compact.join(', ') end

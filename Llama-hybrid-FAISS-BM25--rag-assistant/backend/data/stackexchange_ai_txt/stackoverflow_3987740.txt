@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3987740
+[parent_id]: 3986389
+[tags]: 
+No. It is technically possible but it would be extremely rare to get the exact same amount of overhead. A hash table is organized into buckets. Dictionary<> (and Hashtable) calculate a bucket number for the object with an expression like this: int bucket = key.GetHashCode() % totalNumberOfBuckets; So two objects with a different hash code can end of in the same bucket. A bucket is a List<>, the indexer next searches that list for the key which is O(n) where n is the number of items in the bucket. Dictionary<> dynamically increases the value of totalNumberOfBuckets to keep the bucket search efficient. When you pump a hundred million items in the dictionary, there will be thousands of buckets. The odds that the bucket is empty when you add an item will be quite small. But if it is by chance then, yes, it will take just as long to retrieve the item. The amount of overhead increases very slowly as the number of items grows. This is called amortized O(1).

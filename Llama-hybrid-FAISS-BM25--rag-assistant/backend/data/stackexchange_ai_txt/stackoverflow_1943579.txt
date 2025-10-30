@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1943579
+[parent_id]: 1943449
+[tags]: 
+In your controller you can grab top 10 businesses with something similar to: top10 = Business.average('ratings.rating', :joins => 'INNER JOIN ratings ON businesses.id = ratings.business_id', :group => 'businesses.id', :order => 'avg_ratings_rating DESC', :limit => 10 ) # example of using results of above line top10.each { |id, avg| puts Business.find(id).name + " score: " + avg.to_s } Instead of :order => 'avg_ratings_rating' you can write :order => 'avg(ratings.rating)' . As a result it will return an ordered hash. When you iterate over it you get what you wanted. Probably a better way is to add a class method to your Business model like this: def self.getTop10 average('ratings.rating', :joins => 'INNER JOIN ratings ON businesses.id = ratings.business_id', :group => 'businesses.id', :order => 'avg_ratings_rating DESC', :limit => 10 ) end Then in controller you can do: top10 = Business.getTop10

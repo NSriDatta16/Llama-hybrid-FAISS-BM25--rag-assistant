@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4538575
+[parent_id]: 2700009
+[tags]: 
+You have 2 problems: Reading the file and removing the chars. You need to read the file in the encoding that is written: StreamReader readStream = new StreamReader(receiveStream, Encoding.GetEncoding("YOUR FILE ENCODING")); To remove the chars, you can try do it by hand... Here is the code: private static string CHAR_REPLACE_SRC = "áàãâÁÀÃÂéèêÉÈEíìîÍÌÎóòõôÓÒÕÔúùûÚÙÛçÇñÑ"; private static string CHAR_REPLACE_DST = "aaaaAAAAeeeEEEiiiIIIooooOOOOuuuUUUccnN"; private static string GetCleanString (string src) { int i = 0; while (i 127) { int pos = CHAR_REPLACE_SRC.IndexOf(src[i]); if (pos >= 0) src = src.Replace(CHAR_REPLACE_SRC[pos], CHAR_REPLACE_DST[pos]); else src = src.Remove(i, 1); } else i++; } return src.Replace("\"", "").Replace("?", "").Replace(":", "").Replace("&", "_").Replace("\\", "_").Replace("/", "_"); } You will probably need to do some adaptations. I am using this to create a clean URL from the title of the page.

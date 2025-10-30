@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4221521
+[parent_id]: 4220601
+[tags]: 
+Plenty of examples seem trivial until you start needing to do anything heavy, like streaming gigabytes of data in both directions. My favorite is ruby's net/http , which is part of every ruby install. Here's an example that streams the data, and leaves the connection open when you're finished for more requests. require 'net/http' http = Net::HTTP.new('my.server.org') http.start req = Net::HTTP::Post.new('/path/to/huge/file') req.basic_auth('user', 'pass') req.content_length = File.size 'huge_input_file.txt' req.body_stream = File.open('huge_input_file.txt', 'rb') http.request(req){|res| File.open('huge_output_file.txt', 'wb'){|f| res.read_body {|chunk| f.write chunk} } } Perl doesn't have anything built-in. Net::HTTP and LWP::UserAgent are not part of perl core. A while back I needed a perl http client that functions like the above ruby example, without depending on anything from CPAN. It took under 200 lines, using only IO::Socket::INET and syswrite / sysread (which eliminates a lot of the lower-layer socket nonsense), and MIME::Base64 for authentication.

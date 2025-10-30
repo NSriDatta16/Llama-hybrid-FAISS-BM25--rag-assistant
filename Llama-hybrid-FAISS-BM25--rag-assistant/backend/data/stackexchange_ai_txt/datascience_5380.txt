@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 5380
+[parent_id]: 
+[tags]: 
+In a SVD with user/video bias, why is the UV contribute so small?
+
+I'm testing a SVD-based collaborative filter on my data set, in which the label, $r_{ij}$, is a real value from 0 to 1. Like the many papers suggested, to have a better performance, instead of using $ \hat{R} = U \cdot V^T $ directly, I use $\hat{R} = \mu + B_u + B_v + U \cdot V^T $, where $\mu$ is the average rating, $B_u$ is the bias of user, and $B_v$ is the bias of item. Thus, this model corresponds to a loss function: $\min_{B_u, B_v, U, V} = ||I\circ(R-\mu-Bu-B_v-U\cdot V^T)||_F^2 + \lambda (||B_u||_F^2 + ||B_v||_F^2 + ||U||_F^2 + ||V||_F^2)$ where I is the masking matrix in which $I_{ij} = 1$ if $R_{ij}$ is known, and $||\cdot||_F$ is the frobenius norm. Then, I solve this by gradient descent, it seems to work fine, and the test RMSE is 0.25. However, when I investigate the contribution of each part in predict function $\hat{R} = \mu + B_u + B_v + U \cdot V^T $, I notice that, $\mu$ is about 0.5, $b_u$ and $b_i$ are about $\pm0.3$, but the part of $ U \cdot V^T $ is quite small, normally about $\pm 0.01$. Why does this part contribute so small? Since this part is the actual part where the collaborative filter works, I expect it to contribute more in prediction.

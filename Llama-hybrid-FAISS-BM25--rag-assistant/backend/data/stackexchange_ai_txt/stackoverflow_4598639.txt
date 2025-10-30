@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4598639
+[parent_id]: 4591432
+[tags]: 
+It's not an elegant solution but you can bypass the creation of the Float object by casting the value of your aggregate calculation to TEXT in the query. This "fixes" the rounding error. Please update this question if you find a better solution (such as by patching the sqlite3-ruby driver). SELECT CAST(SUM(amount) AS TEXT) FROM transactions WHERE envelope_id = 834498537 By casting to a string you're allowing Active Record to call BigDecimal's constructor which requires a string and bypassing Float with its inaccurate ISO floating point issues. By the way, I doubt it's a good idea to name your table transactions . That's bound to conflict with some other class name or database-specific keyword at some point.

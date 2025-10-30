@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5311261
+[parent_id]: 5310641
+[tags]: 
+Regarding alignment, kmalloc will align the structures properly. If you have an 4byte variable, it will be 4bytes aligned, if you have an 8byte vaiable, it will be 8bytes aligned. Understanding alignment is the reason why padding is needed. What you dont want to get is garbade padding between the variables in your struct. You can do that with the pragma pack directive (probably easiest) or by adding the padding manually. Example struct usb_ep { short a; /* 2 bytes*/ int b; /* 4 bytes*/ short c; /* 2 bytes*/ }; The size of all the elements is 8bytes, but due to alignment requirements, the size will be 12bytes. Memory layout would be like this: short a - 2 bytes char pad[2] - 2 bytes of padding int b - 4 bytes short c - 2 bytes char pad[2] - 2 bytes of padding In order to not get any padding, or increasing the size of the struct, you can rearrange elements in order to satisfy the alignment requirements. That is having a struct: struct usb_ep { short a; /* 2 bytes*/ short c; /* 2 bytes*/ int b; /* 4 bytes*/ }; Will have the size of 8bytes, and no requirement for adding padding.

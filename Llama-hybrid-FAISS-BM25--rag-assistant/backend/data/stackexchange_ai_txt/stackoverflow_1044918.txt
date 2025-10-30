@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1044918
+[parent_id]: 1035799
+[tags]: 
+Here's the route I ended up taking. I followed the link posted by SashaN in the comments of D.Shwley's answer and learned a little bit about why the "don't fragment" bit is set in Linux's UDP packets. Turns out it has something to do with PMTU discovery. Long story short, you can clear the don't fragment bit from your UDP packets in Python by using the setsockopts function in the socket object. import socket IP_MTU_DISCOVER = 10 IP_PMTUDISC_DONT = 0 # Never send DF frames. IP_PMTUDISC_WANT = 1 # Use per route hints. IP_PMTUDISC_DO = 2 # Always DF. IP_PMTUDISC_PROBE = 3 # Ignore dst pmtu. s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) s.connect(("10.0.0.1", 8000)) s.send("Hello World!") # DF bit is set in this packet s.setsockopt(socket.SOL_IP, IP_MTU_DISCOVER, IP_PMTUDISC_DONT) s.send("Hello World!") # DF bit is cleared in this packet

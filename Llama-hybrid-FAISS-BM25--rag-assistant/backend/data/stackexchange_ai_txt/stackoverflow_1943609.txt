@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1943609
+[parent_id]: 1942604
+[tags]: 
+One parsing trick is to read data in paragraph mode -- a chunk at a time. If your sub-sections are consistently delimited by 2 newlines (or if you can use a pre-process to impose such consistency), paragraph-reading might be useful. Aside from the special handling needed for the 'text' sub-section, the example below is fairly general, requiring only that you declare the name of the last sub-section. # Paragraph mode. $/ = "\n\n" last_subsection = 'text' data = [] until DATA.eof data.push({}) while true line = DATA.readline # Determine which sub-section we are in. ss = nil line.sub!( %r"\A(\w+):?\s*" ) { ss = $1; '' } # Special handling: split the 'text' item into 2 subsections. line, data[-1]['stats'] = line.split(/\nstats +/, 2) if ss == 'text' data[-1][ss] = line break if ss == last_subsection end # Cleanup newlines however you like. data[-1].each_key { |k| data[-1][k].gsub!(/\n/, ' ') } end # Check data.each { |d| puts; d.each { |k,v| puts k + ' => ' + v } } __END__ # Data not shown here...

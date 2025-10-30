@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3493742
+[parent_id]: 
+[tags]: 
+Problem to Decode H264 video over RTP with ffmpeg (libavcodec)
+
+I set profile_idc, level_idc, extradata et extradata_size of AvCodecContext with the profile-level-id et sprop-parameter-set of the SDP. I separate the decoding of Coded Slice, SPS, PPS and NAL_IDR_SLICE packet : Init: uint8_t start_sequence[]= {0, 0, 1}; int size= recv(id_de_la_socket,(char*) rtpReceive,65535,0); Coded Slice : char *z = new char[size-16+sizeof(start_sequence)]; memcpy(z,&start_sequence,sizeof(start_sequence)); memcpy(z+sizeof(start_sequence),rtpReceive+16,size-16); ConsumedBytes = avcodec_decode_video(codecContext,pFrame,&GotPicture,(uint8_t*)z,size-16+sizeof(start_sequence)); delete z; Result: ConsumedBytes >0 and GotPicture >0 (often) SPS and PPS : identical code. Result: ConsumedBytes >0 and GotPicture =0 It's normal I think When I find a new couple SPS/PPS, I update extradata and extrada_size with the payloads of this packet and their size. NAL_IDR_SLICE : The Nal unit type is 28 =>idr Frame are fragmented therefor I tryed two method to decode 1) I prefix the first fragment (without RTP header) with the sequence 0x000001 and send it to avcodec_decode_video. Then I send the rest of fragments to this function. 2) I prefix the first fragment (without RTP header) with the sequence 0x000001 and concatenate the rest of fragments to it. I send this buffer to decoder. In both cases, I have no error (ConsumedBytes >0) but I detect no frame (GotPicture = 0) ... What is the problem ?

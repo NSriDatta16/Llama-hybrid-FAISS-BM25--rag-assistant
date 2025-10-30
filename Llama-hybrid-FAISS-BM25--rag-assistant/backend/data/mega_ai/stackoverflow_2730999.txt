@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2730999
+[parent_id]: 2730231
+[tags]: 
+I only know about a way using an own implementation of URIResolver . public final class StringURIResolver implements URIResolver { Map documents = new HashMap (); public StringURIResolver put(final String href, final String document) { documents.put(href, document); return this; } public Source resolve(final String href, final String base) throws TransformerException { final String s = documents.get(href); if (s != null) { return new StreamSource(new StringReader(s)); } return null; } } Use it like this: final String document1 = ... final String document2 = ... final Templates template = ... final Transformer transformer = template.newTransformer(); transformer.setURIResolver(new StringURIResolver().put("document2", document2)); final StringWriter out = new StringWriter(); transformer.transform(new StreamSource(new StringReader(document1)), new StreamResult(out)); And in the transform, reference it like this:

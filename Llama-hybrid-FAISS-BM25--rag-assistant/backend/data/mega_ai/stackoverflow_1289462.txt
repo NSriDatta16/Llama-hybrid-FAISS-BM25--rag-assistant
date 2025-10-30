@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1289462
+[parent_id]: 1289315
+[tags]: 
+Your question implies that you are using SQL Server 2005/2008, so I'll take a crack at it. With the current architecture, the importance is in the storage itself. When you store more than 8k in a row, it will either go into a separate internal table partition for row overflow or for text (or large object data). Depending on your settings, SQL will make a pointer to this other partition of nvarchar data. Upon retrieval of the data, SQL has to get the page, then do a look-up to another page to get the entire contents of the row. IF the definition of the table leaves out the possibility of hitting that 8060 byte maximum, then you can guarantee that you don't have to do spurious lookups from pointers (which increases reads). Also, keep in mind that SQL 2008 (Enterprise edition) can use page and row level compression, so the rules change a little when using that feature.

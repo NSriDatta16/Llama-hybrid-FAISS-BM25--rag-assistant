@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 17417
+[parent_id]: 17391
+[tags]: 
+I have found the solution. Earlier I have a Dropout layer after single layer of RNN. I have changed the rnn_layer function as below. Removed the DropoutWrapper from the RNN layer - This helped me to overfit Added 2 layers of LSTM cell. Single layer LSTM cell taking time to converge but rather than making LSTM layer wide changed it to deep. This helped me achieve faster convergence than making network wider. Below is the code of rnn_layer. def rnn_layer(input_tensor, n_cell_units, dropout, seq_length, batch_size): lstm_fw_cell = tf.contrib.rnn.BasicLSTMCell(2*n_cell_units, forget_bias=1.0, state_is_tuple=True) # Dropout layer dropped # lstm_fw_cell = tf.contrib.rnn.DropoutWrapper(lstm_fw_cell, input_keep_prob=dropout, output_keep_prob=dropout) # Multi layer RNN lstm_fw_cell = tf.contrib.rnn.MultiRNNCell([lstm_fw_cell] * 2, state_is_tuple=True) outputs, output_states = tf.nn.dynamic_rnn(cell=lstm_fw_cell, inputs=input_tensor, dtype=tf.float32, time_major=True, sequence_length=seq_length) return outputs

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1306142
+[parent_id]: 1302113
+[tags]: 
+For error checking in an expect script, there's a decent example at http://systeminetwork.com/article/handle-errors-expect-scripts What you should do is something like this: proc do_exit {msg} { puts stderr $msg exit 1 } switch -exact -- $case { Linux { spawn ssh ... expect { -re {assword: $} { send -- "$SPASS\r" exp_continue # remain in this expect block and look for the next matching pattern } "some message about incorrect password" { do_exit "incorrect password" } timeout {do_exit "timed out waiting for prompt"} default {do_exit "something else happened"} -re $prompt } # ... rest of your script } } I assume you don't need to know about the exit status of the "opcagt ..." series of commands (you just want to see the contents of the watch.cf file. If you do care, you'll need to get the shell to tell you: send -- "opcagt -status 2>&1 || echo "non-zero return from opcagt: $?" expect { "non-zero return" { handle error and exit? } -re $prompt } # ... continue

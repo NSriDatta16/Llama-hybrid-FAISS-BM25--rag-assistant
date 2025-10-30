@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 200255
+[parent_id]: 200218
+[tags]: 
+To add to Peter's answer. This code may be of help. This boils away the observations that out too influential. cook.influentials=function(m){ #this finds those observations that out too influential cd=cooks.distance(model = m) tossing=which(cd>4/(length(cd)-length(coef(m)))) cat("cooking boiling off",length(tossing),"of", length(cd),"is",round(100*length(tossing)/length(cd)),"%") return(tossing); } cook.model=function(m,tossing=-1*cook.influentials(m)){ #this cooks the model by removing elements that have leverage #the idea is to test this with a test set. if(length(tossing)==0){ message("all good none to boil away"); return(m); } f=formula(m) subw=m$weights subdf=m$model[,all.vars(f)] print(f) subdf=subdf[tossing,]; ##note the -1 above!! if(is.null(subw)){ m2=lm(formula(as.character(f)),subdf); }else{ subw=subw[tossing]; m2=lm(formula(as.character(f)),subdf,weights = subw); } m2=stepAIC(m2,trace=F) cat('m adj.r.squared=',summary(m)$adj.r.squared, ' m.sigma=',summary(m)$sigma, '\nm2 adj.r.squared=',summary(m2)$adj.r.squared, ' m2.sigma=',summary(m2)$sigma, "\n") m2; }

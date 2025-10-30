@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1792257
+[parent_id]: 1792142
+[tags]: 
+Several things happen before main is called: address space is allocated (for stack, executable, ...) the executable is loaded process is linked to dyld (the dynamic linker) load commands in the mach header are performed (frameworks and libraries loaded) more pages get allocated for static storage of libraries dyld performs symbol resolving initializations of libraries and the executable are performed This should only name a few of the things which happen before main gets called. You can put code in one of the initialization functions to be able to do something a little before main but don’t expect this to reduce the delay between tap and your code a lot. You can declare a C function to be called before main like this: void __attribute__ ((constructor)) my_init(void); If you need to do Objective-C things, you can implement +initialize in one of your classes.

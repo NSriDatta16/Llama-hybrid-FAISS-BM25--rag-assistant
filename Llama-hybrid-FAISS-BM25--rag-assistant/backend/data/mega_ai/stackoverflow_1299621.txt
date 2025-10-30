@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1299621
+[parent_id]: 1299422
+[tags]: 
+Adding to what Neil said: With the pragma you make a guarantee to the compiler that aliasing does nto occur, allowing additonal optimizations that are not possible for "standard" code. To port: remove the pragma, then compare the run time of the VC7 and the VC9 build. If the VC9 build performs adequately, you are done. Otherwise, if the VC9 build is significantly slower, compare the VC7 build without the #pragma to the VC9 build. If the additional optimizations are the cause of the speed difference, the VC7 build should now be slowed down to the VC9 build. If that's the case, look into the __restrict / __declspec(noalias) declarations, and specifically the non-aliased references in the affected code block. Use a profiler to find the differences between the code. Otherwise, the speed difference is not related to the #pragma.

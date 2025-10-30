@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 893155
+[parent_id]: 889619
+[tags]: 
+I don't see a problem with an Action method doing further authorization checks within it. You can leverage the Roles provider for the fine-grained authorization you're looking for. Please excuse my syntax here - it's likely rough and I haven't tested this. [Authorize(Roles="Shipping, Accounting")] public ActionResult Edit(int id) { Shipment shipment = repos.GetShipment(id); switch (shipment.State) { case ShipmentState.A: if (Roles.IsUserInRole("Shipping")) return View(shipment); else return View("NotAuthorized"); break; case ShipmentState.B: if (Roles.IsUserInRole("Accounting")) return View(shipment); else return View("NotAuthorized"); break; default: return View("NotAuthorized"); } }

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 274779
+[parent_id]: 
+[tags]: 
+Copula-based Value-at-risk in R
+
+I'm working on a value-at-risk calculation using copulas on different stock market indices. I know how to fit the copula, but I can't figure out how to apply the VaR approach in the next step. The concept of copulas is relatively new to me and has proven to be very challenging for an average master student..I defined 3 periods in which I want to investigate the evolution of the VaR over time. When running the code, R returns a value for the VaR. But when running the code for another time period, R gives the same value as the previous period..Am I overlooking/forgetting something? The code I provided shows the bivariate example of china and india using the normal copula. I plan to extent it with the t and clayton copula in a further stage. library(copula) cop_model = normalCopula(dim = 2) m = pobs(as.matrix(cbind(CHINA_INDIA$CHINA.LOG[571:406],CHINA_INDIA$INDIA.LOG[571:406]))) #pseudo-observations fit = fitCopula(cop_model, m, method = "ml") coef(fit) tau(normalCopula(param = coef(fit))) cor(CHINA_INDIA$CHINA.LOG[571:406],CHINA_INDIA$INDIA.LOG[571:406], method = "kendall") #check whether correlation is more or less preserved set.seed(1559) u = rCopula(500, normalCopula(coef(fit), dim = 2)) #simulate some observations from the copula cdf = pCopula(u, normalCopula(coef(fit), dim = 2) #construct cdf of the copula library(PerformanceAnalytics) VaR(cdf, p=0.95)

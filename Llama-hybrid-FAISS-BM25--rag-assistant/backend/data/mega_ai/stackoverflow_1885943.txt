@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1885943
+[parent_id]: 1884571
+[tags]: 
+FTP only defines the specifics of the transfer operation. How the actual storage is handled is up to whoever's writing the server. This allows it to be filesystem-agnostic, so that the same protocol can be used against Unix, Windows, VMS, TRS-DOS, etc. One option would be to find the source for an existing server that runs on your platform of choice and just "replace" the calls that deal with the file I/O. dbfs.h: #define open db_open #define write db_write #define close db_close dbfs.c: int open(...) { /* create a memory buffer */ } ssize_t write(...) { /* write data to memory buffer */ } int close(...) { /* execute SQL insert statement to save memory buffer to db */ } Existing server code: #include #include #include "dbfs.h" /* "replaces" system-defined file I/O routines */

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4823130
+[parent_id]: 4822625
+[tags]: 
+You main problem is that byLine is using the same buffer, you need to duplicate it so it doesn't override your data auto words = split(strip(line).dup); A more appropriate storage class is string instead of char[], unless you intend on modifying the actual characters. However, you will get a compiler error in v 2.0 because line will be char[]. This is just a matter of duplicating it as an immutable string instead. auto words = split(strip(line).idup); This way your program would look like import std.stdio; import std.string; void main(string[] args) { string[][] lines; auto input = File(args[1], "r"); foreach(line; input.byLine()) { auto words = split(strip(line).idup); lines ~= words; } foreach(line; lines) { writeln(line); } }

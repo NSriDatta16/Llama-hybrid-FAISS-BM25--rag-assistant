@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2057325
+[parent_id]: 2051243
+[tags]: 
+Here is a not-so-elegant temporary fix: using an external exclusive lock around the writes rather than depend on internal sqlite locking. The above block in the question is basically wrapped with a system wide lock that every thread has to acquire before writing. Since sqlite3 locks the entire DB when writing anyways, I am hoping this doesn't add a lot more overhead. On the other hand, reads can proceed without acquiring the lock, which I think might work ok with the less-restrictive reader lock sqlite3 needs.

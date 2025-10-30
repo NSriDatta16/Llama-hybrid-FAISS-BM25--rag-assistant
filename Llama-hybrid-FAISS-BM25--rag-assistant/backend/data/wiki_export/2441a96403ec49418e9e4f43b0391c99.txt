@@ -1,0 +1,321 @@
+The Spring Framework is an application framework and inversion of control container for the Java platform. The framework's core features can be used by any Java application, but there are extensions for building web applications on top of the Java EE (Enterprise Edition) platform. The framework does not impose any specific programming model.. The framework has become popular in the Java community as an addition to the Enterprise JavaBeans (EJB) model. The Spring Framework is free and open source software.
+
+Version history
+
+The first version was written by Rod Johnson, who released the framework with the publication of his book Expert One-on-One J2EE Design and Development in October 2002. The framework was first released under the Apache 2.0 license in June 2003. The first production release, 1.0, was released in March 2004. The Spring 1.2.6 framework won a Jolt productivity award and a JAX Innovation Award in 2006. Spring 2.0 was released in October 2006, Spring 2.5 in November 2007, Spring 3.0 in December 2009, Spring 3.1 in December 2011, and Spring 3.2.5 in November 2013. Spring Framework 4.0 was released in December 2013. Notable improvements in Spring 4.0 included support for Java SE (Standard Edition) 8, Groovy 2,
+ some aspects of Java EE 7, and WebSocket.
+
+Spring Boot 1.0 was released in April 2014.
+
+Spring Framework 4.2.0 was released on 31 July 2015 and was immediately upgraded to version 4.2.1, which was released on 01 Sept 2015. It is "compatible with Java 6, 7 and 8, with a focus on core refinements and modern web capabilities".
+
+Spring Framework 4.3 has been released on 10 June 2016 and was supported until 2020. It was announced to "be the final generation within the general Spring 4 system requirements (Java 6+, Servlet 2.5+), [...]".
+
+Spring 5 is announced to be built upon Reactive Streams compatible Reactor Core.
+
+Spring Framework 6.0 has been released on 16 November 2022 and came with a Java 17+ baseline and a move to Jakarta EE 9+ (in the jakarta namespace), with a focus on the recently released Jakarta EE 10 APIs such as Servlet 6.0 and JPA 3.1.
+
+Modules
+The Spring Framework includes several modules that provide a range of services:
+ Spring Core Container: this is the base module of Spring and provides spring containers (BeanFactory and ApplicationContext). In this context, spring-core is the artifact found in the core module belonging to the org.springframework group. The spring-core artifact consists of the IoC container, as well as the utility classes used throughout the application.
+ Aspect-oriented programming: enables implementing cross-cutting concerns. The spring-aop is an artifact for the AOP framework.
+ Authentication and authorization: configurable security processes that support a range of standards, protocols, tools and practices via the Spring Security sub-project (formerly Acegi Security System for Spring).
+ Convention over configuration: a rapid application development solution for Spring-based enterprise applications is offered in the Spring Roo module.
+ Data access: working with relational database management systems on the Java platform using Java Database Connectivity (JDBC) and object-relational mapping tools and with NoSQL databases. The spring-jdbc is an artifact found in the JDBC module while supports JDBC access by including datasource setup classes.
+ Inversion of control container: configuration of application components and lifecycle management of Java objects, done mainly via dependency injection.
+ Messaging: declarative registration of message listener objects for transparent message-consumption from message queues via Java Message Service (JMS), improvement of message sending over standard JMS APIs.
+ Model–view–controller: an HTTP- and servlet-based framework providing hooks for extension and customization for web applications and RESTful (representational state transfer) Web services.
+ Remote access framework: declarative remote procedure call (RPC)-style marshalling of Java objects over networks supporting Java remote method invocation (RMI), CORBA (Common Object Request Broker Architecture) and HTTP-based protocols including Web services such as SOAP (Simple Object Access Protocol).
+ Transaction management: unifies several transaction management APIs and coordinates transactions for Java objects.
+ Remote management: declarative exposure and management of Java objects for local or remote configuration via Java Management Extensions (JMX).
+ Testing: support classes for writing unit tests and integration tests.
+ WebFlux support: support for using reactive runtimes or web servers such as UnderTow and Netty.
+ Web Socket support: Support for communicating using the WebSocket protocol. The artifact for this module is spring-websocket.
+ XML support: support for object-toXML mapping. Libraries such as Jakarta XML Binding(JAXB) and XStream are supported. The artifact for this module is spring-oxm.
+
+Spring modules are packaged as JAR files. These artifacts can be accessed via the Maven Central Repository using Maven or Gradle.
+
+Inversion of control container 
+The inversion of control (IoC) container is the core container in the Spring Framework. It provides a consistent means of configuring and managing Java objects using reflection. The container is responsible for managing object lifecycles of specific objects: creating these objects, calling their initialization methods, and configuring these objects by wiring them together.
+
+In many cases, one need not use the container when using other parts of the Spring Framework, although using it will likely make an application easier to configure and customize. The Spring container provides a consistent mechanism to configure applications and integrates with almost all Java environments, from small-scale applications to large enterprise applications.
+
+The programmer does not directly create an object, but describes how it should be created, by defining it in the Spring configuration file. Similarly, services and components are not called directly; instead a Spring configuration file defines which services and components must be called. This IoC is intended to increase the ease of maintenance and testing.
+
+Creating and managing beans
+Objects created by the container are called managed objects or beans. The container can be configured by loading XML (Extensible Markup Language) files or detecting specific Java annotations on configuration classes. These data sources contain the bean definitions that provide the information required to create the beans.
+
+The  is a Spring-specific annotation that marks a class as the configuration class. The configuration class provides the beans to the Spring . Each of the methods in the Spring configuration class is configured with the  annotation. The  interface will then return the objects configured with the  annotation as beans. The advantage of java-based configuration over XML-based configuration is better type safety and refactorability.
+
+Types of Inversion of Control 
+There are several types of Inversion of Control. Dependency injection and dependency lookup are examples of Inversion of Control. Objects can be obtained by means of either dependency lookup or dependency injection.
+
+Dependency Injection
+
+Dependency injection is a pattern where the container passes objects by name to other objects, via either constructors, properties, or factory methods. There are several ways to implement dependency injection: constructor-based dependency injection, setter-based dependency injection and field-based dependency injection.
+
+Dependency Lookup
+Dependency lookup is a pattern where a caller asks the container object for an object with a specific name or of a specific type.
+
+Autowiring
+The Spring framework has a feature known as autowiring, which uses the spring container to automatically satisfy the dependencies specified in the JavaBean properties to objects of the appropriate type in the current factory.  This can only occur if there is only one object with the appropriate type.
+
+There are several annotations that can be used for autowiring POJOs, including the Spring-specific annotation  (as well as several other Spring-specific annotations that help resolve autowire ambiguity such as the  or  annotations), and the standard Java annotations  and .
+
+The  annotation can be used on a class that defines a bean to inform Spring to prioritize the bean creation when autowiring it by name.
+
+The  annotation can be used on a class that defines a bean to inform Spring to prioritize the bean creation when autowiring it by type.
+
+The  annotation is an annotation that conforms to JSR 250, or Common Annotations for the Java Platform. The  annotation is used for autowiring references to POJOs by name. The  annotation is annotation that conforms to JSR 300, or Standard Annotations for injection. The  annotation is used for autowiring references to POJOs by type.
+
+Aspect-oriented programming framework
+
+The Spring Framework has its own Aspect-oriented programming (AOP) framework that modularizes cross-cutting concerns in aspects. The motivation for creating a separate AOP framework is to provide basic AOP features without too much complexity in either design, implementation, or configuration. The Spring AOP framework takes full advantage of the Spring container.
+
+The Spring AOP framework is proxy pattern-based. It is configured at run time. This removes the need for a compilation step or load-time weaving. On the other hand, interception only allows for public method-execution on existing objects at a join point.
+
+Compared to the AspectJ framework, Spring AOP is less powerful, but also less complicated. Spring 1.2 includes support to configure AspectJ aspects in the container. Spring 2.0 added more integration with AspectJ; for example, the pointcut language is reused and can be mixed with Spring AOP-based aspects. Further, Spring 2.0 added a Spring Aspects library that uses AspectJ to offer common Spring features such as declarative transaction management and dependency injection via AspectJ compile-time or load-time weaving. SpringSource uses AspectJ AOP in other Spring projects such as Spring Roo and Spring Insight, with Spring Security offering an AspectJ-based aspect library.
+
+Spring AOP has been designed to work with cross-cutting concerns inside the Spring Framework. Any object which is created and configured by the container can be enriched using Spring AOP.
+
+The Spring Framework uses Spring AOP internally for transaction management, security, remote access, and JMX.
+
+Since version 2.0 of the framework, Spring provides two approaches to the AOP configuration:
+
+ schema-based approach and 
+ @AspectJ-based annotation style.
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+The Spring team decided not to introduce new AOP-related terminology. Therefore, in the Spring reference documentation and API, terms such as aspect, join point, advice, pointcut, introduction, target object (advised object), AOP proxy, and weaving all have the same meanings as in most other AOP frameworks (particularly AspectJ).
+
+Data access framework
+Spring's data access framework addresses common difficulties developers face when working with databases in applications. Support is provided for all popular data access frameworks in Java: JDBC, iBatis/MyBatis, Hibernate, Java Data Objects (JDO, discontinued since 5.x), Jakarta Persistence API (JPA), Oracle TopLink, Apache OJB, and Apache Cayenne, among others.
+
+For all of these supported frameworks, Spring provides these features
+
+ Resource management – automatically acquiring and releasing database resources
+ Exception handling – translating data access related exception to a Spring data access hierarchy
+ Transaction participation – transparent participation in ongoing transactions
+ Resource unwrapping – retrieving database objects from connection pool wrappers
+ Abstraction for binary large object (BLOB) and character large object (CLOB) handling
+
+All these features become available when using template classes provided by Spring for each supported framework. Critics have said these template classes are intrusive and offer no advantage over using (for example) the Hibernate API directly. In response, the Spring developers have made it possible to use the Hibernate and JPA APIs directly. This however requires transparent transaction management, as application code no longer assumes the responsibility to obtain and close database resources, and does not support exception translation.
+
+Together with Spring's transaction management, its data access framework offers a flexible abstraction for working with data access frameworks. The Spring Framework doesn't offer a common data access API; instead, the full power of the supported APIs is kept intact. The Spring Framework is the only framework available in Java that offers managed data access environments outside of an application server or container.
+
+While using Spring for transaction management with Hibernate, the following beans may have to be configured:
+ A Datasource like com.mchange.v2.c3p0.ComboPooledDataSource or org.apache.commons.dbcp.BasicDataSource
+ A SessionFactory like org.springframework.orm.hibernate3.LocalSessionFactoryBean with a DataSource attribute
+ A HibernateProperties like org.springframework.beans.factory.config.PropertiesFactoryBean
+ A TransactionManager like org.springframework.orm.hibernate3.HibernateTransactionManager with a SessionFactory attribute
+Other points of configuration include:
+ An AOP configuration of cutting points.
+ .
+
+Transaction management
+Spring's transaction management framework brings an abstraction mechanism to the Java platform. Its abstraction is capable of:
+ working with local and global transactions (local transaction does not require an application server)
+ working with nested transactions
+ working with savepoints
+ working in almost all environments of the Java platform
+
+In comparison, Java Transaction API (JTA) only supports nested transactions and global transactions, and requires an application server (and in some cases, deployment of applications in an application server).
+
+The Spring Framework ships a PlatformTransactionManager for a number of transaction management strategies:
+ Transactions managed on a JDBC Connection
+ Transactions managed on Object-relational mapping Units of Work
+ Transactions managed via the JTA JtaTransactionManager and UserTransaction
+ Transactions managed on other resources, like object databases
+
+Next to this abstraction mechanism the framework provides two ways of adding transaction management to applications:
+ Procedurally, by using Spring's TransactionTemplate
+ Declaratively, by using metadata like XML or Java annotations (@Transactional, etc.)
+
+Together with Spring's data access framework – which integrates the transaction management framework – it is possible to set up a transactional system through configuration without having to rely on JTA or EJB. The transactional framework also integrates with messaging and caching engines.
+
+Model–view–controller framework
+
+The Spring Framework features its own model–view–controller (MVC) web application framework, which was not originally planned. The Spring developers decided to write their own Web framework as a reaction to what they perceived as the poor design of the (then) popular Jakarta Struts Web framework, as well as deficiencies in other available frameworks. In particular, they felt there was insufficient separation between the presentation and request handling layers, and between the request handling layer and the model.
+
+Like Struts, Spring MVC is a request-based framework. The framework defines strategy interfaces for all of the responsibilities that must be handled by a modern request-based framework. The goal of each interface is to be simple and clear so that it's easy for Spring MVC users to write their own implementations, if they so choose. MVC paves the way for cleaner front end code. All interfaces are tightly coupled to the Servlet API. This tight coupling to the Servlet API is seen by some as a failure on the part of the Spring developers to offer a high level of abstraction for Web-based applications . However, this coupling ensures that the features of the Servlet API remain available to developers while offering a high abstraction framework to ease working with it.
+
+The DispatcherServlet class is the front controller of the framework and is responsible for delegating control to the various interfaces during the execution phases of an HTTP request.
+
+The most important interfaces defined by Spring MVC, and their responsibilities, are listed below:
+ Controller: comes between Model and View to manage incoming requests and redirect to proper response. Controller will map the http request to corresponding methods. It acts as a gate that directs the incoming information. It switches between going into Model or View.
+ HandlerAdapter: responsible for execution of objects that handle incoming requests.
+ HandlerInterceptor: responsible for intercepting incoming requests. Comparable, but not equal to Servlet filters (use is optional and not controlled by DispatcherServlet).
+ HandlerMapping: responsible for selecting objects that handle incoming requests (handlers) based on any attribute or condition internal or external to those requests
+ LocaleResolver: responsible for resolving and optionally saving of the locale of an individual user. 
+ MultipartResolver: facilitate working with file uploads by wrapping incoming requests. 
+ View: responsible for returning a response to the client. The View should not contain any business logic and should only present the data encapsulated by the Model. Some requests may go straight to View without going to the Model part; others may go through all three. 
+ ViewResolver: responsible for selecting a View based on a logical name for the View (use is not strictly required).
+ Model: responsible for encapsulating business data. The Model is exposed to the view by the controller. (use is not strictly required).
+
+Each strategy interface above has an important responsibility in the overall framework. The abstractions offered by these interfaces are powerful, so to allow for a set of variations in their implementations. Spring MVC ships with implementations of all these interfaces and offers a feature set on top of the Servlet API. However, developers and vendors are free to write other implementations. Spring MVC uses the Java  interface as a data-oriented abstraction for the Model where keys are expected to be  values.
+
+The ease of testing the implementations of these interfaces is one important advantage of the high level of abstraction offered by Spring MVC. DispatcherServlet is tightly coupled to the Spring inversion of control container for configuring the web layers of applications. However, web applications can use other parts of the Spring Framework, including the container, and choose not to use Spring MVC.
+
+A workflow of Spring MVC
+When a user clicks a link or submits a form in their web-browser, the request goes to the Spring DispatcherServlet. DispatcherServlet is a front-controller in Spring MVC. The DispatcherServlet is highly customizable and flexible. Specifically, it is capable of handling more types of handlers than any implementations of org.
+springframework.web.servlet.mvc.Controller or org.
+springframework.stereotype.Controller annotated classes. It consults one or more handler mappings. DispatcherServlet chooses an appropriate controller and forwards the request to it. The Controller processes the particular request and generates a result. It is known as Model. This information needs to be formatted in html or any front-end technology like Jakarta Server Pages (also known as JSP) or Thymeleaf. This is the View of an application. All of the information is in the Model And View object. When the controller is not coupled to a particular view, DispatcherServlet finds the actual View (such as JSP) with the help of ViewResolver.
+
+Configuration of DispatcherServlet
+As of Servlet Specification version 3.0, there are a few ways of configuring the DispatcherServlet:
+By configuring it in web.xml as shown below:
+
+<servlet>
+  <servlet-name>MyServlet</servlet-name>
+  <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+  <servlet-name>MyServlet</servlet-name>
+  <url-pattern>/<url-pattern>
+</servlet-mapping>
+
+ By configuring it in web-fragment.xml
+ By using javax.servlet.ServletContainerInitializer
+ By implementing the  org.springframework.web.WebApplicationInitializer interface.
+ By using the built-in autoconfiguration for Spring Boot, which uses the SpringBootServletInitializer class.
+
+Remote access framework
+Spring's Remote Access framework is an abstraction for working with various RPC (remote procedure call)-based technologies available on the Java platform both for client connectivity and marshalling objects on servers. The most important feature offered by this framework is to ease configuration and usage of these technologies as much as possible by combining inversion of control and AOP.
+
+The framework provides fault-recovery (automatic reconnection after connection failure) and some optimizations for client-side use of EJB remote stateless session beans.
+
+Spring provides support for these protocols and products out of the box
+
+ HTTP-based protocols
+ Hessian: binary serialization protocol, open-sourced and maintained by CORBA-based protocols. Hessian is maintained by the company Caucho. Hessian is suitable for stateless remoting needs, in particular, Java-to-Java communication.
+ Burlap: An XML-based binary protocol that is open-sourced and also maintained by the company Caucho. The only advantage of using Burlap instead of Hessian is that it is XML-parsable and human readable. For Java-to-Java communication, the Hessian is preferred since it is more light-weight and efficient.
+ RMI (1): method invocations using RMI infrastructure yet specific to Spring
+ RMI (2): method invocations using RMI interfaces complying with regular RMI usage
+ RMI-IIOP (CORBA): method invocations using RMI-IIOP/CORBA
+ Enterprise JavaBean client integration
+ Local EJB stateless session bean connectivity: connecting to local stateless session beans
+ Remote EJB stateless session bean connectivity: connecting to remote stateless session beans
+ SOAP
+ Integration with the Apache Axis Web services framework
+
+Apache CXF provides integration with the Spring Framework for RPC-style exporting of objects on the server side.
+
+Both client and server setup for all RPC-style protocols and products supported by the Spring Remote access framework (except for the Apache Axis support) is configured in the Spring Core container.
+
+There is an alternative open-source implementation (Cluster4Spring) of a remoting subsystem included in the Spring Framework that is intended to support various schemes of remoting (1-1, 1-many, dynamic services discovering).
+
+Convention-over-configuration rapid application development
+
+Spring Boot
+
+Spring Boot Extension is Spring's convention-over-configuration solution for creating stand-alone, production-grade Spring-based Applications that you can "just run". It is preconfigured with the Spring team's "opinionated view" of the best configuration and use of the Spring platform and third-party libraries so you can get started with minimum fuss. Most Spring Boot applications need very little Spring configuration.
+
+Key Features:
+
+ Create stand-alone Spring applications
+ Embed Tomcat or Jetty directly (no need to deploy WAR files)
+ Provide opinionated 'starter' Project Object Models (POMs) to simplify your Maven/Gradle configuration
+ Automatically configure Spring whenever possible
+ Provide production-ready features such as metrics, health checks  and externalized configuration
+ Absolutely no code generation and no requirement for XML configuration.
+ Smooth Integration and supports all Enterprise Integration Patterns.
+
+Spring Roo
+
+Spring Roo is a community project which provides an alternative, code-generation based approach at using convention-over-configuration to rapidly build applications in Java. It currently supports Spring Framework, Spring Security and Spring Web Flow. Roo differs from other rapid application development frameworks by focusing on:
+
+ Extensibility (via add-ons)
+ Java platform productivity (as opposed to other languages)
+ Lock-in avoidance (Roo can be removed within a few minutes from any application)
+ Runtime avoidance (with associated deployment advantages)
+ Usability (particularly via the shell features and usage patterns)
+
+Batch framework
+
+Spring Batch is a framework for batch processing that provides reusable functions that are essential in processing large volumes of records, including:
+ logging/tracing
+ transaction management
+ job processing statistics
+ job restart
+
+It provides more advanced technical services and features that enables extremely high-volume and high-performance batch jobs through optimizations and partitioning techniques.
+
+Spring Batch executes a series of jobs; a job consists of many steps and each step consists of a "READ-PROCESS-WRITE" task or single operation task (tasklet). A "single" operation task is also known as a tasklet. It means doing a single task only, like cleaning up the resources before or after a step is started or completed.
+
+The "READ-PROCESS-WRITE" process consists of these steps: "read" data from a resource (comma-separated values (CSV), XML, or database), "process" it, then "write" it to other resources (CSV, XML, or database). For example, a step may read data from a CSV file, process it, and write it into the database. Spring Batch provides many classes to read/write CSV, XML, and database.
+
+The steps can be chained together to run as a job.
+
+Integration framework
+
+Spring Integration is a framework for Enterprise application integration that provides reusable functions essential to messaging or event-driven architectures.
+ routers – routes a message to a message channel based on conditions
+ transformers – converts/transforms/changes the message payload and creates a new message with transformed payload
+ adapters – integrates with other technologies and systems (HTTP, AMQP (Advanced Message Queuing Protocol), JMS (Java Message Service), XMPP (Extensible Messaging and Presence Protocol), SMTP (Simple Mail Transfer Protocol), IMAP (Internet Message Access Protocol), FTP (File Transfer Protocol) as well as FTPS/SFTP, file systems, etc.)
+ filters – filters a message based on criteria. If the criteria are not met, the message is dropped.
+ service activators – invoke an operation on a service object. Spring supports the use of the annotation @ServiceActivator to declare the component that requires this functionality.
+ management and auditing
+ gateways - exposes an interface to the client for the requested services. A messaging middleware is responsible for provisioning this interface. This interface decouples the messaging middleware from the client by hiding the underlying JMS or Spring Integration APIs. Gateways are related to the Facade pattern. Spring's Integration class, SimpleMessagingGateway, provides essential support for gateways. SimpleMessagingGateway enables the Spring application to specify the channel that sends requests, and the channel that expects to receive responses. The primary focus of SimpleMessagingGateway is to deal with payloads, which spares the client from the intricate details of the transmitted and received messages. SimpleMessagingGateway is used along with channels to enable integration with file systems, JMS, e-mail, or any other systems that require payloads and channels.
+ splitter - Separates a large payload into smaller payloads to support different processing flows. The splitter is achieved in Spring using the splitter component. The splitter component usually forwards the messages to classes with more specialized functionality. Spring supports the @Splitter annotation to declare the component that requires this functionality.
+ aggregator - Used for combining many messages into a single result. Loosely speaking, the aggregator is the reverse of the splitter. The aggregator publishes a single message for all components downstream. Spring supports the @Aggregator annotation to declare the component that requires this functionality. 
+
+Spring Integration supports pipe-and-filter based architectures.
+
+Spring WebSocket
+An essential rule for dealing with data streams effectively is to never block. The WebSocket is a viable solution to this problem.The WebSocket Protocol is a low-level transport protocol that allows full-duplex communication channels over a TCP connection. The WebSocket acts as an alternative to HTTP to enable two-way communication between the client and the server. The WebSocket is especially useful for applications that require frequent and fast exchanges of small data chunks, at a high speed and volume.
+
+Spring supports the WebSocket protocol by providing the WebSocket API for the reactive application. The @EnableWebSocket annotation gives Websocket request processing functionality when places in a Spring configuration class. A mandatory interface is the WebSocketConfigurer which grants access to the WebSocketConfigurer. Then, the Websocket URL is mapped to the relevant handlers by implementing the registerWebSocketHandlers(WebSocketHandlerRegistry) method .
+
+Spring WebFlux
+Spring WebFlux is a framework following the functional programming paradigm, designed for building reactive Spring applications. This framework uses functional programming and Reactive Streams extensively. A good use case for Spring WebFlux is for applications that require sending and receiving instantaneous information, such as a web application with chatting capabilities.
+
+Although applications using Spring WebFlux technology is usually less readable than their MVC counterparts, they are more resilient, and simpler to extend. Spring WebFlux reduces the need to deal with the complications associated with synchronizing thread access.
+
+Spring WebFlux supports server-sent events (SSE), which is a server push technology that allows the client to get automatic updates from a server through an HTTP connection. This communication is unidirectional, and shares many similarities with the publish/subscribe model found in JMS.
+
+Relationship with Jakarta Enterprise Beans (EJB)
+
+The container can be turned into a partially compliant EJB (Enterprise JavaBeans) 3.0 container by means of the Pitchfork project. Some criticize the Spring Framework for not complying with standards. However, SpringSource doesn't see EJB 3 compliance as a major goal, and claims that the Spring Framework and the container allow for more powerful programming models.
+
+Spring4Shell vulnerability
+
+A remote code execution vulnerability affecting certain versions of Spring Framework was published in April 2022 under . It was given the name Spring4Shell in reference to the recent Log4Shell vulnerability, both having similar proofs-of-concept in which attackers could gain shell access on vulnerable machines.
+
+See also
+
+ Apache Tapestry
+ Google Guice
+ Hibernate (framework)
+ List of Java frameworks
+ Comparison of web frameworks
+ Spring Web Flow
+
+Citations
+
+References
+
+ 
+ 
+ *
+
+External links
+
+ 
+
+Aspect-oriented programming
+Java enterprise platform
+Web frameworks

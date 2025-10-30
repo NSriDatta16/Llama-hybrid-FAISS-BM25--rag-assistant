@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2788500
+[parent_id]: 2788445
+[tags]: 
+You're requesting the Element as object, and not it's value. Your code should be: var contacts = (from c in loaded.Descendants("Countries") select new { Country = c.Element("Country").Value, Region = c.Element("region").Value, Province= c.Element("province").Value, City = c.Element("city").Value, Hotel = c.Element("hotel").Value }).ToList(); But I'm not sure this gives any results as well if I look at your XML. I'm guessing this should give you the results you want: var contacts = (from c in loaded.Descendants("Countries") select new { Country = c.Attribute("country").Value, Region = c.Descendants("Regions").FirstOrDefault().Attribute("region")Value, Province= c.Descendants("Provinces").FirstOrDefault().Attribute("province").Value, City = c.Descendants("Cities").FirstOrDefault().Attribute("city").Value, Hotel = c.Descendants("Hotels").FirstOrDefault().Attribute("hotel").Value }).ToList(); Please note that this code is quite fragile, because if one of the decentant elements is missing, an Exception will occur. You should some fine-tuning yourself to get the results you want.

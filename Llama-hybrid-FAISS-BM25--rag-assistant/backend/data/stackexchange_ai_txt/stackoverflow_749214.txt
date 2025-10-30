@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 749214
+[parent_id]: 749180
+[tags]: 
+The most elegant way would be to update the struct fields directly, without having to use the update() function - but maybe there are good reasons for using it that don't come across in the question. struct foo* bar = get_foo_ptr(); foo_ref.id = 42; foo_ref.current_route = new_route; Or you can, like Pukku suggested, create separate access functions for each field of the struct. Otherwise the best solution I can think of is treating a value of '0' in a struct field as a 'do not update' flag - so you just create a funciton to return a zeroed out struct, and then use this to update. struct foo empty_foo(void) { struct foo bar; bzero(&bar, sizeof (struct bar)); return bar; } struct foo bar = empty_foo(); bar.id=42; bar.current_route = new_route; update(&bar); However, this might not be very feasible, if 0 is a valid value for fields in the struct.

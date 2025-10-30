@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 750917
+[parent_id]: 750891
+[tags]: 
+That xml is pretty... horrible. My first suggestion would be to run it through an xslt transformation to get it into something more normal, that can be loaded with Load . Currently, it is abusing namespaces horribly . Alternatively, forget DataSet , and parse it with XmlDocument or similar. Here's an approach using XmlDocument (and using LINQ just for the average, to save a few lines of code): XmlDocument doc = new XmlDocument(); doc.LoadXml(xml); foreach (XmlElement el in doc.SelectNodes("//responce")) { Console.WriteLine(el.ParentNode.Name + "=" + el.InnerText); } XmlNodeList fiveAnswers = doc.SelectNodes( "/Survey/ClientResponces/Question5/*/responce"); double avg = fiveAnswers.Cast () .Average(el => int.Parse(el.InnerText)); Console.WriteLine(avg); For example of normal xml: 1 ... 1 3 ... or something comparable. Don't use the element name to infer identity.

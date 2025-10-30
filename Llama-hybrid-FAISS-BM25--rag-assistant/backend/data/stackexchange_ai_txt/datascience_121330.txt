@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 121330
+[parent_id]: 
+[tags]: 
+Output of SVM changes depending on sign of classes
+
+I want to train a non-linear SVM with a dataset like this: In the purple samples, y = -1 . In the yellow ones, y = 1 . Then, I'm fitting the data into my SVM: def rbf_kernel(X1, X2, gamma=0.3): diff = X1[:, np.newaxis, :] - X2[np.newaxis, :, :] norms = np.sum(diff ** 2, axis=-1) return np.exp(-gamma * norms) class SVM(): def __init__(self, kernel=rbf_kernel, C=0.8): self.kernel = kernel self.C = C def fit(self, X, y, X_test, y_test, learning_rate=0.000003, epochs=10000): n_samples, n_features = X.shape self.alpha = np.zeros(n_samples) self.b = 0 self.x_train = X self.y_train = y self.epochs = [] self.accuracies = [] K = self.kernel(self.x_train, self.x_train) for epoch in range(epochs): pred = np.dot(K, self.alpha*self.y_train) + self.b error = np.maximum(0, 1 - pred * y) loss = np.mean(error) d_alpha = np.mean(np.dot(-y * (pred With this dataset, I have no problem. Accuracy is 0.997. I decide then to swap the sign of the classes, like this: Accuracy now doesn't improve. It only does when i swap the signs of the weights-updating formula: self.alpha += learning_rate * d_alpha self.b += learning_rate * d_b Does anyone have an explanation to this? I don't understand why swapping the classes involves a sign swap as well.

@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 116056
+[parent_id]: 111089
+[tags]: 
+One possible approach is to use mlflow's pyFunc Python model, and store your preprocessing as part of the model's predict call. E.g. import mlflow.pyfunc class ServingModel(mlflow.pyfunc.PythonModel): def __init__(self, model , preprocessing_transform): self._model = model self._scaler_transform = scaler_transform def predict(self, context, model_input): """ Perform a transformation and predict on input of (batch, sequence, features) """ for i in range(model_input.shape[0]): model_input[i, :, :] = self._preprocessing_transform(model_input[i, :, :]) return self._model.predict(model_input) Saving the model mlflow.pyfunc.log_model("model", python_model=AutoEncoderServingModel(model, preprocessing_transform)) Loading the model loaded_model = mlflow.pyfunc.load_model(model_path) results = loaded_model.predict(feature_input)

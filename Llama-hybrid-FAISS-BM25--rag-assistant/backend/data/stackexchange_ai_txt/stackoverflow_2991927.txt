@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2991927
+[parent_id]: 
+[tags]: 
+How to force inclusion of an object file in a static library when linking into executable?
+
+I have a C++ project that due to its directory structure is set up as a static library A , which is linked into shared library B , which is linked into executable C . (This is a cross-platform project using CMake, so on Windows we get A.lib , B.dll , and C.exe , and on Linux we get libA.a , libB.so , and C .) Library A has an init function ( A_init , defined in A/initA.cpp ), that is called from library B 's init function ( B_init , defined in B/initB.cpp ), which is called from C 's main. Thus, when linking B , A_init (and all symbols defined in initA.cpp ) is linked into B (which is our desired behavior). The problem comes in that the A library also defines a function ( Af , defined in A/Afort.f ) that is intended to by dynamically loaded (i.e. LoadLibrary / GetProcAddress on Windows and dlopen / dlsym on Linux). Since there are no references to Af from library B , symbols from A/Afort.o are not included into B . On Windows, we can artifically create a reference by using the pragma: #pragma comment (linker, "/export:_Af") Since this is a pragma, it only works on Windows (using Visual Studio 2008). To get it working on Linux, we've tried adding the following to A/initA.cpp : extern void Af(void); static void (*Af_fp)(void) = &Af; This does not cause the symbol Af to be included in the final link of B . How can we force the symbol Af to be linked into B ?

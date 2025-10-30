@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 123327
+[parent_id]: 
+[tags]: 
+How to split graph data into train and test sets for link prediction problem using node emebbdings and cosine similarity
+
+I would like to predict new links using node embeddings and cosine similarity, but I am unsure how to split the data set into training and testing, and how to evaluate new links. This is my code without splitting creating undirected graph G=nx.from_pandas_edgelist(edge_list, source='source', target='target', create_using=nx.Graph()) here embed nodes model = node2vec.fit(window=10, min_count=1) node2vec = Node2Vec(G, dimensions=128, walk_length=40, num_walks=100, workers=2) emb_df = ( pd.DataFrame( [model.wv.get_vector(str(node)) for node in G.nodes()], index = G.nodes ) ) And then predict the links using cosine similarity metric def predict_links(G, df, node_id, N): user = df[df.index == node_id] all_nodes = G.nodes() other_nodes = [node for node in all_nodes if node not in list(G.adj[node_id]) + [node_id]] other_users = df[df.index.isin(other_nodes)] sim = cosine_similarity(user, other_users)[0].tolist() idx = other_users.index.tolist() idx_sim = dict(zip(idx, sim)) idx_sim = sorted(idx_sim.items(), key=lambda x: x[1], reverse=True) similar_users = idx_sim[:N] users = [art[0] for art in similar_users] return users To conclude, I would like to know how to adjust this code so that a training and testing set is included to learn node embeddings and evaluate the predictions of new links. Thank you all for your support.

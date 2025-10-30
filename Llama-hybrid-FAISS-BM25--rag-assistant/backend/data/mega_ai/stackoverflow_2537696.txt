@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2537696
+[parent_id]: 2526121
+[tags]: 
+According to the EcmaScript 5 spec, JSON dates should be encoded as ISO strings. This is how toJSON of JavaScript date objects could look like: function f(n) { // Format integers to have at least two digits. return n Fortunately Ruby seems to encode dates the same way. An elegant solution is to provide a reviver function to the JSON parse function, which converts ISO date strings into Date objects: myData = JSON.parse(text, function (key, value) { var a; if (typeof value === 'string') { a = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value); if (a) { return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6])); } } return value; }); This should work with all standard compliant JSON implementations. Both samples are taken from the json2 source code by Douglas Crockford.

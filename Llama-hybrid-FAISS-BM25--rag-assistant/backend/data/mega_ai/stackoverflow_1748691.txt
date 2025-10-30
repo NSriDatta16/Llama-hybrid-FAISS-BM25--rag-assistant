@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1748691
+[parent_id]: 143808
+[tags]: 
+For debug builds, then one can use incremental linking, which can improve link times a lot. Sadly enough there are certain pitfalls, and VS2005 will not warn you. If using static libraries then incremental linking will not work if modifying a file part for the static library. The solution is to set the linker option "Use Library Dependency Inputs" to "Yes" (This is the same as Fast Solution Build in VS2003) If using pragma-comment-lib to include the lib of a DLL, and specifies a relative path instead of the lib alone, then incremental linking will stop working. The solution is to specify the lib alone, and use the linker-option LIBPATH to add additional lib-path. Some times the .ilk file will become corrupted (grow beyond 200 MByte) and then suddenly the incremental linker til take more than 10 times the normal time. Some times it will complain about the .ilk file being corrupt, but usually first after several minutes. The solution for me was to setup the following command for the "Build Event" -> "Pre-Link Event" for %%f in ($(IntDir)*.ilk) do ( if "%%~zf" GTR "200000000" (del %%f))

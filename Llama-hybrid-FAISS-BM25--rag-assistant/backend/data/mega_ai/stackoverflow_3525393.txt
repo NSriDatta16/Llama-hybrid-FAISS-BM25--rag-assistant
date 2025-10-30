@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3525393
+[parent_id]: 3525346
+[tags]: 
+Actually, the way you achieved it is the simplest way to do it - storing a reference to this : var myPanorama = this; // ... myPanorama.easeDragging(); Alternatively, you can use jQuery.proxy() to set the context of the function (thanks @Nick): $(document).mouseup($.proxy(function(){ this.easeDragging(); }, this)); The other way to do it is to use the ECMAScript 5th edition .bind() method, although you need to add this to the Function prototype for it to work in unsupported browsers: // From Prototype.js if (!Function.prototype.bind) { // check if native implementation available Function.prototype.bind = function(){ var fn = this, args = Array.prototype.slice.call(arguments), object = args.shift(); return function(){ return fn.apply(object, args.concat(Array.prototype.slice.call(arguments))); }; }; } Then you can use it in your code like so: $(document).mouseup((function(){ this.easeDragging(); }).bind(this));

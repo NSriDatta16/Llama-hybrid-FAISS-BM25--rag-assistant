@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3008789
+[parent_id]: 3008741
+[tags]: 
+Your view will experience the same locking as the underlying tables. From the MySQL Reference page on locking : MySQL grants table write locks as follows: If there are no locks on the table, put a write lock on it. Otherwise, put the lock request in the write lock queue. MySQL grants table read locks as follows: If there are no write locks on the table, put a read lock on it. Otherwise, put the lock request in the read lock queue. It's worth mentioning that this depends on the database engine you are using. MyISAM will follow the steps above and lock the entire table (even if it is split into multiple partitions) where an engine like InnoDB will do row level locking instead. If you're not reaching the necessary performance benchmarks with MyISAM and you have shown your bottleneck is waiting on table locks via updates, I would suggest changing the storage engine of your table to InnoDB.

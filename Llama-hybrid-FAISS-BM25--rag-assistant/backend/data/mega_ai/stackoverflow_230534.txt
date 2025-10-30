@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 230534
+[parent_id]: 
+[tags]: 
+Mongrel::DirHandler equivalent for Passenger
+
+I'm using Mongrel::DirHandler to control response headers for static files - this works great on my dev machine. My production machine uses Passenger so my headers aren't getting set. How do I control headers for static files when using Passenger? snippet from my environment.rb: if defined? Mongrel::DirHandler module Mongrel class DirHandler def send_file_with_expires(req_path, request, response, header_only=false) if req_path =~ /((\/images)|javascripts|stylesheets)/ response.header['Cache-Control'] = 'max-age=315360000' response.header['Expires'] = (Time.now + 10.years).rfc2822 else response.header["Last-Modified"] = Time.now.httpdate response.header["Expires"] = 0 # HTTP 1.0 response.header["Pragma"] = 'no-cache' # HTTP 1.1 ‘pre-check=0, post-check=0′ (IE specific) response.header["Cache-Control"] = 'no-store, no-cache, must-revalidate, max-age=0, pre-check=0, post-check=0' end send_file_without_expires(req_path, request, response, header_only) end alias_method :send_file_without_expires, :send_file alias_method :send_file, :send_file_with_expires end end end

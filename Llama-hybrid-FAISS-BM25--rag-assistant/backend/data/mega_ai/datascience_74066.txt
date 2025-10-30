@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 74066
+[parent_id]: 74062
+[tags]: 
+Your confusion seems to stem from this line: print('Best (Train) AUC Score: {:.4f}%'.format(gsearch.best_score_*100)) The best_score_ is not exactly a training score (nor is it an unbiased estimate of future performance*): as you say, it's the averaged score across different fold splits, but each of the scores that get averaged are the performance of the models on their test fold. So, this score reflects performance of models on unseen data. But, when you compute the score of the model retrained on the entire training set, that model has seen the training data, and the score there is inflated (quite a lot) as you'd expect. * This is discussed at length elsewhere, but in short, while the scores are based on performance on data unseen by the models, you have looked at that data when selecting the "best" model, so to use that score now would be optimistically biased.

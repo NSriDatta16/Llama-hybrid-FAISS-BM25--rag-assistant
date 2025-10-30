@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 536348
+[parent_id]: 536314
+[tags]: 
+Are you doing this via GLSL? In that case textureCube accepts a vec3 as texture coordinate, which is a unit vector on a sphere. In your case you would take the coordinate of your fragment with respect to the center of the sphere, normalize it and pass it as a coordinate. No need to worry about the internal representation as six two-dimensional textures. uniform samplerCube cubemap; varying vec3 pos; // position of the fragment w.r.t. the center of the sphere /* ... */ vec4 color = textureCube(cubemap, normalize(pos).stp); It works like that also in fixed-pipeline OpenGL. By the way, here is how the coordinates are used internally: the largest coordinate in absolute value is used to select which one of the six textures is read from (the sign selects positive or negative). The other two coordinates are used to lookup the texel in the selected map, after being divided by the largest coordinate.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5695538
+[parent_id]: 
+[tags]: 
+More on events and thread safety
+
+I discovered this post on StackOverflow about events and races which helped me immensely - C# Events and Thread Safety The key statement here is that 'Event handlers are required to be robust in the face of being called even after the event has been unsubscribed' I take this to mean that when you subscribe to an event, you must be prepared for that event to be raised even after you have unsubscribed to it, and do some sort of check to see whether the event should be processed. This could be something as simple (and ugly) as bool _acceptEvents; // event handler void LoggedIn(object sender, EventArgs a) { if (!_acceptEvents) return; Evt("Now logged in"); } // code to unsubscribe to event _acceptEvents = false; _parent.LoggedIn -= new LoggedInEventHandler(LoggedIn); Now obviously the above code is god awful to look at, but it serves the purpose required. My question is, what would be a more elegant way of doing this? What is the typical way of handling this situation? I had thought perhaps you could do if (!_parent.LoggedIn.Contains(myhandler)) return; but I tried, and I guess events are designed in a way to prevent you from seeing other subscribers. What do you think? Thanks

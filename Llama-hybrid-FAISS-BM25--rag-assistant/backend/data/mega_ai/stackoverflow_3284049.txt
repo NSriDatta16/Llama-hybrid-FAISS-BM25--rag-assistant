@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3284049
+[parent_id]: 3283837
+[tags]: 
+OK, so your proc: org.contact_24 Select will just return an array... So you need to return true if all org.contact_24 are true. validates_presence_of :email, :if => Proc.new { |user| user.organizations.find(:all).collect {|org| org unless org.contact_24}.compact.blank? } That'll build an array of org's that have contact_24 that are false. It then compacts the array, and returns true if it's blank. So, it'll be false if any records aren't true. I'd recommend moving the organizations.find(:all).collect {|org| org unless org.contact_24}.compact.blank? into a scope, so you'd end up with: user.organizations.not_contacted_in_24_hours

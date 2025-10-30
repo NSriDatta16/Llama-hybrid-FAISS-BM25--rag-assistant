@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3471698
+[parent_id]: 3471535
+[tags]: 
+I cannot find any in the Windows API. However, I do know that you work mostly (or, at least, a lot) with Delphi, so here is a quick Delphi function: function MAKELONGLONG(A, B: cardinal): UInt64; inline; begin PCardinal(@result)^ := A; PCardinal(cardinal(@result) + sizeof(cardinal))^ := B; end; Even faster: function MAKELONGLONG(A, B: cardinal): UInt64; asm end; Explanation: In the normal register calling convention, the first two arguments (if cardinal-sized) are stored in EAX and EDX, respetively. A (cardinal-sized) result is stored in EAX. Now, a 64-bit result is stored in EAX (less significant bits, low address) and EDX (more significant bits, high address); hence we need to move A to EAX and B to EDX, but they are already there!

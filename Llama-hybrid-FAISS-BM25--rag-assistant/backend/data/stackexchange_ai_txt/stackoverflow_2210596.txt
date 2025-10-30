@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2210596
+[parent_id]: 2208832
+[tags]: 
+Funny, I actually did this a few months ago in D and it wasn't received as particularly interesting. My approach was to use templated expression tree classes. I had a Binary class template that could be instantiated with + , * , etc, a unary class that could be instantiated with sin , exp , etc. Derivatives worked by mostly just recursively applying the chain and product rules. For example: class Binary(alias fun) : MathExpression { MathExpression left, right; MathExpression derivative() { static if(is(fun == add)) { return left.derivative + right.derivative; } else static if(is(fun == mul)) { return left.derivative * right + right.derivative * left; } } real opCall(real x) { return fun(left(x), right(x)); } } class Unary(alias fun) : MathExpression { MathExpression inner; MathExpression derivative() { static if(is(fun == sin)) { return Unary!(sin)(inner.derivative); } } real opCall(real x) { return fun(inner(x)); } } class Constant : MathExpression { real val; real opCall(real x) { return val; } real derivative() { return new Constant(0); } }

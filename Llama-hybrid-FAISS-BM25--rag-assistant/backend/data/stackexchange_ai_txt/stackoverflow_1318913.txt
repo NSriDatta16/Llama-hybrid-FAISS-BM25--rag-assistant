@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1318913
+[parent_id]: 1318863
+[tags]: 
+scons md5-sums files to figure out they've changed, so it pretty much md5sums all your files. You can tell it to only use timestamps to decide what to rebuild and not have to MD5sum all the files every time , much like 'make' does, which should speed things up. It might be more fragile. e.g. if a file has changed within 1 second of the last time it was built, scons won't notice that. Use env.Decider('timestamp-newer') There's also MD5-timestamp, which will check the timestamp first, then compare the content using Md5 if it's actually changed if the timestamp is newer. env.Decider('MD5-timestamp') Another easy option to speed things up is to run parallel building using the -j parameter. scons -j 2 On my 2-core box, -j 3 usually gives the biggest speedup. Some output on what scons is doing can be done with the --debug argument to calling scons, see the manpage for the various options.

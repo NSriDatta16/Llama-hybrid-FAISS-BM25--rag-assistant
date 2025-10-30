@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2136276
+[parent_id]: 2134025
+[tags]: 
+Do you really need to get the whole row back? As this means that you are not using any indexes. If you still need to get the whole row. Use the following pattern: SELECT * FROM findings f1 WHERE f1.rowid IN (SELECT rownum rnum, row_id FROM ( SELECT f.rowid row_id FROM findings f ORDER BY record_ordering_column ) WHERE rownum > 900 ) WHERE rnum See AskTom Note: the subtle extra SELECT clause as well as using the ROWID querying. If you add an index on record_ordering_column, then the paganation will use the index to get a set of ROWIDs. Then only load the blocks that contain the rows identified by their ROWIDs. This will be better than your current query that will be a full table scan.

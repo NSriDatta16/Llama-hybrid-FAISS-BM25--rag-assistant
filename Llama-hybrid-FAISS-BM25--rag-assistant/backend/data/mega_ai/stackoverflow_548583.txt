@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 548583
+[parent_id]: 548528
+[tags]: 
+If the query is taking to long to process it is usually because of missing indexes, poor disk IO, or some other bottleneck. A table with 120 000 rows isn't a hell of a lot of data and the query really shouldn't take that long. I really would check disk io. Answer 1 above is a way to speed up query 1. To speed up query 2 you may need to create a aggregate table which get updated with every hit or which gets updated in a batch run nightly and then you can just add in the days hits that have not yet been aggregated. An index on the date rage should make this relatively quick. You should also run "explain" against your query and see what indexes it is using if any. What storage enigne are you using for mysql? This can also have an impact. If you are using MYISAM storage engine and doing inserts and reads concurrently this can have a big performance hit. Make sure your table stats are updated by running "Analyse" against the larger tables on a regular basis. This helps the query engine select the optimal query plan.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3827385
+[parent_id]: 3827352
+[tags]: 
+If you don't have to deal with multiple threads accessing the timer action function simultaneously, you can make buf into either a static variable within the scope of the function, or a file variable in the anonymous namespace (or, if you are an unreformed C programmer like me, into a file static variable). You then make sure the code does not zero the memory until you know you don't want to look at the old data again. Either: void timer_action(void) { static char buf[1024]; ...use buf carefully... } Or: namespace { char buf[1024]; } void timer_action(void) { ...use buf carefully... } If nothing else needs the buffer, hiding it inside the function minimizes the scope and is the preferred solution. If you do have multiple threads involved, you have to be extremely careful, using appropriate thread synchronization primitives to ensure sequential access to the variable, or you have to make a per-thread copy of the variable in thread local storage.

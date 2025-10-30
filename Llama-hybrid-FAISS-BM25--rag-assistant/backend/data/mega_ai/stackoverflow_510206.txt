@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 510206
+[parent_id]: 509741
+[tags]: 
+Hmm... I cooked up this little solution that I thought ended up pretty elegantly... Not sure if this will work, but I aliased method_missing to still allow active_record to do it's thang: module ShittyDatabaseMethods alias :old_method_missing :method_missing def method_missing(method) if methods.include?("#{method}_c") send("#{method}_c".to_sym) else old_method_missing(method) end end end class Test attr_accessor :test_c include ShittyDatabaseMethods end You may not get to name your module "ShittyDatabaseMethods", but you get the idea ;) Once you define that module and stuff it into lib, you just need to include this module and off you go :D Would love to hear if this works out for you :)

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4388706
+[parent_id]: 
+[tags]: 
+Binary Message Comparison
+
+We just came across an interesting issue which we face during unit testing of the response flow of a message transformation. The outcome of this flow is an (XML to NON XML)Binary output which is put on the queue. The issue we are facing is: The length of this binary output message doesn’t match with that of the non-xml data, which we save as our expected result from the MFL format tester tool. Our inference is that OSB internally applies some encoding to this message which by the looks of it is UTF-8 present in Proxy/Business Service. So we changed the encoding of the expected to UTF-8 and the test case was successful. But on close investigation it was found that UTF-8 by its own virtue does not represent all the data correctly. Where ever there is a data loss it is represented with a ‘? ‘ symbol. Hence our comparison is incorrect even though the JUNIT test case passes. And also there is MQ in between which might have its own encoding, which we are unable to rule out at this moment. We can think of two solutions to this: 1. We can implement the Comparison by converting both the expected and obtained into a Byte[] to avoid any encoding issues. But we are unable to obtain the exact message length in the output. 2. We can encode both expected and obtained result into a common encoding format other than UTF-8, but we are not sure which, and then do the comparison. Any ideas gang?

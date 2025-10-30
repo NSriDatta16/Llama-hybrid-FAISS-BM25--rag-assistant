@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4765436
+[parent_id]: 
+[tags]: 
+need to create a webm video from RGB frames
+
+I have an app that generates a bunch of jpgs that I need to turn into a webm video. I'm trying to get my rgb data from the jpegs into the vpxenc sample. I can see the basic shapes from the original jpgs in the output video, but everything is tinted green (even pixels that should be black are about halfway green) and every other scanline has some garbage in it. I'm trying to feed it VPX_IMG_FMT_YV12 data, which I'm assuming is structured like so: for each frame 8-bit Y data 8-bit averages of each 2x2 V block 8-bit averages of each 2x2 U block Here is a source image and a screenshot of the video that is coming out: Images It's entirely possible that I'm doing the RGB->YV12 conversion incorrectly, but even if I only encode the 8-bit Y data and set the U and V blocks to 0, the video looks about the same. I'm basically running my RGB data through this equation: // (R, G, and B are 0-255) float y = 0.299f*R + 0.587f*G + 0.114f*B; float v = (R-y)*0.713f; float u = (B-v)*0.565f; .. and then to produce the 2x2 filtered values for U and V that I write into vpxenc, I just do (a + b + c + d) / 4, where a,b,c,d are the U or V values of each 2x2 pixel block. So I'm wondering: Is there an easier way (in code) to take RGB data and feed it to vpx_codec_encode to get a nice webm video? Is my RGB->YV12 conversion wrong somewhere? Any help would be greatly appreciated.

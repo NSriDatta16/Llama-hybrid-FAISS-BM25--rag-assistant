@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3378796
+[parent_id]: 
+[tags]: 
+Solving the mixin constructor problem in C++ using variadic templates
+
+I've recently tackled the constructor problem , where various mixins classes that decorate each other (and a topmost host class) have different constructor signatures. To maintain a single constructor in the resulting decorated class, and without adding init functions, I've found the following solution. The only restriction it places on a mixin class is that if its constructor takes more than one parameter, they should all be encapsulated in a single tuple. (Compiling this code with g++ requires the -std=c++0x flags) #include // Base class for all mixins struct Host { float f_; int i_; Host(float f, int i) : f_(f), i_(i) {} }; // First mixin--constructs with 1 parameter template struct M1 : public B { char c_; template M1(char c, const A&... a) : B(a...), c_(c) {} }; // Second mixin--constructs with 3 parameters template struct M2 : public B { double d_; short s_; const char* p_; template M2(boost::tuple t, const A&... a) : B(a...), p_(t.get ()), d_(t.get ()), s_(t.get ()) {} }; int main() { // ctor parameters go in this order, from most derived to base: M2 > tst(boost::make_tuple("test", 46.1, (short)-1), (char)5, 4.2f, 2); return 0; } My questions are: 1) Is there a better, more elegant way of solving this problem with C++0X? 2) Specifically, are tuples really necessary?

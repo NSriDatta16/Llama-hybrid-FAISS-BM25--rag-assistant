@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 930919
+[parent_id]: 930675
+[tags]: 
+You want to group the lines, so groupBy from Data.List seems like a good candidate. It uses a custom function to determine which lines are "equal" so one can supply something that makes lines in the same paragraph "equal". For example: import Data.List( groupBy ) inpara :: String -> String -> Bool inpara _ "" = False inpara _ _ = True paragraphs :: [String] -> [[String]] paragraphs = groupBy inpara This has some limitations, since inpara can only compare two adjacent lines and more complex logic doesn't fit into the framework given by groupBy . A more elemental solution if is more flexible. Using basic recursion one can write: paragraphs [] = [] paragraphs as = para : paragraphs (dropWhile null reminder) where (para, reminder) = span (not . null) as -- splits list at the first empty line span splits a list at the point the supplied function becomes false (the first empty line), dropWhile removes leading elements for which the supplied function is true (any leading empty lines).

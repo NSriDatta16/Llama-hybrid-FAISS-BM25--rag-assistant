@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 566751
+[parent_id]: 
+[tags]: 
+Samples from Marginal Posterior Distribution in Pymc3
+
+Let us consider the following Hierarchical Bayesian model: $mu \sim\ Beta(1, 1)$ $k \sim\ Exponential(1)$ $a = k*mu$ $b = (1-mu) * k$ $theta \sim\ Beta(a, b)$ $y \sim\ Bern(theta)$ The above example is a simplification of the example in figure 2.19 in the book Bayesian Analysis with Python by Osvaldo Martin. I use the pymc3 to construct the model as follows: import numpy as np import pymc3 as pm import arviz as az data = np.random.binomial(1, 0.3, 10000) with pm.Model() as model: mu = pm.Beta('mu', 1., 1.) k = pm.Exponential('k', 1) a = pm.Deterministic('a', mu*k) b = pm.Deterministic('b', (1.0-mu)*k) theta = pm.Beta('theta', alpha=a, beta=b) y = pm.Bernoulli('y', p=theta, observed=data) trace = pm.sample(1000) I have the following two questions: The $trace$ variable contains samples from the posterior distribution for the three random variables $mu$ , $k$ and $theta$ . Does the samples correspond to each of the marginal posterior distribution i.e. $p(mu|data)$ , $p(k|data)$ , $p(theta|data)$ or they correspond to the joint posterior i.e. $p(theta,mu,k|data)$ ? If the samples correspond to the joint posterior, how can I obtain samples from each of the marginal posterior distribution i.e. $p(mu|data)$ , $p(k|data)$ , $p(theta|data)$ ?

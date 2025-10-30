@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 192557
+[parent_id]: 
+[tags]: 
+DCC GARCH model diagnostics in R
+
+I have fitted a DCC GARCH model to my multivariate financial data. So, now I need to check the fitted model by using the standardized residual and its squared process. A good fitted model should have no serial correlation in the squared residuals, no ARCH effect and the residuals should be normally distributed. To check this, I need to use the ARCH-LM Test, Ljung-Box test and also Jarque-Bera test on the fitted model. Right? The problem is I do not know how to get the standardized residuals for my multivariate data. Below is my reproducible code: # load libraries library(rugarch) library(rmgarch) library(FinTS) library(tseries) data(dji30retw) Dat = dji30retw[, 1:8, drop = FALSE] uspec = ugarchspec(mean.model = list(armaOrder = c(0,0)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), distribution.model = "norm") spec1 = dccspec(uspec = multispec( replicate(8, uspec) ), dccOrder = c(1,1), distribution = "mvnorm") fit1 = dccfit(spec1, data = Dat, fit.control = list(eval.se=T)) print(fit1) I have tried the following, but I am not sure whether it is correct: resid = residuals(fit1)/sd(residuals(fit1)) ### test for arch effect using Lagrange multiplier (ARCH LM test) ArchTest(resid,lag=12,demean=F) Also, I have tried to use the Jarque-Bera and Ljung-Box test, but I am getting the following error: Error in Box.test(resid^2, lag = 12, type = "Ljung") : x is not a vector or univariate time series

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 904922
+[parent_id]: 897184
+[tags]: 
+I think that the problem is that you are using the list directly to pass the data. I tried it several different ways to get it to fail and figured out a few ways that it doesn't work. If you don't have the [Serializable] attribute on your custom classes it will not work correctly because this is how the classes are marshaled between the processes. Also, if I use a List directly to pass the data I get a null reference exception. If you use a simple transport class to pass the data (and all the types are serializable) then everything worked fine for me. [Serializable] class Test { public string Name { get; set; } public string Description { get; set; } } [Serializable] class Transport { public Transport() { this.Items = new List (); } public IList Items { get; private set; } } Then I can do this no problem and it works across instances... private void Form1_DragDrop(object sender, DragEventArgs e) { foreach (var item in ((Transport)e.Data.GetData(typeof(Transport))).Items) { System.Diagnostics.Debug.WriteLine(item.Name + " " + item.Description); } }

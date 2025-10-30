@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1335212
+[parent_id]: 1335079
+[tags]: 
+You have to seperate the driver jar file and the actual name of the JDBC driver for the particular provider. I would really encourage to not to include jdbc driver jars in your own jar. Just at them to the path at runtime. Similarly you can get the name of the JDBC driver manager from the system properties during runtime, or even a config file. So running app like this: java -jar myapp.jar -cp sqlserver.jar -DdriverManager=com.microsoft.sqlserver.jdbc.SQLServerDriver -DdbUrl=jdbc:some:url and in your application, do something like this (I leave out exception handling): Class.forName(System.getProperty("driverManager")); Connection conn = DriverManager.getConnection(System.getProperty("dbUrl")) ; This way you can change drivers simply by adding appropriate jar file to the classpath and changing the driverManager and dbUrl properties. This way you don't have to recompile to support new drivers. That's the simplest solution that I can think of.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2107807
+[parent_id]: 
+[tags]: 
+key value stores for extendable objects
+
+http://www.infoq.com/presentations/newport-evolving-key-value-programming-model is a video about KV stores, and the whole premise is that redis promotes a column-based style for storing the attributes of an object under separate keys rather than serialising an object and storing it under a single key. (This question is not redis-specific, but more a general style and best practice for KV stores in general.) Instead of a blob for, say, a 'person', redis encourages a column based style where the attributes in an object are stored as separate key, e.g. R.set("U:123:firstname","Billy") R.set("U:123:surname","Newport") ... I am curious if this is best practice, and if people take different approaches. E.g. you could 'pickle' an object under a single key. This has the advantage of being fetched or set in a single request Or a person could be a list with the first item being a field name index or such? This got me thinking - I'd like a hierarchical key store, e.g. R.set(["U:123","firstname"],"Billy") R.set(["U:123","surname"],"Newport") R.get(["U:123"]) returns [("firstname","Billy"),("surname","Newport")] And then to add in transactions: with(R.get(["U:132"]) as user): user.set("firstname","Paul") user.set("lastname","Simon") From a scaling perspective, the batching of gets and sets is going to be important? Are there key stores that do have support for this or have other applicable approaches?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4549449
+[parent_id]: 4547587
+[tags]: 
+You basically just want to serialize a list of things to be done once they create an account. You could store this in a session, a persistent cache like memcached (though you aren't guaranteed persistence), or a custom model/table. There's not really any single accepted way to do this in Rails, so it's left up to you as to how you implement it. What you could do, if you want to stick to the Rails way of doing things, is to set a transient flag on a record, then save it. Once the user registers, you can remove the transient flag. Run a cron job that destroys all transient records older than 10 minutes, and all your before_destroy callbacks should be run to let you roll back any state changes they caused. That's a "heavy" solution, but it's easy to implement and lets you leverage Rails' models easily.

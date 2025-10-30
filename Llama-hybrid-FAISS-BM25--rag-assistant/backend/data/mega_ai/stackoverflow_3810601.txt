@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3810601
+[parent_id]: 3800661
+[tags]: 
+Short Version: The Invalid PTE's address bits will map to the offset within the secondary storage (swap file). Longer Version: In order to understand what happens there, let's have a very quick recap on the workings of Virtual-to-physical translation. I'll discuss the answer on x86 platform. The CR3 processor register has 20 bits allocated to point to the start of the page directory. The top 10 bits of the virtual address encode which page directory entry (PDE) the address is used, which is an array of page table entries (PTEs), the next 10 bits in the address encode which PTE refers to the actual physical page in question. The last 12 bits are offset within the page. When the operating system evicts a page from memory, the PTE is marked as invalid, and the address bits of the PTE become offset into the page file (answering your original question). It gets slightly more complex with memory mapped file, as they use prototype PTEs. If you're interested in more info, I strongly recommend Mark russinovich "Windows Internals" book.

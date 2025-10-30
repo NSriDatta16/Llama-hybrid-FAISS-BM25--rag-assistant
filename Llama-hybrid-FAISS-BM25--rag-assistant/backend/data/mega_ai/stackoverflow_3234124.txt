@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3234124
+[parent_id]: 3233179
+[tags]: 
+I agree it is disappointing that these classes inherit directly from EventArgs. It seems logical that they would inherit from the same sublass of EventArgs given not just their common properties, but the fact that most times you use a DetailsView for inserting you also use it for updating. That being said, what you want to do can be accomplished with a bit of dynamic C#. It's pretty cool, and maybe even a little elegant, albeit a little more overhead. Try this: (requires C# 4.0) protected void DetailsView1_Inserted(Object sender, DetailsViewInsertedEventArgs e) { ProcessDetailsViewEventArgs(e); } protected void DetailsView1_Updated(Object sender, DetailsViewUpdatedEventArgs e) { ProcessDetailsViewEventArgs(e); } private void ProcessDetailsViewEventArgs(dynamic e) { if (e == null) return; if (e.Exception != null) { e.ExceptionHandled = HandleException(e.Exception); e.KeepInEditMode = e.ExceptionHandled; } }

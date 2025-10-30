@@ -1,0 +1,93 @@
+is a Linux-specific system call that moves data between a file descriptor and a pipe without a round trip to user space. The related system call  moves or copies data between a pipe and user space.  Ideally, splice and vmsplice work by remapping pages and do not actually copy any data, which may improve I/O performance. As linear addresses do not necessarily correspond to contiguous physical addresses, this may not be possible in all cases and on all hardware combinations.
+
+Workings 
+With , one can move data from one file descriptor to another without incurring any copies from user space into kernel space, which is usually required to enforce system security and also to keep a simple interface for processes to read and write to files.  works by using the pipe buffer. A pipe buffer is an in-kernel memory buffer that is opaque to the user space process. A user process can splice the contents of a source file into this pipe buffer, then splice the pipe buffer into the destination file, all without moving any data through userspace.
+
+Linus Torvalds described  in a 2006 email, which was included in a KernelTrap article.
+
+Origins 
+The Linux splice implementation borrows some ideas from an original proposal by Larry McVoy in 1998. The splice system calls first appeared in Linux kernel version 2.6.17 and were written by Jens Axboe.
+
+Prototype 
+
+ ssize_t splice(int fd_in, loff_t *off_in, int fd_out, loff_t *off_out, size_t len, unsigned int flags);
+
+Some constants that are of interest are:
+
+/* Splice flags (not laid down in stone yet). */
+#ifndef SPLICE_F_MOVE
+#define SPLICE_F_MOVE           0x01
+#endif
+#ifndef SPLICE_F_NONBLOCK
+#define SPLICE_F_NONBLOCK       0x02
+#endif
+#ifndef SPLICE_F_MORE
+#define SPLICE_F_MORE           0x04
+#endif
+#ifndef SPLICE_F_GIFT
+#define SPLICE_F_GIFT           0x08
+#endif
+
+Example 
+This is an example of splice in action:
+
+/* Transfer from disk to a log. */
+int log_blocks (struct log_handle * handle, int fd, loff_t offset, size_t size)
+{
+    int filedes [2];
+    int ret;
+    size_t to_write = size;
+    ret = pipe (filedes);
+    if (ret < 0)
+        goto out;
+    /* splice the file into the pipe (data in kernel memory). */
+    while (to_write > 0) {
+        ret = splice (fd, &offset, filedes [1], NULL, to_write,
+                SPLICE_F_MORE | SPLICE_F_MOVE);
+        if (ret < 0)
+            goto pipe;
+        else
+            to_write -= ret;
+    }
+    to_write = size;
+    /* splice the data in the pipe (in kernel memory) into the file. */
+    while (to_write > 0) {
+        ret = splice (filedes [0], NULL, handle->fd,
+                &(handle->fd_offset), to_write,
+                SPLICE_F_MORE | SPLICE_F_MOVE);
+        if (ret < 0)
+            goto pipe;
+        else
+            to_write -= ret;
+    }
+
+pipe:
+    close (filedes [0]);
+    close (filedes [1]);
+out:
+    if (ret < 0)
+        return -errno;
+    return 0;
+}
+
+Complementary system calls 
+ is one of three system calls that complete the  architecture.  can map an application data area into a pipe (or vice versa), thus allowing transfers between pipes and user memory where  transfers between a file descriptor and a pipe.  is the last part of the trilogy. It duplicates one pipe to another, enabling forks in the way applications are connected with pipes.
+
+Requirements 
+When using  with sockets, the network controller (NIC) should support DMA, otherwise splice() will not deliver a large performance improvement. The reason for this is that each page of the pipe will just fill up to frame size (1460 bytes of the available 4096 bytes per page).
+
+Not all filesystem types support .  Also,  sockets do not support .
+
+See also 
+ System call
+ Zero-copy
+
+References
+
+External links 
+ Linux kernel 2.6.17 (kernelnewbies.org)
+ Two new system calls: splice() and sync_file_range() (LWN.net)
+ Some new system calls (LWN.net)
+
+Linux kernel features
+System calls

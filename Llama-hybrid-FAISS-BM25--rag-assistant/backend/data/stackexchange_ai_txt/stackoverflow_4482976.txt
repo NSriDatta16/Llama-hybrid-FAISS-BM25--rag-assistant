@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4482976
+[parent_id]: 4482956
+[tags]: 
+The problem is that you're using static methods. There's no clean way of configuring that singleton instance to use different services. Consider this. Make your SomeMethod non-static and inject the required services into the business logic instance: private ISmtpMail _smtpMail; public BusinessLogic(ISmtpMail smtpMail) { _smtpMail = smtpMail; } public void SomeMethod() { ... _smtpMail.Send(); } Your test code will then be able to enforce which service to use: [TestMethod] public static void SomeMethod_Test() { // some mock initialization var bl = new BusinessLogic(new FakeMailSender()); bl.SomeMethod(); // checks } For production code, I strongly encourage you to look at some of the excellent Dependency Injection frameworks out there, e.g. Autofac , which makes the service injections happen more or less by magic.

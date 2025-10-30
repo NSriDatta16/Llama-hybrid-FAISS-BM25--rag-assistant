@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 41839
+[parent_id]: 41824
+[tags]: 
+This past question is related. If $r$ and $b$ are not too large, you can compute the distribution recursively in $O(rb)$ steps. Let $p(x,y)$ be the probability that at some point there are $x$ red balls and $y$ blue balls left. If $x \lt r, y \lt b$ then $$p(x,y) = \frac{2x+2}{2x+y+2}p(x+1,y) + \frac{y+1}{2x+y+1}p(x,y+1)$$ Replace the term with $0$ if $x=r$ xor $y=b$, and $p(r,b)=1$. To compute the average for $1000$ draws from $1000$ red and $1000$ blue balls using this formula, $618.05$ red, took about $0.05$ seconds. Here is some C# code: double[,] p = new double[r+1, b+1]; for (Int32 x = r; x>=0; x--) for (Int32 y = b; y >= 0; y--) { if (x == r && y == b) { p[x, y] = 1.0; } else { p[x,y] += (x==r)? 0 : (2*(double)x+2.0)/(2*x+2.0+y) * p[x+1,y]; p[x,y] += (y==r)? 0 : ((double)y+1.0)/(2*x+y+1.0) * p[x,y+1]; } }

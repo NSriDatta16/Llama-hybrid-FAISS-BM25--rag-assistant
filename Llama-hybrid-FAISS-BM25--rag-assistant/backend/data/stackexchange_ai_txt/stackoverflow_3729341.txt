@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3729341
+[parent_id]: 3728875
+[tags]: 
+This is specific to the webbrowser. Among others, Firefox exposes this behaviour. The page is been requested from the browser cache and any form data is coming from the browser cache as well as "last entered" data. To solve this "problem", you'd like to disable browser cache for dynamic JSF requests. Easiest is to create a Filter which is annotated as @WebFilter(servletNames={"facesServlet"}) (where facesServlet is the of the FacesServlet as definied in web.xml ) and contains basically the following in doFilter() method: HttpServletResponse hsr = (HttpServletResponse) response; hsr.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1. hsr.setHeader("Pragma", "no-cache"); // HTTP 1.0. hsr.setDateHeader("Expires", 0); // Proxies. chain.doFilter(request, response);

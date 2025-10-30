@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5356535
+[parent_id]: 5354059
+[tags]: 
+Here's the approach I took, and so far all my tests are passing. First, I created a unioned enumerable of all the tasks from the various providers: var tasks = from provider in providers from task in provider.SomeThingsToDo() select task; I believe that part of my original problem was that I did a ToList (more or less) and thus began the execution of the tasks prematurely. Next, I added a callback to ExecuteTasks and ExecuteNextTask. Admittedly, not as clean as I'd hoped. Here's the revised implementation: public void ExecuteTasks(IEnumerable tasks, Action callback) { var enumerator = tasks.GetEnumerator(); ExecuteNextTask(enumerator, callback); } static void ExecuteNextTask(IEnumerator enumerator, Action callback) { bool moveNextSucceeded = enumerator.MoveNext(); if (!moveNextSucceeded) { if (callback != null) callback(); return; } enumerator .Current .ContinueWith(x => ExecuteNextTask(enumerator, callback)); } I didn't need a thread-safe structure for storing the list of tasks, because the list is generated only once.

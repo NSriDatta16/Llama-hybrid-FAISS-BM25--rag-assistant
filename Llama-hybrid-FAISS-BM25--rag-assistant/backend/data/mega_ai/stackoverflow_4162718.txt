@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4162718
+[parent_id]: 4162324
+[tags]: 
+I think you need to use the .Include: pushQueueRepository.Include("User").Select(x => x.User.ID == user.ID && x.PageID == pageID) .Include forces EF to load the User object right away, which would otherwise be lazily loaded and thereby not available for your comparison on User.ID. Having a string in the .Include is not very elegant and unfortunately not compile-time checked. You can do something like this: pushQueueRepository.Include(typeof(User).Name).... Not very elegant either, but at least it is checked by the compiler ;-)

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 183984
+[parent_id]: 
+[tags]: 
+How to use XGboost.cv with hyperparameters optimization?
+
+I want to optimize hyperparameters of XGboost using crossvalidation. However, it is not clear how to obtain the model from xgb.cv . For instance I call objective(params) from fmin . Then model is fitted on dtrain and validated on dvalid . What if I want to use KFold crossvalidation instead of training on dtrain ? from hyperopt import fmin, tpe import xgboost as xgb params = { 'n_estimators' : hp.quniform('n_estimators', 100, 1000, 1), 'eta' : hp.quniform('eta', 0.025, 0.5, 0.025), 'max_depth' : hp.quniform('max_depth', 1, 13, 1) #... } best = fmin(objective, space=params, algo=tpe.suggest) def objective(params): dtrain = xgb.DMatrix(X_train, label=y_train) dvalid = xgb.DMatrix(X_valid, label=y_valid) watchlist = [(dtrain, 'train'), (dvalid, 'eval')] model = xgb.train(params, dtrain, num_boost_round, evals=watchlist, feval=myFunc) # xgb.cv(param, dtrain, num_boost_round, nfold = 5, seed = 0, # feval=myFunc)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3103522
+[parent_id]: 3103208
+[tags]: 
+If you need to export array data from Matlab and import it into a C program, one easy option (assuming the array isn't gigantic) is to use a plain text file as in intermediate. From Matlab, write the array out as strings to a text file with each element separated by a comma (for example, 1,0,0,1,0,1,1,etc ). Save this as a regular ASCII text file. Now, you can open the file in C with fopen , read in a character at a time with fgetc , and reconstruct the array. For example, the C portion might look like: FILE* fp; char inp[3]; int array[PLENTY_OF_ROOM], index=0; fp = fopen("exported_data.txt", "r"); while (fgets(inp, 3, fp) != NULL) { if ((inp[0] == '0' || inp[0] == '1') && inp[1] == ',') array[index++] = inp[0] - '0'; else { fprintf(stderr, "Error: bad format\n"); exit(1); } }

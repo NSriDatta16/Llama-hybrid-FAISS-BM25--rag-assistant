@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4829428
+[parent_id]: 
+[tags]: 
+OpenMP code executed in thread pool
+
+I'm thinking about a design were a thread pool will execute code blocks, which may contain OpenMP statements (parallel for mostly). (Similar to: How to deal with OpenMP thread pool contention I guess). My question is if it will cause problems or lead to bad performance if an OpenMP parallel region is executed by a different thread everytime. edit: Target will be Linux (gcc) and Windows (msvc). I will benchmark it, when my first prototype is done (which will be influenced by the answers I get here). Here is a simple example: class Task { public: void doTask() { #pragma omp parallel { // do work in parallel } } }; Now imagine you create an instance of Task give it to a thread pool (thread-0, ..., thread-n). One thread executes doTask() . Later you give the same Task object again into the thread pool, and again, ... . So doTask() (and the parallel section) will be executed by different threads. I wonder if this is handled by OpenMP efficiently (e.g. the threads for the section are not recreated every time).

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2277827
+[parent_id]: 2277731
+[tags]: 
+I don't think Postgres supports that update construct (the simple test I tried fails with the same error). You might have to do something like this: CREATE OR REPLACE FUNCTION DATA_UPDATE (mission NUMERIC, task NUMERIC) RETURNS void as ' DECLARE offScheduled int4; totalReceivers int4; BEGIN IF mission IS NOT NULL THEN select COALESCE(SUM(RR.TRQ_FUEL_OFFLOAD),0), COALESCE(SUM(RR.TRQ_NUMBER_RECEIVERS),0) into offScheduled, totalReceivers FROM REFUELING_REQUEST RR, MISSION_REQUEST_PAIRING MRP WHERE MO.MSN_INT_ID = MRP.MSN_INT_ID AND MO.MO_INT_ID = MRP.MO_INT_ID AND MRP.REQ_INT_ID = RR.REQ_INT_ID; UPDATE MISSION_OBJECTIVE MO SET MO.MO_TKR_TOTAL_OFF_SCHEDULED = offScheduled, MO.MO_TKR_TOTAL_RECEIVERS = totalReceivers WHERE MO.MSN_INT_ID = mission AND MO.MO_INT_ID = task ; END IF; END; ' LANGUAGE plpgsql; ... assuming I haven't mangled the logic too badly ;) I took the liberty of changing the way the parameters are defined, and the return type (since it looks like you're not actually returning anything from the function?) Edit: oops, I used the wrong construct for select into ...

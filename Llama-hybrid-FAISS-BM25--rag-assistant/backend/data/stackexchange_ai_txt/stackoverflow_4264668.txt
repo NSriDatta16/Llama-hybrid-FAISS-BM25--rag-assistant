@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4264668
+[parent_id]: 4264460
+[tags]: 
+This is a reasonably simple use case for condition variables. Have an integer count of the number of active work items, mutex protected. In addition, have two condition variables, one for signalling the worker threads that work is available on a queue, the other to signal the main thread that a thread has finished. Something like: main: set freethreads to numthreads init mutex M, condvars TOMAIN and TOWORKER start N worker threads while true: wait for work item claim M while freethreads == 0: cond-wait TOMAIN, M put work item in queue decrement freethreads cond-signal TOWORKER release M worker: init while true: claim M while no work in queue: cond-wait TOWORKER, M get work to local storage release M do work claim M increment freethreads cond-signal TOMAIN release M Note that the loops run forever. In reality, there would be signals which made them exit and run termination/cleanup code.

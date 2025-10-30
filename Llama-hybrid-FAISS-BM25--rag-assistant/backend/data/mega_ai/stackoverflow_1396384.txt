@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1396384
+[parent_id]: 1396139
+[tags]: 
+I think the easiest way to get from here to there would be just to create multiple wait handles and end with a WaitAll(). Not the most elegant solution, but it will work for you. BTW, I would recommend using a real class that holds reference to the associated wait handle and avoiding the anon methods. List items = new List (); foreach (Type job in queue) { WorkflowInstance myInstance = new WorkflowInstance(job, parameters); ManualResetEvent syncEvent = new ManualResetEvent(false); items.Add(syncEvent); // Completed myInstance.OnCompleted = delegate(WorkflowCompletedEventArgs e) { syncEvent.Set(); }; // Unhandled Exception myInstance.OnUnhandledException = delegate(WorkflowUnhandledExceptionEventArgs e) { // Message Console.WriteLine(e.UnhandledException.ToString()); return UnhandledExceptionAction.Terminate; }; // Aborted myInstance.OnAborted = delegate(WorkflowAbortedEventArgs e) { // Message Console.WriteLine(e.Reason); syncEvent.Set(); }; // Run myInstance.Run(); } // Wait WaitHandle.WaitAll(items.ToArray());

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4543125
+[parent_id]: 
+[tags]: 
+How do I Pass a 'user' object from aspx to silverlight 4
+
+First, we are constrained to using an existing web framework that handles authentication and authorization. The web project uses forms authentication and writes to an encrypted cookie. The user information is exposed to the aspx pages as a property: LoggedInUser.Current This has several properties including the userId and role list. I've looked at using initParams, but haven't been very successful there (edit: I couldn't do it dynamically originally). I've created a simple POCO entity with a [Key] attribute, but I need to at least be able to pass the userId from the aspx page to the imbedded silverlight. What is the easiest way to pass a dynamic object from aspx to silverlight 4? Thank you slugster: Set up the initParams on the aspx page "/> in Code behind: private void LoadSilverlightParams() { LoggedInUser user = LoggedInUser.Current; InitParam = "UserId=" + user.PersonId.ToString() + ","; InitParam += "OrganizationId=" + user.OrganizationId.ToString() + ","; InitParam += "RoleList="; foreach(string s in user.Roles) { InitParam += s + "|"; } InitParam.Remove(InitParam.Count() - 1); } (not pretty, but it works) Then used Slugster's example to use the values on the Silverlight side. Warning: Passing user information via init params exposes the info as plain text to the user viewing the page (they just have to view the source). We ended up using an authentication domain service and using the same user object as the aspx

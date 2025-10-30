@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 969397
+[parent_id]: 968998
+[tags]: 
+Assuming you know how to load the PDF in to a byte array you've got to get it Base64 encoded and then post that to server using MIME multipart encoding. You can utilise the MSXML libraries ability to perform Base64 encoding. See this link for details. Once you have the PDF as a Bas64 string you need to package that as MIME multipart. You can use XMLHTTP object from MSXML to perform that posting for you:- sEntityBody = "----boundary" & vbCrLf sEntityBody = sEntityBody & "Content-Disposition: form-data; name=fileInputElementName; filename=""" + sFileName + """" & vbCrLf sEntityBody = sEntityBody & "Content-Transfer-Encoding: base64" & vbCrLf sEntityBody = sEntityBody & "Content-Type: application/pdf" & vbCrLf & vbCrLf sEntityBody = sEntityBody & sPDFBase64 & vbCrLf sEntityBody = sEntityBody & "-----boundary--" & vbCrLf & vbCrLf Set xhr = New MSXML2.XMLHTTP30 xhr.setRequestHeader("Content-Type", "multipart/form-data; boundary=-----boundary") xhr.Open "POST", sUrl, False xhr.send sEntityBody Perhaps not elegant or efficient but it should it work.

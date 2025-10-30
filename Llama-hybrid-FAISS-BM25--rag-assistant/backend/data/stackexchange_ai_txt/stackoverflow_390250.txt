@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 390250
+[parent_id]: 
+[tags]: 
+Elegant ways to support equivalence ("equality") in Python classes
+
+When writing custom classes it is often important to allow equivalence by means of the == and != operators. In Python, this is made possible by implementing the __eq__ and __ne__ special methods, respectively. The easiest way I've found to do this is the following method: class Foo: def __init__(self, item): self.item = item def __eq__(self, other): if isinstance(other, self.__class__): return self.__dict__ == other.__dict__ else: return False def __ne__(self, other): return not self.__eq__(other) Do you know of more elegant means of doing this? Do you know of any particular disadvantages to using the above method of comparing __dict__ s? Note : A bit of clarification--when __eq__ and __ne__ are undefined, you'll find this behavior: >>> a = Foo(1) >>> b = Foo(1) >>> a is b False >>> a == b False That is, a == b evaluates to False because it really runs a is b , a test of identity (i.e., "Is a the same object as b ?"). When __eq__ and __ne__ are defined, you'll find this behavior (which is the one we're after): >>> a = Foo(1) >>> b = Foo(1) >>> a is b False >>> a == b True

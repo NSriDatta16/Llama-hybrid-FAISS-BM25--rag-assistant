@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4034430
+[parent_id]: 603856
+[tags]: 
+If you want to see the literal HTTP request that is sent out, and therefore see every last header exactly as it is represented on the wire, then you can tell urllib2 to use your own version of an HTTPHandler that prints out (or saves, or whatever) the outgoing HTTP request. # For Python 2, switch these imports to: # # import httplib as client # import urllib2 as request from http import client from urllib import request class MyHTTPConnection(client.HTTPConnection): def send(self, s): print(s.decode('utf-8')) # or save them, or whatever client.HTTPConnection.send(self, s) class MyHTTPHandler(request.HTTPHandler): def http_open(self, req): return self.do_open(MyHTTPConnection, req) opener = request.build_opener(MyHTTPHandler) response = opener.open('http://www.google.com/') The result of running this code is: GET / HTTP/1.1 Accept-Encoding: identity Host: www.google.com User-Agent: Python-urllib/3.9 Connection: close

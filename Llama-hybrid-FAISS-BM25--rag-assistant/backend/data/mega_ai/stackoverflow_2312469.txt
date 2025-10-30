@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2312469
+[parent_id]: 2311906
+[tags]: 
+I think your problem is that you are trying to extend a built-in. Magic __ methods don't get called for builtins. I think you will have to do some kind of wrap-and-delegate, like this (untested) (maybe Anurag beat me to the punch): class Message(object): def __init__(self, strvalue, domain, default='my message'): self.msg = zope.i18nmessageid.Message(strvalue,domain,default) def __getattr__(self,attr): return getattr(self.msg,attr) def __repr__(self): return repr(zope.i18n.interpolate(self.msg.default, self.msg.mapping)) def __str__(self): return zope.i18n.interpolate(self.msg.default, self.msg.mapping) def __unicode__(self): return zope.i18n.interpolate(self.msg.default, self.msg.mapping) Update 1 - it seems that __ methods do get called for subclasses of builtins >>> class Z(int): ... def __add__(self,other): return self*other ... def __str__(self): return "***" ... >>> a = Z(100) >>> a + 2 200 >>> a 100 >>> str(a) '***' >>> "%s" % a '***' So there is definitely some inconsistency going on...

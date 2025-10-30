@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5071084
+[parent_id]: 5071033
+[tags]: 
+You need to override WndProc in the TabControl and turn HTTRANSPARENT into HTCLIENT in the WM_NCHITTEST message. For example: const int WM_NCHITTEST = 0x0084; const int HTTRANSPARENT = -1; const int HTCLIENT = 1; //The default hit-test for a TabControl's //background is HTTRANSPARENT, preventing //me from receiving mouse and drag events //over the background. I catch this and //replace HTTRANSPARENT with HTCLIENT to //allow the user to drag over us when we //have no TabPages. protected override void WndProc(ref Message m) { base.WndProc(ref m); if (m.Msg == WM_NCHITTEST) { if (m.Result.ToInt32() == HTTRANSPARENT) m.Result = new IntPtr(HTCLIENT); } }

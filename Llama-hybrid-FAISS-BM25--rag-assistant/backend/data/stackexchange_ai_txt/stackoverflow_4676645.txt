@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4676645
+[parent_id]: 
+[tags]: 
+inlined functions still show up in the .prof file
+
+I'm trying to figure out how to optimize some code. Here it is: {-# OPTIONS_GHC -funbox-strict-fields #-} data Vec3 a = Vec3 !a !a !a vx :: Vec3 a -> a vx (Vec3 x _ _) = x {-# SPECIALIZE INLINE vx :: Vec3 Double -> Double #-} vy :: Vec3 a -> a vy (Vec3 _ y _) = y {-# SPECIALIZE INLINE vy :: Vec3 Double -> Double #-} vz :: Vec3 a -> a vz (Vec3 _ _ z) = z {-# SPECIALIZE INLINE vz :: Vec3 Double -> Double #-} dot :: (Num a) => Vec3 a -> Vec3 a -> a dot u v = (vx u * vx v) + (vy u * vy v) + (vz u * vz v) {-# SPECIALIZE INLINE dot :: Vec3 Double -> Vec3 Double -> Double #-} type Vec3D = Vec3 Double -- just make a bunch of vecs to measure performance n = 1000000 :: Double v1s = [Vec3 x y z | (x, y, z) When I compile with ghc 6.12.1 (ubuntu linux on an i486 machine) ghc --make -O2 Vec.hs -prof -auto-all -fforce-recomp and run Vec +RTS -p Looking at the Vec.prof file, COST CENTRE MODULE %time %alloc v2s Main 30.9 36.5 v1s Main 27.9 31.3 dots Main 27.2 27.0 CAF GHC.Float 4.4 5.2 vy Main 3.7 0.0 vx Main 2.9 0.0 theMax Main 2.2 0.0 I see that the function vx and vy take a significant portion of the time. Why is that? I thought that the SPECIALIZE INLINE pragma would make those functions go away. When using a non-polymorphic data Vec3D = Vec3D {vx, vy, vz :: !Double} deriving Show the functions vx, vy, vz do not show as a cost center.

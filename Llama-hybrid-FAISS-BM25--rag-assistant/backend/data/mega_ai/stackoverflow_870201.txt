@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 870201
+[parent_id]: 869281
+[tags]: 
+Starting threads in constructors that run code in the still-under-construction object is dangerous. The code you presented will work properly as-is, but the solution is fragile. If DoCallback calls a virtual method in A then you might end up with unexpected results depending on how fast the thread runs. If the called method is pure virtual then the application will die, if it is not pure, the A version of the method will be called instead of the derived version. That is exactly the same reason you should never call a virtual method from a constructor. The safer approach is having the user call the thread. That is also the approach in boost::thread library and the upcoming standard. Create and initialize the object that is going to be executed and then pass it to the running thread: class Worker { public: void DoWork(); }; void startWorkerThread() { Worker w; // fully create the object that is going to be run before you... boost::thread thr( boost::bind( &Worker::DoWork, &w ) ); // ...create thread and run }

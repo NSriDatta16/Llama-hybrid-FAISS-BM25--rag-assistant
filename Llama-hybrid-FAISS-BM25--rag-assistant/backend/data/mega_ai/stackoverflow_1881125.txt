@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1881125
+[parent_id]: 1878281
+[tags]: 
+You could subclass NSWindow and set your subclass as the window of the WebView. You can then control which events are sent to the WebView by detecting what sort of control is being affected by the mouse event. This is pretty brute force but will totally disable any mouse events, including rollovers etc: @interface WebViewEventKillingWindow : NSWindow { IBOutlet WebView* myWebView; } @end @implementation WebViewEventKillingWindow - (void)sendEvent:(NSEvent*)event { NSView* hitView; switch([event type]) { case NSScrollWheel: case NSLeftMouseDown: case NSLeftMouseUp: case NSLeftMouseDragged: case NSMouseMoved: case NSRightMouseDown: case NSRightMouseUp: case NSRightMouseDragged: hitView = [myWebView hitTest:[event locationInWindow]]; if([hitView isDescendantOf:myWebView] && !([hitView isKindOfClass:[NSScroller class]] || [hitView isKindOfClass:[NSScrollView class]])) { return; } break; default: break; } [super sendEvent:event]; } @end

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3730058
+[parent_id]: 
+[tags]: 
+Serialize a HashSet with LinQ
+
+I'd like to take a HashSet and elegantly convert it to a string. I can iterate like so: HashSet words = new HashSet () { "alpha", "beta", "delta" }; string joined = ""; foreach (var w in words) joined += w + ","; if(joined.Length > 0) joined = joined.SubString(0,joined.Length-1); // remove final comma Is there a LinQ way to do this elegantly and efficiently? The only way I can think of doing this is by converting it to an array first: HashSet words = new HashSet () { "alpha", "beta", "delta" }; string joined = String.Join(",",words.ToArray()); But, then I'm doing a double conversion. Would there be some handy-dandy LinQ expression that's efficient and clear? ANSWER 1 (from marr's idea) public static string JoinItems(this IEnumerable items, string joiner) { StringBuilder sb = new StringBuilder(""); foreach (var i in items) sb.AppendFormat("{0}{1}",i,joiner); if(sb.Length>0) return sb.Remove(sb.Length - joiner.Length, joiner.Length).ToString(); else return sb.ToString(); } ANSWER 2 using an Enumerator (from Martin's solution) public static string JoinItems (this IEnumerable items, string delim) { var sb = new StringBuilder(); var i = items.GetEnumerator(); if (i.MoveNext()) { sb.Append(i.Current); while (i.MoveNext()) { sb.Append(delim); sb.Append(i.Current); } } return sb.ToString(); }

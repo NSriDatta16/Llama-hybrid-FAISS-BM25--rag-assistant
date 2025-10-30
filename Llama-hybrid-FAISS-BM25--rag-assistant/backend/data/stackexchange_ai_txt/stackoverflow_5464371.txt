@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5464371
+[parent_id]: 5460765
+[tags]: 
+That's quite a long story. (TLDR, sorry). This being .NET, you're most likely looking at heap fragmentation rather than memory exhaustion. If you are really leaking memory then you are holding on to references too long. Review you IDisposables (especially list comprehension can hurt, especially with Linqy things like orderby and distinct tacked on). I once made an application run 2x as fast, when it was reliably failing by exhausting/fragmenting the heap by tacking a simple .ToList() on the largest enumerations I had to drive a big process. There are good memory profilers for .NET, but I currently know how to operate only mono --profiler (bad memory). A simple google will help you find a profiler you can use on your environment: let it tell you exactly what objects allocated where are fragmenting your heap PS. since I saw you pointing the finger on Web applications on second scanning of your question, I would add: check what references (indirectly) are being held from Session state (application, session).

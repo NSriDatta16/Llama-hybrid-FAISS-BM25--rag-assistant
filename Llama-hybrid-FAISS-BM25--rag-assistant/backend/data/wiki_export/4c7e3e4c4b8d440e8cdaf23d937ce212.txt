@@ -1,0 +1,106 @@
+KDF8 was an early British computer built by English Electric as a version of the RCA 501. By producing a software-compatible system, the intention was to reduce time and cost to develop software. However, the lengthy process of developing manufacturing capability meant that the system was soon outpaced by systems from other vendors. Only a few systems were sold during its 5 years of production.  Due to the consolidation of the British computer industry, English Electric's computer division became one of the components of what would become ICL.
+
+Background
+During the late 1950s English Electric embarked on two major computer projects.
+
+Firstly, English Electric built a version of the RCA 501 computer which was known as the KDP10 (KDP for Kidsgrove Data Processing).  This was a machine intended for commercial data processing applications, with fixed length instructions, and capabilities for processing variable-length numeric and alpha-numeric data. RCA's original design was adapted to use the types of transistors, diodes and other components manufactured in the UK. The KDP10 was first delivered in 1961. In 1964 it was re-designated as the KDF8 and sales continued to 1965. The machine was essentially the same as the RCA 501 and manufactured under license so that English Electric could offer a full range of computer systems for all its customers, without the expense of developing an entirely new machine. The machine sold for £400,000.  Only 13 were sold.
+
+The second large computer to emerge from development work at Kidsgrove was the KDF9, primarily designed for scientific work.
+
+One KDF8 was installed at the Kidsgrove (Staffordshire) site of The English Electric Company's computer bureau.  Over the years, and a succession of mergers, this organisation became English Electric Leo Marconi (EELM), International Computing Services Limited (ICSL), and finally under a joint arrangement between ICL and Barclay's Bank, Baric.
+
+Basic features
+
+Processor/main store 
+KDF8 was a transistor based machine with magnetic core memory.  The core memory of the machine installed at the Kidsgrove computer bureau was upgraded from 64k to the then maximum of 96k of core memory.  KDF8 used an octal (base eight) addressing system. A machine-code instruction was fixed length, ten octal characters long. The instruction set was specifically designed for commercial use.  It had machine-code level instructions for all four of the decimal arithmetic functions operating on variable length numbers, and also had instructions for efficient manipulation of variable-length data-strings.  Not all instructions required all ten characters.  Given the minimal core memory available, programmers frequently used "spare" characters in instructions for storage of constants and similar storage-saving tricks.
+
+KDF8 was strictly a batch processing computer, running one program at a time.  Only one compute instruction could be processed at one time, but it was also possible to have one read and/or one write instruction (typically from and to magnetic tape) executing in parallel.  A system of hardware "gates" set and checked at machine code level were used to control the degree of synchronous operation.  However, since there was no operating system of any kind, this had to be  controlled entirely at the individual program level.
+
+The KDP10 in the service bureau was updated in situ, as the system was built with RCA germanium transistors. Part of the update was to convert the main logic to silicon transistors. There was also a three character address adder added, and the machine cycle was 15 microseconds, with six timing pulses, where sixth pulse was for settling time, thus the machine cycle was reduced to 12.5 microseconds.
+
+The level of programmer skill to control full read/write/compute overlap, especially if data records were "batched" several to the "real" block of data on magnetic tape, was considerable, since all simultaneity checks had to be hand-coded into the program.  Automatic error-detection was essentially limited to hardware parity checks at the character level, and there were no processor hardware checks on what the programmer could do.  For example, the computer would simply stop if instructed to access a memory location beyond physical memory.
+
+Peripherals
+There were no magnetic disks, drums or other similar temporary backing-storage devices.  Bulk storage was limited to magnetic tapes, on open reels, each reel of which was about one inch thick and nine inches (229 mm)  across, holding a maximum of  of tape.  Data and programs were kept on these tapes.  Peripheral error-checking was again limited to parity checks on all reads and writes and the use of write permit rings.  The Kidsgrove KDF8 had eight magnetic tape units on-line, each rated at 40k characters per second read/write speed.  Each tape unit was about  tall and  wide, and the processor and memory cabinets were about the same in size and number.  The Kidsgrove configuration required a large  air-conditioned room.
+
+Eight was considered the working maximum number of tape units, one per channel, for any actual KDF8 configuration.  It was possible  for each tape channel to be split through additional hardware units into a sub-group of eight tape decks, giving a theoretical maximum of 61 on-line tape units.  (Tt least three uniquely coded I/O channel identifiers were required for other devices.)
+
+Other tape unit/printer pairs were available, able to operate independently of the mainframe.  These provided an off-line printing facility for volume output, freeing the KDF8 to run other work.
+
+Other peripherals included:
+ a paper-tape reader (1000cps) for data and (initial) program input,
+ an operator's teleprinter device (with a slow paper tape punch built-in) permitting programs to display information to the operator, and the operator to use the keyboard to punch up short program or data items on paper-tape. This teleprinter could not be used to input data directly to the computer, all operator commands had to be input through the operator's console. 
+ an on-line printer, used mainly for core dumps of failed programs.
+
+Both on and off-line printers were impact printers, capable of printing a line of either 120 or 160 characters, depending on the model   They were single type-face, no lower case.   Fan fold paper for the printers was continuous, with perforations between the pages, and sprocket-holes at each side of the paper for the paper-feed mechanism.  Custom paper sizes, with pre-printed lines/text/colours etc. were common, especially for applications like payroll, and small paper-tape control loops were needed to match page-throw size to each paper type.
+
+Instruction Set
+Each KDF8 machine-code instruction took the format
+
+OO AAA RR BBB
+
+In this representation
+
+OO represents a two-(octal) character operation code, identifying the instruction to be performed, in the range 00 to 77,
+AAA represents a six-(octal) character "A" core address ranging from 000000 to 777777. (A theoretical  Meg directly addressable main store, an actual 96K!)
+RR represents a two-character Register setting (one character for each of two possible registers numbered 1 to 7 used to modify the "A" and "B" addresses, with 0 indicating no register modification) and
+BBB represents the "B" address, the same as the "A" address in format.
+
+Instructions were read in turn from main store into registers, then executed.
+
+Example.  An instruction to read data from the on-line paper-tape reader to locations starting at store location (octal) 200000 would look like
+
+14 200000 00 770000          (spaces for clarity only)
+
+Where 14 was the operation code for this type of read, 200000 was the lowest store location the data would be read to, 00 indicates that no register modification was to be done to the A or B addresses of the instruction, and 77 was the (fixed) device identifier of the paper tape reader.  (Note - 77 used as a device ID for a write operation would direct the write to the operator's teleprinter.  Embarrassing if this was due to a program error, and it was a large data block intended for mag tape.....)  The last four octal characters (0000) were not required in this instruction, and would be ignored when the instruction was processed.  Such "spare" characters were frequently, given the extremely limited main store available used by programmers to store constants.
+
+Some aspects of the instruction set were advanced, and greatly eased programming of commercial systems.
+
+The operation codes 51-54 did decimal arithmetic Add, Subtract, Multiply and Divide on variable length numbers, stored as decimal characters.  One end of each operand was stored at the "A" and "B" addresses of the instruction.  The other end was identified by an ISS (Item Separator Symbol), octal 74.  Thus numbers could be any length.
+A "Sector Compare" instruction (Octal 43) permitted three-way conditional branching of program control depending on whether the data stored in the range from the "A" address to the "B" address was greater, less than, or equal to, the value of the same number of characters stored at locations to the left of the (previously set) "T" register, as the following Assembler language version attempts to demonstrate.
+
+	
+
+        Tag             Op      A-Address      RR    B-Address
+
+        COMPARE         SET     £T                   SALARY,R
+                        SC      TAXLIMIT             TAXLIMIT,R
+                        CTC     BELOWTAXLIMIT        ABOVETAXLIMIT
+        EQUAL           TC      EQUALTAXLIMIT
+
+This example compares a salary with a tax limit, and jumps to one of three program locations depending on the respective values.  The ",R" Assembler convention represents the rightmost character of the named field. CTC stood for "Conditional Transfer of Control" and TC for (unconditional) Transfer of Control
+
+In the above "compare" code, the original (KDP10?) instruction set compared from right to left, requiring the whole length of the data strings to be compared, a character at a time.  KDP8 was enhanced to compare from left to right, so the comparison could stop as soon as the relative values were clear, speeding up processing of such instructions considerably.
+
+Variable length data was handled with the aid of specially designated characters.  The ISS or Item Separator Symbol, octal 74, usually represented as "●" was used to separate variable length data fields.  Octal 75 "<" and 76 ">" identified the start and end of a data message, Octal 777777 was by custom and practice used to identify End of File. So data such as names and addresses could be punched onto paper tape for data input as (for example)
+
+<IAN●TAYLOR●41●HIGH STREET●KIDSGROVE●STAFFS>
+
+Various instructions could operate directly on this variable length data, and records could be batched say ten to the batch onto magnetic tape, for efficient storage.  Given the relatively slow (by today's standards) processor and I/O rates, a significant aspect of the programmer's task was to balance the batching of data on tape, with the computing needed per record and organise the simultaneous I/O and compute operations with the aim of maximising overlap of computing with I/O and avoiding the tape-decks stopping between batch reads.
+
+Software
+There was no operating system.  Programs were initiated by an on-line operator, via an operator's console.  Operators were also responsible for manually clearing memory and re-setting the computer between programs, mounting and changing tapes, controlling off-line printing and the like.
+
+Some standard software packages were available, or became available, all written in the USA by the RCA organisation.  These included the following.
+
+ A parameter-driven sort-merge program, capable of handling very large volumes of data.  Sort parameters could either be read in from the paper-tape reader, for one-off sorts, or "compiled" in (really just stored in the program).  There were extensive user "hooks" where user-supplied code could be put in at various stages of the sort/merge process.
+ An assembler-language compiler called EZ-Code.  This was not used commercially for some time, since compilation time was then seen as a heavy overhead, but became increasingly used in later years.  To save on computer time, typically a programmer would do an initial compile, dry-check the program manually, re-compile, and then test and de-bug the compiled machine-code version of the program, building up a reel of paper-tape machine-code patches to the program as each correction was made.  Once a fairly robust copy was available, the changes would be replicated in Assembler and the program re-compiled and re-tested.  Frequently, the last stage was never quite completed, and it was not unknown for production programs to require machine code-patches to be loaded from paper tape for each run.  Also, a number of major commercial packages for payroll, accounts and share registration were written by Bureau staff before the Assembler compiler was accepted, and remained entirely in machine code.  A further quirk was that the I/O generation routines of the assembler were not used by one programming section, who had written their own generalized I/O package, called Tape Control, based on the COBOL file description table formats. This automated much of the error-prone programming of batching/unbatching of records and controls of simultaneous read/write operations and end-of-file conditions.
+ A COBOL compiler.  This was very rarely used, early experiences not having been entirely favourable. One notable exception was a wiring design program called "WRS1", used to help design the hardware for the later English Electric KDF9 and System 4 range of Mainframe computers.  Another oddity was a decision table pre-processor for COBOL programs, itself written in COBOL.  This was of some interest, since bureau programming staff were at the time experimenting with using decision tables as an alternative to flowcharts.  However, while these programmers continued to hand-code in assembler from the hand-written decision tables with some success, the compilation overheads prevented the use of the pre-processor.
+
+To optimize throughput of production programs, standard packages of software were produced by bureau programmers for payroll, sales and purchase ledgers, share registration, stock control and the like, and some applications – such as payroll – supported the processing of data from many bureau customers in one computer run, with individual parameter settings managing individual customer's requirements.  More complex client requirements were met by custom-built programs.
+
+Computer operation
+A very small (about 20 instructions) bootstrap loader could be held at the front of each program tape, but even this approach was not always used.  Tape labels were (with the exception of COBOL and Tape Control managed applications) almost non-existent.  A grandfather/father/son cycle of tape rotation protected production tapes from major disasters, but required careful manual controls.  Programmers (or for operational suites Production Control staff) gave the operator written instructions on which program tape and data tapes to load, on which devices, and a written summary of how to load and initiate each program.  The operator would then load the tapes, and load and initiate each program in turn manually from the console.
+
+The console consisting of a vertical display panel about  high by about  long with a similarly sized slightly angled control panel below it.  Each of these two parts was filled with labeled buttons and illuminated indicators each (roughly) one inch square.  The display section was made up of  indicators which when illuminated showed, in binary (grouped as octal) characters, the machine's current running (or static) status at the individual machine core address and register level, for the compute, read and write operations then in progress. When a program was running, this display was a kaleidoscope of quickly changing, flashing, multi-colored lights.  The control panel section consisted of press-buttons to select the next register to be set and a central part that mirrored the lay-out of a single machine core address.  Other buttons accessed more complex operations.  Use of these buttons enabled the operator to select and then directly input to the machine's core storage locations and registers the octal pattern he/she keyed in manually.  For an operator to input a single machine instruction, each of up to ten octal characters of the instruction had to be selected and keyed in as its binary pattern – each with the correct (odd) parity bit.
+
+See also
+
+References
+ 
+
+Early British computers
+KDF8
+Transistorized computers
+Kdf8
+Computer-related introductions in 1964

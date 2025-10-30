@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 533720
+[parent_id]: 515341
+[tags]: 
+Just add one (or very few) entries to crontab, and have that entry be a revision-controlled script that calls others: 0 * * * * /path/to/app/hourly.sh 0 0 * * * /path/to/app/daily.sh 0 1 * * 5 /path/to/app/weekly.sh hourly.sh would then call everything that needs to be done hour, daily.sh would then call everything that needs to be done daily, etc. I have found when managing large numbers of cron jobs for a single application that it is best not to have the jobs all hanging loose in the crontab, because that encourages you to overlook dependencies between them, i.e., one task that runs at 14 minutes past the hour depends on a task that runs at 12 minutes past the hour succeeding, but every so often that task takes 2.1 minutes to complete, and the other script fails, giving you a Heisenbug. Another approach is to write your own daemon to manage these tasks.

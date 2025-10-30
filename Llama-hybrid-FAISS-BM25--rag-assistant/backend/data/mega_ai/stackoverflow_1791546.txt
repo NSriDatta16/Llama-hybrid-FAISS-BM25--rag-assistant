@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1791546
+[parent_id]: 1788838
+[tags]: 
+From an abstract contract definition POV, if the server does not require any response from the client, then there's no reason to write it into the "contract" with the client. At a more pragmatic level, you'll be incurring bandwidth costs and processing overhead of having to send and receive the extraneous message. One other major concern I would have is whether the client is sending messages to the server on the same TCP channel that the server is sending notifications to the client. If that is the case, you definitely want to use OneWay messages so as to avoid a possible deadlock (see my comment in this thread: WCF duplex channel gets closed when using callbacks ). Also, to be clear, one-way and async are not exclusive -- you can and likely should send your one-way messages using the async pattern. It is possible for a one-way message send to block, for example if the network buffer is full, so using async will ensure that your server event notification thread stays unblocked.

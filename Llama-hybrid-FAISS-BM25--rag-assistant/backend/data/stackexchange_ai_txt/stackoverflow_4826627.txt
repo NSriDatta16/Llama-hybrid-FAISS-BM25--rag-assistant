@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4826627
+[parent_id]: 4825959
+[tags]: 
+TakeWhile triggers completion when the predicate returns false, at which point everything is torn down. You have two choices: The simplest solution is to use Repeat to start the whole process again: var oTouchPage = oTouchApp .SkipWhile((x) => TestCondition == false) .TakeWhile((x) => TestCondition == true) .Repeat(); The other solution would be to track the situation using SelectMany to trigger the start of each "round" of listening (this is very similar to the "drag-drop" WPF Rx Example): // Think of Subject like an observable variable // This can just be an IObservable if the triggers actually come from elsewhere Subject testConditionValues = new Subject (); var startTrigger = testConditionValues .DistinctUntilChanged() .Where(v => v == true); var endTrigger = testConditionValues .Where(v => v == false); var values = from start in startTrigger from touch in touchEvents.TakeUntil(endTrigger) select touch; // Start listening testConditionValues.OnNext(true); // Stop listening testConditionValues.OnNext(false);

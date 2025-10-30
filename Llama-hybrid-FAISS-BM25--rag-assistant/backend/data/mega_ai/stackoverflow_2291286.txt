@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2291286
+[parent_id]: 
+[tags]: 
+Is this LINQ query with averaging and grouping by hour written efficiently?
+
+This is my first real-world LINQ-to-SQL query. I was wondering if I am making any large, obvious mistakes. I have a medium-large sized (2M+ records, adding 13k a day) table with data, dataTypeID, machineID, and dateStamp. I'd like to get the average, min, and max of data from all machines and of a specific dataType within a 4 hour period, going back for 28 days. E.g DateTime Avg Min Max 1/1/10 12:00AM 74.2 72.1 75.7 1/1/10 04:00AM 74.5 73.1 76.2 1/1/10 08:00AM 73.7 71.5 74.2 1/1/10 12:00PM 73.2 71.2 76.1 etc.. 1/28/10 12:00AM 73.1 71.3 75.5 So far I have only been able to group the averages by 1 hour increments, but I could probably deal with that if the alternatives are overly messy. Code: var q = from d in DataPointTable where d.dateStamp > DateTime.Now.AddDays(-28) && (d.dataTypeID == (int)dataType + 1) group d by new { d.dateStamp.Year, d.dateStamp.Month, d.dateStamp.Day, d.dateStamp.Hour } into groupedData orderby groupedData.Key.Year, groupedData.Key.Month, groupedData.Key.Day, groupedData.Key.Hour ascending select new { date = Convert.ToDateTime( groupedData.Key.Year.ToString() + "-" + groupedData.Key.Month.ToString() + "-" + groupedData.Key.Day.ToString() + " " + groupedData.Key.Hour.ToString() + ":00" ), avg = groupedData.Average(d => d.data), max = groupedData.Max(d => d.data), min = groupedData.Min(d => d.data) };

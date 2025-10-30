@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 466010
+[parent_id]: 
+[tags]: 
+Bayesian matrix factorization
+
+I am working with Bayesian matrix factorization using the MovieLens database. Data consist of a matrix $n \times d$ of $n=943$ users and $d=1682$ movies where users assign a rate (1-5) to movies. Clearly this results in a very sparse matrix since I have only 100000 observations out of 943*1682 possible entries. I define the likelihood as $P(X|W, Z, \beta) = \prod_{(i,j) \in Obs} \mathcal{N}(X_{ij}|Z_iW_j^t, \beta^{-1})$ where $Z = n \times k$ matrix and $W=d \times k$ with $k$ = number of features, $Obs$ are the observed entries in the original matrix $X$ . I want to compute the posterior probability $P(Z, W,\beta|X)$ . I implemented this in Stan (using basic prior just to see if everything works): data { int n_users; // Number of users (943) int n_movies; // Number of movies (1682) int n_features; // Number of features int n_entries; // Number of entries in matrix matrix[n_users, n_movies] rating; } parameters { matrix[n_features, n_movies] W; matrix[n_users, n_features] Z; } model { to_vector(rating) ~ normal(to_vector(Z*W), 1.0); // Likelihood // Priors to_vector(W) ~ normal(0,1); to_vector(Z) ~ normal(0,1); } The problem is that it takes a huge amount of time to compute the posterior probability, is there a way to speed up the computation? I know that I should somehow include only the observations but I can't really figure out how to do it

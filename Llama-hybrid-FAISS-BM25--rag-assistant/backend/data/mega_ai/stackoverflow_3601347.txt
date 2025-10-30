@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3601347
+[parent_id]: 3601250
+[tags]: 
+First off, you should be saying: var links = []; It's generally discouraged to use the Array constructor itself, and by not specifying var , you're making the links variable reside in the global space, which is generally bad. Now, as to your actual problem. Your event handlers are carrying a reference to the path and i variables from the outer scope, but by the time they're actually encountered, the variable i has the value 6 -- not what you intended at all! In order to fix that, you can change: // What to do on mouseover links[i].onmouseover = function() { links[i].innerHTML = ' '; } // What to do on mouse oUt links[i].onmouseout = function() { links[i].innerHTML = defaultState; } to // What to do on mouseover links[i].onmouseover = (function(path, i) { return function () { links[i].innerHTML = ' '; }; })(path, i); // What to do on mouseout links[i].onmouseout = (function(i) { return function () { links[i].innerHTML = defaultState; } })(i); This creates a new closure to hold the variables you want to capture. This way the inner i can still be, oh, 3 while the outer i goes to 6.

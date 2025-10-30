@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1810615
+[parent_id]: 1809364
+[tags]: 
+As Patrice stated, you can use the win32 library for user mode (critical section contains a spincount which will spin). Visual Studio 2010 Beta2 / Win7 x64 contain the Concurrency Runtime (ConcRT) which is built on User Mode Scheduled threads, which allow ConcRT to detect kernel blocking and switch to another task in user mode (lower overhead than a typical context swap). So for example if you use boost::thread and their condition variables and mutexes on a task in ConcRT these will be handled in user mode. You can also use Intel's Threading Building Blocks which contains some user mode spin locks. No condition variable. Anthony Williams has an implementation of std::thread for sale on his website that includes the atomics library from C++0x if you really want to build your own spinlocks. In general unless you are doing very fine grained synchronization where you guarantee there isn't going to be lots of contention, I'd encourage you to be judicious with your usage of spinlocks, they tend to 'spin' and as such consume system cpu resources... -Rick

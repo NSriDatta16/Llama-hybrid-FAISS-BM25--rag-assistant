@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1671445
+[parent_id]: 1671413
+[tags]: 
+I believe you are using the wrong kind of quotes. Plain-quoting ssh-agent doesn't do anything, you need to incorporate the results of running it by using command substitution with: eval `ssh-agent` or eval $(ssh-agent) This causes the script to set the needed environment variables. However, ssh-agent still will not have any keys unless you ssh-add them. If your keys have no passphrase, then ssh-add can simply be run from the script. If your private key does have a passphrase, you might want to run this script as a daemon rather than a cron job. This would allow you to connect to the agent and add your private keys. The real reason the script works from the command line is that your desktop environment is probably running ssh-agent and it arranges for the needed environment variables to be propagated to all your terminal windows. (Either by making them be children and inheriting the variables or by having your shell source the necessary commands.) I'm guessing you are running ssh-add at some point in your normal workflow?

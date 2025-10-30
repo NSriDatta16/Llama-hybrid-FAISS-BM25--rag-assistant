@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5354468
+[parent_id]: 5353164
+[tags]: 
+The ConcurrentBag does indeed keep things in thread local storage, and if you abandon threads it can cause a memory leak. However, the implementation is able to "steal" items from one thread's list to give to another thread. You can see this in action if you write the following: ConcurrentBag MyBag = new ConcurrentBag (); void DoIt() { for (int i = 0; i If you run that program and wait until the "Bag is empty" message before you hit Enter, you'll see that the bag is indeed emptied. So, as long as there's one thread reading from the bag, it will be emptied eventually. Even if all the items were added by other threads. So, yes, there's a possible memory leak. In practice, though, if multiple threads are accessing the bag, it's likely not a concern.

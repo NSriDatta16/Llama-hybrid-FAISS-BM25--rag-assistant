@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 118875
+[parent_id]: 117444
+[tags]: 
+Tldr; I’ve seen a good rule-of-thumb is about 14-18x times the model size for memory limits, so for a 10GB card, training your model would max out memory at roughly 540M parameters. There is some really good information here: https://huggingface.co/docs/transformers/perf_train_gpu_one#anatomy-of-models-memory Note that there are a ton of caveats, depending on framework, mixed precision, model size, batch sizes, gradient checkpointing, and so on. Just to summarize the above, rough memory requirements are: Model weights 4 bytes * number of parameters for fp32 training 6 bytes * number of params for mixed precision training. Optimizer States 8 bytes * number of parameters for normal AdamW (maintains 2 states) 2 bytes * number of parameters for 8-bit AdamW optimizers like bitsandbytes 4 bytes * number of parameters for optimizers like SGD with momentum (maintains only 1 state) Gradients: 4 bytes * number of parameters for either fp32 or mixed precision training (gradients are always kept in fp32) Other: Temporary memory, functionality specific memory, forward activations, and so on.

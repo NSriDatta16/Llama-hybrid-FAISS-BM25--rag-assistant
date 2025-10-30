@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5220593
+[parent_id]: 5219431
+[tags]: 
+Just to add to what @Jeff Fritz has said, an IIS application creates an AppDomain in which your assemblies are loaded. Just like the rules of a normal windows application, if a class such as public static class Something { public static string SomeString { get; set; } } ...then only a single Something.SomeString property is available per AppDomain. The W3SVC process manages the AppDomain, but the is no guaruntee of thread safety (as an AppDomain can be service multiple requests). If you are using read-only static properties, it's probably fine (such as reading config values). If you are making mutable properties that change through the lifetime of a request, its better to use one of the storage mechanisms detailed in other questions here.

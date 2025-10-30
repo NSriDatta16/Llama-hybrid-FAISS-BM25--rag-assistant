@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4747931
+[parent_id]: 
+[tags]: 
+I need help understanding some pythonic "dictify" / "jsonify" code fragments
+
+I need help understanding this python jsonify/dictify code so I can replicate it: TYPES = {} # auto-register all already defined subclasses of CustomObject to the types map # so they will become seriazible/deseriazible for N,T in locals().items(): if isinstance(T, type) and issubclass(T, CustomObject): TYPES[N] = T def CustomTypeDecoder(dct): type_name = dct.get('type') if type_name: cls = TYPES.get(type_name) if cls: return cls(**dct) return dct def loads(s): return json.loads(s, object_hook=CustomTypeDecoder) class CustomTypeEncoder(json.JSONEncoder): def default(self, obj): if isinstance(obj, tuple(TYPES.values())): res = dict(type=obj.__class__.__name__) res.update(obj.to_dict()) return res return json.JSONEncoder.default(self, obj) def dumps(obj): return json.dumps(obj, cls=CustomTypeEncoder)

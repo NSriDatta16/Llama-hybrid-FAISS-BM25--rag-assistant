@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1647919
+[parent_id]: 1647895
+[tags]: 
+I use it to ensure my assumptions about compiler behaviour, headers, libs and even my own code are correct. For example here I verify that the struct has been correctly packed to the expected size. struct LogicalBlockAddress { #pragma pack(push, 1) Uint32 logicalBlockNumber; Uint16 partitionReferenceNumber; #pragma pack(pop) }; BOOST_STATIC_ASSERT(sizeof(LogicalBlockAddress) == 6); In a class wrapping stdio.h 's fseek() , I have taken some shortcuts with enum Origin and check that those shortcuts align with the constants defined by stdio.h uint64_t BasicFile::seek(int64_t offset, enum Origin origin) { BOOST_STATIC_ASSERT(SEEK_SET == Origin::SET); You should prefer static_assert over assert when the behaviour is defined at compile time, and not at runtime, such as the examples I've given above. An example where this is not the case would include parameter and return code checking. BOOST_STATIC_ASSERT is a pre-C++0x macro that generates illegal code if the condition is not satisfied. The intentions are the same, albeit static_assert is standardised and may provide better compiler diagnostics.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 212009
+[parent_id]: 
+[tags]: 
+Do I have to explicitly call System.exit() in a Webstart application?
+
+Recently I converted a Swing application to Webstart. The process was pretty straightforward, but I found that after I close all windows, my application's JVM did not terminate. The thread dump showed that there are a couple of non-daemon threads, notably Swing's EDT, AWT and a couple of websart related threads. The actual strategy used is that each window increments a counter when it is created and decrements one when it is closed. The default close operation is DISPOSE_ON_CLOSE. Wen the counter reaches zero, I stop all threadpools and release all JNI resources. When I launched the application from a bat file (same JARs), it terminated fine when all windows were closed, so I figured that the problem has something to do with Webstart. Now the questions: Can anybody tell me what exactly is happening? Why does Webstart leave zombie JVMs? Is there a way to release the Webstart resources explicitly without halting the JVM? I've always had the opinion that calling System.exit() encourages the sloppy practice of not releasing your resources and relying on the OS to clean up after you (which can lead to nasty surprises if you reuse the code later)... am I missing something? See also the followup question for detecting whether the app has been launched by Webstart.

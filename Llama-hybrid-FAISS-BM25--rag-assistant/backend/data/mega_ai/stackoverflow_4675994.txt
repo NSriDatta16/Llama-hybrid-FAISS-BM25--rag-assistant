@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4675994
+[parent_id]: 4675704
+[tags]: 
+0x80004003 is an "invalid pointer" error, a.k.a. E_POINTER . I assume the declaration of execAction is something like: IExecAction* execAction = NULL; But, QueryInterface expects a pointer to an interface pointer. In other words, you pass a storage location in which to place an IUnknown* ... or, in this specific case, a IExecAction* . So, you need to pass the address of execAction so QueryInterface can return the interface pointer to you. As in: hr = action -> QueryInterface( IID_IExecAction, (void**) &execAction ); I assume this is what's happening since initializing pointer values to NULL is a common coding practice, and QueryInterface is documented to return E_POINTER when the second argument is NULL. If not, please update your question with the declaration of execAction .

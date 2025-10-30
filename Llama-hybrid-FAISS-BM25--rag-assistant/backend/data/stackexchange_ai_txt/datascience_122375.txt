@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 122375
+[parent_id]: 
+[tags]: 
+Fitting a linear function using Single Layer Neural Network in tensorflow
+
+I'm fitting a linear function $$y = x_1 + x_2$$ using a neural network with 1 hidden layer. import tensorflow as tf import matplotlib.pyplot as plt X = tf.random.uniform(shape = [10000, 2], minval = -10, maxval=10) Y = tf.math.reduce_sum(X, axis=-1) random_init = tf.random_normal_initializer(mean=0.0, stddev=0.05) W1 = tf.Variable(random_init(shape=[2, 16], dtype=tf.float32)) b1 = tf.Variable(tf.zeros([16], dtype=tf.float32)) W2 = tf.Variable(random_init(shape=[16, 1], dtype=tf.float32)) b2 = tf.Variable(tf.zeros([1], dtype=tf.float32)) optim = tf.keras.optimizers.Adam(learning_rate=0.01) for epoch in range(10): dataset = tf.data.Dataset.from_tensor_slices((X, Y)).shuffle(buffer_size=1000).batch(32) for x, y in dataset: with tf.GradientTape() as tape: # Single hidden layer with ReLU non-linearity h1 = tf.math.maximum(x @ W1 + b1, 0) y_hat = h1 @ W2 + b2 loss = tf.math.reduce_mean(tf.math.pow(y - y_hat, 2)) vars = [W1, b1, W2, b2] grads = tape.gradient(loss, vars) optim.apply_gradients(zip(grads, vars)) However, the model doesn't seem to fit the training data. Is there anything obviously wrong with the training setup?

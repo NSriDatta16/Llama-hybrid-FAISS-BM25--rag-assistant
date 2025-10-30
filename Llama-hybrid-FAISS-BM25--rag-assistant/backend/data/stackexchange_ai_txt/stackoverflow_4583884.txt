@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4583884
+[parent_id]: 
+[tags]: 
+Deferred trace message formatting via Func ?
+
+In an application which is compiled with trace enabled, the trace statements will always be executed even if the listener is configured to discard them. Sometimes there is a non-trivial amount of work required to format the trace message, for example: Trace.Write(IAmExpensiveToRender.ToString() + " requested the following " + string.Join(",", itemList))); It would be nice to defer the formatting until after the trace messages have been filtered, and one way to implement that would be to to pass in to the trace method a Func instead of a string : Trace.Write((Func )(() => IAmExpensiveToRender.ToString() + " requested the following " + string.Join(",", itemList))); This is supported by the System.Diagnostics.Trace class (since it has a catch-all overload which accepts objects) but would require custom listeners to call get the actual string by invoking the Func. I can't imagine that no-one has tried this yet. Are there any existing trace libraries and/or listeners which leverage this? (I couldn't find a single one) [Update] After a bit of reflectoring, it appears that the Trace overloads which accept a formatting string + params list of arguments already support deferred formatting . They pass the string + args on to the TraceListener which then does the formatting only if the message will actually be written to file.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2980208
+[parent_id]: 2980147
+[tags]: 
+if $reponse is plain text: // add dynamic content to corresponding div $node = $doc->createTextNode($response); $doc->getElementById('resultsContainer')->appendChild($node); if it (can) contain html (one could use createDocumentFragment but that creates its own set of trouble with entities, dtd, etc.): // add dynamic content to corresponding div $frag = new DomDocument(); $frag->strictErrorChecking = false; $frag->validateOnParse = true; $frag->loadHTML($response); $target = $doc->getElementById('resultsContainer'); if(isset($target->childNodes) && $target->childNodes->length)){ for($i = $target->childNodes->length -1; $i >= 0;$i--){ $target->removeChild($target->childNodes->item($i)); } } //if there's lots of content in $target, you might try this: //$target->parentNode->replaceChild($target->cloneNode(false),$target); foreach($frag->getElementsByTagName('body')->item(0)->childNodes as $node){ $target->appendChild($doc->importNode($node,true)); } Which goes to show it really isn't that suited (or at least cumbersome) to use DOMDocuments as a templating engine.

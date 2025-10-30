@@ -1,0 +1,109 @@
+The Remez algorithm  or Remez exchange algorithm, published by Evgeny Yakovlevich Remez in 1934, is an iterative algorithm used to find simple approximations to functions, specifically, approximations by functions in a Chebyshev space that are the best in the uniform norm L∞ sense. It is sometimes referred to as Remes algorithm or Reme algorithm.
+
+A typical example of a Chebyshev space is the subspace of Chebyshev polynomials of order n in the space of real continuous functions on an interval, C[a, b].  The polynomial of best approximation within a given subspace is defined to be the one that minimizes the maximum absolute difference between the polynomial and the function. In this case, the form of the solution is precised by the equioscillation theorem.
+
+Procedure
+The Remez algorithm starts with the function  to be approximated and a set  of  sample points  in the approximation interval, usually the extrema of Chebyshev polynomial linearly mapped to the interval. The steps are:
+
+ Solve the linear system of equations
+ (where ),
+for the unknowns  and E.
+ Use the  as coefficients to form a polynomial .
+ Find the set  of points of local maximum error .
+ If the errors at every  are of equal magnitude and alternate in sign, then  is the minimax approximation polynomial. If not, replace  with  and repeat the steps above.
+
+The result is called the polynomial of best approximation or the minimax approximation algorithm.
+
+A review of technicalities in implementing the Remez algorithm is given by W. Fraser.
+
+Choice of initialization
+The Chebyshev nodes are a common choice for the initial approximation because of their role in the theory of polynomial interpolation. For the initialization of the optimization problem for function f by the Lagrange interpolant Ln(f), it can be shown that this initial approximation is bounded by
+
+with the norm or Lebesgue constant of the Lagrange interpolation operator Ln of the nodes (t1, ..., tn + 1) being
+
+T being the zeros of the Chebyshev polynomials, and the Lebesgue functions being
+
+Theodore A. Kilgore, Carl de Boor, and Allan Pinkus proved that there exists a unique ti for each Ln, although not known explicitly for (ordinary) polynomials. Similarly, , and the optimality of a choice of nodes can be expressed as 
+
+For Chebyshev nodes, which provides a suboptimal, but analytically explicit choice, the asymptotic behavior is known as
+
+( being the Euler–Mascheroni constant) with
+
+ for 
+
+and upper bound
+
+Lev Brutman obtained the bound for , and  being the zeros of the expanded Chebyshev polynomials:
+
+Rüdiger Günttner obtained from a sharper estimate for
+
+Detailed discussion
+This section provides more information on the steps outlined above. In this section, the index i runs from 0 to n+1.
+
+Step 1: Given , solve the linear system of n+2 equations
+ (where ),
+for the unknowns  and E.
+
+It should be clear that  in this equation makes sense only if the nodes  are ordered, either strictly increasing or strictly decreasing. Then this linear system has a unique solution.  (As is well known, not every linear system has a solution.) Also, the solution can be obtained with only  arithmetic operations while a standard solver from the library would take  operations.  Here is the simple proof:
+
+Compute the standard n-th degree interpolant  to  at the first n+1 nodes and also the standard n-th degree interpolant
+ to the ordinates 
+
+To this end, use each time Newton's interpolation formula with the divided
+differences of order  and  arithmetic operations.
+
+The polynomial  has its i-th zero between  and , and thus no further zeroes between  and :  and  have the same sign .
+
+The linear combination
+ is also a polynomial of degree n and
+
+This is the same as the equation above for  and for any choice of E.
+The same equation for i = n+1 is
+ and needs special reasoning:  solved for the variable E, it is the definition of E:
+
+As mentioned above, the two terms in the denominator have same sign:
+E and thus  are always well-defined.
+
+The error at the given n+2 ordered nodes is positive and negative in turn because
+
+The theorem of de La Vallée Poussin states that under this condition no polynomial of degree n exists with error less than E. Indeed, if such a polynomial existed, call it , then the difference
+ would still be positive/negative at the n+2 nodes  and therefore have at least n+1 zeros which is impossible for a polynomial of degree n.
+Thus, this E is a lower bound for the minimum error which can be achieved with polynomials of degree n.
+
+Step 2 changes the notation from
+ to .
+
+Step 3 improves upon the input nodes  and their errors  as follows.
+
+In each P-region, the current node  is replaced with the local maximizer  and in each N-region  is replaced with the local minimizer.  (Expect  at A, the  near , and  at B.) No high precision is required here,
+the standard line search with a couple of quadratic fits  should suffice. (See )
+
+Let . Each amplitude  is greater than or equal to E. The Theorem of de La Vallée Poussin and its proof also
+apply to  with  as the new
+lower bound for the best error possible with polynomials of degree n.
+
+Moreover,  comes in handy as an obvious upper bound for that best possible error.
+
+Step 4: With  and  as lower and upper bound for the best possible approximation error, one has a reliable stopping criterion: repeat the steps until  is sufficiently small or no longer decreases. These bounds indicate the progress.
+
+Variants
+Some modifications of the algorithm are present on the literature. These include:
+
+ Replacing more than one sample point with the locations of nearby maximum absolute differences.
+ Replacing all of the sample points with in a single iteration with the locations of all, alternating sign, maximum differences.
+ Using the relative error to measure the difference between the approximation and the function, especially if the approximation will be used to compute the function on a computer which uses floating point arithmetic;
+ Including zero-error point constraints.
+ The Fraser-Hart variant, used to determine the best rational Chebyshev approximation.
+
+See also
+ Approximation theory
+
+References
+
+External links
+Minimax Approximations and the Remez Algorithm, background chapter in the Boost Math Tools documentation, with link to an implementation in C++
+Intro to DSP
+
+Polynomials
+Approximation theory
+Numerical analysis

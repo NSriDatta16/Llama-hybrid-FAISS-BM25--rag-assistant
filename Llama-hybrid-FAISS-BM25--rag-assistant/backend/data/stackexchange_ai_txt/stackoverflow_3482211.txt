@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3482211
+[parent_id]: 3482194
+[tags]: 
+You can make the column that stores the User Agent string unique , and do INSERT ... ON DUPLICATE KEY UPDATE for your stats insertions For the table: CREATE TABLE IF NOT EXISTS `user_agent_stats` ( `user_agent` varchar(255) collate utf8_bin NOT NULL, `hits` int(21) NOT NULL default '1', UNIQUE KEY `user_agent` (`user_agent`) ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin; +------------+--------------+------+-----+---------+-------+ | Field | Type | Null | Key | Default | Extra | +------------+--------------+------+-----+---------+-------+ | user_agent | varchar(255) | NO | PRI | NULL | | | hits | int(21) | NO | | NULL | | +------------+--------------+------+-----+---------+-------+ You could use the following query to insert user agents: INSERT INTO user_agent_stats( user_agent ) VALUES('user agent string') ON DUPLICATE KEY UPDATE hits = hits+1; Executing the above query multiple times gives: +-------------------+------+ | user_agent | hits | +-------------------+------+ | user agent string | 6 | +-------------------+------+

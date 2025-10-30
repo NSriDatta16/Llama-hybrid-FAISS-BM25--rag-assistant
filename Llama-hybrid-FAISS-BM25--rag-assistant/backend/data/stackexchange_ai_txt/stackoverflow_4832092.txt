@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4832092
+[parent_id]: 4831764
+[tags]: 
+You need to read it from a centralized storage (contrary to sessions). If you could, you should avoid the database calls. Use cache and update the cache on insert: user 1 checks cache for user 2 's score it's non-existing, so the call is forwarded to db the score is still empty/0 so an entry in the cache is written like this: key: "goals-2" (unique identifier which is easy to figure out), value: "0" user 2 scores a goal the score for user-2 is calculated by checking the cache (which is empty) and then checking the db (which is empty/0): 0 is current score the new score is 0 + 1 = 1 the new score is inserted to database (for persistence), the cache with the key "goals-2" is saved with the key "goals-2" and the value "1" then we're done, let's try the loop again: user 1 checks cache for user 2 's score, finds "1" user 1 checks cache again for user 2 's score, finds "1" We're saving really many database calls here. Some possible engines for caching are: APC memcache If you're on shared hosting, or unable to get PHP compiled with a good engine for caching, writing to files could do the job.

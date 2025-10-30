@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5464018
+[parent_id]: 5463968
+[tags]: 
+Do I need to use multiple threads for this? Yes. Since using a Scanner on System.in implies that you're doing blocking IO, one thread will need to be dedicated for the task of reading user input. Here's a basic example to get you started (I encourage you to look into the java.util.concurrent package for doing these type of things though.): import java.util.Scanner; class Test implements Runnable { volatile boolean keepRunning = true; public void run() { System.out.println("Starting to loop."); while (keepRunning) { System.out.println("Running loop..."); try { Thread.sleep(1000); } catch (InterruptedException e) { } } System.out.println("Done looping."); } public static void main(String[] args) { Test test = new Test(); Thread t = new Thread(test); t.start(); Scanner s = new Scanner(System.in); while (!s.next().equals("stop")); test.keepRunning = false; t.interrupt(); // cancel current sleep. } }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 378529
+[parent_id]: 378376
+[tags]: 
+Rails most certainly does support database session storage. In config/environment.rb, uncomment # config.action_controller.session_store = :active_record_store Examining \actionpack-2.2.2\lib\action_controller\session\active_record_store.rb shows that CGI::Session::ActiveRecordStore::Session inherits from ActiveRecord::Base. So at the end of config/environment.rb, you should be able to say CGI::Session::ActiveRecordStore::Session.establish_connection( :adapter => "mysql", :host => "otherserver", :username => "session_user", :password => "123ABC", :database => "sessions") or CGI::Session::ActiveRecordStore::Session.establish_connection(:sessions) to use a connect defined in config/database.yml For example, add to config/database.yml: sessions_development: adapter: mysql host: otherserver username: sessions_user password: 123ABC database: sessions Add to the end of config/environment.rb CGI::Session::ActiveRecordStore::Session.establish_connection("sessions_#{RAILS_ENV}")

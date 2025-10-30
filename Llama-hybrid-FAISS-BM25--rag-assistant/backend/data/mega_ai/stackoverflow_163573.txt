@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 163573
+[parent_id]: 162897
+[tags]: 
+OregonGhost's answer is only correct if the char* returned from GetDir is either allocated in HGlobal or LocalAlloc. I can't remember which one but the CLR will assume that any string return type from a PInvoke function was allocated with one or the other. A more robust way is to type the return of GetDir to be IntPtr. Then you can use any of the Marshal.PtrToStringAnsi functions in order to get out a string type. It also gives you th flexibility of freeing the string in the manner of your choosing. [DllImport("your.dll", CharSet = CharSet.Ansi)] IntPtr GetDir(StringBuilder path); Can you give us any other hints as to the behavior of GetDir? Does it modify the input string? How is the value which is returned allocated? If you can provide that I can give a much better answer.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4971262
+[parent_id]: 
+[tags]: 
+Joining tables using criteria and sqlProjection
+
+I have the following function that builds a Hibernate Criteria to generate binned data: private Criteria getCustomBinResultCriteriaSQL(double binSizeX, double binSizeY, String xVar, String yVar, String customBinQuery) { return createCriteria(Residue.class) .setProjection(Projections.projectionList() .add(Projections.sqlGroupProjection( "floor(" + xVar + " / " + binSizeX + ") * " + binSizeX + " as xBin, " + "floor(" + yVar + " / " + binSizeY + ") * " + binSizeY + " as yBin, " + "CAST (" + customBinQuery + " AS DOUBLE PRECISION) as customBinResult", "xBin, yBin", new String[] { "xBin", "yBin", "customBinResult" }, new Type[] { Hibernate.DOUBLE, Hibernate.DOUBLE, Hibernate.DOUBLE }))) .setResultTransformer(Transformers.aliasToBean(CustomBinResult.class)); } This all works pretty well for data within the same table (residue), but let's say my datastructure is like this: pdbentry: id pdbvar expmethod: id expvar residue: id resvar pdbentry has a one-to-one relation with expmethod, and a one-to-many relation with residue. How would I go about joining the residue table with expmethod, based on the criteria-builder above. So in other words: what do I need to add to the criteria to be able to have "expvar" as xVar? I tried adding something like: .setFetchMode("pdbentry", FetchMode.JOIN); .setFetchMode("expmethod", FetchMode.JOIN); at the end, but then I still couldn't put "expvar" nor "expmethod.expvar" as xVar. Any ideas?

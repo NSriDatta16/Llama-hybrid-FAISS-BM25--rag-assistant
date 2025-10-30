@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5067318
+[parent_id]: 
+[tags]: 
+Call HttpWebRequest in another thread as UI with Task class - avoid to dispose object created in Task scope
+
+I would like call HttpWebRequest on another thread as UI, because I must make 200 request or server and downloaded image. My scenation is that I make a request on server, create image and return image. This I make in another thread. I use Task class, but it call automaticaly Dispose method on all object created in task scope. So I return null object from this method. public BitmapImage CreateAvatar(Uri imageUri, int sex) { if (imageUri == null) return CreateDefaultAvatar(sex); BitmapImage image = null; new Task(() => { var request = WebRequest.Create(imageUri); var response = request.GetResponse(); using (var stream = response.GetResponseStream()) { Byte[] buffer = new Byte[response.ContentLength]; int offset = 0, actuallyRead = 0; do { actuallyRead = stream.Read(buffer, offset, buffer.Length - offset); offset += actuallyRead; } while (actuallyRead > 0); image = new BitmapImage { CreateOptions = BitmapCreateOptions.None, CacheOption = BitmapCacheOption.OnLoad }; image.BeginInit(); image.StreamSource = new MemoryStream(buffer); image.EndInit(); image.Freeze(); } }).Start(); return image; } How avoid it? Thank

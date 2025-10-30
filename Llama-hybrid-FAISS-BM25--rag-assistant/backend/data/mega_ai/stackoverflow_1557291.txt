@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1557291
+[parent_id]: 1557271
+[tags]: 
+@Chalkey is correct. I have run into this error myself, where due to the fact that LINQ to SQL does "lazy" querying, it waits till the last minute to actually perform the query. This means that it may wait until after the page_load function to do the query (and therefore outside of the using statement). Therefore, return the data as a list with .ToList() to force it to run the query immediately. protected void Page_Load(object sender, EventArgs e) { if (!Page.IsPostBack) { //loads combobox with organizations using (MyDataContext cdc = new MyDataContext()) { List queryOrgs = ( from p in cdc.orgUnits select p ).ToList(); //Organizations dropDownOrgs.DataSource = queryOrgs.ToList(); dropDownOrgs.DataValueField = "orgUnitID"; dropDownOrgs.DataTextField = "orgUnitName"; dropDownOrgs.DataBind(); } } }

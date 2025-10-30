@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5133705
+[parent_id]: 
+[tags]: 
+Solving the mutating table problem in Oracle SQL produces a deadlock
+
+Hey, I'm trying to create a trigger in my Oracle database that changes all other records except the one that has just been changed and launched the trigger to 0. Because I am updating records in the same table as the one that launched the trigger I got the mutating table error. To solve this, I put the code as an anonymous transaction, however this causes a deadlock. Trigger code: CREATE OR REPLACE TRIGGER check_thumbnail AFTER INSERT OR UPDATE OF thumbnail ON photograph FOR EACH ROW BEGIN IF :new.thumbnail = 1 THEN check_thumbnail_set_others(:new.url); END IF; END; Procedure code: CREATE OR REPLACE PROCEDURE check_thumbnail_set_others(p_url IN VARCHAR2) IS PRAGMA AUTONOMOUS_TRANSACTION; BEGIN UPDATE photograph SET thumbnail = 0 WHERE url <> p_url; COMMIT; END; I assume I'm causing a deadlock because the trigger is launching itself within itself. Any ideas?

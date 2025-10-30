@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2200375
+[parent_id]: 2196725
+[tags]: 
+Have you verified what is taking so long? i.e. is it the call to CoInitializeEx()? You definitely don't need to call CoInitialize once per task. You also don't say how many threads you spawn, i.e. if your running on a dual core and your work is CPU intensive don't expect more than a 2x speedup, and if your work isn't CPU intensive then it's waiting on some resource (memory, disk, net) and speedups will be similarly constrained, perhaps made worse if there is a lock being held for that resource. If you can use Visual Studio 2010 take a look at the Parallel Pattern Library and Asynchronous Agents Library, there are a couple tools that can help make this take less code to write. If you can't you can at least try placing a token in TLS that represents whether COM has been initialized on that thread and use the presence of this token to bypass your calls to CoInitialize when they aren't needed.

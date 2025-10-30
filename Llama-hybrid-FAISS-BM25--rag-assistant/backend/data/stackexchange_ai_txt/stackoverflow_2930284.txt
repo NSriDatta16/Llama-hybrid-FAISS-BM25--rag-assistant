@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2930284
+[parent_id]: 2929264
+[tags]: 
+Just for the fun of it, here's a neat way to do the job in one regex: "^(?=(?:.*[a-z]())?)(?=.*[A-Z]()|\1)(?=.*[0-9]()|\1\2)(?=\1\2\3|.*[.+*?^$\[\]()|{}/'#\\])[a-zA-Z0-9.+*?^$\[\]()|{}/'#\\]+$" This uses a trick that was made popular by Jan Goyvaerts and Steven Levithan in their indispensable book, Regular Expressions Cookbook : using empty capturing groups as check-boxes for optional conditions. First we look for a lowercase letter, and if we find one, set group 1. (?=(?:.*[a-z]())?) If there's an uppercase letter, we set group 2. If not, and group 1 isn't set, fail. Order is important here: check the current condition in the first alternative, then do the back-assertion. (?=.*[A-Z]()|\1) If there's a digit, we set group 3; if not, and groups 1 and 2 aren't set, fail. (?=.*[0-9]()|\1\2) Finally, if groups 1, 2 and 3 aren't set, we look for one of the specials. We can do the back-assertions first this time; if three conditions have already been met, we don't care about the fourth. (?=\1\2\3|.*[.+*?^$\[\]()|{}/'#\\])

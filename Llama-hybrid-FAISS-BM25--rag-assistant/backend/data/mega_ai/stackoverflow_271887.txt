@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 271887
+[parent_id]: 271815
+[tags]: 
+One approach would be to select the default right on the database server. SELECT IFNULL(NULLIF(a.field1, ''), 'No data') AS field1, IFNULL(NULLIF(a.field2, ''), 'No data') AS field2, IFNULL(NULLIF(ip.description, ''), 'No data') AS internal_project, IFNULL(NULLIF(o.description, ''), 'No data') AS origin, to_char(ad.origin_date,'YYYY') AS origin_date FROM archivalie AS a LEFT JOIN archivalie_dating AS ad ON a.id = ad.archivalie_id LEFT JOIN internal_project AS ip ON a.internal_project_id = ip.id LEFT JOIN origin AS o ON a.origin_id = o.id WHERE a.id = $archivalie_id This way you can output values right away, and you do not have to touch existing code. The IFNULL(NULLIF()) turns empty strings to NULL , and NULL to 'No data' . If you want to leave empty strings alone, use the IFNULL() only. From an architectural perspective, this may lack some elegance (depending on how you look at it), but it is effective.

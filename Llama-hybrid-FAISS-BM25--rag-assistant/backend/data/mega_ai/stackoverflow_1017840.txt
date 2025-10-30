@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1017840
+[parent_id]: 1017813
+[tags]: 
+For your primary key, consider using a surrogate or alternate key; you'll need to cater for slowly changing dimensions, e.g. if you're doing a report over the last 5 years on average sales per married/unmarried salesperson, you'll want to register the fact that someone was unmarried for 2 years, then married for the last 3. This means your data warehouse will have two dimension-table rows for the same person. Following the OLTP structure for that will be hard :) Constraints are less of an issue; DWs are massively optimised for reads (assuming you're populating as a batch), and constraints don't really factor in read operations. You can typically get around any constraint issues with your DW populating job, and deal with nulls etc. at the reporting tool if necessary. It's far more important to make sure default values fit with your conceptual data model, and don't introduce issues at the DW client tools.

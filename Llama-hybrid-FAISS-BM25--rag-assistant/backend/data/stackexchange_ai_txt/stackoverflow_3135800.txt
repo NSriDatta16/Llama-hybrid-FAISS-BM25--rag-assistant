@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3135800
+[parent_id]: 3135472
+[tags]: 
+If one input stream has to be read by multiple consumers, and the input stream is ephemeral (i.e. is not a resource that can be 'rewound', or supports multiple input pointers) you will generally have to provide a buffering scheme that behaves as if it retains each data item until all consumers have read it. You have several choices on implementation. The simplest is what you suggest, with the overhead being primarily storage space for multiple copies of the data in the output buffers. If storage is an issue you could provide a single buffer that maintains separate read pointers, one for each consumer, and keeps in memory only the data between the lowest and highest read pointers. If the consumers read data at greatly different speeds you could still end up with most or all of the input data in memory, at which point some kind of input throttling, or intermediate disk buffering scheme, would become necessary. I assume the single input stream is not persistent (i.e. a file on disk)... in that case the solution is trivial.

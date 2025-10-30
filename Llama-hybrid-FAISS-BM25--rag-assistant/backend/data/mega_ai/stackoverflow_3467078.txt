@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3467078
+[parent_id]: 3466799
+[tags]: 
+I think what you are looking for is storage based on a weak pointer. Your vector stores weak pointers to the connection objects. Your main application gets the shared pointers. The destructor for your connection object frees the resource. Periodically you can pack the vector by erasing all weak pointers with a use_count of zero. class Connect; typedef boost::shared_ptr ConnectPtr; typedef boost::weak_ptr ConnectWeakPtr; typedef std::vector ConnectVector; ConnectVector vector; ConnectPtr ptr( new Connect ( ... )); vector.push_back(ptr); void pack() { ConnectVector tmp; BOOST_FOREACH(ConnectWeakPtr const & p, mMap){ if (p.use_count() > 0){ tmp.insert(p); } mMap.swap(tmp); } }

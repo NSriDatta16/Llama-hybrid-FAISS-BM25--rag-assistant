@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 300135
+[parent_id]: 299987
+[tags]: 
+Generics happens in compile time. It is best used when you want the same code to apply to different types. It is not dynamic, so it won't help you switch between methods depending on input types. Overloading resolving as in David B's reply works, but also happens during compile time. The code in your update does the same thing. It casts (after careful checking of types) and then uses overloading to resolve the method. I feel that you want to switch methods based on runtime input. You could get a more dynamic behaviour if you used Reflection. public object execute(object obj) { MethodInfo m = typeof(Parser).GetMethod( "action", BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { obj.GetType() }, null); m.Invoke(this, new object[] { obj }); return obj; } It is perhaps a little fragile, but it works in the example.

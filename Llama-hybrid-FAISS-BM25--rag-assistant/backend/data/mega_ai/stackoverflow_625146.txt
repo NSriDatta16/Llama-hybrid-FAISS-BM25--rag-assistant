@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 625146
+[parent_id]: 
+[tags]: 
+Memcache-based message queue?
+
+I'm working on a multiplayer game and it needs a message queue (i.e., messages in, messages out, no duplicates or deleted messages assuming there are no unexpected cache evictions). Here are the memcache-based queues I'm aware of: MemcacheQ: http://memcachedb.org/memcacheq/ Starling: http://rubyforge.org/projects/starling/ Depcached: http://www.marcworrell.com/article-2287-en.html Sparrow: http://code.google.com/p/sparrow/ I learned the concept of the memcache queue from this blog post : All messages are saved with an integer as key. There is one key that has the next key and one that has the key of the oldest message in the queue. To access these the increment/decrement method is used as its atomic, so there are two keys that act as locks. They get incremented, and if the return value is 1 the process has the lock, otherwise it keeps incrementing. Once the process is finished it sets the value back to 0. Simple but effective. One caveat is that the integer will overflow, so there is some logic in place that sets the used keys to 1 once we are close to that limit. As the increment operation is atomic, the lock is only needed if two or more memcaches are used (for redundancy), to keep those in sync. My question is, is there a memcache-based message queue service that can run on App Engine?

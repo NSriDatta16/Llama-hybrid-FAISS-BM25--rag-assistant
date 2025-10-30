@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2747151
+[parent_id]: 2745003
+[tags]: 
+It's very hard (but not impossible) to disable GC in a JVM. Look at the JNI "critical" functions for hints. You can also essentially ensure you don't GC by not allocating any more objects (write a JVMTI agent that slaps you if you do, and instrument your code). Finally, you can force a fatal OutOfMemoryError by ensuring that every object you allocate is never freed, thus when you hit -Xmx memory used, you'll fall over as GC won't be able to reclaim anything (mind you, you'll GC one or more times at this point before you fall over in a heap). The real question is why you'd want to? What upside do you see in doing it? Is it for realtime? If so, I'd consider looking at one of the several realtime JVMs available on the market (Oracle, IBM, & others all sell them). I can't honestly think of another reason to do this while still using Java.

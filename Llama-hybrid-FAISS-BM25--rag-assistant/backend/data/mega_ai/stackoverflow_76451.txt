@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 76451
+[parent_id]: 76254
+[tags]: 
+@ScArcher2 Making a second call is extremely dangerous. The process of INSERT ing and selecting the resultant auto-generated keys must be atomic, otherwise you may receive inconsistent results on the key select. Consider two asynchronous INSERT s where they both complete before either has a chance to select the generated keys. Which process gets which list of keys? Most cross-database ORMs have to do annoying things like in-process thread locking in order to keep results deterministic. This is not something you want to do by hand, especially if you are using a database which does support atomic generated key retrieval (HSQLDB is the only one I know of which does not).

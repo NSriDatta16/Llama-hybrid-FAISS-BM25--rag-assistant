@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 157933
+[parent_id]: 
+[tags]: 
+What's the best way of implementing a thread-safe Dictionary?
+
+I was able to implement a thread-safe Dictionary in C# by deriving from IDictionary and defining a private SyncRoot object: public class SafeDictionary : IDictionary { private readonly object syncRoot = new object(); private Dictionary d = new Dictionary (); public object SyncRoot { get { return syncRoot; } } public void Add(TKey key, TValue value) { lock (syncRoot) { d.Add(key, value); } } // more IDictionary members... } I then lock on this SyncRoot object throughout my consumers (multiple threads): Example: lock (m_MySharedDictionary.SyncRoot) { m_MySharedDictionary.Add(...); } I was able to make it work, but this resulted in some ugly code. My question is, is there a better, more elegant way of implementing a thread-safe Dictionary?

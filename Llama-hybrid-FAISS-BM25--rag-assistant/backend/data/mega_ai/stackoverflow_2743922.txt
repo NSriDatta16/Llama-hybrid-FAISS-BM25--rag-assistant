@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2743922
+[parent_id]: 2740874
+[tags]: 
+If you want to do mult-pass rendering, i.e. if you have rendered to the framebuffer and want to to a second render pass where you use the previous rendering than the answer is: Render the first pass to a texture Bind this texture for the second pass Access the privously rendered pixel in the shader Shader code for 3.2: uniform sampler2D mytex; // texture with the previous render pass layout(pixel_center_integer) in vec4 gl_FragCoord; // will give the screen position of the current fragment void main() { // convert fragment position to integers ivec2 screenpos = ivec2(gl_FragCoord.xy); // look up result from previous render pass in the texture vec4 color = texelFetch(mytex, screenpos, 0); // now use the value from the previous render pass ... } Another methods of processing a rendered image would be OpenCL with OpenGL -> OpenCL interop. This allows more CPU like computationing.

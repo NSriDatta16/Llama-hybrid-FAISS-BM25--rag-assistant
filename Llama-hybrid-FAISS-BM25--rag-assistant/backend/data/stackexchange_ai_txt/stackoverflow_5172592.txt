@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5172592
+[parent_id]: 5170591
+[tags]: 
+I like #5 - you are essentially creating your own (exploding) index. It will be fast to query. The only downsides are that you have to manually maintain it (next paragraph), and retrieving the Topic entity will require an extra query (first you query TopicTagQueryCache to get the topic ID and then you need to actually retrieve the topic). Updating the TopicTagQueryCache you suggested shouldn't be a problem either. I wouldn't worry about doing it transactionally - this "index" will just be stale for a short period of time when you update a Topic (at worst, your Topic will temporarily show up in results it should no longer show up in, and perhaps take a moment before it shows up in new results which it should show up it - this doesn't seem so bad). You can even do this update on the task queue (to make sure this potentially large number of database writes all succeed, and so that you can quickly finish the request so your user isn't waiting).

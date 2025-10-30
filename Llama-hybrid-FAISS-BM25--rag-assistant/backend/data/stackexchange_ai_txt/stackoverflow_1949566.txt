@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1949566
+[parent_id]: 
+[tags]: 
+Deleting SQL Agent job by criteria - script
+
+I want to drop all the SQL Agent Jobs which are not currently running and have description of 'xxxx'. How can this be done in script? As of now i got this done as below and sure there would be better way to do. DECLARE @job_owner_name VARCHAR(100) DECLARE @MaxJobs INT declare @RowCnt INT DECLARE @jobId NVARCHAR(36) select @RowCnt = 1 SET @job_owner_name = '' IF OBJECT_ID('tempdb..#xp_results') IS NOT NULL DROP TABLE #xp_results Declare @xp_results TABLE ( job_id UNIQUEIDENTIFIER NOT NULL, last_run_date INT NOT NULL, last_run_time INT NOT NULL, next_run_date INT NOT NULL, next_run_time INT NOT NULL, next_run_schedule_id INT NOT NULL, requested_to_run INT NOT NULL, request_source INT NOT NULL, request_source_id SYSNAME COLLATE database_default NULL, running INT NOT NULL, current_step INT NOT NULL, current_retry_attempt INT NOT NULL, job_state INT NOT NULL ) INSERT INTO @xp_results EXEC master.dbo.xp_sqlagent_enum_jobs 1, '' Declare @jobs TABLE (rownum int IDENTITY (1, 1) Primary key NOT NULL , job_id UNIQUEIDENTIFIER NOT NULL) INSERT INTO @jobs SELECT rj.job_id FROM @xp_results rj INNER JOIN msdb.dbo.sysjobs sj ON sj.job_id = rj.job_id WHERE rj.running <>1 AND sj.[description] = 'MasterJobHanlder' SELECT @MaxJobs = COUNT(*) FROM @jobs WHILE @RowCnt any further ideas please

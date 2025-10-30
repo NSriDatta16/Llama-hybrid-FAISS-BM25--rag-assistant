@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2549051
+[parent_id]: 2480116
+[tags]: 
+It seems there must be a more elegant solution, but this should at least get you going: static T ByteArrayToStructureBigEndian (byte[] bytes) where T : struct { GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned); T stuff = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T)); handle.Free(); System.Type t = stuff.GetType(); FieldInfo[] fieldInfo = t.GetFields(); foreach (FieldInfo fi in fieldInfo) { if (fi.FieldType == typeof(System.Int16)) { // TODO } else if (fi.FieldType == typeof(System.Int32)) { // TODO } else if (fi.FieldType == typeof(System.Int64)) { // TODO } else if (fi.FieldType == typeof(System.UInt16)) { UInt16 i16 = (UInt16)fi.GetValue(stuff); byte[] b16 = BitConverter.GetBytes(i16); byte[] b16r = b16.Reverse().ToArray(); fi.SetValueDirect(__makeref(stuff), BitConverter.ToUInt16(b16r, 0); } else if (fi.FieldType == typeof(System.UInt32)) { // TODO } else if (fi.FieldType == typeof(System.UInt64)) { // TODO } } return stuff; }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2287411
+[parent_id]: 2275860
+[tags]: 
+the most effective way to merge files are to use byte level cut and paste feature offered by VTD-XML , AFAIK. You take both files, parse them into VTDNav objects, then instantiate an XMLModifier object, grab the fragments from the second file, and insert them into the first file... that got to be far more efficient than SAX.. Also the resultant XML gets written direction onto a file -- there is no need to store it in memory. Below is the complete code in less than 20 lines... import com.ximpleware.*; import java.io.*; public class merge { // merge second.xml into first.xml assuming the same encoding public static void main(String[] s) throws VTDException, IOException{ VTDGen vg = new VTDGen(); if (!vg.parseFile("d:\\xml\\first.xml", false)) return; VTDNav vn1=vg.getNav(); if(!vg.parseFile("d:\\xml\\second.xml", false)) return; VTDNav vn2 = vg.getNav(); XMLModifier xm = new XMLModifier(vn1); long l = vn2.getContentFragment(); xm.insertBeforeTail(vn2, l); xm.output("d:\\xml\\merged.xml"); } }

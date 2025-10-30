@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3966105
+[parent_id]: 
+[tags]: 
+nhibernate hydration performance
+
+Context: Domain model of Documents having Editions and Tags . What kind of figures are you going to expect when hydrating using nHibernate? My domain model not very complex and when I query all Documents fetching Editions as well as Tags the query returns a little more than 8000 rows from the database - which in turn are hydrated into about 2300 Documents. The database operation takes about 100ms and the hydration process takes 4000ms, which I find very strange. dotTrace indicates a large number of calls (1.6M) to "System.Data.SQLite.SQLite3.ColumnName(SQLiteStatement, Int32)" and the like. The query is performed using Criteria like this: var docsQuery = _session.CreateCriteria (); docsQuery.SetFetchMode("Editions", FetchMode.Join); docsQuery.SetFetchMode("Tags", FetchMode.Join); docsQuery.SetResultTransformer(new DistinctRootEntityResultTransformer()); return docsQuery .List (); Note: Surely limiting the resultset will improve the performance. My primary concern was on why the bad hydration performance in general. Fiddling with session.FlushMode and session.CacheMode does not help a lot in my case. UPDATE: Here is a screenshot from the profiler. UPDATE 2: Checked the query times and they are about 100ms in all.

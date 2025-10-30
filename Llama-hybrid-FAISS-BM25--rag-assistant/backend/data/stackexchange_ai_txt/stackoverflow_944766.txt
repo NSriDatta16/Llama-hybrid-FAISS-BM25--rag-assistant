@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 944766
+[parent_id]: 
+[tags]: 
+C#: Wait for variable to become non-null
+
+.Net's odd locking semantics are bugging me again. I'm launching a thread, the child thread in turns starts a form. The parent thread should wait until the form is created. My first attempt was to use a Monitor to watch the Form variable: private void OpenForm() { if (FormThread == null) { Monitor.Enter(Form); FormThread = new Thread(FormStub); FormThread.SetApartmentState(ApartmentState.STA); FormThread.Start(); Monitor.Wait(Form); Monitor.Exit(Form); } } private void FormStub() { Form = new ConnectorForm(); Monitor.Enter(Form); Monitor.PulseAll(Form); Monitor.Exit(Form); Application.Run(Form); } ... This throws an exception. Monitor.Enter() fails, since Form == null. I could very easily create a dummy integer or something (I actually think I'll canabalize the FormThread variable), but I was wondering if there was a more elegant solution.

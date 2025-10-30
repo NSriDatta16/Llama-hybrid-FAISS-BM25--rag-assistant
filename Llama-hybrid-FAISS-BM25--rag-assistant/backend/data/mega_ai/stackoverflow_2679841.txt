@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2679841
+[parent_id]: 2679793
+[tags]: 
+Is there any reason you are storing the values as long s? For Unicode storage you only need to store the values as UInt32 , which would then make it easy to interpret the data as UTF-32 by doing something like this: int numberOfChars = 3; UInt32* yourStringBuffer = malloc(sizeof(UInt32) * numberOfChars); yourStringBuffer[0] = 0x2F8DB; //杞 yourStringBuffer[1] = 0x2318; //⌘ yourStringBuffer[2] = 0x263A; //☺ NSData* stringData = [NSData dataWithBytes:yourStringBuffer length:sizeof(UInt32) * numberOfChars]; //set the encoding according to the current byte order NSStringEncoding encoding; if(CFByteOrderGetCurrent() == CFByteOrderBigEndian) encoding = NSUTF32BigEndianStringEncoding; else encoding = NSUTF32LittleEndianStringEncoding; NSString* string = [[NSString alloc] initWithData:stringData encoding:encoding]; free(yourStringBuffer); NSLog(@"%@",string); //output: 杞⌘☺

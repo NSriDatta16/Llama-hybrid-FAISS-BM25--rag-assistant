@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4737488
+[parent_id]: 
+[tags]: 
+Parallel.ForEach() .... how best to terminate loop externally?
+
+I have an application whereby I download and process approximately 7,800 URL's using a Paraller.ForEach() loop. Using this technique has allowed my computer to complete this operation in about 4.5 minutes (is used to take almost 28 minutes on average). As this is running inside a WinForms application I allow the user to "stop" the process early by simply clicking a stop button, which will in turn set a volatile boolean variable to 'false'. At the top of my Parallel.ForEach() loop I check the state of that variable, and if it has been set to 'false' I simply call the ParallelLoopState.Stop() method. My next code block inside the loop only runs if the ParallelLoopState has not been stopped. Works great. Have experienced zero problems using this implementation for the 3 weeks I've been using it. But I was just reading and came across the "CancellationTokenSource" and "CancellationToken" classes and discovered these were designed to essentially perform the same act ... to allow a Parallel loop to be cancelled externally. Can anyone tell me if they foresee a problem with me continuing to use my existing implementation? Parallel.ForEach(searchList, (url, state) => { if (!this.isSearching) { state.Stop(); OnSearchEvent(new SearchStatusEventArgs(SearchState.STOP_REQUESTED, ......)); } if (!state.IsStopped) { // continue on with regular processing ....... } });

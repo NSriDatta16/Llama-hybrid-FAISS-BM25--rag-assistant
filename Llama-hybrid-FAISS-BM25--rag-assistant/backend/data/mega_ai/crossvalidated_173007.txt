@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 173007
+[parent_id]: 
+[tags]: 
+Validation of linear logistic regression for binned binomial data
+
+I am looking at how pavement thickness variation parameters(absolute thickness, variance, slopes, critical points) relate to distress occurrence. After some research, I have settled on the linear logistic model for regression testing. In order to get distress rates (pHat), I bin my binary data data using MATLAB's binning algorithm and then use the following function to fit a logistic linear model: function[pihat] = fitRegression(X,Y) %X = [n x 1] array of predictor variable %Y = [n x 1] logical array of distress occurrence [N,edges,bin] = histcounts(X); %use MATLAB automatic binning algorithm X = (edges(1:end-1) + edges(2:end))/2; % get mean bin values for regression fitting. bin = bin(bin~=0); %remove 0 data for i = 1:length(N) pihat(i) = sum(Y(bin==i))./N(i); % calculate pihat for each bin end Y = pihat; glm = GeneralizedLinearModel.fit(X,Y,'distr','binomial', 'link', 'logit'); logitFit = glmval(glm.Coefficients.Estimate,linspace(floor(min(X)),ceil(max(X)),numel(X)),'logit'); ps = plotSlice(glm); end Is my binning and use of a logit GLM valid?

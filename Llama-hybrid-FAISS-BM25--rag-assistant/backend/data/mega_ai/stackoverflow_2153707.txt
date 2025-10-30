@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2153707
+[parent_id]: 2151171
+[tags]: 
+vBulletin needs md5 of the password not the actual password. So if you capture what your webbrowser sends out you can use that value. Or you have to use md5 library (not tested) to create the md5 hash out of any password. require 'rubygems' require 'mechanize' agent = WWW::Mechanize.new page = agent.get("http://www.vbulletin.org/forum/index.php") login_form = page.form_with(:action => 'login.php?do=login') login_form['vb_login_username'] = 'user name' login_form['vb_login_password'] = '' login_form['vb_login_md5password_utf'] = 'md5 hash from the password' login_form['vb_login_md5password'] = 'md5 hash from the password' page = agent.submit login_form #Display welcome message if logged in puts page.parser.xpath("/html/body/div/table/tr/td[2]/div/div").xpath('text()').to_s.strip output = File.open("login.html", "w") {|f| f.write(page.parser.to_html) }

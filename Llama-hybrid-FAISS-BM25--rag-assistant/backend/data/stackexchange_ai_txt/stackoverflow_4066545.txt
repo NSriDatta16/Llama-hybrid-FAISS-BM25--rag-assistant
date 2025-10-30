@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4066545
+[parent_id]: 4066537
+[tags]: 
+I would advise embedding Lua in your project. Easy to embed and completely ANSI C with one very flexible garbage collected data structure (a Lua table/aka hashmap). You can always strip out the bits that you don't need, but even if you don't Lua is tiny. Lua has a stack based API which isn't too hard to follow: lua_State *L = luaL_newstate(); // make a new lua state lua_newtable(L); // pushes a new table to the top of the stack (position 1) // storing values lua_pushinteger(2343); // key: 2343 lua_pushboolean(1); // value: true lua_settable(L, 1); // pop key/value, store in table at position 1 // retrieving values lua_pushinteger(2343); // key we're looking for lua_gettable(L, 1); // get from table at top of stack - 2; pops key if (lua_toboolean(L, -1)) // is it a true value? { // executes; we know 2343 is true as we pushed it just above } lua_pop(L, 1); // pop it off the stack; only our table remains And you can iterate over the values as well, possibly doing away with the need of your linked list (but the order of the iteration is non-determinate). Full manual here .

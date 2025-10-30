@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3023845
+[parent_id]: 
+[tags]: 
+T-SQL Getting duplicate rows returned
+
+The following code section is returning multiple columns for a few records. SELECT a.ClientID,ltrim(rtrim(c.FirstName)) + ' ' + case when c.MiddleName <> '' then ltrim(rtrim(c.MiddleName)) + '. ' else '' end + ltrim(rtrim(c.LastName)) as ClientName, a.MISCode, b.Address, b.City, dbo.ClientGetEnrolledPrograms(CONVERT(int,a.ClientID)) as Abbreviation FROM ClientDetail a JOIN Address b on(a.PersonID = b.PersonID) JOIN Person c on(a.PersonID = c.PersonID) LEFT JOIN ProgramEnrollments d on(d.ClientID = a.ClientID and d.Status = 'Enrolled' and d.HistoricalPKID is null) LEFT JOIN Program e on(d.ProgramID = e.ProgramID and e.HistoricalPKID is null) WHERE a.MichiganWorksData=1 I've isolated the issue to the ProgramEnrollments table. This table holds one-to-many relationships where each ClientID can be enrolled in many programs. So for each program a client is enrolled in, there is a record in the table. The final result set is therefore returning a row for each row in the ProgramEnrollments table based on these joins. I presume my join is the issue but I don't see the problem. Thoughts/Suggestions? Thanks, Chuck

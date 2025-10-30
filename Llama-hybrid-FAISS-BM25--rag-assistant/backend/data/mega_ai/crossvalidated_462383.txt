@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 462383
+[parent_id]: 462363
+[tags]: 
+You can do type(model) and there is an variable __name__ . Try something like this below, I could not get the score for your models so I used a simple r2 from sklearn.linear_model import LinearRegression, Ridge from sklearn.metrics import r2_score from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, BaggingRegressor import xgboost as xgb import lightgbm as lgb import pandas as pd mods = [LinearRegression(),Ridge(),GradientBoostingRegressor(), RandomForestRegressor(),BaggingRegressor(), xgb.XGBRegressor(), lgb.LGBMRegressor()] data = load_iris() df = pd.DataFrame(data.data, columns=['sepal.length','sepal.width','petal.length','petal.width']) X = df[['sepal.length','sepal.width']] y = df['petal.width'] fitted = [mod.fit(X,y) for mod in mods] model_df = pd.DataFrame({ 'Model': [type(i).__name__ for i in fitted], 'Score': [i.score(X,y) for i in fitted] }) model_df Model Score 0 LinearRegression 0.742928 1 Ridge 0.742797 2 GradientBoostingRegressor 0.929430 3 RandomForestRegressor 0.943384 4 BaggingRegressor 0.941296 5 XGBRegressor 0.919452 6 LGBMRegressor 0.861518

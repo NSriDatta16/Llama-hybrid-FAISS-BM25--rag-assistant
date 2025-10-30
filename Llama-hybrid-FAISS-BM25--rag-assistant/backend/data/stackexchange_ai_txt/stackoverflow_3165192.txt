@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3165192
+[parent_id]: 3165107
+[tags]: 
+Your intuition is right: you need a temporary vector. Otherwise, you will end up using partly old values, and partly new values, and the result will not be correct. Try it yourself on paper with a simple example. There are two ways you can write this algorithm: Copy the data to a temporary vector first; then read from that one, and write to histogram . This is what you did in your first code fragment. Read from histogram and write to a temporary vector; then copy from the temporary vector back to histogram . To prevent needless copying of data, you can use vector::swap . This is an extremely fast operation that swaps the contents of two vectors. Using strategy 2 above, this would result in: vector mask(3); mask[0] = 0.25; mask[1] = 0.5; mask[2] = 0.25; vector newHistogram(histogram->size()); for (int bin = 1; bin size()-1; bin++) { double smoothedValue = 0; for (int i = 0; i swap(newHistogram);

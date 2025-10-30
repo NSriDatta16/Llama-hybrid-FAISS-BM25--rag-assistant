@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 980373
+[parent_id]: 980072
+[tags]: 
+What probably works best is to split this into two queries, one for loading the average price and sum of prices per person: SELECT AVG(price), SUM(price) FROM `personals` WHERE personal_id = '1234' GROUP BY name; and a second one for the maxima you want to know: SELECT MAX(price) FROM `personals` WHERE personal_id = '1234' GROUP BY name, to_days(thedate) - to_days('2009-06-13'); If you really want the columns all in the same query, use a subquery for the first one (might not be too efficient on large databases) SELECT MAX(price), AVG(price), SUM(price) FROM `personals` LEFT JOIN ( SELECT AVG(price), SUM(price), name FROM `personals` WHERE personal_id = '1234' -- # this line is optional GROUP BY name ) totals ON totals.name = personals.name WHERE personal_id = '1234' GROUP BY name, to_days(thedate) - to_days('2009-06-13');

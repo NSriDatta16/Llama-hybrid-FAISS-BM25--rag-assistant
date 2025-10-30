@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 563894
+[parent_id]: 563867
+[tags]: 
+So I dug into the source code. There is no bootstrapping in rms::val.prob , that would likely occur in calibrate or validate . The two lines you see (logistic calibrated and non-parametric) are obtained in the following way: For logistic calibration, we fit a logistic regression using the logit of the probability as the predictor. Here is some code to do just that set.seed(0) p = runif(1000) logit_p = qlogis(p) y = rbinom(1000, 1, p) mod = lrm(y~logit_p) pp = seq(0.01, 0.99, 0.01) pred = plogis(predict(mod, newdata = list(logit_p = qlogis(pp)))) For the non-parametric curve, Frank uses a lowess smoother. sm = lowess(p, y, iter=0) If we plot the two curves against the output of rms::val.prob , we see the two lines lay on top of one another. val.prob(p, y) lines(sm, col='red') lines(pp, pred, col='blue') The source code is available by running the following code. Just replace with a file path. sink( ) rms::val.prob sink()

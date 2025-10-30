@@ -1,0 +1,94 @@
+An Abstract Agent Programming Language or Artificial Autonomous Agents Programming Language or 3APL (pronounced triple-A-P-L) is an experimental tool and programming language for the development, implementation and testing of multiple cognitive agents using the Belief-Desire-Intention (BDI) approach.
+
+Overview
+3APL was developed and is maintained by a team at the computer science department of Utrecht University in the Netherlands. It facilitates specification of cognitive agent behavior using actions, beliefs, goals, plans, and rules. It has been subject to at least 15 papers and conferences, and at least 4 theses.
+
+Platform
+The 3APL platform has a visual interface for the monitoring and debugging of agents being run therein, and a syntax-coloring editor for source code editing. It has been released as a Java-based software, which comes with some specification Java interfaces that can be used to develop Java-based plug-ins and libraries. These can be used to provide a visible representation of a virtual environment, for instance. A 3APL platform can also connect in client or server roles to other 3APL platforms across a network, to allow communication among 3APL agents on each platform. A lightweight version of 3APL for mobile applications, named 3APL-M "Toymaker", has also been released.
+
+Language
+The 3APL language is relatively simple. The syntax has basic boolean logical operators AND, OR and NOT, with IF-THEN-ELSE conditional statements, and WHILE-DO control flow loop structures. While temporary variables cannot be created except by calling plug-in methods or belief/goal conditions, iterative counter loops can be constructed using a combination of WHILE-DO loops, beliefs and capabilities.
+
+A 3APL agent contains formal definitions of agent beliefs, capabilities, goals and plans. Specifically, there are six skeletal blocks that must be defined.
+
+PROGRAM "agent"
+BELIEFBASE {}
+CAPABILITIES {}
+GOALBASE {}
+PLANBASE {}
+PG-RULES {}
+PR-RULES {}
+
+The beliefs, defined using Prolog syntax, are used to remember information and to perform logical computations. Beliefs can be read by one another, edited by the capabilities, and read by conditional statements in the plans. The initial beliefs of an agent can be defined in its belief base.
+
+BELIEFBASE {
+	status(standby).
+	at(0,0).
+	location(r1,2,4).
+	location(r5,6,1).
+	dirty(r1).
+	dirty(r5).
+}
+
+Capabilities define the prerequisites and effects of actions in a STRIPS-like format, reading preexisting beliefs, removing some using the NOT operator, and adding new ones by stating them.
+
+CAPABILITIES {
+	{status(S1)} SetStatus(S2) {NOT status(S1), status(S2)},
+	{at(X1,Y1)} NowAt(X2,Y2) {NOT at(X1,Y1), at(X2,Y2)},
+	{dirty(R)} Clean(R) {NOT dirty(R)}
+}
+
+Goals are also defined using Prolog syntax, and new goals can be adopted during runtime. Initial goals are defined in the goal base.
+
+GOALBASE {
+	cleanRoom(r1).
+	cleanRoom(r5).
+}
+
+Each goal ideally has associated goal planning rules, its PG rules, which serve as an abstract plans and are called from the goals as long as their guard conditions are met.
+
+PG-RULES {
+	cleanRoom(R) <- dirty(R) | {
+		SetStatus(cleaning(R));
+		goTo(R);
+		clean(R);
+		SetStatus(standby);
+	}
+}
+
+The PG rules in turn can call plan revision rules, or PR rules, which serve as subroutines, and can be called upon to execute lower level and/or repetitive tasks as long as their guard conditions are met. Initial plans are defined in the plan base, executed at the beginning of the deliberation cycle.
+
+PLANBASE { SetStatus(started); }
+PR-RULES {
+	goTo(R) <- location(R,X,Y) AND NOT at(X,Y) | {
+		NowAt(X,Y);
+	}
+	clean(R) <- location(R,X,Y) AND at(X,Y) | {
+		Clean(R);
+	}
+}
+
+External methods may be called to access the environments modeled in the plug-ins. However, parameters cannot be directly passed to the methods, which means that the known environment must be correspondingly modeled in the agent's beliefs. The call returns a Prolog list, which can then be processed by the agent's own predicate logic.
+
+Java("JanitorWorld", moveNorth(), M);
+
+Agents can also communicate with one another using Send commands. When a piece of information X is sent with the performative P from agent A to agent B, the sending action is recorded in A's belief base as sent(B,P,X) and is registered in B's belief base as received(A,P,X).
+
+Send(Partner,inform,dirty(R));
+
+Download
+3APL is available for download at the University of Utrecht's 3APL website, packaged with sample lone and communicative agents, and a discrete multi-agent foreground environment plug-in called BlockWorld.
+
+See also
+ Autonomous agent
+ Cognitive architecture
+ Agent communication language
+
+Further reading
+ 3APL User Guide for Java version
+ 3APL deliberation cycle
+
+External links
+ 3APL Homepage
+
+Agent-based programming languages

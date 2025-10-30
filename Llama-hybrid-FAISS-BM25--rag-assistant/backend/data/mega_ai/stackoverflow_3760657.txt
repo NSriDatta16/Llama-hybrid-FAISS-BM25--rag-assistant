@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3760657
+[parent_id]: 
+[tags]: 
+What happens to locks on objects passed to other threads?
+
+I'm not quite sure how to word this, so I'll just paste my code and ask the question: private void remoteAction_JobStatusUpdated(JobStatus status) { lock (status) { status.LastUpdatedTime = DateTime.Now; doForEachClient(c => c.OnJobStatusUpdated(status)); OnJobStatusUpdated(status); } } private void doForEachClient(Action task) { lock (clients) { foreach (KeyValuePair entry in clients) { IRemoteClient clientProxy = entry.Value; RemoteClientId clientId = entry.Key; ThreadPool.QueueUserWorkItem(delegate { try { task(clientProxy); #pragma warning disable 168 } catch (CommunicationException ex) { #pragma warning restore 168 RemoveClient(clientId); } }); } } } Assume that any other code which modifies the status object will acquire a lock on it first. Since the status object is passed all the way through to multiple ThreadPool threads, and the call to ThreadPool.QueueUserWorkItem will complete before the actual tasks complete, am I ensuring that the same status object gets sent to all clients? Put another way, when does the lock (status) statement "expire" or cause its lock to be released?

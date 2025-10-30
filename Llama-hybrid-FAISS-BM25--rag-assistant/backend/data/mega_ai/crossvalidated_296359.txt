@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 296359
+[parent_id]: 
+[tags]: 
+bayesian logistic regression with weakly informative priors (pymc3)
+
+I am trying to implement the suggestion by Gelman et al. (2008) to use weakly informative priors for bayesian logistic regression. I am trying to achieve this with pymc3 , and I am unsure on how to handle the standardization Gelman proposes for binary input variables: Standardizing the data is in my case simply data['score'] - data['score'].mean() , but how to deal with that in the model specification? Here is some working example code, but without the standardization. import scipy as sp from scipy import stats import pandas as pd from patsy import dmatrix import pymc3 as pm import theano.tensor as Tht import matplotlib.pyplot as plt import seaborn.apionly as sns #============================================================================== # data generation #============================================================================== labels = list('ABCDE') true_freqs = [0.9,0.8,0.5,0.8,0.4] Neach = 20 data = [] for label,freq in zip(labels,true_freqs): d = sp.rand(Neach) Here is the output: If I simply plug in the centered values as such likelihood = pm.Binomial('likelihood',n=1,p=p,observed=data['score'] - data['score'].mean()) then I get oddly looking chains and generally weird results, I guess because this does something completely different than I expected and leads to some numerical problems. Long story short: How to adjust a pmc3 model for binary input, but not ranging from 0 to 1?

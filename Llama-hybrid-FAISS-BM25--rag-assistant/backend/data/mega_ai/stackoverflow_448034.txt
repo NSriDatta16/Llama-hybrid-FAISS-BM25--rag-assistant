@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 448034
+[parent_id]: 
+[tags]: 
+Multithreaded Resource Access - Where Do I Put My Locks?
+
+I have threaded code where each thread needs to write to the same file. To prevent concurrency issues, I am using a Lock object. My question is whether I am using the Lock correctly. If I set the lock from within each thread, is that lock global or only specific to that specific thread? Basically, should I create a Lock first and pass its reference to each thread, or is it ok to set it from within the thread like I do here: import time from threading import Thread, Lock def main(): for i in range(20): agent = Agent(i) agent.start() class Agent(Thread): def __init__(self, thread_num): Thread.__init__(self) self.thread_num = thread_num def run(self): while True: print 'hello from thread %s' % self.thread_num self.write_result() def write_result(self): lock = Lock() lock.acquire() try: f = open('foo.txt', 'a') f.write('hello from thread %s\n' % self.thread_num) f.flush() f.close() finally: lock.release() if __name__ == '__main__': main()

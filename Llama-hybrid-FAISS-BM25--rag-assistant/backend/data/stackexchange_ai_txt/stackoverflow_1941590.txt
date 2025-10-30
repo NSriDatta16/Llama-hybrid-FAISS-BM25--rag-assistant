@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1941590
+[parent_id]: 1936179
+[tags]: 
+OK, I totally figured it out, and this may help others who are bothered by this issue. I began by noticing that the ListView control in C++Builder looks "correct" under Windows 7, so I looked in the source code for the VCL to see what kind of magic they're doing to make the ListView look like the list control in Windows Explorer. I stumbled on one line of code that looked promising: SetWindowTheme(Handle, 'explorer', nil); From the SDK documentation, this function "Causes a window to use a different set of visual style information than its class normally uses." So, I tried invoking this function on my WinForms ListView control: [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)] public static extern int SetWindowTheme(IntPtr hWnd, String pszSubAppName, String pszSubIdList); SetWindowTheme(myListView.Handle, "explorer", null); ...and, by god, it worked! The ListView finally looks like it belongs with the rest of the OS! Thanks, Borland Inprise Embarcadero! You really are good for something!

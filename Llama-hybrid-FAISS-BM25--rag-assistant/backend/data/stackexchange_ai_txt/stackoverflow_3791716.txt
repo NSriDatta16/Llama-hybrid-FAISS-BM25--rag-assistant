@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3791716
+[parent_id]: 3791687
+[tags]: 
+You can't pass C++ exceptions to the script - you need to catch the C++ exceptions in Invoke() / InvokeEx() , translate them and pass them out using the EXCEPINFO* parameter. E.g. excerpting from FireBreath's implementation : HRESULT YourIDispatchExImpl::InvokeEx(DISPID id, LCID lcid, WORD wFlags, DISPPARAMS *pdp, VARIANT *pvarRes, EXCEPINFO *pei, IServiceProvider *pspCaller) { try { // do actual work } catch (const cppException& e) { if (pei != NULL) { pei->bstrSource = CComBSTR(ACTIVEX_PROGID); pei->bstrDescription = CComBSTR(e.what()); // ... } return DISP_E_EXCEPTION; } // ...

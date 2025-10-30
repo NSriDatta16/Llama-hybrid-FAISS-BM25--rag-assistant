@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3545005
+[parent_id]: 
+[tags]: 
+How can I use South's DataMigration to change the storage backend of Django model ImageField instance?
+
+I'm trying to migrate some models ImageFields to using the S3BotoStorage storage backend from django-storages . As part of this process I've changed my Model's ImageField declaration to include the storage=instance_of_s3botostorage argument, and new instances of my Model that save an image to the ImageField attribute now get stored in S3 - as intended. I tried to move existing model instances over to storing their data in S3, too, so wrote a South DataMigration like this: def forwards(self, orm): "upload ImageField file to S3 if it's not already in there" for mymodel in orm.MyModel.objects.all(): if mymodel.logo_image and not isinstance(mymodel.logo_image.storage, S3BotoStorage): print "uploading %s to S3" % mymodel.logo_image file_contents = ContentFile(mymodel.logo_image.read()) mymodel.logo_image.save(mymodel.logo_image.name, file_contents) mymodel.save() but this clearly doesn't have the intended effect because the image file is simply saved using the old storage backend - which makes sense considering save() is actually a method of the FieldFile belonging to the FileField So, how to move/change file storage on an instance of a model?

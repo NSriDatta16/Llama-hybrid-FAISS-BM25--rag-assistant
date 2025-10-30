@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 568314
+[parent_id]: 567597
+[tags]: 
+I'll answer my own question with a workaround I ended up using. Unfortunately, I could not figure out which table was causing the issue through the SQL Server replication interface (or the Event Log for that matter). It just didn't say. So the next thing I thought of was, "What if I could get replication to continue even though there is an error?" And lo and behold, there is a way. In fact, it's easy. There is a special Distribution Agent profile called "Continue on data consistency errors." If you enable that, then these types of errors will just be logged and passed on by. Once it is through applying the transactions and potentially logging the errors (I only encountered two), then you can go back and use RedGate SQL Data Compare (or some other tool) to compare your two databases, make any corrections to the subscriber and then start replication running again. Keep in mind, for this to work, your publication database will need to be "quiet" during the part of the process where you diff and fix the subscriber database. Luckily, I had that luxury in this case.

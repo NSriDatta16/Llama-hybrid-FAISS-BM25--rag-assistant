@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2230048
+[parent_id]: 2229463
+[tags]: 
+Yes. Part of the problem is that you talk about them as dialogs but don't actually use the ShowDialog() method to display them. That would make it impossible for the user to close the main form while a dialog is displayed. The message loop terminates when the main form is closed, the remaining forms will be disposed without going through the normal shutdown sequence. One solution is to pro-actively close the forms yourself when the main form closes. This worked well: Private Sub Form1_FormClosing(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing For frm As Integer = Application.OpenForms.Count - 1 To 1 Step -1 Application.OpenForms(frm).Close() If Application.OpenForms.Count - 1 = frm Then e.Cancel = True Exit For End If Next End Sub You probably should pay attention to e.CloseReason so you don't block a Windows shutdown.

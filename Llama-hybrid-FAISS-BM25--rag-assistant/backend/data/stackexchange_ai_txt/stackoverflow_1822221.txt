@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1822221
+[parent_id]: 1822114
+[tags]: 
+As a partial answer to your question concerning lookup performance, you have to consider your insertion pattern. You noted that std::map uses a Red-Black Tree as a hedge against linearizing a carefully sorted insertion into a linked list. Hence, such a tree provides O(log n) lookup time despite an aberrant insertion order. You pay a cost for this, however, in insertion, removal, and traversal performance, as well as losing locality of reference for repeated reading of "nearby" data. A hash table may offer faster lookup if you can tune a hash function for your key type (an integer, you say) that will preclude collisions. If your data set was fixed, such that you could load it once and only read it afterward, you could use parallel arrays of integers and floats, and use std::lower_bound to find your match via binary search. Sorting the parallel arrays properly would be a chore, if your keys are divorced from their corresponding values, but you'd enjoy tighter storage and locality of reference than storing an array of, say, std::pair .

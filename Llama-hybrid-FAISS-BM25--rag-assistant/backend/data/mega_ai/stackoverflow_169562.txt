@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 169562
+[parent_id]: 
+[tags]: 
+Proper nullable type checking in C#?
+
+Ok, my actual problem was this: I was implementing an IList . When I got to CopyTo(Array array, int index) , this was my solution: void ICollection.CopyTo(Array array, int index) { // Bounds checking, etc here. if (!(array.GetValue(0) is T)) throw new ArgumentException("Cannot cast to this type of Array."); // Handle copying here. } This worked in my original code, and still works. But it has a small flaw, which wasn't exposed till I started building tests for it, specifically this one: public void CopyToObjectArray() { ICollection coll = (ICollection)_list; string[] testArray = new string[6]; coll.CopyTo(testArray, 2); } Now, this test should pass. It throws the ArgumentException about not being able to cast. Why? array[0] == null . The is keyword always returns false when checking a variable that is set to null . Now, this is handy for all sorts of reasons, including avoiding null dereferences, etc. What I finally came up with for my type checking was this: try { T test = (T)array.GetValue(0); } catch (InvalidCastException ex) { throw new ArgumentException("Cannot cast to this type of Array.", ex); } This isn't exactly elegant, but it works... Is there a better way though?

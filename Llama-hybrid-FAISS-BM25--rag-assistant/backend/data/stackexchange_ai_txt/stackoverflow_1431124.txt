@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1431124
+[parent_id]: 1418160
+[tags]: 
+Here's a different approach that might be useful to you. It has slightly more maintenance costs than the PARENT_ID or lft/rght approach, but retrieval is much easier (and faster). Dole bananas can be in products table. You have a single category_id for a product. We had a requirement to allow multiple categories for a product. This lead us to having a categories_products join table, where product could have multiple joined rows. Then, we had to decide whether to have Dole bananas in just bananas, or in bananas and all its parents as well. As speed of retrieval was critical, we put dole bananas in its categories and all of their parent categories. There are three category-product joins for dole bananas. Using this structure, returning all the items from any category is easy and quick, only one query. You can't do this in the PARENT_ID approach (unless you hard-code parents, grand-parents, etc.) Adding a category is easy. Categorizing a product requires inserting multiple rows in the join table. Deleting and moving categories are a bit trickier.

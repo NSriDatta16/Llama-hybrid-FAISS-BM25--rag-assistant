@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1333178
+[parent_id]: 1331294
+[tags]: 
+Assume you have following values. foo(a,b) = [{0,2}] bar(x,y) = [{1,2},{2,2},{3,2}] The answer given above raises an ORA-01427 error. The statement need some additions, which depend on the expected result. If you expect that the greatest bar(x,2) should be stored in foo(a,2). foo(a,b) = [{3,2}] update foo set a = (select max(x) from bar where bar.y = foo.b and bar.x is not null) where exists (select * from bar where bar.y = foo.b and bar.x is not null); If you expect any value of bar(x,2) than write following. foo(a,b) = [{[1|2|3],2}] update foo set a = (select x from bar where bar.y = foo.b and bar.x is not null and rownum The order of the subselect depends on storage and row retrival. Both updates can give the same result. Without an ORDER BY the roworder is not predictable. The rownum takes only the first row of the subselect.

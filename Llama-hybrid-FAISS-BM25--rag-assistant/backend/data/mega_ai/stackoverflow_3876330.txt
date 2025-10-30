@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3876330
+[parent_id]: 3811955
+[tags]: 
+Because the suggested atomic assignment does not protect against anything. Remember that an atomic instruction can be thought of as a critical section that could be (but does not have to be) efficiently implemented by the compiler by using magic hardware. Think about two threads reaching x = y with shared x and private y . After all the threads finish, x is equal to the last thread to execute "wins" and sets x to its y . Wrap the assignment in a critical section and nothing changes, the last thread still "wins". Now, if the threads do something else with x afterwards the slowest thread may not have caught up and even if it has the compiler could legitimately end up using choosing to some cached value for x (i.e. the thread's local y ). To avoid this, you would need a barrier (so the winning thread has won) and its implied flush (so the local cache has been invalidated): x = y; #pragma omp barrier \\ do something with shared x... but I cannot think of a good reason to do this. Why do all the work to find y on many threads if most of them will be (non-deterministically) thrown away?

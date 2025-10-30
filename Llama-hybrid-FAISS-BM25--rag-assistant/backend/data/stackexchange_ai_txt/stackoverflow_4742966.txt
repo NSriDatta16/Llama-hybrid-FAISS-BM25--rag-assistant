@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4742966
+[parent_id]: 2895122
+[tags]: 
+The way I did it is to subclass the slider and check in touchesBegan . If the user taps on the thumb button area (which we track) then ignore the tap, but any where else on the trackbar we do: : -(void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { UITouch *touch = [[event allTouches] anyObject]; CGPoint touchLocation = [touch locationInView:self]; // if we didn't tap on the thumb button then we set the value based on tap location if (!CGRectContainsPoint(lastKnownThumbRect, touchLocation)) { self.value = self.minimumValue + (self.maximumValue - self.minimumValue) * (touchLocation.x / self.frame.size.width); } [super touchesBegan:touches withEvent:event]; } - (CGRect)thumbRectForBounds:(CGRect)bounds trackRect:(CGRect)rect value:(float)value { CGRect thumbRect = [super thumbRectForBounds:bounds trackRect:rect value:value]; lastKnownThumbRect = thumbRect; return thumbRect; }

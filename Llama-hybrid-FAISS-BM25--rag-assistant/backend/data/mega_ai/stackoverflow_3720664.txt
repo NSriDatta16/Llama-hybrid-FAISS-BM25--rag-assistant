@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3720664
+[parent_id]: 
+[tags]: 
+Use Ruby profile to track down slow execution in RSpec
+
+I have a bunch of rspec tests that are taking entirely too long to run. I am trying to figure out where the bottleneck is and the logical place to start is using the standard libraries profile library. Execution is happening with JRuby 1.5.2 in this particular case. Here is the output after embedding the profile library in my spec: % cumulative self self total time seconds seconds calls ms/call ms/call name 0.37 0.37 0.37 69 5.33 5.33 # >#include 0.01 0.38 0.01 208 0.06 0.06 String#fast_xs 0.00 98.99 0.00 1 0.00 98987.00 #toplevel I need to look into why 208 calls are being made to String#fast_xs, but the real question here is what exactly is happening in #toplevel? There is a latency of 98987.00ms being spent on something in there and I need a more granular way of seeing the breakdown to understand what I can change in my spec tests to speed things up.

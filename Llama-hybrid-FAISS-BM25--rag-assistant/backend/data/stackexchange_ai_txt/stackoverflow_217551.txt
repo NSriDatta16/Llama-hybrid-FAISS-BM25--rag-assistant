@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 217551
+[parent_id]: 
+[tags]: 
+How to create a string representing a Java long as though it were unsigned 64-bit value
+
+My component is handed a long value that I later use as a key into a cache. The key itself is a string representation of the long value as if it were unsigned 64-bit value. That is, when my component is handed -2944827264075010823L, I need to convert that into the string key "15501916809634540793". I have a solution, but it seems brute force and it makes me a bit queasy. Essentially, I convert the long into a hexadecimal string representation (so -2944827264075010823L becomes "d721df34a7ec6cf9") and convert the hexadecimal string into a BigInteger: String longValueAsHexString = convertLongToHexString(longValue); BigInteger bi = new BigInteger(longValueAsHexString, 16); String longValueString = bi.toString(); I then use longValueString as the key into the cache. I cannot use Long.toString(longValue,16), because it returns the hex string for the absolute value, prefixed by a "-". So my convertLongToHexString looks like this: long mask = 0x00000000ffffffffL; long bottomHalf = number & mask; long upperHalf = (number >> 32) & mask; String bottomHalfString = Long.toString(bottomHalf, 16); if (bottomHalfString.length() != 8) { String zeroes = "0000000000000000"; bottomHalfString = zeroes.substring(16-bottomHalfString.length()) + bottomHalfString; } return Long.toString(upperHalf,16)+bottomHalfString; There must be a more elegant way of doing this. Any suggestions?

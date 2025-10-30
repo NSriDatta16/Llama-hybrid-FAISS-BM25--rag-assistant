@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3182878
+[parent_id]: 3164076
+[tags]: 
+We discovered that the stored procedure was actually executing twice, due to the way it was being called from VB6: With cmdCommand .ActiveConnection = cnnConn .CommandType = adCmdStoredProc .CommandText = "uspMyStoredProcedure" .Parameters("@strParam1") = strFunctionParameter1 .Parameters("@bolParam2") = bolFunctionParameter2 .Execute End With MyResultSet.CursorLocation = adUseClient MyResultSet.Open cmdCommand, , adOpenStatic, adLockReadOnly The command object 'cmdCommand' is executed the first time with the explicit call as the final line in the 'With' statement, '.Execute'. What we found was that the last line: 'MyResultSet.Open cmdCommand...' is also implicitly executing the stored procedure a second time. Since the stored procedure's function is essentially to activate and deactivate an alarm, by executing twice we were getting the activation and deactivation occurring at once and therefore no resultset returned. Hopefully this might help avoid someone else getting stuck on something like this.

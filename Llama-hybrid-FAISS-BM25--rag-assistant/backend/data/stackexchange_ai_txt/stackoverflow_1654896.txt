@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1654896
+[parent_id]: 
+[tags]: 
+rebol open has no refinement called async
+
+I tried the example http://www.rebol.net/docs/async-examples.html but it doesn't work. port-spec: tcp://www.rebol.net:80 http-request: {GET / User-Agent: REBOL/Core Connection: close } client: context [ data: make binary! 10000 handler: func [port action arg] [ switch action [ read [ append data copy/part port arg print ["-- read" arg "bytes" length? data "total"] ] write [print "-- writing (sending)"] write-done [print "-- done with write"] close [ print ["-- done with read" length? data] close port print ["-- closed port, press RETURN to quit"] ] init [print "-- port initialized"] open [print "-- opened" insert port http-request] address [print ["-- address lookup:" arg]] error [print ["-- error:" mold disarm :arg] close port] ] ] ] p: open/direct/binary/async port-spec get in client 'handler input ; (wait for user console input before closing) attempt [close p]

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 990553
+[parent_id]: 990469
+[tags]: 
+I think you will need to use numpy to hold such a big matrix efficiently , not just computation. You have ~5e6 items of 4/8 bytes means 20/40 Mb in pure C already, several times of that in python without an efficient data structure (a list of rows, each row a list). Now, concerning your question: import numpy as np a = np.empty((1234, 5678), dtype=np.int) a[:] = np.linspace(1, 5678, 5678) You first create an array of the requested size, with type int (I assume you know you want 4 bytes integer, which is what np.int will give you on most platforms). The 3rd line uses broadcasting so that each row (a[0], a[1], ... a[1233]) is assigned the values of the np.linspace line (which gives you an array of [1, ....., 5678]). If you want F storage, that is column major: a = np.empty((1234, 4567), dtype=np.int, order='F') ... The matrix a will takes only a tiny amount of memory more than an array in C, and for computation at least, the indexing capabilities of arrays are much better than python lists. A nitpick: numeric is the name of the old numerical package for python - the recommended name is numpy.

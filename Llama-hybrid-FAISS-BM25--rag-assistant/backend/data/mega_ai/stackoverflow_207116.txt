@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 207116
+[parent_id]: 206718
+[tags]: 
+The problem lies not in with using Session, it lies with the logic used to determine when to retrieve data. Session is the correct approach to use here as Cache is shared across requests - that is, User A would see the report User B just configured if User B was the first user to execute code that used Cache instead of Session. if (!Page.IsPostBack) { if (Request.QueryString.Get("id") == "5") { string publication = Request.QueryString.Get("pub"); DateTime date = DateTime.Parse(Request.QueryString.Get("date")); int pages = int.Parse(Request.QueryString.Get("pages")); int sort = int.Parse(Request.QueryString.Get("sort")); // fixed the statement below to key off of session if (Session["Record"] == null) { reportpath = Server.MapPath("IssuesReport.rpt"); rpt.Load(reportpath); Session["Record"] = RetrievalProcedures.IssuesReport(date, publication, pages); } rpt.SetDataSource((DataTable)Session["Record"]); CrystalReportViewer1.ReportSource = rpt; // .... } }

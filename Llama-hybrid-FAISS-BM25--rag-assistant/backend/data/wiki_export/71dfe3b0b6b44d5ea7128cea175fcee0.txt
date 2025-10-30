@@ -1,0 +1,281 @@
+In computer science, storage virtualization is "the process of presenting a logical view of the physical storage resources to" a host computer system, "treating all storage media (hard disk, optical disk, tape, etc.) in the enterprise as a single pool of storage."
+
+A "storage system" is also known as a storage array, disk array, or filer.  Storage systems typically use special hardware and software along with disk drives in order to provide very fast and reliable storage for computing and data processing.  Storage systems are complex, and may be thought of as a special purpose computer designed to provide storage capacity along with advanced data protection features.  Disk drives are only one element within a storage system, along with hardware and special purpose embedded software within the system.
+
+Storage systems can provide either block accessed storage, or file accessed storage.  Block access is typically delivered over Fibre Channel, iSCSI, SAS, FICON or other protocols.  File access is often provided using NFS or SMB protocols.
+
+Within the context of a storage system, there are two primary types of virtualization that can occur:
+
+ Block virtualization used in this context refers to the abstraction (separation) of logical storage (partition) from physical storage so that it may be accessed without regard to physical storage or heterogeneous structure. This separation allows the administrators of the storage system greater flexibility in how they manage storage for end users.
+ File virtualization addresses the NAS challenges by eliminating the dependencies between the data accessed at the file level and the location where the files are physically stored. This provides opportunities to optimize storage use and server consolidation and to perform non-disruptive file migrations.
+
+Block virtualization
+
+Address space remapping
+
+Virtualization of storage helps achieve location independence by abstracting the physical location of the data. The virtualization system presents to the user a logical space for data storage and handles the process of mapping it to the actual physical location.
+
+It is possible to have multiple layers of virtualization or mapping.  It is then possible that the output of one layer of virtualization can then be used as the input for a higher layer of virtualization. Virtualization maps space between back-end resources, to front-end resources. In this instance, "back-end" refers to a logical unit number (LUN) that is not presented to a computer, or host system for direct use. A "front-end" LUN or volume is presented to a host or computer system for use.
+
+The actual form of the mapping will depend on the chosen implementation. Some implementations may limit the granularity of the mapping which may limit the capabilities of the device. Typical granularities range from a single physical disk down to some small subset (multiples of megabytes or gigabytes) of the physical disk.
+
+In a block-based storage environment, a single block of information is addressed using a LUN identifier and an offset within that LUN known as a logical block addressing (LBA).
+
+Metadata
+
+The virtualization software or device is responsible for maintaining a consistent view of all the mapping information for the virtualized storage. This mapping information is often called metadata and is stored as a mapping table.
+
+The address space may be limited by the capacity needed to maintain the mapping table. The level of granularity, and the total addressable space both directly impact the size of the meta-data, and hence the mapping table.  For this reason, it is common to have trade-offs, between the amount of addressable capacity and the granularity or access granularity.
+
+One common method to address these limits is to use multiple levels of virtualization.  In several storage systems deployed today, it is common to utilize three layers of virtualization.
+
+Some implementations do not use a mapping table, and instead calculate locations using an algorithm.  These implementations utilize dynamic methods to calculate the location on access, rather than storing the information in a mapping table.
+
+I/O redirection
+
+The virtualization software or device uses the metadata to re-direct I/O requests. It will receive an incoming I/O request containing information about the location of the data in terms of the logical disk (vdisk) and translates this into a new I/O request to the physical disk location.
+
+For example, the virtualization device may :
+
+ Receive a read request for vdisk LUN ID=1, LBA=32
+ Perform a meta-data look up for LUN ID=1, LBA=32, and finds this maps to physical LUN ID=7, LBA0
+ Sends a read request to physical LUN ID=7, LBA0
+ Receives the data back from the physical LUN
+ Sends the data back to the originator as if it had come from vdisk LUN ID=1, LBA32
+
+Capabilities
+
+Most implementations allow for heterogeneous management of multi-vendor storage devices within the scope of a given implementation's support matrix. This means that the following capabilities are not limited to a single vendor's device (as with similar capabilities provided by specific storage controllers) and are in fact possible across different vendors' devices.
+
+Replication
+
+Data replication techniques are not limited to virtualization appliances and as such are not described here in detail. However most implementations will provide some or all of these replication services.
+ 
+When storage is virtualized, replication services must be implemented above the software or device that is performing the virtualization. This is true because it is only above the virtualization layer that a true and consistent image of the logical disk (vdisk) can be copied. This limits the services that some implementations can implement or makes them seriously difficult to implement. If the virtualization is implemented in the network or higher, this renders any replication services provided by the underlying storage controllers useless.
+
+ Remote data replication for disaster recovery
+ Synchronous Mirroring where I/O completion is only returned when the remote site acknowledges the completion. Applicable for shorter distances (<200 km)
+ Asynchronous Mirroring where I/O completion is returned before the remote site has acknowledged the completion. Applicable for much greater distances (>200 km)
+ Point-In-Time Snapshots to copy or clone data for diverse uses
+ When combined with thin provisioning, enables space-efficient snapshots
+
+Pooling
+
+The physical storage resources are aggregated into storage pools, from which the logical storage is created. More storage systems, which may be heterogeneous in nature, can be added as and when needed, and the virtual storage space will scale up by the same amount. This process is fully transparent to the applications using the storage infrastructure.
+
+Disk management
+
+The software or device providing storage virtualization becomes a common disk manager in the virtualized environment. Logical disks (vdisks) are created by the virtualization software or device and are mapped (made visible) to the required host or server, thus providing a common place or way for managing all volumes in the environment.
+
+Enhanced features are easy to provide in this environment:
+
+ Thin Provisioning to maximize storage utilization
+ This is relatively easy to implement as physical storage is only allocated in the mapping table when it is used.
+ Disk expansion and shrinking
+ More physical storage can be allocated by adding to the mapping table (assuming the using system can cope with online expansion)
+ Similarly disks can be reduced in size by removing some physical storage from the mapping (uses for this are limited as there is no guarantee of what resides on the areas removed)
+
+Benefits
+
+Non-disruptive data migration
+
+One of the major benefits of abstracting the host or server from the actual storage is the ability to migrate data while maintaining concurrent I/O access.
+
+The host only knows about the logical disk (the mapped LUN) and so any changes to the meta-data mapping is transparent to the host. This means the actual data can be moved or replicated to another physical location without affecting the operation of any client. When the data has been copied or moved, the meta-data can simply be updated to point to the new location, therefore freeing up the physical storage at the old location.
+
+The process of moving the physical location is known as data migration. Most implementations allow for this to be done in a non-disruptive manner, that is concurrently while the host continues to perform I/O to the logical disk (or LUN).
+
+The mapping granularity dictates how quickly the meta-data can be updated, how much extra capacity is required during the migration, and how quickly the previous location is marked as free. The smaller the granularity the faster the update, less space required and quicker the old storage can be freed up.
+
+There are many day to day tasks a storage administrator has to perform that can be simply and concurrently performed using data migration techniques.
+
+ Moving data off an over-utilized storage device.
+ Moving data onto a faster storage device as needs require
+ Implementing an Information Lifecycle Management policy
+ Migrating data off older storage devices (either being scrapped or off-lease)
+
+Improved utilization
+
+Utilization can be increased by virtue of the pooling, migration, and thin provisioning services. This allows users to avoid over-buying and over-provisioning storage solutions. In other words, this kind of utilization through a shared pool of storage can be easily and quickly allocated as it is needed to avoid constraints on storage capacity that often hinder application performance.
+
+When all available storage capacity is pooled, system administrators no longer have to search for disks that have free space to allocate to a particular host or server. A new logical disk can be simply allocated from the available pool, or an existing disk can be expanded.
+
+Pooling also means that all the available storage capacity can potentially be used. In a traditional environment, an entire disk would be mapped to a host. This may be larger than is required, thus wasting space. In a virtual environment, the logical disk (LUN) is assigned the capacity required by the using host.
+
+Storage can be assigned where it is needed at that point in time, reducing the need to guess how much a given host will need in the future. Using Thin Provisioning, the administrator can create a very large thin provisioned logical disk, thus the using system thinks it has a very large disk from day one.
+
+Fewer points of management
+
+With storage virtualization, multiple independent storage devices, even if scattered across a network, appear to be a single monolithic storage device and can be managed centrally.
+
+However, traditional storage controller management is still required. That is, the creation and maintenance of RAID arrays, including error and fault management.
+
+Risks
+
+Backing out a failed implementation
+
+Once the abstraction layer is in place, only the virtualizer knows where the data actually resides on the physical medium. Backing out of a virtual storage environment therefore requires the reconstruction of the logical disks as contiguous disks that can be used in a traditional manner.
+
+Most implementations will provide some form of back-out procedure and with the data migration services it is at least possible, but time consuming.
+
+Interoperability and vendor support
+
+Interoperability is a key enabler to any virtualization software or device. It applies to the actual physical storage controllers and the hosts, their operating systems, multi-pathing software and connectivity hardware.
+
+Interoperability requirements differ based on the implementation chosen. For example, virtualization implemented within a storage controller adds no extra overhead to host based interoperability, but will require additional support of other storage controllers if they are to be virtualized by the same software.
+
+Switch based virtualization may not require specific host interoperability — if it uses packet cracking techniques to redirect the I/O.
+
+Network based appliances have the highest level of interoperability requirements as they have to interoperate with all devices, storage and hosts.
+
+Complexity
+
+Complexity affects several areas :
+
+ Management of environment: Although a virtual storage infrastructure benefits from a single point of logical disk and replication service management, the physical storage must still be managed. Problem determination and fault isolation can also become complex, due to the abstraction layer.
+ Infrastructure design: Traditional design ethics may no longer apply, virtualization brings a whole range of new ideas and concepts to think about (as detailed here)
+ The software or device itself: Some implementations are more complex to design and code network based, especially in-band (symmetric) designs in particular — these implementations actually handle the I/O requests and so latency becomes an issue.
+
+Metadata management
+
+Information is one of the most valuable assets in today's business environments. Once virtualized, the metadata are the glue in the middle. If the metadata are lost, so is all the actual data as it would be virtually impossible to reconstruct the logical drives without the mapping information.
+
+Any implementation must ensure its protection with appropriate levels of back-ups and replicas. It is important to be able to reconstruct the meta-data in the event of a catastrophic failure.
+
+The metadata management also has implications on performance. Any virtualization software or device must be able to keep all the copies of the metadata atomic and quickly updateable. Some implementations restrict the ability to provide certain fast update functions, such as point-in-time copies and caching where super fast updates are required to ensure minimal latency to the actual I/O being performed.
+
+Performance and scalability
+
+In some implementations the performance of the physical storage can actually be improved, mainly due to caching. Caching however requires the visibility of the data contained within the I/O request and so is limited to in-band and symmetric virtualization software and devices. However these implementations also directly influence the latency of an I/O request (cache miss), due to the I/O having to flow through the software or device. Assuming the software or device is efficiently designed this impact should be minimal when compared with the latency associated with physical disk accesses.
+
+Due to the nature of virtualization, the mapping of logical to physical requires some processing power and lookup tables. Therefore, every implementation will add some small amount of latency.
+
+In addition to response time concerns, throughput has to be considered. The bandwidth into and out of the meta-data lookup software directly impacts the available system bandwidth. In asymmetric implementations, where the meta-data lookup occurs before the information is read or written, bandwidth is less of a concern as the meta-data are a tiny fraction of the actual I/O size. In-band, symmetric flow through designs are directly limited by their processing power and connectivity bandwidths.
+
+Most implementations provide some form of scale-out model, where the inclusion of additional software or device instances provides increased scalability and potentially increased bandwidth. The performance and scalability characteristics are directly influenced by the chosen implementation.
+
+Implementation approaches
+ Host-based
+ Storage device-based
+ Network-based
+
+Host-based
+
+Host-based virtualization requires additional software running on the host, as a privileged task or process. In some cases volume management is built into the operating system, and in other instances it is offered as a separate product. Volumes (LUN's) presented to the host system are handled by a traditional physical device driver. However, a software layer (the volume manager) resides above the disk device driver intercepts the I/O requests, and provides the meta-data lookup and I/O mapping.
+
+Most modern operating systems have some form of logical volume management built-in (in Linux called Logical Volume Manager or LVM; in Solaris and FreeBSD, ZFS's zpool layer; in Windows called Logical Disk Manager or LDM), that performs virtualization tasks.
+
+Note: Host based volume managers were in use long before the term storage virtualization had been coined.
+
+Pros
+ Simple to design and code
+ Supports any storage type
+ Improves storage utilization without thin provisioning restrictions
+
+Cons
+ Storage utilization optimized only on a per host basis
+ Replication and data migration only possible locally to that host
+ Software is unique to each operating system
+ No easy way of keeping host instances in sync with other instances
+ Traditional Data Recovery following a server disk drive crash is impossible
+
+Specific examples
+ Technologies:
+ Logical volume management
+ File systems, e.g., (hard links, SMB/NFS)
+ Automatic mounting, e.g., (autofs)
+
+Storage device-based
+
+Like host-based virtualization, several categories have existed for years and have only recently been classified as virtualization. Simple data storage devices, like single hard disk drives, do not provide any virtualization. But even the simplest disk arrays provide a logical to physical abstraction, as they use RAID schemes to join multiple disks in a single array (and possibly later divide the array it into smaller volumes).
+
+Advanced disk arrays often feature cloning, snapshots and remote replication. Generally these devices do not provide the benefits of data migration or replication across heterogeneous storage, as each vendor tends to use their own proprietary protocols.
+
+A new breed of disk array controllers allows the downstream attachment of other storage devices. For the purposes of this article we will only discuss the later style which do actually virtualize other storage devices.
+
+Concept
+
+A primary storage controller provides the  services and allows the direct attachment of other storage controllers. Depending on the implementation these may be from the same or different vendors.
+
+The primary controller will provide the pooling and meta-data management services. It may also provide replication and migration services across those controllers which it is .
+
+Pros
+
+ No additional hardware or infrastructure requirements
+ Provides most of the benefits of storage virtualization
+ Does not add latency to individual I/Os
+
+Cons
+
+ Storage utilization optimized only across the connected controllers
+ Replication and data migration only possible across the connected controllers and same vendors device for long distance support
+ Downstream controller attachment limited to vendors support matrix
+ I/O Latency, non cache hits require the primary storage controller to issue a secondary downstream I/O request
+ Increase in storage infrastructure resource, the primary storage controller requires the same bandwidth as the secondary storage controllers to maintain the same throughput
+
+Network-based
+
+Storage virtualization operating on a network based device (typically a standard server or smart switch) and using iSCSI or FC Fibre channel networks to connect as a SAN. These types of devices are the most commonly available and implemented form of virtualization.
+
+The virtualization device sits in the SAN and provides the layer of abstraction between the hosts performing the I/O and the storage controllers providing the storage capacity.
+
+Pros
+
+ True heterogeneous storage virtualization
+ Caching of data (performance benefit) is possible when in-band
+ Single management interface for all virtualized storage
+ Replication services across heterogeneous devices
+
+Cons
+
+ Complex interoperability matrices limited by vendors support
+ Difficult to implement fast meta-data updates in switched-based devices
+ Out-of-band requires specific host based software
+ In-band may add latency to I/O
+ In-band the most complicated to design and code
+
+Appliance-based vs. switch-based
+
+There are two commonly available implementations of network-based storage virtualization, appliance-based and switch-based. Both models can provide the same services, disk management, metadata lookup, data migration and replication. Both models also require some processing hardware to provide these services.
+
+Appliance based devices are dedicated hardware devices that provide SAN connectivity of one form or another. These sit between the hosts and storage and in the case of in-band (symmetric) appliances can provide all of the benefits and services discussed in this article. I/O requests are targeted at the appliance itself, which performs the meta-data mapping before redirecting the I/O by sending its own I/O request to the underlying storage. The in-band appliance can also provide caching of data, and most implementations provide some form of clustering of individual appliances to maintain an atomic view of the metadata as well as cache data.
+
+Switch based devices, as the name suggests, reside in the physical switch hardware used to connect the SAN devices. These also sit between the hosts and storage but may use different techniques to provide the metadata mapping, such as packet cracking to snoop on incoming I/O requests and perform the I/O redirection. It is much more difficult to ensure atomic updates of metadata in a switched environment and services requiring fast updates of data and metadata may be limited in switched implementations.
+
+In-band vs. out-of-band
+
+In-band, also known as symmetric, virtualization devices actually sit in the data path between the host and storage. All I/O requests and their data pass through the device. Hosts perform I/O to the virtualization device and never interact with the actual storage device. The virtualization device in turn performs I/O to the storage device. Caching of data, statistics about data usage, replications services, data migration and thin provisioning are all easily implemented in an in-band device.
+
+Out-of-band, also known as asymmetric, virtualization devices are sometimes called meta-data servers. These devices only perform the meta-data mapping functions. This requires additional software in the host which knows to first request the location of the actual data. Therefore, an I/O request from the host is intercepted before it leaves the host, a meta-data lookup is requested from the meta-data server (this may be through an interface other than the SAN) which returns the physical location of the data to the host. The information is then retrieved through an actual I/O request to the storage. Caching is not possible as the data never passes through the device.
+
+File based virtualization
+File-based virtualization is a type of storage virtualization that uses files as the basic unit of storage. This is in contrast to block-based storage virtualization, which uses blocks as the basic unit. It is a way to abstract away the physical details of storage and allow files to be stored on any type of storage device, without the need for specific drivers or other low-level configuration.
+
+File-based virtualization can be used for a variety of purposes, including storage consolidation, improved storage utilization, and disaster recovery. This can simplify storage administration and reduce the overall number of storage devices that need to be managed.
+
+File-based virtualization can also improve storage utilization by allowing files to be stored on devices that are not being used to their full capacity. For example, if a file server has a number of hard drives that are only partially filled, file-based virtualization can be used to store files on those drives, thereby increasing the utilization of the storage devices.
+
+Finally, file-based virtualization can be used for disaster recovery purposes. By replicating files across a variety of storage devices, it is possible to recover in case of a storage device failure.
+
+File-based virtualization can be used to create a virtual file server (or virtual NAS device), which is a storage system that appears to the user as a single file server but which is actually implemented as a set of files stored on a number of physical file servers.
+
+See also
+
+ Archive
+ Automated tiered storage
+ Storage hypervisor
+ Backup
+ Computer data storage
+ Data proliferation
+ Disk storage
+ Information lifecycle management
+ Information repository
+ Magnetic tape data storage
+ Repository
+ Spindle
+
+References
+
+Storage virtualization
+
+Virtualization

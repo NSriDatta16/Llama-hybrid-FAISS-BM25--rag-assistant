@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4091313
+[parent_id]: 4091209
+[tags]: 
+You'll want a header file that looks something like this: // Common.h #pragma once #ifdef COMMON_BUILD // When building Common.dll, want to export the definition of Pool #define COMMON_EXPORT __declspec(dllexport) #else // When using Common.dll, want to import the definition of Pool #define COMMON_EXPORT __declspec(dllimport) #endif // Declarations of shared globals struct COMMON_EXPORT Pool { static int data1; static int data2; }; (For more about the dllimport and dllexport stuff, see http://msdn.microsoft.com/en-us/library/3y1sfaz2.aspx and http://msdn.microsoft.com/en-us/library/81h27t8c.aspx ) Then in your DLL's build, you will want a source file like this: // Common.cpp #define COMMON_BUILD #include "Common.h" int Pool::data1 = 0; int Pool::data2 = 0; Then, all the DLLs and EXEs that use it should "#include Common.h" and link with the Common DLL, and then they can use Pool::data1 , etc.

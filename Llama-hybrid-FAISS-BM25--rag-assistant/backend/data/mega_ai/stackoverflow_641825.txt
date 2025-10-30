@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 641825
+[parent_id]: 641754
+[tags]: 
+The answer to your question is no. That's what the integrated pipeline of IIS7 acheives but its not available on IIS6. In this specific case using context.Response.TransmitFile will do the trick although you should consider setting the Response content type, charset and cache control headers, something like:- HttpResponse Response = context.Response Response.ContentType = "text/plain"; Response.CharSet = "Windows-1252"; Response.AddFileDependency(filePath); // Set additional properties to enable caching. Response.Cache.SetExpires(DateTime.Now.AddSeconds(60)); Response.Cache.SetCacheability(HttpCacheability.Public); Response.Cache.SetValidUntilExpires(true); Response.TransmitFile(filePath); This pretty much duplicates what IIS static content handler would be doing.

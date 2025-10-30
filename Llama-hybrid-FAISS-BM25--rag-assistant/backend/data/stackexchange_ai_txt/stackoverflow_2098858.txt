@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2098858
+[parent_id]: 2098817
+[tags]: 
+Something like this: DECLARE @stillgoing bit; SET @stillgoing = 1; WHILE @stillgoing = 1 BEGIN DELETE TOP (100) YourTableName WHERE IsObsolete = 1; IF @@ROWCOUNT = 0 SET @stillgoing = 0; CHECKPOINT /* Will encourage the log to clear if it's in Simple recovery model */ END Edit: This will only work in SQL 2005 and on. As we've just learned it's SQL 2000, this code instead: DECLARE @stillgoing bit SET @stillgoing = 1 SET ROWCOUNT 100 WHILE @stillgoing = 1 BEGIN DELETE YourTableName WHERE IsObsolete = 1 IF @@ROWCOUNT = 0 SET @stillgoing = 0 CHECKPOINT /* Will encourage the log to clear if it's in Simple recovery model */ END And... Simple Recovery Model means that the log will truncate on checkpoints, rather than only when the log is backed up.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4965032
+[parent_id]: 4958776
+[tags]: 
+This is just a timing issue. The start vsperfmon /coverage /output:run.coverage command starts up vsperfmon.exe in a separate process. Concurrently, your script goes on to run hello . If hello is a really simple program, it is possible that it executes and completes before vsperfmon.exe is running and fully initialized. If your script hits vsperfcmd /shutdown before the monitor is up and running, you will get the error you're showing. vsperfcmd is just a controller/launcher for vsperfmon , so you can use that exclusively in your batch file: cl /Zi hello.cpp -link /Profile vsinstr -coverage hello.exe vsperfcmd /start:coverage /output:run.coverage hello vsperfcmd /shutdown In this case, the first call to vsperfcmd will block until the monitor is up and fully running.

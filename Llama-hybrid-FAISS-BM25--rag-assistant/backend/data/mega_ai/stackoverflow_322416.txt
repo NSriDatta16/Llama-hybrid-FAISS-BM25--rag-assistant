@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 322416
+[parent_id]: 322298
+[tags]: 
+In addition to removing the html.setHeader("Content-Type", html.getContentType()) call as suggest already, I'd replace the line: MimeMultipart content = new MimeMultipart(); …with: MimeMultipart content = new MimeMultiPart("alternative"); …and removing the line: message.setHeader("Content-Type" , content.getContentType() ); The default MimeMultiPart constructor could be causing problems with a "multipart/mixed" content-type. When using multipart/alternative, the alternatives are ordered by how faithful they are to the original, with the best rendition last. However, clients usually give users an option to display plain text, even when HTML is present. Are you sure that this option is not enabled in Outlook? How do other user agents, like Thunderbird, or GMail, treat your messages? Also, ensure that the HTML is well-formed. I'd validate the HTML content with the W3 validation service , and possibly save it into a file and view it with different versions of IE too. Maybe there's a flaw there causing Outlook to fall back to plain text.

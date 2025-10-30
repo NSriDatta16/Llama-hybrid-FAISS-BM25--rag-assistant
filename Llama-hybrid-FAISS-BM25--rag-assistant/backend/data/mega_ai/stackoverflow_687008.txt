@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 687008
+[parent_id]: 687001
+[tags]: 
+Main problem: For the function: QueryFullProcessImageName , the first parameter is not an HINSTANCE, it is the process handle. They are different. To get the current process Id you should use GetCurrentProcessId . Then pass that into OpenProcess to get the process handle. Other Problem: You should be using GetWindowLongPtr above instead of GetWindowLong. Using GetWindowLong would likely cause problems on x64 systems. How to find out what your problem is on your own: After most Win32 functions fail, you can find out the reason why by using GetLastError. So after the call to QueryFullProcessImageName please do this: DWORD dwLastError = GetLastError(); LPVOID lpMsgBuf; std::string strErrorMessage; FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dwLastError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL); if (lpMsgBuf) { strErrorMessage = (const TCHAR*)lpMsgBuf; LocalFree(lpMsgBuf); } You can also simply just call GetLastError() and lookup its return value here .

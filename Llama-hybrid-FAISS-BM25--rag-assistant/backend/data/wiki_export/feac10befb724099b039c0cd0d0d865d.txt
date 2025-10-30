@@ -1,0 +1,38 @@
+The self-consistent mean field (SCMF) method is an adaptation of mean field theory used in protein structure prediction to determine the optimal amino acid side chain packing given a fixed protein backbone. It is faster but less accurate than dead-end elimination and is generally used in situations where the protein of interest is too large for the problem to be tractable by DEE.
+
+General principles
+Like dead-end elimination, the SCMF method explores conformational space by discretizing the dihedral angles of each side chain into a set of rotamers for each position in the protein sequence. The method iteratively develops a probabilistic description of the relative population of each possible rotamer at each position, and the probability of a given structure is defined as a function of the probabilities of its individual rotamer components.
+
+The basic requirements for an effective SCMF implementation are:
+
+ A well-defined finite set of discrete independent variables
+ A precomputed numerical value (considered the "energy") associated with each element in the set of variables, and associated with each binary element pair
+ An initial probability distribution describing the starting population of each individual rotamer
+ A way of updating rotamer energies and probabilities as a function of the mean-field energy
+
+The process is generally initialized with a uniform probability distribution over the rotamers—that is, if there are  rotamers at the  position in the protein, then the probability of any individual rotamer  is . The conversion between energies and probabilities is generally accomplished via the Boltzmann distribution, which introduces a temperature factor (thus making the method amenable to simulated annealing). Lower temperatures increase the likelihood of converging to a single solution, rather than to a small subpopulation of solutions.
+
+Mean-field energies
+The energy of an individual rotamer  is dependent on the "mean-field" energy of the other positions—that is, at every other position, each rotamer's energy contribution is proportional to its probability. For a protein of length  with  rotamers per residue, the energy at the current iteration is described by the following expression. Note that for clarity, the mean-field energy at iteration  is denoted by , whereas the precomputed energies are denoted by , and the probability of a given rotamer is denoted by .
+
+These mean-field energies are used to update the probabilities through the Boltzmann law:
+
+where  is the Boltzmann constant and  is the temperature factor.
+
+Energy of the system
+Although computing the system energy is not required in carrying out the SCMF method, it is useful to know the overall energies of the converged results. The system energy  consists of two sums:
+
+where the addends are defined as:
+
+Convergence
+Perfect convergence for the SCMF method would result in a probability of 1 for exactly one rotamer at each position  in the protein, and a probability of zero for all other rotamers at each position. Convergence to a unique solution requires probabilities close to 1 for exactly one rotamer at each position. In practice, especially when higher temperatures are used, the algorithm instead identifies a small number of high-probability rotamers at each position, allowing the resulting conformations' relative energies to then be enumerated (based on the precomputed energies, not on those derived from the mean-field approximation). One way to improve convergence is to run again at a lower temperature using the probabilities calculated from a previous higher-temperature run.
+
+Accuracy
+Unlike dead-end elimination, SCMF is not guaranteed to converge on the optimal solution. However, it is deterministic (as in, it will converge to the same solution every time given the same initial conditions), unlike alternatives that rely on Monte Carlo analysis. By comparison to DEE, which is guaranteed to find the optimal solution, SCMF is faster but less accurate overall; it is significantly better at identifying correct side chain conformations in the protein's core than it is on identifying correct surface conformations. Geometric packing constraints are less restrictive on the surface and thus provide fewer boundaries to the conformational search.
+
+References
+  Koehl P, Delarue M. (1994). Application of a self-consistent mean field theory to predict protein side-chains conformation and estimate their conformational entropy. J Mol Biol 239(2):249-75.
+  Voigt CA, Gordon DB, Mayo SL. (2000). Trading accuracy for speed: A quantitative comparison of search algorithms in protein sequence design. J Mol Biol 299(3):789-803.
+
+Applied mathematics
+Protein methods

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3952746
+[parent_id]: 3952728
+[tags]: 
+You should inspect the ReturnValue property . Perhaps the following works better? int currentRating = (int)db.sproc_GetAverageByPageId(pageId).ReturnValue; Update: since your stored proc returns a resultset instead of using a return statement the actual data will be available as an element in the enumerable returned by db.sproc_GetAverageByPageId(pageId) . If you inspect the ISingleResult type , you'll see that it inherits IEnumerable which indicates that you can enumerate the object to get to the data, each element being of type T . Since the sproc does a SELECT SUM(*) ... we can count on the resultset to always contain one row. Thus, the following code will give you the first (and only) element in the collection: var sumRow = db.sproc_GetAverageByPageId(pageId).Single(); Now, the type of sumRow will be T from the interface definition, which in your case is PsychoDataLayer.sproc_GetAverageByPageId . This type hopefully contains a property that contains the actual value you are after. Perhaps you can share with us the layout of the PsychoDataLayer.sproc_GetAverageByPageId type?

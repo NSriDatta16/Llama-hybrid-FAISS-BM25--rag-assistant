@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2072641
+[parent_id]: 
+[tags]: 
+How to make full text query with AND when text spans several columns
+
+We have table with several full text indexed fields. Say, it is firstName, surName and lastName. I'm looking for "John AND Smith" and obviously these two words most likely will be written in different fields. Query returns nothing. If I search for "John OR Smith" it is working. The question is: can I somehow tell SQL Server that all fields belonging to one row of specific table should be treated as one continuous text fragment? Of course, I can concat fields manually to special field and index it, but it looks quite silly. Just in case, the query. It's not about person's name, but idea is the same: SELECT [id], [type], [accessClass], [rank] FROM ( SELECT DISTINCT temp_result.* FROM ( select SDF_Article.article_id [id], 6 [type], SDF_Object.accessClass [accessClass], RelevanceTable.[rank] [rank] from SDF_Article inner join SDF_Object SDF_Object on SDF_Article.article_id=SDF_Object.object_id inner join SDF_Article_Locale SDF_Article_Locale on SDF_Article.article_id=SDF_Article_Locale.article inner join ContainsTable(SDF_Article_Locale, (title, body, brief), 'FORMSOF (INFLECTIONAL, hello) AND FORMSOF (INFLECTIONAL, world)', Language 'Russian') RelevanceTable on SDF_Article_Locale.entry_id=RelevanceTable.[KEY] ) AS temp_result INNER JOIN SDF_RelationMap SDF_Map ON temp_result.[id] = SDF_Map.object AND SDF_Map.ancestor = 5 ) AS result ORDER BY [rank] desc We are using SQL Server 2005.

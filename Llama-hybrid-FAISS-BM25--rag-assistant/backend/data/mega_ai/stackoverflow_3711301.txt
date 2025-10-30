@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3711301
+[parent_id]: 3689766
+[tags]: 
+Your app will be the bottleneck in performance not Apache or Paste. Nginx is used in lots of production servers so that bit will be fine. I don't know about mod_wsgi but uWSGI is used in production environments and plays well with both nginx and Paste applications. I currently run a server using Apache + Paste using Apache to serve static content and Paste to handle Pylons. When I stress tested the setup (using default settings on Apache) I got a lot of variation in the time it took to handle requests (varying from 0.5 to 10 secs). As a test I setup Nginx + uWSGI. Nginx is known to be very good for handling static content and I saw a 10x improvement in the number of files it could serve. The average response time for the Pylons app didn't change (it's DB bound) but the variability dropped to almost zero. Neither setup dropped a connection or failed to respond so based on this I'll be moving to Nginx + uWSGI for our next app, especially as it has a lot more static content.

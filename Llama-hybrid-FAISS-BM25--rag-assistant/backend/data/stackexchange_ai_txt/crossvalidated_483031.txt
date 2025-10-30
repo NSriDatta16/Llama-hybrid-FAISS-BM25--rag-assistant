@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 483031
+[parent_id]: 
+[tags]: 
+Under predictions in Time series forecast
+
+I have a time series which has increasing trend and is seasonal. I build a TSLM model, with trend() and season() . Now, when I use this time-series model to predict in test data, the predictions are always under the actuals. Below is the reproducible code. I have noticed that the under predictions are always between the months March through June, even if I test on different years. I also tried to add knots in trend at 1913 . The data is from sales of a commodity product(cold drinks). library(lubridate) library(forecast) library(tsibble) library(fable) library(feasts) library(tidyverse) df % mutate(year_mon = yearmonth(year_mon)) %>% as_tsibble() dts_train % head(-6) fable_models % model( tslm = TSLM(y ~ trend() + season()) ) fable_models %>% gg_tsresiduals() augment(fable_models) dts_test % tail(6) forecast(fable_models, new_data = dts_test, level = 95) %>% as_tibble() %>% select(year_mon, .model, predicted = .mean) %>% inner_join(dts_test, by = c("year_mon")) %>% mutate(.resid = y - predicted) The decomposition of time-series suggests that the trend component has cycle before 1914 . dts_train %>% model( STL(y ~ trend() + season(window='periodic'), robust = TRUE)) %>% components() %>% autoplot() Not programming language specific question, above a working sample in R . Link to data: https://raw.githubusercontent.com/amandeepfj/RawData/master/time-series.csv

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1719768
+[parent_id]: 1694511
+[tags]: 
+In the combined grammar, place your parser rules above your lexer rules. Also, remember that the lexer runs first and only after it's finished the parser runs. The TYPE (lexer) token must be matched before it's known that the define (parser) rule needs it. Fragment lexer rules do not create tokens, but they can be composed into non-fragment rules that do create tokens. In your example, IDHEAD and IDTAIL are not tokens - they are just used to describe the parts of ID . As such, TYPE and ID are your non-fragment rules, and IDHEAD and IDTAIL are fragment rules. grammar Test; define: 'define' ID 'as' TYPE; /* * Lexer rules only below here */ TYPE: ('text' | 'number' | 'bool'); ID: (IDHEAD IDTAIL*); fragment IDHEAD: ('a'..'z' | 'A'..'Z' | '_'); fragment IDTAIL: (IDHEAD | '0'..'9');

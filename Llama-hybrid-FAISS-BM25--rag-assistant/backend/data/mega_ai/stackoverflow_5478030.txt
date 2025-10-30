@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5478030
+[parent_id]: 5444350
+[tags]: 
+Yes, the major problem is that the second code snippet has added memory leaks to your application. The other is that it won't compile. When you add an object to a collection its retain count is increased, which means that your line [self.mapAnnotations insertObject:[[MyAnnotation alloc] initWithInfo:theCoordinate:@"Title":@"Subtitle"] atIndex:0]; should be written as [self.mapAnnotations insertObject:[[[MyAnnotation alloc] initWithInfo:@"Title" theCoordinate:theCoordinate] autorelease] atIndex:0]; Pay attention to two things: The MyAnnotation instance is sent an "autorelease" message before being sent to the collection of annotations. This is one way to remove the memory leak. The other would be to use a pointer, like in the previous snippet, and then send a release message like you previously did. In Objective-C, the parameters don't go all together at the end of the method call. Hope this helps!

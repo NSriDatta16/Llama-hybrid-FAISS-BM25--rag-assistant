@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 244971
+[parent_id]: 
+[tags]: 
+R logistic fitted probabilities 0 or 1
+
+nsam=100 X1 = runif(nsam) X2 = runif(nsam) data = cbind(X1,X2) pairmin = matrix(NA,nn*(nn-1)/2,3) k = 0 for (i in 1:(nn-1)) { for (j in (i+1):nn) { k = k + 1 pairmin[k,1:2] = pmin(data[i,],data[j,]) pairmin[k,3] = sign((data[i,1]-data[j,1])*(data[i,2]-data[j,2])) } } pairmin = cbind(pairmin,pairmin[,3]*0.5 + 0.5) pairmin = data.frame(pairmin) I have two explanatory variables X1, X2 and zero-one variable X4. I could do logistic regression by lm2 but I tried library(plyr) pairmin1 = pairmin[order(pairmin[,1],pairmin[,2],pairmin[,3]),] freqdat = ddply(pairmin1,.(X1,X2,X3,X4),nrow) lm22 That is, counting the redundant observations and use them as weights. The reason I do this is to reduce computation time. (Actual sample size in my study is >100,000 and have to repeat the task several hundred time). I found that using redundancy counts as weights considerably reduces computation while maintaining same estimates. (As I found this in GAM : https://stackoverflow.com/questions/40101775/weights-option-in-gam ) But I got warnings. 1) Algorithms did not converge 2) Fitted probabilities are 0 or 1. The response variables of this random data are concordances and discordances of all pairs, and it is obviously not 'completely separated.' as seen in the plot. (Blue is 1, and green is 0) I think this is not complete separation. Then why does this happen?

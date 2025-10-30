@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4818531
+[parent_id]: 4756647
+[tags]: 
+OK, first I must say that pmdboi's answer is very elegant and almost certainly the right one. Still, just in case you want a super cut-down DSL like Encoder::Theora.encode do infile "path/to/infile" outfile "path/to/outfile" passes 2 end You can do something ugly like this: require 'blockenspiel' module Encoder class Theora # this replaces pmdboi's elegant Struct class Config include Blockenspiel::DSL def method_missing(method_id, *args, &blk) if args.length == 1 instance_variable_set :"@#{method_id}", args[0] else instance_variable_get :"@#{method_id}" end end end def self.encode(&blk) config = Config.new Blockenspiel.invoke blk, config # now you can do things like puts config.infile puts config.outfile puts config.passes end end end

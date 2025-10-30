@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1661690
+[parent_id]: 
+[tags]: 
+How do I compare two objects based on their base class?
+
+I would like to be able to compare two classes derived from the same abstract class in C#. The following code illustrates my problem. I now I could fix the code by making BaseClass non abstract and then return a new BaseClass object in ToBassClass() . But isn't there a more elegant and efficient solution? abstract class BaseClass { BaseClass(int x) { X = x; } int X { get; private set; } // It is probably not necessary to override Equals for such a simple class, // but I've done it to illustrate my point. override Equals(object other) { if (!other is BaseClass) { return false; } BaseClass otherBaseClass = (BaseClass)other; return (otherBaseClass.X == this.X); } BaseClass ToBaseClass() { // The explicit is only included for clarity. return (BaseClass)this; } } class ClassA : BaseClass { ClassA(int x, int y) : base (x) { Y = y; } int Y { get; private set; } } class ClassB : BaseClass { ClassB(int x, int z) : base (x) { Z = z; } int Z { get; private set; } } var a = new A(1, 2); var b = new B(1, 3); // This fails because despite the call to ToBaseClass(), a and b are treated // as ClassA and ClassB classes so the overridden Equals() is never called. Assert.AreEqual(a.ToBaseClass(), b.ToBaseClass());

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4388552
+[parent_id]: 
+[tags]: 
+SQL for public private records which depend on the project being selected
+
+I have a term DB. Each term may be private or public. Terms are organized into project s. There is a user table as well. If I were to make an SQL to retrieve the data taking care of the public status and I know in advance whether I need to allow public it would look like this: SELECT * FROM term JOIN project ON (project.id = term.id_project) WHERE term.public = true (could have been WHERE public , but clearer like this) or WHERE (term.public = true OR term.public = false) (could have been skipped completely, but clearer like this) But, each user-project combination ( user_project_mm ) may be allowed or disallowed to see private projects. Trying to solve right away yields something like: SELECT * FROM term JOIN project ON (project.id = term.id_project) JOIN user_project_mm ON (user_project_mm.id_project = project.id) WHERE user_project_mm.id_user = $currentUserID [[IF user_project_mm.private THEN NOTHING ELSE AND term.public = true]] The code inside [[]] is clearly not SQL. This is some kind of SQL rewriting that is necessary here. The decision whether to append AND term.public or not depends on each particular result record field user_project_mm.private . I don't want to post-process with PHP as this will ruin my pagination done with LIMIT and it's dirty anyway. Is there a clean SQL solution for this? Did I explain it clearly enough?

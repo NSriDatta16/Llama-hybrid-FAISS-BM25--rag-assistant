@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1998258
+[parent_id]: 
+[tags]: 
+Implement auto_current_user_add when using Django's User table
+
+I have an AppEngine app that I'm migrating to run in Django, using app-engine-patch to get all the goodness of Django - particularly the Admin interface. One of my models looks like (partially) this: class Request(db.Model): requestor = db.UserProperty(auto_current_user_add=True) When I display a form based on this model I don't display the requestor field, and so when I call the Model's put() method the entity I'm saving doesn't have the requestor property set. This triggers the auto_current_user_add magic, and the user who created the request is automatically added. Under Django, I'm using the provided Users table. I want this to display as a list of the users of my app, so the model becomes: from ragendja.auth.google_models import User class Request(db.Model): requestor = db.ReferenceProperty(User) However, this breaks the auto_current_user_add magic in the admin interface - if the user of the admin interface doesn't enter a value for the requestor property, Django sets the property to None, when I'd really like for the Request to have their username inserted automatically. How can I restore the magic?

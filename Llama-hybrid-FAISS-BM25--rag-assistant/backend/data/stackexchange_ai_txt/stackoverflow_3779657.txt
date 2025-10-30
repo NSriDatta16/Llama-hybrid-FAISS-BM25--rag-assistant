@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3779657
+[parent_id]: 3778813
+[tags]: 
+The shell script is actually the simple part. The sed script is the scary bit. The script can be improved with here documents, but witness the comment: #!/bin/bash seds=/tmp/seds.$$ awks=/tmp/awks.$$ gres=/tmp/gres.$$ trap "rm -f $seds $awks $gres" 0 1 2 3 15 # this is a noble and hairy attempt to parse xml with sed # it is extremely fragile and strongly dependent upon # the form of the source file never changing # I'm alternately proud or disgusted that I've been able # to get away with this cat > $seds / {/event /{s/^.*$/\n/; p}; /payloadType / {h; /protocol/ {s/.*protocol=\"([^\"]*)?\".*/protocol: \1/}; p; x; /type/ {s/.*type=\"([^\"]+)\".*/payload: \1/g}; /type/! {s/.*protocol=\"([^\"]+)\".*/payload: \1/g}; p}; /sender / {/sccpAddress/ {s/.*sccpAddress=\"([^\"]*)?\".*/sccpAddress: \1/}; /sccpAddress/! {s/.*/sccpAddress: Unknown/}; p}; /result /{s/.*value=\"([^\"]+)\".*/result: \1/g; p}; /filter code/{s/.*type=\"([^\"]+)\".*/type: \1/g; p};} EOF cat > $awks $gres

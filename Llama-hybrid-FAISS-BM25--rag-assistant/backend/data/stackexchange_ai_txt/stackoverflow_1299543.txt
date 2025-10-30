@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1299543
+[parent_id]: 1299410
+[tags]: 
+As others have said, serialization may be the key here (assuming you don't want to use ORM to store the properties as columns in a table, which seems much more direct). Some caveats though; a database is: long term storage not related to your .NET code As such, you do not want to use any serialization technique that is platform-specific or version-specific. You will often see people mention BinaryFormatter for persistance, but this falls into both of the above traps. You would be scuppered if you ever changed platform, or even if you just change some properties . You need an implementation-independent approach; the simplest (which also retains the ability to be human readable) is xml or json, perhaps via XmlSerializer or Json.NET (stored in a [n]varchar(max) ). If you don't care about human readable, "protocol buffers" (fast/binary) would do well (stored in a varbinary(max) ), and is available for most platforms (including C#/.NET/etc).

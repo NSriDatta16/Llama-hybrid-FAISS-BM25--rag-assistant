@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4705643
+[parent_id]: 
+[tags]: 
+Content provider file storage No Such file or directory
+
+I build application which allows user to make "graphic" notes. I got a problem, when tried to save Bitmap into my custom ContentProvider(NotesProvider extends ContentProvider). According to the Google devGuide should override openFile(Uri uri, String mode) method. And I got Error: File not found. I look through this problem and get solution here . Then I build my representation like so public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException { if(sUriMatcher.match(uri)!=NOTE_ID) throw new IllegalArgumentException("Unsupported open file on directori uri " +uri); File root = new File(Environment.getDataDirectory(), BITMAPS_PATH); root.mkdirs(); File path=new File(root, uri.getEncodedPath()); int imode = 0; if (mode.contains("w")) { imode |= ParcelFileDescriptor.MODE_WRITE_ONLY; if (!path.exists()) { try { path.createNewFile(); } catch (IOException e) { // TODO decide what to do about it, whom to notify... e.printStackTrace(); } } } if (mode.contains("r")) imode |= ParcelFileDescriptor.MODE_READ_ONLY; if (mode.contains("+")) imode |= ParcelFileDescriptor.MODE_APPEND; return ParcelFileDescriptor.open(path, imode); } and application have IOException 12:42:12.714 2550 WARN System.err java.io.IOException: No such file or directory

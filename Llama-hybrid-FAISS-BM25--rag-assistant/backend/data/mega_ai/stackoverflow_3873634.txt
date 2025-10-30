@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3873634
+[parent_id]: 3873496
+[tags]: 
+You can use a FileFilter for this. Here's one I wrote for returning a list of directories that contain images. From this, it should be fairly simple to modify it to return a list of images: FileFilter filterForImageFolders = new FileFilter() { public boolean accept(File folder) { try { //Checking only directories, since we are checking for files within //a directory if(folder.isDirectory()) { File[] listOfFiles = folder.listFiles(); if (listOfFiles == null) return false; //For each file in the directory... for (File file : listOfFiles) { //Check if the extension is one of the supported filetypes //imageExtensions is a String[] containing image filetypes (e.g. "png") for (String ext : imageExtensions) { if (file.getName().endsWith("." + ext)) return true; } } } return false; } catch (SecurityException e) { Log.v("debug", "Access Denied"); return false; } } }; EDIT: To clarify, to use this, you would do something like the below: File extStore = Environment.getExternalStorageDirectory(); File[] imageDirs = extStore.listFiles(filterForImageFolders);

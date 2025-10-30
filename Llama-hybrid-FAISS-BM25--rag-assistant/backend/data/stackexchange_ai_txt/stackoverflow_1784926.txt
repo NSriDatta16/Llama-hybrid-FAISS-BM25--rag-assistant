@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1784926
+[parent_id]: 1784652
+[tags]: 
+It depends on whether your struct is an abstract data type or not. If you make the struct definition public in your header, then defining accessors doesn't make any sense - API clients can still read/write fields directly, and, in C, they do have reasonable expectation that it will work. On the other hand, you may want to hide the struct entirely, and only show its declaration to the clients, as a kind of an opaque handle: foo.h: typedef struct foo foo; foo* foo_create(); void foo_free(foo*); int foo_get_bar(foo*); void foo_set_bar(foo*, int); foo.cpp: struct foo { int bar; }; foo* foo_create() { return malloc(sizeof(foo)); } void foo_free(foo* p) { free(p); } int foo_get_bar(foo* p) { return p->bar; } void foo_set_bar(foo* p, int newval) { p->bar = nwval; } client.cpp: #include "foo.h" foo* f = foo_create(); f->bar = 123; // compile error, bar is not defined foo_set_bar(f, 123); // ok The reason for doing it that way is 1) encapsulation, same as in OO, and 2) versioning - you may add new fields to your struct, or reorganize them freely, and old code will remain binary-compatible.

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 74647
+[parent_id]: 
+[tags]: 
+Pytorch XLA to solve the spawn problems in a Colab Env
+
+As reference only, here is my code It seems that torch.multiprocessing.set_start_method("spawn") can't be used in an Colab Env. Only 'fork' is allowed. I have implemented A3C - Data Parallelism to solve the Breakout Atari Game. As I use multi-agents, I need to spawn several processes. This is representing a single agent : TotalReward = namedtuple("TotalReward", field_names="reward") def data_func(net, device, train_queue, batch_size, entropy_beta, env_name, n_envs, gamma, reward_steps, **kwargs): env = GymEnvVec(env_name, n_envs) agent = Agent(net, batch_size, entropy_beta) exp_source = ExperienceSourceFirstLast(env, agent, gamma, reward_steps) for exp in exp_source: new_rewards = exp_source.pop_total_reward() if new_rewards: train_queue.put(TotalReward(reward=np.mean(new_rewards))) train_queue.put(exp) and here is how I set and start several agents train_queue = mp.Queue(maxsize=params["process_count"]) data_proc_list = [] for _ in range(params["process_count"]): data_proc = mp.Process(target=data_func, args=(net, device, train_queue), kwargs={**params}) data_proc.start() data_proc_list.append(data_proc) Can I set multi-agents using Queue and Process in Colab ? I have thought using spawn function from here using Pytorch XLA. What do you think?

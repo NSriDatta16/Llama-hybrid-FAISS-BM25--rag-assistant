@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2737571
+[parent_id]: 2737500
+[tags]: 
+The follwing code describes the situation of communication between managed C# code and a unmanaged C/C++ DLL via PInvoke. Essentially the idea is, that you can pass your C code a C# delegate. The const unsigned char* gets converted to a string with Marshal.PtrToStringAnsi . C++: typedef void FncFoo (const char*); FncFoo callback = 0; extern "C" { // this function is called from C# to pass the delegate void TakeFooCallback(FncFoo f) { callback = f; } } // C function calling C# void dump_body(const unsigned char *Body, int BodyLen) { if(callback) { callback(Body); } } C#: class StringC2CS { delegate void DlgFoo(IntPtr a); [DllImport("myclib.dll")] // name of the dll void TakeFooCallback(DlgFoo callback); // this function gets called by C void FooImpl(IntPtr a) { string str = Marshal.PtrToStringAnsi(a); // use string } public StringC2CS() { // passes a callback to C TakeFooCallback(new DlgFoo(FooImpl)); } }

@@ -1,0 +1,52 @@
+In computing, an input–output memory management unit (IOMMU) is a memory management unit (MMU) connecting a direct-memory-access–capable (DMA-capable) I/O bus to the main memory. Like a traditional MMU, which translates CPU-visible virtual addresses to physical addresses, the IOMMU maps device-visible virtual addresses (also called device addresses or memory mapped I/O addresses in this context) to physical addresses. Some units also provide memory protection from faulty or malicious devices.
+
+An example IOMMU is the graphics address remapping table (GART) used by AGP and PCI Express graphics cards on Intel Architecture and AMD computers.
+
+On the x86 architecture, prior to splitting the functionality of northbridge and southbridge between the CPU and Platform Controller Hub (PCH), I/O virtualization was not performed by the CPU but instead by the chipset.
+
+Advantages
+The advantages of having an IOMMU, compared to direct physical addressing of the memory (DMA), include:
+ Large regions of memory can be allocated without the need to be contiguous in physical memory the IOMMU maps contiguous virtual addresses to the underlying fragmented physical addresses. Thus, the use of vectored I/O (scatter-gather lists) can sometimes be avoided.
+ Devices that do not support memory addresses long enough to address the entire physical memory can still address the entire memory through the IOMMU, avoiding overheads associated with copying buffers to and from the peripheral's addressable memory space.
+ For example, x86 computers can address more than 4 gigabytes of memory with the Physical Address Extension (PAE) feature in an x86 processor. Still, an ordinary 32-bit PCI device simply cannot address the memory above the 4 GiB boundary, and thus it cannot directly access it. Without an IOMMU, the operating system would have to implement time-consuming bounce buffers (also known as double buffers).
+ Memory is protected from malicious devices that are attempting DMA attacks and faulty devices that are attempting errant memory transfers because a device cannot read or write to memory that has not been explicitly allocated (mapped) for it. The memory protection is based on the fact that OS running on the CPU (see figure) exclusively controls both the MMU and the IOMMU. The devices are physically unable to circumvent or corrupt configured memory management tables.
+ In virtualization, guest operating systems can use hardware that is not specifically made for virtualization. Higher performance hardware such as graphics cards use DMA to access memory directly; in a virtual environment all memory addresses are re-mapped by the virtual machine software, which causes DMA devices to fail. The IOMMU handles this re-mapping, allowing the native device drivers to be used in a guest operating system.
+ In some architectures IOMMU also performs hardware interrupt re-mapping, in a manner similar to standard memory address re-mapping.
+ Peripheral memory paging can be supported by an IOMMU. A peripheral using the PCI-SIG PCIe Address Translation Services (ATS) Page Request Interface (PRI) extension can detect and signal the need for memory manager services.
+
+For system architectures in which port I/O is a distinct address space from the memory address space, an IOMMU is not used when the CPU communicates with devices via I/O ports. In system architectures in which port I/O and memory are mapped into a suitable address space, an IOMMU can translate port I/O accesses.
+
+Disadvantages
+The disadvantages of having an IOMMU, compared to direct physical addressing of the memory, include:
+ Some degradation of performance from translation and management overhead (e.g., page table walks).
+ Consumption of physical memory for the added I/O page (translation) tables. This can be mitigated if the tables can be shared with the processor.
+ In order to decrease the page table size the granularity of many IOMMUs is equal to the memory paging (often 4096 bytes), and hence each small buffer that needs protection against DMA attack has to be page aligned and zeroed before making visible to the device. Due to OS memory allocation complexity this means that the device driver needs to use bounce buffers for the sensitive data structures and hence decreasing overall performance.
+
+Virtualization
+When an operating system is running inside a virtual machine, including systems that use paravirtualization, such as Xen and KVM, it does not usually know the host-physical addresses of memory that it accesses. This makes providing direct access to the computer hardware difficult, because if the guest OS tried to instruct the hardware to perform a direct memory access (DMA) using guest-physical addresses, it would likely corrupt the memory, as the hardware does not know about the mapping between the guest-physical and host-physical addresses for the given virtual machine. The corruption can be avoided if the hypervisor or host OS intervenes in the I/O operation to apply the translations. However, this approach incurs a delay in the I/O operation.
+
+An IOMMU solves this problem by re-mapping the addresses accessed by the hardware according to the same (or a compatible) translation table that is used to map guest-physical address to host-physical addresses.
+
+Published specifications
+ AMD has published a specification for IOMMU technology, called AMD-Vi.
+ IBM offered Extended Control Program Support: Virtual Storage Extended (ECPS:VSE) mode on its 43xx line; channel programs used virtual addresses.
+ Intel has published a specification for IOMMU technology as Virtualization Technology for Directed I/O, abbreviated VT-d.
+ Information about the Sun IOMMU has been published in the Device Virtual Memory Access (DVMA) section of the Solaris Developer Connection. 
+ The IBM Translation Control Entry (TCE) has been described in a document entitled Logical Partition Security in the IBM eServer pSeries 690.
+ The PCI-SIG has relevant work under the terms Single Root I/O Virtualization (SR-IOV) and Address Translation Services (ATS). These were formerly covered in distinct specifications, but as of PCI Express 5.0 have been moved to the PCI Express Base Specification.
+ ARM defines its version of IOMMU as System Memory Management Unit (SMMU) to complement its Virtualization architecture.
+
+See also 
+ Heterogeneous System Architecture (HSA)
+ List of IOMMU-supporting hardware
+ Memory-mapped I/O
+ Memory protection
+
+References
+
+External links
+ 
+ Mastering the DMA and IOMMU APIs, Embedded Linux Conference 2014, San Jose, by Laurent Pinchart
+
+Memory management
+Computer peripherals

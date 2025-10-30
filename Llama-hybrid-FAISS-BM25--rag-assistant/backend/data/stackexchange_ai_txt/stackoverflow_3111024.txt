@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3111024
+[parent_id]: 3110494
+[tags]: 
+From a little curl , it seems to be using shoutcast protocol, so you're looking for an early line starting with icy-name: $ curl http://89.238.146.142:7030 | head -5 % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 13191 0 13191 0 0 16013 0 --:--:-- --:--:-- --:--:-- 28516ICY 200 OK icy-notice1: This stream requires Winamp icy-notice2:SHOUTcast Distributed Network Audio Server/Linux v1.9.8 icy-name:Ibiza Global Radio icy-genre:Electronic 100 33463 0 33463 0 0 30954 0 --:--:-- 0:00:01 --:--:-- 46579 curl: (23) Failed writing body $ Therefore: >>> import urllib2 >>> f = urllib2.urlopen('http://89.238.146.142:7030') >>> for i, line in enumerate(f): ... if line.startswith('icy-name') or i > 20: break ... >>> if i > 20: print 'failed to find station name' ... else: print 'station name is', line.replace('icy-name:', '') ... station name is Ibiza Global Radio >>> You may want to add e.g. some .lower() calls because I believe these header names are meant to be case-insensitive, but that's the general idea.

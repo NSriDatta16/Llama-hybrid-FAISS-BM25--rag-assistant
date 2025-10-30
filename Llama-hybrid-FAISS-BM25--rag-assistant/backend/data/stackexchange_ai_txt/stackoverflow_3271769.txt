@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3271769
+[parent_id]: 3269863
+[tags]: 
+Firstly, posting error messages rather than "no dice" would be helpful. Secondly, please read the documentation for SQLiteDatabase.query() . SQL keywords like "FROM" and "HAVING" shouldn't form part of the method call. You've already passed the table name as the first parameter to query() , so writing " FROM DATABASE_NAME WHERE ... " is both redundant and will lead to an invalid query being formed. Thirdly, you can't pass in Java variable names as part of the selection parameter String — you need to have a String like: KEY_HOMEID +"="+ journalId . Fourthly, it's generally a good idea to use selectionArgs rather than embedding the query parameters into the selection . Especially when you have Strings or parameters coming from user input. e.g. selection = KEY_HOMEID +"=?" and selectionArgs = new String[] { journalId } Overall, your method call should look like: mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_HEIGHT, KEY_BODY, KEY_HOMEID }, KEY_HOMEID +"=?", new String[] { journalId }, null, null, null);

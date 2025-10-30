@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 790732
+[parent_id]: 771380
+[tags]: 
+SQLite to be ACID db flushes with every commit OR with every insert/delete/update not wrapped with transaction. Use transactions for grouping operations OR turn OFF ACIDity and set PRAGMA synchronous=OFF. "PRAGMA synchronous = OFF" and SQLite won't flush data at all (effectively leaving that to OS Cache) SQLITE_DEFAULT_CACHE_SIZE is ONLY for size of cache. And cache is used ONLY for reading data. There is another option - you can implement own VFS layer and prevent page saving at all before your own buffer will be full. http://www.sqlite.org/c3ref/vfs.html But I'm sure that sync=off (or much better to use transactions) will do the job good enough (while having a good chance to corrupt your db in case power failures or hard reset for sync=off). Another hint is to place JOURNAL in memory or turn it off completely. Again - it's turning off acidity, but that also removes some disk touches.

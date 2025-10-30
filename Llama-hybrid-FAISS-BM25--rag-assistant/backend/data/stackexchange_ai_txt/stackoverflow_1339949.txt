@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1339949
+[parent_id]: 1339851
+[tags]: 
+If you're using InnoDB (or a storage engine that supports them) you can use FOREIGN KEY constraints to delete the correspoding rows. This is one of the easiest/safest approach if you don't mind the slight performance impact of foreign keys. Note however that rows deleted because of constraints do not get triggers to fire. Alternatively, you can use triggers. They work with any storage engine and they're usually easy enough to write. I like them but they're not very performant if you're deleting a large number of rows at once (several hundreds or thousands.) CREATE TRIGGER ad_orders AFTER DELETE ON orders FOR EACH ROW DELETE FROM orders_items WHERE orderID = OLD.orderID; Finally, as suggested in a previous answer, you could use multi-table DELETE: DELETE o, oi FROM orders o LEFT JOIN orders_items oi USING (orderID) WHERE o.orderID = 500;

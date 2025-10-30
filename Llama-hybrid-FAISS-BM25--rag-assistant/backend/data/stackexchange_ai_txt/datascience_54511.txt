@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 54511
+[parent_id]: 
+[tags]: 
+ValueError: When feeding symbolic tensors to a model, we expect the tensors to have a static batch size. Got tensor with shape: (None, 32)
+
+inp=Input(shape=(max_length,)) x = Embedding(nb_words, EMBEDDING_DIM, embeddings_initializer=Constant(embedding_matrix),input_length=max_length, trainable=False)(inp) x = SpatialDropout1D(0.2)(x) x = Bidirectional(CuDNNLSTM(EMBEDDING_DIM, return_sequences=True))(x) x = Conv1D(64, 5, activation='relu')(x) x = GlobalMaxPooling1D()(x) inp1 = Input(shape=(2,)) concat = concatenate([x, inp1]) x = Dense(32, kernel_initializer='normal', activation='relu')(concat) x = Dropout(0.2)(x) output = Dense(1, activation='sigmoid')(x) model = Model(inputs=[inp, inp1], outputs=output) model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']) when i try to fit the above model it gives me the value error history = model.fit([X_train_pad, x], y_train, batch_size=1024, epochs=2, validation_data=([X_test_pad, x1], y_test)) Here max_length is 256 and i pad the input data with max_length.

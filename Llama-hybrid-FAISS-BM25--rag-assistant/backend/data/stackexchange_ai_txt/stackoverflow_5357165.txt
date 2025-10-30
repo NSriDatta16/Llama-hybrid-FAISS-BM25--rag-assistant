@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5357165
+[parent_id]: 5356524
+[tags]: 
+You cannot have private members in this scenario because the instances of your DomainContext between the two invokes are actually separate objects. Every call is being made atomically and the server portion creates and cleans up the object after use. One option is to shift the stateful nature of your calls from the server to the client. Have the first method return as a concrete class a model which encapsulates the private values you wish to track. You can then use that model in the client to invoke the second instance method. If you do not want this data over the wire then this is not a good option. A second option is to simply leverage the Session or Cache objects of ASP.NET Since Silverlight does run under the ASP.NET context. HttpContext.Current is available to your services and coupled to the user. Another option is to simply chain both methods into a single invoke method.

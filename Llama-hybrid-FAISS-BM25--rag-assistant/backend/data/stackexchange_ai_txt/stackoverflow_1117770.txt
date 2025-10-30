@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1117770
+[parent_id]: 
+[tags]: 
+How to load a set of objects when Hibernate Lazy Fetchtype is used?
+
+I have a Hibernate domain class (let's say PetOwner) with a one to many relationship with another class(Pets) [PetOwner (1)---------(*) Pet] Due to a drastic change required to improve the performance I had to change the fetchtype of the getPets() method in PetOwner class to be lazy. So the current mapping looks as follows @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "petowner") public Set getPets() { if (pets == null) { pets = new HashSet (); } return pets; } For some test classes, the getPets() method is used after a PetOwner is found using the retrievePetOwnerById() method. After the changes to mapping this causes LazyInitializationException .(As the object-graph is not fully loaded due to the change of fetch type) I used a not elegant workaround by adding a method like the one shown below to the DefaultPetOwnerService. public PetOwner retrievePetOwnerByIdWithPets(Long petOwnerId) { PetOwner petOwner = retrievePetOwnerById(petOwnerId); int size = petOwner.getPets().size(); return petOwner; } petOwner.getPets().size() has to be used because the pets won't be loaded till some operation on the list is done. When I use the new method, the LazyInitializationException can be overcome. But it's a hack and I'm searching a way to do this more neatly. Are there any suggestions?

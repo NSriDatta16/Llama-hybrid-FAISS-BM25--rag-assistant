@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4491602
+[parent_id]: 4491213
+[tags]: 
+Yes, a nested class is fine here. Note that to keep the code organized, I wouldn't place the definition of B inside A . Instead: class A { class B; }; class A::B { }; Among other things, this allows the definition of class A::B to be placed inside A's implementation file. EDIT: Since there seems to be some confusion about whether a nested class gets access to the containing class's private members, I provide a code snippet to prove that it does: class A { int x; class B { int func(A* p) { return p->x; } }; }; GCC 4.3.4: Accepted. Variant without inline definition of A::B , also accepted: class A { int x; class B; }; class A::B { int func(A* p) { return p->x; } }; Comeau: Accepted (both variants) Your Comeau C/C++ test results are as follows: Comeau C/C++ 4.3.10.1 (Oct 6 2008 11:28:09) for ONLINE_EVALUATION_BETA2 Copyright 1988-2008 Comeau Computing. All rights reserved. MODE:strict errors C++ noC++0x_extensions In strict mode, with -tused, Compile succeeded (but remember, the Comeau online compiler does not link). Compiled with C++0x extensions DISabled.

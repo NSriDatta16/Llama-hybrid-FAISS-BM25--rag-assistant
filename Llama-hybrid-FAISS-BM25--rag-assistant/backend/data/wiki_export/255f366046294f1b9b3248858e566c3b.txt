@@ -1,0 +1,79 @@
+A volume boot record (VBR) (also known as a volume boot sector, a partition boot record or a partition boot sector) is a type of boot sector introduced by the IBM Personal Computer. It may be found on a partitioned data storage device, such as a hard disk, or an unpartitioned device, such as a floppy disk, and contains machine code for bootstrapping programs (usually, but not necessarily, operating systems) stored in other parts of the device. On non-partitioned storage devices, it is the first sector of the device. On partitioned devices, it is the first sector of an individual partition on the device, with the first sector of the entire device being a Master Boot Record (MBR) containing the partition table.
+
+The code in volume boot records is invoked either directly by the machine's firmware or indirectly by code in the master boot record or a boot manager. Code in the MBR and VBR is in essence loaded the same way.
+
+Invoking a VBR via a boot manager is known as chain loading. Some dual-boot systems, such as NTLDR (the boot loader for all releases of Microsoft's Windows NT-derived operating systems up to and including Windows XP and Windows Server 2003), take copies of the bootstrap code that individual operating systems install into a single partition's VBR and store them in disc files, loading the relevant VBR content from file after the boot loader has asked the user which operating system to bootstrap.
+In Windows Vista, Windows Server 2008 and newer versions, NTLDR was replaced; the boot-loader functionality is instead provided by two new components: WINLOAD.EXE and the Windows Boot Manager.
+
+In file systems such as FAT12 (except for in DOS 1.x), FAT16, FAT32, HPFS and NTFS, the VBR also contains a BIOS Parameter Block (BPB) that specifies the location and layout of the principal on-disk data structures for the file system. (A detailed discussion of the sector layout of FAT VBRs, the various FAT BPB versions and their entries can be found in the FAT article.)
+
+Technical details
+
+Signature
+The presence of an IBM PC compatible boot loader for x86-CPUs in the boot sector is by convention indicated by a two-byte hexadecimal sequence called the boot sector signature ( at fixed offset  and  at ) for sector sizes of 512 bytes or more. For 512 byte sectors, the boot sector signature also marks the end of the sector. VBRs on smaller and larger sectors may show signatures at the end of the actual sector size as well, however, the semantics described herein apply to the 16-bit signature at  only.
+
+This signature indicates the presence of at least a dummy boot loader which is safe to be executed, even if it may not be able to actually load an operating system. It does not indicate the presence of a (or even a particular) file system or operating system, although some old versions of DOS prior to 3.3 relied on it in their process to detect FAT-formatted media (newer versions do not). Boot code for other platforms or CPUs should not use this signature, since this may lead to a crash when the BIOS passes execution to the boot sector assuming that it contains valid executable code. This implies that FAT12/FAT16 media to be used also by very old versions of DOS must maintain the signature even if they do not contain an operating system or are meant to be bootable on other platforms only; consequently they must contain at least an x86 compatible (dummy) loader as well (for comparison, see examples of FAT on the Atari ST and with MSX-DOS). Nevertheless, some media for other platforms erroneously contain the signature even without a x86 compatible dummy loader, making the check not 100% reliable in practice.
+
+The signature is tested for by most System BIOSes since (at least) the IBM PC/AT (but not by the original IBM PC and some other machines). Even more so, it is also checked by most MBR boot loaders before passing control to the boot sector. Some BIOSes (like the IBM PC/AT) perform the check only for fixed disk / removable drives, while for floppies and superfloppies it is enough to start with a byte greater or equal to  and the first nine words not to contain the same value, before the boot sector is accepted as valid, thereby avoiding the explicit test for ,  on floppies. Since old boot sectors (i.e. very old CP/M-86 and DOS media) sometimes do not feature this signature despite the fact that they can be booted successfully, the check can be disabled in some environments. This also reflects the fact that floppies can be formatted to use smaller sector sizes than 512 bytes.
+
+If the BIOS or MBR code does not detect a valid boot sector and therefore cannot pass execution to the boot sector code, it will try the next boot device in the row. If they all fail it will typically display an error message and invoke INT 18h. This will either start up optional resident software in ROM (ROM BASIC), attempt to remote boot via network, reboot the system via INT 19h after user confirmation, or cause the system to halt the bootstrapping process until the next power-up.
+
+From decimal offset 72 to 79, an NTFS PBR contains the partition UUID volume ID serial number.
+
+Invocation
+The boot code in the VBR can assume that the BIOS has set up its data structures and interrupts and initialized the hardware. The code should not assume more than 32 KB of memory to be present for fail-safe operation; if it needs more memory it should query INT 12h for it, since other pre-boot code (such as f.e. BIOS extension overlays, encryption systems, or remote bootstrap loaders) may be present elsewhere in memory as well (and would typically hide themselves from the boot sector by reducing the reported INT 12h memory accordingly, so that they do not get overwritten by the MBR's and VBR's actions). The BIOS Boot Specification allows for 64 KB of memory and explicitly recommends  to  as a temporary scratchpad. The boot code must not assume better CPUs than the original Intel 8088 or 8086 (used in the original PC) and make no assumptions in regard to the exact state of the hardware, the interrupt system (interrupts can be enabled or disabled) or the location and size of the stack. Although the original IBM BIOS initializes the DS, ES, and SS CPU registers to segment  and maintains the initial stack at SS:SP = , this is not a condition to rely on, as not all BIOSes and MBR codes follow this convention. Registers not mentioned below must be treated as not initialized. Direct hardware access is not normally allowed. While the Disk Parameter Table (DPT/FDPB) is typically set up at  in memory already, the VBR must move (and possibly fix-up) the DPT pointed to by INT 1Eh vector to this location (INT 1Eh not an interrupt, but a far pointer to the DPT).
+
+Some conditions can be relaxed in controlled environments, for example, some boot loaders today assume to have up to 128 KB of memory to work with in normal operation (without querying for more), and some boot loaders using LBA access assume at least an Intel 80188 or 80186 CPU.
+
+The VBR is loaded at memory location 0000h:7C00h and with the following CPU registers set up when the prior bootstrap loader (that is, typically the BIOS or MBR, but possibly another boot loader) passes execution to it by jumping to 0000h:7C00h in the CPU's real mode.
+
+ CS:IP = 0000h:7C00h (fixed)
+Some Compaq BIOSes erroneously use 07C0h:0000h instead. While this resolves to the same location in real mode memory, it is non-standard and should be avoided, since VBR code assuming certain register values or not written to be relocatible may not work otherwise.
+
+ DL = boot drive unit (floppies / superfloppies: 00h = first, 01h = second, ..., 7Eh; fixed disks / removable drives: 80h = first, 81h = second, ..., FEh; values 7Fh and FFh are reserved for ROM / remote drives and must not be used on disk). DL is supported by IBM BIOSes as well as most other BIOSes. The Toshiba T1000 BIOS is known to not support this properly, and some old Wyse 286 BIOSes use DL values greater or equal to 2 for hard disks. USB sticks configured as superfloppies typically get an assignment of DL = 00h or 01h, however, some rare BIOSes erroneously present USB sticks configured as removable drives as DL = 01h as well, instead of using DL = 80h. Traditionally, only values 00h and 80h were passed on by the BIOS during boot, and many boot sectors were hard-wired to work with fixed values, anyway. The Plug and Play BIOS Specification and BIOS Boot Specification (BBS) allow other devices to become bootable as well. The later also recommends that the MBR and VBR codes use DL rather than internally hardwired defaults. (NB. MS-DOS/PC DOS and OS/2 VBRs ignore the provided DL value and instead retrieve the value stored at offset +19h in the Extended BIOS Parameter Block (EBPB) or at sector offset +1FDh in DOS versions 3.2 to 3.31. Some versions of DR-DOS use DL starting with 7.02. DR-DOS 7.07 VBRs default to use DL and ignore the BPB value, but SYS /O[:nnn] can be used to reinvoke the old behaviour of using the BPB value or even enforce a particular boot drive unit nnn to be stored there. On FAT32 volumes, FreeDOS takes advantage of the DL value as well, whereas it does so on FAT12/FAT16 volumes only, if the BPB value is set to FFh.)
+ DH bit 5 = 0: device supported through INT 13h; else: don't care (should be zero). DH is supported by some IBM BIOSes. Some MBR and VBR codes preserve the value of DH.
+
+Systems with Plug-and-Play BIOS or BBS support will provide a pointer to PnP data in addition to DL:
+
+ DL = boot drive unit (see above)
+ ES:DI = points to "$PnP" installation check structure
+
+This information allows the boot loader (in the MBR or VBR) to actively interact with the BIOS or a resident PnP / BBS overlay in memory in order to configure the boot order etc., however, this information is ignored by most standard MBRs and VBRs. Ideally, ES:DI is passed on, but PnP-enabled operating systems typically also have fallback methods to retrieve the PnP BIOS entry point later on so that most operating systems do not rely on this. Information in ES:DI can be used as a hint - according to the PnP BIOS specification, "$PnP" installation check structure could be found by searching for a signature of the ASCII string $PnP in system memory starting from F0000h to FFFFFh at every 16 byte boundary.
+
+With partitioned media, when the VBR is launched by the MBR (or different boot loader) rather than the BIOS, many implementation pass additional information to the VBR besides just DL (and sometimes DH and ES:DI as well):
+
+ DS:SI = points to the 16-byte MBR partition table entry (in the relocated MBR) corresponding with the activated VBR. PC-MOS 5.1 depends on this to boot if no partition in the partition table is flagged as bootable. In conjunction with LOADER, Multiuser DOS and REAL/32 boot sectors use this to locate the boot sector of the active partition (or another bootstrap loader like IBMBIO.LDR at a fixed position on disk) if the boot file (LOADER.SYS) could not be found. PTS-DOS 6.5 and S/DOS 1.0 use this in conjunction with their Advanced Active Partition (AAP) feature. In addition to support for LOADER and AAPs, DR-DOS 7.07 can use this to determine the necessary INT 13h access method when using its dual CHS/LBA VBR code. The MBR code of OS/2, MS-DOS (prior to 7.0), PC DOS (up to 7.10), and Windows NT (up to ca. 2007) happens to provide this same interface as well, although these systems do not make use of it. The MBR installed by Windows NT 6.0 (and higher) uses other registers, and is therefore no longer compatible with these extensions. While some extensions only depend on the 16-byte partition table entry itself, other extensions may require the whole 4 (or 5 entry) partition table to be present as well.
+
+Under DR-DOS 7.07 an extended interface may be optionally used by the MBR and in conjunction with LOADER:
+
+ AX = magic signature indicating the presence of this extension (0EDCh)
+ DL = boot drive unit (see above)
+ DS:SI = points to the 16-byte MBR partition table entry used (see above)
+ ES:BX = start of boot sector or special "NEWLDR" sector image (typically 7C00h)
+ CX = reserved
+
+In conjunction with GUID partition tables (GPT), an Enhanced Disk Drive Specification (EDD) 4 Hybrid MBR proposal recommends another extension to the MBR to VBR interface:
+
+ EAX = 54504721h ("!GPT")
+ DL = boot drive unit (see above)
+ ES:DI = points to "$PnP" installation check structure (see above)
+ DS:SI = points to a Hybrid MBR handover structure, consisting of a 16-byte dummy MBR partition table entry (with all bits set except for the boot flag at offset +0h and the partition type at offset +4h) followed by additional data. This is partially compatible with the older DS:SI extension discussed above, if only the 16-byte partition entry, not the whole partition table is required by these older extensions.
+
+See also
+ Master Boot Record (MBR)
+ Extended Boot Record (EBR)
+ BIOS Parameter Block (BPB)
+ BPB formats in FAT file systems
+ Disk partitioning
+ Partition alignment
+
+Notes
+
+References
+
+Further reading
+ 
+
+Computer file systems
+BIOS
+Booting

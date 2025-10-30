@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1789893
+[parent_id]: 1789855
+[tags]: 
+You can't, because the Resolve method in question is a static method. This is one of the many reasons static types are considered evil when it comes to unit testing (and hence for general composability of code). You seem to be applying an (anti)pattern known as Service Locator, and you are currently experiencing one of the many problems associated with it. A better solution would be to use Constructor Injection like this: public class HomeController { private readonly IOrganisationService organisationService; public HomeController(IOrganisationService organisationService) { if (organisationService == null) { throw new ArgumentNullException("organisationService"); } this.organisationService = organisationService; } public ActionResult Index() { var x = this.organisationService; // return result... } } You can now let your DI Container of choice resolve the HomeController instance from the outside. This is a much more flexible solution.

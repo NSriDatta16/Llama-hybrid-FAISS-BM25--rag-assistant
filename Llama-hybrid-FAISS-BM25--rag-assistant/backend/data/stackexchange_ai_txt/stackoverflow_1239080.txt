@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1239080
+[parent_id]: 
+[tags]: 
+How to fix this touch event performance problem?
+
+I am tracking a touch sequence on a view. The view is in an hierarchy of 3 other views, and nothing is covering it. When touches begin, until touches moved, I get an delay of 0.2 seconds. all following touchesMoved have a small delay of only 0.01 seconds. - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { lastTime = [NSDate timeIntervalSinceReferenceDate]; } - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event { UITouch *touch = [touches anyObject]; if ([touch view] == self.wheelView) { CGFloat timeDiff = [NSDate timeIntervalSinceReferenceDate] - lastTime; NSLog(@"%f", timeDiff); lastTime = [NSDate timeIntervalSinceReferenceDate]; } } Every touch sequence beginning from touchesBegan: until a bunch of touchesMoved: has an execution delay that looks like this: 0.266244 0.001605 0.025965 0.005230 0.011768 0.001601 0.010808 0.002451 Like you can see, the first one is strongly delayed. I can only guess, but: Does iPhone OS wait a while to see if it will be a touch sequence? Or in other words: Does it wait to see if the touch was intended to be a moving touch? I am trying to implement a scrolling technique just for practise (sure I could use UIScrollView, but I want to learn). When I start scrolling it feels bad because the first 0.26 seconds just nothing happens, and then it jumps fast to the finger position. That looks ugly. Any idea how to disable this waiting mechanism so that touchesMoved happen immediately?

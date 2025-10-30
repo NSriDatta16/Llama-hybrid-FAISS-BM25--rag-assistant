@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1569267
+[parent_id]: 1569238
+[tags]: 
+List insertion is very fast. Something else must be going on here. Try timing it with and without products.Add(prd) commented out. I suspect you'll find they're almost identical. Here's how I'd solve this: comment out one line at a time until you see a big jump in performance-- then you'll have found your culprit. Another thing to watch out for: database performance is not static. For example, a query which takes 4 seconds to execute the first time might only take 100 msecs to execute the second time, because all the data is cached into RAM so no physical I/O needs to be done the second time. And the very first query to a database will be slow as SQL spins up lots of things. My suggestion: always start with a warm cache, meaning run the code once and then run it again, and only consider the second timing real. Even better, run the code 10 times, then time it 10 times, and throw out the first 10 and average the second.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2379126
+[parent_id]: 2379079
+[tags]: 
+The key here is that the [XmlRoot] can only be applied to a root type such as a class; if you are using a List<> as the root it won't work - but we can shim that with [XmlElement] . I'm using the Stream approach (via Encoding.UTF8 ), but note that this isn't really the heart of the issue IMO (the root type is): [XmlRoot(Namespace="urn:organisationMetaDataSchema")] public class Organisations { private readonly List items = new List (); [XmlElement("Organisation")] public List Items { get { return items; } } } public class Organisation { public string Code { get; set; } public string Name { get; set; } } static class Program { static void Main() { string xml = @" XXXX YYYYYYYY "; XmlSerializer ser = new XmlSerializer(typeof(Organisations)); using (Stream input = new MemoryStream(Encoding.UTF8.GetBytes(xml))) { Organisations orgs = (Organisations)ser.Deserialize(input); } } }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2567139
+[parent_id]: 2566964
+[tags]: 
+I used both, and I definitely prefer the util-linux-ng (formerly in e2fsprogs) one. For portability, I make my software support both and use autoconf/cmake macros to detect which one is installed. The main problem with OSSP for me is that it abuses object-orientation in C for no good reason. An UUID is just a 128-bit number, which can be represented with a char[16] array. The UUID is usually associated with another structure (the UUID serves as a key or an identifier for such structure), so it should be good if you could inline that array in the structure itself. With OSSP UUID, it gives you a uuid_t* pointer to a dynamically allocated object, which holds more state than just the UUID value. If you work with tens of thousands of objects, this sensibly makes the program slower, uses more memory and causes more memory fragmentation. In the end, to make OSSP UUID usable, you have to use it just to generate the UUID (which involves 4 calls: uuid_create, uuid_make, uuid_export and uuid_destroy) and work with the UUID value yourself. With util-linux-ng, it is just a single call: uuid_generate.

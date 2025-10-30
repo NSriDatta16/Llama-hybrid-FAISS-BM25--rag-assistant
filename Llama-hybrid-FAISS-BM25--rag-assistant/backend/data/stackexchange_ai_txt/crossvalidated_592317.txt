@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 592317
+[parent_id]: 
+[tags]: 
+Low RMSE, MSE and a good plot of pred and true values but both R^2 and adjusted r^2 are negative. What am I doing wrong?
+
+I'm developing a code to predict how many bikes will arrive at a given station. The issue is that I'm having a hard time interpreting my metrics: On the one hand, it looks like I have a good MSE and a good RMSE, but adjusted r^2 and r^2, both negative, telling me that my model has a worse fit than a horizontal line. However, my plot(log=True) also indicates that I have relatively good predictions. What do you think might be happening for me to have both R^2 and an adjusted r^2 negative? MSE 0.026319652524120617 RMSE 0.16223332741493227 R^2 -0.3523394531142525 Adjusted R^2 -0.35234760060098713 For this, I am modeling a time series with the following code: X = df.drop('next_count',axis=1) y = df[['next_count']] #split the data tscv = TimeSeriesSplit(n_splits=5) for train_index, val_index in tscv.split(X): X_train, X_test = X.iloc[train_index], X.iloc[val_index] y_train, y_test = y.iloc[train_index], y.iloc[val_index] y_train = y_train.values.ravel() y_test = y_test.values.ravel() #scaling scaler = MinMaxScaler() scaled_train = scaler.fit_transform(X_train) scaled_test = scaler.transform(X_test) #build the model model = ZeroInflatedRegressor( classifier=DecisionTreeClassifier(random_state=0), regressor=DecisionTreeRegressor(random_state=0)) model.fit(scaled_train, y_train) #Predict output for scaled_test (unseen data) y_pred = model.predict(scaled_test)

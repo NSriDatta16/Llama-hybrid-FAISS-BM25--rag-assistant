@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3508077
+[parent_id]: 
+[tags]: 
+How to define "type disjunction" (union types)?
+
+One way that has been suggested to deal with double definitions of overloaded methods is to replace overloading with pattern matching: object Bar { def foo(xs: Any*) = xs foreach { case _:String => println("str") case _:Int => println("int") case _ => throw new UglyRuntimeException() } } This approach requires that we surrender static type checking on the arguments to foo . It would be much nicer to be able to write object Bar { def foo(xs: (String or Int)*) = xs foreach { case _: String => println("str") case _: Int => println("int") } } I can get close with Either , but it gets ugly fast with more than two types: type or[L,R] = Either[L,R] implicit def l2Or[L,R](l: L): L or R = Left(l) implicit def r2Or[L,R](r: R): L or R = Right(r) object Bar { def foo(xs: (String or Int)*) = xs foreach { case Left(l) => println("str") case Right(r) => println("int") } } It looks like a general (elegant, efficient) solution would require defining Either3 , Either4 , .... Does anyone know of an alternate solution to achieve the same end? To my knowledge, Scala does not have built-in "type disjunction". Also, are the implicit conversions defined above lurking in the standard library somewhere so that I can just import them?

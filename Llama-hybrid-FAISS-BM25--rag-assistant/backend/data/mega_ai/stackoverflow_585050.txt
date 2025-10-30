@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 585050
+[parent_id]: 585006
+[tags]: 
+Sounds like a case for a star schema. You would have a (huge) fact table like this: question_id, survey_id, age_group_id, health_classifier_id, is_smoking ... , answer_value and denormalised dimension tables: age_group: group_name, min_age, max_age, age_group_id 1.4 million rows doesn't sound like much for a system like this. Some databases have special features to support querying on this kind of schema: On Oracle those would be: 'dimensions' for supporting aggragation allong dimensions bitmap index for filtering on low cardinality attributes like age_group_id and is_smoking bitmap joind index for filtering on low cardinality attributes in a joined table, i.e. selecting from the fact table but filtering on min_age in the age_group table. partitioning tables to handle large tables materialized views for precalculating aggregation results There are also specialised db systems for this kind of data called multidimensional database. check if there are similiar constructs for your database or consider switching the database engine

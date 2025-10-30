@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3344285
+[parent_id]: 3344224
+[tags]: 
+Consider moving the API access to a new class, and store the TcpSocket instance and the context ID there. Change your models to talk to this API access class instead of talking to the socket themselves. Add an around_filter to your controller(s) that pulls the context ID out of the session, stores it into the API access class, and nils it after running the action. As long as your Rails processes remain single-threaded, you'll be fine. If you switch to a multi-threaded model, you'll also need to change the API access class to store the context ID and the TcpSocket in thread-local storage, and you'll need one TcpSocket per thread.

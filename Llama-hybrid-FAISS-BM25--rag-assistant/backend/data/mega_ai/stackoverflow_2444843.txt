@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2444843
+[parent_id]: 
+[tags]: 
+why nResult ！= nConvertedLen，when use CComBSTR；
+
+CComBSTR wsData = (char*)pvData； when constuct CComBSTR，call A2WBSTR，but sometimes nResult ！= nConvertedLen，just 1/20. why？ inline BSTR A2WBSTR(_In_opt_ LPCSTR lp, int nLen = -1) { if (lp == NULL || nLen == 0) return NULL; USES_CONVERSION_EX; BSTR str = NULL; #pragma warning(push) #pragma warning(disable: 6385) int nConvertedLen = MultiByteToWideChar(_acp_ex, 0, lp, nLen, NULL, NULL); #pragma warning(pop) int nAllocLen = nConvertedLen; if (nLen == -1) nAllocLen -= 1; // Don't allocate terminating '\0' str = ::SysAllocStringLen(NULL, nAllocLen); if (str != NULL) { int nResult; nResult = MultiByteToWideChar(_acp_ex, 0, lp, nLen, str, nConvertedLen); ATLASSERT(nResult == nConvertedLen); if(nResult != nConvertedLen) { SysFreeString(str); return NULL; } } return str; }

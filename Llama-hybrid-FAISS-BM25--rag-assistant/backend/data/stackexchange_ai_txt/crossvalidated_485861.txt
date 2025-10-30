@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 485861
+[parent_id]: 
+[tags]: 
+Is it correct to decrease the alpha parameter in sklearn SVM pipeline to improve performance?
+
+I'm trying to find the best parameters for a Fine-grained Sentiment Analysis of a dataset of movie reviews. This is the current code: class SVMSentiment(Base): """Predict sentiment scores using a linear Support Vector Machine (SVM). Uses a sklearn pipeline. """ def __init__(self, model_file: str=None) -> None: super().__init__() # pip install sklearn from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer from sklearn.linear_model import SGDClassifier from sklearn.svm import LinearSVC from sklearn.pipeline import Pipeline self.pipeline = Pipeline( [ ('clf', SGDClassifier( loss='hinge', penalty='l2', alpha=1e-4, random_state=42, max_iter=100, learning_rate='optimal', tol=None, )), ] ) def predict(self, train_file: str, test_file: str, lower_case: bool) -> pd.DataFrame: "Train model using sklearn pipeline" train_df = self.read_data(train_file, lower_case) learner = self.pipeline.fit(train_df['text'], train_df['truth']) # Fit the learner to the test data test_df = self.read_data(test_file, lower_case) test_df['pred'] = learner.predict(test_df['text']) return test_df If alpha = 1e-4, accuracy improves of about 0.5 percentage and I was wondering if that was correct and if so why, as I have seen online the default value is 1e-3.

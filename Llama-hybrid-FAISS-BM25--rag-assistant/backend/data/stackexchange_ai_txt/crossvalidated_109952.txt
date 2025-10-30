@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 109952
+[parent_id]: 109889
+[tags]: 
+Latitude and Longitude are tricky to handle directly. You can however transform the data to 3D space, then take the mean, and then scale that vector to the earth surface again. If the mean is absolute 0, then your data is rather evenly/symmetric distributed around the globe, and you are probably asking the wrong question; there is no "central" point. But when your data clusters somewhere, you should be fine. Compute the weighted average in 3D coordinates and project back to the spherical coordinates: \begin{align} P =& \sum_i p_i\\ \mu_x =& \frac{1}{P}\sum_i p_i\sin\phi_i \cos\psi_i\\ \mu_y =& \frac{1}{P}\sum_i p_i\sin\phi_i \sin\psi_i \\ \mu_z =& \frac{1}{P}\sum_i p_i\cos\phi_i\\ \phi_\mu =& \arccos \frac{\mu_z'}{\sqrt{\mu_x^2+\mu_y^2+\mu_z^2}}\\ \psi_\mu =& \arctan_2(\mu_y', \mu_x') \end{align} If you get a division by zero, then your points are distributed all around the globe, and there is no well-defined "mean" anymore. Just choose any of the input points: $\phi_\mu=\phi_1,\quad \psi_\mu=\psi_1$, or the one which has the smallest average (squared) distance to all others.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1062099
+[parent_id]: 1059854
+[tags]: 
+You could try using a SAXTransformerFactory in combination with a XMLReader. Something like: SAXTransformerFactory transformFactory = (SAXTransformerFactory) TransformerFactory.newInstance(); StreamSource source = new StreamSource(TRANSFORMER_PATH); StringWriter extractionWriter = new StringWriter(); TransformerHandler transformerHandler = null; try { transformerHandler = transformFactory.newTransformerHandler(source); transformerHandler.setResult(new StreamResult(extractionWriter)); } catch (TransformerConfigurationException e) { throw new SAXException("Unable to create transformerHandler due to transformer configuration exception."); } XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader(); reader.setContentHandler(transformerHandler); reader.parse(new InputSource(new FileReader(xml))); System.err.println(extractionWriter.toString()); You should be able to set the SAX parser to not include ignorable whitespace, if it doesn't already do it by default. I haven't actually tested this, but I do something similar in one of my projects.

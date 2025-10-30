@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1097692
+[parent_id]: 1096868
+[tags]: 
+You could use java.nio and come up with something like this public static String byteListToString(List l, Charset cs) throws IOException { final int CBUF_SIZE = 8; final int BBUF_SIZE = 8; CharBuffer cbuf = CharBuffer.allocate(CBUF_SIZE); char[] chArr = cbuf.array(); ByteBuffer bbuf = ByteBuffer.allocate(BBUF_SIZE); CharsetDecoder dec = cs.newDecoder(); StringWriter sw = new StringWriter((int)(l.size() * dec.averageCharsPerByte())); Iterator itInput = l.iterator(); int bytesRemaining = l.size(); boolean finished = false; while (! finished) { // work out how much data we are likely to be able to read final int bPos = bbuf.position(); final int bLim = bbuf.limit(); int bSize = bLim-bPos; bSize = Math.min(bSize, bytesRemaining); while ((--bSize >= 0) && itInput.hasNext()) { bbuf.put(itInput.next().byteValue()); --bytesRemaining; } bbuf.flip(); final int cStartPos = cbuf.position(); CoderResult cr = dec.decode(bbuf, cbuf, (bytesRemaining but I really don't think I'd recommend for something this simple.

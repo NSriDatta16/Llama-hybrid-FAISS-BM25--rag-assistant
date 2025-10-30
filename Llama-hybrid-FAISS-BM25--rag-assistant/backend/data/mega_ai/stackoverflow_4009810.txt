@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4009810
+[parent_id]: 
+[tags]: 
+Android - why ContentObserver invokes itself?
+
+I am trying to delete received SMS in ContentObserver (on "content://sms/") onChange() method using contentResolver.delete, but after deleting ContentObserver is invoked one more time. Could you explaing my, whe ContentObserver invokes itself despite deliverSelfNotifications() returns false? I foud soultion to uregister ContentObserver before deleting the sms and register again after, but is inelegant. My code: private class SmsMmsContentObserver extends ContentObserver { public SmsMmsContentObserver(Handler handler) { super(handler); } @Override public boolean deliverSelfNotifications() { return false; } @Override public void onChange(boolean selfChange) { super.onChange(selfChange); Uri uriSMSURI = Uri.parse("content://sms/"); Cursor cur = getContentResolver().query(uriSMSURI, null, null, null, null); if (cur.moveToNext()) { int threadIdIn = cur.getInt(cur.getColumnIndex("thread_id")); getContentResolver().delete(Uri.parse("content://sms/conversations/" + threadIdIn), null, null); } } } Methods to register observer in on of services. private void registerSmsMmsObserver() { if (observer == null) { observer = new SmsMmsContentObserver(new Handler()); contentResolver = getContentResolver(); contentResolver.registerContentObserver(uriSmsMms, true, observer); } } private void unregisterSmsMmsObserver() { if (contentResolver != null) contentResolver.unregisterContentObserver(observer); observer = null; }

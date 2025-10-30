@@ -1,0 +1,87 @@
+In computer science, the Tak function is a recursive function, named after Ikuo Takeuchi (:ja:竹内郁雄). It is defined as follows:
+
+def tak(x, y, z):
+    if y < x:
+        return tak( 
+            tak(x-1, y, z),
+            tak(y-1, z, x),
+            tak(z-1, x, y)
+        )
+    else:
+        return z
+
+This function is often used as a benchmark for languages with optimization for recursion.
+
+tak() vs. tarai()
+
+The original definition by Takeuchi was as follows:
+
+def tarai(x, y, z):
+    if y < x:
+        return tarai( 
+            tarai(x-1, y, z),
+            tarai(y-1, z, x),
+            tarai(z-1, x, y)
+        )
+    else:
+        return y  # not z!
+
+tarai is short for たらい回し tarai mawashi, "to pass around" in Japanese.
+
+John McCarthy named this function tak() after Takeuchi.
+
+However, in certain later references, the y somehow got turned into the z. This is a small, but significant difference because the original version benefits significantly from lazy evaluation.
+
+Though written in exactly the same manner as others, the Haskell code below runs much faster.
+
+tarai :: Int -> Int -> Int -> Int
+tarai x y z
+    | x <= y    = y
+    | otherwise = tarai (tarai (x-1) y z)
+                        (tarai (y-1) z x)
+                        (tarai (z-1) x y)
+
+One can easily accelerate this function via memoization yet lazy evaluation still wins.
+
+The best known way to optimize tarai is to use mutually recursive helper function as follows.
+
+def laziest_tarai(x, y, zx, zy, zz):
+    if not y < x:
+        return y
+    else:
+        return laziest_tarai(
+            tarai(x-1, y, z),
+            tarai(y-1, z, x),
+            tarai(zx, zy, zz)-1, x, y)
+
+def tarai(x, y, z):
+    if not y < x:
+        return y
+    else:
+        return laziest_tarai(
+            tarai(x-1, y, z),
+            tarai(y-1, z, x),
+            z-1, x, y)
+
+Here is an efficient implementation of tarai() in C:
+int tarai(int x, int y, int z)
+{
+    while (x > y) {
+        int oldx = x, oldy = y;
+        x = tarai(x - 1, y, z);
+        y = tarai(y - 1, z, oldx);
+        if (x <= y) break;
+        z = tarai(z - 1, oldx, oldy);
+    }
+    return y;
+}
+Note the additional check for (x <= y) before z (the third argument) is evaluated, avoiding unnecessary recursive evaluation.
+
+References
+
+External links
+
+TAK Function
+
+Functions and mappings
+Special functions

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1252671
+[parent_id]: 1252570
+[tags]: 
+Ok, another possible solution using look-up table: #include #undef BIGENDIAN #ifdef BIGENDIAN enum { TSIZE = sizeof(int), INIT = 0, END = TSIZE }; #define op(x) ++(x) #define cond(x) ((x) END) #endif static char *binstr[] = { "0000", // 0x0 "0001", // 0x1 "0010", // 0x2 "0011", // 0x3 "0100", // 0x4 "0101", // 0x5 "0110", // 0x6 "0111", // 0x7 "1000", // 0x8 "1001", // 0x9 "1010", // 0xA "1011", // 0xB "1100", // 0xC "1101", // 0xD "1110", // 0xE "1111", // 0xF }; int main(void) { int num, i; unsigned char *hex; hex = ((unsigned char *) &num); while(fscanf(stdin, "%i", &num) != EOF) { for(i = INIT; cond(i); op(i)) printf("%s%s", binstr[hex[i]>>4], binstr[hex[i]&0xF]); printf("\n"); } return 0; } PD: I only check with little-endian memory organization.

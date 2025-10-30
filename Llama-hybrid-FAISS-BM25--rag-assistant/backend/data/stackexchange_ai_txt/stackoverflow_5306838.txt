@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5306838
+[parent_id]: 5306731
+[tags]: 
+I think your solution is independant of the fact you're using MVC. The way I've implemented this in the past is to persist the fact you need to sent an e-mail into the database and then process this using a Windows Service. Another way to do this would be to utilize MSMQ as your storage medium. In general, MSMQ shouldn't be used to "store" data, only as a message transport mechanism, but it's certainly an option in this case. In terms of developing a "queue", if the e-mails need ordered delivery for some reason, simply having a "RequestedDTTM" column in your database table would allow you to send them in the order they were requested. Lastly, I would consider implementing a simply multi-threaded e-mail sender to maximize performance. Using the TPL in .NET 4.0 would make this pretty easy. Alternatively, you could use something like the SmartThreadPool library (available at codeplex.com) to manager your e-mail sender threads. As was mentioned in the other answer you linked to, your UI shouldn't be doing this e-mail sending.

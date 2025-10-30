@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1084830
+[parent_id]: 1084727
+[tags]: 
+I guess you are using MyISAM as your storage engine, which unfortunately doesn't support foreign keys. So, given the following tables: A --- A_ID (PK), A_SOMETHING B --- B_ID (PK), B_SOMETHING C --- A_ID (PK, FK), B_ID (PK, FK) If you want delete all As which are linked to B_ID = 13, you can do the following. DELETE FORM A WHERE A_ID IN (SELECT A_ID FROM C WHERE B_ID = 13); Or, if you want to delete all As where the linked B's B_SOMETHING value is 'Foo': DELETE FORM A WHERE A_ID IN (SELECT C.A_ID FROM B,C WHERE B.B_ID = C.B_ID AND B.B_SOMETHING = 'Foo' ); After, you have some cleanup to do: DELETE FROM C WHERE A_ID NOT IN (SELECT A_ID FROM A); Now, doing this all manually is a pain and you are better off using a storage engine with support for Foreign Keys ( InnoDB ). You should of provided a screen shot of all the relevant tables, not just the joined result. It would of made your question that much clearer.

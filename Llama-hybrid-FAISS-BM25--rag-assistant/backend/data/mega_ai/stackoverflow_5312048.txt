@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5312048
+[parent_id]: 5311850
+[tags]: 
+From your description, I get the feeling that your code is too tightly coupled. What you really want is to have an initialized Java VM before you start your tests. So instead of messing with native code and an agent, I suggest to split the code into three classes: The Java code in an abstract base class A class which extends the base class and implements the abstract methods with the native C++ code. Ideally, this class should not contain any Java code except for native method declarations. A mockup class for tests which defines the same methods with empty bodies (or ones that just return null ). For the tests, instantiate the mock-up class. Override the methods that you need for the test so you can return mock data objects which the code under test needs (see mockito for some example about mock-up testing) Alternatively, test the Java loading code in a test case. In all other tests, add the class to your classpath and just instantiate it as usual.

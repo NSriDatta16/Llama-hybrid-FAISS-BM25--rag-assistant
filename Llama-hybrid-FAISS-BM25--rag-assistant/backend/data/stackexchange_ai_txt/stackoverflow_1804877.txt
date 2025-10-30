@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1804877
+[parent_id]: 1804859
+[tags]: 
+If the serializer you are using does not retain the type - at the least, you must store the type of T along with the data, and use that to create the generic list reflectively: //during storage: Type elementType = myList.GetType().GetGenericTypeDefinition().GetGenericArguments[0]; string typeNameToSave = elementType.FullName; //during retrieval string typeNameFromDatabase = GetTypeNameFromDB(); Type elementType = Type.GetType(typeNameFromDatabase); Type listType = typeof(List<>).MakeGenericType(new Type[] { elementType }); Now you have listType , which is the exact List you used (say, List ). You can pass that type into your deserialization routine.

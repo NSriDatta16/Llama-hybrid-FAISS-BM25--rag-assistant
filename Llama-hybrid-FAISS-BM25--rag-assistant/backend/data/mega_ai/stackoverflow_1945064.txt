@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1945064
+[parent_id]: 1944995
+[tags]: 
+Instead of reading into a ByteBuffer , I would use file mapping, see: FileChannel.map() . Also, you don't really explain how your GetValue(row, col) and SetValue(row, col) access the storage. Are row and col more or less random? The idea I have in mind is the following: sometimes, for image processing, when you have to access pixels like row + 1 , row - 1 , col - 1 , col + 1 to average values; on trick is to organize the data in 8 x 8 or 16 x 16 blocks. Doing so helps keeping the different pixels of interest in a contiguous memory area (and hopefully in the cache). You might transpose this idea to your algorithm (if it applies): you map a portion of your file once, so that the different calls to GetValue(row, col) and SetValue(row, col) work on this portion that's just been mapped.

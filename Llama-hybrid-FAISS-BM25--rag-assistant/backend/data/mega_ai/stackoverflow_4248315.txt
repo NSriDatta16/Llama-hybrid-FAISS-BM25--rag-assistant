@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4248315
+[parent_id]: 4248027
+[tags]: 
+I know you've said you want to use SQL Loader, but you might want to look at using an external table as it might make things easier. You could declare your external table as something like create table EXTERNAL_HR_DATA ( EMPNO NUMBER(4), ENAME VARCHAR2(10), JOB VARCHAR2(9), MGR NUMBER(4), HIREDATE DATE, SAL NUMBER(7,2), COMM NUMBER(7,2), DEPTNO NUMBER(2)) Organization external (type oracle_loader default directory testdir access parameters (records delimited by newline fields terminated by ‘,’) location (‘emp_ext.csv’)) reject limit 1000; This would allow you to read (but not change) the data in your file using standard SELECT statements. You could then SELECT from the external table and INSERT the data into your 'temp' table directly, doing at least some of the editing during the INSERT: INSERT INTO TEMP_HR_DATA SELECT EMPNO, UPPER(TRIM(ENAME)), UPPER(TRIM(JOB)), MGR, HIREDATE, SAL, COMM, DEPTNO FROM EXTERNAL_HR_DATA; Share and enjoy.

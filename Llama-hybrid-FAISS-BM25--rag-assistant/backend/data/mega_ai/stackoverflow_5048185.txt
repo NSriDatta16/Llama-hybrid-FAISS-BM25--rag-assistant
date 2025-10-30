@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5048185
+[parent_id]: 5034391
+[tags]: 
+I don't have a public example, but I have done this in Silverlight applications. I used the Silverlight navigation framework to organize the top level of content. When the frame navigated to a new page, I created a lifetime scope in which I resolved the page's root view model, which I associated with the page through an attribute: [ViewModel(typeof(OrdersViewModel))] public class OrdersView : Page When the frame navigated to a different page, I disposed the lifetime scope before creating the next one. The same pattern applies to opening dialogs. Each dialog gets its own lifetime scope and view model. When it closes, the lifetime scope gets disposed. There are also situations which don't fall neatly along these boundaries. Sometimes you need more granularity and can go deeper into lifetime scopes using contextual scopes . These situations are usually one-offs and involve some glue to begin the lifetime scopes. I find it helpful to think in terms of units of work : you commit changes at the end of each lifetime scope. This makes the extent of a set of data a natural lifetime scope.

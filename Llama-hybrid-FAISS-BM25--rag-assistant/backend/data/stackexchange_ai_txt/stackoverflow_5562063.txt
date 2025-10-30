@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5562063
+[parent_id]: 5555405
+[tags]: 
+Ok I got it on my own, it seems there is no way to get the image uri without saving the bitmap to disk, therefore I use this simple method: private Uri storeImage() { this.storedImage = null; this.storeImage = true; // Wait for the image while (this.storedImage == null && !this.stop) try { Thread.sleep(100); } catch (InterruptedException e) { e.printStackTrace(); } this.storeImage = false; FileOutputStream fileOutputStream = null; File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); File file = new File(path, "cwth_" + getCurrentTime()+ ".jpg"); try { fileOutputStream = new FileOutputStream(file); } catch (FileNotFoundException e) { e.printStackTrace(); } BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream); this.storedImage.compress(CompressFormat.JPEG, JPEG_STORE_QUALITY, bos); try { bos.flush(); bos.close(); fileOutputStream.flush(); fileOutputStream.close(); } catch (IOException e) { e.printStackTrace(); } return Uri.parse("file://" + file.getAbsolutePath()); }

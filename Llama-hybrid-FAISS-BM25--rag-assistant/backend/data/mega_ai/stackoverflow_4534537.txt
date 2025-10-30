@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4534537
+[parent_id]: 4534478
+[tags]: 
+If you use netTcpBinding - and in a "behind-the-corporate-firewall" LAN environment, it's definitely a great idea to do so - you need to also expose a MEX endpoint (Metadata Exchange) using the mexTcpBinding in order for svcutil to be able to detect and find that service. MEX = Metadata Exchange is the mechanism that WCF uses to "publicly advertise" what a service looks like. If you have a MEX endpoint, then utilities like svcutil can query and "discover" a service, e.g. find out about all the service methods it exposes, about the parameters it expects to get and so on. To add a MEX endpoint, you can definitely use code, too! Something like this fragment: var mexBinding = MetadataExchangeBindings.CreateMexTcpBinding(); selfHost.AddServiceEndpoint(typeof(IMetadataExchange), mexBinding, "mex"); Without MEX, you need to somehow "tell" the client trying to consume your service what it is your service offers so that the client can make sure to call the proper methods with the proper parameters.

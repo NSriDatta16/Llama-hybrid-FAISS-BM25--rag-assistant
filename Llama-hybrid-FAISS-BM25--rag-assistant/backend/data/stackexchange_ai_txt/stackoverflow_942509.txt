@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 942509
+[parent_id]: 942481
+[tags]: 
+You have the good intuition. Usually, in OOP, when you have rows of if's or humongous switches, it's a strong code smell. The best way to make this smell go away is to go with polymorphism. You should go ahead with your idea, having a base abstract class BaseTool, with the different OnXXX methods implemented as nops (just returns, so you only have to specify the behavior if your tool knows how to act on the method), and have each tool inherit from BaseTool and implement its own behavior by overriding the relevant methods. So your method ends up being public void OnEditorViewMouseDown(Point mousePos) { currentTool.OnEditorViewMouseDown(mousePos); } Depending on your design, you should also consider passing the DragManager to the method, so as not to be tied to instance variables laying around. An EditorContext (containing the DragManager) fitted with everything the method needs without having to fetch "global" variables would make your method more self-contained and less brittle when refactoring. The design itself will depend on the responsability: who is in charge of what.

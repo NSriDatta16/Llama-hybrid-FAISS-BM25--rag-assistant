@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3725523
+[parent_id]: 3725325
+[tags]: 
+Use a bitfield. (I'm really surprised nobody has suggested this.) struct int20_and_something_else { int less_than_a_million : 20; int less_than_four_thousand : 12; // total 32 bits }; This only works as a mutual optimization of elements in a structure, where you can spackle the gaps with some other data. But it works very well! If you truly need to optimize a gigantic array of 20-bit numbers and nothing else, there is: struct int20_x3 { int one : 20; int two : 20; int three : 20; // 60 bits is almost 64 void set( int index, int value ); int get( int index ); }; You can add getter/setter functions to make it prettier if you like, but you can't take the address of a bitfield, and they can't participate in an array. (Of course, you can have an array of the struct .) Use as: int20_x3 *big_array = new int20_x3[ array_size / 3 + 1 ]; big_array[ index / 3 ].set( index % 3, value );

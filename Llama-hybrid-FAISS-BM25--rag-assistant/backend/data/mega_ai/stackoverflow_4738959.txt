@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4738959
+[parent_id]: 4736656
+[tags]: 
+NVARCHAR is the proper type for this - it stores everything in a 2-byte Unicode. What you need to pay attention to is when working with NVARCHAR fields in SQL Server Management Studio - you absolutely must use the N'....' prefix in that case! If you use this: INSERT INTO dbo.YourTable(NVarcharColumn) VALUES('Some Chinese text here') then SSMS will temporarily convert the string literal you specify into VARCHAR (non-Unicode!) and thus you'll loose any Unicode-encoded characters. However, if you use: INSERT INTO dbo.YourTable(NVarcharColumn) VALUES(N'Some Chinese text here') (note the N prefix before the string literal!) then SSMS will handle everything as Unicode all the time, and your Chinese or Korean (or other) special characters should be preserved.

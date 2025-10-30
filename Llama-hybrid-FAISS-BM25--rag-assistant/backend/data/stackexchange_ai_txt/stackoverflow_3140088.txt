@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3140088
+[parent_id]: 
+[tags]: 
+Test for overhead of virtual functions
+
+I set up a (perhaps very unscientific) small test to determine the overhead of virtual functions in a one-level single inheritance and the results I got were, well, exactly the same when accessing the derived class polymorphically or when accessing it directly. What was a bit surprising was the order of magnitude of computation time that is introduced when any function is declared virtual (see results below). Is there so much overhead when declaring member functions as such, and why is it still present even when accessing the derived class directly? The code is as follows: class base { public: virtual ~base() {} virtual uint func(uint i) = 0; }; class derived : public base { public: ~derived() {} uint func(uint i) { return i * 2; } }; uint j = 0; ulong k = 0; double l = 0; ushort numIters = 10; base* mybase = new derived; // or derived* myderived = ... for(ushort i = 0; i func(j); finish2 = clock(); l += (double) (finish2 - start2); std::cout Results: base* mybase = new derived; gives an average of ~338 ms. derived* myderived = new derived; gives an average of ~338 ms. Eliminating inheritance and removing virtual functions gives an average of ~38 ms. That's almost 10 times less! So basically, if any function is declared virtual the overhead will always be identically present, even if I don't use it polymorphically? Thanks.

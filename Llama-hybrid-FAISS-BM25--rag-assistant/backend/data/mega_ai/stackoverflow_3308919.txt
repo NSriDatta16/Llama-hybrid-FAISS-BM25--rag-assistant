@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3308919
+[parent_id]: 3306766
+[tags]: 
+You'd be a lot better off doing it this way: INSERT INTO PersonAgent_copy(PersonID, AgentID, Address, City, Country) select pa.persid, pa.agentid, Case When Pa.Personid = Pa.Agentid Then pa.Address ELSE p.Address END, Case When Pa.Personid = Pa.Agentid Then pa.City ELSE p.City END, Case When Pa.Personid = Pa.Agentid Then pa.Country ELSE p.Country END from PersonAgent pa left outer join Person p on pa.agent_id = p.person_id The reason for this is that, with your method, every time personid and agentid are the same three queries have to be run against the Person table. This can add up very quickly. With my method, the Person table is queried once.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3376600
+[parent_id]: 3353722
+[tags]: 
+Unlike other UNIXen, on MacOS the debug info is not linked into the executable. Instead, the executable has a list of object files which were linked into it, and the debugger looks for debug info in these individual object files. If you remove the object files, then you can't debug. When you compile and link the executable in "single step", GCC does this: Create assembly file /tmp/[random-string].s Assemble it into /tmp/[random-string].o Link /tmp/[random-string].o with crt0.o , libc , etc. into mcmc executable. Remove /tmp/[random-string].o and .s It is that last step which prevents you from debugging. Solution: g++-mp-4.5 -Wall -pedantic -std=c++0x -g -ggdb -c MCMC-simplex.cpp g++-mp-4.5 MCMC-simplex.o -lgsl -static-libstdc++ -o mcmc This will leave MCMC-simplex.o in the current directory, and will allow GDB to find debug info in it.

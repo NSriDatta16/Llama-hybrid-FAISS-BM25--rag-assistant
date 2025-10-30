@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1816778
+[parent_id]: 1816559
+[tags]: 
+You could possibly use Aspectj to 'introduce' the field into each serializable class as it is loaded. I would first introduce a marker interface into each class using the package and then introduce the field using a Hash of the class file for the serialVersionUID public aspect SerializationIntroducerAspect { // introduce marker into each class in the org.simple package declare parents: (org.simple.*) implements SerialIdIntroduced; public interface SerialIdIntroduced{} // add the field to each class marked with the interface above. private long SerialIdIntroduced.serialVersionUID = createIdFromHash(); private long SerialIdIntroduced.createIdFromHash() { if(serialVersionUID == 0) { serialVersionUID = getClass().hashCode(); } return serialVersionUID; } } You will need to add the aspectj load time weaver agent to the VM so it can weave the advice into your existing 3rd party classes. Its funny though once you get around to setting Aspectj up, its remarkable the number of uses that you will put to. HTH ste

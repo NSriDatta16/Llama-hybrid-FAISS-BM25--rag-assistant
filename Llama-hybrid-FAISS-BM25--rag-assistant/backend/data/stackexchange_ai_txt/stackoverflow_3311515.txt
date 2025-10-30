@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3311515
+[parent_id]: 1706120
+[tags]: 
+As my original answer was quite old but there seems to be still attention to this topic here's the latest version of bundler/sinatra setup which will cover most of the use case: A minimal config.ru require './my_sinatra_app' run MySinatraApp An environment env.rb file that requires all the bundled gems (also supports loading the current environment's group): require 'bundler/setup' APP_ENV = ENV["RACK_ENV"] || "development" Bundler.require :default, APP_ENV.to_sym Then your app file (requiring the environment) with your sinatra app ( Sinatra::Base ): require_relative 'env' class MyApp Start your development server with rackup, and Sinatra will be loaded via Bundler, your app will be accessible from http://localhost:9292 . $ rackup or bundle exec rackup if needed Make sure you have a Gemfile like the following one and you run the bundle command before starting the app source "https://rubygems.org" gem "sinatra" gem "puma" # a better rack server than the default webrick

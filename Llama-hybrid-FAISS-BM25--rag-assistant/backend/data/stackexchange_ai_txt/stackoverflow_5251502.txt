@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5251502
+[parent_id]: 
+[tags]: 
+GetFormat never gets an IFormatProvider type
+
+In a WinGrid (Infragistics, if you must know) I got a column containing int s. The value is a number of seconds, from which you can calculate a time. I created an IFormatProvider/ICustomFormatter that does just that. During my grid initialization, I set the Format and FormatInfo parameters. However, when GetFormat is called on my custom type formatter, the type parameter is always a NumberFormatInfo, and never an ICustomFormatter. Why? Here is my class, in case it helps : public class SecToTime : IFormatProvider, ICustomFormatter { public object GetFormat(Type formatType) { if (formatType == typeof(ICustomFormatter)) { return this; } else { return null; } } public string Format(string format, object arg, IFormatProvider provider) { if (arg is int) { int seconds = (int)arg; int hours = (int)Math.Truncate((double)seconds / 3600); int minutes = (int)Math.Truncate((double)(seconds / 60) % 60); seconds = seconds % 60; return string.Format("{0:hh:mm:ss}", new DateTime(0, 0, 0, hours, minutes, seconds)); } else throw new ArgumentNullException(); } }

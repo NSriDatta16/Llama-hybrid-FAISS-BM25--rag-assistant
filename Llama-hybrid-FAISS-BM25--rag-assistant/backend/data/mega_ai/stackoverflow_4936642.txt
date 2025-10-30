@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4936642
+[parent_id]: 4934550
+[tags]: 
+I took a look at your benchmark code and frankly, it looks dodgy. You are measuring all kinds of extraneous things along with what it is you want to measure; you're measuring the cost of the foreach and the adding to a list, both of which might have costs of the same order of magnitude as the thing you are attempting to test. Also, you are not throwing out the first run; remember, the JIT compiler is going to jit the code that you call the first time through the loop, and it is going to be hot and ready to go the second time, so your results will therefore be skewed; you are averaging one potentially very large thing with many small things. In the past when I have done this I have discovered situations where the jit time actually dominated the time of everything else. Is that realistic? Do you mean to measure the jit time, or should it be not considered as part of the average?

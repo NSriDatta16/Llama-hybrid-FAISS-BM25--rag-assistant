@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 608628
+[parent_id]: 608619
+[tags]: 
+While one hot and label encoding can be applied dataframe wise before splitting (using e.g. pandas routines), it's better to split first and build a proper pipeline which would simplify the input of the new data without extra manual steps. Target encoding should always be done after splitting, otherwise it creates a huge target leakage. Same applies to augmentation: you want your test set to represent the production data, not the altered data. (Worth noting using this for resampling is often suboptimal, consider the sources mentioned in the metathread ). imblearn SMOTEN implementation expects categorical features only iirc, so it should come before encoding. So, the ideal order would be: Split SMOTEN Encoding Assuming you use sklearn-compatible routines, you should fit the transformers on train set only and use those to transform both train and test sets.

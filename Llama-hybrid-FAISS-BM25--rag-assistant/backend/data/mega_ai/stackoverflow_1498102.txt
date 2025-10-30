@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1498102
+[parent_id]: 1497997
+[tags]: 
+Others have noted that you can use the built-in File.ReadAllBytes . The built-in method is fine, but it's worth noting that the code you post above is fragile for two reasons: Stream is IDisposable - you should place the FileStream fs = new FileStream(filename, FileMode.Open,FileAccess.Read) initialization in a using clause to ensure the file is closed. Failure to do this may mean that the stream remains open if a failure occurs, which will mean the file remains locked - and that can cause other problems later on. fs.Read may read fewer bytes than you request. In general, the .Read method of a Stream instance will read at least one byte, but not necessarily all bytes you ask for. You'll need to write a loop that retries reading until all bytes are read. This page explains this in more detail.

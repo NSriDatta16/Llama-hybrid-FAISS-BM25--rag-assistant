@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2164347
+[parent_id]: 
+[tags]: 
+Why do I get "Premature end of script headers" from my CGI proxy?
+
+I have CGI proxy that works on my localhost, but when I try to get it work on another server I get Premature end of script headers. I have included the source below. I also tried print header instead of the text/xml and it worked localhost but it failed on the server. use strict; #use warnings; use CGI qw(:standard); use CGI::Carp qw(fatalsToBrowser); use HTTP::Request::Common qw(POST); use HTTP::Request::Common; use LWP::UserAgent; use URI::Escape; use Data::Dumper; my $url = param('url'); sub writeXML($) { my $response = shift @_; if ($response->is_success) { print CGI->header('text/xml'); print $response->content; print STDERR "content response:#" . $response->content . "#\n"; } else { print STDERR "Status Code: " . $response->status_line . "\n"; print STDERR Dumper ($response); } } sub makeRequest(){ if ($url){ my $ua = LWP::UserAgent->new; my $response = $ua->request(GET $url); if ($response){ writeXML($response); } else{ print STDERR "No response exists"; } } else{ print STDERR "URL must be specified"; } } makeRequest(); 0; __END__

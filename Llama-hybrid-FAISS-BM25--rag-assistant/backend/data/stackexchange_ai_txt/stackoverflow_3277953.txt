@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3277953
+[parent_id]: 3277842
+[tags]: 
+The compiler is probably inserting pad bytes between members of your struct. One way you can get around this is to use pragma pack. Note that this is non-standard, but it works on g++ and visual C++. #pragma pack (push, 1) struct Amessage { unsigned short int Length; char MessageType; unsigned int Timestamp; unsigned long long int OrderReferenceNumber; char BuySellIndicator; unsigned int Shares; char Stock[6]; unsigned int Price; }; #pragma pack (pop) What's going on in the code above is: the pragma pack tells the compiler you don't want it to insert padding to make it so that it'll be performing aligned access to members of the struct. the push/pop thing is so you can have nested #pragma packs (for example, when including header files) and have a way to go back to the previously set pack options. See MSDN for an explanation that's probably better than the one I could give. http://msdn.microsoft.com/en-us/library/2e70t5y1%28VS.80%29.aspx

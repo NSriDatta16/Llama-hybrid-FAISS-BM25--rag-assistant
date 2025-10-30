@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2794864
+[parent_id]: 2794761
+[tags]: 
+This is accomplished with a transaction savepoint . It usually looks something like this: BEGIN TRANSACTION for each invoice SAVE TRANSACTION InvoiceStarted BEGIN TRY Save header Save line 1 Save line 2 Save Total END TRY BEGIN CATCH ROLLBACK TO Invoicestarted Log Failed Invoice END CATCH end for COMMIT I used a Transact-SQL based pseudo code and this is no accident. Savepoints are a database concept and the .Net Transactions don't support them. You can use SqlTransaction directly and leverage SqlTransaction.Save or you can use T-SQL stored procedures modeled after an exception safe template . I'd recommend you avoid the .Net transactions (ie. TransactionScope) in this case.

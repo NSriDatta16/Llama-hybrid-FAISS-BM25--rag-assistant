@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5451987
+[parent_id]: 
+[tags]: 
+Sorting XML using LINQ
+
+I want to sort a XML file with LINQ. The XML is below and is only an example. Normally it is much bigger and more complex. The XML should be sorted by title, ascending. Not the whole XML at once, but every parentNode for itself. Leafs are always at the bottom. Folder or non-leafs are at the top. The following XML is already well structured, but the titles are in the wrong order. The sort algorithm should also replace wrong positioned non-leaf nodes. I have already some code which does the job, but I want to know if there is a more elegant or a shorter way. At the moment I have to call a function recursive to make the traversion. Maybe this can be done in another way. Thank you. Rene Here is my XML: And here is my code: using (XmlReader reader = XmlReader.Create(XmlStream)) { XDocument xDoc = XDocument.Load(reader); Action sortXml = null; sortXml = xElement => { bool sortParentNode = false; foreach (var xElem in xElement.Elements()) { if (xElem.HasElements) { // go into deep sortXml(xElem); } else { // break loop and sort parentNode sortParentNode = true; break; } } if (sortParentNode) { xElement.ReplaceNodes(from node in xElement.Elements() orderby node.Attribute("title").Value group node by node.HasElements into folderGroup orderby folderGroup.Key descending select folderGroup); } }; sortXml(xDoc.Root); }

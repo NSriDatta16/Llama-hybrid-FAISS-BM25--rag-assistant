@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4064687
+[parent_id]: 4064271
+[tags]: 
+I couldn't find an ideal solution for this problem, just a partial one. I'll assume you enabled design mode for the panels following the approach in this answer . Altering the design behavior of the panels requires given them their own designer. Here's a sample class that does this: using System; using System.ComponentModel; using System.Windows.Forms; using System.Windows.Forms.Design; [Designer(typeof(MyPanelDesigner))] public class MyPanel : Panel { private class MyPanelDesigner : ScrollableControlDesigner { public override SelectionRules SelectionRules { get { return SelectionRules.None; } } } } Replace the panels in your UC with MyPanel. The custom SelectionRules property ensures that the user cannot easily drag the panel into another position with the mouse. The Location and Size properties are however still editable in the property grid. To get rid of that I think you'll need to override PreFilterProperties().

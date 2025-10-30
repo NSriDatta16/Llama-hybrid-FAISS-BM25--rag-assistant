@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1662155
+[parent_id]: 1661518
+[tags]: 
+If the app is development and hasn't yet gone into production you're safe to just go back and rename the migrations/models/views etc... and do a rake db:migrate:reset and be done with it. You should have enough tests to ensure that the rename didn't break anything, and if it does you should increase your test coverage in that area. In so far as doing this for an app that is currently in production I suggest doing it incrementally so that the surface area for the change is reduced: Change your routes This is probably the biggest change. Updating your routes first will give you a chance to fix all of your views. Update your models/controllers You can do this without changing the database. You can make your model point to a new database table by using set_table_name "OldTable" . This means you can make any database changes out of band of the release. Change the database Hopefully you're using a migration, in which case just do a table rename and remove the set_table_name.

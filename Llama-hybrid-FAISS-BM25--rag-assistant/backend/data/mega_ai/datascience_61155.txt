@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 61155
+[parent_id]: 
+[tags]: 
+Dividing the weights obtained on an already standardized data set by the standard deviation of the features? (Ridge regression)
+
+I'm trying to understand a code snippet from my lecture on Machine Learning (see the code below). It extracts the mean and standard deviation of the features and uses them to 'normalize' (standardize) the features. The data X contains all-ones in the first column. The variable t is the output value on which we train the weights. First the mean of the output is obtained so that ridge regression can be applied without a bias term (intercept), then the all-ones column is removed and the data is normalized. The weights are obtained by the formula: What I don't understand is that the weights obtained by using the normalized data are once again divided by the standard deviation of the features W[1:, 0] = Wn[:, 0] * Sinv . Can someone help me out? Thanks! PS: I know normalizing is something else and I actually mean standardizing, but my professor uses normalizing instead for some reason.. Here's the code: def NormalisedRidgeRegression(X, t, p_lambda=0.0): K = X.shape[1] - 1 M = np.mean(X[:, 1:], axis=0) S = np.std(X[:, 1:], axis=0) Sinv = 1 / S targetmean = np.mean(t) tn = t - targetmean Xn = np.dot(X[:, 1:] - M, np.diag(Sinv)) Wn = np.dot(np.dot(np.linalg.pinv(np.dot(Xn.T, Xn) + p_lambda * np.eye(K)), Xn.T), tn) W = np.zeros((K + 1, 1)) W[1:, 0] = Wn[:, 0] * Sinv W[0, 0] = targetmean y_hat = np.dot(X, W) return W, y_hat

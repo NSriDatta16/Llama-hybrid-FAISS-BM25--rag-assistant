@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 89314
+[parent_id]: 89246
+[tags]: 
+You could get rid of your dbo.d_agent_define subquery and just add in a join to the agent define table. Would this code work? select list_name, app_name, map.fname + ' ' + map.lname as agent_login, input, convert(varchar,dateadd(ss,TAC_BEG_tstamp,'01/01/1970')) as tac_seconds from dbo.maps_report_list list join dbo.report_tac_agent tac on (tac.list_id = list.list_id) join dbo.d_agent_define map on (map.agent_id = tac.agent_id) where input = 'SYS_ERR' and app_name = 'CHARLOTT' and convert(varchar,dateadd(ss,day_tstamp,'01/01/1970'),101) = '09/10/2008' and list_name LIKE 'NRBAD%' order by agent_login,convert(varchar,dateadd(ss,TAC_BEG_tstamp,'01/01/1970')) Note that I named your dateadd column because it did not have a name. I also tried to keep your convention of how you do a join. There are a few things that I would do different with this query to make it more readable, but I only focused on getting rid of the subquery problem. I did not do this, but I would recommend that you qualify all of your columns with the table from which you are getting them.

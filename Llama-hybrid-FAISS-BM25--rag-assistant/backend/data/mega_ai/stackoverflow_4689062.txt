@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4689062
+[parent_id]: 4687677
+[tags]: 
+We are using embedded Jetty at work and it's a blast. See http://wiki.eclipse.org/Jetty/Tutorial/Embedding_Jetty for a guide on embedding Jetty. The startup time on the Jetty side is extremely fast (1-2 seconds). In our case though spring takes a lot of time to initialize still. It is easy to configure Jetty to reload jsps automatically just point it to a directory and not war file and jsps will reload automatically, something like this: public class OneWebAppUnassembled { public static void main(String[] args) throws Exception { Server server = new Server(8080); WebAppContext context = new WebAppContext(); context.setDescriptor(webapp+"/WEB-INF/web.xml"); context.setResourceBase("../test-jetty-webapp/src/main/webapp"); context.setContextPath("/"); context.setParentLoaderPriority(true); server.setHandler(context); server.start(); server.join(); } } Class reloading is possible using hot swap, I don't know if there are ready solutions for when hot swap doesn't work.

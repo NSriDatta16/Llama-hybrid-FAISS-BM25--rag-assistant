@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2885275
+[parent_id]: 2885183
+[tags]: 
+Hibernate has built in support for what you are aiming to achieve - it supports optimistic locking using version ids or timestamps. If you try to save an object and the underlying data has changed, hibernate throws an exception. You can catch this exception and handle as necessary - ignore the update, retry or whatever makes sense. See Optimistic Concurrency Control EDIT: I'm not clear on how your update query works, but if you want to continue doing this by hand, you can evict your object from the session after retreiving it. This gives you a snapshot of the object as it was at retrieval time that you can modify independent from the db/cache. You can pass it into your custom update query as one side of the comparison, the other side being the persisted value. When the query selects/updates the entity, it will be re-read from the database, not from your evicted object. Your update query can then compare this with your evicted/modified value (passed as a parameter) to see if the update should be done or not. See Session.evict()

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1023097
+[parent_id]: 1023084
+[tags]: 
+The default cache store is memory for action and fragment caching so nothing would appear in tmp/cache. You can change that to file_store for debugging purposes. I'd recommend gem installing mongrel and using that instead of webrick in development mode. It's faster and it provides better information at a glance than webrick. When actions are cached, all before filters still run. What it looks like you are doing is running your twitter and flickr actions as plain old methods in the before_filter. This will not invoke caching. You should look into fragment caching and change your controller to be: class SomeController before_filter :twitter, :flickr protected def twitter unless read_fragment('twitter') ... do stuff ... end end end #_twitter.erb render the relevant stuff

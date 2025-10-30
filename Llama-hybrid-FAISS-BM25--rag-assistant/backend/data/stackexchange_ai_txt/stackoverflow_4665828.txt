@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4665828
+[parent_id]: 4665618
+[tags]: 
+You need to call aio_return(2) exactly once for each asynchronous I/O operation. According to the note on that man page, failure to do so will leak resources, and it apparently also causes your problem. After you call aio_suspend to wait for the I/O to complete, make sure to call aio_return to get the number of bytes read, e.g.: const struct aiocb *aio_l[] = {&aio}; if (aio_suspend(aio_l, 1, 0) != 0) { printf("aio_suspend: %s\n", strerror(errno)); } else { printf("successfully read %d bytes\n", (int)aio_return(&aio)); printf("%d\n", *(int *)aio.aio_buf); } Also bear in mind these important notes from the aio_read(2) man page (emphasis mine): The Asynchronous I/O Control Block structure pointed to by aiocbp and the buffer that the aiocbp->aio_buf member of that structure references must remain valid until the operation has completed. For this reason, use of auto (stack) variables for these objects is discouraged . The asynchronous I/O control buffer aiocbp should be zeroed before the aio_read() call to avoid passing bogus context information to the kernel.

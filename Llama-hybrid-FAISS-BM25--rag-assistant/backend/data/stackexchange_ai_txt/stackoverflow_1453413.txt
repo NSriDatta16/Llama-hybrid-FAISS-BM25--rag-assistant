@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1453413
+[parent_id]: 
+[tags]: 
+Making Django forms.DateField show use local date format
+
+I'm trying to find an easy way to build forms which show dates in the Australian format (dd/mm/yyyy). This was the only way I could find to do it. It seems like there should be a better solution. Things to note: Created a new widget which renders date value in dd/mm/yyyy format Created new date field to prepend the locate date format string to the list of values it tries to use I imagine the ideal solution would be a datefield which automatically localised but that didn't work for me (strftime didn't seem to be unicode friendly but I didn't try very hard) Am I missing something? Is there a more elegant solution? Is this a robust approach? from models import * from django import forms import datetime class MyDateWidget(forms.TextInput): def render(self, name, value, attrs=None): if isinstance(value, datetime.date): value=value.strftime("%d/%m/%Y") return super(MyDateWidget, self).render(name, value, attrs) class MyDateField(forms.DateField): widget = MyDateWidget def __init__(self, *args, **kwargs): super(MyDateField, self).__init__(*args, **kwargs) self.input_formats = ("%d/%m/%Y",)+(self.input_formats) class ExampleForm(ModelForm): class Meta: model=MyModel fields=('name', 'date_of_birth') date_of_birth = MyDateField()

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1991910
+[parent_id]: 1991840
+[tags]: 
+Here's a pyparsing version - I hope the comments are sufficiently explanatory. src = """ p 0 = ( m 3 +(2 l 2 + l 1 ) """ \ """ m 2 +( l 2 2 +2 l 1 l 2 +""" \ """ l 1 2 ) m ) /( m 3 +(3 l 2 +""" \ """2 l 1 ) ) }. """ from pyparsing import makeHTMLTags, anyOpenTag, anyCloseTag, Suppress, replaceWith # set up tag matching for and tags SUB,endSUB = makeHTMLTags("sub") SUP,endSUP = makeHTMLTags("sup") # all other tags will be suppressed from the output ANY,endANY = map(Suppress,(anyOpenTag,anyCloseTag)) SUB.setParseAction(replaceWith("_{")) SUP.setParseAction(replaceWith("^{")) endSUB.setParseAction(replaceWith("}")) endSUP.setParseAction(replaceWith("}")) transformer = (SUB | endSUB | SUP | endSUP | ANY | endANY) # now use the transformer to apply these transforms to the input string print transformer.transformString(src) Gives p_{0} = (m^{3}+(2l_{2}+l_{1}) m^{2}+(l_{2}^{2}+2l_{1} l_{2}+l_{1}^{2}) m) /(m^{3}+(3l_{2}+2l_{1}) ) }.

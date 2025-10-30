@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 468184
+[parent_id]: 467459
+[tags]: 
+I think I found an ans which can be used with hyperopt. So supposed my inputs are ap1 - ap6, outputs are o1,o2,o3. My objective is to get max o1, but constraints are: ap3 - ap6 = 0.18, o3 I have managed to use hyperopt to get my ans as follows: def objective(args): ap1,ap2,ap3,ap4,ap5,ap6 = args x_in = np.asarray([ap1,ap2,ap3,ap4,ap5,ap6]) x_in = x_in.reshape(-1, 1).T if (ap3 - ap6 0.19): o1= 1e10 else: ans = -np.array(model.predict(x_in)) o2= np.squeeze(aoa_cl_cruise_scaler.inverse_transform(ans[2,0,0].reshape(-1, 1))) o3= np.squeeze(aoa_max_c_end_scaler.inverse_transform(ans[3,0,0].reshape(-1, 1))) if o2> o3: o1= ans[1,0,0] else: o1= 1e10 return {'loss': o1, 'status': STATUS_OK } Is this the best way to solve the problem? It seems that I'm wasting a lot of trials because I can't use hp.uniform to limit their values. My obj function is a black box obtained thru deep learning. Is it better a retrain a another model with o2,o3 becoming one of the inputs? Not sure if that would help.

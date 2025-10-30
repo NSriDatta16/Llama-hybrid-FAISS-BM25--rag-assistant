@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2082934
+[parent_id]: 2082585
+[tags]: 
+"I need to find out the primary key of a sqlite database." - if you can use the database you might avoid parsing the sql string: The result of PRAGMA TABLE_INFO() has a field pk which is set to 1 if the field is part of the PRIMARY key of the table. $pdo = new PDO('sqlite::memory:'); $pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION ); $pdo->exec('CREATE TABLE cia (name PRIMARY KEY, population INTEGER)'); $pdo->exec('CREATE TABLE casting(movieid INTEGER, actorid INTEGER, PRIMARY KEY (movieid, actorid))'); showPrimary($pdo, 'cia'); showPrimary($pdo, 'casting'); function showPrimary($pdo, $tablename) { // only an example. I don't care about injections here echo "primary key for '$tablename'\n"; foreach($pdo->query("PRAGMA TABLE_INFO($tablename)", PDO::FETCH_ASSOC) as $row) { if ( $row['pk'] ) { printf(" %s %s PRIMARY\n", $row['name'], $row['type']); } } } prints primary key for 'cia' name PRIMARY primary key for 'casting' movieid INTEGER PRIMARY actorid INTEGER PRIMARY

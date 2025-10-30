@@ -1,0 +1,98 @@
+A friend class in C++ can access the private and protected members of the class in which it is declared as a friend. A significant use of a friend class is for a part of a data structure, represented by a class, to provide access to the main class representing that data structure. The friend class mechanism allows to extend the storage and access to the parts, while retaining proper encapsulation as seen by the users of the data structure.
+
+Similar to a friend class, a friend function is a function that is given access to the private and protected members of the class in which it is declared as a friend.
+
+Example
+
+The following example demonstrates the use of a friend-class for a graph data structure, where the graph is represented by the main class Graph, and the graph's vertices are represented by the class Vertex.
+
+#include <iostream>
+#include <memory>
+#include <string>
+#include <unordered_set>
+
+class Graph;
+
+class Vertex {
+ public:
+  explicit Vertex(std::string name) : edges_(), name_(std::move(name)) {}
+
+  auto begin() const { return edges_.cbegin(); }
+  auto end() const { return edges_.cend(); }
+
+  const auto& name() const { return name_; }
+
+ private:
+  // Vertex gives access-rights to Graph.
+  friend class Graph;
+
+  std::unordered_set<Vertex*> edges_;
+  std::string name_;
+};
+
+class Graph {
+ public:
+  ~Graph() {
+    while (!vertices_.empty()) {
+      auto vertex = vertices_.begin();
+      RemoveVertex(*vertex);
+    }
+  }
+
+  auto AddVertex(const std::string& name) -> Vertex* {
+    auto vertex = std::make_unique<Vertex>(name);
+    auto iter = vertices_.insert(vertex.get());
+    return vertex.release();
+  }
+
+  void RemoveVertex(Vertex* vertex) {
+    vertices_.erase(vertex);
+    delete vertex;
+  }
+
+  auto AddEdge(Vertex* from, Vertex* to) {
+    // Graph can access Vertex's private fields because Vertex declared Graph as
+    // a friend.
+    from->edges_.insert(to);
+  }
+
+  auto begin() const { return vertices_.cbegin(); }
+  auto end() const { return vertices_.cend(); }
+
+ private:
+  std::unordered_set<Vertex*> vertices_;
+};
+
+Encapsulation
+
+A proper use of friend classes increases encapsulation, because it allows to extend the private access of a data-structure to its parts --- which the data-structure owns --- without allowing private access to any other external class. This way the data-structure stays protected against accidental attempts at breaking the invariants of the data-structure from outside.
+
+It is important to notice that a class cannot give itself access to another class's private part; that would break encapsulation. Rather, a class gives access to its own private parts to another class --- by declaring that class as a friend. In the graph example, Graph cannot declare itself a friend of Vertex. Rather, Vertex declares Graph a friend, and so provides Graph an access to its private fields. 
+
+The fact that a class chooses its own friends means that friendship is not symmetric in general. In the graph example, Vertex cannot access private fields of Graph, although Graph can access private fields of Vertex.
+
+Alternatives
+
+A similar, but not equivalent, language feature is given by C#'s internal access modifier keyword, which allows classes inside the same assembly to access the private parts of other classes. This corresponds to marking each class a friend of another in the same assembly; friend classes are more fine-grained.
+
+Programming languages which lack support for friend classes, or a similar language feature, will have to implement workarounds to achieve a safe part-based interface to a data-structure. Examples of such workarounds are:
+ Make the parts' fields public. This solution decreases encapsulation by making it possible to violate invariants of the data-structure from outside.
+ Move all mutable structural data away from the part to the data-structure, and introduce indirection back from each part to its data-structure. This solution changes the organization of the data structure, and increases memory consumption in cases where there would otherwise be no need for this information.
+
+Properties
+ Friendships are not symmetric – if class A is a friend of class B, class B is not automatically a friend of class A.
+ Friendships are not transitive – if class A is a friend of class B, and class B is a friend of class C, class A is not automatically a friend of class C.
+ Friendships are not inherited – if class Base is a friend of class X, subclass Derived is not automatically a friend of class X; and if class X is a friend of class Base, class X is not automatically a friend of subclass Derived. However, if class Y is a friend of subclass Derived, class Y will also have access to protected portions of class Base, just as subclass Derived does.
+
+See also
+ Friend function
+
+References
+
+External links
+http://publib.boulder.ibm.com/infocenter/comphelp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8a.doc%2Flanguage%2Fref%2Fcplr043.htm
+http://www.cplusplus.com/doc/tutorial/inheritance/
+
+Class (computer programming)
+
+de:Friend-Klasse

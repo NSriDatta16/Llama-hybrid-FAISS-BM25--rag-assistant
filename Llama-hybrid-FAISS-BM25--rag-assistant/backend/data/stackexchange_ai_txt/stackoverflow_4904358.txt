@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4904358
+[parent_id]: 
+[tags]: 
+Why use performSelector:withObject:withObject at runtime if you know both the selector and its arguments at compile time?
+
+I've just come across some code in Three20 that looks like this: SEL sel = @selector(textField:didAddCellAtIndex:); if ([self.delegate respondsToSelector:sel]) { [self.delegate performSelector:sel withObject:self withObject:(id)_cellViews.count-1]; } On LLVM 2.0, this causes the compilation error: error: arithmetic on pointer to interface 'id', which is not a constant size in non-fragile ABI I know why that error is occurring and I know how to fix it. I just need to invoke the method directly, like so: SEL sel = @selector(textField:didAddCellAtIndex:); if ([self.delegate respondsToSelector:sel]) { [self.delegate textField:self didAddCellAtIndex:(_cellViews.count - 1)]; } My question is, if you know both the selector and its arguments at compile time, why would you need to use performSelector:withObject:withObject: at runtime? I don't see why the code was written this way in the first place. If the selector and arguments were dynamically passed into the method, I may understand, but they're not, the selector and its arguments are hard coded, (even if the index does change during run time, its method of obtaining the index is hard coded.) If someone could explain to me a good reason why this would be necessary, I'd be grateful. Otherwise, I'll be over here changing all this code.

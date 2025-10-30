@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 52802
+[parent_id]: 52744
+[tags]: 
+Following Simon Larsson tip ( I usually replace unseen and NaN values with the global target mean ) here is the new version of my homemade transformer : class Cat2TargetMean( BaseEstimator , TransformerMixin ) : def __init__( self , col2trans , tgt_col ) : self._col2trans = col2trans self._tgt_col = tgt_col def fit( self , X , y = None ) : self._dfl_val = X[ self._tgt_col ].mean() self._dic_col_p = {} for col in self._col2trans : p = X.groupby( col ).mean()[ self._tgt_col ] self._dic_col_p.update( { col : p.to_dict() } ) return self def transform( self , X , y = None ) : for col , dic_p in self._dic_col_p.items() : X[ col ] = X[ col ].map( dic_p ).fillna( self._dfl_val ) return X I use the map function and fill the resulting NaN values by the target variable mean ( self._dfl_val ( default value ) computed in the fit method of the transformer : self._dfl_val = X[ self._tgt_col ].mean() Best practice should be to use the existing encoder http://contrib.scikit-learn.org/categorical-encoding/targetencoder.html#

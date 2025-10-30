@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1787554
+[parent_id]: 1787474
+[tags]: 
+There is nothing unorthodox left to do for C code performance. All of the effective techniques have been "orthodoxed". The best I've found is to use a profiler with access to CPU performance counters and pay special attention to cache and branch misses. Add cache prefetches wherever you can and remove unpredictable branches wherever you can. Don't bother with loop unrolling. If the branch is predictable it is almost free. Let the compiler worry about it. On some very parallel architectures like IA64 it can be faster to unroll a loop all the way to the end. One example of this is avoiding the C string functions. Use memset to zero a string array, memcpy to set the string and memcmp to compare the entire array against another similar array. This can use 64-bit loads, never has to check for the zero terminator and can be optimized to not loop or branch at all if using a "small" array size of 64 or 128. The memxxx() functions are usually compiler built-ins and very optimized.

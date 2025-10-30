@@ -1,0 +1,341 @@
+In computer programming, DLL injection is a technique used for running code within the address space of another process by forcing it to load a dynamic-link library. DLL injection is often used by external programs to influence the behavior of another program in a way its authors did not anticipate or intend. For example, the injected code could hook system function calls, or read the contents of password textboxes, which cannot be done the usual way. A program used to inject arbitrary code into arbitrary processes is called a DLL injector.
+
+Approaches on Microsoft Windows
+There are multiple ways on Microsoft Windows to force a process to load and execute code in a DLL that the authors did not intend:
+ DLLs listed in the registry entry HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs are loaded into every process that loads User32.dll during the initial call of that DLL. Beginning with Windows Vista, AppInit_DLLs are disabled by default. Beginning with Windows 7, the AppInit_DLL infrastructure supports code signing. Starting with Windows 8, the entire AppInit_DLL functionality is disabled when Secure Boot is enabled, regardless of code signing or registry settings.
+ DLLs listed under the registry key HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDLLs are loaded into every process that calls the Win32 API functions CreateProcess, CreateProcessAsUser, CreateProcessWithLogonW, CreateProcessWithTokenW and WinExec. That is the right way to use legal DLL injection on current version of Windows - Windows 10. DLL must be signed by a valid certificate.
+ Process manipulation functions such as CreateRemoteThread or code injection techniques such as AtomBombing, can be used to inject a DLL into a program after it has started.
+ Open a handle to the target process. This can be done by spawning the process or by keying off something created by that process that is known to exist – for instance, a window with a predictable title, or by obtaining a list of running processes and scanning for the target executable's filename.
+ Allocate some memory in the target process, and the name of the DLL to be injected is written to it.
+ This step can be skipped if a suitable DLL name is already available in the target process. For example, if a process links to ‘User32.dll’, ‘GDI32.dll’, ‘Kernel32.dll’ or any other library whose name ends in ‘32.dll’, it would be possible to load a library named ‘32.dll’. This technique has in the past been demonstrated to be effective against a method of guarding processes against DLL injection.
+ Create a new thread in the target process with the thread's start address set to be the address of LoadLibrary and the argument set to the address of the string just uploaded into the target.
+ Instead of writing the name of a DLL-to-load to the target and starting the new thread at LoadLibrary, one can write the code-to-be-executed to the target and start the thread at that code.
+ The operating system then calls the initialization routine of the injected DLL.
+ Note that without precautions, this approach can be detected by the target process due to the DLL_THREAD_ATTACH notifications sent to every loaded module as a thread starts.
+ Windows hooking calls such as SetWindowsHookEx.
+ Use the SuspendThread or NtSuspendThread function to suspend all threads, and then use SetThreadContext or NtSetContextThread function to modify an existing thread's context in the application to execute injected code, that in turn could load a DLL.
+ Exploit design limitations in Windows and applications that call the LoadLibrary or LoadLibraryEx function without specifying a full-qualified path to the DLL being loaded.
+ Operating system-level shims.
+ Substituting an application-specific DLL with a rogue replacement that implements the same function exports as the original.
+
+Approaches on Unix-like systems
+On Unix-like operating systems with the dynamic linker based on ld.so (on BSD) and ld-linux.so (on Linux), arbitrary libraries can be linked to a new process by giving the library's pathname in the LD_PRELOAD environment variable, that can be set globally or individually for a single process.
+
+For example, on a Linux system, this command launches the command "prog" with the shared library from file "test.so" linked into it at the launchtime:
+
+LD_PRELOAD="./test.so" prog
+
+Such a library can be created in the same way as other shared objects. With GCC, this involves compiling the source file containing the new globals to be linked, with the  or  option, and linking with the  option. The library has access to external symbols declared in the program like any other library.
+
+On macOS, the following command launches the command "prog" with the shared library from file "test.dylib" linked into it at the launchtime:
+
+DYLD_INSERT_LIBRARIES="./test.dylib" DYLD_FORCE_FLAT_NAMESPACE=1 prog
+
+It is also possible to use debugger-based techniques on Unix-like systems.
+
+Sample code
+
+Copying a LoadLibrary-loaded DLL to a remote process
+
+As there is no LoadLibrary() call to load a DLL into a foreign process you have to copy a locally loaded DLL into remotely allocated memory.
+The following commented code shows how to do that.
+
+#include <Windows.h>
+#include <TlHelp32.h>
+#include <iostream>
+#include <memory>
+#include <system_error>
+#include <charconv>
+#include <vector>
+#include <cassert>
+
+#if defined(_MSC_VER)
+	#pragma warning(disable: 6387)
+#endif
+
+using namespace std;
+
+using XHANDLE = unique_ptr<void, decltype([]( void *h ) { h && h != INVALID_HANDLE_VALUE && CloseHandle( (HANDLE)h ); })>;
+using XHMODULE = unique_ptr<remove_reference_t<decltype(*HMODULE())>, decltype([]( HMODULE hm ) { hm && FreeLibrary( hm); })>;
+
+MODULEENTRY32W getModuleDescription( HMODULE hmModule );
+size_t maxReadableRange( void *pRegion );
+string getAbsolutePathA( char const *fileName, char const *err );
+DWORD dumbParseDWORD( wchar_t const *str );
+wstring getAbsolutePath( wchar_t const *makeAbsolute, char const *errStr );
+[[noreturn]]
+void throwSysErr( char const *str );
+
+constexpr wchar_t const *LOADER_DLL_NAME = L"loaderDll.dll";
+constexpr char const *LOADER_THREAD_PROC = "loadLibraryThread";
+
+int wmain( int argc, wchar_t **argv )
+{
+	try
+	{
+		if( argc < 3 )
+			return EXIT_FAILURE;
+		wchar_t const
+			*processId = argv[1],
+			*remoteLoadedDll = argv[2],
+			*initData = argc >= 4 ? argv[3] : L"";
+		DWORD dwProcessId = dumbParseDWORD( processId );
+		XHANDLE xhProcess( OpenProcess( PROCESS_ALL_ACCESS, FALSE, dwProcessId ) );
+		if( !xhProcess.get() )
+			throwSysErr( "can't open remote process with unlimited access" );
+		XHMODULE xhmLocalLoader;
+		MODULEENTRY32W meLocalLoader;
+		for( ; ; )
+		{
+			xhmLocalLoader.reset( LoadLibraryW( LOADER_DLL_NAME ) );
+			if( !xhmLocalLoader.get() )
+				throwSysErr( "can't locally load loader DLL" );
+			// get module starting address and size
+			meLocalLoader = getModuleDescription( (HMODULE)xhmLocalLoader.get() );
+			// try to allocate memory range in the foreign process with the same size the DLL in our process occupies
+			if( VirtualAllocEx( xhProcess.get(), meLocalLoader.modBaseAddr, meLocalLoader.modBaseSize, MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE ) )
+				break;
+			// allocation failed, free library
+			xhmLocalLoader.reset( nullptr );
+			// try to reserve address range which the library occupied before to prevent
+			// recycling of that address range with the next LoadLibrary() call.
+			if( !VirtualAlloc( meLocalLoader.modBaseAddr, meLocalLoader.modBaseSize, MEM_RESERVE, PAGE_NOACCESS ) )
+				throwSysErr( "can't reserve address range of previously mapped DLL" );
+		}
+		LPTHREAD_START_ROUTINE loaderThreadProc = (LPTHREAD_START_ROUTINE)GetProcAddress( (HMODULE)xhmLocalLoader.get(), ::LOADER_THREAD_PROC );
+		if( !loaderThreadProc )
+			throwSysErr( "can't get procedure entry point" );
+		// coppy all readable DLL-contents to the destination process
+		if( SIZE_T copied; !WriteProcessMemory( xhProcess.get(), meLocalLoader.modBaseAddr, meLocalLoader.modBaseAddr, meLocalLoader.modBaseSize, &copied ) && GetLastError() != ERROR_PARTIAL_COPY )
+			throwSysErr( "can't copy loader DLL to remote process" );
+		// create two concatenated C strings that contain the DLL to load as well as the parameter
+		// given to the remotely loaded DLL
+		wstring data( getAbsolutePath( remoteLoadedDll, "can't get absolute path to DLL to be remotely loaded" ) );
+		data += L'\0';
+		data += initData;
+		data += L'\0';
+		size_t dataSize = data.size() * sizeof(wchar_t);
+		auto initStrErr = []() { throwSysErr( "failed to copy initialization data to loader DLL" ); };
+		void *remoteData;
+		// remotely allocate memory large enough to hold at least our both strings
+		if( !(remoteData = VirtualAllocEx( xhProcess.get(), nullptr, dataSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE)) )
+			initStrErr();
+		// write our both strings to remote memory
+		if( SIZE_T copied; !WriteProcessMemory( xhProcess.get(), remoteData, data.data(), dataSize, &copied )
+			|| copied != dataSize )
+			initStrErr();
+		// create a remote DLL loader thread; the given entry point has the same address in our process as well as the remote address
+		// tive this thread the address of our both remotely copied strings
+		XHANDLE xhRemoteInitThread( CreateRemoteThread( xhProcess.get(), nullptr, 0, loaderThreadProc, remoteData, 0, nullptr ) );
+		if( !xhRemoteInitThread.get() )
+			throwSysErr( "failed to create remote initializaton thread" );
+		// wait on our remote loader thread to finish
+		// it should that very soon as its only task is to copy the strings for the remotely loaded DLL and load this DLL itself
+		if( WaitForSingleObject( xhRemoteInitThread.get(), INFINITE ) == WAIT_FAILED )
+			throwSysErr( "can't wait for remote initialization thread" );
+		DWORD dwInitThreadExitCode;
+		if( !GetExitCodeThread( xhRemoteInitThread.get(), &dwInitThreadExitCode ) )
+			throwSysErr( "can't get initialization thread's success code" );
+		// check for remote loader's exit-code, it should be NO_ERROR (0)
+		if( dwInitThreadExitCode != NO_ERROR )
+			throw system_error( (int)dwInitThreadExitCode, system_category(), "LoadLibrary() error in remote loader dll" );
+	}
+	catch( exception const &se )
+	{
+		cout << se.what() << endl;
+	}
+}
+
+MODULEENTRY32W getModuleDescription( HMODULE hmModule )
+{
+	// returns the absolute path to for a given module handle
+	auto getModulePath = []( HMODULE hm, char const *err ) -> wstring
+	{
+		wchar_t modulePath[MAX_PATH];
+		if( DWORD dwRet = GetModuleFileNameW( hm, modulePath, MAX_PATH ); !dwRet || dwRet >= MAX_PATH )
+			throwSysErr( err );
+		return modulePath;
+	};
+	// local DLL's module path
+	wstring moduleAbsolute( getModulePath( hmModule , "can't get absolute path for local loader DLL" ) );
+	XHANDLE xhToolHelp( CreateToolhelp32Snapshot( TH32CS_SNAPMODULE, GetCurrentProcessId() ) );
+	auto toolHelpErr = []() { throwSysErr( "can't list modules in injecting process" ); };
+	if( xhToolHelp.get() == INVALID_HANDLE_VALUE )
+		toolHelpErr();
+	MODULEENTRY32W me;
+	me.dwSize = sizeof me;
+	if( !Module32FirstW( xhToolHelp.get(), &me ) )
+		toolHelpErr();
+	for( ; ; )
+	{
+		// has the current image in the snapshot the same path like the DLL which is given by the module handle
+		// no need to compare case insensitive because we got both paths from the kernel so that they should exactly match
+		if( getModulePath( me.hModule, "can't get absolute path for toolhelp-enumerated DLL name" ) == moduleAbsolute )
+			return me;
+		me.dwSize = sizeof me;
+		if( !Module32NextW( xhToolHelp.get(), &me ) )
+			toolHelpErr();
+	}
+}
+
+[[noreturn]]
+void throwSysErr( char const *str )
+{
+	throw system_error( (int)GetLastError(), system_category(), str );
+}
+
+DWORD dumbParseDWORD( wchar_t const *str )
+{
+	// idiot's from_chars because there's no from_chars for unicode characters
+	DWORD dwRet = 0;
+	while( *str )
+		dwRet = dwRet * 10 + (unsigned char)(*str++ - L'0');
+	return dwRet;
+}
+
+wstring getAbsolutePath( wchar_t const *makeAbsolute, char const *errStr )
+{
+	// get absolute path of a given relative path
+	wstring path( MAX_PATH, L'\0' );
+	DWORD dwLength;
+	if( !(dwLength = GetFullPathNameW( makeAbsolute, MAX_PATH, path.data(), nullptr )) )
+		throwSysErr( errStr );
+	// if deRet == MAX_PATH we might miss a zero-termination character, treat this as an error
+	else if( dwLength >= MAX_PATH )
+		throw invalid_argument( errStr );
+	path.resize( dwLength );
+	return path;
+}
+
+The main issue solved here is that a locally loaded DLL copied to a remote process must occupy the same addresses as in the injecting process. The above code does this by allocating memory for the same address range as occupied before in the injecting process. If this fails the DLL is locally freed, the former address range is marked as reserved, and the LoadLibrary() call is tried again. By reserving the former address range the code prevents that the next LoadLibrary() apptempt will assign the same address range as used before.
+
+The main drawback with that approach is that the DLL copied into the foreign process is that there aren't any other DLL library dependencies of that DLL loaded into the foreign address space or pointers, f.e. function calls, to DLLs loaded by the foreign process are adjusted according to the dependencies of the copied DLL. Luckily DLLs usually have preferred loading addresses which are honored by the kernel's loader. Some DLLs like kernel32.dll are reliably loaded in the early beginning when the process address space is occupied by the executable image and its depending DLLs. These normally have reliable and non-conflicting addresses. So the copied DLL can use any kernel32.dll calls, f.e. to load another DLL with full advantages of a locally loaded DLL, i.e. having all relative library-dependencies. The path to that DLL is copied to the foreign address space and given as a void-parameter to the thread-function. The above implementation also allows to have additional parameters, which are passed to the remotely copied DLL after the string with the DLL to remotely loaded to passed to that DLL.
+
+The following code is the source of the remotely copied loader DLL which only does kernel32.dll calls:
+
+#include <Windows.h>
+#include <atomic>
+
+using namespace std;
+
+BOOL APIENTRY DllMain( HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved )
+{
+	return TRUE;
+}
+
+DWORD WINAPI loadLibraryThread( LPVOID lpvThreadParam );
+
+// MSVC / clang-cl mangling
+#if defined(_M_IX86)
+	#pragma comment(linker, "/export:loadLibraryThread=?loadLibraryThread@@YGKPAX@Z")
+#elif defined(_M_X64)
+	#pragma comment(linker, "/export:loadLibraryThread=?loadLibraryThread@@YAKPEAX@Z")
+#else
+	#error unsupported platform
+#endif
+
+DWORD WINAPI loadLibraryThread( LPVOID lpvThreadParam )
+{
+	// use atomics to prevent the "optimizer" from replacing my code with
+	// wsclen or memcpy library calls to external addresses actually not valid
+	// with this copied DLL
+	// ignore any atomic load barriers since this hasn't to be fast
+	atomic_wchar_t const
+		// path to the library to load from inside
+		*libPath = (atomic_wchar_t *)lpvThreadParam,
+		// pointer to the parameters given to this library
+		*data = libPath;
+	// advance data to the actual parameters
+	while( *data++ );
+	HANDLE hOutboundEvent;
+	// create named event to notify the remote DLL that data has already copied 
+	// necessary because the remote DLL execution begins directly after LoadLibrary()S
+	if( !(hOutboundEvent = CreateEventA( nullptr, FALSE, FALSE, "nasty hackers" )) )
+		return GetLastError();
+	// size of the paramers given to the DLL
+	size_t dataSize = 0;
+	while( data[dataSize++] );
+	if( dataSize >= MAX_PATH )
+		return ERROR_INVALID_PARAMETER;
+	// clean LoadLibrary() with all DLL-dependencies
+	HMODULE hm = LoadLibraryW( (wchar_t *)libPath );
+	if( !hm )
+		return GetLastError();
+	// get address of parameters export from the loaded DLL
+	wchar_t volatile (&initData)[MAX_PATH] = *(wchar_t (*)[MAX_PATH])GetProcAddress( hm, "initData" );
+	// the loaded DLL doesn't provide such an export, i.e. its not relying on parameters ?
+	if( !initData )
+		return NO_ERROR;
+	// copy parameters to the DLL
+	for( size_t i = 0; i != dataSize; initData[i] = data[i], ++i );
+	// notify that parameters available
+	if( !SetEvent( hOutboundEvent ) )
+		return GetLastError();
+	return NO_ERROR;
+}
+
+The last code shows an example of a DLL loaded by the loader DLL which prints the parameters to a file.
+
+#include <Windows.h>
+#include <fstream>
+#include <atomic>
+
+using namespace std;
+
+#if defined(_MSC_VER)
+	#pragma warning(disable: 6387) // returned handle could be null
+#endif
+
+#if defined(_M_IX86)
+	#pragma comment(linker, "/export:DllMain=_DllMain@12")
+#elif defined(_M_X64)
+	#pragma comment(linker, "/export:DllMain=_DllMain@12")
+#else
+	#error unsupported platform
+#endif
+
+using namespace std;
+
+DWORD WINAPI myThread( LPVOID lpvThreadParam );
+
+BOOL APIENTRY DllMain( HMODULE hModule, DWORD dwReason, LPVOID lpReserved )
+{
+	switch( dwReason )
+	{
+	case DLL_PROCESS_ATTACH:
+		// create thread since there is no export called from the loader DLL
+		CreateThread( nullptr, 0, myThread, nullptr, 0, nullptr );
+	default:
+		break;
+	}
+	return TRUE;
+}
+
+extern "C"
+__declspec(dllexport)
+wchar_t initData[MAX_PATH] = { 0 };
+
+DWORD WINAPI myThread( LPVOID lpvThreadParam )
+{
+	// wait for initData to be filled by loader DLL
+	// skip that if you don't rely on any initData
+	// as the named event "nasty hackers" has been created by our own DLL's
+	// LoadLibrary() we're just connecting to a named event, but not creating one
+	if( WaitForSingleObject( CreateEventA( nullptr, FALSE, FALSE, "nasty hackers" ), INFINITE ) != WAIT_OBJECT_0 )
+		return 0;
+	// write parameters in a file to test function
+	// the following code doesn't work when the DLL is non-statically linked for unknown reasons
+	wofstream wofs;
+	wofs.open( "c:\\Users\\xxx\\test.txt", ofstream::out | ofstream::trunc );
+	wofs << initData << endl;
+	return 0;
+}
+
+One important fact is that there are no exports called from the loader DLL, but instead all initialization is done from DllMain. The only export is that of initData, which receives the parameters given by the injecting process through the loader DLL. And one must be aware that the thread created from a DllMain-function isn't scheduled until after its DLL_THREAD_ATTACH-function has succeeded. So there may not be any synchronization from inside DllMain with the created thread.
+
+References
+
+ 
+Computer libraries
+Windows administration
+Threads (computing)

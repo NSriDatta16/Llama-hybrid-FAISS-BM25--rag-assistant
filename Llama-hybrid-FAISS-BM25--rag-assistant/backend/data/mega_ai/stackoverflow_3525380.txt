@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3525380
+[parent_id]: 3525359
+[tags]: 
+Python tries to discourage you from "summing" strings. You're supposed to join them: "".join(list_of_strings) It's a lot faster, and uses much less memory. A quick benchmark: $ python -m timeit -s 'import operator; strings = ["a"]*10000' 'r = reduce(operator.add, strings)' 100 loops, best of 3: 8.46 msec per loop $ python -m timeit -s 'import operator; strings = ["a"]*10000' 'r = "".join(strings)' 1000 loops, best of 3: 296 usec per loop Edit (to answer OP's edit): As to why strings were apparently "singled out", I believe it's simply a matter of optimizing for a common case, as well as of enforcing best practice: you can join strings much faster with ''.join, so explicitly forbidding strings on sum will point this out to newbies. BTW, this restriction has been in place "forever", i.e., since the sum was added as a built-in function ( rev. 32347 )

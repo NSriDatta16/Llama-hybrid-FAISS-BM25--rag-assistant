@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4099527
+[parent_id]: 
+[tags]: 
+Problem with MySQL JOIN query / COUNTs
+
+I am trying to display a list of cookbooks which have been tagged with a specific tag. This is working, except I cannot also display the number of times the tag has been applied to each book by different users. I would like to sort by this number so a book tagged 'baking' for example, by multiple users, would rank higher than a book tagged 'baking' by only one user. Here is a slightly simplified list of tables: Table 1: cookbooks ID, Title, Author, etc. Table 2: recipes ID, recipe_title, recipe, cookbook_id Table 3: recipe_reviews ID, recipe_id, star_rating, comments Table 4: book_tags tag_id, tag_text Table 5: book_user_tag user_id, book_id, tag_id This is the test query as currently written: SELECT cookbooks.*, COUNT(DISTINCT recipe_reviews.ID) as numreviews, COUNT( book_user_tag.tag_id) as numtags, AVG(recipe_reviews.star_rating) as average, book_tags.tag_text FROM cookbooks LEFT OUTER JOIN recipes ON cookbooks.ID = recipes.cookbook_id LEFT OUTER JOIN recipe_reviews ON recipes.ID = recipe_reviews.recipe_id LEFT OUTER JOIN book_user_tag ON cookbooks.ID = book_user_tag.book_id INNER JOIN book_tags ON book_user_tag.tag_id = book_tags.tag_id WHERE book_user_tag.tag_id = 69 GROUP BY cookbooks.ID ORDER BY numtags DESC UPDATE: This query ended up working when I debugged it and realized that a DISTINCT was required on the second count, and that it was trying to count the wrong variable; should have been user_id.

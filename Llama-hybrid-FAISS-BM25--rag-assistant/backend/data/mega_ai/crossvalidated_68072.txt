@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 68072
+[parent_id]: 67907
+[tags]: 
++1 to fabee's answer, which is complete. Just a note to translate it into R, based on the packages that I've found to do the operations at hand. In my case, I had data that is NOAA temperature forecasts on a three-month basis: Jan-Feb-Mar, Feb-Mar-Apr, Mar-Apr-May, etc, and I wanted to break it out into (approximate) monthly values, assuming that each three-month period's temperature is essentially an average. library (Matrix) library (matrixcalc) # Feb-Mar-Apr through Nov-Dec-Jan temperature forecasts: qtemps Which works great for me. Thanks @fabee. EDIT: OK, back-translating my R to Python, I get: from numpy import * from numpy.linalg import * qtemps = transpose ([[46.0, 56.4, 65.8, 73.4, 77.4, 76.2, 69.5, 60.1, 49.5, 41.2]]) a = tril (ones ((12, 12)), 2) - tril (ones ((12, 12)), -1) a = a[0:10,:] ai = pinv (a) mtemps = dot (ai, qtemps) * 3 (Which took a lot longer to debug than the R version. First because I'm not as familiar with Python as with R, but also because R is much more usable interactively.)

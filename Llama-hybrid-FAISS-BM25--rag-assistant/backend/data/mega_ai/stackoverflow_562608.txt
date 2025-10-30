@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 562608
+[parent_id]: 
+[tags]: 
+Aggregation with two Joins (MySQL)
+
+I have one table called gallery . For each row in gallery there are several rows in the table picture . One picture belongs to one gallery. Then there is the table vote . There each row is an upvote or a downvote for a certain gallery. Here is the (simplified) structure: gallery ( gallery_id ) picture ( picture_id, picture_gallery_ref ) vote ( vote_id, vote_value, vote_gallery_ref ) Now I want one query to give me the following information: All galleries with their own data fields and the number of pictures that are connected to the gallery and the sumarized value of the votes. Here is my query, but due to the multiple joining the aggregated values are not the right ones. (At least when there is more than one row of either pictures or votes.) SELECT *, SUM( vote_value ) as score, COUNT( picture_id ) AS pictures FROM gallery LEFT JOIN vote ON gallery_id = vote_gallery_ref LEFT JOIN picture ON gallery_id = picture_gallery_ref GROUP BY gallery_id Because I have noticed that COUNT( DISTINCT picture_id ) gives me the correct number of pictures I tried this: ( SUM( vote_value ) / GREATEST( COUNT( DISTINCT picture_id ), 1 ) ) AS score It works in this example, but what if there were more joins in one query? Just want to know whether there is a better or more 'elegant' way this problem can be solved. Also I'd like to know whether my solution is MySQL-specific or standard SQL?

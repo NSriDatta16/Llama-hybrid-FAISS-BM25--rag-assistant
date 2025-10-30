@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4481892
+[parent_id]: 
+[tags]: 
+Web application behind reverse proxy - how do I handle SSL?
+
+I have a public Apache server which needs to proxy to an internal Apache server (for SVN access). What I'd like to have is: User ---[HTTPS]---> Web Server ---[HTTP]---> SVN Server I'm not too familiar with SSL handling, so I'd like some opinions on this approach. Is this an ok model; should I be using SSL everywhere, etc. My approach works for the most part, but fails when rewriting redirects back to HTTPS. If a user goes to https://acme.web.mcx/svn (no trailing '/') they are redirected by the SVN server to http://acme.web.mcx/svn/ (almost there!) Here's my config for the Web Server (Proxying server): ServerAdmin me@admin.com ServerAlias *.web.mcx www.web.mcx web.mcx DocumentRoot /server/web/app/webroot ErrorLog logs/web-error_log CustomLog logs/web-access_log common RewriteEngine On RewriteCond %{HTTP_HOST} !^www\.web\.mcx$ [NC] RewriteCond %{HTTP_HOST} ^(www\.)?([^.]+)\.web\.mcx$ [NC] RewriteRule ^/svn(.*) http://db.mcx/svn$1 [P] ProxyPassReverse /svn http://db.mcx/svn ProxyPreserveHost on SSLEngine on SSLCertificateFile /etc/httpd/ssl/server.crt SSLCertificateKeyFile /etc/httpd/ssl/server.key SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown ProxyRequests Off Order deny,allow Allow from all ProxyVia On Order Deny,Allow Allow from all Satisfy Any

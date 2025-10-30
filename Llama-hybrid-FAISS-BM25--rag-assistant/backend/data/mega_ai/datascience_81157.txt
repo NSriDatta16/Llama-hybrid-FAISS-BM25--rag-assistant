@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 81157
+[parent_id]: 
+[tags]: 
+LSTM model prediction scaling with loaded model
+
+I am deploying a LSTM pytorch model for production and I have issue with scaling the LSTM output correctly. While the model was tested the output was scaled with label data: y_scaler = MinMaxScaler(feature_range=(-1, 1)) y_test_scaled = y_scaler.transform(y_test.reshape(-1, 1)) Now when I am loading the model from state_dict and making a prediction how I should inverse scale the data? I am not having the newest label data during the forecast. For the input data I am using QuantilieTransformer . I can make predictions this way: y_test_scaler = MinMaxScaler(feature_range=(-1, 1)) y_minmax = label_data # For example past 40 days of the label data y_test_scaled = y_test_scaler.fit_transform(y_minmax.reshape(-1, 1)) If I use the whole label-data as y_minmax the results are not good enough. But If I use less label data for scaling predictions are decent. # Inverse transform predictions from LSTM model y_actual = y_test_scaler.inverse_transform(y.reshape(-1, 1)) Should the output of LSTM be somehow inversed with x_scaler or how? :) EDIT: I got good results by making prediction for large amount of sequences. (Predicting 1 sequence to future and 300 sequences of history data). It is not a problem to load a lot of history data during the prediction, but I believe there is a smarter way to get the same result.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4403936
+[parent_id]: 4403861
+[tags]: 
+One simple way is to use: mkdir -p ../obj It doesn't fail when the directory exists. I usually create a macro, MKPATH, for this: MKPATH = mkdir -p and then reference the macro in the rule: $(objdir): $(MKPATH) $(objdir) That way, I can change the behaviour without changing the makefile if it becomes necessary. Your shell fragment: if [ ! -d $(objdir) ] ; then mkdir $(objdir) fi does not work as written because make executes each line separately. You could write (note the added semi-colon): if [ ! -d $(objdir) ] ; then \ $(MKPATH) $(objdir) ; \ fi Or: if [ ! -d $(objdir) ] ; then $(MKPATH) $(objdir); fi Or: [ -d $(objdir) ] || $(MKPATH) $(objdir) Note that the command line must be successful overall, so do not try: [ ! -d $(objdir) ] && $(MKPATH) $(objdir) If the directory exists, the first alternative fails, but the shell exits with a non-zero status, thus failing...and causing the build to fail.

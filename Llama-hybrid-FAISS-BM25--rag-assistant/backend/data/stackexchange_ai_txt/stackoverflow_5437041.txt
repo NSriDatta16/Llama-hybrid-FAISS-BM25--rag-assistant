@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5437041
+[parent_id]: 5436905
+[tags]: 
+If you want multiple days you will need the day as well as hour in the GROUP BY clause. Currently it's averaging all the values for the same hour on multiple days. (Values for today's 11, yesterday's 11, etc., are averaged together) I don't have an easy way to test it, but something like: SELECT TRUNCATE(AVG(TIME_TO_SEC(TIMEDIFF(END_DATE, START_DATE))/60), 2) as elapsed, EXTRACT(DAY FROM END_DATE) as day, EXTRACT(HOUR FROM END_DATE) as hour FROM TIME_INFO WHERE EXTRACT(HOUR FROM END_DATE) BETWEEN 9 AND 18 AND DATE(END_DATE) > CURDATE() - INTERVAL 3 DAY GROUP BY EXTRACT(DAY FROM END_DATE), EXTRACT(HOUR FROM END_DATE) ORDER BY END_DATE DESC If you want it to work across month/year boundaries you'll probably want DATE(END_DATE) rather than the EXTRACT(DAY FROM END_DATE) , in which case output might look something like: elapsed date hour ------------------------- 2.5 2011/03/25 11

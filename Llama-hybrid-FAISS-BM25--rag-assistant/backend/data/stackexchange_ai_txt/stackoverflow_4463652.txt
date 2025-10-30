@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4463652
+[parent_id]: 4462480
+[tags]: 
+Your [DllImport] declaration is equivalent to the VB6 declare statement. It is probably best to assume that the VB6 declaration was wrong to begin with an that you got away with it by luck. The return type is quite odd, but that can't cause a stack problem since the return value is passed through a CPU register, not the stack. Start diagnosing this with Debug + Windows + Registers. Pay attention to the value of ESP before and after the call. If it is not the same then you really do have a declaration problem and lots of calls to this function can blow the stack. Not that likely btw, this normally generates an MDA warning. If it matches then it can only be the Fortran code that overflows the stack. Also keep in mind that you might be blaming the wrong function. The function that generates the SOE might not be the one that screwed the stack up. Looking at the ESP value lets you quickly find the trouble-maker.

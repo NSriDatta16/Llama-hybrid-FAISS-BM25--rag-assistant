@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4257369
+[parent_id]: 4253158
+[tags]: 
+Files with the .cu extension are handled by nvcc which automatically includes the CUDA-specific headers such that the CUDA types are declared. When you name it .c / .cpp you need to include the relevant header to get the types. Since you're using the runtime API, try include cuda_runtime_api.h . The fact that you're not finding them suggests your paths have not been set correctly. Try adding $(CUDA_PATH)\include to the include paths (see this post for more details). Having said that, there are concerns here... You don't need to declare a struct (or a class) as __global__ or __device__ , the struct is just a type and the type is cross-platform. Where you need those declarations is where storage is implied, i.e. when you create an instance of the struct or where you are creating code that must be compiled for the device. If you are simply declaring a struct then you should be able to declare it in a header file and include it in both .cpp and .cu files with no problems, and if not then by all means post a separate question with more details.

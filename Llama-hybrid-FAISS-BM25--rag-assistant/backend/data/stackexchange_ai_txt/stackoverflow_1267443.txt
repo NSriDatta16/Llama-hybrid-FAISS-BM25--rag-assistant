@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1267443
+[parent_id]: 1248061
+[tags]: 
+I'm not an expert on this topic, but it seems like this kind of unload-to-replace is not directly supported. But do you need to unload-replace the class? Could you instead create a never-changing class that the external world talks to, in which you internally imlpement a versioning system? For example, you create class MyToolAgent that has, say, a static string with the classname of the ToolAgentImplementation to use. When you first release, it's set to use ToolAgentImplementation1_0. When you upgrade to version 2.0, you deploy an additional class called ToolAgentImplmenetation2_0, and update the MyToolAgent class to load and use it. You never unload version 1.0, but you do stop using it. You do waste some memory here, but you achieve the version upgrade. I don't know if this is feasible in your situation, but in general it seems the JVM doesn't support directly swapping in a new version, but that you should be able to hide that in some way.

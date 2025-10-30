@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2284200
+[parent_id]: 2069793
+[tags]: 
+Here is how I would go about it in SQL Server The query below will get the average weight from a fictional Scale table holding a single weigh-in for each person while not permitting those who are overly fat or thin to throw off the more realistic average: select w.Gender, Avg(w.Weight) as AvgWeight from ScaleData w join ( select d.Gender, Avg(d.Weight) as AvgWeight, 2*STDDEVP(d.Weight) StdDeviation from ScaleData d group by d.Gender ) d on w.Gender = d.Gender and w.Weight between d.AvgWeight-d.StdDeviation and d.AvgWeight+d.StdDeviation group by w.Gender There may be a better way to go about this, but it works and works well. If you have come across another more efficient solution, I’d love to hear about it. NOTE: the above removes the top and bottom 5% of outliers out of the picture for purpose of the Average. You can adjust the number of outliers removed by adjusting the 2* in the 2*STDDEVP as per: http://en.wikipedia.org/wiki/Standard_deviation

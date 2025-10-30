@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5224806
+[parent_id]: 5224633
+[tags]: 
+The answer is yes. It is simply the matter of writing a custom converter. Don´t be discouraged by thinking "too much code for a simple conversion". Here is an example for a converter that converts a custom object to string and back. This kind of converter is often used for select menus: @FacesConverter( value="merkmalConverter" ) public class MerkmalMenuConverter implements Converter { public String getAsString(FacesContext context, UIComponent component, Object value) { if (value != null) { Merkmal m = (Merkmal) value; return m.getBezeichnung(); } return null; // Value is null. } @SuppressWarnings("unchecked") public Object getAsObject(FacesContext context, UIComponent component, String value) { if (value != null) { MerkmalJpaController mJpaC = new MerkmalJpaController(); List mList = mJpaC.findMerkmalEntities(); for (Merkmal m : mList) { if (m.getBezeichnung().equals(value)) { return m; } } } return null; // Value is null or doesn't have any match. } } Use your converter in the jsf file as shown here as child element of your input field to be converted:

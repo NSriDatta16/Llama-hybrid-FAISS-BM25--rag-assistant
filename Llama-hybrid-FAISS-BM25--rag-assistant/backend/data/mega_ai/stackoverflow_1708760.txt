@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1708760
+[parent_id]: 1708120
+[tags]: 
+Recompiling will clear all the current session data. However it will not clear your authentication ticket, that's stored as a cookie, so there's a few things you can do to avoid this. If you only need to access the user id then use User.Indentity.Name If you only need basic user data for display purposes, such as the user's name, then you can store that in a session cookie. Warning : only do this for displaying data unless you encrypt the cookie data, plain text cookie data shouldn't be trusted. If your user data is more complex than that then access the data through a method that uses caching as suggested by Agent_9191 Add something like this to a base controller or extension method protected UserData GetUserData() { UserData user = HttpContext.Session["User"] as UserData; if (user == null) { user = UserDataRepository.GetUser(User.Identity.Name); HttpContext.Session.Add("User", user); } return user; }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3688192
+[parent_id]: 3672243
+[tags]: 
+You could implement something similar. Will was on the right track, but it seems like "call-next-method" is pretty pivotal to the use of "around", which can be implemented as such: def around(callback): def decorator(fn): return lambda *a, **kw: callback(lambda: fn(*a, **kw)) return decorator def hello_before(call_next_method): print("I'm executing before the primary-method") return call_next_method() def hello_after(call_next_method): value = call_next_method() print("I'm executing after the primary-method") return value def hello_around(call_next_method): print "I'm the most specific around method calling next method." value = call_next_method() print("I'm the most specific around method done calling next method.") return value @around(hello_around) @around(hello_after) @around(hello_before) def helloworld(): print("Hello world") helloworld() This produces exactly the same output as yours, with reasonably similar constructs. Just pay attention to the order you decorate the function with.

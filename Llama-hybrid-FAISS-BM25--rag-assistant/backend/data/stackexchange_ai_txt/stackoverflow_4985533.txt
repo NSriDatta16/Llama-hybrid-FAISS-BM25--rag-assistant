@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4985533
+[parent_id]: 
+[tags]: 
+Cleanest way to loop over master set, processing each sub-set, in Ruby
+
+This is a common scenario and I'm never quite happy with the solutions. You have a set of data, just assume rows from a db ordered by category in this case. You want to build a buffer with a sub-set of each category, and on each category change, do some processing, then clear the buffer. Assume that process() is wrapped in a bunch of complex logic that you don't want to duplicate Anyone have a better setup? # category, city data = [ [10, 'citya'], [10, 'cityb'], [11, 'citya'], [11, 'cityb'], [11, 'citya'], [12, 'cityb'], [12, 'cityg'] ] # do some heavy lifting in here def process(buf) p buf; end cur_cat = nil cur_cat_buf = [] data.each do |r| if r[0] != cur_cat cur_cat = r[0] process(cur_cat_buf) # This is the other technique, and is just terrible. Messy, awful! Always looking ahead, checking if it is nil or different etc...ugh... cur_cat = data[0][0] if data.length > 0 cur_cat_buf = [] data.each_with_index do |r, i| cur_cat_buf This is another alternative. Certainly better than the last one. cur_cat = nil cur_cat_buf = [] for i in 0..(data.length) if (r = data[i]) == nil or r[0] != cur_cat process(cur_cat_buf) break unless r cur_cat_buf.clear cur_cat = r[0] end cur_cat_buf I want a clean, elegant solution. There's gotta be a better way!

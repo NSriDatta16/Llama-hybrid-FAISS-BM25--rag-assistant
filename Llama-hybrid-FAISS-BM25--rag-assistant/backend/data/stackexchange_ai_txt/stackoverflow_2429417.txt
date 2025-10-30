@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2429417
+[parent_id]: 
+[tags]: 
+TransactionRequiredException on OptimisticLockException
+
+I have the following class that generates sequencial Card Numbers. I'm trying to recover from OptimisticLockException, by calling recursively the same method. however, i'm getting TransactionRequiredException. Dows anyone knows how to recover from OptimisticLockException in my case? Thanks a lot in advance @Name("simpleAutoIncrementGenerator") public class SimpleAutoIncrementGenerator extends CardNumberGenerator{ private static final long serialVersionUID = 2869548248468809665L; private int numberOfRetries = 0; @Override public String generateNextNumber(CardInstance cardInstance, EntityManager entityManager) { try{ EntityCard card = (EntityCard)entityManager.find(EntityCard.class, cardInstance.getId()); if(card != null){ String nextNumber = ""; String currentNumber = card.getCurrentCardNumber(); if(currentNumber != null && !currentNumber.isEmpty()){ Long numberToInc = Long.parseLong(currentNumber); numberToInc ++; nextNumber = String.valueOf(numberToInc); card.setCurrentCardNumber(nextNumber); // this is just to cause a OptimisticLock Exception try { Thread.sleep(4000); } catch (InterruptedException e) { // TODO Auto-generated catch block e.printStackTrace(); } entityManager.persist(card); entityManager.flush(); return nextNumber; } } }catch (OptimisticLockException oLE) { System.out.println("\n\n\n\n OptimisticLockException \n\n\n\n"); if(numberOfRetries

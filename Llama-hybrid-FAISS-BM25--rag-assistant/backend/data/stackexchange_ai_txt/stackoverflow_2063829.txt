@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2063829
+[parent_id]: 
+[tags]: 
+How can I use java.lang.instrument in an Eclipse RCP application?
+
+In order to use the instrumentation features introduced in JDK 5, you can use the -javaagent flag passed to the JVM. This will inject an instance of an Instrumentation class into the static premain method. For example in a class like this: public class MyClass { public static Instrumentation inst; public static void premain(String options, Instrumentation inst) { MyClass.inst = inst; } } With an appropriate manifest file, you can run this as follows: java -javaagent:myfiles.jar SomeClass This calls the premain method then main from SomeClass . This approach is used in the Java.SizeOf Project to guess at the approximate size of a Java object. OK, now in Eclipse RCP each bundle has its own classloader . This means that the static Instrumentation that we stored in our MyClass is not visible to an Eclipse application. The javaagent uses one class-loader, the Eclipse bundles get loaded with another. When we access MyClass.inst from within a plugin it is null , as that class is not the same class as the one the javaagent loaded and called premain on. Other clues as to a possible solution are this thread on the rcp mailing list. But nothing conclusive. Is there any way to work around this? The Eclipse-BuddyPolicy hinted at in the eclipsezone article sounds good. I tried: Eclipse-BuddyPolicy: app in my plugins without luck. I need something like Eclipse-BuddyPolicy: javaagent . Any ideas?

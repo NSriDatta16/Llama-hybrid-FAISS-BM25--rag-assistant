@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5445671
+[parent_id]: 5303874
+[tags]: 
+I switched timing to use System.Diagnostics.Stopwatch, to make sure you weren't suffering from bad resolution. Running your code on my dual-core laptop of 2 years it takes on average 270 milliseconds with 100 iterations. I timed just the looping part, that takes around 70 milliseconds, so the bulk of the work is done prior to looping. Breaking it down further, it is actually SignData that is the hog here, it takes around 210 milliseconds even though it is called only once in the benchmark. Of course, we are using different machines, but 70 milliseconds is what you got out of your own verifying code? Changes to timer: let timer f = let sw = System.Diagnostics.Stopwatch() sw.Start() f() |> ignore sw.Stop() sw.ElapsedMilliseconds Sample breakdown: Construct cryptoprovider took 0 Create test array took 0 rnd.NextBytes took 0 rsaSP.SignData took 211 VerifyData took 75 100 iterations took 287L

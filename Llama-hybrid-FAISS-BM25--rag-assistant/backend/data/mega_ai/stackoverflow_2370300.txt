@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2370300
+[parent_id]: 2370281
+[tags]: 
+You're writing to the stream and then immediately trying to read from it without rewinding ... so there's no data to read. Fortunately, there's a very easy way of simplifying the code anyway: byte[] file = stream.ToArray(); However, you've got another potential problem: byte[] storage = new byte[500000]; using (MemoryStream stream = new MemoryStream(storage)) ... This will make the MemoryStream have a fixed size of 500K - no more, no less. I suspect that's not what you want; I suggest you get rid of the storage variable and just call the parameterless MemoryStream constructor.

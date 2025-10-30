@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3266358
+[parent_id]: 
+[tags]: 
+Geocoder Rails plugin - Near search problem with ActiveRecord
+
+This is dragging at my nerves! Scenario: I am using the geocoder plugin: http://github.com/alexreisner/geocoder/ I have two models: Address and Item the latitude and the longitude are in Address and an Item belongs_to :address Now, when I try to do a near search: Item.near(Person.first.address.coordinates, 20) on an Item it fails with the following SQL: Unknown column 'latitude' in 'field list': SELECT *, 3956 * 2 * ASIN(SQRT(POWER(SIN((51.3883 - latitude) * PI() / 180 / 2), 2) + COS(51.3883 * PI()/180) * COS(latitude * PI() / 180) * POWER(SIN((6.65326 - longitude) * PI() / 180 / 2), 2) )) AS distance FROM `items` WHERE ((latitude BETWEEN 51.0984449275362 AND 51.6781550724638 AND longitude BETWEEN 6.188777824785 AND 7.117742175215) AND (`items`.`accepted` IS NULL AND `items`.`taken_by` IS NULL)) ORDER BY distance ASC Don't look at the weird Math stuff in the query, the problem lies within the FROM and the WHERE clause because the latitude and the longitude attributes are part of the address table, so a simple addition to the Query would solve the problem: ... FROM items, addresses WHERE ... ... null)) AND items.address_id = addresses.id ORDER BY ... I just want to add a table to the FROM field and a condition :( I tried using several named_scopes using :include and :joins, but none worked! Does anybody know a solution to this? How could I insert this into a scoped ActiveRecord object?

@@ -1,0 +1,112 @@
+In parallel computing, a barrier is a type of synchronization method. A barrier for a group of threads or processes in the source code means any thread/process must stop at this point and cannot proceed until all other threads/processes reach this barrier.
+
+Many collective routines and directive-based parallel languages impose implicit barriers. For example, a parallel do loop in Fortran  with OpenMP will not be allowed to continue on any thread until the last iteration is completed. This is in case the program relies on the result of the loop immediately after its completion. In message passing, any global communication (such as reduction or scatter) may imply a barrier.
+
+In concurrent computing, a barrier may be in a raised or lowered state. The term latch is sometimes used to refer to a barrier that starts in the raised state and cannot be re-raised once it is in the lowered state. The term count-down latch is sometimes used to refer to a latch that is automatically lowered once a pre-determined number of threads/processes have arrived.
+
+Implementation
+The basic barrier has mainly two variables, one of which records the pass/stop state of the barrier, the other of which keeps the total number of threads that have entered in the barrier. The barrier state was initialized to be "stop" by the first threads coming into the barrier. Whenever a thread enters, based on the number of threads already in the barrier, only if it is the last one, the thread sets the barrier state to be "pass" so that all the threads can get out of the barrier. On the other hand, when the incoming thread is not the last one, it is trapped in the barrier and keeps testing if the barrier state has changed from "stop" to "pass", and it gets out only when the barrier state changes to "pass". The following C++ code demonstrates this procedure.
+struct barrier_type
+{
+    // how many processors have entered the barrier
+    // initialize to 0
+    int arrive_counter;
+    // how many processors have exited the barrier
+    // initialize to p
+    int leave_counter;
+    int flag;
+    std::mutex lock;
+};
+
+// barrier for p processors
+void barrier(barrier_type* b, int p)
+{
+    b->lock.lock();
+    if (b->arrive_counter == 0)
+    {
+        if (b->leave_counter == p) { // no other threads in barrier
+            b->flag = 0;             // first arriver clears flag
+        } else {
+            b->lock.unlock();
+            while (b->leave_counter != p); // wait for all to leave before clearing
+            b->lock.lock();
+            b->flag = 0;
+        }
+    }
+    int arrived = ++(b->arrive_counter);
+    unlock(b->lock);
+    if (b->arrive_counter == p) { //last arriver sets flag
+        b->arrive_counter = 0;
+        b->leave_counter = 1;
+        b->flag = 1;
+    } else {
+        while (b->flag == 0); // wait for flag
+        lock(b->lock);
+        b->leave_counter++;
+        unlock(b->lock);
+    }
+}
+
+The potential problem is:
+
+ Due to all the threads repeatedly accessing the global variable for pass/stop, the communication traffic is rather high, which decreases the scalability.
+
+This problem can be resolved by regrouping the threads and using multi-level barrier, e.g. Combining Tree Barrier. Also hardware implementations may have the advantage of higher scalability.
+
+Sense-Reversal Centralized Barrier 
+Instead of using the same value to represent pass/stop, sequential barriers use opposite values for pass/stop state. For example, if barrier 1 uses 0 to stop the threads, barrier 2 will use 1 to stop threads and barrier 3 will use 0 to stop threads again and so on. The following C++ code demonstrates this.
+
+struct barrier_type
+{
+    int counter; // initialize to 0
+    int flag; // initialize to 0
+    std::mutex lock;
+};
+
+int local_sense = 0; // private per processor
+
+// barrier for p processors
+void barrier(barrier_type* b, int p)
+{
+    local_sense = 1 - local_sense;
+    b->lock.lock();
+    b->counter++;
+    int arrived = b->counter;
+    if (arrived == p) // last arriver sets flag
+    {
+        b->lock.unlock();
+        b->counter = 0;
+        // memory fence to ensure that the change to counter
+        // is seen before the change to flag
+        b->flag = local_sense;
+    }
+    else
+    {
+        b->lock.unlock();
+        while (b->flag != local_sense); // wait for flag
+    }
+}
+
+Combining Tree Barrier 
+A Combining Tree Barrier is a hierarchical way of implementing barrier to resolve the scalability by avoiding the case that all threads are spinning at the same location.
+
+In k-Tree Barrier, all threads are equally divided into subgroups of k threads and a first-round synchronizations are done within these subgroups. Once all subgroups have done their synchronizations, the first thread in each subgroup enters the second level for further synchronization. In the second level, like in the first level, the threads form new subgroups of k threads and synchronize within groups, sending out one thread in each subgroup to next level and so on. Eventually, in the final level there is only one subgroup to be synchronized. After the final-level synchronization, the releasing signal is transmitted to upper levels and all threads get past the barrier.
+
+Hardware Barrier Implementation 
+The hardware barrier uses hardware to implement the above basic barrier model.
+
+The simplest hardware implementation uses dedicated wires to transmit signal to implement barrier. This dedicated wire performs OR/AND operation to act as the pass/block flags and thread counter. For small systems, such a model works and communication speed is not a major concern. In large multiprocessor systems this hardware design can make barrier implementation have high latency. The network connection among processors is one implementation to lower the latency, which is analogous to Combining Tree Barrier.
+
+See also
+ Fork–join model
+ Rendezvous (Plan 9)
+ Memory barrier
+
+References
+
+External links
+
+Computer science
+Concurrency control
+Concurrency (computer science)
+Parallel computing

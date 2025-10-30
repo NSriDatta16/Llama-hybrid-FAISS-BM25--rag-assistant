@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4210300
+[parent_id]: 
+[tags]: 
+ANTLR forward references
+
+I need to create a grammar for a language with forward references. I think that the easiest way to achieve this is to make several passes on the generated AST, but I need a way to store symbol information in the tree. Right now my parser correctly generates an AST and computes scopes of the variables and function definitions. The problem is, I don't know how to save the scope information into the tree. Fragment of my grammar: composite_instruction scope JScope; @init { $JScope::symbols = new ArrayList(); $JScope::name = "level "+ $JScope.size(); } @after { System.out.println("code block scope " +$JScope::name + " = " + $JScope::symbols); } : '{' instruction* '}' -> ^(INSTRUCTION_LIST instruction*) ; I would like to put a reference to current scope into a tree, something like: : '{' instruction* '}' -> ^(INSTRUCTION_LIST instruction* {$JScope::symbols}) Is it even possible? Is there any other way to store current scopes in a generated tree? I can generate the scope info in a tree grammar, but it won't change anything, because I still have to store it somewhere for the second pass on the tree.

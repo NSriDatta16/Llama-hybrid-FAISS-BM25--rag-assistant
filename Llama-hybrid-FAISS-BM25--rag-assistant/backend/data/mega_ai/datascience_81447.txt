@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 81447
+[parent_id]: 
+[tags]: 
+XGBoost custom objective for regression in R
+
+I implemented a custom objective and metric for a xgboost regression. In order to see if I'm doing this correctly, I started with a quadratic loss. The implementation seems to work well, but I cannot reproduce the results from a standard "reg:squarederror" objective. Question: I wonder if my current approach is correct (especially the implementation of the first and second order gradient)? If so, what could be a possible reason for the difference? Gradient and Hessian are defined as: grad Minimal example (in R): library(ISLR) library(xgboost) library(tidyverse) library(Metrics) # Data df = ISLR::Hitters %>% select(Salary,AtBat,Hits,HmRun,Runs,RBI,Walks,Years,CAtBat,CHits,CHmRun,CRuns,CRBI,CWalks,PutOuts,Assists,Errors) df = df[complete.cases(df),] train = df[1:150,] test = df[151:nrow(df),] # XGBoost Matrix dtrain Results: The custom metric yields a slightly better result MAE=199.6 compared to the standard objective MAE=203.3 . During boosting, the RMSE tends to be lower with the custom objective. For the custom objective the RMSE is: [1] eval-MyError:599.490030 [2] eval-MyError:560.677996 [3] eval-MyError:527.867686 [4] eval-MyError:498.216760 [5] eval-MyError:472.167415 ... For the standard objective the RMSE is: [1] eval-rmse:598.144775 [2] eval-rmse:562.479431 [3] eval-rmse:529.981079 [4] eval-rmse:501.730103 [5] eval-rmse:479.081329

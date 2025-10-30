@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5222213
+[parent_id]: 5222027
+[tags]: 
+What you can do is the following: public class MyClass { public MyClass() { #if DEBUG // Only run in debug mode, because of performance. StackTrace trace = new StackTrace(); var callingMethod = trace.GetFrames()[1].GetMethod(); if (callingMethod.IsStatic && callingMethod.Name == ".cctor") { throw new InvalidOperationException( "You naughty boy!"); } #endif } } Static fields will 'normally' be created by static constructors. What the above code does is looking at the calling method to see if it is a static constructor and if that's the case, throw an exception. Note however, that this check is quite fragile and smart users can easily work around this by refactoring the creation of this method to another method. In other words, I agree with every body else that there is no good way to do this.

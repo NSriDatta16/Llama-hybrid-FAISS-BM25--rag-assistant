@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5234038
+[parent_id]: 
+[tags]: 
+CUDA 4.0 RC - many host threads per one GPU - cudaStreamQuery and cudaStreamSynchronize behaviour
+
+I wrote a code which uses many host (OpenMP) threads per one GPU. Each thread has its own CUDA stream to order it requests. It looks very similar to below code: #pragma omp parallel for num_threads(STREAM_NUMBER) for (int sid = 0; sid >>(dData, dataSize); else { CUDA_CHECK(streamStatus); } cudaStreamSynchronize(stream); } cudaStreamDestroy(stream); } And everything were good till I got many small jobs. In that case, from time to time, cudaStreamQuery returns cudaErrorNotReady, which is for me unexpected because I use cudaStreamSynchronize. Till now I were thinking that cudaStreamQuery will always return cudaSuccess if it is called after cudaStreamSynchronize. Unfortunately it appeared that cudaStreamSynchronize may finish even when cudaStreamQuery still returns cudaErrorNotReady. I changed the code into the following and everything works correctly. #pragma omp parallel for num_threads(STREAM_NUMBER) for (int sid = 0; sid >>(dData, dataSize); else { CUDA_CHECK(streamStatus); } cudaStreamSynchronize(stream); } cudaStreamDestroy(stream); } So my question is.... is it a bug or a feature? EDIT: it is similar to JAVA synchronize { while(waitCondition) { wait(); } }

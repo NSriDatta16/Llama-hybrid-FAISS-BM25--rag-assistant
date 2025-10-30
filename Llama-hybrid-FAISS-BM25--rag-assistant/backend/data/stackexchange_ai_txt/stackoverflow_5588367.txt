@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5588367
+[parent_id]: 5469313
+[tags]: 
+Use this handler: Public NotInheritable Class ImageHandler Implements IHttpHandler Private Const REQUEST_KEY As String = "pic" Public ReadOnly Property IsReusable() As Boolean Implements System.Web.IHttpHandler.IsReusable Get Return False End Get End Property Public Sub ProcessRequest(ByVal context As System.Web.HttpContext) Implements System.Web.IHttpHandler.ProcessRequest If Not String.IsNullOrEmpty(context.Request.QueryString(REQUEST_KEY)) Then Dim fileName As String = context.Request.QueryString(REQUEST_KEY) Try Dim fileInfo As New IO.FileInfo(context.Server.MapPath(fileName)) If fileInfo.Exists Then context.Response.Cache.SetCacheability(HttpCacheability.Public) context.Response.Cache.SetExpires(Date.Now.AddYears(1)) Dim fileExt As String = fileInfo.Extension.Remove(0, 1).ToUpperInvariant If fileExt = "JPG" Then context.Response.ContentType = "image/jpeg" Else context.Response.ContentType = "image/" & fileExt End If context.Response.TransmitFile(fileInfo.FullName) End If Catch ex As Exception End Try End If End Sub End Class Register it in your web.config: Use it like this:

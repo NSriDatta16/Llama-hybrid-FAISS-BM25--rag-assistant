@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2232234
+[parent_id]: 2232226
+[tags]: 
+0 is not an lvalue, it's an rvalue. You cannot modify it, but you're trying to bind to a reference where it could be modified. If you make your reference const , it will work as expected. Consider this: int& x = 0; x = 1; // wtf :( This obviously is a no-go. But const& 's can be bound to temporaries (rvalues): const int& x = 0; x = 1; // protected :) [won't compile] Note that the life-time of the temporary is ended at the completion of the constructor. If you make static-storage for your constant, you'll be safe: class Foo { public: static const int Zero = 0; Foo() : x(Zero) // Zero has storage { y = 1; } private: const int& x; int y; };

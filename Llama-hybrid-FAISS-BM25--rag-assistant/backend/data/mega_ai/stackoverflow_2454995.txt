@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2454995
+[parent_id]: 
+[tags]: 
+Map different child foreign key columns based on parent type at runtime
+
+I think I probably know that the most common suggestion will be "change the database schema" but unfortunately it's one of those "I'm stuck with a legacy database" situations. Basically I want to map the following using Fluent NHibernate CREATE TABLE Person (PersonId int) CREATE TABLE Organisation (OrganisationId int) CREATE TABLE OwnedPhoneNumber (Id int, PersonId int, OrganisationId int, PhoneNumber varchar(50)) interface IPhoneNumberOwner { int Id {get; set;} } class Person : IPhoneNumberOwner { public virtual int Id {get; set;} public virtual ISet PhoneNumbers {get; set;} } class Organisation : IPhoneNumberOwner { public virtual int Id {get; set;} public virtual ISet PhoneNumbers {get; set;} } class OwnedPhoneNumber { public virtual int Id {get; set;} public virtual IPhoneNumberOwner Owner {get; set;} public virtual string PhoneNumber {get; set;} } My question is how do I create the ClassMap file for the OwnedPhoneNumber class to determine the column to use when persisting an entity i.e. if it's a Person object use the PersonId column and if it's an Organisation use the OrganisationId column. Mapping the collections from the parent classes is no problem. Hopefully I've included enough detail to explain the problem but obviously shout if not.

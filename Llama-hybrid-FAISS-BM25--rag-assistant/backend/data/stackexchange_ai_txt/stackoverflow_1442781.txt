@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1442781
+[parent_id]: 1429457
+[tags]: 
+I'm assuming you are using asmx web services for this answer. Your guess is right -- the XML Serializer uses the enumeration names in the WSDL and not the value. If you look at your WSDL it will look something like this: So, when you invoke the service it is expecting a string that is the name of the enumeration member. When you use a .NET proxy, this conversion is usually handled for you. If a value is passed to the service that cannot be deserialized into the enum value you will get the message that you are seeing. To get around this, you can ensure you are sending it the expected value or, if that doesn't work for you, you can tell the XML Serializer what values you want to use. You can do this using the XmlEnum attribute: public enum QueryType { [XmlEnum("1")] Inquiry = 1, [XmlEnum("2")] Maintainence = 2 } This will generate the following schema fragment (from the WSDL): Then if you are passing the value "2" into the service then it should be deserialized properly but you lose the meaning of the enumeration values.

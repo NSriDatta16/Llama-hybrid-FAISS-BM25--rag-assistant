@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2377067
+[parent_id]: 2376981
+[tags]: 
+So fundamentally, you're constrained by the type of (/): (/) :: (Fractional a) => a -> a -> a BTW, you also want Data.List.genericLength genericLength :: (Num i) => [b] -> i So how about removing the fromIntegral for something more general: import Data.List average xs = realToFrac (sum xs) / genericLength xs which has only a Real constraint (Int, Integer, Float, Double)... average :: (Real a, Fractional b) => [a] -> b So that'll take any Real into any Fractional. And note all the posters getting caught by the polymorphic numeric literals in Haskell. 1 is not an integer, it is any number. The Real class provides only one method: the ability to turn a value in class Num to a rational. Which is exactly what we need here. And thus, Prelude> average ([1 .. 10] :: [Double]) 5.5 Prelude> average ([1 .. 10] :: [Int]) 5.5 Prelude> average ([1 .. 10] :: [Float]) 5.5 Prelude> average ([1 .. 10] :: [Data.Word.Word8]) 5.5

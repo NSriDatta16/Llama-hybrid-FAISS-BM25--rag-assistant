@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4957365
+[parent_id]: 4957299
+[tags]: 
+Define the field to be an interface, rather than a concrete class. (So UserService instead of UserServiceImpl ). You can add the @Transactional annotation on the concrete class - it will work. The problem is that by default spring uses JDK proxies ( java.lang.reflect.Proxy ) which are interface-only proxies. Your concrete class is then used by the invocation handler, but you cannot cast to it. If there is no interface, spring uses another method - CGLIB, which subclasses the target class in order to make the proxy. You can use to configure the proxying stragegy ( proxy-target-class ) per bean.

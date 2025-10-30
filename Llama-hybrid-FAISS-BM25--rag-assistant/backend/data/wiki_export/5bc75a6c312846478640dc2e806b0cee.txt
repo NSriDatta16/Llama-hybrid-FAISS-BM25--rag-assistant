@@ -1,0 +1,201 @@
+Caltech Intermediate Form (CIF) is a file format for describing integrated circuits.
+CIF provides a limited set of graphics primitives that are useful for describing the two-dimensional
+shapes on the different layers of a chip.
+The format allows hierarchical description, which makes the representation concise.
+In addition, it is a terse but human-readable text format.
+
+Overview 
+
+Each statement in CIF consists of a keyword or letter followed by parameters and terminated
+with a semicolon.
+Spaces must separate the parameters but there are no restrictions on the number of statements
+per line or of the particular columns of any field.
+Comments can be inserted anywhere by enclosing them in parentheses. 
+
+There are only a few CIF statements and they fall into one of two categories: geometry or control.
+The geometry statements are: LAYER to switch mask layers, BOX to draw a
+rectangle, WIRE to draw a path, ROUNDFLASH to draw a circle, POLYGON to draw an arbitrary
+figure, and CALL to draw a subroutine of other geometry statements.
+The control statements are DS to start the definition of a subroutine, DF to finish the
+definition of a subroutine, DD to delete the definition of subroutines, 0 through 9 to
+include additional user-specified information, and END to terminate a CIF file.
+All of these keywords are usually abbreviated to one or two letters that are unique.
+
+Geometry 
+
+The LAYER statement (or the letter L) sets the mask layer to be used
+for all subsequent geometry until the next such statement.
+Following the LAYER keyword comes a single layer-name parameter.
+For example, the command: 
+    L CC;
+sets the layer to be the CMOS contact cut (see Fig. B.1 for some typical MOS layer names).
+
+The BOX statement (or the letter B) is the most commonly used way of
+specifying geometry.
+It describes a rectangle by giving its length, width, center position, and an optional rotation.
+The format is as follows: 
+    B length width xpos ypos [rotation] ;
+Without the rotation field, the four numbers specify a box the center of which is
+at (xpos, ypos) and is length across in x and width tall in y.
+All numbers in CIF are integers that refer to centimicrons of distance, unless subroutine
+scaling is specified (described later).
+The optional rotation field contains two numbers that define a vector endpoint
+starting at the origin.
+The default value of this field is (1, 0), which is a right-pointing vector.
+Thus the rotation clause 10 5 defines a 26.6-degree counterclockwise rotation from the normal.
+Similarly, 10 -10 will rotate clockwise by 45 degrees.
+Note that the magnitude of this rotation vector has no meaning.
+
+The WIRE statement (or the letter W) is used to construct a
+path that runs between a set of points.
+The path can have a nonzero width and has rounded corners.
+After the WIRE keyword comes the width value and then an arbitrary
+number of coordinate pairs that describe the endpoints.
+Figure B.2 shows a sample wire.
+Note that the endpoint and corner rounding are implicitly handled.
+
+The ROUNDFLASH statement (or the letter R) draws a filled
+circle, given the diameter and the center coordinate. For example, the statement: 
+    R 20 30 40;
+will draw a circle that has a radius of 10 (diameter of 20), centered at (30, 40).
+
+The POLYGON statement (or the letter P) takes a series of
+coordinate pairs and draws a filled polygon from them.
+Since filled polygons must be closed, the first and last coordinate points are
+implicitly connected and need not be the same.
+Polygons can be arbitrarily complex, including concavity and self-intersection.
+Figure B.3 illustrates a polygon statement.
+
+Hierarchy 
+
+The CALL statement (or the letter C) invokes a collection
+of other statements that have been packaged with DS and DF.
+All subroutines are given numbers when they are defined and these numbers are used in
+the CALL to identify them.
+If, for example, a LAYER statement and a BOX statement are
+packaged into subroutine 4, then the statement:
+    C 4;
+will cause the box to be drawn on that layer. 
+
+In addition to simply invoking the subroutine, a CALL statement can include
+transformations to affect the geometry inside the subroutine.
+Three transformations can be applied to a subroutine in CIF: translation, rotation, and mirroring.
+Translation is specified as the letter T followed by an x, y offset.
+These offsets will be added to all coordinates in the subroutine, to translate its
+graphics across the mask.
+Rotation is specified as the letter R followed by an x, y vector endpoint
+that, much like the rotation clause in the BOX statement, defines a line to the origin.
+The unrotated line has the endpoint (1, 0), which points to the right.
+Mirroring is available in two forms: MX to mirror in x and MY to mirror in y.
+Mirroring is a bit confusing, because MX causes a negation of the x
+coordinate, which effectively mirrors about the y axis.
+
+Any number of transformations can be applied to an object and their listed order
+is the sequence that will be used to apply them.
+Figure B.4 shows some examples, illustrating the importance of ordering the
+transformations (notice that Figs. B.4c and B.4d produce different results by
+rearranging the transformations).
+
+Defining subroutines for use in a CALL statement is quite simple.
+The statements to be packaged are enclosed between DS (definition
+start) and DF (definition finish) statements.
+Arguments to the DS statement are the subroutine number and a subroutine scaling factor.
+There are no arguments to the DF statement.
+The scaling factor for a subroutine consists of a numerator followed by a denominator
+that will be applied to all values inside the subroutine.
+This scaling allows large numbers to be expressed with fewer digits and allows ease
+of rescaling a design.
+The scale factor cannot be changed for each invocation of the subroutine since it
+is applied to the definition.
+As an example, the subroutine of Fig. B.4 can be described formally as follows:
+    DS 10 20 2;
+      B10 20 5 5;
+      W1 5 5 10 15;
+    DF;
+Note that the scale factor is 20/2, which allows the trailing zero to be dropped
+from all values inside the subroutine. 
+
+Arbitrary depth of hierarchy is allowed in CIF subroutines.
+Forward references are allowed provided that a subroutine is defined before it is used.
+Thus the sequence:
+    DS 10;
+       ...
+      C 11;
+    DF;
+    DS 11;
+       ...
+    DF;
+    C 10;
+is legal, but the sequence:
+    C 11;
+    DS 11;
+       ...
+
+    DF;
+is not. This is because the actual invocation of subroutine 11 does
+not occur until after its definition in the first example.
+
+Control 
+
+CIF subroutines can be overwritten by deleting them and then redefining them.
+The DD statement (delete definition) takes a single parameter and
+deletes every subroutine that has a number greater than or equal to this value.
+The statement is useful when merging multiple CIF files because designs can be
+defined, invoked, and deleted without causing naming conflicts.
+However, it is not recommended for general use by CAD systems.
+
+Extensions to CIF can be done with the numeric statements 0 through 9.
+Although not officially part of CIF, certain conventions have evolved for the
+use of these extensions (see Fig. B.5).
+
+The final statement in a CIF file is the END statement (or the letter E).
+It takes no parameters and typically does not include a semicolon.
+
+BNF grammar
+The following is the grammar for the CIF format with cifFile being the top level grammar node.
+
+ cifFile ::= (blank* command? semi)* endCommand blank*
+ command ::= primCommand | defDeleteCommand | defStartCommand semi (blank* primCommand? semi)* defFinishCommand
+ primCommand ::= polygonCommand | boxCommand | roundFlashCommand | wireCommand | layerCommand | callCommand | userExtensionCommand | commentCommand
+ polygonCommand ::= "P" path
+ boxCommand ::= "B" integer sep integer sep point (sep point)?
+ roundFlashCommand ::= "R" integer sep point
+ wireCommand ::= "W" integer sep path
+ layerCommand ::= "L" blank* shortname
+ defStartCommand ::= "D" blank* "S" integer (sep integer sep integer)?
+ defFinishCommand ::= "D" blank* "F"
+ defDeleteCommand ::= "D" blank* "D" integer
+ callCommand ::= "C" integer transformation
+ userExtensionCommand ::= digit userText
+ commentCommand ::= "(" commentText ")"
+ endCommand ::= "E"
+ transformation ::= (blank* ("T" point |"M" blank* "X" |"M" blank* "Y" |"R" point)*)*
+ path ::= point (sep point)*
+ point ::= sInteger sep sInteger
+ sInteger ::= sep* "-"? integerD
+ integer ::= sep* integerD
+ integerD ::= digit+
+ shortname ::= c c? c? c?
+ c ::= digit | upperChar
+ userText ::= userChar*
+ commentText ::= commentChar* | commentText "(" commentText ")" commentText
+ semi ::= blank* ";" blank*
+ sep ::= upperChar | blank
+ digit ::= "0" | "1" | ... | "9"
+ upperChar ::= "A" | "B" | ... | "Z"
+ blank ::= any ASCII character except digit, upperChar, "-", "(", ")", or ";"
+ userChar ::= any ASCII character except ";"
+ commentChar ::= any ASCII character except "(" or ")"
+
+See also
+GDS II stream format
+OASIS (Open Artwork System Interchange Standard)
+EDIF, a vendor neutral file format made in 90s
+
+References 
+Computer Aids for VLSI Design - Appendix B: Caltech Intermediate Format by Steven M. Rubin
+The Caltech Intermidiate Form for LSI Layout Description
+A CIF Primer
+Hon, Robert W. and Sequin, Carlo H., "A Guide to LSI Implementation," 2nd Edition, Xerox Palo Alto Research Center technical memo SSL-79-7, January 1980.
+
+EDA file formats

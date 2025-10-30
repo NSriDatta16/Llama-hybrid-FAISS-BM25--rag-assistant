@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 540848
+[parent_id]: 
+[tags]: 
+XGBoost - does it make sense that accuracy decreases as threshold increases?
+
+I'm using XGBoost for a classification problem, and if I need to check how accuracy changes as a function of threshold. As a result, I got that accuracy decreases as the threshold value increases (see plot below). Does that make sense? Here is my code: num_col = df.shape[1] # split data into X and y X = df.iloc[:,2:(num_col-1)] y = df.iloc[:,num_col-1] # split data into train and test sets seed = 7 test_size = 0.33 # With the stratified split, we take into account class imbalances. X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=101, stratify=y) model = XGBClassifier() model.fit(X_train, y_train) threshold = [] accuracy = [] for p in tqdm([0.5, 0.6, 0.7, 0.8, 0.9, 0.95]): threshold.append(p) y_pred = (model.predict_proba(X_test)[:,1] >= p).astype(int) predictions = [round(value) for value in y_pred] accuracy.append(accuracy_score(y_test,predictions)) plt.scatter(threshold,accuracy) plt.xlabel("Threshold") plt.ylabel("Balanced accuracy") plt.show()

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1583465
+[parent_id]: 1583364
+[tags]: 
+How about calling any twice, on an iterator (Python 2.x and 3.x compatible)? >>> def has_one(seq, predicate=bool): ... seq = (predicate(e) for e in seq) ... return any(seq) and not any(seq) ... >>> has_one([]) False >>> has_one([1]) True >>> has_one([0]) False >>> has_one([1, 2]) False any will take at most one element which evaluates to True from the iterator. If it succeeds the first time and fails the second time, then only one element matches the predicate. Edit: I see Robert Rossney suggests a generalized version, which checks whether exactly n elements match the predicate. Let me join in on the fun, using all : >>> def has_n(seq, n, predicate=bool): ... seq = (predicate(e) for e in seq) ... return all(any(seq) for _ in range(n)) and not any(seq) ... >>> has_n(range(0), 3) False >>> has_n(range(3), 3) False >>> has_n(range(4), 3) True >>> has_n(range(5), 3) False

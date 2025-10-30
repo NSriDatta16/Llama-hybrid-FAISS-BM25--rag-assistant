@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2301459
+[parent_id]: 2301377
+[tags]: 
+Well, stating that module , object and function are strings, I think a better way to do this would be: module_klass = Kernel.const_get(module) klass = module_klass.const_get(object) klass.send(function.to_sym, hash) Kernel.const_get will give you any constant (in this case a constant with the module instance) and it will put it on the module_klass variable. This will be the same as doing eval(module) but less expensive. To get classes or modules declared inside this module_klass you need to invoke const_get on this instance, once you got that, you just use the send method, this will call the methods you specify in the first parameter, and will pass to this functions the following parameters that are given. If for any reason this is not working for you, your solution might work if you just do: hash = { :somestuff => "etc", ... } eval(module + "::" + object + "." + function + "(" + hash.inspect + ")") But IMO that's not as elegant and also is likely to be a slower implementation. Hope that helps.

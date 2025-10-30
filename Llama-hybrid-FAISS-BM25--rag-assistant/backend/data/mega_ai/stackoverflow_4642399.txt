@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4642399
+[parent_id]: 
+[tags]: 
+How to maintain a Map in JPA2?
+
+I have three entity classes ( A , B , C ). A should contain a map which maps instances of B to instances of C . All instances of C are owned by a map of some A . I've tried this (getters and setters omitted): @Entity public class A { @Id @GeneratedValue private Long id; // I want to map this in an elegant way: @OneToMany(mappedBy="a") @MapKey(name="b") private Map map; } @Entity public class B { @Id @GeneratedValue private Long id; } @Entity public class C { @Id @GeneratedValue private Long id; // I don't really want the following in Java, unidirectional access from A to C would suffice: @ManyToOne private A a; @ManyToOne private B b; // Can I get rid of a and b? } That gives a nice schema (exactly the one that I want!), but in Java there's ugly duplication given that there are now two ways to specify the relation: a.map.put(b, c); and c.a = a; c.b = b; What happens if I just change one half of the association? That looks problematic. What is the best way around that? Isn't there some more elegant solution for the required unidirectional access? I considered making C @Embeddable and use an @ElementCollection for A.map , but in reality C is an abstract base class for different entities which means that it can't be made @Embeddable.

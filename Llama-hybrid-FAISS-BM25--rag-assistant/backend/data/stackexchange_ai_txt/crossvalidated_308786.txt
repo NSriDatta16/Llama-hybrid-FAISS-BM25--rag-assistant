@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 308786
+[parent_id]: 
+[tags]: 
+What loss function should I use to score a seq2seq RNN model?
+
+I'm working through the Cho 2014 paper which introduced encoder-decoder architecture for seq2seq modeling. In the paper, they seem to use the probability of the output given input (or it's negative-log-likelihood) as the loss function for a input $x$ of length $M$ and output $y$ of length $N$: $P(y_1, …, y_N | x_1, …, x_M) = P(y_1 | x_1, …, x_m) P(y_2 | y_1, x_1, …, x_m) \dots P(y_N | y_1, …, y_N-1, x_1, …, x_m)$ However, I think I see several problems with using this as a loss function: It seems to assume teacher forcing during training (ie, instead of using the decoder's guess for a position as the input to the next iteration, it uses the known token. It wouldn't penalize long sequences. Since the probability is from $1$ to $N$ of the output, if the decoder generated a longer sequence everything after the first $N$ would not factor into the loss. If the model predicts an early End-of-String token, the loss function still demands $N$ steps -- which means we are generating outputs based on an untrained "manifold" of the models. That seems sloppy. Are any of these concerns valid? If so, has there been any progress into a more advanced loss function?

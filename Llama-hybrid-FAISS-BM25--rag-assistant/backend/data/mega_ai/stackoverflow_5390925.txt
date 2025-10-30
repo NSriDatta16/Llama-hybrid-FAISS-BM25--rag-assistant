@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5390925
+[parent_id]: 5357632
+[tags]: 
+I think you're pretty close, you don't need to 'Property.forName' for referencing a main query from the subquery: Criteria mainQuery = getSession().createCriteria(TestResult.class, "mainQuery"); DetachedCriteria maxDate = new DetachedCriteria(TestResult.class, "maxDate"); maxDate.setProjection(Projections.projectionList() .add(Projections.max("testDate")) .add(Projections.groupProperty("test")) .add(Projections.groupProperty("item"))); maxDate.add(Restrictions.eqProperty("maxDate.test", "mainQuery.test")); maxDate.add(Restrictions.eqProperty("maxDate.item", "mainQuery.item")); mainQuery.setProjection(Projections.projectionList() .add(Projections.groupProperty("test")) .add(Projections.groupProperty("item")) .add(Projections.rowCount())); result = mainQuery.list(); //use some AliasToBeanResultTransformer to convert the projected result into beans Try if this works...

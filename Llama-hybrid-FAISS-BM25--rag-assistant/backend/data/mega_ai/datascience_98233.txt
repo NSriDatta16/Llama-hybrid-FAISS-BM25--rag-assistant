@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 98233
+[parent_id]: 80666
+[tags]: 
+I had the same problem and I couldn't understand why they were different. The problem is that the ProgbarLogger prints an average of the values (loss, regularization loss, other metrics), which are the values shown in the stdout like this: 45/1 - 0s - loss: 1.2592 - mae: 0.7602 While the values inside the History for the fit, or the scalar or list of scalars for evaluate, are the real values computed on your model. This can be changed with the stateful_metrics parameter of the ProgbarLogger , which will return the real values and not the averaged ones. In your example could be done like this for loss : results = model.evaluate(test_data, test_target, verbose=2, callbacks=[ tf.keras.callbacks.ProgbarLogger( count_mode="steps", stateful_metrics=["loss"] ) ])

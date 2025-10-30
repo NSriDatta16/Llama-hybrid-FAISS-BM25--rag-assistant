@@ -1,0 +1,236 @@
+In numerical linear algebra, the Gauss–Seidel method, also known as the Liebmann method or the method of successive displacement,  is an iterative method used to solve a system of linear equations. It is named after the German mathematicians Carl Friedrich Gauss and Philipp Ludwig von Seidel, and is similar to the Jacobi method. Though it can be applied to any matrix with non-zero elements on the diagonals, convergence is only guaranteed if the matrix is either strictly diagonally dominant, or symmetric and positive definite. It was only mentioned in a private letter from Gauss to his student Gerling in 1823. A publication was not delivered before 1874 by Seidel.
+
+Description 
+Let  be a square system of  linear equations, where:
+
+When  and  are known, and  is unknown, we can use the Gauss–Seidel method to approximate . The vector  denotes our initial guess for  (often  for ). We denote  as the -th approximation or iteration of , and  is the next (or k+1) iteration of .
+
+Matrix-based formula 
+The solution is obtained iteratively via
+
+where the matrix  is decomposed into a lower triangular component , and a strictly upper triangular component  such that . More specifically, the decomposition of  into  and  is given by:
+
+Why the matrix-based formula works 
+The system of linear equations may be rewritten as:
+
+The Gauss–Seidel method now solves the left hand side of this expression for , using previous value for  on the right hand side. Analytically, this may be written as:
+
+Element-based formula 
+However, by taking advantage of the triangular form of , the elements of  can be computed sequentially for each row  using forward substitution:
+
+Notice that the formula uses two summations per iteration which can be expressed as one summation  that uses the most recently calculated iteration of . The procedure is generally continued until the changes made by an iteration are below some tolerance, such as a sufficiently small residual.
+
+Discussion 
+The element-wise formula for the Gauss–Seidel method is similar to that of the Jacobi method.
+
+The computation of  uses the elements of  that have already been computed, and only the elements of  that have not been computed in the -th iteration. This means that, unlike the Jacobi method, only one storage vector is required as elements can be overwritten as they are computed, which can be advantageous for very large problems.
+
+However, unlike the Jacobi method, the computations for each element are generally much harder to implement in parallel, since they can have a very long critical path, and are thus most feasible for sparse matrices. Furthermore, the values at each iteration are dependent on the order of the original equations.
+
+Gauss-Seidel is the same as successive over-relaxation with .
+
+Convergence
+The convergence properties of the Gauss–Seidel method are dependent on the matrix A. Namely, the procedure is known to converge if either:
+  is symmetric positive-definite, or
+  is strictly or irreducibly diagonally dominant.
+
+The Gauss–Seidel method sometimes converges even if these conditions are not satisfied.
+
+Golub and Van Loan give a theorem for an algorithm that splits  into two parts. Suppose  is nonsingular. Let  be the spectral radius of . Then the iterates  defined by  converge to  for any starting vector  if  is nonsingular and .
+
+Algorithm 
+
+Since elements can be overwritten as they are computed in this algorithm, only one storage vector is needed, and vector indexing is omitted. The algorithm goes as follows:
+
+ algorithm Gauss–Seidel method is
+     inputs: , 
+     
+ 
+     
+     repeat until convergence
+         for  from 1 until  do
+             
+             for  from 1 until  do
+                 if  ≠  then
+                     
+                 end if
+             end (-loop)
+             
+         end (-loop)
+         check if convergence is reached
+     end (repeat)
+
+Examples
+
+An example for the matrix version
+
+A linear system shown as  is given by:
+
+We want to use the equation
+
+in the form
+
+where:
+
+We must decompose  into the sum of a lower triangular component  and a strict upper triangular component :
+
+The inverse of  is:
+
+Now we can find:
+
+Now we have  and  and we can use them to obtain the vectors  iteratively.
+
+First of all, we have to choose : we can only guess. The better the guess, the quicker the algorithm will perform.
+
+We choose a starting point:
+
+We can then calculate:
+
+As expected, the algorithm converges to the exact solution:
+
+In fact, the matrix  is strictly diagonally dominant (but not positive definite).
+
+Another example for the matrix version
+
+Another linear system shown as  is given by:
+
+We want to use the equation
+
+in the form
+
+where:
+
+We must decompose  into the sum of a lower triangular component  and a strict upper triangular component :
+
+The inverse of  is:
+
+Now we can find:
+
+Now we have  and  and we can use them to obtain the vectors  iteratively.
+
+First of all, we have to choose : we can only guess. The better the guess, the quicker will perform the algorithm.
+
+We suppose:
+
+We can then calculate:
+
+If we test for convergence we'll find that the algorithm diverges. In fact, the matrix A is neither diagonally dominant nor positive definite.
+Then, convergence to the exact solution
+
+is not guaranteed and, in this case, will not occur.
+
+An example for the equation version
+
+Suppose given  equations where xn are vectors of these equations and starting point x0.
+From the first equation solve for x1 in terms of   For the next equations substitute the previous values of xs.
+
+To make it clear consider an example.
+
+Solving for  and  gives:
+
+Suppose we choose  as the initial approximation, then the first approximate solution is given by
+
+Using the approximations obtained, the iterative procedure is repeated until the desired accuracy has been reached.  The following are the approximated solutions after four iterations.
+
+The exact solution of the system is .
+
+An example using Python and NumPy
+The following numerical procedure simply iterates to produce the solution vector.
+
+import numpy as np
+
+ITERATION_LIMIT = 1000
+
+# initialize the matrix
+A = np.array(
+    [
+        [10.0, -1.0, 2.0, 0.0],
+        [-1.0, 11.0, -1.0, 3.0],
+        [2.0, -1.0, 10.0, -1.0],
+        [0.0, 3.0, -1.0, 8.0],
+    ]
+)
+# initialize the RHS vector
+b = np.array([6.0, 25.0, -11.0, 15.0])
+
+print("System of equations:")
+for i in range(A.shape[0]):
+    row = [f"{A[i,j]:3g}*x{j+1}" for j in range(A.shape[1])]
+    print("[{0}] = [{1:3g}]".format(" + ".join(row), b[i]))
+
+x = np.zeros_like(b, np.float_)
+for it_count in range(1, ITERATION_LIMIT):
+    x_new = np.zeros_like(x, dtype=np.float_)
+    print(f"Iteration {it_count}: {x}")
+    for i in range(A.shape[0]):
+        s1 = np.dot(A[i, :i], x_new[:i])
+        s2 = np.dot(A[i, i + 1 :], x[i + 1 :])
+        x_new[i] = (b[i] - s1 - s2) / A[i, i]
+    if np.allclose(x, x_new, rtol=1e-8):
+        break
+    x = x_new
+
+print(f"Solution: {x}")
+error = np.dot(A, x) - b
+print(f"Error: {error}")
+
+Produces the output:
+
+System of equations:
+[ 10*x1 +  -1*x2 +   2*x3 +   0*x4] = [  6]
+[ -1*x1 +  11*x2 +  -1*x3 +   3*x4] = [ 25]
+[  2*x1 +  -1*x2 +  10*x3 +  -1*x4] = [-11]
+[  0*x1 +   3*x2 +  -1*x3 +   8*x4] = [ 15]
+Iteration 1: [ 0.  0.  0.  0.]
+Iteration 2: [ 0.6         2.32727273 -0.98727273  0.87886364]
+Iteration 3: [ 1.03018182  2.03693802 -1.0144562   0.98434122]
+Iteration 4: [ 1.00658504  2.00355502 -1.00252738  0.99835095]
+Iteration 5: [ 1.00086098  2.00029825 -1.00030728  0.99984975]
+Iteration 6: [ 1.00009128  2.00002134 -1.00003115  0.9999881 ]
+Iteration 7: [ 1.00000836  2.00000117 -1.00000275  0.99999922]
+Iteration 8: [ 1.00000067  2.00000002 -1.00000021  0.99999996]
+Iteration 9: [ 1.00000004  1.99999999 -1.00000001  1.        ]
+Iteration 10: [ 1.  2. -1.  1.]
+Solution: [ 1.  2. -1.  1.]
+Error: [  2.06480930e-08  -1.25551054e-08   3.61417563e-11   0.00000000e+00]
+
+Program to solve arbitrary no. of equations using Matlab
+The following code uses the formula
+
+function x = gauss_seidel(A, b, x, iters)
+    for i = 1:iters
+        for j = 1:size(A,1)
+            x(j) = (b(j) - sum(A(j,:)'.*x) + A(j,j)*x(j)) / A(j,j);
+        end
+    end
+end
+
+See also
+Conjugate gradient method
+Gaussian belief propagation
+Iterative method: Linear systems
+Kaczmarz method (a "row-oriented" method, whereas Gauss-Seidel is "column-oriented." See, for example, this paper.)
+Matrix splitting
+Richardson iteration
+
+Notes
+
+References
+ .
+ .
+
+External links
+
+Gauss–Seidel from www.math-linux.com
+Gauss–Seidel From Holistic Numerical Methods Institute
+ Gauss Siedel Iteration from www.geocities.com
+The Gauss-Seidel Method
+Bickson
+Matlab code
+C code example
+
+Numerical linear algebra
+Articles with example pseudocode
+Relaxation (iterative methods)
+Articles with example Python (programming language) code
+Articles with example MATLAB/Octave code

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4941129
+[parent_id]: 4941102
+[tags]: 
+There is no MS SQL function that will create such shadow tables automagically. It comes close with partitioning, but that really splits the storage (fast/slow) while still keeping data in one table. What you are looking for is a straight archive and purge. A simple strategy is a nightly task to update static lookup tables (that the primary table references) move records with date to history table delete records that were moved If this table has foreign key links to other tables, you will find it unlikely that those tables need to be purged unless they too grow quickly (rare). If other tables have FKs to the primary on the other hand, that is a different matter. In that case, you would have to move all the dependent children, then the primary, then finally delete in reverse order.

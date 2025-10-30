@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3030743
+[parent_id]: 3030697
+[tags]: 
+Here be dragons. You're getting into parts of c++ that will probably result in a lot of questions posted to StackOverflow :) Think long and hard about if you really want to do this. Start with the easy part, you want to allow operator+ to add types that are not always the same as T . Start with this: template TemplateTest operator+(const TemplateTest & rhs) { return TemplateTest (this->x + rhs.x); } Note that this is templated on T2 as well as T . When adding doubleTt1 + intTt2 , T will be doubleTt1 and T2 will be intTt2 . But here's the big problem with this whole approach. Now, when you add a double and an int , what do you expect? 4 + 2.3 = 6.3 ? or 4 + 2.3 = 6 ? Who would expect 6 ? Your users should, because you're casting the double back to an int , thus losing the fractional part. Sometimes. Depending on which operand is first. If the user wrote 2.3 + 4 , they would get (as expected?) 6.3 . Confusing libraries make for sad users. How best to deal with that? I don't know.

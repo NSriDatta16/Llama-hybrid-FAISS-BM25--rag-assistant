@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5354111
+[parent_id]: 5353611
+[tags]: 
+Your specific issue is that you are bypassing the default string to Brush conversion and would need to handle that manually. As sixlettervariables states, you'd can use a Binding if your source is a string, but that is probably overkill. At a minimum, you'd want to set Mode=OneTime on the Binding. You can also create a custom MarkupExtension that performs the conversion. Your conversion, whether it be through a custom IValueConverter or MarkupExtension, can leverage the BrushConverter class. So things like "Black" or "#000" will work as they do when defining the color in XAML like your first example. EDIT: Actually a markup extension that derives from StaticExtension, makes this easier: public class BrushStaticExtension : StaticExtension { private static BrushConverter converter = new BrushConverter(); public BrushStaticExtension() { } public BrushStaticExtension(string member) : base (member) { } public override object ProvideValue(IServiceProvider serviceProvider) { return converter.ConvertFrom(base.ProvideValue(serviceProvider)); } }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3457255
+[parent_id]: 3457119
+[tags]: 
+using System.Linq; using System.Net.NetworkInformation; var nic = NetworkInterface .GetAllNetworkInterfaces() .FirstOrDefault(i => i.NetworkInterfaceType != NetworkInterfaceType.Loopback && i.NetworkInterfaceType != NetworkInterfaceType.Tunnel); var name = nic.Name; or more elegant solution: .Where(i => !( new[] { NetworkInterfaceType.Loopback, NetworkInterfaceType.Tunnel } .Contains(i.NetworkInterfaceType))) or if you want to practice in LINQ: static IEnumerable GetAllNetworkInterfaces(IEnumerable excludeTypes) { var all = NetworkInterface.GetAllNetworkInterfaces(); var exclude = all.Where(i => excludeTypes.Contains(i.NetworkInterfaceType)); return all.Except(exclude); } Usage: var nic = GetAllNetworkInterfaces(new[] { NetworkInterfaceType.Tunnel, NetworkInterfaceType.Loopback });

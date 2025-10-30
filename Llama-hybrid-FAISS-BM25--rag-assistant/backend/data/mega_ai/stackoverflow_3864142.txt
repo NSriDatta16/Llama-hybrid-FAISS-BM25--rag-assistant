@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3864142
+[parent_id]: 3863899
+[tags]: 
+This looks like a tree traversal problem to me, which doesn't lend itself particularly well to set-based operations. The following works, but it's not too elegant: -- turn this into stored proc? declare @inputId int set @inputId = 4 declare @Ids table (ID int) insert into @Ids values (@inputId) declare @reccount int set @reccount = 1 declare @lastreccount int set @lastreccount = 0 while @reccount <> @lastreccount begin set @lastreccount = @reccount insert into @Ids select ParentID from recursiveTest where ID in (select ID from @Ids) and ParentID not in (select ID from @Ids) set @reccount = (select COUNT(*) from @Ids) end select * from recursiveTest where ID in (select ID from @Ids);

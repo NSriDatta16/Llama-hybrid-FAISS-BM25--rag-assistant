@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4210286
+[parent_id]: 4209868
+[tags]: 
+The problem is that the Schedule struct you are defining matches this kind of C struct: struct Schedule { BSTR *Name; }; While the structure that exists in memory at the IntPtr you are tinkering with has the layout: struct Schedule { BSTR Name; }; If you use Marshal.StructureToPtr() on an instance of Schedule and then inspect the memory, you will see that only the first four bytes get set, because they are a pointer. Unfortunately, there is no elegant workaround to this in .NET. You cannot use a non-pointer string in a struct because then the struct would be of variable length. If it is an option, forgo the struct entirely and stick with Marshal.PtrToStringAuto() .

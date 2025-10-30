@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 169779
+[parent_id]: 168167
+[tags]: 
+For CherryPy 3.1, you would need to find the right subclass of Session, run its 'setup' classmethod, and then set cherrypy.session to a ThreadLocalProxy. That all happens in cherrypy.lib.sessions.init, in the following chunks: # Find the storage class and call setup (first time only). storage_class = storage_type.title() + 'Session' storage_class = globals()[storage_class] if not hasattr(cherrypy, "session"): if hasattr(storage_class, "setup"): storage_class.setup(**kwargs) # Create cherrypy.session which will proxy to cherrypy.serving.session if not hasattr(cherrypy, "session"): cherrypy.session = cherrypy._ThreadLocalProxy('session') Reducing (replace FileSession with the subclass you want): FileSession.setup(**kwargs) cherrypy.session = cherrypy._ThreadLocalProxy('session') The "kwargs" consist of "timeout", "clean_freq", and any subclass-specific entries from tools.sessions.* config.

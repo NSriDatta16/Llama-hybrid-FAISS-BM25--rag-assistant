@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1762783
+[parent_id]: 1762513
+[tags]: 
+The join on tag is causing rows from feedback to appear multiple times. That causes the average to be way off. You could rewrite the FROM part with a subquery for both the tags and the average. That makes sure their calculations don't interfere: SELECT , feedback.rating , suptags.tags FROM suppliers AS s JOIN ( SELECT st.supplier_id , GROUP_CONCAT(REPLACE( t.name, ' ', ',') SEPARATOR ',') AS tags FROM suppliers_to_tags AS st JOIN supplier_tags AS t ON t.tag_id = st.tag_id GROUP BY st.supplier_id ) as suptags ON suptags.supplier_id = s.supplier_id JOIN ( SELECT fb1.supplier_id , AVG(fb1.rating) as rating FROM supplier_feedback fb1 WHERE fb1.feedback_id NOT IN ( SELECT min(fb2.feedback_id) FROM supplier_feedback fb2 WHERE fb2.supplier_id = fb1.supplier_id ) GROUP BY fb1.supplier_id ) feedback ON s.supplier_id = feedback.supplier_id The suptags subquery adds all tags per supplier to a string. The feedback subquery calculates the average rating, excluding the row with the lowest feedback_id.

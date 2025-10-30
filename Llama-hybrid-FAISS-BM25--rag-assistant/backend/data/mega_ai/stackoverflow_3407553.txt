@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3407553
+[parent_id]: 
+[tags]: 
+Store And Replay WCF Messages
+
+I want to store WCF messages in some storage and read them later on in order to "replay" them again. Attached some code parts: private void WriteMessage(Message message, string path) { FileStream fileStream = new FileStream(path, FileMode.Create); using (XmlDictionaryWriter writer = XmlDictionaryWriter.CreateBinaryWriter(fileStream)) { using (XmlDictionaryReader reader = message.GetReaderAtBodyContents()) { message.WriteBodyContents(writer); writer.Flush(); } } } private Message ReadMessage(string path) { using (FileStream fs = File.OpenRead(path)) { using (XmlDictionaryReader reader = XmlDictionaryReader.CreateBinaryReader(fs, XmlDictionaryReaderQuotas.Max)) { fs.Flush(); Message message = Message.CreateMessage(reader, int.MaxValue, messageVersion); return message.CreateBufferedCopy(int.MaxValue).CreateMessage(); } } } problem is that before storing the message, the Message.ToString() returns the message string as it's should like, the whole message, but after reading it, the ToString() shows the body as "... stream ..." and that's it. please advaice Many thanks :-) Please note: at the "WriteMessage" only the body is read and written as the message is wrapped in another message.

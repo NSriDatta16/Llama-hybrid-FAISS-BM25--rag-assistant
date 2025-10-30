@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1683814
+[parent_id]: 1683784
+[tags]: 
+I created a handler such as this to output some environmental parameters for reuse in various JS objects: /Environment.ashx/.cs using System; using System.Collections.Generic; using System.Linq; using System.Web; namespace MvcApplication2 { /// /// Summary description for $codebehindclassname$ /// public class Environment : IHttpHandler { public void ProcessRequest(HttpContext context) { context.Response.ContentType = "text/javascript"; context.Response.Cache.SetCacheability(HttpCacheability.Public); context.Response.Cache.SetExpires(DateTime.Now.AddSeconds(600)); context.Response.Write(String.Format("Environment = {{ RootPath:\"{0}\" }};", context.Request.ApplicationPath)); // set any application info you need here } public bool IsReusable { get { return false; } } } } Enable the handler in your web.config: Set up your master or content ASPX page (below assumes ASP.NET MVC): " type="text/javascript"> Now, for all JS objects and scripts that assume Environment.ashx was already loaded, you can reference Environment.RootPath var imagePath = Environment.RootPath + "images/image.jpg";

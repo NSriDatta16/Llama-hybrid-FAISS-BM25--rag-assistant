@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2599073
+[parent_id]: 2597630
+[tags]: 
+You can rewrite the parent class, but that will only apply to calls for that class itself. So this call will retrieve the correctly overridden class: Mage::getBlock("adminhtml/widget_tabs"); This is because the real classname is loaded by Magento using the XML / overrides system. However, if you don't override the child class, this call will not work as you expect: Mage::getBlock("admihtml/sales_order_view_tabs"); That's because the parent class is not specified using Magento's system, but using regular PHP: class Mage_Adminhtml_Block_Sales_Order_View_Tabs extends Mage_Adminhtml_Block_Widget_Tabs If you want to override the parent class, the XML-based override system cannot help you. You can, however, copy the Widget_Tabs class into the local space and Magento will load it there. Make a directory path app/code/local/Mage/Adminhtml/Block/Widget/ and copy Tabs.php into it, and you can make modifications as necessary. Hope that helps. Thanks, Joe

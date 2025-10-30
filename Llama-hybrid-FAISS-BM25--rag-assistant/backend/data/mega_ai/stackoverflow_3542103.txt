@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3542103
+[parent_id]: 3540573
+[tags]: 
+With the code fragment in one of the answers above, "@ids" is not sanitised. This is fine if your code 'knows' that "@ids" contains only valid integer IDs, but very dangerous if any ID came in from user input or a URL. See: http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M001831 ...for a possible solution. This is a protected method so we have to call via 'send' to demonstrate its use at the console: >> ActiveRecord::Base.send(:sanitize_sql_for_conditions, { :id => [1,6] }, :people) => "people.\"id\" IN (1,6)" ...i.e. insert the above result after the SQL WHERE keyword. As the previous answer says, unless you have a really complex case which can't be built up using standard Rails calls (which is indeed the case for Coderama but may not be for future readers), you should always try to avoid writing SQL by hand. Bearing this in mind, an alternative way to build up complex queries is the "ez_where" plugin which is worth a look if anyone reading is thinking of resorting to SQL: http://github.com/ezmobius/ez-where

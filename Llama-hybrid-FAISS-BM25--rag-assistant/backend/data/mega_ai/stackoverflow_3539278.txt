@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3539278
+[parent_id]: 
+[tags]: 
+Using Moq to override virtual methods in the same class
+
+We are using Moq to unit test our service classes, but are stuck on how to test situations where a service method calls another service method of the same class. I tried setting the method being called to virtual, but still couldn't figure out what to do then in Moq. For example: public class RenewalService : IRenewalService { //we've already tested this public virtual DateTime? GetNextRenewalDate(Guid clientId) { DateTime? nextRenewalDate = null; //... a ton of already tested stuff... return nextRenewalDate; } //but want to test this without needing to mock all //the methods called in the GetNextRenewalDate method public bool IsLastRenewalOfYear(Renewal renewal) { DateTime? nextRenewalDate = GetNextRenewalDate(renewal.Client.Id); if (nextRenewalDate == null) throw new Exceptions.DataIntegrityException("No scheduled renewal date, cannot determine if last renewal of year"); if (nextRenewalDate.Value.Year != renewal.RenewDate.Year) return true; return false; } } In the above example, our GetNextRenewalDate method is pretty complicated, and we've already unit tested it. However, we want to test the simpler IsLastRenewalOfYear without needing to mock everything needed for GetNextRenewalDate. Basically, we just want to mock GetNextRenewalDate. I realize that I could create a new class that overrides GetNextRenewalDate and test the new class, but is there a way that I can leverage Moq to make this simpler?

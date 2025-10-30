@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 290632
+[parent_id]: 
+[tags]: 
+How to overload operator<< that doesn't take or return ostream
+
+Original Question I am writting a logging class where the goal is to be able to do this: // thread one Logger() Currently my Logger header looks something like this: #pragma once; #include class Logger { public: Logger(); ~Logger(); std::ostream* out_stream; }; template Logger& operator Some notes about this class: Cross platform compatibility is not an issue. Inside of Logger.cpp there is a singleton class that takes care of creating the "real" ostream. The Logger constructor and deconstructor perform the necessary locking of the singleton. I have three problems: How do I make the operator How do I make the operator How can I add a specialization so that if T is a WCHAR* or std::wstring that it will convert it to char* or std::string before passing it to out_stream? (I can do the conversion. Losing high unicode characters isn't a problem in my case.) Summary of things learned in answers: Put template BEFORE friend instead of after. std::ios::hex is not a manipulator. std::hex is a manipulator. End Result #pragma once #include #include std::string ConvertWstringToString(std::wstring wstr); class Logger { public: Logger(); ~Logger(); template Logger& operator

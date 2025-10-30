@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2515562
+[parent_id]: 2515501
+[tags]: 
+Assuming MySQL , this one: SELECT * FROM mytable WHERE flagged = 'F' ORDER BY flagged ASC, id ASC LIMIT 1 will be slightly less efficient in InnoDB and of same efficiency in MyISAM , if you have an index on (flagged, id) . InnoDB tables are clustered on the PRIMARY KEY , so fetching the first record in id does not require looking up the table. In MyISAM , tables are heap-organized, so the index used to police the PRIMARY KEY is stored separately from the table. Note the flagged in the ORDER BY clause may seem to be redundant, but it is required for MySQL to pick the correct index. Also, the composite index should be on (flagged, id) even in InnoDB (which implicitly includes the PRIMARY KEY into each index).

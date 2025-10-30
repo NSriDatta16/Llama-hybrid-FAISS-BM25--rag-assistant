@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 61908
+[parent_id]: 61890
+[tags]: 
+Random forests' base-learner trees use "bootstrapping," by default with rate 1.0 (parameter subsamplingRate ); that is, the dataset is resampled but with replacement. So each tree learns on a dataset of the same size as the original, but with some of those points duplicated and some left out. For large datasets, it works out to be about 1/3 of the datasets are left out for each tree. With enough trees (really, just a few is enough), it becomes extremely unlikely that any datapoint is never used by any of the trees. Spark appears to use hard voting for its random forests , so that's not the difference. It seems to me that the main difference here is that you've partitioned the data for your custom implementation, so those base learners learn on substantially less data. If that's doing well, it suggests that the random forest is overfitting in comparison. I would suggest varying the tree parameters, say by making the trees in the random forest more conservative, to see how they compare then.

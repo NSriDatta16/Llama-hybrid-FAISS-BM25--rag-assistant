@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3495883
+[parent_id]: 
+[tags]: 
+C# - Iterating over and invoking class members
+
+I'm trying to iterate over the members of a static class and invoke all of the members that are fields. I get a MissingFieldException on the line where I attempt to invoke the member. Something like this: "Field 'NamespaceStuff.MyClass+MyStaticClass.A' not found." public class MyClass { public MyClass() { Type type = typeof(MyStaticClass); MemberInfo[] members = type.GetMembers(); foreach(MemberInfo member in members) { if (member.MemberType.ToString() == "Field") { // Error on this line int integer = type.InvokeMember(member.Name, BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField, null, null, null); } } } } public static class MyStaticClass { public static readonly int A = 1; public static readonly int B = 2; public static readonly int C = 3; } The array "members" looks something like this: [0]|{System.String ToString()} [1]|{Boolean Equals(System.Object)} [2]|{Int32 GetHashCode()} [3]|{System.Type GetType()} [4]|{Int32 A} [5]|{Int32 B} [6]|{Int32 C} It blows up when it gets to index 4 in the foreach loop ('A' really is in there). I passed in null for the second-to-last parameter in InvokeMember() because it's a static class, and there's nothing appropriate to pass in here. I'm guessing my problem is related to this, though. Is what I'm trying to do possible? Maybe I'm going about it completely the wrong way. Also, please let me know if some of these BindingsFlags are superfluous.

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 566647
+[parent_id]: 566640
+[tags]: 
+Your regression has two inputs crop coverage ~ soil_moisture + weed_coverage but you've only plotted crop_coverage against soil_moisture while still allowing variability in weed_coverage . If you want a smooth plot, you need to drop weed_coverage from the analysis entirely (not entirely satisfactory); or you can plot $E(\texttt{crop_coverage} \mid \texttt{soil_moisture})$ . That is, average over the "hidden" variable. Finally, you could, since you have two input variables in the model, construct a 3D response surface plot to show how the two variables jointly contribute to crop_coverage . I've managed to reproduce the same phenomenon for a linear model, by plotting the fitted value while not accounting for another variable included in the model. See the code below: n = 10 x1 = runif(n) x2 = runif(n) y = 0.3*x1 - 2*x2 + rnorm(n) d = tibble( y = y, x1 = x1, x2 = x2 ) lin_model = lm(y ~ x1 + x2) d $fitted = lin_model$ fitted.values d %>% ggplot(aes(x = x1, y = fitted)) + geom_point(aes(x = x1, y = y)) + geom_line()

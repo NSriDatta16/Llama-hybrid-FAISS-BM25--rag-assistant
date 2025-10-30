@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1149242
+[parent_id]: 1149095
+[tags]: 
+IN your previous question I didn't realize you were moving the slider by changing its transform. Mixing up motion by changing its frame and transform is going to be moderately complicated. Maybe you could try doing something more like this: - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event { if (!self.dragging ) { return; } UITouch *touch = [[event allTouches] anyObject]; CGPoint point = [touch locationInView:self]; int offset = point.x - self.startX; NSLog(@"%i", offset); if (offset > (LENGTH-SIZE)) { offset = (LENGTH-SIZE); } CGRect oldFrame = self.frame; CGRect newFrame = CGRectMake(oldFrame.origin.x+offset, oldFrame.origin.y, oldFrame.size.width, oldFrame.size.height); self.frame = newFrame; if (point.x >= (LENGTH-(SIZE-self.startX))) { NSLog(@"Slider reached end"); [self.sliderView removeFromSuperview]; } } That moves the slider by modifying its frame, not its translation, which should cause it to interact better with the snap back animation. Alternatively, rather than resetting the frame in the implicit animator you could reset the translation there.

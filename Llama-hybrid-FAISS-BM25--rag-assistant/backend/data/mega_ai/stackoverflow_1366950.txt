@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1366950
+[parent_id]: 1305072
+[tags]: 
+The example Chico gives is on the right track, but has a problem: when there are many categories, the script will also execute many queries, which is inefficient. The following example is much more efficient: $categories = array(); $category_array = mysql_query("SELECT id_a, type FROM a"); while ($category = mysql_fetch_array($category_array)) { $category['products'] = array(); $categories[$category['id_a']][] = $category; } $product_array = mysql_query("SELECT * FROM b"); while ($product = mysql_fetch_array($product_array)) { $categories[$product['id_a']]['products'][] = $product } foreach($categories as $category) { echo $category['type']; foreach ($category['products'] as $product) { echo $product['name']; } } As an added bonus, this also separates the retrieval of the data more cleanly from the output.

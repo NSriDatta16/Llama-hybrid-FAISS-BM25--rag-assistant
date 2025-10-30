@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 54887
+[parent_id]: 
+[tags]: 
+Keras Model question for Pre trained model extension
+
+I want to add a few more layers to a Resnet50 model and my question is - do I need to compile it and train it on new data or can I just use it as it is? Will it just give me the Resnet50 results? Here is what I am trying: def base_model(): resnet = resnet50.ResNet50(weights="imagenet", include_top=False) x = resnet.output x = Conv2D(128, (3, 3), activation='relu',padding='same')(x) x = Conv2D(128, (3, 3), activation='relu',padding='same')(x) x = MaxPooling2D((2, 2), strides=(2, 2))(x) x = Conv2D(256, (3, 3), activation='relu',padding='same')(x) x = Conv2D(256, (3, 3), activation='relu',padding='same')(x) x = MaxPooling2D((2, 2), strides=(2, 2))(x) x = Conv2D(512, (3, 3), activation='relu',padding='same')(x) x = Conv2D(512, (3, 3), activation='relu',padding='same')(x) x = MaxPooling2D((2, 2), strides=(2, 2))(x) x = GlobalAveragePooling2D()(x) x = Dense(4096, activation='relu')(x) x = Dropout(0.6)(x) x = Dense(4096, activation='relu')(x) x = Dropout(0.6)(x) x = Lambda(lambda x_: K.l2_normalize(x,axis=1))(x) return Model(inputs=resnet.input, outputs=x) And then use it like this : enhanced_resnet = base_model() img = image.load_img(file, target_size=(224, 224)) img = image.img_to_array(img) x = resnet50.preprocess_input(img) x = np.array([x]) feature = enhanced_resnet.predict(x) What I want as return value is the features from the image and not a prediction, as I am using a distance equation to tell the similarity between images.

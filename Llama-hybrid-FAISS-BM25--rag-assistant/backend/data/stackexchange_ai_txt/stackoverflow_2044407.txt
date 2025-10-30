@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2044407
+[parent_id]: 2043281
+[tags]: 
+Here's one that works and is not ugly: ;WITH Time_CTE AS ( SELECT MIN(_Timestamp) AS dt, ROW_NUMBER() OVER (ORDER BY MIN(_Timestamp)) AS RowNum FROM Table1 GROUP BY _Timestamp ) SELECT t1.dt AS StartDate, t2.dt AS EndDate, DATEDIFF(MS, t1.dt, t2.dt) AS Elapsed FROM Time_CTE t1 INNER JOIN Time_CTE t2 ON t2.RowNum = t1.RowNum + 1 Will give you the following output from your example: StartDate | EndDate | Elapsed ------------------------+-------------------------+-------- 2009-12-20 11:59:56.000 | 2009-12-20 11:59:56.300 | 300 2009-12-20 11:59:56.300 | 2009-12-20 11:59:56.400 | 100 2009-12-20 11:59:56.400 | 2009-12-20 11:59:56.500 | 100 2009-12-20 11:59:56.500 | 2009-12-20 11:59:56.900 | 400 Edit: If you want to restrict time ranges then just add WHERE _Timestamp BETWEEN @StartDate AND @EndDate before the GROUP BY line. Edit2: And if you want the average, then change that final SELECT t1.dt, ... statement to: SELECT AVG(DATEDIFF(MS, t1.dt, t2.dt)) FROM Time_CTE t1 ... (same as above)

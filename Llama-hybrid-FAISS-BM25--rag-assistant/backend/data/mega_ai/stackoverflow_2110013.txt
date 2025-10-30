@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2110013
+[parent_id]: 2108742
+[tags]: 
+If all the associated entities (Log, Product and Photo) will be searched by a common property (id INT) then maybe you could try something like this... First, create an interface: public interface IUserAssociation { int id { get; } } Then each of the three classes would implement this interface like so: public partial class Product : IUserAssociation { } The the GetUser method would look like so: public User GetUser (T entity) where T : IUserAssociation { var type = typeof(T); if (type == typeof(Log)) { return db.Users.FirstOrDefault(u => u.Logs.Any(l => l.id.Equals(entity.id))); } else if (type == typeof(Product)) { return db.Users.FirstOrDefault(u => u.Products.Any(pr => pr.id.Equals(entity.id))); } else if (type == typeof(Photo)) { return db.Users.FirstOrDefault(u => u.Photos.Any(ph => ph.id.Equals(entity.id))); } else { throw new ArgumentException(); } } Then you should be able to call GetUser and pass it a Log, Photo or Product entity from one method. It is not very elegant but would work for this specific situation.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2206111
+[parent_id]: 
+[tags]: 
+How do I execute an external script while capturing both output and exit code in Perl?
+
+I'm trying to check for an SVN tag existence from a Perl script. So I try calling svn info $url , read exit code and suppress standard output and standard error streams. However, I struggle to do this elegantly (there are probably better ways to ask SVN about a tag, but that's not the point here): my $output = `svn info $url/tags/$tag`; This suppresses the output while putting it into $output . Exit code is lost. my $output = `svn info $url/tags/$tag 2>&1`; This suppresses both STDERR and STDOUT and puts them both into $output . Exit code is again lost. my $exitcode = system("svn", "info", "$url/tags/$tag"); This catches the exit code, but the actual output and error stream is visible to the user. open( STDERR, q{>}, "/dev/null" ); open my $fh, q{>}, "/dev/null"; select($fh); if (system("svn", "info", "$url/tags/$tag") != 0) { select(STDOUT); print ("Tag doesn't exist!"); do_something_with_exit(); } select(STDOUT); print "Exit code: $exitcode"; This kills the STDOUT and STDERR and catches the exit code, but it's ugly because I'd have to remeber to switch the STDOUT back to original. So, is there any more elegant solution?

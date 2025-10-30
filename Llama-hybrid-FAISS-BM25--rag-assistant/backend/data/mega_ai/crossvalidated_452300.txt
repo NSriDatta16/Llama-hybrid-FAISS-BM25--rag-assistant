@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 452300
+[parent_id]: 
+[tags]: 
+One shot inference with Variational Autoencoders using proposal mean
+
+Let's say you have an already trained Variational Autoencoder where the parameters are $\phi, \theta$ for the recognition and generative models respectively. Let's also assume you have the following Gaussian factorization scheme: $ \newcommand{\Norm}{\mathcal{N}} \newcommand{\pz}{p(z)} \newcommand{\ptheta}{p_{\theta}} \newcommand{\encoding}{q_{\phi}(z \g x)} \newcommand{\decoding}{p_{\theta}(x \g z)} \newcommand{\g}{\,|\,} \newcommand{\qphi}{q_{\phi}} \newcommand{\qphizgivenx}[2]{\qphi(#1 \g #2)} $ $$ \begin{split} \pz &= \Norm(0,I)\\ \decoding &= \Norm(\mu_{\theta}(z),\sigma^2I) \\ \encoding &=\Norm(\mu_{\phi}(x),diag(\sigma^2_{\phi}(x))) \end{split} $$ where $x \in \mathbb{R}^d,z \in \mathbb{R}^r, d>>r$ , and $\mu_\phi, \sigma^2_\phi$ functions are neural network encoders while $\mu_{\theta}$ is a neural network decoder. Now, according to Kingma & Welling 2019 p. 30 $\log \ptheta(x)$ can be approximated by an importance sampling procedure with $L$ iterations: $$ \log \ptheta(x) \approx \log \frac{1}{L} \sum_{l=1}^{L}\frac{\ptheta(x,z^{(l)})}{\qphizgivenx{z^{(l)}}{x}} $$ Here, $z^{(l)}$ are sampled from $\qphizgivenx{z^{(l)}}{x}$ . This operation is too costly for me so I want to do this in one shot so $L=1$ . My question is, can I justify that one single sample should be the mean of the proposal distribution, thus $z^{(1)} = \mu_\phi(x)$ ?

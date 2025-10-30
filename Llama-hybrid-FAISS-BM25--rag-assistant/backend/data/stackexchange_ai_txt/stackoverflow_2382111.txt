@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2382111
+[parent_id]: 2382089
+[tags]: 
+One solution is to partition based on insert date. Namely, your application (or DAO) decides which table to insert into based on some logic which combines current date (or rather time since last partition slice was started) and/or te size of "last" partition. Or offload such logic into a daily script, and have the script populate some "this is the partition to use" for DAO's use. This immediately removes your need to delete "old" rows (just drop the old partition); it also ensures that your inserts periodically start populating small table, which, among other things, speeds up the "average" INSERT/SELECT speed (worst case scenarios are still just as slow of course)

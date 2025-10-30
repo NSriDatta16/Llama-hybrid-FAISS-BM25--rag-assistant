@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5195679
+[parent_id]: 4420393
+[tags]: 
+It appears that socket.io.js has options that control this. tryTransportsOnConnectTimeout - default value is true rememberTransport - default value is true I believe that if 'tryTransportsOnConnectTimeout' is set to 'true' then socket.io will iterate through all transport mechanisms on connect and use the first one that succeeds. If 'rememberTransport' is set to 'true' the transport that was successful is stored in a cookie. In my application I implemented logic to re-connect when disconnected. I found that I had to set both of the above options to 'false' to prevent falling back to a undesired transport. The issue occurred because after disconnect, the server might become available at any point (while the client was attempting long-poll rather than websockets for example). If that occurred, the cookie was set and subsequent connections would continue to use the undesired transport.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3094105
+[parent_id]: 3089658
+[tags]: 
+SELECT... EXCEPT and SELECT...INTERSECT always qualify as elegant in my book, but that doesn't necessarily make code neater or easier to read, and the version I came up with still contains subqueries. Based on the temp table from Paul Kearney - pk , I came up with: DECLARE @Category1 varchar(32) ,@Category2 varchar(32) SET @Category1 = 'ProductA' SET @Category2 = 'ProductB' SELECT isnull(set1.varname, set2.varname) varname, set1.Category, set1.Info, set2.Category, set2.Info from (-- Exists for "1" but not for "2" select @Category1 Category, varname, info from @t where category = @Category1 except select @Category1, varname, info from @t where category = @Category2) set1 full outer join (-- Exists for "2" but not for "1" select @Category2 Category, varname, info from @t where category = @Category2 except select @Category2, varname, info from @t where category = @Category1) set2 on set2.varname = set1.varname The full outer join catches missing rows, and you end up with some NULLs in the Category and Info columns.

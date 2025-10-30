@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2651352
+[parent_id]: 2650897
+[tags]: 
+I have used Enum-Column for such use cases. The plugin allows you to define a enum column type in your migration script and creates a MYSQL enum column type for the attribute. create_table :tasks do |t| ... t.enum :status, :limit => [:normal, :active, :completed], :default => :normal ... end Now in your code you can do the following: task.status = "active" task.status = :completed p "Task status: #{task.status}" # prints Task status: completed Task.find_by_status(:active) Task.find_by_status("active") Task.find_by_status(2) Works well with serialization too: task.to_xml # will result in status= active instead of status-2 Other nice aspect is, the status values are displayed as strings when viewed using a regular DB client(E.g: mysql command console or phpMyAdmin) The plugin provides optimal storage and user friendly access for the enumeration types. Caveat: The plugin is quite old and not maintained. I am using it extensively with MySQL DB. I had to patch the code to get it work on PostgreSQL. If you are using MySQL, this plugin is a good choice.

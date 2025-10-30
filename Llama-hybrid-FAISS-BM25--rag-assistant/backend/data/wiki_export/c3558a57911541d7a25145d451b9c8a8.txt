@@ -1,0 +1,79 @@
+In a general computing sense, overlaying means "the process of transferring a block of program code or other data into main memory, replacing what is already stored". Overlaying is a programming method that allows programs to be larger than the computer's main memory. An embedded system would normally use overlays because of the limitation of physical memory, which is internal memory for a system-on-chip, and the lack of virtual memory facilities.
+
+Usage
+Constructing an overlay program involves manually dividing a program into self-contained object code blocks called overlays or links, generally laid out in a tree structure. Sibling segments, those at the same depth level, share the same memory, called overlay region or destination region. An overlay manager, either part of the operating system or part of the overlay program, loads the required overlay from external memory into its destination region when it is needed; this may be automatic or via explicit code. Often linkers provide support for overlays.
+
+Example
+The following example shows the control statements that instruct the OS/360 Linkage Editor to link an overlay program containing a single region, indented to show structure (segment names are arbitrary):
+ INCLUDE SYSLIB(MOD1)
+ INCLUDE SYSLIB(MOD2)
+ OVERLAY A
+   INCLUDE SYSLIB(MOD3)
+     OVERLAY AA
+       INCLUDE SYSLIB(MOD4)
+       INCLUDE SYSLIB(MOD5)
+     OVERLAY AB
+        INCLUDE SYSLIB(MOD6)
+ OVERLAY B
+    INCLUDE SYSLIB(MOD7)
+                       +--------------+
+                       | Root Segment |
+                       | MOD1, MOD2   |
+                       +--------------+
+                               |
+                    +----------+----------+
+                    |                     |
+             +-------------+       +-------------+
+             |  Overlay A  |       |  Overlay B  |
+             |  MOD3       |       |  MOD7       |
+             +-------------+       +-------------+
+                    |
+           +--------+--------+
+           |                 |
+    +-------------+   +-------------+
+    | Overlay AA  |   | Overlay AB  |
+    | MOD4, MOD5  |   | MOD6        |
+    +-------------+   +-------------+
+These statements define a tree consisting of the permanently resident segment, called the root, and two overlays A and B which will be loaded following the end of MOD2. Overlay A itself consists of two overlay segments, AA, and AB. At execution time overlays A and B will both utilize the same memory locations; AA and AB will both utilize the same locations following the end of MOD3.
+
+All the segments between the root and a given overlay segment are called a path.
+
+Applications
+, most business applications are intended to run on platforms with virtual memory. A developer on such a platform can design a program as if the memory constraint does not exist unless the program's working set exceeds the available physical memory. Most importantly, the architect can focus on the problem being solved without the added design difficulty of forcing the processing into steps constrained by the overlay size. Thus, the designer can use higher-level programming languages that do not allow the programmer much control over size (e.g. Java, C++, Smalltalk).
+
+Still, overlays remain useful in embedded systems. Some low-cost processors used in embedded systems do not provide a memory management unit (MMU). In addition many embedded systems are real-time systems and overlays provide more determinate response-time than paging. For example, the Space Shuttle Primary Avionics System Software (PASS) uses programmed overlays.
+
+Even on platforms with virtual memory, software components such as codecs may be decoupled to the point where they can be loaded in and out as needed.
+
+Historical use
+IBM introduced the concept of a chain job
+in FORTRAN II. The program had to explicitly call the CHAIN subroutine to load a new link,
+and the new link replaced all of the old link's storage except for the Fortran COMMON area.
+
+IBM introduced more general overlay handling in IBSYS/IBJOB, including a tree structure and automatic loading of links as part of CALL processing.
+
+In OS/360, IBM extended the overlay facility of IBLDR by allowing an overlay program to have independent overlay regions, each with its own overlay tree. OS/360 also had a simpler overlay system for transient SVC routines, using 1024-byte SVC transient areas.
+
+In the home computer era overlays were popular because the operating system and many of the computer systems it ran on lacked virtual memory and had very little RAM by current standards: the original IBM PC had between 16K and 64K, depending on configuration. Overlays were a popular technique in Commodore BASIC to load graphics screens.
+
+"Several DOS linkers in the 1980s supported [overlays] in a form nearly identical to that used 25 years earlier on mainframe computers." Binary files containing memory overlays had de facto standard extensions .OVL or .OVR (but also used numerical file extensions like .000, .001, etc. for subsequent files). This file type was used among others by WordStar (consisting of the main executable WS.COM and the overlay modules WSMSGS.OVR, WSOVLY1.OVR, MAILMERGE.OVR and SPELSTAR.OVR, where the "fat" overlay files were even binary identical in their ports for CP/M-86 and MS-DOS), dBase, and the Enable DOS office automation software package from Enable Software. Borland's Turbo Pascal and the GFA BASIC compiler were able to produce .OVL files.
+
+See also 
+ Expanded memory (EMS)
+ Virtual memory
+ Chain loading
+ Paging
+ Bank switching
+ Recursion
+
+Notes
+
+References
+
+Further reading
+  (2+244+4 pages)
+
+External links
+ http://computer-programming-forum.com/29-pascal/45df7513ab22cf7e.htm
+
+Virtual memory

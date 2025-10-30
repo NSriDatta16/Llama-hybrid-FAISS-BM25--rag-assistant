@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1627647
+[parent_id]: 1626597
+[tags]: 
+We use CSLA.NET, and it takes the view that a failed data fetch should return an "empty" object. This is actually quite annoying, as it demands the convention of checking whether obj.IsNew rathern than obj == null . As a previous poster mentioned, null return values will cause code to fail straight away, reducing the likelihood of stealth problems caused by empty objects. Personally, I think null is more elegant. It's a very common case, and I'm surprised that people here seem surprised by it: on any web application, data is often fetched using a querystring parameter, which can obviously be mangled, so requiring that the developer handle incidences of "not found". You could handle this by: if (User.Exists(id)) { this.User = User.Fetch(id); } else { Response.Redirect("~/notfound.aspx"); } ...but that's an extra call to the database every time, which may be an issue on high-traffic pages. Whereas: this.User = User.Fetch(id); if (this.User == null) { Response.Redirect("~/notfound.aspx"); } ...requires only one call.

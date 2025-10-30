@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2320658
+[parent_id]: 
+[tags]: 
+Why are not all type information erased in Java at runtime?
+
+My obviously wrong understanding of Java Generics was up to now, that Type Erasure removes all type information such that there is nothing left at all at runtime. Recently I stumbled upon a code fragment where I had to ask myself: How the hack does this work? Simplified, it presents as: import java.lang.reflect.ParameterizedType; import java.lang.reflect.Type; public abstract class SuperClass { private final Type type; protected SuperClass(){ ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass(); type = parameterizedType.getActualTypeArguments()[0]; } public void tellMyType(){ System.out.println("Hi, my type parameter is " + type); } } and public class Example { public static void main(String[] args) { SuperClass sc = new SuperClass (){}; sc.tellMyType(); } } Executing the Main Class results in Hi, my type parameter is class java.lang.Integer . What we can see here is, that the type information of T is also available at runtime, which contradicts my initial understanding. So my question is: Why does the compiler keep this? Is this required for some internal JVM behavior or is there any reasonable explanation for this effect?

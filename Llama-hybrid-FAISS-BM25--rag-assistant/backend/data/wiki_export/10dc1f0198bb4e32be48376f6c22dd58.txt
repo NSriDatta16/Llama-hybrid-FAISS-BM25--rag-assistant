@@ -1,0 +1,46 @@
+The split-radix FFT is a fast Fourier transform (FFT) algorithm for computing the discrete Fourier transform (DFT), and was first described in an initially little-appreciated paper by R. Yavne (1968) and subsequently rediscovered simultaneously by various authors in 1984. (The name "split radix" was coined by two of these reinventors, P. Duhamel and H. Hollmann.)  In particular, split radix is a variant of the Cooley–Tukey FFT algorithm that uses a blend of radices 2 and 4: it recursively expresses a DFT of length N in terms of one smaller DFT of length N/2 and two smaller DFTs of length N/4.
+
+The split-radix FFT, along with its variations, long had the distinction of achieving the lowest published arithmetic operation count (total exact number of required real additions and multiplications) to compute a DFT of power-of-two sizes N.  The arithmetic count of the original split-radix algorithm was improved upon in 2004 (with the initial gains made in unpublished work by J. Van Buskirk via hand optimization for N=64  ), but it turns out that one can still achieve the new lowest count by a modification of split radix (Johnson and Frigo, 2007). Although the number of arithmetic operations is not the sole factor (or even necessarily the dominant factor) in determining the time required to compute a DFT on a computer, the question of the minimum possible count is of longstanding theoretical interest.  (No tight lower bound on the operation count has currently been proven.)
+
+The split-radix algorithm can only be applied when N is a multiple of 4, but since it breaks a DFT into smaller DFTs it can be combined with any other FFT algorithm as desired.
+
+Split-radix decomposition
+Recall that the DFT is defined by the formula:
+
+where  is an integer ranging from  to  and  denotes the primitive root of unity:
+
+and thus: .
+
+The split-radix algorithm works by expressing this summation in terms of three smaller summations.  (Here, we give the "decimation in time" version of the split-radix FFT; the dual decimation in frequency version is essentially just the reverse of these steps.)
+
+First, a summation over the even indices .  Second, a summation over the odd indices broken into two pieces:  and , according to whether the index is 1 or 3 modulo 4.  Here,  denotes an index that runs from 0 to .  The resulting summations look like:
+
+where we have used the fact that .  These three sums correspond to portions of radix-2 (size N/2) and radix-4 (size N/4) Cooley–Tukey steps, respectively.  (The underlying idea is that the even-index subtransform of radix-2 has no multiplicative factor in front of it, so it should be left as-is, while the odd-index subtransform of radix-2 benefits by combining a second recursive subdivision.)
+
+These smaller summations are now exactly DFTs of length N/2 and N/4, which can be performed recursively and then recombined.
+
+More specifically, let  denote the result of the DFT of length N/2 (for ), and let  and  denote the results of the DFTs of length N/4 (for ).  Then the output  is simply:
+
+This, however, performs unnecessary calculations, since  turn out to share many calculations with .  In particular, if we add N/4 to k, the size-N/4 DFTs are not changed (because they are periodic in N/4), while the size-N/2 DFT is unchanged if we add N/2 to k. So, the only things that change are the  and  terms, known as twiddle factors.  Here, we use the identities:
+
+to finally arrive at:
+
+which gives all of the outputs  if we let  range from  to  in the above four expressions.
+
+Notice that these expressions are arranged so that we need to combine the various DFT outputs by pairs of additions and subtractions, which are known as butterflies.  In order to obtain the minimal operation count for this algorithm, one needs to take into account special cases for  (where the twiddle factors are unity) and for  (where the twiddle factors are  and can be multiplied more quickly); see, e.g. Sorensen et al. (1986).  Multiplications by  and  are ordinarily counted as free (all negations can be absorbed by converting additions into subtractions or vice versa).
+
+This decomposition is performed recursively when N is a power of two.  The base cases of the recursion are N=1, where the DFT is just a copy , and N=2, where the DFT is an addition  and a subtraction .
+
+These considerations result in a count:  real additions and multiplications, for N>1 a power of two.  This count assumes that, for odd powers of 2, the leftover factor of 2 (after all the split-radix steps, which divide N by 4) is handled directly by the DFT definition (4 real additions and multiplications), or equivalently by a radix-2 Cooley–Tukey FFT step.
+
+References
+ R. Yavne, "An economical method for calculating the discrete Fourier transform," in Proc. AFIPS Fall Joint Computer Conf. 33, 115–125 (1968).
+ P. Duhamel and H. Hollmann, "Split-radix FFT algorithm," Electron. Lett. 20 (1), 14–16 (1984).
+ M. Vetterli and H. J. Nussbaumer, "Simple FFT and DCT algorithms with reduced number of operations," Signal Processing 6 (4), 267–278 (1984).
+ J. B. Martens, "Recursive cyclotomic factorization—a new algorithm for calculating the discrete Fourier transform," IEEE Trans. Acoust., Speech, Signal Processing 32 (4), 750–761 (1984).
+ P. Duhamel and M. Vetterli, "Fast Fourier transforms: a tutorial review and a state of the art," Signal Processing 19, 259–299 (1990).
+ S. G. Johnson and M. Frigo, "A modified split-radix FFT with fewer arithmetic operations," IEEE Trans. Signal Process. 55 (1), 111–119 (2007).
+ Douglas L. Jones, "Split-radix FFT algorithms," Connexions web site (Nov. 2, 2006).
+ H. V. Sorensen, M. T. Heideman, and C. S. Burrus, "On computing the split-radix FFT", IEEE Trans. Acoust., Speech, Signal Processing 34 (1), 152–156 (1986).
+
+FFT algorithms

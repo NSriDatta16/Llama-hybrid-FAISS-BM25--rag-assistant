@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4056361
+[parent_id]: 4056348
+[tags]: 
+You can use a local static variable, if you don't care about thread-safety. Although, this will only give you a proper count the first time you run your recursive routine. A better technique would be a RAII guard-type class which contains an internal static variable. At the start of the recursive routine, construct the guard class. The constructor would increment the internal static variable, and the destructor would decrement it. This way, when you create a new stack-frame the counter increments by one, and when you return from each stack-frame the counter would decrement by one. struct recursion_guard { recursion_guard() { ++counter; } ~recursion_guard() { --counter; } static int counter; }; int recursion_guard::counter = 0; void recurse(int x) { recursion_guard rg; if (x > 10) return; recurse(x + 1); } int main() { recurse(0); recurse(0); } Note however, that this is still not thread-safe. If you need thread-safety, you can replace the static-storage variable with a thread-local-storage variable, either using boost::thread_specific_ptr or the C++0x thread local facilities.

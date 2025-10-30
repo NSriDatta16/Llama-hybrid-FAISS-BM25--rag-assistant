@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3945466
+[parent_id]: 3945429
+[tags]: 
+It sounds like you come from a relational database background. You should be storing the relationship from FEATURE to PERSON in a relationship, not an attribute (you may already be doing this but your naming person_id makes me suspicious; the standard Core Data convention would be to name the relationship person and its inverse feature ). Assuming this is the case, you can use a predicate format like NSManagedObject *person ... //the person instance you want to search against NSPredicate *p = [NSPredicate predicateWithFormat:@"self.person == %@", person]; Of course, you should be defining the inverse relationship (PERSON=>FEATURE) in which case you can just do NSManagedObject *feature = person.feature; assuming you name that relationship feature . Core Data uses inverse relationships to maintain consistency of the object graph. Their storage is minimal and the benefits to having them are significant; without a really good reason, you should always define inverse relationships for all relationships in a Core Data model.

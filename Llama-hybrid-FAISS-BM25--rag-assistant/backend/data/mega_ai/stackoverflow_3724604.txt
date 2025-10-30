@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3724604
+[parent_id]: 3724295
+[tags]: 
+Here is a quick untested change to your example: my @regexes_to_filter_a = (qr/^tmp$/, qr/^temp/, qr/del/); my @organism_dirs = (); # this will hold final list of dirs to processs my @subdirs = File::Find::Rule->directory->maxdepth(1)->in($root_dir); foreach my $subdir (@subdirs) { unless (basename($subdir) ~~ @regexes_to_filter_a) { push @organism_dirs, $subdir; } } The key changes are: i) should be either @array = (...list...); or $array_ref = [...list...]; my @regexes_to_filter_a = ("tmp", "temp", "del"); ii) and change to using smart match . Below checks that basename($subdir) is in ( ~~ ) the @regexes_to_filter_a array. So no need to loop through the array and do individual regex checks. unless (basename($subdir) ~~ @regexes_to_filter_a) { ... } /I3az/

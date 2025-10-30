@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2676838
+[parent_id]: 
+[tags]: 
+Benchmarking a UDP server
+
+I am refactoring a UDP listener from Java to C. It needs to handle between 1000 and 10000 UDP messages per second, with an average data length of around 60 bytes. There is no reply necessary. Data cannot be lost (Don't ask why UDP was decided). I fork off a process to deal with the incoming data so that I can recvfrom as quickly as possible - without filling up my kernel buffers. The child then handles the data received. In short, my algo is: Listen for data. When data is received, check for errors. Fork off a child. If I'm a child, do what I with the data and exit. If I'm a parent, reap any zombie children waitpid(-1, NULL, WNOHANG) . Repeat. Firstly, any comments about the above? I'm creating the socket with socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) , binding with AF_INET and INADDR_ANY and recvfrom with no flags. Secondly, can anyone suggest something that I can use to test that this application (or at least the listener) can handle more messages than what I am expecting? Or, would I need to hack something together to do this. I'd guess the latter would be better, so that I can compare data that is generated versus data that is received. But, comments would be appreciated.

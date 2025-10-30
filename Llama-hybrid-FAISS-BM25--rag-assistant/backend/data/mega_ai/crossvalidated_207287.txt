@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 207287
+[parent_id]: 195264
+[tags]: 
+So finally to summarize : ctrl = trainControl(method="repeatedcv", number=10, repeats = 300, savePredictions = TRUE, classProbs = TRUE) mdl = train("Label~.", data=Data, method = "glm", trControl = ctrl) pred = predict(mdl, newdata = Data, type="prob") roc.1 = roc(Data$Label, pred$control) roc.2 = roc(mdl$pred$obs,mdl$pred$control) roc.3 = roc(as.numeric(mdl$trainingData$.outcome=='case'),aggregate(case~rowIndex,mdl$pred,mean)[,'case']) roc.1 is irrelevant as it evaluates a model on the same data used to train it (the finalModel is just the fit on Data ignoring the CV argument, built to apply on a different dataset for future prediction) roc.2 is 'almost' accurate as it will consider each prediction independently (averaging the prediction, not the probabilities) roc.3 is the correct way to do it as it averages the prediction probabilities for each sample among the repeated CV (contrary to roc.2 where the prediction results are averaged)

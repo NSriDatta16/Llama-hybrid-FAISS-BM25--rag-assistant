@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2730690
+[parent_id]: 2730663
+[tags]: 
+Unmanaged memory that was allocated by unmanaged code can only be freed by the unmanaged code. So you need to add another unmanaged function that will take a pointer to the allocated string and free the memory. This function then should be called from the managed code once it has finished working with the string. Example: class Program { [DllImport("test.dll")] static extern IntPtr GetString(); [DllImport("test.dll")] static extern IntPtr FreeString(IntPtr ptr); static void Main() { IntPtr ptr = GetString(); try { var str = Marshal.PtrToStringAnsi(ptr); // work with the string } finally { if (ptr != IntPtr.Zero) { FreeString(ptr); } } } }

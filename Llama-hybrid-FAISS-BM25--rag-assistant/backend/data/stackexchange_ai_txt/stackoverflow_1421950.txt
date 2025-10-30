@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1421950
+[parent_id]: 1421491
+[tags]: 
+There isn't much overhead for malloc, so you are unlikely to achieve any run-time savings. There is, however, a good reason to implement an allocator on top of malloc, and that is to be able to trace memory leaks. For example, you can free all memory allocated by the program when it exits, and then check to see if your memory allocator calls balance (i.e. same number of calls to allocate/deallocate). For your specific implementation, there is no reason to free() since the malloc won't release to system memory and so it will only release memory back to your own allocator. Another reason for using a custom allocator is that you may be allocating many objects of the same size (i.e you have some data structure that you are allocating a lot). You may want to maintain a separate free list for this type of object, and free/allocate only from this special list. The advantage of this is that it will avoid memory fragmentation.

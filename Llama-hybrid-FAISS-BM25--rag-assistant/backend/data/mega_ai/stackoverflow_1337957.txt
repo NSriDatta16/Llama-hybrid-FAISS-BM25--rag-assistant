@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1337957
+[parent_id]: 1337095
+[tags]: 
+Ants Aasma's solution is much more elegant, but if you are keeping your Class definitions separate from your table definitions intentionally, you need to map your classes to your tables with the mapper function. After you have defined your classes, you need to define your tables: building = Table('building', metadata, Column('id', Integer, primary_key=True), Column('x', Integer), Column('y', Integer), ) commercial = Table('commercial', metadata, Column('building_id', Integer, ForeignKey('building.id'), primary_key=True), Column('business', String(50)), ) residential = Table('residential', metadata, Column('building_id', Integer, ForeignKey('building.id'), primary_key=True), Column('numResidents', Integer), ) Then you can map the tables to the classes: mapper(Building, building) mapper(Commercial, commercial, inherits=Building, polymorphic_identity='commercial') mapper(Residential, residential, inherits=Building, polymorphic_identity='residential') Then interact with the classes the exact same way Ants Aasma described.

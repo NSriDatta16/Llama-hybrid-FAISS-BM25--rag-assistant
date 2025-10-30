@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 387308
+[parent_id]: 387223
+[tags]: 
+Are you calling to_xml on a hash or an ActiveRecord model (or something else)? I am not that you would want to, but you can easily monkey patch to_xml and redefine it to start with those parameters. I would suggest that you make a new method to_default_xml that simply called to_xml with the parameters you wanted def to_default_xml self.to_xml(:skip_types => true, :dasherize => false) end Update: Since you want to add this to a couple of ActiveRecord models you could do two things, open up ActiveRecord::base (which is a bit hackish and fragile) or create a module and import it into every model you want to use with it. A little more typing, but much cleaner code. I would put a class in lib/ that looks something like this: module DefaultXml def to_default_xml self.to_xml(:skip_types => true, :dasherize => false) end end Then in your models: class MyModel

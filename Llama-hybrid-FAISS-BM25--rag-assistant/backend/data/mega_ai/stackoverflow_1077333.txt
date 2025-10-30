@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1077333
+[parent_id]: 1076998
+[tags]: 
+There is an easy way to do this. Set child to draggable Set parent to droppable Set a flag which if true on drag stop removes the element Unset this flag in the parents on drop function child dragged out of parent == child not dropped into parent So when you move the child around in the parent nothing happens (removeMe flag is unset) and it moves back to original position. If you drag the child outside of the parent the removeMe flag isn't unset and the drag stop method removes the child. javascript $("#draggable").draggable({ start: function(event, ui) { // flag to indicate that we want to remove element on drag stop ui.helper.removeMe = true; }, stop: function(event, ui) { // remove draggable if flag is still true // which means it wasn't unset on drop into parent // so dragging stopped outside of parent if (ui.helper.removeMe) { ui.helper.remove(); } }, // move back if dropped into a droppable revert: 'valid' }); $("#droppable").droppable({ drop: function(event, ui) { // unset removeMe flag as child is still inside parent ui.helper.removeMe = false; } }); html Drag me!

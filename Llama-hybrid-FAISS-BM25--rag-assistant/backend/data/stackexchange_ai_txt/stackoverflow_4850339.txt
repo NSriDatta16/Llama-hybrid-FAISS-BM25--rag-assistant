@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4850339
+[parent_id]: 4849851
+[tags]: 
+No there is nothing built in, but if you have a clearly defined use-case it is something I could of course look at (I'm the author). For now, I would suggest using some variant of: var found = Serializer.DeserializeItems (source, PrefixStyle.Base128, Serializer.ListItemTag).FirstOrDefault(obj => obj.Foo = "bar"); if(found != null) {...} which will short-circuit when a match is found, and will release the objects for collection promptly (hopefully in gen-0). Or for multiple items, perhaps: var list = Serializer.DeserializeItems (source, PrefixStyle.Base128, Serializer.ListItemTag).Where(obj => obj.Foo = "bar").ToList(); (which again releases the non-matching items promptly) To do this in the general case (especially for more complex queries) I can't think of a sane way to do it without materializing the object, so this is probably as close as you can get unless there is a very specific (and simple) scenario that happens to align nicely with the underlying data storage (for example, the filter is always on "tag 1").

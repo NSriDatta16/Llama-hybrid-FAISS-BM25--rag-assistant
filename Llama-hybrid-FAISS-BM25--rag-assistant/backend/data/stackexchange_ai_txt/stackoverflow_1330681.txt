@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1330681
+[parent_id]: 1330464
+[tags]: 
+Since Array and String are both Enumerables , there's not an elegant way to say "a thing that's an Enumberable, but not a String," at least not in the way being discussed. What I would do is duck-type for Enumerable ( responds_to? :[] ) and then use a case statement, like so: def foo(obj, arg) if arg.respond_to?(:[]) case arg when String then obj.send(arg) else arg.each { |method_name| obj.send(method_name) } end end end or even cleaner: def foo(obj, arg) case arg when String then obj.send(arg) when Enumerable then arg.each { |method| obj.send(method) } else nil end end

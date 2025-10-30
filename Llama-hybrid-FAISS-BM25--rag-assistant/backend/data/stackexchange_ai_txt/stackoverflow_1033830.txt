@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1033830
+[parent_id]: 1033796
+[tags]: 
+There is a significant performance penalty on inserts as all of the indexes need to be updated. Roughly, you will incur one disk write for the insert on the large table and slightly more than one (on average) for each index on the table. Each index leaf node will incur a write, and some additional writes will occur from time to time as the leaf and (less often) parent nodes split. Each table and index write will also incur log traffic. The particularly nasty penalty is on bulk inserted data, as active indexes on tables where you are inserting bulk loaded data will be updated for each row - and these updates are not minimally logged. This will massively blow out your I/O (which will all be random access rather than nice sequential bulk writes) and will also generate vast amounts of log traffic.

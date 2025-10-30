@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2243812
+[parent_id]: 
+[tags]: 
+Functional Programming - Implementing Scan (Prefix Sum) using Fold
+
+I've been teaching myself functional programming, and I'm currently writing different higher order functions using folds. I'm stuck implementing scan (also known as prefix sum). My map implementation using fold looks like: (define (map op sequence) (fold-right (lambda (x l) (cons (op x) l)) nil sequence)) And my shot at scan looks like: (define (scan sequence) (fold-left (lambda (x y) (append x (list (+ y (car (reverse x)))))) (list 0) sequence)) My observation being that the "x" is the resulting array so far, and "y" is the next element in the incoming list. This produces: (scan (list 1 4 8 3 7 9)) -> (0 1 5 13 16 23 32) But this looks pretty ugly, with the reversing of the resulting list going on inside the lambda. I'd much prefer to not do global operations on the resulting list, since my next attempt is to try and parallelize much of this (that's a different story, I'm looking at several CUDA papers). Does anyone have a more elegant solution for scan? BTW my implementation of fold-left and fold-right is: (define (fold-left op initial sequence) (define (iter result rest) (if (null? rest) result (iter (op result (car rest)) (cdr rest)))) (iter initial sequence)) (define (fold-right op initial sequence) (if (null? sequence) initial (op (car sequence) (fold-right op initial (cdr sequence)))))

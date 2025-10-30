@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1497730
+[parent_id]: 339496
+[tags]: 
+I don't see a problem with you writing a custom parser. The requirements seem sufficiently different to anything already provided by the BCL, so go right ahead. "Elegance" is obviously a subjective thing. In my opinion, if your parser's API looks and works like a standard BCL "reader"-type API, then that is quite "elegant". As for the large data sizes, make your parser work by reading one byte at a time and use a simple state machine to work out what to do. Leave the streaming and buffering to the underlying FileStream class. You should be OK with performance and memory consumption. Example of how you might use such a parser class: using(var reader = new EddReader(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 8192)) { // Read a small field string smallField = reader.ReadFieldAsText(); // Read a large field Stream largeField = reader.ReadFieldAsStream(); }

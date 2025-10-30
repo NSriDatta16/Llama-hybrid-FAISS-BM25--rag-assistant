@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 445333
+[parent_id]: 445259
+[tags]: 
+I've encounter some problems with pipelines (for example, if I want to apply my own custom function, it is a real hazard) so here is what I use instead: X_train, X_test, y_train, y_test = train_test_split(X, Y, stratify=Y, random_state=seed, test_size=0.2) sc = StandardScaler().fit(X_train) X_train = sc.transform(X_train) X_test = sc.transform(X_test) pca = PCA().fit(X_train) X_train = pca.transform(X_train) X_test = pca.transform(X_test) eclf = SVC() parameters_grid = { 'C': (0.1, 1, 10) } grid_search = GridSearchCV(eclf, parameters_grid, cv=cv, refit='auc', return_train_score=True) grid_search.fit(X_train, y_train) best_model = eclf.set_params(**grid_search.best_params_).fit(X_train, y_train) test_auc_score = roc_auc_score(y_test, best_model.predict(X_test)) I realize it is a bit long but it is clear on what you are doing.

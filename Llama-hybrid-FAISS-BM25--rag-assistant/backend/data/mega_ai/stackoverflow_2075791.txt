@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2075791
+[parent_id]: 2075688
+[tags]: 
+Use PHP's unserialize function to decode the strings like that. unserialize PHP docs This string decodes to this array like so: php > $f='a:8:{s:9:"max_inbox";i:50;s:13:"auto_add_link";b:1;s:9:"email_new";b:1;s:11:"email_reply";b:1;s:9:"email_add";b:1;s:13:"email_message";b:0;s:16:"threads_per_page";i:0;s:7:"version";s:3:"1.0";}'; php > var_dump(unserialize($f)); array(8) { ["max_inbox"]=> int(50) ["auto_add_link"]=> bool(true) ["email_new"]=> bool(true) ["email_reply"]=> bool(true) ["email_add"]=> bool(true) ["email_message"]=> bool(false) ["threads_per_page"]=> int(0) ["version"]=> string(3) "1.0" } The reason for storing data like this is that you can store multiple parameters in one database field. Storing serialized arrays allows you to not worry about the schema of your database. Friendfeed does this with MySQL for instance, and it's also similar to the style of the 'NoSQL' storage systems like MongoDB. I prefer to use JSON over PHP serialize, myself.

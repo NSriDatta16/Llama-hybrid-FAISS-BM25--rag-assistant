@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2869697
+[parent_id]: 2869488
+[tags]: 
+It's not as elegant as using an attribute, but you could also add a method to your cache container that takes a delegate as a parameter and encapsulates the logic itself. public class SiteCache { public static T Retrieve (Delegate d, params object[] methodParameters) { string key = d.Method.ReflectedType + "#" + d.Method.Name; for (int i = 0; i Then you could call it in your ASP.NET code behind: delegate string DoStuffDelegate(string key); protected void Page_Load(object sender, EventArgs e) { string s1 = SiteCache.Retrieve (new DoStuffDelegate(DoStuff), "my key"); string s2 = SiteCache.Retrieve (new DoStuffDelegate(DoStuff), "my key"); //at this point, s1 will be the same as s2 } int doStuffCount = 0; private string DoStuff(string key) { doStuffCount++; return string.Format("Calling do stuff with key '{0}' - count = {1}", key, doStuffCount); }

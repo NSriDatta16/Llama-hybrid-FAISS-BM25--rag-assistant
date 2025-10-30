@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3693052
+[parent_id]: 
+[tags]: 
+How do you deal with sequences of IDisposable using LINQ?
+
+What's the best approach to call Dispose() on the elements of a sequence? Suppose there's something like: IEnumerable locations = ... var streams = locations.Select ( a => new FileStream ( a , FileMode.Open ) ); var notEmptyStreams = streams.Where ( a => a.Length > 0 ); //from this point on only `notEmptyStreams` will be used/visible var firstBytes = notEmptyStreams.Select ( a => a.ReadByte () ); var average = firstBytes.Average (); How do you dispose FileStream instances ( as soon as they're no longer needed ) while maintaining concise code? To clarify: this is not an actual piece of code, those lines are methods across a set of classes, and FileStream type is also just an example. Is doing something along the lines of: public static IEnumerable Where ( this IEnumerable source , Func predicate ) where TSource : IDisposable { foreach ( var item in source ) { if ( predicate ( item ) ) { yield return item; } else { item.Dispose (); } } } might be a good idea? Alternatively: do you always solve a very specific scenario with regards to IEnumerable without trying to generalize? Is it so because having it is an untypical situation? Do you design around having it in the first place? If so, how?

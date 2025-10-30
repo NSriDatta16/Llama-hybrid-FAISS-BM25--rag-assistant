@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 586411
+[parent_id]: 586385
+[tags]: 
+If you're better at programming than maths, I believe there's a reasonably simple way to get this by brute force as well. It provides a slightly different intuition: $E[XY]$ is higher without replacement when $X , because removing a low value of $X$ increases $E[Y]$ , it is lower, and by a greater amount, when $X > \text{mean}(X)$ . A little thought shows that this asymmetry occurs because we're looking at the product, e.g. it wouldn't happen for $E[X + Y]$ . library(tidyverse) vals = 1:10 # Calculate E[XY|x] conditional on each possible value of X no_replace = map_dbl(vals, function(x) mean(x * vals[vals != x])) with_replace = map_dbl(vals, function(x) mean(x * vals)) # Take averages over X values to get E[XY] mean(no_replace) # 29.33333 mean(with_replace) # 30.25 # Plot df = data.frame(x = vals, `Replacement`=with_replace, `Without replacement`=no_replace) df %>% pivot_longer(-x) %>% ggplot(aes(x, value, color = name)) + geom_point() + geom_path() + geom_vline(linetype = 'dashed', xintercept = mean(vals)) + scale_x_continuous(breaks = vals) + labs(x = 'X', y = 'E[XY]', color = 'Method')

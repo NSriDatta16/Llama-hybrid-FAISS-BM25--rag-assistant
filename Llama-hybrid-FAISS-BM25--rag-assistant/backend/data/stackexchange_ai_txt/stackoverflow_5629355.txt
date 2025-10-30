@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5629355
+[parent_id]: 
+[tags]: 
+How to force Apache Tomcat not to reuse a thread from the thread pool?
+
+We've got a normal-ish server stack including BlazeDS, Tomcat and Hibernate. We'd like to arrange things such that if certain errors (especially AssertionError) are thrown, the current thread is considered to be in an unknown state and won't be used for further HTTP requests. (Partly because we're storing some things, such as Hibernate transaction session, in thread-local storage. Now, we can catch throwables and make sure to roll back transactions and rethrow, but there's no guarantee about what other code may have left who knows what in the thread-local storage.) Tomcat with the default thread pool behavior reuses threads. We tried specifying our own executor, which seems to be the most specific method of changing its thread pool behavior, but it doesn't always call Executor.execute() with a new task for each request. (Most likely it reuses the same execution context for all requests in the same HTTP connection.) One option is to disable keepalive, so that there's only one request per HTTP connection, but that's ugly. Anyway, I'd like to know. Is there a way to tell Tomcat not to reuse a thread, or to kill or exit the thread so that Tomcat is forced to create a new one? (From the Tomcat source, it appears Tomcat will close the connection and abandon the task/thread after sending a HTTP 500 response, but I don't know how to get BlazeDS to generate a 500 response; that's another angle I'd like to know more about.)

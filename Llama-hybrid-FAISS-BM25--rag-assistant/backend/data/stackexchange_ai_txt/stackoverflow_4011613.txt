@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4011613
+[parent_id]: 4011600
+[tags]: 
+It depends on your access patterns, read/write ratio and whether (possibly most importantly) the clustered index is defined on the Primary Key. Rule of thumb is make your primary key as small as possible (32 bit int) and define the clustered index on a monotonically increasing key (think IDENTITY) where possible, unless you have range searches that form a large proportion of the queries against that table. If your application is write intensive, and you define the clustered index on the GUID column you should note: All non-clustered indexes will contain the clustered index key and will therefore be larger. This may have a negative effect of performance if there are many NC indexes. Unless you are using an 'ordered' GUID (such as a COMB or using NEWSEQUENTIALID()), your inserts will fragment the index over time. This means you need a regular index rebuild and possibly increasing the amount of free space left in pages (fill factor) Because there are many factors at work (hardware, access patterns, data size), I suggest you run some tests and benchmark your particular circumstances..

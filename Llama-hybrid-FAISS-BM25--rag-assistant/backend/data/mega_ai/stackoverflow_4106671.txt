@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4106671
+[parent_id]: 4106508
+[tags]: 
+Your template is not a "generic move assignment". But it is a "perfect forwarder", except that in your case it doesn't forward. The rule in C++0x is that template argument deduction treats a parameter "T&&" specially: Lvalue arguments deduce T to ArgType& , and Rvalue arguments deduce it to ArgType . That way, an lvalue of type ArgType will yield to ultimate parameter type ArgType& , and an Rvalue will ultimately yield to ArgType&& . In your case, the lvalue right hand side yields a deduced parameter type "Foo &", which perfectly well matches the lvalue argument. The currently draft (n3126) forbids the compiler to use the template to perform the copy assignment (in a very confusingly worded paragraph), though. It depens on the resolution of issue 1080 whether that will change or not.

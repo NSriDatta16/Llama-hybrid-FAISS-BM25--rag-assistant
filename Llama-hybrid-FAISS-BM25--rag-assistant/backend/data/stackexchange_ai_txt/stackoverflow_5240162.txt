@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5240162
+[parent_id]: 
+[tags]: 
+Safe string copy in C/C++
+
+I wrote this string copy routine for C strings. It is supposed to behave like strlcpy, that is - null terminate the destination if size > 0, and return the length of the source string. However I also want the function to fail if either the source or destination pointer is null, and somehow notify this to the caller. But I can not think of a very elegant way to do this. Right now I send two negative values as size to denote that the source or the destination pointer points to null. Hence I changed the return type from size_t to a signed integer, and I am not happy with this interface. What would be a better interface? #include // size_t #include // 32 bit int const std::int32_t SRC_NULL = -1; const std::int32_t DST_NULL = -2; std::int32_t CopyStringn (char *dest, const char *src, std::size_t size) { const char* temp (src); if (temp == NULL) return SRC_NULL; if (dest == NULL) return DST_NULL; while (*temp) { if (size > 1) { *dest++ = *temp; --size; } ++temp; } if (size) *dest = '\0'; return static_cast (temp - src); // Length does not include null }

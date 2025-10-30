@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1332398
+[parent_id]: 1332240
+[tags]: 
+Here's a good reason, mostly in response to your own posted answer: Using htmlspecialchars() or htmlentities() does not make your SQL query safe . That's what mysql_real_escape_string() is for. You seem to be making the assumption that it's only the single and double quote characters that pose a problem. MySQL queries are actually vulnerable to the \x00 , \n , \r , \ , ' , " and \x1a characters in your data. If you are not using prepared statements or mysql_real_escape_string() , then you have an SQL injection vulnerability. htmlspecialchars() and htmlentities() do not convert all of these characters, ergo you cannot make your query safe by using these functions. To that end, addslashes() does not make your query safe either! Other smaller downsides include what the other posters have already mentioned about MySQL not always being used for web content, as well as the fact that you are increasing the amount of storage and index space needed for your data (consider one byte of storage for a quote character, versus six or more bytes of storage for its entity form).

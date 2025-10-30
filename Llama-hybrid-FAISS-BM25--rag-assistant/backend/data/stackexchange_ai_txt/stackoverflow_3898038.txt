@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3898038
+[parent_id]: 
+[tags]: 
+IIS 7.0 large file transfer: "Unable to read data from the transport connection: The connection was closed."
+
+Assume you have an ASP.NET page with these lines of code: while (true) { byte[BUFFER_SIZE] buffer; // Fill buffer with pseudo data Response.OutputStream.Write(buffer, 0, buffer.Length); Response.Flush(); } You have also a test application for the above page with these lines of code: while (readBytes != 0) { byte[BUFFER_SIZE] buffer; readBytes = stream.Read(buffer, 0, buffer.length) } Instead of reading a real huge file, I tried to produce random binary data on the fly and transfer to the client and it worked fine. Then, I wrote a client who just read the bytes from ASP.NET page and then do nothing with it and just read the next bytes until the connection is closed by ASP.NET page (download is finished). I used a time-based setting in ASP.NET page for when to finish the download (this is a stress test). So what IIS 7.0 and ASP.NET are doing is streaming data for a period of time (i.e one hour). I started 100 concurrent clients on this page with average download speed of 250 KB/s for one hour. Everything was OK for about 45 minutes, but suddenly IIS closes all connections with this error code on the client side: Unable to read data from the transport connection: The connection was closed. I guess it's about transferring a lot of binary data via IIS and there should be some configuration in IIS 7.0 which is triggered by my stress test but which configuration.

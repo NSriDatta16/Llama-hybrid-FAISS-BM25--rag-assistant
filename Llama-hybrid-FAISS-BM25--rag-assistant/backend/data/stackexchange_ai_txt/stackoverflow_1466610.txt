@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1466610
+[parent_id]: 1465665
+[tags]: 
+That is, can I pass latex some command-line arguments so that I can choose which style to use based on that argument? Yes. Three options: One In your source file, write \providecommand{\comment}[1]{\emph{#1}}% fallback definition and then compile the LaTeX document ("myfile.tex") as pdflatex (whatever options you need) "\newcommand\comment[1]{\textbf{#1}}\input{myfile}" Two Alternatively, pdflatex "\let\ifmyflag\iftrue\input{myfile}" and then have in the source \ifcsname ifmyflag\endcsname\else \expandafter\let\csname ifmyflag\expandafter\endcsname \csname iffalse\endcsname \fi ... \ifmyflag \newcommand\comment[1]{\emph{#1}} \else \newcommand\comment[1]{\textbf{#1}} \fi Three Or even pdflatex "\def\myflag{}\input{myfile}" with \ifdefined\myflag \newcommand\comment[1]{\emph{#1}} \else \newcommand\comment[1]{\textbf{#1}} \fi which is probably the shortest, albeit slightly fragile because you never know when a package might define \myflag behind your back.

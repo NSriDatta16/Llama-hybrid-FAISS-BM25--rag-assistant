@@ -1,0 +1,42 @@
+The Layout Versus Schematic (LVS) is the class of electronic design automation (EDA) verification software that determines whether a particular integrated circuit layout corresponds to the original schematic or circuit diagram of the design.
+
+Background
+A successful design rule check (DRC) ensures that the layout conforms to the rules designed/required for faultless fabrication. However, it does not guarantee if it really represents the circuit you desire to fabricate. This is where an LVS check is used.
+
+The need for such programs was recognized relatively early in the history of ICs, and programs to perform this comparison were written as early as 1975.  These early programs operated mainly on the level of graph isomorphism, checking whether the schematic and layout were indeed identical.  With the advent of digital logic, this was too restrictive, since exactly the same function can be implemented in many different (and non-isomorphic) ways.  Therefore, LVS has been augmented by formal equivalence checking, which checks whether two circuits perform exactly the same function without demanding isomorphism.
+
+Check
+LVS checking software recognizes the drawn shapes of the layout that represent the electrical components of the circuit, as well as the connections between them. This netlist is compared by the "LVS" software against a similar schematic or circuit diagram's netlist.
+
+LVS checking involves following three steps:
+ Extraction: The software program takes a database file containing all the layers drawn to represent the circuit during layout. It then runs the database through many area based logic operations to determine the semiconductor components represented in the drawing by their layers of construction. Area based logical operations use polygon areas as inputs and generate output polygon areas from these operations. These operations are used to define the device recognition layers, the terminals of these devices, the wiring conductors and via structures, and the locations of pins (also known as hierarchical connection points). The layers that form devices can have various measurements performed to and these measurements can be attached to these devices. Layers that represent "good" wiring (conductors) are usually made of and called metals. Vertical connections between these layers are often called vias.
+ Reduction: During reduction the software combines the extracted components into series and parallel combinations if possible and generates a netlist representation of the layout database. A similar reduction is performed on the "source" Schematic netlist.
+ Comparison: The extracted layout netlist is then compared to the netlist taken from the circuit schematic. If the two netlists match, then the circuit passes the LVS check. At this point it is said to be "LVS clean." (Mathematically, the layout and schematic netlists are compared by performing a Graph isomorphism check to see if they are equivalent.)
+
+In most cases the layout will not pass LVS the first time requiring the layout engineer to examine the LVS software's reports and make changes to the layout. Typical errors encountered during LVS include:
+
+ Shorts: Two or more wires that should not be connected have been and must be separated.
+ Opens: Wires or components that should be connected are left dangling or only partially connected. These must be connected properly to fix this.
+ Component Mismatches: Components of an incorrect type have been used (e.g. a low Vt MOS device instead of a standard Vt MOS device)
+ Missing Components: An expected component has been left out of the layout.
+ Parameter Mismatch: Components in the netlist can contain properties. The LVS tool can be configured to compare these properties to a desired tolerance. If this tolerance is not met, then the LVS run is deemed to have a Property Error. A parameter that is checked may not be an exact match, but may still pass if the lvs tool tolerance allows it. (example: if a resistor in a schematic had resistance=1000 (ohms) and the extracted netlist had the a matched resistor with resistance=997(ohms) and the tolerance was set to 2%, then this device parameter would pass as 997 is within 2% of 1000 ( 997 is 99.7% of 1000 which is within the 98% to 102% range of the acceptable +-2% tolerance error) )
+
+Software
+
+Commercial software 
+ Assura, Dracula and PVS by Cadence Design Systems
+ Calibre by Mentor Graphics
+ Guardian LVS by Silvaco
+ Quartz LVS by Magma Design Automation
+ IC Validator by Synopsys
+ PowerLVS -now SmartLVS by Silvaco
+ SmartLVS by Silvaco
+ VERI and HVERI by Zeni EDA
+
+Free software
+ KLayout https://klayout.de/
+ Netgen http://opencircuitdesign.com/netgen/
+
+References
+
+Electronic circuit verification

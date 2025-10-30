@@ -1,0 +1,139 @@
+An eikonal equation (from Greek εἰκών, image) is a non-linear first-order partial differential equation that is encountered in problems of wave propagation.
+
+The classical eikonal equation in geometric optics is a differential equation of the form
+
+where  lies in an open subset of ,  is a 
+positive function,    denotes the gradient, and  is the Euclidean norm. The function  is given and one seeks solutions .
+In the context of geometric optics, the function  is the refractive index of the medium.
+
+More generally, an eikonal equation is an equation of the form
+
+where  is a function of  variables. 
+Here the function  is given, and   is the solution.
+If , then equation () becomes ().
+
+Eikonal equations naturally arise in the WKB method
+and the study of Maxwell's equations. Eikonal equations provide a link between physical (wave) optics and geometric (ray) optics.
+
+One fast computational algorithm to approximate the solution to the eikonal equation is the fast marching method.
+
+History
+
+The term "eikonal" was first used in the context of geometric optics by Heinrich Bruns. However, 
+the actual equation appears earlier in the seminal work of William Rowan Hamilton on geometric optics.
+
+Physical interpretation
+
+Continuous shortest-path problems
+
+Suppose that  is an open set with suitably smooth boundary . 
+The solution to the eikonal equation
+
+can be interpreted as the minimal amount of time required to travel from  to , where  is the speed of travel, and  is an exit-time penalty. (Alternatively this can be posed as a minimal cost-to-exit by making the right-side  and  an exit-cost penalty.)
+
+In the special case when , the solution gives the signed distance from  .
+
+By assuming that  exists at all points, it is easy to prove that  corresponds to a time-optimal control problem using Bellman's optimality principle and a Taylor expansion. Unfortunately, it is not guaranteed that  exists at all points, and more advanced techniques are necessary to prove this. This led to the development of viscosity solutions in the 1980s by Pierre-Louis Lions and Michael G. Crandall, and Lions won a Fields Medal for his contributions.
+
+Electromagnetic potential
+The physical meaning of the eikonal equation is related to the formula
+
+ 
+
+where  is the electric field strength, and  is the electric potential.  There is a similar equation for velocity potential in fluid flow and temperature in heat transfer.  The physical meaning of this equation in the electromagnetic example is that any charge in the region is pushed to move at right angles to the lines of constant potential, and along lines of force determined by the field of the E vector and the sign of the charge.
+
+Ray optics and electromagnetism are related by the fact that the eikonal equation gives a second electromagnetic formula of the same form as the potential equation above where the line of constant potential has been replaced by a line of constant phase, and the force lines have been replaced by normal vectors coming out of the constant phase line at right angles.  The magnitude of these normal vectors is given by the square root of the relative permittivity.  The line of constant phase can be considered the edge of one of the advancing light waves (wavefront).  The normal vectors are the rays the light is traveling down in ray optics.
+
+Computational algorithms
+
+Several fast and efficient algorithms to solve the eikonal equation have been developed since the 1990s. Many of these algorithms take advantage of algorithms developed much earlier for shortest path problems on graphs with nonnegative edge lengths. These algorithms take advantage of the causality provided by the physical interpretation and typically discretize the domain using a mesh or regular grid and calculate the solution at each discretized point.
+Eikonal solvers on triangulated surfaces were introduced in.
+
+Sethian's fast marching method (FMM) was the first "fast and efficient" algorithm created to solve the Eikonal equation. The original description discretizes the domain  into a regular grid and "marches" the solution from "known" values to the undiscovered regions, precisely mirroring the logic of Dijkstra's algorithm. If  is discretized and has  meshpoints, then the computational complexity is  where the  term comes from the use of a heap (typically binary). A number of modifications can be prescribed to FMM since it is classified as a label-setting method. In addition, FMM has been generalized to operate on general meshes that discretize the domain.
+
+Label-correcting methods such as the Bellman–Ford algorithm can also be used to solve the discretized Eikonal equation also with numerous modifications allowed (e.g. "Small Labels First"  or "Large Labels Last" ). Two-queue methods have also been developed that are essentially a version of the Bellman-Ford algorithm except two queues are used with a threshold used to determine which queue a gridpoint should be assigned to based on local information.
+
+Sweeping algorithms such as the fast sweeping method (FSM) are highly efficient for solving Eikonal equations when the corresponding characteristic curves do not change direction very often. These algorithms are label-correcting but do not make use of a queue or heap, and instead prescribe different orderings for the gridpoints to be updated and iterate through these orderings until convergence. Some improvements were introduced such as "locking" gridpoints during a sweep if does not receive an update, but on highly refined grids and higher-dimensional spaces there is still a large overhead due to having to pass through every gridpoint. Parallel methods have been introduced that attempt to decompose the domain and perform sweeping on each decomposed subset. Zhao's parallel implementation decomposes the domain into -dimensional subsets and then runs an individual FSM on each subset. Detrixhe's parallel implementation also decomposes the domain, but parallelizes each individual sweep so that processors are responsible for updating gridpoints in an -dimensional hyperplane until the entire domain is fully swept.
+
+Hybrid methods have also been introduced that take advantage of FMM's efficiency with FSM's simplicity. For example, the Heap Cell Method (HCM) decomposes the domain into cells and performs FMM on the cell-domain, and each time a "cell" is updated FSM is performed on the local gridpoint-domain that lies within that cell. A parallelized version of HCM has also been developed.
+
+Numerical approximation
+
+For simplicity assume that  is discretized into a uniform grid with spacings  and  in the x and y directions, respectively.
+
+2D approximation on a Cartesian grid
+
+Assume that a gridpoint  has value . A first-order scheme to approximate the partial derivatives is
+
+where
+
+Due to the consistent, monotone, and causal properties of this discretization it is easy to show that if  and  and  then
+
+which can be solved as a quadratic. In the limiting case of , this reduces to
+
+This solution will always exist as long as  is satisfied and is larger than both,  and ,  as long as  . 
+
+If , a lower-dimensional update must be performed by assuming one of the partial derivatives is :
+
+n-D approximation on a Cartesian grid
+
+Assume that a grid point  has value . Repeating the same steps as in the  case we can use a first-order scheme to approximate the partial derivatives. Let  be the minimum of the values of the neighbors in the  directions, where  is a standard unit basis vector. The approximation is then
+
+Solving this quadratic equation for  yields:
+
+If the discriminant in the square root is negative, then a lower-dimensional update must be performed (i.e. one of the partial derivatives is ).
+
+If  then perform the one-dimensional update
+
+If  then perform an  dimensional update using the values  for every  and choose the smallest.
+
+Mathematical description
+
+An eikonal equation is one of the form
+
+The plane  can be thought of as the initial condition, by thinking of  as   We could also solve the equation on a subset of this plane, or on a curved surface, with obvious modifications.
+
+The eikonal equation shows up in geometrical optics, which is a way of studying solutions of the wave equation , where  and .  In geometric optics, the eikonal equation describes the phase fronts of waves.  Under reasonable hypothesis on the "initial" data, the eikonal equation admits a local solution, but a global smooth solution (e.g. a solution for all time in the geometrical optics case) is not possible.  The reason is that caustics may develop.  In the geometrical optics case, this means that wavefronts cross.
+
+We can solve the eikonal equation using the method of characteristics.  One must impose the "non-characteristic" hypothesis  along the initial hypersurface , where H = H(x,p) and p = (p1,...,pn) is the variable that gets replaced by ∇u. Here x = (x1,...,xn) = (t,x′).
+
+First, solve the problem , .  This is done by defining curves (and values of  on those curves) as
+
+  Note that even before we have a solution , we know  for  due to our equation for .
+That these equations have a solution for some interval  follows from standard ODE theorems (using the non-characteristic hypothesis).  These curves fill out an open set around the plane .  Thus the curves define the value of  in an open set about our initial plane.  Once defined as such it is easy to see using the chain rule that , and therefore  along these curves.
+
+We want our solution  to satisfy , or more specifically, for every ,   Assuming for a minute that this is possible, for any solution  we must have
+
+and therefore
+
+In other words, the solution  will be given in a neighborhood of the initial plane by an explicit equation.  However, since the different paths , starting from different initial points may cross, the solution may become multi-valued, at which point we have developed caustics.
+We also have (even before showing that  is a solution)
+
+It remains to show that , which we have defined in a neighborhood of our initial plane, is the gradient of some function .  This will follow if we show that the vector field  is curl free.  Consider the first term in the definition of .  This term,  is curl free as it is the gradient of a function.  As for the other term, we note
+
+The result follows.
+
+Applications
+ A concrete application is the computation of radiowave attenuation in the atmosphere.
+ Finding the shape from shading in computer vision.
+ Geometric optics
+ Continuous shortest path problems
+ Image segmentation
+ Study of the shape for a solid propellant rocket grain
+
+See also
+ Hamilton–Jacobi–Bellman equation
+ Hamilton–Jacobi equation
+ Fermat's principle
+ One-way wave equation
+
+References
+
+Further reading
+
+External links
+The linearized eikonal equation
+English translation of "Das Eikonal" by Heinrich Bruns
+
+Partial differential equations
+Geometrical optics

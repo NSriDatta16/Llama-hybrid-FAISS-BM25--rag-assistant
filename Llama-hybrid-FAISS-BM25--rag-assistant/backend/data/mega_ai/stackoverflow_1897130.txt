@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1897130
+[parent_id]: 1897006
+[tags]: 
+To expand on Neil's comment, "global" new may not be given the static storage class specifier, and is therefore "global" - it is visible to the linker outside of the module (could be extern'd from any other module, for instance). Invalid: static void* operator new(size_t sz) {} Valid: //in main.cpp void* operator new(size_t sz) {} //in foo.cpp extern void* operator new(size_t sz); Depending on what you want to do, the best approach can be to use malloc/new in your definitions, or add a parameter to your override so the signature changes (you can then fall-back to the default global new without recursion). Don't forget about throwing an exception in case of allocation failure, and implementing no-throw versions of your overloads.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1575355
+[parent_id]: 
+[tags]: 
+Portability concerns on C struct/union
+
+Supposing I have the following type from an external library: union foreign_t { struct { enum enum_t an_enum; int an_int; } header; struct { double x, y; } point; }; is it safe to assume the following code fragment will work as expected on different platforms and with different compilers? struct pair_t { double x, y; }; union foreign_t foreign; struct pair_t *p_pair; p_pair = (struct pair_t *) &foreign; p_pair->x = 1234; p_pair->y = 4321; /* Expected result: (1234, 4321) or something like that */ printf("(%lf, %lf)", foreign.point.x, foreign.point.y); EDIT: Following the strict aliasing suggestion I made the following test: #include #include int main() { uint16_t word = 0xabcd; uint8_t tmp; struct { uint8_t low; uint8_t high; } *byte = (void *) &word; tmp = byte->low; byte->low = byte->high; byte->high = tmp; printf("%x\n", word); return 0; } The above apparently innocent piece of code is not reliable: $ gcc -O3 -fno-strict-aliasing -otest test.c $ ./test cdab $ gcc -O3 -fstrict-aliasing -otest test.c $ ./test abcd No peace for developers...

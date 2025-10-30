@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 104345
+[parent_id]: 
+[tags]: 
+What are the tradeoffs associated with the various XGBoost interfaces?
+
+I'm spinning up with XGBoost today, and have already encountered at least two ways to train gradient boosted trees: Approach 1 ("native" xgb) source: XGB python intro xg_train = xgb.DMatrix(data = X_train, label = y_train) xg_train.save_binary('./data/processed/train.buffer') xg_train = xgb.DMatrix('./data/processed/train.buffer') param = {'max_depth':2, 'eta':1, 'objective':'binary:logistic'} clf = xgb.train(param,xg_train, 100) # 1.79s wall time Approach 2 ("sklearn-style") source: XGB sklearn wrapper example clf2 = xgb.XGBClassifier( n_estimators=100, max_depth=2, eta=1, objective="binary:logistic", random_state=1729 ) clf2.fit(train[['distance_from_net', 'angle']], train['is_goal'].astype(int)) I've checked that the results (i.e. predictions on a validation set) are identical, but are there hidden tradeoffs associated with each approach? i.e: speed? Is data binarization handled behind the scenes in approach 2? I recorded the following with timeit : Approach 1 1.11 s ± 25.2 ms per loop (7 runs) Approach 2 1.58 s ± 367 ms per loop (7 runs) completeness do the interfaces in Approach 2 or 3 give up access to any features of "native" xgb?

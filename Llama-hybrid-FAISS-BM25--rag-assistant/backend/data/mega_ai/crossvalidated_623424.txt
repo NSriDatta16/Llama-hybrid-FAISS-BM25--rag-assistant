@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 623424
+[parent_id]: 623146
+[tags]: 
+I think I figured the answer to my own question. Apparently, what they did was estimating $E[Y|D, X]$ (i.e. fitting a model using $(D, X)$ as features), and then computing the estimator of $\theta_0$ as $$\hat{\mathbb{E}}[Y|X, D=1] - \hat{\mathbb{E}}[Y|X, D=0]$$ and average the above quantity over $X$ . Simulations (below) gave very similar (in terms of biasedness) distribution to that in the paper. While a much better method of estimating $\theta_0$ was proposed by Kunzel et al. (2019) that they called "X-learner". The idea is that you use a subsample $D=1$ to estimate $\mu_1(X):=\mathbb{E}[Y|X, D=1]$ , a subsample $D=0$ to estimate $\mu_0(X):=\mathbb{E}[Y|X, D=0]$ , then for units with $D=1$ you compute a predicted $\hat{\mu}_0(X)$ , and symetrically for units with $D=0$ you compute a predicted $\hat{\mu}_1(X)$ . Finally, $$\hat{\theta}_0 = \frac{1}{n}\sum_{i:D_i = 1} (Y_i - \hat{\mu}_0(X_i)) + \frac{1}{n}\sum_{i:D_i = 0} (\hat{\mu}_1(X_i) - Y_i)$$ Below are the results of simulations:

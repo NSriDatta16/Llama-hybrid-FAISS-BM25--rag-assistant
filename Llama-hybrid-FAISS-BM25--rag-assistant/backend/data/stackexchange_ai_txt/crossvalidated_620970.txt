@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 620970
+[parent_id]: 617124
+[tags]: 
+That's a good question! There are performance tricks during inference that are enabled by keeping these separate. For example, caching the $K$ tensor. We normally would compute the product $QK$ with the whole input sequence; however, when generating a sequence at step $T$ , we always have the same $T-1$ tokens, thus recomputing the whole product would be quite wasteful! We can cache the first ( $T-1) \times (T-1$ ) submatrix in $QK$ , and also cache the key embeddings (the first $T-1$ embeddings in $K$ )! So each subsequent generation only needs to compute $W_Q x_T$ instead of generating the whole set of key, query embeddings. If we only keep track of the combined product $W_QW_K$ , we wouldn't be able to do this step, which reduces the complexity by a whole factor of the sequence length.

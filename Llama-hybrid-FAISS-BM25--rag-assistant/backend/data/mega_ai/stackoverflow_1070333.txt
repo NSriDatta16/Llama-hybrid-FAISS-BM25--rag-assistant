@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1070333
+[parent_id]: 
+[tags]: 
+Is there an easier way to pop off a directory from boost::filesystem::path?
+
+I have a relative path (e.g. "foo/bar/baz/quux.xml") and I want to pop a directory off so that I will have the subdirectory + file (e.g. "bar/baz/quux.xml"). You can do this with path iterators, but I was hoping there was something I was missing from the documentation or something more elegant. Below is the code that I used. #include #include #include #include #include boost::filesystem::path pop_directory(const boost::filesystem::path& path) { list parts; copy(path.begin(), path.end(), back_inserter(parts)); if (parts.size() ::iterator it = ++parts.begin(); it != parts.end(); ++it) { pathSub /= *it; } return pathSub; } } int main(int argc, char* argv) { list test = boost::assign::list_of("foo/bar/baz/quux.xml") ("quux.xml")("foo/bar.xml")("./foo/bar.xml"); for (list ::iterator i = test.begin(); i != test.end(); ++i) { boost::filesystem::path p(*i); cout The output is: Input: foo/bar/baz/quux.xml Subdir Path: bar/baz/quux.xml Input: quux.xml Subdir Path: quux.xml Input: foo/bar.xml Subdir Path: bar.xml Input: ./foo/bar.xml Subdir Path: foo/bar.xml What I was hoping for was something like: boost::filesystem::path p1(someString); boost::filesystem::path p2(p2.pop()); If you look at some test code on codepad.org , I have tried branch_path (returns "foo/bar/baz") and relative_path (returns "foo/bar/baz/quux.xml").

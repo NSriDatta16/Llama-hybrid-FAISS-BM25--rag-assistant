@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 384957
+[parent_id]: 384923
+[tags]: 
+The old PHP "mssql" extension only supports VARCHAR up to 255 bytes in size. This is a known limitation, and it's why Microsoft has been developing a new PHP extension to support modern SQL Server releases. One workaround is to declare the storage of that column as NVARCHAR, but when you query it from PHP, use CAST to convert it to NTEXT. Then the full length can be returned. Another option is to keep the column stored as NTEXT, but GROUP BY only book_id by putting the count into a subquery: SELECT bk.*, bc.books_sold FROM books_book bk INNER JOIN (SELECT bk2.book_id, COUNT(*) books_sold FROM books_book bk2 INNER JOIN orderdetails_orddetails ord ON (bk2.id_book = ord.id_book_orddetails) GROUP BY bk2.book_id) bc ON (bk.book_id = bc.book_id);

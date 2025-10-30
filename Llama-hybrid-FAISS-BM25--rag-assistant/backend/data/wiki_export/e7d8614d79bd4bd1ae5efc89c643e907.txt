@@ -1,0 +1,113 @@
+The original Macintosh was a relatively simple machine, now of interest for its simplicity and for the fact that it was the first computer produced by Apple under the name Macintosh. The Macintosh used standard off-the-shelf components to the greatest extent possible, achieving a moderate price point by mixing complex LSI chips, readily customizable programmable array logic, and off-the-shelf components.
+
+Overall architecture 
+The Macintosh used the Motorola 68000. The 68000's bus was wired directly to the other programmable components of the computer: the IWM floppy controller, the Zilog 8530 SCC, and the MOS Technology 6522.
+
+The bus also connected the 68000 to the 128 or 512 KiB of main memory (DRAM), which was shared between the processor and the multimedia circuits in a direct memory access (DMA) arrangement. Either the processor or the video/sound engine could access the memory, but not both, resulting in up to a 10% loss in performance; the DMA circuit also performed necessary maintenance on the RAM which would otherwise add overhead, a trick previously used in the Apple II.
+
+Precise timing information was relayed to the 68000 by interrupts. The 68000 provides three interrupt inputs, which in the Macintosh 128K/512K were connected to the 6522, the 8530, and a human input designed for programmers, in order of increasing priority. Thus typing on the keyboard (attached to the 6522) did not reduce serial data (8530) performance, yet the program controlling the serial bus could be debugged by the programmer.
+
+To further reduce the cost of manufacture, as compared with its predecessor the Lisa, Apple did not include an MMU. As a result, the Macintosh did not support protected memory, and this feature remained absent from the OS until 2001 with the Mac OS X operating system.
+
+According to Andy Hertzfeld the Macintosh used for the introduction demo on January 24, 1984, was a prototype with 512k RAM, even though the first model offered for sale implemented just 128k of non-expandable memory. This prototype was used to provide adequate RAM to run the memory-intensive demo, which showcased speech synthesis software intended to impress the crowd.
+
+Components 
+This is a comprehensive list of the integrated circuits in the original Macintosh:
+ a Motorola MC68000 microprocessor at clock speed 7.8336 MHz
+ 64 or 128 KB of ROM in two chips containing parts of the operating system
+ 128 KB of RAM in 16 chips
+ eight TTL chips implementing a video and sound DMA controller, plus
+ two TTL chips providing a 16-bit video buffer (74166 type)
+ one PAL chip generating video timing signals (LAG)
+ two TTL chips providing an 8-bit Pulse-width modulation sound driver (74LS161 type)
+ two analog chips providing sound amplification (MC14016 switch, LF353 op-amp)
+ a Zilog 8530 chip controlling two RS-422 buses through two driver chips
+ an Integrated Woz Machine 400 KB floppy-disk controller plus support PAL (ASG)
+ a 6522 VIA bridge chip connecting to the keyboard and clock
+ an Apple real-time clock chip plus a 32.768 kHz quartz oscillator
+ an Intel 8021 microcontroller in the keyboard
+ bus control and extra logic including
+ two PAL chips to activate the other chips (BMU0/1)
+ two PAL chips to convert the 16 MHz clock to other timing signals (TSM, TSG)
+ two TTL chips buffering the RAM to the 68000 (74LS244 type)
+ some inverters (74LS04 type)
+
+This personal computer was implemented in four special-purpose LSI chips, six MSI PALs, 19 chips of standard SSI/MSI logic and analog circuits, plus memory. Most of the simpler chips would be consolidated into a few custom chips in the next generation, much reducing cost.
+
+Features 
+The above components implemented the Macintosh GUI and networking as described below.
+
+Mouse 
+The centerpiece of the new interface was mouse-driven control. The mouse contained only electromechanical components: a button, and two optical encoders. The button was connected to the 6522. The encoders' four outputs were connected two to the 8530 and two to the 6522.
+
+The optical encoders detected movement by quadrature. Each encoder had a wheel with radial stripes which would interrupt the light passing between an LED and a light-detecting photodiode, producing electrical pulses with mouse movement. Both the X and the Y encoders were turned by frictional contact with the mouse ball. Two pairs of emitters and detectors were used on each encoder. A first set of pulses is enough to detect the rate of rotation without indicating the direction of rotation, and a second set of synchronized but 90° out of phase pulses provides the direction of rotation. Therefore, two emitter-detector pairs were used for X and Y each.
+
+The motion detection signals connected to the 8530 chip using two non-essential pins used for obsolete modems. Originally these signaled modem connection or disconnection. When the mouse moved by a certain amount, the modem connect/disconnect signal would change state and the 8530 would interrupt the processor. The operating system would then read the direction signals from the 6522 to differentiate left from right, and up from down, and move the mouse cursor.
+
+Cursor and video 
+The mouse cursor was drawn on the screen by software, as were all other on-screen objects. To support real-time animation the screen timing PAL circuit would send a pulse to the 6522 once per vertical retrace. This was the basis for an operating system service called the VBL (vertical blanking) Manager. When the screen was to be redrawn, the cursor would be moved and games had an opportunity to update the display.
+
+It could sometimes be difficult to avoid a race condition between a game and the raster display. Flicker could result from the processor writing to the image while it was being sent to the CRT. Therefore, the Macintosh provided a choice of two images in memory, so one could be read while the other was written. The "page" was selected by a general-purpose I/O output connected from the 6522 to the video DMA. As two images added up to 42.75 KiB of precious RAM, however, this feature was unpopular.
+
+The DMA graphics controller operated independently and autonomously. One-bit pixels were fetched sixteen at a time over a 16-bit data bus and output at just less 16 MHz, necessitating almost one million fetches per second. Each fetch took one memory access cycle out of every two available during active parts of the display, implying a memory bandwidth for the CPU of about 2.56MB per second.
+
+Keyboard 
+The 6522 provided a general-purpose serial bus. The keyboard contained an Intel 8021 microprocessor which transmitted user input to the 6522 over standard phone patch cable. A new keystroke resulted in a processor interrupt.
+
+Sound 
+The sampled sound engine piggybacked on the video circuit. As the raster scan returned from the right side of the screen to the left, one byte of data was placed into a PWM generator instead of the screen. This provided 8-bit sampled monaural sound sampled at the 22.25 kHz horizontal blanking rate. General purpose 6522 outputs could mute the sampled sound, or set its volume to one of 8 levels of attenuation.
+
+A square wave generator was included on the 6522. One of its two timer circuits could be set to toggle the mute output periodically. This could produce frequencies higher than 11 kHz.
+
+This system was not compatible with the Lisa / Mac XL hardware, which in other respects could run Mac software with commonly available software/firmware modifications. Running programs on Lisas which made use of the Mac sound features would cause severe video problems and system crashes.
+
+Communication 
+The Zilog 8530 SCC was clocked at around 3.7 MHz. At this speed each serial channel was half as fast as the main memory. The RS-422 protocol was implemented except for the connection-established line, which was used to support the mouse. Apple later changed to an 8-pin connector which dropped it entirely.
+
+Storage 
+The Macintosh's persistent storage medium was Sony's floppy diskette drive. This drive replaced the Apple ]['s Shugart drive and  the 871K FileWare/"Twiggy" floppy drive used in the original Lisa as the storage medium chosen for the original Macintosh. The single-sided 3.5 inch floppy stored 400 KB by spinning the disk slower when the outer edge was used. A separate microcontroller, the IWM (Integrated Woz Machine), was dedicated to disk control. The floppy operated by polled I/O so access was not seamless: loading and saving files were operations that stopped the entire machine.
+
+Twenty bytes of memory were included in the real-time clock counter chip. This data was retained using a 4.5 Volt alkaline battery and was used to store user preferences.
+
+Timekeeping 
+The Macintosh featured a real-time clock counting seconds, and a countdown timer with near-microsecond resolution. The former was connected to the 6522 by a serial bus on three general-purpose I/O lines. It functioned much as a quartz watch when the machine was powered off. The latter was built into the 6522 itself. Either could generate interrupts.
+
+Memory Map 
+
+ RAM begins at  and ends at  (128K)/ (512K) and is divided up into a series of different functional areas:
+System globals ( - )
+System heap (). SysZone points to start, ApplZone points to end + 1
+Application heap (ApplZone; grows upwards. HeapEnd points to its end; ApplLimit sets maximum)
+Stack. Grows downwards from CurStackBase; SP = A7 points to top of stack.
+QuickDraw globals. (206 bytes) A5 points to boundary between QD globals and App globals (the "A5 world").
+Application globals
+Application parameters (32 bytes)
+Jump table
+Alternate screen buffer, 21,888 bytes (BufPtr)
+9344 bytes of undocumented space
+740 bytes alternate sound buffer
+796 bytes undocumented
+Screen buffer, 21,888 bytes (ScrnBase =  (128K)/ (512K))
+System Error handler, 128 bytes
+Main sound buffer, 740 bytes
+28 bytes undocumented, MemTop points to the end of RAM, +1
+ ROM ( - )
+ sccRBase - SCC read operations - 
+ sccWBase - SCC write operations - 
+ IWM (dBase) 
+ VIA (vBase) 
+aVBufB - register B base - 
+aVBufA - register A base - 
+aVIFR - interrupt flag register - 
+aVIER - interrupt enable register - 
+
+The RAM map is organised so that the system globals, system and application heaps grow upwards from low memory, everything else grows downwards from MemTop, from high memory towards low memory. On the 512K Macintosh, the "extra" RAM thus appears as a wider gap between the application heap and the stack, where it is available for application use.
+
+References
+
+External links
+ Macintosh 128K: Technical Specifications Apple Support Knowledge Base
+ Macintosh 512K: Technical Specifications Apple Support Knowledge Base
+ Macintosh 128K/Macintosh 512K Apple Computer Historical Information - Macintosh Hardware Description
+ Macintosh Serial Ports: Serial Ports as Slots MacTech Volume 1, Issue 8 (July 1985)
+128K

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 169587
+[parent_id]: 169444
+[tags]: 
+In principle you should be able to do this by 'stacking' an individual's data, e.g. creating data like indiv treatment covar response_type value 1 A 27.5 latency 1.1 1 (same) (same) aggression 7.5 2 B 31.1 latency 1.4 2 B (same) aggression 8.1 ... Then fit a model with indiv as a random effect, e.g. lmer(value~response_type:(treatment*indiv_cov)+(response_type|indiv), data=stacked_data) Since lme4 fits an unstructured/full variance-covariance matrix by default, the summary() or VarCorr() output will give you the among-individual correlation between latency and aggression. MCMCglmm can do this sort of model too, even more flexibly (e.g., multi-type models where each outcome has a different distribution family are allowed). The reshape2 and tidyr packages are useful for stacking your data. This rpubs document discusses this issue further. Repeated measures might work, too, but mixed models are more flexible (easier to include additional covariates on different levels, additional blocking factors, individuals with missing values for one response type ...)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5297470
+[parent_id]: 5297377
+[tags]: 
+You could use an HTTP Handler as follows: public class GetImage : IHttpHandler { public void ProcessRequest(HttpContext context) { DateTime now = DateTime.Now; context.Response.Cache.SetExpires(now.AddYears(1)); context.Response.Cache.SetCacheability(HttpCacheability.Public); context.Response.Cache.SetValidUntilExpires(true); context.Response.Cache.SetLastModified(now); context.Response.Cache.VaryByParams["FileID"] = true; context.Response.Cache.SetOmitVaryStar(true); context.Response.ContentType = file.ContentType; context.Response.AppendHeader("content-length", file.ContentLength.ToString()); //TODO: Get your file here string contentDisposition = String.Empty; contentDisposition += "filename=" + file.OriginalFilename; context.Response.AppendHeader("content-disposition", contentDisposition); string imagePath = Path.Combine(HostingEnvironment.MapPath(Settings.Default.MediaPath), file.LocalFilename); context.Response.WriteFile(imagePath); } public bool IsReusable { get { return false; } } } and use it like this:

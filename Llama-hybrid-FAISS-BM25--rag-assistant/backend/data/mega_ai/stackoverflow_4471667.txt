@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4471667
+[parent_id]: 4471388
+[tags]: 
+The intended use of shared_ptr is in its name: Sharing objects. You can't share objects with automatic storage duration. Once their scope ends, no object outside of that scope can depend on them existing. Like ereOn points out, you can get something going by passing in a null deleter, but that's a pain in the ass for users of the function. My first thought is to create an overload for the function which takes a reference and simply wraps the shared_ptr version: void a(X &val){ a(shared_ptr (&val, null_deleter())); } This at least saves the user from dealing with the gross hack. Whether or not it's any safer depends on the semantics of a() . If you're taking the pointer and storing it in some global/persistent object that will exist after a() returns, you still risk undefined behavior. In that case, the only safe way around the issue is to make a copy: void a(const X &val){ a(shared_ptr (new X(val)); }

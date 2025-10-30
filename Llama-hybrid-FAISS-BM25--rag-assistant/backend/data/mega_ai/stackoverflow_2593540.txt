@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2593540
+[parent_id]: 
+[tags]: 
+Django foreign keys cascade deleting and "related_name" parameter (bug?)
+
+In this topic I found a good way to prevent cascade deleting of relating objects, when it's not neccessary. class Factures(models.Model): idFacture = models.IntegerField(primary_key=True) idLettrage = models.ForeignKey('Lettrage', db_column='idLettrage', null=True, blank=True) class Paiements(models.Model): idPaiement = models.IntegerField(primary_key=True) idLettrage = models.ForeignKey('Lettrage', db_column='idLettrage', null=True, blank=True) class Lettrage(models.Model): idLettrage = models.IntegerField(primary_key=True) def delete(self): """Dettaches factures and paiements from current lettre before deleting""" self.factures_set.clear() self.paiements_set.clear() super(Lettrage, self).delete() But this method seems to fail when we are using ForeignKey field with "related_name" parameter. As it seems to me, "clear()" method works fine and saves the instance of "deassociated" object. But then, while deleting, django uses another memorized copy of this very object and since it's still associated with object we are trying to delete - whooooosh! ...bye-bye to relatives :) Database was arcitectured before me, and in somewhat odd way, so I can't escape these "related_names" in reasonable amount of time. Anybody heard about workaround for such a trouble?

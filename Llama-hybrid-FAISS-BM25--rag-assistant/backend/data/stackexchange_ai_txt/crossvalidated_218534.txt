@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 218534
+[parent_id]: 
+[tags]: 
+Generating samples from high-dimensional multivariate Gaussian with few training samples
+
+Say I have a $n\times d$ dataset $D$ where $n\ll d$ ($n$ number of observations, $d$ number of dimensions). Currently, if I want $m$ samples from $D$ assuming it is multivariate Gaussian, I can do this (in Matlab): T = cholcov(cov( D )); S = bsxfun( @plus, randn( m, size(D,2) ) * T, mean(D,1) ); However, this will compute a $d\times d$ covariance matrix which is very big, but not full rank obviously. I feel like this is wasting a lot of time and using the "wrong" information. I know of a trick used with PCA in that case, which essentially uses $D D^T$ instead of $D^T D$ (that's an abusive notation, I said nothing about D being demeaned or the normalisation to get a covariance matrix of course.. but you get the idea, it uses the "small" full-rank covariance instead). Is there a similar "trick" to sample from multivariate Gaussians? So, from the link mentioned in comment, I put together this Matlab code which is already much faster, is that correct? [U,L,V] = svd( D, 'econ' ); S = bsxfun( @plus, randn( m, size(D,1) ) * L * V', mean(D,1) );

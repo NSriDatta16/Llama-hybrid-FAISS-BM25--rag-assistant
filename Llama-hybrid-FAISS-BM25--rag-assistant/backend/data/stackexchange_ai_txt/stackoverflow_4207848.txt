@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4207848
+[parent_id]: 4207761
+[tags]: 
+What you're describing is inter-process communication, which can get messy. The easiest and most elegant, but probably least reactive, is to have the service write entries as small text files (or append to a log), and have your GUI use a FileSystemWatcher to detect new files or updates to the log file, and read the file. You have to ensure that the service opens the file for appending in a "shared" manner, allowing read-only access while it's writing. Otherwise, you'll block one process or the other, probably causing lost messages. Processes can communicate through some built-in pipelines. if your service writes messages to its StandardOutput pipe, the GUI can remotely attach a listener and receive events when messages are written. This is probably the most elegant non-file way to do what you want. Research the Process class, especially the OutputDataReceived event. You'll have to go look for the process from your GUI by some uniquely identifying information, using GetProcess().

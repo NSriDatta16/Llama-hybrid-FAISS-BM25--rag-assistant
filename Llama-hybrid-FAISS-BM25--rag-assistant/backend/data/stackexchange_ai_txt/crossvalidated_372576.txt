@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 372576
+[parent_id]: 
+[tags]: 
+VIF Drops Significantly When I Delete Some Dummy Variables
+
+Is my model valid even with the high VIF? Does it matter which dummy variable I drop as the reference point? I have a a category variable ( Fruit ) that I converted to dummy variables: columns Apple , Banana , Cranberry , Durian , etc. I deleted dummy column Apple , so it acts like the baseline. When I run Ordinary Least Squared models, the VIF is nan , which drops to 16 with Banana gone, and further drops to 4 when I deleted dummy variable Cranberry . I want to avoid multicollinearity, but I thought dummy variables must be kept together, not cherry picked. I also ran a correlation matrix on the dummy variables, and none of them exhibited a correlation higher than 0.2. Example code for VIF: df_mc_features = model_mc.model.exog mc_vif = [variance_inflation_factor(df_mc_features, i) for i in range(df_mc_features.shape[1])] display('Median VIF:', np.median(np.array(mc_vif))); display('Average VIF:', np.array(mc_vif).mean()); Example code for OLS: scaler = StandardScaler() data = df.copy() scaler.fit(data) data_scaled = pd.DataFrame(scaler.transform(data), columns=data.columns) df_mc_y = data_scaled['Target Variable'].copy() df_mc_x = data_scaled.drop(['Target Variable'], axis=1).copy() model_mc = sm.OLS(list(df_mc_y.astype(float)), sm.add_constant(df_mc_x.astype(float)), missing='drop').fit() model_mc.summary()

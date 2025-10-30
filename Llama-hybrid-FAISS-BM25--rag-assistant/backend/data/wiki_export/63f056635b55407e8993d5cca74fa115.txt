@@ -1,0 +1,22 @@
+SEAlink is a file transfer protocol that is backward compatible with XMODEM but features a sliding window system for improved throughput. SEAlink was written in 1986 as a part of the SEAdog FidoNet mailer written by System Enhancement Associates, creators of the famous ARC program. It was licensed with a simple "give credit" requirement, but nevertheless was not very widely used except in FidoNet mailers. SEAlink, and most other XMODEM enhancements, were quickly displaced following the introduction of ZMODEM.
+
+Description
+XMODEM breaks down the file to be sent into a numbered series of packets of 128 bytes each. Packets are sent one at a time to the receiver, who either acknowledges the proper reception by sending a ACK character or requests it to be resent by sending a NAK instead. The transfer then continues with another packet.
+
+Although the time needed to send the ACK or NAK is almost zero, the propagation delay of the phone system itself introduces a latency. A latency of 0.1 seconds is not at all uncommon and can be much longer on overseas links. That means that the maximum transfer rate of XMODEM is a function of the phone system more than the speed of the modems themselves. At 300 bit/s this is not a serious concern, as the packet will take about 3.5 seconds to send, the 0.1 delay being insignificant. However, at 9600 bit/s the packet only takes about 0.1 seconds to send, meaning that at least half of the potential throughput is lost while the sender waits for the  ACK or NAK to arrive.
+
+SEAlink addresses this through the use of a "sliding window". In this case the sender does not wait for the ACK or NAK, and instead simply sends out its packets in a continuous stream. The receiver still has to ACK or NAK the packets, but does so by attaching a packet number to each one, allowing the sender to identify which packets worked or failed. The "window" refers to the number of packets that can be sent before an ACK or NAK is required. In the case of SEAlink, the window was six packets, allowing up to 768 bytes of data to be sent at once.
+
+SEAlink was designed to be completely backward compatible with existing XMODEM implementations. On the receiver side, all that was required was that the receiver send back the packet number (contained in all XMODEM packets) along with the normal ACK or NAK character. On reception of the very first ACK or NAK, the SEAlink sender would "notice" the packet number and continue to use windows. If the packet number was missing, it was assumed it was sending to a non-SEAlink XMODEM, and set the window size to one.
+
+Other features
+SEAlink also included a number of features included in other XMODEM derivatives. Notable was the use of a "zero packet", which was introduced in the FidoNet-related TeLink protocol in order to send file information and support batch file transfers.
+
+SEAlink made one minor modification to this "standard", adding a byte in position 40 of the packet to indicate whether or not to use "overdrive". When turned on, by placing any non-zero number in byte 40, the receiver no longer expected ACK messages, but only NAKs. This was intended to reduce the bandwidth required from the receiver back to the sender, which was an important consideration on many of the early high-speed modems, which featured a very slow backchannel (75 bit/s in the Telebit modems, for instance).
+
+A later addition was "RESYNC", allowing for file transfers to be restarted from where they left off. RESYNC added another indicator in the zero packet, byte 42, to indicate that the sender supports the feature. In this case, the receiver always checks to see if an identical filename exists locally, and if so, sends a SYN character instead of the normal ACK or NAK. The SYN is followed by the packet number at which to restart.
+
+References
+ SEAlink 1.20 program and source code
+
+BBS file transfer protocols

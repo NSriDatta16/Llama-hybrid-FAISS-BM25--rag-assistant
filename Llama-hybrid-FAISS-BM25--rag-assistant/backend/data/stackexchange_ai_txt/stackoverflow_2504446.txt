@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2504446
+[parent_id]: 2466713
+[tags]: 
+What you want to do doesnt sound particularly good and maybe you should think about re-designing those 2 procs. However, you could do something like this as a quick fix: get your sp2 sproc to write it's intermediate results to a temporary table which you can then access/process inside of sp1. You can then drop the temporary table which you created in sp2 once sp1 returns. http://pastie.org/883881 delimiter ; drop procedure if exists foo; delimiter # create procedure foo() begin create temporary table tmp_users select * from users; -- do stuff with tmp_users call bar(); drop temporary table if exists tmp_users; end # delimiter ; drop procedure if exists bar; delimiter # create procedure bar() begin -- do more stuff with tmp_users select * from tmp_users; end # delimiter ; call foo(); not very elegant but should do the trick

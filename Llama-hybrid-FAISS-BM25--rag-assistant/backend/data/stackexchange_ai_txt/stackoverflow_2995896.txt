@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2995896
+[parent_id]: 2995805
+[tags]: 
+This is due to everything in IE6 being executed in the same thread - even animating the gif. The only way to ensure that the gif is displayed prior to starting is by detaching the execution. function longRunningProcess(){ .... hideGif(); } displayGif(); window.setTimeout(longRunningProcess, 0); But this will still render the browser frozen while longRunningProcess executes. In order to allow interaction you will have to break your code in to smaller fragments, perhaps like this var process = { steps: [ function(){ // step 1 // display gif }, function(){ // step 2 }, function(){ // step 3 }, function(){ // step 4 // hide gif } ], index: 0, nextStep: function(){ this.steps[this.index++](); if (this.index != this.steps.length) { var me = this; window.setTimeout(function(){ me.nextStep(); }, 0); } } }; process.nextStep();

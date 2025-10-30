@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4271933
+[parent_id]: 4271857
+[tags]: 
+you need a call to lua_load to compile the block of code, and then a call to lua_call to run it. For a really good example of how this is done, take a look at the example provided here: . The first argument to any Lua api function is always an interpreter state, which is the return value of lua_open() The example actually uses luaL_loadbuffer which wraps the call to lua_load to make compiling a c string a bit easier. you can read how to use it in the chapter of the reference manual that covers the The Auxiliary Library . This leaves a lua chunk at the top of the lua stack, which can then be invoked with lua_call , but the example uses lua_pcall , which provides a bit of error trapping. since the chunk you just compiled doesn't take any arguments (it's a chunk not a function) and doesn't have any return value you'd be interested in, and you want to see the error exactly as it was produced, all of the arguments besides the first (which is always the lua interpreter state) can be zeros.

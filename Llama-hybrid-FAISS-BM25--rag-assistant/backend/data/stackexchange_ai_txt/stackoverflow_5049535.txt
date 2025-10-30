@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5049535
+[parent_id]: 5042273
+[tags]: 
+The main sticking point for modelling this is how to treat both users and groups as members of groups. Ken Downs's approach will solve this problem. Another approach is to treat users and and groups as a derived type of a common base type: create table groupmemberbase ( memberid int, --optional flag to idicate the type of the derived entity --this is similar to the login flag used by Ken Downs membertype int, primary key (memberid) ) create table users { memberid int, --more user attributes here primary key (memberid), foreign key (memberid) references groupmemberbase (memberid) ) create table groups ( memberid int, --more group attributes here primary key (memberid), foreign key (memberid) references groupmemberbase (memberid) ) create table groupmembers ( groupid int, memberid int, primary key (groupid, memberid), foreign key (groupid) references groups (memberid) foreign key (memberid) references groupmemberbase (memberid) ) One advantage of this approach is that it prevents a user or group from accidentally becoming a member of a user - this restriction is enforced at the schema level.

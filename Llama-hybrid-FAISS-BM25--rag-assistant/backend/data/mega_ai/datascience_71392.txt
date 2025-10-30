@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 71392
+[parent_id]: 
+[tags]: 
+How can I tell whether my Random-Forest model is overfitting?
+
+I was trying to generate predictions for Iris species using the UCI Machine Learning Iris dataset. I used a RandomForestClassifier with GridSearchCV and calculated the mean absolute error. However, upon generating predictions with the testing set it gave me a suspicious MAE of 0.000000, and a score of 1.0. Is it likely that the model is overfit? If so, why did this happen, and how do I prevent this? iris = pd.read_csv('/iris/Iris.csv') le = LabelEncoder() i2 = iris.copy() labelled_iris_df = pd.DataFrame(le.fit_transform(i2.Species)).rename(columns={0:'Species_Encoded'}) i3 = i2.drop('Species', axis=1) i3 = pd.concat([i3, labelled_iris_df], axis=1) #Encoded dataset y = i3.Species_Encoded X = i3.drop('Species_Encoded', axis=1) X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.75, random_state=42) params = { 'n_estimators':[50,100,150,200], 'max_depth':[3,4,5,6] } rfc = RandomForestClassifier(random_state=42) gc = GridSearchCV(rfc, params, cv=3).fit(X,y) print (gc.best_params_) #n_estimators: 50, max_depth:4 model = RandomForestClassifier(n_estimators=50, max_depth=4, random_state=42) model.fit(X_train,y_train) preds = model.predict(X_test) mae = mean_absolute_error(y_test, preds) sc = model.score(X_test, y_test) print("mae: %f \t\t score: %f" % (mae, sc)) #Prints mae: 0.000000 score: 1.0 I'm a beginner to Machine Learning so please feel free to comment on bad sections of this code and how I can improve them.

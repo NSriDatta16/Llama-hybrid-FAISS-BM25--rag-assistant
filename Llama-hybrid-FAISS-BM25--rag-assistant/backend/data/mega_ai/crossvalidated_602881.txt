@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 602881
+[parent_id]: 
+[tags]: 
+Bayesian two way test-results interpretation
+
+I did a bayesian two way hypothesis test using pymc3 - the variable "do you like chemical free products - yes/no" vs "will you buy this soap or not". The goal was to understand if those who like chemical free products are more likely to buy it or not? The code is below and I am not able to interpret results show in table. What is the conclusion? import pymc3 as pm import numpy as np # Convert data to NumPy array data = np.array([left_merged['chemical_free'], left_merged['purchaseDecision_soap']]).T # Define the model with pm.Model() as model: # Priors p_val_yes = pm.Beta('p_val_yes', alpha=1, beta=1) p_val_no = pm.Beta('p_val_no', alpha=1, beta=1) # Likelihood y = pm.Bernoulli('y', p=p_val_yes if data[:,0] == '1' else p_val_no, observed=data[:,1]) # Sample from the posterior distribution trace = pm.sample(draws=5000, tune=1000, chains=2) # Extract the values of p_val_yes and p_val_no from the trace p_val_yes_samples = trace['p_val_yes'] p_val_no_samples = trace['p_val_no'] # Calculate the difference in purchase proportions between val_yes and val_no delta = p_val_yes_samples - p_val_no_samples # Calculate the credible interval for delta az.summary(trace) mean sd hdi_3% hdi_97% mcse_mean mcse_sd ess_bulk ess_tail r_hat p_val_yes 0.506 0.289 0.026 0.964 0.004 0.003 6609.0 6548.0 1.0 p_val_no 0.645 0.028 0.589 0.695 0.000 0.000 7168.0 6979.0 1.0

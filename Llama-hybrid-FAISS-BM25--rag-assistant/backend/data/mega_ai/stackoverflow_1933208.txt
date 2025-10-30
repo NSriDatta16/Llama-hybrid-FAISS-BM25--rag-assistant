@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1933208
+[parent_id]: 1933064
+[tags]: 
+The advice is necessary if the class contains two or more unmanaged resources. If allocation of one fails, then you will need to free all the previous allocated resources to avoid a leak. (EDIT: more generally, any exception thrown after allocating a resource has to be handled by deleting that resource). This can't be done if they are allocated in the initialiser list. For example: SomeClass() : data1(new value1), data2(new value2) {} will leak the value1 if new value2 throws. You will need to handle this, like so: SomeClass() : data1(0), data2(0) { data1 = new value1; // could be in the initialiser list if you want try { data2 = new value2; } catch (...) { delete data1; throw; } } Of course, all these shenanigans can be avoided by sensible use of smart pointers.

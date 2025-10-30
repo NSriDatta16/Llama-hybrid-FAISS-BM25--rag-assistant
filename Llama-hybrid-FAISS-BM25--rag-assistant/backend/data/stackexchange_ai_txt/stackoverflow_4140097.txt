@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4140097
+[parent_id]: 
+[tags]: 
+Is there a more elegant way to do this in .NET 4.0?
+
+It appears that C# 4.0 does not support covariance (using the "in" keyword) on parameters in overrides; is that the case? If so, is there a more elegant way to do this? CONTEXT public interface IBaseEvent { /* ... */ } public interface IDerivedEvent : IBaseEvent { /* ... */ } public class MoreDerivedEvent : IDerivedEvent { /* ... */ } I have a set of classes that handle MoreDerivedEvent . Due to limitations of the event handling code, I can only register a single event handler for MoreDerivedEvent , and I don't know that it will handle registering interfaces as events (I don't believe it will, as the guidance is to use classes explicitly). So, in order to handle the event appropriately, I've defined the handlers as follows: public class BaseType { protected virtual void Handle(IBaseEvent @event) { /* Do Base Stuff */ } } public class DerivedType { protected virtual void Handle(IDerivedEvent @event) { /* Do Derived Stuff */ Handle((IBaseEvent)@event); } protected override sealed void Handle(IBaseEvent @event) { base.Handle(@event); } } This obviously does not provide true inheritance, and I'll probably just flatten the types derived from DerivedType and BaseType if I can't solve this issue. But I figured I'd put it to the Stack Overflow community first.

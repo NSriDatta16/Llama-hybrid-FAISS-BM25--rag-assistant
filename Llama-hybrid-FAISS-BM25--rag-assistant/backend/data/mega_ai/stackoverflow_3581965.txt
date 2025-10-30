@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3581965
+[parent_id]: 3581887
+[tags]: 
+Assuming you use at least SQL2005, you could do somesting like WITH p as ( SELECT a, b, row_number() OVER(ORDER BY time_column) as row_no, count() OVER() as total_count FROM myTable WHERE ) SELECT a, b FROM p WHERE row_no % (total_cnt / 10) = 1 The where condition in the bottom calculates the modulus of the row number by the total number of records divided by the required number of final records. If you want to use the average instead of one specific value, you would extend this as follows: WITH p as ( SELECT a, b, row_number() OVER(ORDER BY time_column) as row_no, count() OVER() as total_count FROM myTable WHERE ), a as ( SELECT a, b, row_no, total_count, avg(a) OVER(partition by row_no / (total_cnt / 10)) as avg_a FROM p ) SELECT a, b, avg_a FROM a WHERE row_no % (total_cnt / 10) = 1 The formula to select one of the values in the final WHERE clause is used with the % replaced by / in the partition by clause.

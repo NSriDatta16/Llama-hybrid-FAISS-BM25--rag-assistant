@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 940481
+[parent_id]: 939778
+[tags]: 
+If you do not want to read from '/proc. Then you can consider writing a Kernel module which will implement your own system call. And your system call should be written so that it can obtain the list of current processes, such as: /* ProcessList.c Robert Love Chapter 3 */ #include #include #include int init_module(void) { struct task_struct *task; for_each_process(task) { printk("%s [%d]\n",task->comm , task->pid); } return 0; } void cleanup_module(void) { printk(KERN_INFO "Cleaning Up.\n"); } The code above is taken from my article here at http://linuxgazette.net/133/saha.html .Once you have your own system call, you can call it from your user space program.

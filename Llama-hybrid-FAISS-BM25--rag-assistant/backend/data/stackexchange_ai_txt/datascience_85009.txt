@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 85009
+[parent_id]: 
+[tags]: 
+How to decode encoded labels in Decision tree classifier
+
+I have some dataset with procurements of organization where actually i'm working. The aim is to find most important features that describe why some processes of purchases is succesful, and why not succesful. To solve this, I'm using Decision Tree Classifier. First, I convert boolen columns to int for col in ['flag_prequalification', 'flag_procurement_category_strategy']: data.loc[:, col] = data.loc[:, col].astype(int) Then, convert object type to string. This for label encoding for cat_feature in categorical_features: data.loc[:, cat_feature] = data.loc[:, cat_feature].fillna('unknown').astype(str) %%time encoder = defaultdict(LabelEncoder) data.loc[:, categorical_features] = ( data .loc[:, categorical_features] .apply(lambda x: encoder[x.name].fit_transform(x), axis=0) ) After, let's use log(sum) instead of sum for col in ['sum_tru_no_nds (lot)', 'price (lot)', 'count (lot)']: data[col] = (data[col] + 1).apply(np.log) And, in the end plot the tree: from sklearn.externals.six import StringIO from IPython.display import Image from sklearn.tree import export_graphviz import pydotplus import graphviz # DOT data dot_data = tree.export_graphviz(clf, out_file=None, feature_names=None, class_names=target_col, filled=True) # Draw graph graph = graphviz.Source(dot_data, format="png") graph The question is, how can I explain this tree to others, more precisely how can I decode this labels in tree?

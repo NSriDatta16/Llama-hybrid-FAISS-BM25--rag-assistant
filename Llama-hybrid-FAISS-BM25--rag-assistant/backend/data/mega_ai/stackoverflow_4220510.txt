@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4220510
+[parent_id]: 1636131
+[tags]: 
+Use the method org.eclipse.jdt.internal.ui.javaeditor.EditorUtility.getActiveEditorJavaInput() . That returns the Java element edited in the current active editor. The return type is org.eclipse.jdt.core.IJavaElement , but if it's a Java file that's being edited, the run time type will be org.eclipse.jdt.core.ICompilationUnit . To get the AST, i.e., the org.eclipse.jdt.core.dom.CompilationUnit , you can use the following code: public static CompilationUnit getCompilationUnit(ICompilationUnit icu, IProgressMonitor monitor) { final ASTParser parser = ASTParser.newParser(AST.JLS3); parser.setSource(icu); parser.setResolveBindings(true); final CompilationUnit ret = (CompilationUnit) parser.createAST(monitor); return ret; } Keep in mind that this is for Java >= 5. For earlier versions you'll need to switch the argument to ASTParser.newParser() . I realize that this question was answered but I wanted to shed light on the EditorUtility class, which is quite useful here.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 393241
+[parent_id]: 
+[tags]: 
+Read\write boost::binary_oarchive to pipe
+
+I am continue to build two simple processes throwing class objects one to another (see my previous post) through simple (anonymous) pipes. Now I revealed for myself boost::serialization (thanks answered people) and have tried to make some class be serialized through ::WriteFile::ReadFile. So - what I am doing wrong? 1) I created some class #pragma once #include "wtypes.h" #include #include #include class CTextContainer { friend class boost::serialization::access; template void serialize(Archive & ar, const unsigned int version) { ar & m_sText; ar & m_dwCRC; ar & m_dwSize; } public: CTextContainer() : m_dwCRC(0), m_dwSize(0) { ZeroMemory(m_sText, sizeof(m_sText)); m_dwSize = sizeof(*this); } CTextContainer(LPCTSTR sText) : m_dwCRC(0), m_dwSize(0) { ZeroMemory(m_sText, sizeof(m_sText)); wcsncpy_s(m_sText, 1024, sText, wcslen(sText)); m_dwSize = sizeof(*this); } virtual ~CTextContainer(){} LPTSTR GetText() const{return (LPTSTR) m_sText;} protected: DWORD m_dwCRC; DWORD m_dwSize; TCHAR m_sText[1024]; }; //end of class 2) And now I am trying to read from this class into binary archive and to write its content to one end of pipe... boost::archive::binary_oarchive oa(ofs); oa It won't work in that way, right? So, how it will? 3) Same operation on other side?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1480194
+[parent_id]: 1480066
+[tags]: 
+It isn't always possible to do repetitive things in a simple and elegant way. Just do what you always do when you have common code that gets replicated across many projects: Search CPAN, someone may have already the code for you. For this issue I found Scalar::MoreUtils . If you don't find something you like on CPAN, make a module and put the code in a subroutine: package My::String::Util; use strict; use warnings; our @ISA = qw( Exporter ); our @EXPORT = (); our @EXPORT_OK = qw( is_nonempty); use Carp qw(croak); sub is_nonempty ($) { croak "is_nonempty() requires an argument" unless @_ == 1; no warnings 'uninitialized'; return( defined $_[0] and length $_[0] != 0 ); } 1; =head1 BOILERPLATE POD blah blah blah =head3 is_nonempty Returns true if the argument is defined and has non-zero length. More boilerplate POD. =cut Then in your code call it: use My::String::Util qw( is_nonempty ); if ( is_nonempty $name ) { # do something with $name } Or if you object to prototypes and don't object to the extra parens, skip the prototype in the module, and call it like: is_nonempty($name) .

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5000229
+[parent_id]: 
+[tags]: 
+Mathematica: reconstruct an arbitrary nested list after Flatten
+
+What is the simplest way to map an arbitrarily funky nested list expr to a function unflatten so that expr==unflatten@@Flatten@expr ? Motivation: Compile can only handle full arrays (something I just learned -- but not from the error message), so the idea is to use unflatten together with a compiled version of the flattened expression: fPrivate=Compile[{x,y},Evaluate@Flatten@expr]; f[x_?NumericQ,y_?NumericQ]:=unflatten@@fPrivate[x,y] Example of a solution to a less general problem: What I actually need to do is to calculate all the derivatives for a given multivariate function up to some order. For this case, I hack my way along like so: expr=Table[D[x^2 y+y^3,{{x,y},k}],{k,0,2}]; unflatten=Module[{f,x,y,a,b,sslot,tt}, tt=Table[D[f[x,y],{{x,y},k}],{k,0,2}] /. {Derivative[a_,b_][_][__]-> x[a,b], f[__]-> x[0,0]}; (Evaluate[tt/.MapIndexed[#1->sslot[#2[[1]]]&, Flatten[tt]]/. sslot-> Slot]&) ] Out[1]= {x^2 y + y^3, {2 x y, x^2 + 3 y^2}, {{2 y, 2 x}, {2 x, 6 y}}} Out[2]= {#1, {#2, #3}, {{#4, #5}, {#5, #7}}} & This works, but it is neither elegant nor general. Edit: Here is the "job security" version of the solution provided by aaz: makeUnflatten[expr_List]:=Module[{i=1}, Function@Evaluate@ReplaceAll[ If[ListQ[#1],Map[#0,#1],i++]&@expr, i_Integer-> Slot[i]]] It works a charm: In[2]= makeUnflatten[expr] Out[2]= {#1,{#2,#3},{{#4,#5},{#6,#7}}}&

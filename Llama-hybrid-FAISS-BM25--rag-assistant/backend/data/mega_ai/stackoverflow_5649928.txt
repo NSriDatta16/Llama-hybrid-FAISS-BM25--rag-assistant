@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5649928
+[parent_id]: 5649709
+[tags]: 
+You can use logintobogan for inspiration: #implementation of hook_user mymodule_user($op) { if ($op == 'login') { $_REQUEST['destination'] = '/user/will/be/redirected/here' } } The important part is to make sure, that by the time the final drupal_goto() is called in user.module, you have set your $_REQUEST['destination'] . A few things to note: Logintoboggan has a lot of code to deal with all sorts of edge-cases, such as redirecting out/to https. You can ignore these, if your case is simple. Your module must be called after user.module and probably after other modules implementing hook_user, for they might change this global too. Very ugly, but the way this works in Drupal. Do not -ever- issue drupal_goto() in any hook. Especially not hook_user, or hook_form_alter. drupal_goto will prohibit other hooks from being called; breaking functionality at the least, but often corrupting your database. Do not issue drupal_goto() in form_alter callbacks such as "_submit", this might break many other modules and might even corrupt your database.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4627506
+[parent_id]: 4627399
+[tags]: 
+You could use a block: typedef void (^Callback)(NSArray*); [somebody doSomethingAndPerform:^(NSArray *data) { // do whatever you want with the data }]; - (void) doSomethingAndPerform: (Callback) callback { NSArray *data = …; callback(data); } This is very flexible, but maybe too complex. If you want something simpler, you can always just pass the selector and target, just as you thought: [somebody doSomethingAndCall:@selector(dataReceiver:) on:self]; - (void) doSomethingAndCall: (SEL) selector on: (id) target { NSArray *data = …; [target performSelector:selector withObject:data]; } Or you can use a protocol: @protocol DataConsumer - (void) handleData: (NSArray*) data; @end // this class has to implement DataConsumer [somebody doSomethingAndNotify:self]; - (void) doSomethingAndNotify: (id ) consumer { NSArray *data = …; [consumer handleData:data]; } This solution is a bit heawyweight, but the advantage is that the compiler catches some errors for you. There’s also more coupling, but it’s far from being a problem.

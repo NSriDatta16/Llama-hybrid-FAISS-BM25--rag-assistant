@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4252615
+[parent_id]: 4252349
+[tags]: 
+Rails 4+ ActiveRecord 4.0 and above adds where.not so you can do this: Foo.includes(:bar).where.not('bars.id' => nil) Foo.includes(:bar).where.not(bars: { id: nil }) When working with scopes between tables, I prefer to leverage merge so that I can use existing scopes more easily. Foo.includes(:bar).merge(Bar.where.not(id: nil)) Also, since includes does not always choose a join strategy, you should use references here as well, otherwise you may end up with invalid SQL. Foo.includes(:bar) .references(:bar) .merge(Bar.where.not(id: nil)) Rails 3 The canonical way to do this with Rails 3: Foo.includes(:bar).where("bars.id IS NOT NULL")

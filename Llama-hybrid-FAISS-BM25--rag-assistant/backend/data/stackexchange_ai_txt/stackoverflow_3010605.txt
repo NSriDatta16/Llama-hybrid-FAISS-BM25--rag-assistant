@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3010605
+[parent_id]: 3010375
+[tags]: 
+Here are some empirical answers: GeoPtProperty uses 31B of storage space. Using BlobProperty varies based on what exactly you store: struct.pack('>2f', lat, lon) => 21B. Using pickle (v2) to packe a 2-tuple containing floats => 37B. Using pickle (v0) to packe a 2-tuple containing floats => about 30B-32B (v0 uses a variable-length ascii encoding for floats). In short, it doesn't look like GeoPt is doing anything particularly clever. If you are going to be storing a lot of these, then you could use struct to pack your floats. Packing and unpacking them with struct will probably be unnoticeably different from the CPU cost associated with serializing/deserializing GeoPt . If you plan on storing lots of floats per entity and space is really important, then you might consider leveraging the CompressedBlobProperty in aetycoon . Disclaimer : This is the minimum space required. Actual space will be slightly larger per property based on the length of the property's name. The model itself also adds overhead (for its name and key).

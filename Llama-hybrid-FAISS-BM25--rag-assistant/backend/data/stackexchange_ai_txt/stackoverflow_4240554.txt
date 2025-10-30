@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4240554
+[parent_id]: 
+[tags]: 
+C/C++ getting struct size
+
+Today, with my great surprise, I discovered that When the sizeof operator is applied to a class, struct, or union type, the result is the number of bytes in an object of that type, plus any padding added to align members on word boundaries. The result does not necessarily correspond to the size calculated by adding the storage requirements of the individual members. I didn't know of it, and am pretty sure this thing is breaking some of my old code: to read binary files I used to have structs like this one: struct Header { union { char identc[4]; uint32 ident; }; uint16 version; }; and to read those 6 bytes directly with fread driven by sizeof : fread( &header, sizeof(header), 1, f ); But now sizeof(header) returns 8 ! Is it possible that with older GCC versions sizeof(header) returned 6 , or I my mind is totally gone? Anyway is there any other operator (or preprocessor directive or whatever) that lets the compiler know how big the structs is -- excluding padding? Otherwise what would be a clean way to read a raw-data struct from a file that doesn't require to write too much code? EDIT : I know that this isn't the correct way to read/write binary data: I'd have different result depending on machine endianess and stuff. Anyway this method is the fastest one, I'm juist trying to read some binary data to quickly get its content, not to write a good application which I'm going to use in future or to release.

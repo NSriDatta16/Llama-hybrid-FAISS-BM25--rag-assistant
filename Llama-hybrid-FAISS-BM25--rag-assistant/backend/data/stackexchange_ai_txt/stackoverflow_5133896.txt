@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5133896
+[parent_id]: 5133058
+[tags]: 
+Let me show you an overstating example: public bool IsEmpty { get { /* always costs 10s here */ } } public int Count { get { /* always costs 15s here, no matter Count is 0 or 1 or 2... */ } } If they implement the Count property like this: public int Count { get { if (IsEmpty) return 0; //original implementation here } } Now when the final Count is 0, it costs 10s(5s less than before!great!), but for those Count is 1/2/more, it costs more than before, because checking IsEmpty costs time! So the optimization is not a good idea, because IsEmpty takes time. It will be good if IsEmpty is reading from a field directly. EDIT I checked the implementaion of both IsEmpty and Count via reflector, both are expensive . Obviously checking IsEmpty for 0 count only will reduce the average performance speed.

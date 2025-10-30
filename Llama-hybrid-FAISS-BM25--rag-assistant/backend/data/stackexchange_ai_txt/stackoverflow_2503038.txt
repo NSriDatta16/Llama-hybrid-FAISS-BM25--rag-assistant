@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2503038
+[parent_id]: 2503010
+[tags]: 
+Try this: Get-Content test.txt | Foreach {($_ -split '\s+',4)[0..2]} And if you want the data in those columns printed on the same line: Get-Content test.txt | Foreach {"$(($_ -split '\s+',4)[0..2])"} Note that this requires PowerShell 2.0 for the -split operator. Also, the ,4 tells the the split operator the maximum number of split strings you want but keep in mind the last string will always contain all extras concat'd. For fixed width columns, here's one approach for column width equal to 7 ($w=7): $res = Get-Content test.txt | Foreach { $i=0;$w=7;$c=0; ` while($i+$w -lt $_.length -and $c++ -lt 2) { $_.Substring($i,$w);$i=$i+$w-1}} $res will contain each column for all rows. To set the max columns change $c++ -lt 2 from 2 to something else. There is probably a more elegant solution but don't have time right now to ponder it. :-)

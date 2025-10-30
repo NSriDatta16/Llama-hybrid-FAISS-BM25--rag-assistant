@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4611836
+[parent_id]: 4611828
+[tags]: 
+This answer from Jon Skeet discusses using a mutex to do it Mutex is the way to go. It's a lot less fragile than using process names etc. However, you need to make sure the Mutex isn't garbage collected. In the case of a service (which is event driven rather than having a "main" method which runs to completion), the most sensible way of doing this is probably to put it in a static variable. Dispose of the mutex when the service stops, so you don't need to wait for finalization or anything like that. Matthew Brindley gives this example in the same question for his answer [STAThread] static void Main() { using(Mutex mutex = new Mutex(false, "Global\\" + appGuid)) { if(!mutex.WaitOne(0, false)) { MessageBox.Show("Instance already running"); return; } Application.Run(new Form1()); } } To maximize the other application you'll need to send it the message to maximize. See this article on message sending

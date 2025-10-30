@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 745763
+[parent_id]: 745672
+[tags]: 
+This wont work: SET @OldValue = (SELECT @column_name FROM Deleted); SET @NewValue = (SELECT @column_name FROM Inserted); You're attempting dynamic sql here, which won't work. You have to hard-code the SQL, the variable @column_name will not be dynamically replaced with its value, because the SQL of the trigger gets parsed once, before the trigger runs. With this, you'll (depending on your settings) probably get the literal value of the column name. It is possible to get dynamic SQL (by connecting to the server in another process, or in MySQl by creating a prepared statement), but it's not possible to do that and reference the "magic" INSERTED and DELETED pseudo-tables available in a trigger. So your clever use of information_schema.columns won't work. What you can do is leverage that cleverness to write a stored procedure to generate the trigger (this is in fact what I did when I had to write auditing triggers). Then whenever you change the Shipment table, you'll have to run the sp to generate the "create trigger...." statmentnt, and then run that generated statement to re-create the trigger.

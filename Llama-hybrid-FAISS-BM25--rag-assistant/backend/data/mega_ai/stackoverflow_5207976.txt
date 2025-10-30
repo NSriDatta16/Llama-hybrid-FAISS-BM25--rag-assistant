@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5207976
+[parent_id]: 5206009
+[tags]: 
+You need to add a Blog property to Post if it needs to be not-null (see the last paragraph in 6.4. One-To-Many Associations ) Here are some mappings that should work: Then you'll be able to use code like the following: using (var session = sessionFactory.OpenSession()) using (var tx = session.BeginTransaction()) { var blog = new Blog { Name = "My Blog" }; var post = new Post { Blog = blog, Content = "My First Post" }; var comment = new Comment { Blog = blog, Feedback = "Awesome!" }; blog.LastComment = comment; blog.Posts = new List { post }; post.Comments = new List { comment }; session.Save(comment); tx.Commit(); } This inserts the Blog , then the Post , then the Comment , then it updates the Blog to set the LastCommentId . Note that you need to call Save on the Comment ; anything else will fail.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2561918
+[parent_id]: 2561902
+[tags]: 
+Use subprocess.call() . From the docs: subprocess.call(*popenargs, **kwargs) Run command with arguments. Wait for command to complete, then return the returncode attribute. The arguments are the same as for the Popen constructor. Edit: subprocess.call() uses wait() , and wait() is vulnerable to deadlocks (as Tommy Herbert pointed out). From the docs: Warning: This will deadlock if the child process generates enough output to a stdout or stderr pipe such that it blocks waiting for the OS pipe buffer to accept more data. Use communicate() to avoid that. So if your command generates a lot of output, use communicate() instead: p = subprocess.Popen( ["scanx", "--udp", host], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE) out, err = p.communicate()

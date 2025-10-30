@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2766659
+[parent_id]: 
+[tags]: 
+IQuery NHibernate - do I have to Encrypt a parameter that is an encrypted IUserType?
+
+Situation : suppose I have a column on an entity which is encrypted in the database using IUserType: public class EncryptedStringUserType : IUserType { public object NullSafeGet(IDataReader rs, string[] names, object owner) { object r = rs[names[0]]; if (r == DBNull.Value) return null; return CryptoProvider.Instance.Decrypt((string) r); } public void NullSafeSet(IDbCommand cmd, object value, int index) { object paramVal = DBNull.Value; if (value != null) paramVal = CryptoProvider.Instance.Encrypt((string) value); IDataParameter parameter = (IDataParameter)cmd.Parameters[index]; parameter.Value = paramVal; } // Other IUserType members as usual.. } As explained by Ayende himself in: http://ayende.com/Blog/archive/2008/07/31/Entities-dependencies-best-practices.aspx Now when querying, using the NHibernate IQuery interface, I need to encrypt the parameter I am passing into the Query: query.SetString("DbEncryptedParameter", CryptoProvider.Instance.Encrypt(UnencryptedValueObject.ToString())); Question : Is there a better way of performing this query, leveraging the knowledge NHibernate has of this Encrypted Type, so the encryption doesn't have to be performed while setting the parameter?

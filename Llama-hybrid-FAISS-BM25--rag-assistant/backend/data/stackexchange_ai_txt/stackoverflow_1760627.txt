@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1760627
+[parent_id]: 1760404
+[tags]: 
+If you are trying to order the products by the number of sales associated with them, it can actually be kind of a difficult problem, depending on your database. Googling dug up an answer from transientink.com , but this solution does not work for me personally. I suspect it's because of differences in how PostgreSQL handles GROUP BY clauses compared to MySQL. Another option is to enable counter_cache on the product association in Sales (see the link for the details) and sort by the counter cache field. Another option is to use Ruby for the sorting: @top_products = Product.find(:all, :include => :sales).sort_by { |p| p.sales.size } There are 2 major issues with this, the first is that you are leveraging your web server to do the sorting, which will slow down requests (perhaps noticeably, depending on the number of products.) Second, you can't make use of the :limit option in the finder, so if you only want the top 10 most sold products, you have to fetch them all from the DB, sort them in your application, and then limit them afterwards.

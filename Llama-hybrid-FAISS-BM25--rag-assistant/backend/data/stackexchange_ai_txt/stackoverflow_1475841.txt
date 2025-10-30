@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1475841
+[parent_id]: 1468000
+[tags]: 
+I would add the lock to the queue... managing locks external to the queue is tricky, tends to confuse the code but also is quite fragile since the unlocked data structure is exposed. The pattern that appears to be garnering utility for queues is a try_pop & try_push method. The Parallel Extensions to .NET is using this pattern with System.Collections.Concurrent.ConcurrentQueue. This is done with either a lock-free queue or by simply embedding the queue and locks in a container with appropriate interfaces. Anthony Williams has a good post on how to do this with a std::queue here . your code can look like this: //inside a while loop bfs::directory_iterator elem; while (this->input_queue.pop(*elem)) { ... // do something }

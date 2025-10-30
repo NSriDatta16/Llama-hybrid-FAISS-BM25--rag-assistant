@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4499350
+[parent_id]: 4499074
+[tags]: 
+It's difficult to know without seeing your code, but there are less obvious ways that "leaks" can occur in a C++ program, e.g. memory fragmentation - if you are allocating different size objects all the time, then sometimes there won't be a large enough contiguous area of free memory and more will have to be allocated from the OS. Allocations like this will not be freed back to OS until all the memory in the allocation is freed, so long running programs will tend to grow (in terms of address space used) over time. forgetting to have a virtual in a base case which has virtual functions - a very common gotcha which leads to leaks. using smart pointers, such as shared_ptr, and have an object hold on to a shared_ptr to an object - memory leak tools won't usually spot this kind of thing. using smart pointers and getting circular references - you need to use e.g. a weak_ptr somewhere to break the cycle. As to tools, there is purify which is good but expensive.

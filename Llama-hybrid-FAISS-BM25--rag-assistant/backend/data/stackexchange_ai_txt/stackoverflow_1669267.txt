@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1669267
+[parent_id]: 1665419
+[tags]: 
+Generally speaking, all threads use the same address space and therefore usually have just one heap. However, it can be a bit more complicated. You might be looking for Thread Local Storage (TLS), but it stores single values only. Windows-Specific: TLS-space can be allocated using TlsAlloc and freed using TlsFree (Overview here ). Again, it's not a heap, just DWORDs. Strangely, Windows support multiple Heaps per process. One can store the Heap's handle in TLS. Then you would have something like a "Thread-Local Heap". However, just the handle is not known to the other threads, they still can access its memory using pointers as it's still the same address space. EDIT : Some memory allocators (specifically jemalloc on FreeBSD) use TLS to assign "arenas" to threads. This is done to optimize allocation for multiple cores by reducing synchronization overhead.

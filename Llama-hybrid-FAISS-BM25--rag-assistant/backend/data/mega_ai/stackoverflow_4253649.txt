@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4253649
+[parent_id]: 4253571
+[tags]: 
+LINQ to SQL can't magically translate arbitrary C# to TSQL; a limited selection of commonly needed syntax is available inside LINQ, but a C# method is not going to work. Options: rewrite the function as a UDF (in TSQL) and map the UDF to your data-context (i.e. drag the UDF onto the designer surface); use myDataContext.MyUdf(args) in LINQ apply your function only once the data is back in .NET-land re-write the function as a LINQ-projection I expect the middle option is the easiest in your scenario. For example: var productslist= (from p in productsTable select new {Id=p.Id,p.price}).AsEnumerable() .Select(p => new {p.Id, Tax=myfunctions.calculateTax(p.price)}); The AsEnumerable() breaks "composition" - i.e. it stops LINQ-to-SQL from trying to understand calculateTax in terms of TSQL; only the Id and price are retrieved from SQL; then as it processes each row it applies the second projection to calculate the tax.

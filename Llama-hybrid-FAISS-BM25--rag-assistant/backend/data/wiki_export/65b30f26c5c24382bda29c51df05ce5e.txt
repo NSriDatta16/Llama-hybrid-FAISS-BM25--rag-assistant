@@ -1,0 +1,34 @@
+Process Contention Scope is one of the two basic ways of scheduling threads. Both of them being: process
+local scheduling (known as Process Contention Scope, or Unbound Threads—the
+Many-to-Many model) and system global scheduling (known as System Contention Scope, or Bound Threads—the One-to-One model). These scheduling classes are
+known as the scheduling contention scope, and are defined only in POSIX. Process
+contention scope scheduling means that all of the scheduling mechanism for the
+thread is local to the process—the thread's library has full control over which
+thread will be scheduled on an LWP. This also implies the use of either the Many-
+to-One or Many-to-Many model.
+
+Types of PCS scheduling
+PCS scheduling is done by the threads library. The library chooses which unbound thread will be put on which LWP. The scheduling of the LWP is (of course) still global and independent of the local scheduling. While this does mean that unbound threads are subject to a sort of funny, two-tiered scheduling architecture, in practice, you can ignore the scheduling of the LWP and deal solely with the local scheduling algorithm.
+There are four means of causing an active thread (say, T1) to context switch. Three of them require that the programmer has written code. These methods are largely identical across all of the libraries.
+ Synchronization. By far the most common means of being context switched (a wild generalization) is for T1 to request a mutex lock and not get it. If the lock is already being held by T2, then the T1 will be placed on the sleep queue, awaiting the lock, thus allowing a different thread to run.
+ Preemption. A running thread (T6) does something that causes a higher priority thread (T2) to become runnable. In that case, the lowest priority active thread (T1) will be preempted, and T2 will take its place on the LWP. The ways of causing this to happen include releasing a lock, changing the priority level of T2 upwards or of T1 downwards.
+ Yielding. If the programmer puts an explicit call to sched_yield() in the code that T1 is running, then the scheduler will look to see if there is another runnable thread (T2) of the same priority (there can’t be a higher priority runnable thread). If there is one, then that one will then be scheduled. If there isn’t one, then T1 will continue to run. 
+ Time-Slicing. If the vendor's PCS allows time-slicing (like Digital UNIX, unlike Solaris), then T1 might simply have its time slice run out and T2 (at the same priority level) would then receive a time slice.
+
+Implementation
+The scheduler for PCS threads has a very simple algorithm for deciding which thread to run. Each thread has a priority number associated with it. The runnable threads with the highest priorities get to run. These priorities are not adjusted by the threads library. The only way they change is if the programmer writes an explicit call to thread_setschedparam(). This priority is an integer in C. We don’t give you any advice on how to choose the value, as we find that we don’t use it much ourselves. You probably won’t, either. 
+The natural consequence of the above discussion on scheduling is the existence of
+four scheduling states for threads. 
+A thread may be in one of the following states:
+Active: Meaning that it is on an LWP 5 .
+Runnable: Meaning that it is ready to run, but there just aren’t enough LWPs for it to get one. It will remain here until an active thread loses its LWP or until a new LWP is created.
+Sleeping: Meaning that it is waiting for a synchronization variable.
+Stopped (not in POSIX): Meaning that a call to the suspension function has been made. It will remain in this state until another thread calls the continue function on it. 
+Zombie: Meaning that it is a dead thread and is waiting for its resources to be collected. (This is not a recognizable state to the user, though it might appear in the debugger.)
+
+See also
+ System Contention Scope
+
+References
+
+Processor scheduling algorithms

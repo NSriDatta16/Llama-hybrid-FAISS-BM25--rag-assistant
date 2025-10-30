@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3713494
+[parent_id]: 3702304
+[tags]: 
+Ok, so the problem was in the lack of change tracking. I was trying to use proxies to do just that but it turns out the 'new' operator does not create any kind of proxy, so no tracking is made to the objects and nothing added to them is added to the context. To create a proxy I needed to call ObjectContext.CreateObject. Considering i was using DbContext the solutions were to either expose the internal ObjectContext or to create a method that would call the context internally. I went for the latter. But this seems a hack. Do you have any suggestions for a more elegant solution? Edit: Although this works it is possible to stick to the DbContext API only. This is done by using non-proxy POCOs and calling DetectChanges before the SavingChanges event is raised.

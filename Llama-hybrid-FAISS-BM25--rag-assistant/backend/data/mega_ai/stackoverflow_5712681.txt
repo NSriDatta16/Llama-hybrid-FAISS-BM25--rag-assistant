@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5712681
+[parent_id]: 5177879
+[tags]: 
+Instead of using a custom structure, just cast the pointer to the buffer containing the packet to the structure of the packet type and work down from there. IIRC libpcap emits Ethernet packets, so the following code should print the Ethernet packet type, the destination and source MAC addresses and the payload in hexadecimal: void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) { struct mac_filter *p = (struct mac_filter *) packet; const unsigned int data_len = (header->len - sizeof *p); const u_char *data = (packet + sizeof *p); int i = 0; printf("Type: %04hx\n", p->ether_type); printf( "Destination: %02X:%02X:%02X:%02X:%02X:%02X\n", p->ether_dhost[0], p->ether_dhost[1], p->ether_dhost[2], p->ether_dhost[3], p->ether_dhost[4], p->ether_dhost[5] ); printf( "Sender: %02X:%02X:%02X:%02X:%02X:%02X\n", p->ether_shost[0], p->ether_shost[1], p->ether_shost[2], p->ether_shost[3], p->ether_shost[4], p->ether_shost[5] ); for (i = 0; i

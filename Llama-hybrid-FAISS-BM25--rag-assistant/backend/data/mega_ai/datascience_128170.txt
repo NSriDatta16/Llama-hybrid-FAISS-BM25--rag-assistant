@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 128170
+[parent_id]: 
+[tags]: 
+Weird Behavour in Skforcast
+
+I applied XGBoost to forcast a univariante time series dataset, the first time I created my own lags features manually: lags = 365 #Number of lags to include for i in range(1, lags + 1): df[f'OT_lag_{i}'] = df['OT'].shift(i).copy() then Trained the XGboost and calculated the MSE on the test set: # Split data into train and test sets train_size = int(len(df) * 0.8) # 80% train, 20% test train_data, test_data = df.iloc[:train_size].copy(),df.iloc[train_size:].copy() model_xgb = xgb.XGBRegressor(objective='reg:squarederror',random_state = 123) # Fit model model_xgb.fit(train_data.drop([ 'OT'], axis=1), train_data['OT']) # Forecast test values forecast_test = model_xgb.predict(test_data.drop(['OT'], axis=1)) I got a 0.4 MSE and this visualization of the predictions: I tried to use the skForecast built in ForecasterAutoreg and intilizing an XGboost with the same parameters (random state and number of lags) and I got this really weird and bad predictions (MSE = 5 when it was 0.4) on my test set: forecaster = ForecasterAutoreg( regressor = DecisionTreeRegressor(random_state = 1), lags = 400) # Fit model forecaster.fit(y=train_data) # Forecast test values predictions = forecaster.predict(steps= len(test_data))

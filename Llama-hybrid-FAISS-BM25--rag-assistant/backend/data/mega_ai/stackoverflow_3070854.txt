@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3070854
+[parent_id]: 3070695
+[tags]: 
+Appending an empty string to the beginning and end of the list is actually a good idea, but there is actually no need to use fancy list comprehension or such. You can build a generator very easily: def yieldContext(l, func): l = [''] + l + [''] for i, s in enumerate(l): if func(s): yield ' '.join(l[i-1:i+2]).strip() gives: >>> print list(yieldContext(ex_paragraph, t1)) ['The quick brown fox jumps over the fence. Where there is another red fox. They run off together.'] >>> print list(yieldContext(ex_paragraph, t2)) ['The quick brown fox jumps over the fence. Where there is another red fox.'] (If you really want to create a list, there is not much of a difference. It depends mostly on how many sentences you have and what you want to do with the "context") def yieldContext(l, func): l = [''] + l + [''] return [' '.join(l[i-1:i+2]).strip() for i, s in enumerate(l) if func(s)]

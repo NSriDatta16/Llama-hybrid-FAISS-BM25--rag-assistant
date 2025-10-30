@@ -1,0 +1,181 @@
+In computer programming, homoiconicity (from the Greek words homo- meaning "the same" and icon meaning "representation") is a property of some programming languages. A language is homoiconic if a program written in it can be manipulated as data using the language, and thus the program's internal representation can be inferred just by reading the program itself.  This property is often summarized by saying that the language treats code as data.
+
+In a homoiconic language, the primary representation of programs is also a data structure in a primitive type of the language itself. This makes metaprogramming easier than in a language without this property: reflection in the language (examining the program's entities at runtime) depends on a single, homogeneous structure, and it does not have to handle several different structures that would appear in a complex syntax. Homoiconic languages typically include full support of syntactic macros, allowing the programmer to express transformations of programs in a concise way.
+
+A commonly cited example is Lisp, which was created to allow for easy list manipulations and where the structure is given by S-expressions that take the form of nested lists, and can be manipulated by other Lisp code. Other examples are the programming languages Clojure (a contemporary dialect of Lisp), Rebol (also its successor Red), Refal, Prolog, and possibly Julia (see the section “Implementation methods” for more details).
+
+History 
+The term first appeared in connection with the TRAC programming language, developed by Calvin Mooers:
+
+The last sentence above is annotated with footnote 4, which gives credit for the origin of the term:
+
+The researchers implicated in this quote might be neurophysiologist and cybernetician Warren Sturgis McCulloch (note the difference in the surname from the note) and philosopher, logician and mathematician Charles Sanders Peirce. Pierce indeed used the term  "icon" in his Semiotic Theory. According to Peirce, there are three kinds of sign in communication: the icon, the index and the symbol. The icon is the simplest representation: an icon physically resembles that which it denotes.
+
+Alan Kay used and possibly popularized the term "homoiconic" through his use of the term in his 1969 PhD thesis:
+
+Uses and advantages 
+
+One advantage of homoiconicity is that extending the language with new concepts typically becomes simpler, as data representing code can be passed between the meta and base layer of the program.  The abstract syntax tree of a function may be composed and manipulated as a data structure in the meta layer, and then evaluated. It can be much easier to understand how to manipulate the code since it can be more easily understood as simple data (since the format of the language itself is as a data format).
+
+A typical demonstration of homoiconicity is the meta-circular evaluator.
+
+Implementation methods 
+All Von Neumann architecture systems, which includes the vast majority of general purpose computers today, can implicitly be described as homoiconic due to the way that raw machine code executes in memory, the data type being bytes in memory.  However, this feature can also be abstracted to the programming language level.
+
+Languages such as Lisp and its dialects, such as Scheme, Clojure, and Racket employ S-expressions to achieve homoiconicity, and are considered the "Purest" forms of homoiconicity, as these languages use the same representation for both data and code.
+
+Other languages provide data structures for easily and efficiently manipulating code. Notable examples of this weaker form of homoiconicity include Julia, Nim, and Elixir.
+
+Languages often considered to be homoiconic include:
+
+ Adenine
+ APL
+ Nim
+ Curl
+ Elixir
+ Io
+ Julia 
+ Prolog
+ Rebol
+ Red
+ SNOBOL
+ Tcl
+ XSLT
+ REFAL
+ Rexx
+ Wolfram Language
+
+In Lisp 
+
+Lisp uses S-expressions as an external representation for data and code. S-expressions can be read with the primitive Lisp function READ. READ returns Lisp data: lists, symbols, numbers, strings. The primitive Lisp function EVAL uses Lisp code represented as Lisp data, computes side-effects and returns a result. The result will be printed by the primitive function PRINT, which creates an external S-expression from Lisp data.
+
+Lisp data, a list using different data types: (sub)lists, symbols, strings and integer numbers.
+
+((:name "john" :age 20) (:name "mary" :age 18) (:name "alice" :age 22))
+
+Lisp code. The example uses lists, symbols and numbers.
+(* (sin 1.1) (cos 2.03))      ; in infix: sin(1.1)*cos(2.03)
+
+Create above expression with the primitive Lisp function LIST and set the variable EXPRESSION to the result
+(setf expression  (list '* (list 'sin 1.1) (list 'cos 2.03)) )  
+-> (* (SIN 1.1) (COS 2.03))    ; Lisp returns and prints the result
+
+(third expression)    ; the third element of the expression
+-> (COS 2.03)
+
+Change the COS term to SIN
+(setf (first (third expression)) 'SIN)
+; The expression is now (* (SIN 1.1) (SIN 2.03)).
+
+Evaluate the expression
+(eval expression)
+-> 0.7988834
+
+Print the expression to a string
+(print-to-string expression)
+->  "(* (SIN 1.1) (SIN 2.03))"
+
+Read the expression from a string
+(read-from-string "(* (SIN 1.1) (SIN 2.03))")
+->  (* (SIN 1.1) (SIN 2.03))     ; returns a list of lists, numbers and symbols
+
+In Prolog 
+
+1 ?- X is 2*5.
+X = 10.
+
+2 ?- L = (X is 2*5), write_canonical(L).
+is(_, *(2, 5))
+L = (X is 2*5).
+
+3 ?- L = (ten(X):-(X is 2*5)), write_canonical(L).
+:-(ten(A), is(A, *(2, 5)))
+L = (ten(X):-X is 2*5).
+
+4 ?- L = (ten(X):-(X is 2*5)), assert(L).
+L = (ten(X):-X is 2*5).
+
+5 ?- ten(X).
+X = 10.
+
+6 ?-
+
+On line 4 we create a new clause. The operator :- separates the head and the body of a clause. With assert/1* we add it to the existing clauses (add it to the "database"), so we can call it later. In other languages we would call it "creating a function during runtime". We can also remove clauses from the database with abolish/1, or retract/1.
+
+* The number after the clause's name is the number of arguments it can take. It is also called arity.
+
+We can also query the database to get the body of a clause:
+
+7 ?- clause(ten(X),Y).
+Y = (X is 2*5).
+
+8 ?- clause(ten(X),Y), Y = (X is Z).
+Y = (X is 2*5),
+Z = 2*5.
+
+9 ?- clause(ten(X),Y), call(Y).
+X = 10,
+Y = (10 is 2*5).
+
+call is analogous to Lisp's eval function.
+
+In Rebol 
+
+The concept of treating code as data and the manipulation and evaluation thereof can be demonstrated very neatly in Rebol. (Rebol, unlike Lisp, does not require parentheses to separate expressions).
+
+The following is an example of code in Rebol (Note that >> represents the interpreter prompt; spaces between some elements have been added for readability):
+
+ >> repeat i 3 [ print [ i "hello" ] ]
+ 
+ 1 hello
+ 2 hello
+ 3 hello
+
+(repeat is in fact a built-in function in Rebol and is not a language construct or keyword).
+
+By enclosing the code in square brackets, the interpreter does not evaluate it, but merely treats it as a block containing words:
+
+[ repeat i 3 [ print [ i "hello" ] ] ]
+
+This block has the type block! and can furthermore be assigned as the value of a word by using what appears to be a syntax for assignment, but is actually understood by the interpreter as a special type (set-word!) and takes the form of a word followed by a colon:
+
+ >> block1: [ repeat i 3 [ print [ i "hello" ] ] ] ;; Assign the value of the block to the word `block1`
+ == [repeat i 3 [print [i "hello"]]]
+ >> type? block1 ;; Evaluate the type of the word `block1`
+ == block!
+
+The block can still be interpreted by using the do function provided in Rebol (similar to eval in Lisp).
+
+It is possible to interrogate the elements of the block and change their values, thus altering the behavior of the code if it were to be evaluated:
+
+ >> block1/3 ;; The third element of the block
+ == 3
+ >> block1/3: 5 ;; Set the value of the 3rd element to 5
+ == 5
+ >> probe block1 ;; Show the changed block
+ == [repeat i 5 [print [i "hello"]]]
+ >> do block1 ;; Evaluate the block
+ 1 hello
+ 2 hello
+ 3 hello
+ 4 hello
+ 5 hello
+
+See also 
+ Cognitive dimensions of notations, design principles for programming languages' syntax
+ Concatenative programming language
+ Language-oriented programming
+ Symbolic programming
+ Self-modifying code
+ LISP (programming language), perhaps the most well-known example of a homoiconic language
+ Metaprogramming, a programming technique for which homoiconicity is very useful
+ Reification (computer science)
+
+Notes
+
+References
+
+External links 
+ Definition of Homoiconic at the C2 Wiki
+
+Programming language topics

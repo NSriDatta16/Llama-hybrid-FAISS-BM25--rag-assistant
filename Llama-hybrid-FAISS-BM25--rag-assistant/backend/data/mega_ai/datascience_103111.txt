@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 103111
+[parent_id]: 
+[tags]: 
+Shap after scikit pipeline - feature name
+
+I'm using pipeline to transform data and predict model and I want to apply SHAP after that. However, when I apply it, it returns SHAP chart just fine, but the name of the feature are like feature 1, feature 2, etc - like the image bellow. How can I get the real feature name in shap? My code: def pipeline(categoricas_all,numericas_all, model): encoder = OneHotEncoder() #apenas para categoricas com baixa cardinalidade imputer_num = SimpleImputer(strategy = 'median') imputer_cat = SimpleImputer(strategy = 'most_frequent') numeric_transformer = Pipeline(steps=[ ('imputer', SimpleImputer(strategy = 'median')) # ,('scaler', StandardScaler()) ]) categorical_transformer = Pipeline(steps=[ ('imputer', SimpleImputer(strategy = 'most_frequent')) ,('encod', encoder) ]) preprocessor = ColumnTransformer( transformers=[ ('num', numeric_transformer, numericas_all) ,('cat', categorical_transformer, categoricas_all) ]) pipe = Pipeline(steps=[('preprocessor', preprocessor),('classifier', model)]) return preprocessor, pipe processor, pipe = pipeline(categoricas_all,numericas_all, item) pipe.fit(X_train, y_train) explainer = shap.Explainer(pipe["classifier"]) data_transformation = pipe['preprocessor'].transform(X_test) shap_values = explainer(data_transformation) shap.plots.waterfall(shap_values[0])

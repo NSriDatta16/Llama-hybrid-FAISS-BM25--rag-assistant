@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4125505
+[parent_id]: 4125383
+[tags]: 
+First of all -- are you sure you need to do this? Now, with that out of the way -- (defvar *symbol-name* "zap") (let ((symbol (intern *symbol-name*))) (proclaim `(special ,symbol)) (setf (symbol-value symbol) 100)) (print |zap|) Note that |zap| will normally need to be quoted with pipes, because intern is case-sensitive, while the default readtable upcases symbols by default. So if you don't quote, as in (print zap) , that is interpreted as (PRINT ZAP) , with the wrong case for zap . Alternatively, you can upcase the interned symbol, with (intern (string-upcase *symbol-name*)) . Update after seeing what you're actually trying to do. You definitely don't want to be defining global variables for that. A data structure that maps keys (A1...H4, etc) to numbers is what you want. In this case, your keys can be symbols or strings. And the data structure could be a hashtable, a plist or alist (among other choices). For example, a string-keyed hashtable would look like: (defvar *table* (make-hash-table :test #'equalp)) (setf (gethash "A1" *table*) 42) (print (gethash "A1" *table*)) ==> prints 42

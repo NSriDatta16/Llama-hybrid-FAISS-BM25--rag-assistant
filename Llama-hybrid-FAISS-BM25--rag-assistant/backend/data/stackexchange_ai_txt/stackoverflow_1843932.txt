@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1843932
+[parent_id]: 
+[tags]: 
+Is LWP::UserAgent not thread-safe?
+
+I'm running 40-or-so threads with the following subroutine: my $app = shift; my $ua = LWP::UserAgent->new(); $ua->timeout(5); my $response = $ua->get($$app{'watch_url'}); my $new_md5; if ($response->is_success()) { $new_md5 = md5_hex($response->content()); } return ($$app{'short_name'}, $$app{'watch_md5'}, $new_md5); Core dumps ensue about 3/4 of the time. LWP and LWP::UserAgent are pure Perl, so I'm caught off-guard by this. Is LWP::UserAgent not thread-safe? Update: Here's a minimal version to reproduce the issue: use strict; use warnings; use threads; use LWP::UserAgent; sub check_app { my $ua = LWP::UserAgent->new(); $ua->timeout(5); $ua->get('http://www.flatdoc.com/?' . rand(10)); } my @threads; for (my $i = 0; $i create(\&check_app); push(@threads, $thread); } foreach (@threads) { $_->join(); }

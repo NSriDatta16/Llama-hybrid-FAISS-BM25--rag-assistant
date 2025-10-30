@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1315715
+[parent_id]: 1315689
+[tags]: 
+It depends on both character encodings (the one used in the .htaccess file and the one used for the requested URI) if your rule works. If both are the same, it should work. Most user agents nowadays use either ISO 8859-1 or UTF-8 when encoding the URL for a request over HTTP. But UTF-8 will replace ISO 8859-1 sooner or later. And as bobince noticed in the comments, Apache uses internally the single byte encoding ASCII when interpreting .htaccess files. So you might get problems when you use a multy byte encoding like UTF-8. But the following is encoding independed: # for ISO 8859-1 RewriteRule ^([a-zA-Z0-9\xC4\xD6\xDC\xDF\xE4\xE9\xF6\xFC-]*)/?$ page.php?var=$1 [L] # for UTF-8 RewriteRule ^(([a-zA-Z0-9-]|\xC3\x84|\xC3\x96|\xC3\x9C|\xC3\x9F|\xC3\xA4|\xC3\xA9|\xC3\xB6|\xC3\xBC)*)/?$ page.php?var=$1 [L] But to avoid such construct, you could just exclude the slash and dot and validate the value later with PHP: RewriteRule ^([^/.]*)/?$ page.php?var=$1 [L]

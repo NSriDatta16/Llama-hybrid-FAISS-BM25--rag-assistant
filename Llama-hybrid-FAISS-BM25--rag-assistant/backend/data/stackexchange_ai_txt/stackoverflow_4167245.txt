@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4167245
+[parent_id]: 4162384
+[tags]: 
+Chapter 10 of the mercurial book covers this exactly: $ cat .hg/hgrc [hooks] pretxncommit.whitespace = hg export tip | (! egrep -q '^\+.*[ \t]$') $ echo 'a ' > a $ hg commit -A -m 'test with trailing whitespace' adding a transaction abort! rollback completed abort: pretxncommit.whitespace hook exited with status 1 $ echo 'a' > a $ hg commit -A -m 'drop trailing whitespace and try again' In this example, we introduce a simple pretxncommit hook that checks for trailing whitespace. This hook is short, but not very helpful. It exits with an error status if a change adds a line with trailing whitespace to any file, but does not print any information that might help us to identify the offending file or line. It also has the nice property of not paying attention to unmodified lines; only lines that introduce new trailing whitespace cause problems. Just change the regular expression from '^\+.*[ \t]$' to whatever string you're looking for.

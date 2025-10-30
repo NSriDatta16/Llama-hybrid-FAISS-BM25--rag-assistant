@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4608056
+[parent_id]: 4287531
+[tags]: 
+On linux/unix you can use long jrand48(unsigned short xsubi[3]); where xsubi[3] encodes the state of the random number generator, like this: #include #include #include int main() { unsigned short *xsub; #pragma omp parallel private(xsub) { xsub = new unsigned short[3]; xsub[0]=xsub[1]=xsub[2]= 3+omp_get_thread_num(); int j; #pragma omp for for(j=0;j compile with g++-mp-4.4 -Wall -Wextra -O2 -march=native -fopenmp -D_GLIBCXX_PARALLEL jrand.cc -o jrand (replace g++-mp-4.4 with whatever you need to call g++ version 4.4 or 4.3) and you get $ ./jrand 0 [0] 1344229389 1 [0] 1845350537 2 [0] 229759373 3 [0] 1219688060 4 [0] -553792943 5 [1] 360650087 6 [1] -404254894 7 [1] 1678400333 8 [1] 1373359290 9 [1] 171280263 i.e. 10 different pseudorandom numbers without any mutex locking or race conditions.

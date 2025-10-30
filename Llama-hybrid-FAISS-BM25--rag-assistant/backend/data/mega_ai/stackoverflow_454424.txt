@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 454424
+[parent_id]: 454236
+[tags]: 
+First, from the looks of your function you would probably be doing it in the current buffer, so no, you don't need to have a 'buffer' argument. If that's a bad assumption, I can change the code. Next, in a 'let' if you are assigning to variables you need another set of parens around each pair of var/value. Finally, when looping through a list I prefer to use functional-programming-like functions (mapcar, mapc, etc.). I'll try to inline some comments here: (defun my-func () "Do some replacements" (interactive) (let ((replacements (list '("foo" . "bar") '("baz" . "quux")))) (save-excursion ; So point isn't moved after this function (mapc (lambda (x) ; Go through the list, with this 'inline' function ; being called with each element as the variable 'x' (goto-char (point-min)) ; Start at the beginning of the buffer (while (re-search-forward (car x) nil t) ; Search for the car of the replacement (replace-match (cdr x)))) ; And replace it with the cdr replacements)))) ; The list we're mapc'ing through As for what to read, I'd suggest the Elisp manual that comes with Emacs.

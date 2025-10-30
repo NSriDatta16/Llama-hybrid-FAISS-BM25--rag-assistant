@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4358502
+[parent_id]: 4358457
+[tags]: 
+From the limited system information given, I suspect there would be two relevant processes. The first a daily job which does an UPDATE on the [Balance] column for all records in [Customers] based on [C_Package] (perhaps this indicates a monthly fee stored elsewhere), [C_AccountStatus] (perhaps indicating whether they are active), [C_BillingDay] , and todays date. Once that is done all you need to do is SELECT [CID] FROM [dbo].[Customers] WHERE [Balance] > 0 Hope this helps. Edit ... To select Customers who haven't made a payment (though the logic seems flawed): SELECT c.[CID] FROM [Customers] c WHERE c.[CID] NOT IN (SELECT p.[CID] FROM [Payments] p WHERE p.[DateTimeRecieved] BETWEEN GETDATE() AND DATEADD(MONTH,-1,GETDATE())) (There's probably a way more elegant query than that!)

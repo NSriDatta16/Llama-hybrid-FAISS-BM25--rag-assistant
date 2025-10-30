@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 150778
+[parent_id]: 150753
+[tags]: 
+You might need to implement manual memory management. Is the image data long lived? If not, then you can use the pattern used by apache web server: allocate large amounts of memory and wrap them into memory pools. Pass those pools as the last argument in functions, so they can use the pool to satisfy the need to allocate temporary memory. Once the call chain is finished, all the memory in the pool can should be no longer used, so you can scrub the memory area and used it again. Allocations are fast, since they only mean adding a value to a pointer. Deallocation is really fast, since you will free very large blocks of memory at once. If your application is multithreaded, you might need to store the pool in thread local storage, to avoid cross-thread communication overhead.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 818249
+[parent_id]: 818222
+[tags]: 
+When an index is used, it can either lead to the location of the complete record, or all the fields you need can be stored in the index itself (so you don't need to go to complete record.) In the first case, you have two reads best case, one to read the index, and one to read the complete record. In the second case, you get everything you need from reading the index. You can INCLUDE extra columns to be stored with the index if, together with the field(s) comprising the index, you have complete queries satisfied without needing the extra read for the row. This is not an issue for the CLUSTERED index because reading the index is the same as reading the entire row. There is an especially big advantage if you are reading several index keys in a sequence (e.g. SELECT ... FROM ... WHERE keys BETWEEN n1 AND n2) because the index reads will likely be stored adjacent to each other and can be read with perhaps only one or two physical sectors; and not needing to find the rest of the records provides more leverage.

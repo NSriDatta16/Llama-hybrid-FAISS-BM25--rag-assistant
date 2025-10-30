@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 96889
+[parent_id]: 92101
+[tags]: 
+I find that I usually get that error from training/vectorizing outside the kfold loop. vec.fit_transform(), vec.fit_transform(), clf.fit(), clf.pred() - all four of those function calls has to be inside to loop, to make sure all matricies gets the correct shapes. Is your testing algo setup something like this?: k_folds = sklearn.cross_validation.StratifiedKFold(list_of_annotations, k=5) for train_index, test_index in k_folds: X_train, X_test = X[train_index], X[test_index] y_train, y_test = y[train_index], y[test_index] vec = TfidfVectorizer() --> X_train_matrix = vec.fit_transform(X_train) --> X_test_matrix = vec.transform(X_test) clf = svm.SVC() --> clf.fit(X_train_matrix, y_train) --> y_pred = clf.predict(X_test_matrix) precision, recall, fscore, support = precision_recall_fscore_support(y_test, y_pred) # print/save accuracy scores

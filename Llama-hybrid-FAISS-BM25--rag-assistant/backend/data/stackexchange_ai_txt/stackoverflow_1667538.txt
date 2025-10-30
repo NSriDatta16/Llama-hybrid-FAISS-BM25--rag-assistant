@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1667538
+[parent_id]: 1667163
+[tags]: 
+I'm not looking for advise on which indexes to create or the like, I'm just trying to understand why the query plan and execution are so dissimilar on three seemingly similar queries. You seem to have two indexes: IX_NonCluster_Config (ProductID, ServerTime) IX_NonCluster_ProductID_CookieID_With_ServerTime (ProductID, CookieID) INCLUDE (ServerTime) The first index does not cover CookieID but is ordered on ServerTime and hence is more efficient for the less selective ProductID 's (i. e. those that you have many) The second index does cover all columns but is not ordered, and hence is more efficient for more selective ProductID 's (those that you have few). In average, you ProductID cardinality is so that SQL Server expects the second method to be efficient, which is what it uses when you use parametrized queries or explicitly provide selective GUID 's. However, your original GUID is considered less selective, that's why the first method is used. Unfortunately, the first method requires additional filtering on CookieID which is why it's less efficient in fact.

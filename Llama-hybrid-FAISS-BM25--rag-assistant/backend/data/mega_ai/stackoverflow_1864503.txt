@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1864503
+[parent_id]: 1864103
+[tags]: 
+Two things to add here: It's a good idea, when pulling raw data into a struct, to set the struct to have zero padding, even if it's entirely composed of 32-bit unsigned integers. In gcc you do this with #pragma pack(0) before the struct definition and #pragma pack() after it. For dealing with potential endianness issues, two calls to look at are ntohs() and ntohl() , for 16- and 32-bit values respectively. Note that these swap from network byte order to host byte order; if these are the same (which they aren't on x86-based platforms), they do nothing. You go from host to network byte order with htons() and htonl() . However, since this data is coming from your filesystem and not the network, I don't know if endianness is an issue. It should be easy enough to figure out by comparing the values you expect (e.g. the block size) with the values you get, in hex.

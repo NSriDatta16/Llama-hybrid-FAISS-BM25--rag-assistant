@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3433578
+[parent_id]: 1220891
+[tags]: 
+UIGraphicsGetCurrentContext() refers to the UIView's context only when you're inside the -drawRect: method. To draw a line when you touch the screen, you need to use a variable to keep track on the finger's status. @interface MyView : UIView { BOOL touchDown; } ... -(void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event { touchDown = YES; [self setNeedsDisplay]; } -(void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event { touchDown = NO; [self setNeedsDisplay]; } -(void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event { touchDown = NO; [self setNeedsDisplay]; } -(void)drawRect:(CGRect)rect { CGContextRef context = UIGraphicsGetCurrentContext(); if(touchesDown) { CGContextSetLineWidth(context, 5.0); CGContextSetStrokeColorWithColor(context, [UIColor greenColor].CGColor); CGContextSetFillColorWithColor(context, [UIColor greenColor].CGColor); CGContextMoveToPoint(context, 100.0, 30.0); CGContextAddLineToPoint(context, 200.0, 30.0); CGContextStrokePath(context); } }

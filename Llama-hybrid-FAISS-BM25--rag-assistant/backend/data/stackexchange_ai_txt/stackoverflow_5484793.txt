@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5484793
+[parent_id]: 5484204
+[tags]: 
+I tried adding synchronized as I suggested and this fixed the problem. ;) I tried synchronizing each row 299 ms. swapping the loops in mutliplyStride so that it goes by column instead of by row. 253 ms assumed one lock for each pair of rows (i.e. I locked one row for both updates. 216 ms Disable biased locking -XX:-UseBiasedLocking 207 ms use 2x the number of processors for threads. 199 ms. same except using double instead of float 237 ms. no synchronization at all. 174 ms. As you can see the fifth option is less than 10% slower than no synchronization. If you want further gains I suggest you alter the way the data is accessed to make them more cache friendly. In summary I suggest private final ExecutorService executor = Executors.newFixedThreadPool(MAX_THREADS*2); public void multiplyStride2() { for (int i = 0; i Interestingly, if I calculate a block of 2x4 instaed of 2x2 the average times drops to 172 ms. (faster than the previous result with no synchronization) ;)

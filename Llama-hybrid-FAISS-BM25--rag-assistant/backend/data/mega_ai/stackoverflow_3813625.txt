@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3813625
+[parent_id]: 
+[tags]: 
+How to customize MPVolumeView?
+
+I have tried many methods to implement a regular UISlider and control the device volume, but it's all Native-C functions which results in many untraceable bugs. I tried the MPVolumeView it works like charm, it even controls the device volume even after you close the app, just like the iPod app. My question is, is there anyway to customize the MPVolumeView with specific colors and images, just like UISlider ? NOTE: I want a legal method without using private undocumented APIs. UPDATE As per @Alexsander Akers answer, since the sub views are hidden in MPVolumeView I had to cycle through subviews, get the UISlider and customize it, here is the code. IBOutlet UISlider *volumeSlider; //defined in and connected to a UISlider in Interface Builder -(void) viewDidLoad { .... [self setCustomSlider]; .... } -(void) setCustomSlider{ MPVolumeView *volumeView = [[[MPVolumeView alloc] initWithFrame:[volumeSlider frame]] autorelease]; NSArray *tempArray = volumeView.subviews; for (id current in tempArray){ if ([current isKindOfClass:[UISlider class]]){ UISlider *tempSlider = (UISlider *) current; UIImage *img = [UIImage imageNamed:@"trackImage.png"]; img = [img stretchableImageWithLeftCapWidth:5.0 topCapHeight:0]; [tempSlider setMinimumTrackImage:img forState:UIControlStateNormal]; [tempSlider setThumbImage:[UIImage imageNamed:@"thumbImage.png"] forState:UIControlStateNormal]; } } [volumeSlider removeFromSuperview]; [self.view addSubview:volumeView]; }

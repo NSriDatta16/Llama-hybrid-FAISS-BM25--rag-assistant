@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2791374
+[parent_id]: 2791341
+[tags]: 
+After subscribing to the bids event stream; you've effectively blocked any other observers from subscribing (Subscribe returns an IDisposable.) You'll have to define another Observable in parallel with ticks, and subscribe to that one to average it. var ticksToAverage = Observable.FromEvent (MarketDataProvider, "MarketTick"); var bidsToAverage = ticksToAverage .Where(e => e.EventArgs.Quote.HasBid) .Select(e => e.EventArgs.Quote.Bid); var avgOfBids = bidsToAverage.Average(); var avgOfBidsSubscription = avgOfBids.Subscribe( b => Console.WriteLine("Avg Bid: {0}", b) );

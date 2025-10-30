@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 4771
+[parent_id]: 2806
+[tags]: 
+you could trying using a couple of options. 1- Penalized Matrix Decomposition . You apply some penalty constraints on the u's and v's to get some sparsity. Quick algorithm that has been used on genomics data See Whitten Tibshirani. They also have an R-pkg. " A penalized matrix decomposition, with applications to sparse principal components and canonical correlation analysis." 2- Randomized SVD . Since SVD is a master algorithm, find a very quick approximation might be desirable, especially for exploratory analysis. Using randomized SVD, you can do PCA on huge datasets. See Martinsson, Rokhlin, and Tygert "A randomized algorithm for the decomposition of matrices". Tygert has code for a very fast implementation of PCA. Below is a simple implementation of randomized SVD in R. ransvd = function(A, k=10, p=5) { n = nrow(A) y = A %*% matrix(rnorm(n * (k+p)), nrow=n) q = qr.Q(qr(y)) b = t(q) %*% A svd = svd(b) list(u=q %*% svd$u, d=svd$d, v=svd$v) }

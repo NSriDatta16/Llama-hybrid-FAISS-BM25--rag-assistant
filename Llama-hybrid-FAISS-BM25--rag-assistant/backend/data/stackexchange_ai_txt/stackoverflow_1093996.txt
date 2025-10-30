@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1093996
+[parent_id]: 
+[tags]: 
+Reading a property value with a lambda expression
+
+I'm writing a file generic block for my application and started with using Lambda expressions for managing my rule sets for block generation to avoid the pitfalls of magic strings, configuration hell etc. Inside my mapping class I have lines similar to: Map(x => x.Name).Length(20).PadLeft(true).PaddingChar("#"); This works fine and isn't where my question dwells, where I setup saving my information about the expression is in the Map method: public override IPropertyMap Map(Expression > expression) { var propertyMap = new FixedLengthPropertyMap { //Length = 20, //PaddingCharacter = " ", PadLeft = false, PropertyInfo = ReflectionHelper.GetProperty(expression) }; _properties.Add(propertyMap); return propertyMap; } _properties is just a List that stores my info where my question from what is the best way to have a real object's data be read from the properties currently I came up with something similar to this: var map = new AgentMap(); var agent = new Agent {Name = "Bob"}; string output = map.Write(agent); public override string Write (T agent) { var initial = _properties[0]; return initial.PropertyInfo.GetValue(agent, null) as string; } Is there a better way than using the GetValue method since earlier on I'm using an expression tree?

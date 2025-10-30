@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 42182
+[parent_id]: 40931
+[tags]: 
+Okay, I finally found the problem. It was that I was backpropagating the gradients on every layers. Including the input and output layers. And it seems that Mxnet expect strictly to have the same NDarray size than the one he computed (no bigger for instance). Otherwise, the array seems not to be copied at all (not even partially)and thus gives wrong results. But to do that, I had to make sure the gradients size where equals, which is the case for every layers but the entry and output gradients. I incorrectly assumed that, if I increased the batch size of the input/output, all the layers of the network would have an increased batch size. However, the batch size of the input doesn't matter inside the network. So, what I thought I was doing by summing over the values for every batch size was clearly not doing what I thought - meaning averaging the gradients for every image. What I actually did with that was to level off every 3D kernels. Thus, the simple solution in my case was just to sum the gradients for every layers but the first and last one.

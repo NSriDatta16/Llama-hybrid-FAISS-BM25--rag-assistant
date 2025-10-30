@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4562485
+[parent_id]: 
+[tags]: 
+GDB breakpoints stop working after asio socket->connect call
+
+I am using Eclipse + Mingw + Boost on Windows. The problem I have appears when the debugger gets to this code fragment in Eclipse: int YarpInterface::connect_to_port(std::string ip, std::string port, tcp::socket* socket) { boost::asio::io_service io_service; tcp::resolver resolver(io_service); tcp::resolver::query query(boost::asio::ip::tcp::v4(), ip, port); tcp::resolver::iterator endpoint_iterator = resolver.resolve(query); tcp::resolver::iterator end; boost::system::error_code error = boost::asio::error::host_not_found; while (error && endpoint_iterator != end) { socket->close(); socket->connect(*endpoint_iterator++, error); } if (error) { throw boost::system::system_error(error); } return true; } When I start debugging, gdb correctly stops inside the main, I can safely single step my code all the way until the socket->connect invocation, after this I loose all control over the execution and the program just continues to execute until it exits. All breakpoints after this line are ignored completely. I see no useful error messages in the gdb logs. I am using the latest version of Mingw, Boost and Eclipse. I have compiled my code and boost using the same compiler, both with debug symbols enabled. Edit: I can also step into the call all the way through boost code safely, therefore I am quite convinced that the problem occurs when gdb gets to the more low level system calls.

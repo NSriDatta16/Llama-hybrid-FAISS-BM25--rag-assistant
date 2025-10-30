@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2978700
+[parent_id]: 
+[tags]: 
+Calculate running total in SQLite table using triggers
+
+How can I create a SQLite Trigger to calculate running totals on the "Actual" table? The following SQL code should update the AccountBalances table so that the Balance column counts from 1, 2, 3, ... rowcount. However, the trigger only updates the 2nd row, even when I turned on recursive_triggers. The result below is row 1 = 1, row 2 = 2, and rows after that are null. CREATE TEMP TABLE "AccountBalances" ( "Id" INTEGER PRIMARY KEY, "DateId" INT, "AccountId" INT, "AccountCurrAmount" REAL, "Balance" REAL); INSERT INTO "AccountBalances" (DateId, AccountId, AccountCurrAmount) SELECT DateId, AccountId, Sum(AccountCurrAmount) FROM Actual GROUP BY DateId, AccountId ORDER BY AccountId, DateId; CREATE TRIGGER UpdateAccountBalance AFTER UPDATE ON AccountBalances BEGIN UPDATE AccountBalances SET Balance = 1 + new.Balance WHERE Id = new.Id + 1; END; PRAGMA recursive_triggers = 'on'; UPDATE AccountBalances SET Balance = 1 WHERE Id = 1

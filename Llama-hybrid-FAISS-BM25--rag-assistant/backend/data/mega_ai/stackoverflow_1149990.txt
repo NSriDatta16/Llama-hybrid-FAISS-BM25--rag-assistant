@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1149990
+[parent_id]: 1149969
+[tags]: 
+I assume that these are HTML fragments, not full pages. You could convert them to partial views -- pretty trivial, you just add the correct page directive and rename to .ascx. Then you would use Html.RenderPartial to include the partial in your main view. Another way would be to create your own HtmlHelper extension that works like RenderPartial but simply reads the named file and writes it to the response just like you are currently doing. Ex1: Ex2: Note that in the first case the view file needs to live in the Views directory. In the second case, you can reference the file from anywhere that the worker process has read access. You'll need to create the second method yourself. Perhaps something similar to: public static class MyHtmlHelperExtensions { public static void RenderHtml( this HtmlHelper helper, string path ) { var reader = new StreamReader( path ); var contents = reader.ReadToEnd(); helper.ViewContext.HttpContext.Response.Write( contents ); } } Please note that you'll have to add error handling.

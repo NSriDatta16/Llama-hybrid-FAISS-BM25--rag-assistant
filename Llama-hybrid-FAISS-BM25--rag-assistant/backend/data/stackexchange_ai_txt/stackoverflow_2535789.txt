@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2535789
+[parent_id]: 2535783
+[tags]: 
+new is used to dynamically allocate memory. You don't need to do that, so just do: test t; // create an instance of test with automatic storage t.read(); // invoke a method The error is because the type of new test() is a test* , a pointer to a (newly created) test . You can't assign a test* to a test . The pointer version, for what it's worth, would have been: test* t = new test(); t->read(); // the arrow is short for (*test). delete t; // don't forget to clean up! However, it's bad style to do raw memory allocation like that. You'd use something called a smart pointer to make sure it gets deleted automatically, instead. The standard library has one in the header , called auto_ptr , that would suffice: std::auto_ptr t(new test()); // put a new test into a pointer wrapper t->read(); // treat it like a normal pointer // nothing else to worry about, will be deleted automatically However, all this isn't needed for you, in this case. Always prefer automatic (stack) allocation over dynamic allocation.

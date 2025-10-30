@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 944538
+[parent_id]: 
+[tags]: 
+Overlay Window not drawing correctly when hooking
+
+The requirement is to draw my information in side of another application's window. To take care of z order and so forth hooking WH_GETMESSAGE and draw on WM_PAINT seem good. However some WM_PAINT are intended for the window area of my concern, but other WM_PAINT are for something completely different, like a context menu or button. Example Notepad is hooked with an overlay writing "Hello" into the Notepad screen. This works fine. However when right clicking Notepad the context menu gets overlay with Hello. Basically the context menu is destroyed. Is there an elegant way of determining what WM_PAINT is context menu? LRESULT CALLBACK overlayHook(int code, WPARAM wParam, LPARAM lParam) { //Try and be the LAST responder to WM_PAINT messages; LRESULT retCode = CallNextHookEx(hhk, code, wParam, lParam); //Per GetMsgProc documentation, don't do anything fancy if(code message != WM_PAINT) { //Ignore everything that isn't a paint request return retCode; } PAINTSTRUCT psPaint; BeginPaint(message->hwnd, &psPaint); HDC hdc = psPaint.hdc; RECT r = psPaint.rcPaint; TextOut(hdc, 10, 10, "Hello", 4); EndPaint(message->hwnd, &psPaint); return retCode; } It is not enough to test for the draw update region, because the context menu could be anywhere and contain the area of my concern.

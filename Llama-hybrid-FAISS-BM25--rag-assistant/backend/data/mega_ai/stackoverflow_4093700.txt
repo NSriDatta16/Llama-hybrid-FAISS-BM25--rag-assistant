@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4093700
+[parent_id]: 4055130
+[tags]: 
+The problem is in getting of REQUEST_URI environment variable value and checking it with SCRIPT_FILENAME and SCRIPT_NAME environment variables values. In your case REQUEST_URI is /index.php/stddadmin/ and SCRIPT_FILENAME with SCRIPT_NAME are equals to /shop/index.php and Magento unable to retrieve path info for controllers matching. So a cause of the problem is in adding of /index.php/ prefix to the request path and the Magento url generation has this value hardcoded for admin. There are only two solutions to your problem: Override method called _updatePathUseRewrites in Mage_Core_Model_Store model like in the following example: class Your_CustomModule_Model_Store extends Mage_Core_Model_Store { protected _updatePathUseRewrites($url) { return $url; // Return passed variable without adding index.php as prefix } } In this case your admin panel will be available at /admin/ url, like usual frontend page. Reorganize project structure for placing Magento in root folder or add symbolic links on each its file and folder in root.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 821963
+[parent_id]: 821811
+[tags]: 
+If the date_created is guaranteed to be unique per customer_id, then you can do this: [simple table] create table ordertable (customer_id int, order_total int, referral_code char, date_created datetime) insert ordertable values (1,10, 'a', '2009-01-01') insert ordertable values (2,15, 'b', '2009-01-02') insert ordertable values (1,35, 'c', '2009-01-03') [replace my lame table names with something better :)] SELECT orderAgg.customer_id, orderAgg.order_sum, referral.referral_code as first_referral_code FROM ( SELECT customer_id, sum(order_total) as order_sum FROM ordertable GROUP BY customer_id ) as orderAgg join ( SELECT customer_id, min(date_created) as first_date FROM ordertable GROUP BY customer_id ) as dateAgg on orderAgg.customer_id = dateAgg.customer_id join ordertable as referral on dateAgg.customer_id = referral.customer_id and dateAgg.first_date = referral.date_created

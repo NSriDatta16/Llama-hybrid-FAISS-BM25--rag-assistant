@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4200881
+[parent_id]: 4199008
+[tags]: 
+The general idea here is that your program should spend the vast majority of it's time waiting on the socket to deliver something, either blocked in the UDP receive or waiting in the io_service for notification that the socket has asynchronously received something. The socket implicitly has a small buffer in the OS for receiving packets, there's no way to avoid it. So the problem is more likely in how your program is behaving. Is your thread anywhere but within the ASIO io_service? If so you can easily overflow any underlying socket buffer. Can you prove that, on average, the time spent between blocking calls is less than the time between packets being sent? You do have to call async_receive again after you receive data from the socket. For example you can issue another async_receive from within your receive handler.

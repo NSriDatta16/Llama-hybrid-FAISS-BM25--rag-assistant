@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2058946
+[parent_id]: 2052673
+[tags]: 
+Here's the solution I came up with. I added the following method to my custom webapp.RequestHandler subclass: # Required imports import cgi from django.core.files.uploadedfile import SimpleUploadedFile def get_uploaded_files(self): """Gets a dictionary mapping field names to SimpleUploadedFile objects for each uploaded file in the given params. Suitable for passing to a Django form as the `files` argument.""" return dict((k, SimpleUploadedFile(v.filename, v.file.read())) for k, v in self.request.params.items() if isinstance(v, cgi.FieldStorage) and v.file) Now, when handling uploaded files, I can do something like the following: form = MyForm(self.request.params, self.get_uploaded_files()) This works well for me so far. (I don't know if it's bad form to answer my own question. I'm sorry if it is.)

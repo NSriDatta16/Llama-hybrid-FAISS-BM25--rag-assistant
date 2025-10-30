@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4337538
+[parent_id]: 4336569
+[tags]: 
+Writing if (defined $HoH{$c}{$d}) {...} will "work" insomuch as it will tell you whether or not $HoH{$c}{$d} has a defined value. The problem is that if $HoH{$c} doesn't already exist it will be created (with an appropriate value) so that $HoH{$c}{$d} can be tested. This process is called "autovivification." It's convenient when setting values, e.g. my %hoh; $hoh{a}{b} = 1; # Don't need to set '$hoh{a} = {}' first but inconvenient when retrieving possibly non-existent values. I wish that Perl was smart enough to only perform autovivification for expressions used as lvalues and short-circuit to return undef for rvalues but, alas, it's not that magical. The autovivification pragma (available on CPAN) adds the functionality to do this. To avoid autovivification you need to test the intermediate values first: if (exists $HoH{$c} && defined $HoH{$c}{$d}) { ... }

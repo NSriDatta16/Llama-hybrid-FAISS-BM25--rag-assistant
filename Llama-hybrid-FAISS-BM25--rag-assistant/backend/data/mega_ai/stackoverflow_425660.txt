@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 425660
+[parent_id]: 423924
+[tags]: 
+If all you need is the Organizational Id, you could put it in a static ThreadLocal and then access it in the interceptor. On the other hand if you are dead set on getting the session, and this depends on what your environment is, you could ditch the interceptor and use an org.hibernate.event.FlushEntityEventListener which seems to be more along the lines of what you need anyways. You can get the session like this (rough pseudo code): FlushEntityEventListener.onFlushEntity(FlushEntityEvent event) EntityEvent entityEvent = event.getEntityEntry(); EntityPersister persister = entityEvent.getPersister(); SessionFactoryImplementor sessionFactoryImplor = persister.getFactory(); Session session = sessionFactoryImplor.getCurrentSession(); From the Hibernate 3 On Line Docs : The event system can be used in addition or as a replacement for interceptors.

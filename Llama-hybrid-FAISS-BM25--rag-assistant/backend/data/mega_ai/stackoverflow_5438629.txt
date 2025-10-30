@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5438629
+[parent_id]: 
+[tags]: 
+singleton class in objective-C
+
+I want to have one object that is initialized in the delegate and I want to be able to use this object anywhere across view controllers (doesn't depend on what view I am currently at). I am guessing the solution to this would be to have a singleton class, so far I have the following: @interface LocationManager : NSObject { NSDate *enter; NSDate *exit; CLLocationManager * manager; } @property (nonatomic, retain) NSDate * enter; @property (nonatomic, retain) NSDate * exit; - (BOOL)registerRegionWithLatitude:(double)latitude andLongitude:(double)longitude; + (LocationManager *)instance; @end #import "LocationManager.h" @implementation LocationManager @synthesize enter; @synthesize exit; #pragma mark - CLLocationManager delegate static LocationManager *gInstance = NULL; + (LocationManager *)instance { @synchronized(self) { if (gInstance == NULL) gInstance = [[self alloc] init]; } return(gInstance); } @end Is this correct? So all I need to do to access this is just to call instance? Inside LocationManager I also want to have only one CLLocationManager, called manager.. however, where do I initialize it so I only have one? Can I do the following? Most other singleton examples doesn't have any variables in the class, so that's where I got confused + (LocationManager *)sharedLocationManager { @synchronized(self) { if (lm == NULL){ lm = [[self alloc] init]; lm.manager = [[CLLocationManager alloc] init]; lm.manager.delegate = lm; } } return(lm); }

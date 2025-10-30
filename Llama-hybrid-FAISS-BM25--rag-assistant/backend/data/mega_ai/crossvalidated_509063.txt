@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 509063
+[parent_id]: 
+[tags]: 
+Report model performance with GridSearchCV
+
+I used GridSearchCV to optimize random forest classifier on a dataset with X, y rfc = RandomForestClassifier() parameters = {'n_estimators': [40, 80, 160], 'min_samples_split': [8, 10, 12, 24], 'max_depth': [2, 4, 8]} clf = GridSearchCV(rfc, parameters, n_jobs=-1, scoring='roc_auc', cv=StratifiedKFold(shuffle = True, n_splits=3)) clf.fit(X, y) print("Best AUC: {}".format(clf.best_score_)) and get Best AUC: 0.8293403900021546 Not so bad, but not perfect. Then I did a manual cross validation: skf = StratifiedKFold(n_splits=3, random_state=None, shuffle=True) for train_index, test_index in skf.split(X, y): X_train, X_test = X[train_index], X[test_index] y_train, y_test = y[train_index], y[test_index] rfc.fit(X_train, y_train) train_auc = roc_auc_score(y_train, clf.best_estimator_.predict_proba(X_train)[:, 1] ) test_auc = roc_auc_score(y_test, clf.best_estimator_.predict_proba(X_test)[:, 1] ) print("Train AUC", train_auc, "Test AUC", test_auc) and get Train AUC 1.0 Test AUC 1.0 Train AUC 1.0 Test AUC 1.0 Train AUC 1.0 Test AUC 1.0 It turns out the best model is actually performing really well and classifying every sample correctly. But I assume it is the best model from the K-fold validations and not representative of the average model performance. clf.best_score_ reports the average of the score from cross-validation. I wonder if that is the correct interpretation? If so, what metric should I report for the model performance 1.0 or 0.83?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2672251
+[parent_id]: 2667612
+[tags]: 
+To add to the other answers, you also should be making sure any member functions of that class that pass a string are passing by const reference. For example, say your class constructor definition looks like this: myType::myType(int a, string b) Use this instead: myType::myType(int a, const string& b) So basically, go through all your function parameters throughout your project, and change string to const string& , and myType to const myType& . This alone should fix the majority of your performance issues. Note: About dynamically allocating the string and passing as a pointer: This is not a good idea, as though it will lighten the performance load somewhat, you're going to be extremely vulnerable to memory leaks, which makes debugging a nightmare (in addition to being much more haphazardly destructive to your performance than running slow). As a general rule, I highly discourage passing naked pointers. There's almost always a better, safer alternative.

@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 86926
+[parent_id]: 86925
+[tags]: 
+Say you have a dataframe of your data in this format: df = pd.DataFrame({ 'name': ['Bob', 'Bob', 'Bob', 'Tim', 'Tim', 'Tim'], 'fruit': ['Oranges', 'Apples', 'Bananas', 'Oranges', 'Apples', 'Bananas'], 'num': [5, 10, 12, 3, 20, 5] }) You can perform a groupby on fruit and aggregate the sum of the num field. After that you can apply a function on your aggregated dataframe that leverages values from your non-aggregated data like so: df_agg = df.groupby('fruit').sum() df_agg.reset_index(inplace=True) def desc(x): d = [] for idx, row in df.loc[df['fruit']==x].sort_values(['num'], ascending=False).iterrows(): d.append(f"{row['name']}({row['num']})") return ', '.join(d) df_agg['desc_str'] = df_agg['fruit'].apply(lambda x: desc(x)) This gives you the following df_agg that you are looking for: fruit num desc_str 0 Apples 30 Tim(20), Bob(10) 1 Bananas 17 Bob(12), Tim(5) 2 Oranges 8 Bob(5), Tim(3)

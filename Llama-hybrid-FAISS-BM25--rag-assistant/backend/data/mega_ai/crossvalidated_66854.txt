@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 66854
+[parent_id]: 66850
+[tags]: 
+A binary logistic regression is generally used for fitting a model to a binary output, but formally the results of logistic regression are not themselves binary, they are continuous probability values (pushed to zero or 1 by a logit transformaion, but continuous between 0 and 1 nonetheless). It sounds like the software you are using is rounding the output for you, which you don't want. Here's a simple example demonstrating how you could accomplish this in R, since it sounds like you are amenable to trying new software: # generate sample data set.seed(123) x = rnorm(100) y= as.numeric(x>0) # let's shuffle a handful so we don't fit a perfect model ix = sample(1:100, 10) y[ix]= 1-y[ix] # Let's take a look at our observations df = data.frame(x,y) plot(df) # Build the model m = glm(y~x, family=binomial(logit), data=df) # Look at results summary(m) # generate predictions. Here, since I'm not passing in new data # it will use the training data set to generate predictions y.pred = predict(m, type="response") plot(x, y.pred, col=(round(y.pred)+1))

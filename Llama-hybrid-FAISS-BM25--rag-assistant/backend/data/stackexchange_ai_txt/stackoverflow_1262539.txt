@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1262539
+[parent_id]: 1262310
+[tags]: 
+I assume you mean the "X11 application" - it is not entirely clear from your description what you are planning to do. The below code snippet will send the "pause" keycode to the application that currently has the keyboard input focus under X11 using XTest extension - from what I've read this is the most compatible way to "fake" the keyboard events. See if you might apply this to your scenario (no error check on whether the XOpenDisplay succeeded, to make it simpler). #include #include #include ... Display *display; unsigned int keycode; display = XOpenDisplay(NULL); ... keycode = XKeysymToKeycode(display, XK_Pause); XTestFakeKeyEvent(display, keycode, True, 0); XTestFakeKeyEvent(display, keycode, False, 0); XFlush(display); You will need to link with the -lX11 -lXtst. Obviously the firefox would need to have focus at that time. However, I would be curious to know what is the bigger task that you are trying to accomplish - I suspect there should be a more elegant solution than spoofing the keypress events.

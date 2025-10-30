@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2468295
+[parent_id]: 2466373
+[tags]: 
+Since spaces are illegal in URLs, http://126.0.0.1:8000/Hockey Player/ is unacceptable. The urlencode filter will simply replace the space with %20, which is ugly/inelegant, even if it does kind of get the job done. A much better solution is to use a "slug" field on your model that represents a cleaned-up version of the title field (I'll assume it's called the title field). You want to end up with a clean URL like: http://126.0.0.1:8000/hockey_player/ To make that happen, use something like this in your model: class Player(models.Model): title = models.CharField(max_length=60) slug = models.SlugField() ... If you want the slug field to be pre-populated in the admin, use something like this in your admin.py: class PlayerAdmin(admin.ModelAdmin): prepopulated_fields = {"slug": ("title",)} .... admin.site.register(Player,PlayerAdmin) Now when you enter a new Player in the admin, if you type "Hockey Player" for the Title, the Slug field will become "hockey_player" automatically. In the template you would then use: {% for item in field_list %} {{ item }} {% endfor %}

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 369329
+[parent_id]: 292738
+[tags]: 
+I tried installing the new package and the bug remains. So i looked at the Bayesian network code itself and found the bug. Its in line 530 of BayesianModel.py when finding the descendents. Because neighbors is an iterator, it is empty after visit.extend and so descendants.extend does nothing and the result is empty. I fixed it in place by casting neighbors as a list. Since Bayesian Networks are acyclic, this is a very simple dfs which does not remember which nodes it has visited. """ descendents = [] visit = [node] while visit: n = visit.pop() neighbors = self.neighbors(n) visit.extend(neighbors) **descendents.extend(neighbors)** return descendents

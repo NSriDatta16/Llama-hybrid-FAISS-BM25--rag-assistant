@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2288361
+[parent_id]: 2288238
+[tags]: 
+I refer you to this link . Your type LPVOIDPROC is a pointer-to-function , which is not the same thing as a pointer-to-member-function . When you try to cast ClassB::Proc , you are trying to convert a pointer-to-member-function , an invalid operation. You should take a look at boost::function , that offers exactly what you are looking for. Or you could use functors to encapsulate your functions if you don't want to resort to boost. Example: struct VoidProcFunctor { virtual void call() = 0; }; class ClassB; struct BProcFunctor : VoidProcFunctor { BProcFunctor(ClassB* b) : b_(b) {} void call(); private: ClassB* b_; } class ClassA { public: VoidProcFunctor* m_pProc; void SetProc(VoidProcFunctor* pProc) { m_pProc = pProc; } void OnSomeEvent() { m_pProc->call(); } }; class ClassB { ClassA* pCA; void Proc() { /* ... */ } void Init() { // Assume pCA != NULL // warning! this is not the best design possible BProcFunctor* bproc = new BProcFunctor(this); pCA->SetProc(bproc); } }; void BProcFunctor::call() { b_->proc() }

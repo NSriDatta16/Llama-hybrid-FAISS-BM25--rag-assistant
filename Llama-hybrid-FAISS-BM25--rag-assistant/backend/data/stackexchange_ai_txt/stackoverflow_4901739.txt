@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4901739
+[parent_id]: 
+[tags]: 
+Help with group by clause in projection queries
+
+I want to group records of people coming in on any airport per day per hour. So basically I want a count of people coming in everyhour at any particular airport. Below is my code for it. string ArrDate = String.Format("LTRIM(STR(MONTH({0}))) + '/' + LTRIM(STR(DAY({0}))) + '/' + LTRIM(STR(YEAR({0})))", "DestinationDatetime"); string ArrTime= String.Format("rtrim(datepart(hh, DestinationDatetime)) +' Hour'", "DestinationDatetime"); Template.Criteria. SetProjection( Projections.ProjectionList() .Add(Projections.Count("ID"), "ACount") .Add(Projections.SqlGroupProjection(ArrDate + " as DateVal", ArrDate new string[] { "DateVal" }, new IType[] { NHibernateUtil.String })) .Add(Projections.SqlGroupProjection(ArrTime + " as TimeVal", ArrTime, new string[] { "TimeVal" }, new IType[] { NHibernateUtil.String })) .Add(Projections.GroupProperty("Airport"), "APort")); Template.Criteria.SetResultTransformer(Transformers.AliasToEntityMap); Now, the above query gives me records in the below manner, Date Airport Time Count 12/16 ORD 13 Hour 5 12/16 ORD 17 Hour 6 12/16 MWK 10 Hour 7 I want the query to display the records as, Date Airport Time Count 12/16 ORD 1 pm 5 4pm 6 MWK 10 am 7 So that the date and airport do not keep repeating themselves. I want to have count of people coming in after every hour.i.e., between 1-2am, 2-3am and so on..

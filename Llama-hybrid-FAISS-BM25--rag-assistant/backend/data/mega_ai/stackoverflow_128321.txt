@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 128321
+[parent_id]: 125171
+[tags]: 
+s/// is not a regex. Thus, you can't pass it as a regex. I don't like eval for this. It's very fragile, with a lot of bordercases. I think it's best to take an approach similar to the one JavaScript takes: pass both a regex (in Perl, that is qr// ) and a code reference for the substitution. For example, to pass parameters to get the same effect as s/(\w+)/\u\L$1/g; You can call replace($string, qr/(\w+)/, sub { "\u\L$1" }, 'g'); Note that the 'g' modifier is not actually a flag for the regex (I think attaching it to the regex is a design mistake in JavaScript), so I chose to pass it in a third parameter. Once the API has been decided on, the implementation can be done next: sub replace { my($string, $find, $replace, $global) = @_; unless($global) { $string =~ s($find){ $replace->() }e; } else { $string =~ s($find){ $replace->() }ge; } return $string; } Let's try it: print replace('content-TYPE', qr/(\w+)/, sub { "\u\L$1" }, 'g'); Result: Content-Type That looks good to me.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4431517
+[parent_id]: 
+[tags]: 
+Refactoring a find for children of parent created after a time
+
+I am trying to find any comments created after a datetime that were not made by the current user. At first I did this.. current_user.comments.find(:all, :conditions=>["created_at > ? AND user_id != ?", current_user.last_checked_mail, current_user]) but the problem here was that because it begins with the user model, its only finding comments exclusively made by that user. So instead, I began searching for all comments associated with the user, and those comments children so long as their user_id is not the current_user Comment.find(:all, :conditions => ["user_id = ?", current_user]).select { |c| c.comments.find(:all, :conditions => ["user_id != ?", current_user]) } But it seems that still draws every single comment related to the current_user, and not their children. My Comment Model : belongs_to :commentable, :polymorphic => true has_many :comments, :as => :commentable

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1444291
+[parent_id]: 1444089
+[tags]: 
+What a great question! Here's a way to do it without unsafe code: public struct LongAndBytes { [FieldOffset(0)] public ulong UlongValue; [FieldOffset(0)] public byte Byte0; [FieldOffset(1)] public byte Byte1; [FieldOffset(2)] public byte Byte2; [FieldOffset(3)] public byte Byte3; [FieldOffset(4)] public byte Byte4; [FieldOffset(5)] public byte Byte5; [FieldOffset(6)] public byte Byte6; [FieldOffset(7)] public byte Byte7; public byte[] ToArray() { return new byte[8] {Byte0, Byte1, Byte2, Byte3, Byte4, Byte5, Byte6, Byte7}; } } // ... LongAndBytes lab = new LongAndBytes(); lab.UlongValue = 0; do { // stuff lab.UlongValue++; } while (lab.ULongValue != 0); Each of the members Byte0...Byte7 overlap the ulong and share its members. It's not an array - I tried dinking around with that and had unsatisfactory results. I bet someone knows the magic declaration to make that happen. I can do that for a P/Invoke, but not for use in .NET as an array is an object.

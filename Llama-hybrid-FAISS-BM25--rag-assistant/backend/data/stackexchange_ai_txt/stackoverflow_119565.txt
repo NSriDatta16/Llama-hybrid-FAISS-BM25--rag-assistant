@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 119565
+[parent_id]: 119444
+[tags]: 
+I agree that locking binary files is a necessary feature for some environments. I just had a thought about how to implement this, though: Have a way of marking a file as "needs-lock" (like the "svn:needs-lock" property). On checkout, git would mark such a file as read-only. A new command git-lock would contact a central lock server running somewhere to ask permission to lock. If the lock server grants permission, mark the file read-write. git-add would inform the lock server of the content hash of the locked file. The lock server would watch for that content hash to appear in a commit on the master repository. When the hash appears, release the lock. This is very much a half-baked idea and there are potential holes everywhere. It also goes against the spirit of git, yet it can certainly be useful in some contexts. Within a particular organisation, this sort of thing could perhaps be built using a suitable combination of script wrappers and commit hooks.

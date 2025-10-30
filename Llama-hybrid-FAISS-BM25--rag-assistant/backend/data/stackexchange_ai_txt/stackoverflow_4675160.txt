@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4675160
+[parent_id]: 2042706
+[tags]: 
+UPDATE: I'm a doofus. What's happening is obvious. The Animation first sets the layers position to it's current position. But I've told the layer to divide any setPosition coordinates by pRatio. So it's not going to CGPoint(0,0) but something like CGPoint(0.032, 0). I've fixed it like this: - (void) setPosition:(CGPoint)point { if(!animating){ [super setPosition:CGPointMake(round(point.x / pRatio), round(point.y / pRatio))]; }else{ [super setPosition:point]; } } - (void) gotoStartPosition:(NSNotification *)notification { animating = YES; CGPoint startPos = CGPointFromString([notification object]); CGPoint pStart = CGPointMake(startPos.x / pRatio, startPos.y / pRatio); id moveToStart = [MoveTo actionWithDuration:1 position:pStart]; id endAnim = [CallFunc actionWithTarget:self selector:@selector(endAnimation)]; [self runAction:[Sequence actions: moveToStart, endAnim, nil]]; } - (void) endAnimation { animating = NO; } Which isn't elegant, but it works. I'm closing this question.

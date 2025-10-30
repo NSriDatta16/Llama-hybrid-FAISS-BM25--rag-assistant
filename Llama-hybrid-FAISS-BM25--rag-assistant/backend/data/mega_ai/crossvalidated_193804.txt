@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 193804
+[parent_id]: 193490
+[tags]: 
+I don't know much of text analyses, so I cannot answer that part. However, whatever CV metric favored in litterature should be compatible with OOB-CV also. Except that OOB-CV for time series permutes the series of events, I have not heard of any biases of using OOB-CV. As thumb rule, OOB-CV is similar to 5-fold CV. Below I post a naive example for the R randomForest implementation of how to use other metrics. library(randomForest) set.seed(123) obs=2000 X = matrix(rnorm(obs)) y = X+rnorm(obs) plot(X,y) rf = randomForest(X,y) mse = function(pred,true) mean((pred-true)^2) myCV_randomForest = function(rf,stat=mse,...) stat(predict(rf,...),rf$y) myCV_randomForest(rf,stat=mse) myCV_randomForest(rf,stat=function(x,y) sd(x-y)) #use some other metric

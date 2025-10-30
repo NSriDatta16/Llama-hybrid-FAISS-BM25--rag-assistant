@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4600127
+[parent_id]: 4600108
+[tags]: 
+these should be in your model. FAT model, SKINNY controller: # contact.rb ... # may need require 'phony' and include Phony before_save :prep def prep self.fax = 1+Phony.normalize(self.fax) unless self.fax.empty? || (self.fax.length == 11 && self.fax[0] == 1) self.phone = 1+Phony.normalize(self.phone) unless self.phone.empty? || (self.phone.length == 11 && self.phone[0] == 1) end ... Edit: As I mentioned in my comment, it's better in terms of storage and efficiency and indexing to store as a bigint unsigned in your database and add the prettiness to the numbers in a method. This way, your site is always normalized (no two phone numbers will ever look different because they are formatted 'on the fly'). # sample methods def phony str = self.phone.to_s "#{str[0..2]}-#{str[3..5]}-#{str[6..10]}" end # use a similar method for faxing, but I'll write # this one differently just to show flexibility def faxy str = self.fax.to_s "+1 (#{str[0..2]}) #{str[3..5]}-#{str[6..10]}" end

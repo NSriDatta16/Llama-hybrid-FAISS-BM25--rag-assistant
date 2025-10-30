@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2343426
+[parent_id]: 2343389
+[tags]: 
+If you want that data to be persitent, you must not write it to memcache (which is a caching mecanism, and not a data persistance storage) . Basically, what I'd probably do would be like this : When trying to get a counter for a page : Check if it's stored in memcache if yes, use it if not, fetch it from the DB and store it to memcache When trying to write a counter (i.e. counter += 1) : Write the data to the database ( update ... set counter = counter + 1 where... ) select the data back from the database ; wrapping both update and select in a transaction might help : isolation is something databases do well. and immediatly write it to memcache, so it's up to date for the next "get" operation But I would not use memcache for persistance : I would never write to memcache any data that has not been written to the database persistance is the job of the database ; not of a caching engine.

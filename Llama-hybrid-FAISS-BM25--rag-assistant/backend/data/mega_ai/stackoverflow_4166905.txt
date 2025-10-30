@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4166905
+[parent_id]: 4166198
+[tags]: 
+Since there is already plenty solutions given, I suggest an alternative to using the array: $storage = new SplObjectStorage; // create an Object Collection $storage->attach($memberObject); // add an object to it $storage->detach($memberObject); // remove that object You could make this into a custom MemberCollection class with Finder methods and other utility operations, e.g. class MemberCollection implements IteratorAggregate { protected $_storage; public function __construct() { $this->_storage = new SplObjectStorage; } public function getIterator() { return $this->_storage; } public function addMember(IMember $member) { $this->_storage->attach($member); } public function removeMember(IMember $member) { $this->_storage->detach($member); } public function removeBy($property, $value) { foreach ($this->_storage as $member) { if($member->$property === $value) { $this->_storage->detach($member); } } } } Might be overkill for your scenario though.

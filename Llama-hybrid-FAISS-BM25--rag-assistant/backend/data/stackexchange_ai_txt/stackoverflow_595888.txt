@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 595888
+[parent_id]: 
+[tags]: 
+How to prevent a control from changing Z order?
+
+I have user control in .Net where I use a hit test in WndProc to allow resizing it in runtime with the mouse. The problem is that after the hit test succedes (mouse press, drag to resize, mouse release) the control jumps upwards in the Z order and ruins it position in the form. I need the hit test since it's a very customized control. Is there a way in WndProc to stop the control from changing it's Z order ? Thanks. The hit test code: protected override void WndProc(ref Message m) { if (!DesignMode && Sizeable && (m.Msg == Win32Wrapper.WM_NCHITTEST)) { Point Hit = new Point((int)m.LParam & 0xFFFF, (int)m.LParam >> 16); Hit = this.PointToClient(Hit); int DistToBorder = 5; if (Hit.X this.ClientRectangle.Bottom - DistToBorder) { m.Result = (IntPtr)Win32Wrapper.HTBOTTOMLEFT; return; } m.Result = (IntPtr)Win32Wrapper.HTLEFT; return; } else if (Hit.X > ClientRectangle.Right - DistToBorder) { if (Hit.Y this.ClientRectangle.Bottom - DistToBorder) { m.Result = (IntPtr)Win32Wrapper.HTBOTTOMRIGHT; return; } m.Result = (IntPtr)Win32Wrapper.HTRIGHT; return; } else if (Hit.Y this.ClientRectangle.Bottom - DistToBorder) { m.Result = (IntPtr)Win32Wrapper.HTBOTTOM; return; } }

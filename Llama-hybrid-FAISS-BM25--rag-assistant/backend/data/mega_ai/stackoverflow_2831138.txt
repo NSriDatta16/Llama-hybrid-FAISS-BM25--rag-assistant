@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2831138
+[parent_id]: 
+[tags]: 
+boost multi_index_container and erase performance
+
+I have a boost multi_index_container declared as below which is indexed by hash_unique id(unsigned long) and hash_non_unique transaction id(long). Insertion and retrieval of elements is fast but when I delete elements, it is much slower. I was expecting it to be constant time as key is hashed. e.g To erase elements from container for 10,000 elements, it takes around 2.53927016 seconds for 15,000 elements, it takes around 7.137100068 seconds for 20,000 elements, it takes around 21.391720757 seconds Is it something I am missing or is it expected behavior? class Session { public: Session() { //increment unique id static unsigned long counter = 0; boost::mutex::scoped_lock guard(mx); counter++; m_nId = counter; } unsigned long GetId() { return m_nId; } long GetTransactionHandle(){ return m_nTransactionHandle; } .... private: unsigned long m_nId; long m_nTransactionHandle; boost::mutext mx; .... }; typedef multi_index_container >, hashed_non_unique > > //end indexed_by > SessionContainer; typedef SessionContainer::nth_index ::type SessionById; int main() { ... SessionContainer container; SessionById *pSessionIdView = &get (container); unsigned counter = atoi(argv[1]); vector vSes(counter); //insert for(unsigned i = 0; i erase(vSes[i]->getId()); delete vSes[i]; } lock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts); std::cout

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1746116
+[parent_id]: 
+[tags]: 
+Python tabstop-aware len() and padding functions
+
+Python's len() and padding functions like string.ljust() are not tabstop-aware, i.e. they treat '\t' like any other single-width character, and don't round len() up to the nearest multiple of tabstop. Example: len('Bear\tnecessities\t') is 17 instead of 24 ( i.e. 4+(8-4)+11+(8-3) ) and say I also want a function pad_with_tabs(s) such that pad_with_tabs('Bear', 15) = 'Bear\t\t' Looking for simple implementations of these - compactness and readability first, efficiency second. This is a basic but irritating question. @gnibbler - can you show a purely Pythonic solution, even if it's say 20x less efficient? Sure you could convert back and forth using str.expandtabs(TABWIDTH) , but that's clunky. Importing math to get TABWIDTH * int( math.ceil(len(s)*1.0/TABWIDTH) ) also seems like massive overkill. I couldn't manage anything more elegant than the following: TABWIDTH = 8 def pad_with_tabs(s,maxlen): s_len = len(s) while s_len and since Python strings are immutable and unless we want to monkey-patch our function into string module to add it as a method, we must also assign to the result of the function: s = pad_with_tabs(s, ...) In particular I couldn't get clean approaches using list-comprehension or string.join(...) : ''.join([s, '\t' * ntabs]) without special-casing the cases where len(s) is len(s)>=maxlen already. Can anyone show better len() and pad_with_tabs() functions?

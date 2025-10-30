@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 598950
+[parent_id]: 
+[tags]: 
+One text classification model, two sets of target classes
+
+I am attempting to classify text sequences into two sets of labels - class_1 = [A, B, C, D] , class_2 = [X, Y, Z] . The model will be an instance of BertForSequenceClassification from Huggingface's Transformers. For each input sequence, the single model should predict one class from class_1 and one class from class_2 , as opposed to training two separate models for each set of classes. What would be the best way to do this? I am thinking to just have a set of classes to output as: { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'X': 4, 'Y': 5, 'Z': 6 } The model will then have 7 outputs. I will then deduce the two predicted classes as class_1 = logits[:4].argmax(dim=-1) and class_2 = logits[4:].argmax(dim=-1) . Is this a reasonable approach? Or is there a better way to force a single model to predict one label from each of the 2 different sets of classes? If this is a reasonable approach, then what is the best way to handle the loss function? CrossEntropyLoss takes in a model's output logits and corresponding label indices. This wouldn't work in my case. Would it be best to implement my own loss function which is the average of the CrossEntropyLoss between logits[:4] and logits[4:] ?

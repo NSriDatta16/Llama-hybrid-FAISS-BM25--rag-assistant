@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3382419
+[parent_id]: 
+[tags]: 
+web.py: How to selectively hide resources with 404s for any HTTP method?
+
+I want to selectively hide some resources based on some form of authentication in web.py, but their existence is revealed by 405 responses to any HTTP method that I haven't implemented. Here's an example: import web urls = ( '/secret', 'secret', ) app = web.application(urls, globals()) class secret(): def GET(self): if web.cookies().get('password') == 'secretpassword': return "Dastardly secret plans..." raise web.notfound() if __name__ == "__main__": app.run() When an undefined method request is issued, the resource is revealed: $ curl -v -X DELETE http://localhost:8080/secret ... > DELETE /secret HTTP/1.1 ... I could implement the same check for the other common methods in the HTTP specification, but a creative miscreant might invent their own: $ curl -v -X SHENANIGANS http://localhost:8080/secret ... > SHENANIGANS /secret HTTP/1.1 ... Is there a way to implement a catch all method in a web.py class for any HTTP method, so I can ensure the security check will be run? Or is there an alternative way to hide these resources?

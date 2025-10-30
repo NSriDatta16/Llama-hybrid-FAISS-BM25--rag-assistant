@@ -1,0 +1,85 @@
+Comet is a web application model in which a long-held HTTPS request allows a web server to push data to a browser, without the browser explicitly requesting it. Comet is an umbrella term, encompassing multiple techniques for achieving this interaction. All these methods rely on features included by default in browsers, such as JavaScript, rather than on non-default plugins. The Comet approach differs from the original model of the web, in which a browser requests a complete web page at a time.
+
+The use of Comet techniques in web development predates the use of the word Comet as a neologism for the collective techniques. Comet is known by several other names, including
+Ajax Push,
+Reverse Ajax, Two-way-web, HTTP Streaming, and
+HTTP server push
+among others. The term Comet is not an acronym, but was coined by Alex Russell in his 2006 blog post.
+
+In recent years, the standardisation and widespread support of WebSocket and Server-sent events has rendered the Comet model obsolete.
+
+History
+
+Early Java applets
+The ability to embed Java applets into browsers (starting with Netscape Navigator 2.0 in March 1996) made two-way sustained communications possible, using a raw TCP socket to communicate between the browser and the server. This socket can remain open as long as the browser is at the document hosting the applet. Event notifications can be sent in any format text or binary and decoded by the applet.
+
+The first browser-to-browser communication framework
+The very first application using browser-to-browser communications was Tango Interactive, implemented in 1996–98 at the Northeast Parallel Architectures Center (NPAC) at Syracuse University using DARPA funding. TANGO architecture has been patented by Syracuse University. TANGO framework has been extensively used as a distance education tool. The framework has been commercialized by CollabWorx and used in a dozen or so Command&Control and Training applications in the United States Department of Defense.
+
+First Comet applications
+The first set of Comet implementations dates back to 2000, with the Pushlets, Lightstreamer, and KnowNow projects. Pushlets, a framework created by Just van den Broecke, was one of the first open source implementations. Pushlets were based on server-side Java servlets, and a client-side JavaScript library. Bang Networks a Silicon Valley start-up backed by Netscape co-founder Marc Andreessen had a lavishly-financed attempt to create a real-time push standard for the entire web.
+
+In April 2001, Chip Morningstar began developing a Java-based (J2SE) web server which used two HTTP sockets to keep open two communications channels between the custom HTTP server he designed and a client designed by Douglas Crockford; a functioning demo system existed as of June 2001. The server and client used a messaging format that the founders of State Software, Inc. assented to coin as JSON following Crockford's suggestion. The entire system, the client libraries, the messaging format known as JSON and the server, became the State Application Framework, parts of which were sold and used by Sun Microsystems, Amazon.com, EDS and Volkswagen.
+
+In March 2006, software engineer Alex Russell coined the term Comet in a post on his personal blog. The new term was a play on Ajax (Ajax and Comet both being common household cleaners in the USA).
+
+In 2006, some applications exposed those techniques to a wider audience: Meebo’s multi-protocol web-based chat application enabled users to connect to AOL, Yahoo, and Microsoft chat platforms through the browser; Google added web-based chat to Gmail; JotSpot, a startup since acquired by Google, built Comet-based real-time collaborative document editing. New Comet variants were created, such as the Java-based ICEfaces JSF framework (although they prefer the term "Ajax Push"). Others that had previously used Java-applet based transports switched instead to pure-JavaScript implementations.
+
+Implementations
+Comet applications attempt to eliminate the limitations of the page-by-page web model and traditional polling by offering two-way sustained interaction, using a persistent or long-lasting HTTP connection between the server and the client.  Since browsers and proxies are not designed with server events in mind, several techniques to achieve this have been developed, each with different benefits and drawbacks. The biggest hurdle is the HTTP 1.1 specification, which states "this specification... encourages clients to be conservative when opening multiple connections". Therefore, holding one connection open for real-time events has a negative impact on browser usability: the browser may be blocked from sending a new request while waiting for the results of a previous request, e.g., a series of images. This can be worked around by creating a distinct hostname for real-time information, which is an alias for the same physical server. This strategy is an application of domain sharding.
+
+Specific methods of implementing Comet fall into two major categories: streaming and long polling.
+
+Streaming
+An application using streaming Comet opens a single persistent connection from the client browser to the server for all Comet events. These events are incrementally handled and interpreted on the client side every time the server sends a new event, with neither side closing the connection.
+
+Specific techniques for accomplishing streaming Comet include the following:
+
+Hidden iframe
+A basic technique for dynamic web application is to use a hidden iframe HTML element (an inline frame, which allows a website to embed one HTML document inside another). This invisible iframe is sent as a chunked block, which implicitly declares it as infinitely long (sometimes called "forever frame"). As events occur, the iframe is gradually filled with script tags, containing JavaScript to be executed in the browser. Because browsers render HTML pages incrementally, each script tag is executed as it is received. Some browsers require a specific minimum document size before parsing and execution is started, which can be obtained by initially sending 1–2 kB of padding spaces.
+
+One benefit of the iframes method is that it works in every common browser. Two downsides of this technique are the lack of a reliable error handling method, and the impossibility of tracking the state of the request calling process.
+
+XMLHttpRequest
+The XMLHttpRequest (XHR) object, a tool used by Ajax applications for browser–server communication, can also be pressed into service for server–browser Comet messaging by generating a custom data format for an XHR response, and parsing out each event using browser-side JavaScript; relying only on the browser firing the onreadystatechange callback each time it receives new data.
+
+Ajax with long polling
+
+None of the above streaming transports work across all modern browsers without negative side-effects. This forces Comet developers to implement several complex streaming transports, switching between them depending on the browser. Consequently, many Comet applications use long polling, which is easier to implement on the browser side, and works, at minimum, in every browser that supports XHR. As the name suggests, long polling requires the client to poll the server for an event (or set of events). The browser makes an Ajax-style request to the server, which is kept open until the server has new data to send to the browser, which is sent to the browser in a complete response. The browser initiates a new long polling request in order to obtain subsequent events. IETF RFC 6202 "Known Issues and Best Practices for the Use of Long Polling and Streaming in Bidirectional HTTP" compares long polling and HTTP streaming.
+Specific technologies for accomplishing long-polling include the following:
+
+XMLHttpRequest long polling
+For the most part, XMLHttpRequest long polling works like any standard use of XHR. The browser makes an asynchronous request of the server, which may wait for data to be available before responding. The response can contain encoded data (typically XML or JSON) or Javascript to be executed by the client. At the end of the processing of the response, the browser creates and sends another XHR, to await the next event. Thus the browser always keeps a request outstanding with the server, to be answered as each event occurs.
+
+Script tag long polling
+While any Comet transport can be made to work across subdomains, none of the above transports can be used across different second-level domains (SLDs), due to browser security policies designed to prevent cross-site scripting attacks. That is, if the main web page is served from one SLD, and the Comet server is located at another SLD (which does not have cross-origin resource sharing enabled), Comet events cannot be used to modify the HTML and DOM of the main page, using those transports. This problem can be sidestepped by creating a proxy server in front of one or both sources, making them appear to originate from the same domain. However, this is often undesirable for complexity or performance reasons.
+
+Unlike iframes or  XMLHttpRequest objects, script tags can be pointed at any URI, and JavaScript code in the response will be executed in the current HTML document. This creates a potential security risk for both servers involved, though the risk to the data provider (in our case, the Comet server) can be avoided using JSONP.
+
+A long-polling Comet transport can be created by dynamically creating script elements, and setting their source to the location of the Comet server, which then sends back JavaScript (or JSONP) with some event as its payload. Each time the script request is completed, the browser opens a new one, just as in the XHR long polling case. This method has the advantage of being cross-browser while still allowing cross-domain implementations.
+
+Alternatives
+Browser-native technologies are inherent in the term Comet. Attempts to improve non-polling HTTP communication have come from multiple sides:
+
+ The HTML 5 draft specification produced by the Web Hypertext Application Technology Working Group (WHATWG) specifies so called server-sent events, which defines a new JavaScript interface EventSource and a new MIME type text/event-stream. All major browsers except Microsoft Internet Explorer include this technology.
+ The HTML 5 WebSocket API working draft specifies a method for creating a persistent connection with a server and receiving messages via an onmessage callback.
+ The Bayeux protocol by the Dojo Foundation. It leaves browser-specific transports in place, and defines a higher-level protocol for communication between browser and server, with the aim of allowing re-use of client-side JavaScript code with multiple Comet servers, and allowing the same Comet server to communicate with multiple client-side JavaScript implementations. Bayeux is based on a publish/subscribe model, so servers supporting Bayeux have publish/subscribe built-in.
+ The BOSH protocol by the XMPP standards foundation. It emulates a bidirectional stream between the browser and server by using two synchronous HTTP connections.
+ The JSONRequest object, proposed by Douglas Crockford, would be an alternative to the XHR object.
+ Use of plugins, such as Java applets or the proprietary Adobe Flash (using RTMP protocol for data streaming to Flash applications). These have the advantage of working identically across all browsers with the appropriate plugin installed and need not rely on HTTP connections, but the disadvantage of requiring the plugin to be installed
+ Google announced a new Channel API for Google App Engine, implementing a Comet-like API with the help of a client JavaScript library on the browser. This API has been deprecated.
+
+See also
+ Push technology
+ Pull technology
+
+Notes
+
+References
+
+External links
+ *
+
+Ajax (programming)
+Web 2.0 neologisms
+Web development

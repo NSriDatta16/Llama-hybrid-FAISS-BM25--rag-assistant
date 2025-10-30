@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4036464
+[parent_id]: 
+[tags]: 
+Private inheritance and swap
+
+I'm using private inheritance in the implementation of two very related classes. The using Base::X; is very useful and elegant. However, I can't seem to find an elegant solution for reusing the base class's swap function. class A { public: iterator begin(); const_iterator begin() const; const_iterator cbegin() const; A clone(); void swap( A& other ); }; class Const_A : private A { public: // I think using A::A; will be valid in C++0x Const_A( const A& copy) : A(copy) { } // very elegant, concise, meaningful using A::cbegin; // I'd love to write using A::begin;, but I only want the const overload // this is just forwarding to the const overload, still elegant const_iterator begin() const { return A::begin(); } // A little more work than just forwarding the function but still uber simple Const_A clone() { return Const_A(A::clone()); } // What should I do here? void swap( Const_A& other ) { /* ??? */ } }; So far the only thing I can come up with is copy-pasting A::swap 's definition into Const_A::swap 's definition, YUCK! Is there an elegant solution to to reuse the private base class's swap? Is there a cleaner way to implement what I'm trying to do here (a const wrapper for a class)?

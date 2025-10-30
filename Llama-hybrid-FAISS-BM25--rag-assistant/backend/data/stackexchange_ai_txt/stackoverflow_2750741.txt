@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2750741
+[parent_id]: 2750663
+[tags]: 
+I figured it out. First of all, the whole point of this strategy is to make use of the intelligent cache keys in rails, which auto-generate unique keys based on the model name, ID, and updated_at attributes. What if you have content that refers to two models? There is a convention for this built-in, you simply use an array: - cache([@posts, @user]) do And this just appends a user key to the posts key, so that if either is updated the cache automatically expires. You can use this same convention to add additional information to the key in the form of a plain string. This is useful for distinguishing between fragments that draw on the same query but require different views, and is the answer to the question above. - cache([@posts, "lists"]) do and then on the other page use - cache([@posts, "list_with_images"]) do and this will create two separate fragments that won't be confused with each other.

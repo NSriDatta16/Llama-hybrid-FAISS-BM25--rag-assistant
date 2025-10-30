@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2407802
+[parent_id]: 2407494
+[tags]: 
+You can change the default timezone for your rails application by changing config.time_zone in your environment.rb . Usually by default it is set to UTC. In your case each coupon has its own timezone. So you have to use a different approach. You don't have to change your save logic. You just need to change your retrieval logic. Use the in_time_zone method of Time class. c = Coupon.last p c.expired_at.in_time_zone(c.expired_at_timezone) # => Tue, 09 Mar 2010 02:06:00 MST -07:00 Otherwise you can override the expired_at method of your Coupon model. def expired_at # access the current value of expired_at from attributes hash attributes["expired_at"].in_time_zone(self.expired_at_timezone) end Now you can do the following: p Coupon.last.expired_at # => Tue, 09 Mar 2010 02:06:00 MST -07:00

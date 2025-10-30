@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 36950
+[parent_id]: 33147
+[tags]: 
+You can do this in a pretty straightforward way. The clustering ends up being a form of unsupervised feature engineering, where you are assuming that group membership alters the underlying linear relationship. For example, suppose your initial fit is y = b0 + b1*x1 + ... + bn*xn You then create 3 clusters k1, k2, k3. Create 2 binary variables, is_k2 & is_k3 (zeros for both imply k1 membership). Fitting for just this, you'd have y = (b0 + bn+1*is_k2 + bn+2*is_k3) + b1*x1 + ... + bn*xn Here bn+1 and bn+2 are simply deviations from the original intercept, however, we don't have separate slopes. In order for the slopes to be independent, we need to continue feature engineering to create the products of the x1..xn variables and the is_k2 & is_k3 variables. The resulting coefficients can be thought of as changes to the slope from the default class: y = (b0 + bn+1*is_k2 + bn+2*is_k3) + (b1 + bn+3*is_k2 + bn+4*is_k3)*x1 + ... The problem you're probably anticipating is that you're creating a large number of features, so you'll probably want to use lasso to tame your feature space.

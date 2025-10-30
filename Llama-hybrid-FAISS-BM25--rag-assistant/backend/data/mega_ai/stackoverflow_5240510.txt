@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5240510
+[parent_id]: 5239772
+[tags]: 
+While bigger, it's possible this will perform better. SELECT A.*, B3.value FROM ( SELECT B.id, MAX(B.seqNr) MaxSeqNr FROM B GROUP BY B.id ) B2 INNER JOIN B B3 ON B2.id = B3.id AND B2.MaxSeqNr = B3.seqNr INNER JOIN A ON A.id = B3.id Also possible it will perform worse. Need some real data to test and see. :-) Also creating a compound index on B.id, B.seqNr DESC could improve performance of both your original and this alternate query. If you can hold-off any theoretical purists in your organization you can significantly increase performance by adding a LatestPaymentForA field and using a trigger to keep this field in sync. Whenever a new record is inserted into B , update existing record B where LastPaymentFromA is true and has same id , then insert the new record with LastPaymentFromA to true. Then you can do something really fast like this: SELECT A.*, B.value FROM A INNER JOIN B On A.id = B.id WHERE B.LastPaymentFromA = 1

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4921971
+[parent_id]: 4921684
+[tags]: 
+The usual approach in this kind of situation would be to have a third "connection" table, called something like employeeDepartment . CREATE TABLE employeeDepartment ( employee INT UNSIGNED NOT NULL, department INT UNSIGNED NOT NULL, PRIMARY KEY (employee, department) ) and then you also make employee and department foreign keys to the primary keys of the appropriate tables, though this requires you to be using the right storage engine (not that that is hard to do). This makes doing various things a whole lot easier than the approach you seem to be going for (storing a list of values in one column). You could then use SELECT eD1.employee FROM employeeDepartment AS eD1 LEFT JOIN employeeDepartment AS eD2 ON eD1.employee = eD2.employee AND eD2.department = 'dpt2' -- replace with appropriate integer -- if using integers as I suggested WHERE eD1.department = 'dpt1' AND -- same comment applies eD2.employee IS NULL

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2750172
+[parent_id]: 
+[tags]: 
+Mocking Autofac's "Resolve" extension method with TypeMock
+
+I'm trying to mock an Autofac resolve, such as using System; using Autofac; using TypeMock.ArrangeActAssert; class Program { static void Main(string[] args) { var inst = Isolate.Fake.Instance (); Isolate.Fake.StaticMethods(typeof(ResolutionExtensions), Members.ReturnNulls); Isolate.WhenCalled(() => inst.Resolve ()).WillReturn(new BubbleGum()); Console.Out.WriteLine(inst.Resolve ()); } } public interface IRubber {} public class BubbleGum : IRubber {} Coming from Moq, the syntax and exceptions from TypeMock confuse me a great deal. Having initially run this in a TestMethod, I kept getting an exception resembling "WhenCalled cannot be run without a complementing behavior". I tried defining behaviors for everyone and their mothers, but to no avail. Then I debug stepped through the test run, and saw that an actual exception was fired from Autofac: IRubber has not been registered. So it's obvious that the static Resolve function isn't being faked, and I can't get it to be faked, no matter how I go about hooking it up. Isolate.WhenCalled(() => ResolutionExtensions.Resolve (null)).WillReturn(new BubbleGum()); ... throws an exception from Autofac complaining that the IComponentContext cannot be null. Feeding it the presumably faked IContainer (or faking an IComponentContext instead) gets me back to the "IRubber not registered" error.

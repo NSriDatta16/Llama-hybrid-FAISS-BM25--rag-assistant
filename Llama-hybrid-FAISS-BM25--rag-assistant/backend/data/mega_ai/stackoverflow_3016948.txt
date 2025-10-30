@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3016948
+[parent_id]: 3015869
+[tags]: 
+One (rather long-winded) approach would be to select PersonID and LegalName into a separate temporary table for each of the Cache Person roles you're interested in, like so: select [Person].[PersonID], [Person.LegalName] into #Person_Owner from [Cache] join [Person] with (nolock) on [Person].[PersonID] = [Cache].[ClientOwnerID] Then run a final query, linking each of the Cache Person roles to the relevant temporary tables. It's messy and longwinded (in code terms), but it should ensure that you only retrieve the Person records you need once for each role. Alternatively, you could do a cartesian join between [Cache] and [Person], then use case structures to determine which Cache roles match which Legal Names. It would ensure that the [Person] table is only scanned once, but the result set would be gigantic; it's only likely to be faster than your existing query if it's logical reads that are slowing you down, and you have an awful lot of memory to spare on your DB server.

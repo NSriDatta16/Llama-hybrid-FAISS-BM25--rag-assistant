@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2974371
+[parent_id]: 2970029
+[tags]: 
+I think what you are asking is not possible (without doing messy things) with the Criteria API : none of the method in the API returns a collection (that would be a map in your case), they only return Lists. So what you could do is write your own ResultTransformer that would return a singleton list whose first and only element will be your map... but that would be a bit messy in my opinion. something like that : public class MyResultTransformer implements ResultTransformer { public Object transformTuple(Object[] tuple, String[] aliases) { return tuple; } public List transformList(List collection) { Map result = new LinkedHashMap(); // to preserve order // build the map from the collection ... return Collections.singletonList(result); } } to get tuples with only two elements (Color and count), use the Criteria.setProjections() method.

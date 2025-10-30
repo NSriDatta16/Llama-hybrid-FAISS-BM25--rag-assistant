@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 672302
+[parent_id]: 671702
+[tags]: 
+Here is an example using CPAN's Text::CSV module rather than manual parsing of CSV fields: use strict; use warnings; use Text::CSV; my %hash; my $csv = Text::CSV->new({ allow_whitespace => 1 }); open my $file, " ) { my ($first, $rest) = split /\t/, $_, 2; my @values; if($csv->parse($rest)) { @values = $csv->fields() } else { warn "Error: invalid CSV: $rest"; next; } foreach(@values) { push @{ $hash{$_} }, $first; } } # this can be shortened, but I don't remember whether sort() # defaults to or cmp, so I was explicit foreach(sort { $a cmp $b } keys %hash) { print "$_\t", join(",", sort { $a $b } @{ $hash{$_} }), "\n"; } Note that it will print to standard output. I recommend just redirecting standard output, and if you expand this program at all, make sure to use warn() to print any errors, rather than just print() ing them. Also, it won't check for duplicate entries, but I don't want to make my code look like Brad Gilbert's, which looks a bit wack even to a Perlite.

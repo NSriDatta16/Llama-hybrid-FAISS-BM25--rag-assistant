@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1676217
+[parent_id]: 1675322
+[tags]: 
+I think I would lean towards making classes only to store complete authoritative data (what you call DataStruct?). You don't really need a special class for "loading + storage of another class". Plus, that way has the unspoken invariant that my_data holds the data of my_file up to the current seek position, which seems a bit strange to my eye. Put another way: what does Foo do? Given a filename, it loads data, and gives you a DataStruct. That sounds like a function to me. If you need to be able to run it in a thread, or fire events between loading records, a class is the natural way to do it in C++, but you don't need a class for those things in Lisp. Also, remember that you don't need to use DEFCLASS in order to use generic methods in CLOS. I don't know what the structure of your data is, but in similar situations I've made a parse-one-chunk function that takes a stream and returns one record, and then create a complete Foo instance inside a loop in a with-open-file. If the stream is never needed outside the scope of a with-open-file expansion, you never need to worry about closing it.

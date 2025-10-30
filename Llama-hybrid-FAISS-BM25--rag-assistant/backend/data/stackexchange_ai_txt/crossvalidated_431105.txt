@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 431105
+[parent_id]: 431022
+[tags]: 
+Accuracy might look tempting but not a good metric in general. In multilabel classification, for each class we'll have f1 score, precision , recall values etc. You need to decide how to average them, which is what the error is saying actually. The options are binary (which is the default one), micro , macro , weighted , samples . binary option needs positive and negative classes, and doesn't work in multilabel problems. To reiterate sklearn documentation linked above, micro option calculates TP,FP etc. globally, while macro does it specific to each class and averages them. weighted is the weighted version of macro average that accounts for class imbalance. And, this parameter needs to be passed into the scorer function, e.g.: scorer = sklearn.metrics.make_scorer(sklearn.metrics.f1_score, average = 'weighted') gs_svc = GridSearchCV(estimator=svc_clf,param_grid=param_grid,scoring=scorer,cv=5)

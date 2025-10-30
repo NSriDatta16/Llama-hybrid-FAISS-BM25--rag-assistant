@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2226375
+[parent_id]: 2225343
+[tags]: 
+I quite like your idea of using F# active patterns to solve this. It is a bit more verbose than using pre-processing, but I think it's quite elegant. Also, according to some BCL guidelines , you shouldn't be using ToLower when comparing strings (ignoring the case). The right approach is to use OrdinalIgnoreCase flag. You can still define a nice active pattern to do this for you: open System let (|InvariantEqual|_|) (str:string) arg = if String.Compare(str, arg, StringComparison.OrdinalIgnoreCase) = 0 then Some() else None match "HellO" with | InvariantEqual "hello" -> printfn "yep!" | _ -> printfn "Nop!" You're right that it's more verbose, but it nicely hides the logic and it gives you enough power to use the recommended coding style (I'm not sure how this could be done using pre-processing).

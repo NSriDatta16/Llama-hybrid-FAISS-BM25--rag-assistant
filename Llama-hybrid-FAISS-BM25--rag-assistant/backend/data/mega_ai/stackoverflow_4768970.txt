@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4768970
+[parent_id]: 
+[tags]: 
+Guice: injector in provider
+
+I know that generally injector should be used only once in all application (on startup). But i have following use case. I inject task implementation for Executor, and then inside that task i have dependency (lets say FileHandler ) that has to be instantiated each time. I know the way is to inject provider (lets say FileHandlerProvider ) that will return new instance each time requested. The problem is that FileHandler has a lot of dependencies of it own (lets say Parser , OutputPrinter ...). Now those also need new instance each time (because implementations could have some state, for example counters, and on next thread run reusing same instance would be a problem). The thing is that after provider is injected the same instance of provider is reused, so new FileHandler is always created with same Parser and OuputPrinter . The solution could be again to inject ParserProvider and OutputPrinterProvider instead of Parser and OuputPrinter in FileHandlerProvider , but thats just not right, it gets too complicated soon, because there are more dependencies. The only simple solution I see now could be to use Injector in FileHandlerProvider , that would return new instance FileHandler (and new instances of dependencies). Or maybe there is another more elegant solution in this situation?

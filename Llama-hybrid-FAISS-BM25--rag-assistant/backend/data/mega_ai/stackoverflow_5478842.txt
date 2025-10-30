@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5478842
+[parent_id]: 5460976
+[tags]: 
+Robert Harvey's answer put me on the right path but it is possible with ASP.NET MVC3 to quite simply override the validation using the following pattern: public class LessThanOrEqualToPropertyAttribute : ValidationAttribute, IClientValidatable { public string OtherProperty { get; set; } public override bool IsValid(object value) { return true; } protected override ValidationResult IsValid(object value, ValidationContext validationContext) { if (value != null) { PropertyInfo propertyInfo = validationContext.ObjectType.GetProperty(OtherProperty); var otherValue = propertyInfo.GetGetMethod().Invoke(validationContext.ObjectInstance, null); if ((int)otherValue GetClientValidationRules(ModelMetadata metadata, ControllerContext context) { var rule = new ModelClientValidationRule { ValidationType = "lessthanorequaltoproperty", ErrorMessage = FormatErrorMessage(ErrorMessage), }; rule.ValidationParameters.Add("otherproperty", OtherProperty); yield return rule; } } This wasn't exactly clear from the various conflicting documentation I found.

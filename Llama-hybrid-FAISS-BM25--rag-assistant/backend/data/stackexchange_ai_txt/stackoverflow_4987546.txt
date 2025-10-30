@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4987546
+[parent_id]: 4987470
+[tags]: 
+I've had a similar problem (with BSTR specifically) but hopefully this will help. There is a bug in .NET (fixed in 4.0) when internally marshalling strings back from unmanaged code. More Info The work-around is to change your P/Invoke signature to use an IntPtr and do the string marshalling yourself. [DllImport("MediaInfo.dll", EntryPoint = "MediaInfo_Open")] private static extern IntPtr _MediaInfo_Open(IntPtr handle, IntPtr filename); internal static extern IntPtr MediaInfo_Open(IntPtr handle, string filename) { IntPtr stringPtr = Marshal.StringToBSTR(filename); return _MediaInfo_Open(handle, stringPtr); }

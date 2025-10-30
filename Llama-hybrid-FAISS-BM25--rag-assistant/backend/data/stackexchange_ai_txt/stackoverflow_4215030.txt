@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4215030
+[parent_id]: 4213239
+[tags]: 
+There's nothing technically wrong with your approach to pimping Any , although I think it's generally ill-advised. Likewise, there's a reason asInstanceOf and isInstanceOf are so verbosely named; it's to discourage you from using them! There's almost certainly a better, statically type-safe way to do whatever you're trying to do. Regarding the example which causes your console to hang: the declared type of toA is Any => A , yet you've defined its result as x , which has type Any , not A . How can this possibly compile? Well, remember that when an apparent type error occurs, the compiler looks around for any available implicit conversions to resolve the problem. In this case, it needs an implicit conversion Any => A ... and finds one: toA ! So the reason toA type checks is because the compiler is implicitly redefining it as: implicit def toA(x: Any): A = toA(x) ... which of course results in infinite recursion when you try to use it.

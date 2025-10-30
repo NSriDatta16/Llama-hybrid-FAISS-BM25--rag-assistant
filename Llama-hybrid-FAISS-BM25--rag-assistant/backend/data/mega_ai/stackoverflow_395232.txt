@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 395232
+[parent_id]: 
+[tags]: 
+We need to lock a .NET Int32 when reading it in a multithreaded code?
+
+I was reading the following article: http://msdn.microsoft.com/en-us/magazine/cc817398.aspx "Solving 11 Likely Problems In Your Multithreaded Code" by Joe Duffy And it raised me a question: "We need to lock a .NET Int32 when reading it in a multithreaded code?" I understand that if it was an Int64 in a 32-bit SO it could tear, as it is explained in the article. But for Int32 I imagined the following situation: class Test { private int example = 0; private Object thisLock = new Object(); public void Add(int another) { lock(thisLock) { example += another; } } public int Read() { return example; } } I don't see a reason to include a lock in the Read method. Do you? Update Based on the answers (by Jon Skeet and ctacke) I understand that the code above still vulnerable to multiprocessor caching (each processor has its own cache, unsynchronized with others). All the three modifications bellow fix the problem: Adding to "int example" the "volatile" property Inserting a Thread.MemoryBarrier(); before the actual reading of "int example" Read "int example" inside a "lock(thisLock)" And I also think that "volatile" is the most elegant solution.

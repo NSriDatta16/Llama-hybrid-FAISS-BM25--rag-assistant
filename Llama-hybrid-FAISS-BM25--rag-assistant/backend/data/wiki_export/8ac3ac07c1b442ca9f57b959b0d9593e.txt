@@ -1,0 +1,95 @@
+Handel-C is a high-level programming language which targets low-level hardware, most commonly used in the programming of FPGAs. It is a rich subset of C, with non-standard extensions to control hardware instantiation with an emphasis on parallelism.  Handel-C is to hardware design what the first high-level programming languages were to programming CPUs.  Unlike many other design languages that target a specific architecture Handel-C can be compiled to a number of design languages and then synthesised to the corresponding hardware.  This frees developers to concentrate on the programming task at hand rather than the idiosyncrasies of a specific design language and architecture.
+
+Additional features
+
+The subset of C includes all common C language features necessary to describe complex algorithms. Like many embedded C compilers, floating point data types were omitted. Floating point arithmetic is supported through external libraries that are very efficient.
+
+Parallel programs
+
+In order to facilitate a way to describe parallel behavior some of the CSP keywords are used, along with the general file structure of Occam.
+
+For example:
+par {    
+     ++c;
+     a = d + e;
+     b = d + e;
+}
+
+Channels
+
+Channels provide a mechanism for message passing between parallel threads. Channels can be defined as asynchronous or synchronous (with or without an inferred storage element respectively). A thread writing to a synchronous channel will be immediately blocked until the corresponding listening thread is ready to receive the message. Likewise the receiving thread will block on a read statement until the sending thread executes the next send. Thus they may be used as a means of synchronizing threads.
+par {
+    chan int a; // declare a synchronous channel
+    int x;
+
+    // begin sending thread
+    seq (i = 0; i < 10; i++) {
+        a ! i;  // send the values 0 to 9 sequentially into the channel
+    }
+
+    // begin receiving thread
+    seq (j = 0; j < 10; j++) {
+        a ? x;  // perform a sequence of 10 reads from the channel into variable x
+        delay;  // introduce a delay of 1 clock cycle between successive reads
+                // this has the effect of blocking the sending thread between writes
+    }
+}
+Asynchronous channels provide a specified amount of storage for data passing through them in the form of a FIFO. Whilst this FIFO neither full nor empty, both sending and receiving threads may proceed without being blocked. However, when the FIFO is empty, the receiving thread will block at the next read. When it is full, the sending thread will block at the next send. A channel with actors in differing clock domains is automatically asynchronous due to the need for at least one element of storage to mitigate metastability.
+
+A thread may simultaneously wait on multiple channels, synchronous or asynchronous, acting upon the first one available given a specified order of priority or optionally executing an alternate path if none is ready.
+
+Scope and variable sharing
+
+The scope of declarations are limited to the code blocks ({ ... }) in which they were declared, the scope is hierarchical in nature as declarations are in scope within sub blocks.
+
+For example:
+int a;
+
+void main(void)
+{
+   int b;
+   /* "a" and "b" are within scope */
+   {
+     int c;
+     /* "a", "b" and "c" are within scope */ 
+   }
+   {
+     int d;
+     /* "a", "b" and "d" are within scope */  
+   }
+}
+
+Extensions to the C language
+In addition to the effects the standard semantics of C have on the timing of the program, the following keywords are reserved for describing the practicalities of the FPGA environment or for the language elements sourced from Occam:
+
+Scheduling
+
+In Handel-C, assignment and the delay command take one cycle.  All other operations are "free".  This allows programmers to manually schedule tasks and create effective pipelines.  By arranging loops in parallel with the correct delays, pipelines can massively increase data throughput, at the expense of increased hardware resource use.
+
+History
+The historical roots of Handel-C are in a series of Oxford University Computing Laboratory hardware description languages developed by the hardware compilation group. Handel HDL evolved into Handel-C around early 1996. The technology developed at Oxford was spun off to mature as a cornerstone product for Embedded Solutions Limited (ESL) in 1996. ESL was renamed Celoxica in September 2000.
+
+Handel-C was adopted by many University Hardware Research groups after its release by ESL, as a result was able to establish itself as a hardware design tool of choice within the academic community, especially in the United Kingdom.
+
+In early 2008, Celoxica's ESL business was acquired by Agility, which developed and sold, among other products, ESL tools supporting Handel-C.
+
+In early 2009, Agility ceased operations after failing to obtain further capital investments or credit
+
+In January 2009, Mentor Graphics acquired Agility's C synthesis assets.
+
+Other subset C HDL's that developed around the same time are Transmogrifier C in 1994 at University of Toronto (now the FpgaC open source project) and Streams-C at Los Alamos National Laboratory (now licensed to Impulse Accelerated Technologies under the name Impulse C)
+
+See also
+
+ High- and low-level
+ C to HDL
+
+References
+
+External links
+Handel-C language resources at Mentor Graphics
+Oxford Handel-C
+ 
+
+C programming language family
+Hardware description languages

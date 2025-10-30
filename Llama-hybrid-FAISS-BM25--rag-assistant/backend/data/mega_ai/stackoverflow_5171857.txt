@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5171857
+[parent_id]: 5171722
+[tags]: 
+Assuming that the balance always increases, you could just find the balance on the first day, the balance on the last day, and calculate the average (based on the # of days): ;with minmax as ( -- subquery to get min / max data per user select username ,min(capturedate) as mincapturedate ,min(balance) as minbalance ,max(capturedate) as maxcapturedate ,max(balance) as maxbalance from [5171722] t group by username ) ,averageincrease as ( -- subquery to calculate average daily increase select username ,datediff(day, mincapturedate, maxcapturedate) as numdays ,(maxbalance - minbalance) as totalincrease ,(maxbalance - minbalance) / datediff(day, mincapturedate, maxcapturedate) as averagedailyincrease from minmax ) -- pull results together, with highest average daily increase first select * from averageincrease order by averagedailyincrease desc The field averagedailyincrease at the end contains the average daily increase.

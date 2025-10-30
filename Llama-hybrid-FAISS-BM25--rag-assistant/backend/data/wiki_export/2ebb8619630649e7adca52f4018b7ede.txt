@@ -1,0 +1,82 @@
+The Dadda multiplier is a hardware binary multiplier design invented by computer scientist Luigi Dadda in 1965. It uses a selection of full and half adders to sum the partial products in stages (the Dadda tree or Dadda reduction) until two numbers are left. The design is similar to the Wallace multiplier, but the different reduction tree reduces the required number of gates (for all but the smallest operand sizes) and makes it slightly faster (for all operand sizes). 
+
+Dadda and Wallace multipliers have the same three steps for two bit strings  and  of lengths  and  respectively:
+
+ Multiply (logical AND) each bit of , by each bit of , yielding  results, grouped by weight in columns 
+ Reduce the number of partial products by stages of full and half adders until we are left with at most two bits of each weight.
+ Add the final result with a conventional adder.
+
+As with the Wallace multiplier, the multiplication products of the first step carry different weights reflecting the magnitude of the original bit values in the multiplication. For example, the product of bits  has weight .
+
+Unlike Wallace multipliers that reduce as much as possible on each layer, Dadda multipliers attempt to minimize the number of gates used, as well as input/output delay. Because of this, Dadda multipliers have a less expensive reduction phase, but the final numbers may be a few bits longer, thus requiring slightly bigger adders.
+
+Description 
+To achieve a more optimal final product, the structure of the reduction process is governed by slightly more complex rules than in Wallace multipliers. 
+
+The progression of the reduction is controlled by a maximum-height sequence , defined by:
+
+ , and 
+
+This yields a sequence like so:
+
+ 
+
+The initial value of  is chosen as the largest value such that , where  and  are the number of bits in the input multiplicand and multiplier. The lesser of the two bit lengths will be the maximum height of each column of weights after the first stage of multiplication. For each stage  of the reduction, the goal of the algorithm is the reduce the height of each column so that it is less than or equal to the value of . 
+
+For each stage from , reduce each column starting at the lowest-weight column,  according to these rules:
+ If  the column does not require reduction, move to column 
+ If  add the top two elements in a half-adder, placing the result at the bottom of the column and the carry at the bottom of column , then move to column 
+ Else, add the top three elements in a full-adder, placing the result at the bottom of the column and the carry at the bottom of column , restart at step 1
+
+Algorithm example 
+
+The example in the adjacent image illustrates the reduction of an 8 × 8 multiplier, explained here.
+
+The initial state  is chosen as , the largest value less than 8.
+
+Stage , 
+  are all less than or equal to six bits in height, so no changes are made
+ , so a half-adder is applied, reducing it to six bits and adding its carry bit to 
+  including the carry bit from , so we apply a full-adder and a half-adder to reduce it to six bits
+  including two carry bits from , so we again apply a full-adder and a half-adder to reduce it to six bits
+  including two carry bits from , so we apply a single full-adder and reduce it to six bits
+  are all less than or equal to six bits in height including carry bits, so no changes are made
+Stage , 
+  are all less than or equal to four bits in height, so no changes are made
+ , so a half-adder is applied, reducing it to four bits and adding its carry bit to 
+  including the carry bit from , so we apply a full-adder and a half-adder to reduce it to four bits
+  including previous carry bits, so we apply two full-adders to reduce them to four bits
+  including previous carry bits, so we apply a full-adder to reduce it to four bits
+  are all less than or equal to four bits in height including carry bits, so no changes are made
+Stage , 
+  are all less than or equal to three bits in height, so no changes are made
+ , so a half-adder is applied, reducing it to three bits and adding its carry bit to 
+  including previous carry bits, so we apply one full-adder to reduce them to three bits
+  are all less than or equal to three bits in height including carry bits, so no changes are made
+Stage , 
+  are all less than or equal to two bits in height, so no changes are made
+ , so a half-adder is applied, reducing it to two bits and adding its carry bit to 
+  including previous carry bits, so we apply one full-adder to reduce them to two bits
+  including the carry bit from , so no changes are made
+Addition
+
+The output of the last stage leaves 15 columns of height two or less which can be passed into a standard adder.
+
+See also
+ Booth's multiplication algorithm
+ Fused multiply–add
+ Wallace tree
+ BKM algorithm for complex logarithms and exponentials
+ Kochanski multiplication for modular multiplication
+
+References
+
+Further reading
+ 
+
+Arithmetic logic circuits
+
+Computer arithmetic
+Multiplication
+1965 introductions
+1965 in computing

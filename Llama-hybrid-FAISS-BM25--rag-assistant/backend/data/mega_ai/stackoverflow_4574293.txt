@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4574293
+[parent_id]: 244295
+[tags]: 
+If you are using SubSonic 2.1/2.2 and you have access to the source you can apply the following: SubSonic/SqlQuery/Constraint.cs (Add a new property) public bool ParameterIsTableColumn { get { return ParameterValue is TableSchema.TableColumn ; } } SubSonic/SqlQuery/SqlQuery.cs (Inside SetConstraintParams method) foreach(Constraint c in qry.Constraints) { if (c.ConstructionFragment == "##" || c.ParameterIsTableColumn) continue; SubSonic/SqlQuery/SqlGenerators/ANSISqlGenerator.cs (Inside BuildConstraintSQL method) //add this at the top of the method int currentConstraintIndex = query.Constraints.IndexOf(c); ///the statement 'c.ParameterName = ' occurs four times in this method ///use this line the first three times, and a slight variation of it on the fourth c.ParameterName = (c.ParameterIsTableColumn ? ((TableSchema.TableColumn)c.ParameterValue).QualifiedName : String.Concat(col.ParameterName, currentConstraintIndex));

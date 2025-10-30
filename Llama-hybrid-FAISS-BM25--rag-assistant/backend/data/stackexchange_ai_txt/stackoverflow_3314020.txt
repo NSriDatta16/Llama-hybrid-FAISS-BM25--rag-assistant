@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3314020
+[parent_id]: 3313818
+[tags]: 
+I'd personally be wary of introducing extra threads in quite so many places - "Here be Dragons" is a useful rule when it comes to working with threads! I can't see any problems with what you have, but if it were simpler it'd be easier to be more certain. I'm assuming you want the call to "AddToWorkQueue" to be done in a different thread (to test the race condition) so I've left that in. Does this do what you need it to? (eye compiled so may be wrong) while(true) { Task.Factory.StartNew( delegate { AddToWorkQueue(); }); Thread.Sleep(5000); } random aside - prefer "throw;" to "throw ex;" - the former preserves the original call stack, the latter will only give you the line number of the "throw ex;" call. Even better, omit the try/catch in this case as all you do is re-throw the exceptions, so you may as well save yourself the overhead of the try.

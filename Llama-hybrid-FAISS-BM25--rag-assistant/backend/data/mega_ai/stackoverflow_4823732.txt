@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4823732
+[parent_id]: 4822559
+[tags]: 
+Here's a complete script I created to list logical disk, partition and the partition offset to check for disk alignment issues. (source: my blog http://sev17.com/2009/02/disk-alignment-partitioning-the-good-the-bad-the-ok-and-the-not-so-ugly/ ) Param($Computer) $Partitions=Get-WmiObject -ComputerName $Computer -Namespace "root\cimv2" -Class "Win32_DiskPartition" $Partitions | ForEach-Object { Get-WmiObject -ComputerName $Computer -Namespace "root\cimv2" -Query “ASSOCIATORS OF {Win32_DiskPartition.DeviceID='$($_.DeviceID)'} WHERE AssocClass = Win32_LogicalDiskToPartition” | Add-Member -MemberType NoteProperty -Name "PartitionName" $_.Name | Add-Member -MemberType NoteProperty -Name "Block" $_.BlockSize | Add-Member -MemberType NoteProperty -Name "StartingOffset" $_.StartingOffset | Add-Member -MemberType NoteProperty -Name "StartSector" $($_.StartingOffset/$_.BlockSize) } $Partitions | Format-List *

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5752338
+[parent_id]: 5737695
+[tags]: 
+I ended up doing this: Created LogAndRedirectOnErrorAttribute class that uses abstract class FilterAttribute and implements IExceptionFilter as shown below: public class LogAndRedirectOnErrorAttribute : FilterAttribute,IExceptionFilter { public void OnException(ExceptionContext filterContext) { //Do logging here Util.LogError(Utility.GetExceptionDetails(filterContext.Exception), TraceEventType.Critical.ToString()); //redirect to error handler filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary( new { controller = "Error", action = "Index" })); // Stop any other exception handlers from running filterContext.ExceptionHandled = true; // CLear out anything already in the response filterContext.HttpContext.Response.Clear(); } } And on Each Controller Class where necessary, use the above attribute: [LogAndRedirectOnError] public class AccountController:Controller { ..... }

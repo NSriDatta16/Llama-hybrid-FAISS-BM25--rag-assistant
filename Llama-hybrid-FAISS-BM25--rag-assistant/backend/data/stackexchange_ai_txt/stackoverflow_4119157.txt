@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4119157
+[parent_id]: 
+[tags]: 
+Left outer join on bizarre data model in LINQ
+
+I've got a class that looks like this: public class KpiValue { public string ID { get; set; } public string NAME { get; set; } public string ORG_UNIT_ID { get; set; } public string SITE_ID { get; set; } public string AREA_ID { get; set; } public double? VALUE { get; set; } } And corresponding Site , Area , Organization and OrgUnit classes, each with an ID property. Only one of the properties will have a value, the rest will be null (not my idea). I'd like to normalize this structure into something useful, assigning a NAME property that looks like: "Area: My First Area" or "Site: Best Site Ever" That consists of the NAME of the site or area or org, etc that matches the corresponding ID property (AREA_ID or SITE_ID or...) of my class. Assuming I've got this so far... var org = Organization.FindByProperty("NAME",orgName); var orgUnits = org.GetOrgUnits().AsEnumerable(); var sites = from OrgUnit ou in orgUnits from Site s in ou.GetSites() select s; var areas = from Site s in sites from area in s.Areas() select area; //help! var monthlyGrid = from KpiValue monthlyKpi in kpiMonthlyValues join area in areas on monthlyKpi.AREA_ID equals area.ID join site in sites on monthlyKpi.SITE_ID equals site.ID join orgUnit in orgUnits on monthlyKpi.ORG_UNIT_ID equals orgUnit.ID select new monthlyKpi() { NAME = //"Area: MyArea" or "Site: MySite" ... }; The join seems to be matching with AND conditions, not OR conditions... How can I achieve this in LINQ?

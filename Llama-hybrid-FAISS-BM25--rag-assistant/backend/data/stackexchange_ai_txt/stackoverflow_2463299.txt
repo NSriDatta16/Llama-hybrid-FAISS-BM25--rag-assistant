@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2463299
+[parent_id]: 2463112
+[tags]: 
+It looks to me like the lmdif function takes the "void *p" as a user argument that it just passes to the callback (minpack_func_mn fcn). If that is the case, just make LT_Calibrator::fcn a static function, and pass your object as the "p" parameter. Then you can cast the user-argument (p) to get your object back, if you want. class LT_Calibrator { public: static int fcn(void *p, int m, int n, const double *x, double *fvec,int iflag) { LT_Calibrator* pCalibrator = static_cast ( p ); } }; Then call like: LT_Calibrator someCalibrator; info=lmdif(&LT_Calibrator::fcn, &someCalibrator, m, n, x, fvec, ftol);

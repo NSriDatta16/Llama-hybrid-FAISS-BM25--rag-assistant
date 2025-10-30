@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1403491
+[parent_id]: 1401801
+[tags]: 
+This is easy to do with the TABLE() function. The one catch is that the array variable must use a type declared in SQL. This is because SELECT uses the SQL engine, so PL/SQL declarations are out of scope. SQL> create or replace type numbers_nt as table of number 2 / Type created. SQL> SQL> declare 2 l_array numbers_nt; 3 begin 4 l_array := numbers_nt (7521,7566,7654); 5 for r in ( select ename 6 from emp 7 where empno in ( select * 8 from table (l_array) 9 ) 10 ) 11 loop 12 dbms_output.put_line ( 'employee name = '||r.ename); 13 end loop; 14 end; 15 / employee name = PADFIELD employee name = ROBERTSON employee name = BILLINGTON PL/SQL procedure successfully completed. SQL>

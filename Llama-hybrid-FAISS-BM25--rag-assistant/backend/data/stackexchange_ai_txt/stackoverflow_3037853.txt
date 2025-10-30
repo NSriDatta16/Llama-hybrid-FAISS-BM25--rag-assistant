@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3037853
+[parent_id]: 3006505
+[tags]: 
+I will suggest a diferent aproche. The chache is your problem, then change the cache Header. Here is an example that I make and test it and its works just fine. On the global.asax on the very start of the call... protected void Application_BeginRequest(Object sender, EventArgs e) { HttpApplication app = (HttpApplication)sender; string cTheFile = HttpContext.Current.Request.Path; if (cTheFile.EndsWith("ScriptResource.axd", StringComparison.InvariantCultureIgnoreCase)) { // here is the trick with your version ! string etag = "\"" + app.Context.Request.QueryString.ToString().GetHashCode().ToString() + "1.0.190" + "\""; string incomingEtag = app.Request.Headers["If-None-Match"]; app.Response.Cache.SetETag(etag); if (String.Compare(incomingEtag, etag) == 0) { app.Response.StatusCode = (int)System.Net.HttpStatusCode.NotModified; app.Response.StatusDescription = "Not Modified"; } else { app.Response.Cache.SetExpires(DateTime.UtcNow.AddMinutes(1)); app.Response.Cache.SetMaxAge(new TimeSpan(0, 1, 0)); app.Response.Cache.SetCacheability(HttpCacheability.Public); } } }

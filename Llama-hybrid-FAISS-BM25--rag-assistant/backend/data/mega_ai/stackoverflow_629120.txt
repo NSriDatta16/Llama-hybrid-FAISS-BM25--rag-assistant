@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 629120
+[parent_id]: 628843
+[tags]: 
+As Chris says , you can use unsafe code - in which case you'd better make sure you specify the layout explicitly. At that point of course you're reducing the CLR's ability to optimise a bit - you'll end up with unaligned access, loss of atomicity etc. That may well not be relevant for you, but it's worth bearing in mind. Personally, I regard this as being a pretty fragile way to serialize/deserialize. If anything changes, your data is unreadable. If you try to run on an architecture which uses a different endianness, you'll find all your values screwed up etc. In addition, using the in-memory layout will fail as soon as you need to use an reference types - which could well influence your own design of types, encouraging you to use structs where you would otherwise use classes. I far prefer to either explicitly read and write the values (e.g. with BinaryWriter, or preferably a version of binary writer which lets you set the endianness ) or use a portable serialization framework like Protocol Buffers .

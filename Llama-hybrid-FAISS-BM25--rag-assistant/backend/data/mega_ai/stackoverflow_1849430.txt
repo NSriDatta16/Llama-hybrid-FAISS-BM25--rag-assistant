@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1849430
+[parent_id]: 1849339
+[tags]: 
+You don't typically load all the data from multiple tables into one model in rails. More common is to replace the joins below with include , which will preload the associated model so you hit the cache when calling message.message_users . At any rate, this should duplicate what your sql was doing, as long as there are no column name clashes between messages and messages_users . If you don't need the data from messages_users after the query is performed, you can remove the select fragment. Message.find(:all, :joins=>:message_users, :select=>"message_users.*, messages.*", :conditions=>['message_users.user_id = ? and message_users.hidden = ? and message_users.last_read_at > messages.updated_at', 1,0], :order=>"messages.updated_at desc", :limit=>20) There's a good screencast about the difference between joins and include here

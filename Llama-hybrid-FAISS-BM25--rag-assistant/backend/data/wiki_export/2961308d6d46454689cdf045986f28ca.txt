@@ -1,0 +1,51 @@
+In computer science, Kosaraju-Sharir's algorithm (also known as Kosaraju's algorithm) is a linear time algorithm to find the strongly connected components of a directed graph.  Aho, Hopcroft and Ullman credit it to S. Rao Kosaraju and Micha Sharir. Kosaraju suggested it in 1978 but did not publish it, while Sharir independently discovered it and published it in 1981. It makes use of the fact that the transpose graph (the same graph with the direction of every edge reversed) has exactly the same strongly connected components as the original graph.
+
+The algorithm
+The primitive graph operations that the algorithm uses are to enumerate the vertices of the graph, to store data per vertex (if not in the graph data structure itself, then in some table that can use vertices as indices), to enumerate the out-neighbours of a vertex (traverse edges in the forward direction), and to enumerate the in-neighbours of a vertex (traverse edges in the backward direction); however the last can be done without, at the price of constructing a representation of the transpose graph during the forward traversal phase. The only additional data structure needed by the algorithm is an ordered list  of graph vertices, that will grow to contain each vertex once.
+
+If strong components are to be represented by appointing a separate root vertex for each component, and assigning to each vertex the root vertex of its component, then Kosaraju's algorithm can be stated as follows.
+ For each vertex  of the graph, mark  as unvisited. Let  be empty.
+ For each vertex  of the graph do , where  is the recursive subroutine:
+ If  is unvisited then:
+ Mark  as visited.
+ For each out-neighbour  of , do .
+ Prepend  to .
+ Otherwise do nothing.
+ For each element  of  in order, do  where  is the recursive subroutine:
+ If  has not been assigned to a component then:
+ Assign  as belonging to the component whose root is .
+ For each in-neighbour  of , do .
+ Otherwise do nothing.
+Trivial variations are to instead assign a component number to each vertex, or to construct per-component lists of the vertices that belong to it. The unvisited/visited indication may share storage location with the final assignment of root for a vertex.
+
+The key point of the algorithm is that during the first (forward) traversal of the graph edges, vertices are prepended to the list  in post-order relative to the search tree being explored. This means it does not matter whether a vertex  was first visited because it appeared in the enumeration of all vertices or because it was the out-neighbour of another vertex  that got visited; either way  will be prepended to  before  is, so if there is a forward path from  to  then  will appear before  on the final list  (unless  and  both belong to the same strong component, in which case their relative order in  is arbitrary). 
+
+This means, that each element  of the list can be made to correspond to a block , where the block consists of all the vertices reachable from vertex  using just outward edges at each node in the path. It is important to note that no vertex in the block beginning at  has an inward link from any of the blocks beginning at some vertex to its right, i.e., the blocks corresponding to vertices  in the list. This is so, because otherwise the vertex having the inward link(say from the block beginning at )would have been already visited and pre-pended to  in the block of , which is a contradiction. On the other hand, vertices in the block starting at  can have edges pointing to the blocks starting at some vertex in 
+
+Step 3 of the algorithm, starts from , assigns all vertices which point to it, the same component as . Note that these vertices can only lie in the block beginning at  as higher blocks can't have links pointing to vertices in the block of . Let the set of all vertices that point to  be . Subsequently, all the vertices pointing to these vertices,  are added too, and so on till no more vertices can be added. 
+
+There is a path to , from all the vertices added to the component containing . And there is a path to all the vertices added from , as all those lie in the block beginning at (which contains all the vertices reachable from  following outward edges at each step of path). Hence all these form a single strongly connected component. Moreover, no vertex remains, because, to be in this strongly connected component a vertex must be reachable from  and must be able to reach . All vertices that are able to reach , if any, lie in the first block only, and all the vertices in first block are reachable from . So the algorithm chooses all the vertices in the connected component of . 
+
+When we reach vertex , in the loop of step 3, and  hasn't been assigned to any component, we can be sure that all the vertices to the left have made their connected components; that  doesn't belong to any of those components; that  doesn't point to any of the vertices to the left of it. Also, since, no edge from higher blocks to 's block exists, the proof remains same. 
+
+As given above, the algorithm for simplicity employs depth-first search, but it could just as well use breadth-first search as long as the post-order property is preserved.
+
+The algorithm can be understood as identifying the strong component of a vertex  as the set of vertices which are reachable from  both by backwards and forwards traversal. Writing  for the set of vertices reachable from  by forward traversal,  for the set of vertices reachable from  by backwards traversal, and  for the set of vertices which appear strictly before  on the list  after phase 2 of the algorithm, the strong component containing a vertex  appointed as root is
+ 
+Set intersection is computationally costly, but it is logically equivalent to a double set difference, and since  it becomes sufficient to test whether a newly encountered element of  has already been assigned to a component or not.
+
+Complexity 
+Provided the graph is described using an adjacency list, Kosaraju's algorithm performs two complete traversals of the graph and so runs in Θ(V+E) (linear) time, which is asymptotically optimal because there is a matching lower bound (any algorithm must examine all vertices and edges). It is the conceptually simplest efficient algorithm, but is not as efficient in practice as Tarjan's strongly connected components algorithm and the path-based strong component algorithm, which perform only one traversal of the graph.
+
+If the graph is represented as an adjacency matrix, the algorithm requires Ο(V2) time.
+
+References 
+ Alfred V. Aho, John E. Hopcroft, Jeffrey D. Ullman. Data Structures and Algorithms. Addison-Wesley, 1983.
+ Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein. Introduction to Algorithms, 3rd edition. The MIT Press, 2009. .
+ Micha Sharir. A strong-connectivity algorithm and its applications to data flow analysis.  Computers and Mathematics with Applications 7(1):67–72, 1981.
+
+External links 
+Good Math, Bad Math: Computing Strongly Connected Components
+
+Graph algorithms
+Graph connectivity

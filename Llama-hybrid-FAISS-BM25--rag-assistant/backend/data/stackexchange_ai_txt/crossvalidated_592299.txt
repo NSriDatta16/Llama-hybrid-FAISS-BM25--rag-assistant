@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 592299
+[parent_id]: 
+[tags]: 
+Can I compute a confidence interval without assuming any underlying distributions?
+
+I have data about storage consumption for a lot of users (N > 50k+). The raw data distribution would look something like this: Given the outliers, to get an estimate of how much storage each user consumes I'd like to build a confidence interval for the median memory consumption (I guess I could build it for the mean if I removed outliers first.. am I correct?). If I follow my most intuitive understanding of a, say, 95% confidence interval, I would go as follows: bootstrap many samples (e.g. 10_000) of some size (e.g. 1000); compute the median for each sample; take any interval that contains 95% of the samples' medians, by default the equally-tailed one. As an example, in Python: medians = [ df['Total storage used (GB)'] .sample(n=1000, replace=True) .median() for _ in range(100_000) ] sorted_medians_srs = pd.Series(medians).sort_values() alpha = 0.05 left_ci, right_ci = ( sorted_medians_srs # take the extremes .iloc[[int(100_000 * alpha/2), -int(100_000 * alpha/2)]] .values ) Which gives a credible CI: That is, I didn't assume any underlying distribution and I just sampled from the "actual" distribution I have at hand. How incorrect is this approach?

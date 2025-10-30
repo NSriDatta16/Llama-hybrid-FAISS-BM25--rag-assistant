@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 82134
+[parent_id]: 
+[tags]: 
+Initializing weights that are a pointwise product of multiple variables
+
+In two-layer perceptrons that slide across words of text, such as word2vec and fastText , hidden layer heights may be a product of two random variables such as positional embeddings and word embeddings (Mikolov et al. 2017, Section 2.2) : $$v_c = \sum_{p\in P} d_p \odot u_{t+p}$$ However, it's unclear to me how to best initialize the two variables. When only word embeddings are used for the hidden layer weights, word2vec and fastText initialize them to $\mathcal{U}(-1 / \text{fan_out}; 1 / \text{fan_out})$ . When the product of two random variables is used, we might: initialize the first variable with ones and the other variable with $\mathcal{U}(-1 / \text{fan_out}; 1 / \text{fan_out})$ : This would maintain the distribution of the weights, but the gradients to the second variable would be way too large. initialize the variables with a 2-factor of $\mathcal{U}(0, 1)$ : and then rescale their product to $[-1 / \text{fan_out}; 1 / \text{fan_out}]$ . This would maintain the distribution of the weights, but enlarge the gradients to both variables, since they are now both initialized to ones or close to ones. I will appreciate any ideas and pointers to existing research in this direction.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1172041
+[parent_id]: 951070
+[tags]: 
+I've used the solution suggested by Fredrik Mörk. It's very clear and elegant. Otherwise I found a problem if we instantiate the splash form before launching the real application (application.run (mainform...)): it raises an invalidOprationException caused by the form-handle still not exists in the calling-thread. To create the handle directly in the thread t (and skip this exception!) try to launch the splash form in this way: Thread t = new Thread(new ThreadStart(delegate { _splash = new Splash(); Application.Run(_splash); })); t.Start(); and, if you plan to call the closeSplash method in more branches of the program, force the null value after the first call: private static Splash _splash = null; public static void CloseSplash() { if (_splash!= null) { _splash.CloseSplash(); _splash=null; } }

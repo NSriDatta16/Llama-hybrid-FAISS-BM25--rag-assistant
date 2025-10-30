@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5368719
+[parent_id]: 5087334
+[tags]: 
+For the upcoming versions of WYMeditor we've solved this issue by completely overriding the the different native implementations (including the enter key handler.) To force a pargraph (or rather reformat to a paragraph) you can do something like this with jQuery (where element is a DOM Node or a jQuery object): function formatElement (element, tagName) { element = $(element); newElement = $(' ').append(element.clone().get(0).childNodes); element.replaceWith(newElement); } This could be done on keyup where you'd get the newly created element by using looking at the current selection and then call the above function. In WYMeditor we also make sure that we're actually modifying a block element, so that we maintain a valid document structure. If not, we walk up the DOM tree to find a block parent. Just like DanielH's solution the drawback of this approach is that you need to implement your own undo/redo stack, but as far as I'm aware it's the only reliable cross browser way of doing it.

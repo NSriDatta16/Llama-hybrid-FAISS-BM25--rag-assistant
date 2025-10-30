@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4440380
+[parent_id]: 4436419
+[tags]: 
+I think it is not a good method to write a result transformer to solve your problem. Try something like this, Query query = session.createSQLQuery(clauseBaseQuery.toString()); query.setResultTransformer(Transformers.aliasToBean(AdvancedClauseSearchResultDTO.class)); And in AdvancedClauseSearchResultDTO class, modify setter methods to set required fields for you. For example, class AdvancedClauseSearchResultDTO { private Date effectiveDate; private String status; . . public void getEffectiveDate() { return effectiveDate; } public void setEffectiveDate(Date aDate) { Date now = new Date(System.currentTimeMillis()); if (now.before(effectiveDate)) { this.status = "Pending"; } else if (now.after(terminationDate)) { this.status = "Terminated"; } else { this.status = "Active"; } this.effectiveDate = aDate; } } You got the idea...

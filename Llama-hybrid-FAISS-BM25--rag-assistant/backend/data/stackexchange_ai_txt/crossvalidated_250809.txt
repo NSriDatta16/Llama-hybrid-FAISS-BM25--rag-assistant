@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 250809
+[parent_id]: 
+[tags]: 
+Confusion about cv.glm in R
+
+R's document says that delta is the raw cross-validation estimate of prediction error, which i think is prediction error rate in the situation of logistic regression. However, when i try to calculate prediction error rate with my own function the result is different. cv.glm: > fit=glm(Direction~Lag1+Lag2,family = binomial,data = Weekly) > cv.err=cv.glm(Weekly,fit) > cv.err$delta[1] [1] 0.2464536 my function: > fun=function(){ + count=0 + for(i in 1:length(Direction)){ + fit=glm(Direction~Lag1+Lag2,family = binomial,data = Weekly[-i,]) + prob=predict(fit,newdata = Weekly[i,],type = "response") + pred="Down" + if(prob>0.5) + pred="Up" + if(pred!=Direction[i]) + count=count+1 + } + return(count/length(Direction)) + } > fun() [1] 0.4499541 Why the result is different? Could anyone explain this for me?

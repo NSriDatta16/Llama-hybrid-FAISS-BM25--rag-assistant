@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4832626
+[parent_id]: 
+[tags]: 
+How does Django construct the url returned by FileSystemStorage?
+
+I have model, for testing purposes with just an ImageField. This ImageField is bound to a FileSystemStorage like the following: fs_test = FileSystemStorage(location = settings.FS_TEST_FILES, base_url = settings.FS_TEST_URL) class TestModel(models.Model): image = models.ImageField(storage=fs_test,upload_to='image') the settings look like this: FS_TEST_FILES = os.path.normpath(MEDIA_ROOT+'/fs_test') FS_TEST_URL = os.path.normpath(MEDIA_URL+'/fs_test/') When uploading, the file is uploaded to "media/root/fs_test/image/filename.png". No worry until here. But when calling "image.url", i get "media/url/image/filename.png". Shouldn't that be base_url+filename, which in this case would be "media/url/fs-test/image/filename.png"? Why not? edit: some more information on this. Djangos FileField class defines the url access as follows: def _get_url(self): self._require_file() return self.storage.url(self.name) url = property(_get_url) and the Storage class defines: def url(self, name): if self.base_url is None: raise ValueError("This file is not accessible via a URL.") return urlparse.urljoin(self.base_url, name).replace('\\', '/') but my code returns the standard MEDIA_URL, not the base_url defined in fs_test.

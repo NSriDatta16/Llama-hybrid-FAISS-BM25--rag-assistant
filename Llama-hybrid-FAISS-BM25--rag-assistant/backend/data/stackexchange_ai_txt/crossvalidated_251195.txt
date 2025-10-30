@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 251195
+[parent_id]: 152551
+[tags]: 
+Thanks for sharing your efforts on this. FWIW, I got it to work with some minor tweaks import pymc as mc bowl = mc.Categorical('which_bowl', [.5,.5]) p = [ # vanilla, chocolate [.75, .25], # bowl 1 [.5, .5 ], # bowl 2 ] @mc.deterministic def bowl_selection(p=p, bowl=bowl): return p[bowl] observation = mc.Categorical('obs', bowl_selection, value=0, observed=True) mcmc = mc.MCMC([bowl, p, bowl_selection, observation]) mcmc.sample(15000, 3000) bowl_trace = mcmc.trace('which_bowl')[:] Now the posterior probabilities for the hypotheses are (bowl_trace == 0).sum()*1./ bowl_trace.shape[0] and (bowl_trace == 1).sum()*1./ bowl_trace.shape[0]

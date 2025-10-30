@@ -1,0 +1,100 @@
+In cryptography, a secret sharing scheme is verifiable if auxiliary information is included that allows players to verify their shares as consistent. More formally, verifiable secret sharing ensures that even if the dealer is malicious there is a well-defined secret that the players can later reconstruct. (In standard secret sharing, the dealer is assumed to be honest.)
+The concept of verifiable secret sharing (VSS) was first introduced in 1985 by Benny Chor, Shafi Goldwasser, Silvio Micali and Baruch Awerbuch.
+
+In a VSS protocol a distinguished player who wants to share the secret is referred to as the dealer. The protocol consists of two phases: a sharing phase and a reconstruction phase.
+
+Sharing: Initially the dealer holds secret as input and each player holds an independent random input. The sharing phase may consist of several rounds. At each round each player can privately send messages to other players and can also broadcast a message. Each message sent or broadcast by a player is determined by its input, its random input and messages received from other players in previous rounds.
+
+Reconstruction: In this phase each player provides its entire view from the sharing phase and a reconstruction function is applied and is taken as the protocol's output.
+
+An alternative definition given by Oded Goldreich defines VSS as a secure multi-party protocol for computing the randomized functionality corresponding to some (non-verifiable) secret sharing scheme. This definition is stronger than that of the other definitions and is very convenient to use in the context of general secure multi-party computation.
+
+Verifiable secret sharing is important for secure multiparty computation.  Multiparty computation is typically accomplished by making secret shares of the inputs, and manipulating the shares to compute some function.  To handle "active" adversaries (that is, adversaries that corrupt nodes and then make them deviate from the protocol), the secret sharing scheme needs to be verifiable to prevent the deviating nodes from throwing off the protocol.
+
+Feldman's scheme 
+A commonly used example of a simple VSS scheme is the protocol by Paul Feldman, which is based on Shamir's secret sharing scheme combined with any homomorphic encryption scheme. The following description gives the general idea, but is not secure as written. (Note, in particular, that the published value gs leaks information about the dealer's secret s.)
+
+First, a cyclic group G of prime order q, along with a generator g of G, is chosen publicly as a system parameter. The group G must be chosen such that computing discrete logarithms is hard in this group. (Typically, one takes an order-q subgroup of (Z/pZ)×, where q is a prime dividing .)
+
+The dealer then computes (and keeps secret) a random polynomial P of degree t with coefficients in Zq, such that , where s is the secret.  Each of the n share holders will receive a value P(1), ..., P(n) modulo q.  Any  share holders can recover the secret s by using polynomial interpolation modulo q, but any set of at most t share holders cannot. (In fact, at this point any set of at most t share holders has no information about s.)
+
+So far, this is exactly Shamir's scheme. To make these shares verifiable, the dealer distributes commitments to the coefficients of P modulo q.  If P(x) = s + a1x + ... + atxt, then the commitments that must be given are:
+ c0 = gs,
+ c1 = ga1, 
+ ...
+ ct = gat.
+
+Once these are given, any party can verify their share.  For instance, to verify that  modulo q, party i can check that
+
+.
+
+This scheme is, at best, secure against computationally bounded adversaries,  namely  the intractability of computing discrete logarithms. Pedersen proposed later a scheme where no information about the secret is revealed even with a dealer with unlimited computing power.
+
+Benaloh's scheme 
+Once n shares are distributed to their holders, each holder should be able to verify that all shares are collectively t-consistent (i.e., any subset t of n shares will yield the same, correct, polynomial without exposing the secret).
+
+In Shamir's secret sharing scheme the shares  are t-consistent if and only if the interpolation of the points  yields a polynomial degree at most .
+
+Based on that observation, Benaloh's protocol can be shown to allow the share holders to perform the required validation while also verifying the dealer's authenticity and integrity.
+
+A second observation is that given the degree of the sum of two polynomials F and G is less than or equal to t, either the degrees of both F and G are less than or equal to t, or both the degrees of F and G are greater than t. This claim is evident due to Polynomial function's Homomorphic property, examples:
+
+case 1: 
+, , 
+case 2: 
+, , 
+the case that we canceled: 
+, , 
+
+Interactive proof: The following 5 steps verify the integrity of the dealer to the Share holders:
+ Dealer chooses polynomial P, distributes shares (as per Shamir's secret sharing scheme).
+ Dealer constructs a very large number (k) of random polynomials  of degree t, and distributes shares.
+ Share-holder chooses a random subset of  polynomials.
+ Dealer reveals shares of the m chosen polynomials  and sums of remaining  sums  then shares the result as well.
+Each share-holder or verifier ascertains that all revealed polynomials are degree-t, and corresponds to its own known share.
+The secret s remains safe and unexposed.
+
+These 5 steps will be done in small number of iterations to achieve high probability result about the dealer integrity.
+
+Diagnosis 1: Because the degree of polynomial  is less than or equal to t and because the Dealer reveals the other  polynomials (step 4), the degree of the polynomial P must be less than or equal to t (second observation case 1, with height probability when these steps are repeated in different iterations).
+
+Diagnosis 2: One of the parameters for the problem was to avoid exposing the secret which we are attempting to verify. This property is kept through the use of Algebra homomorphism to perform validation. (A set of random polynomials of degree at most t together with a set of sums of P and other polynomials of degree at most t gives no useful information about P.)
+
+Secret ballot elections 
+
+Verifiable secret sharing can be used to build end-to-end auditable voting systems.
+
+Using the technique of verifiable secret sharing one can satisfy the election problem that will be described here.
+
+In the election problem each voter can vote either 0 (to oppose) or 1 (for support), and the sum of all votes will determine election's result. For the election to execute, it is necessary to make sure that the following conditions are fulfilled:
+
+ The voters' privacy should not be compromised.
+ The election administrator must verify that no voter committed fraud.
+
+If using verifiable secret sharing, n tellers will replace the single election administrator. Each voter will distribute one share of its secret vote to every one of the n tellers. This way the privacy of the voter is preserved and the first condition is satisfied.
+
+Reconstruction of the election's result is easy, if there exist enough  tellers to discover polynomial P.
+
+The interactive proof can be generalized slightly to allow verification of the vote shares. Each voter will prove (in the distribution of the secret share phase) to the tellers that his vote is legitimate using the five steps of the interactive proof.
+
+Round-optimal and efficient verifiable secret sharing 
+The round complexity of a VSS protocol is defined as the number of communication rounds in its sharing phase; reconstruction can always be done in a single round. There is no 1-round VSS with , regardless of the number of players. The bounds on perfect and efficient VSS protocols is given below.
+
+See also 
+ Secret sharing
+ Secure multiparty computation
+ Publicly Verifiable Secret Sharing
+ Verifiable computing
+
+Bibliography 
+ T. Rabin and M. Ben-Or, Verifiable secret sharing and multiparty protocols with honest majority. In Proceedings of the Twenty-First Annual ACM Symposium on theory of Computing (Seattle, Washington, United States, May 14–17, 1989). 
+ Rosario Gennaro, Yuval Ishai, Eyal Kushilevitz, Tal Rabin, The Round Complexity of Verifiable Secret Sharing and Secure Multicast. In Proceedings of the thirty-third annual ACM symposium on Theory of computing ( Hersonissos, Greece, Pages: 580 - 589, 2001 )
+ Matthias Fitzi, Juan Garay, Shyamnath Gollakota, C. Pandu Rangan, and Kannan Srinathan, Round-Optimal and Efficient Verifiable Secret Sharing. Theory of Cryptography, Third Theory of Cryptography Conference, TCC 2006, ( New York, NY, USA, March 4–7, 2006 )
+ Oded Goldreich, Secure multi-party computation
+ Josh Cohen Benaloh, Secret Sharing Homomorphisms: Keeping Shares of a Secret.  Proceedings on Advances in cryptology, CRYPTO '86. pp. 251–260, 1987
+
+References
+
+Notes 
+
+Cryptography

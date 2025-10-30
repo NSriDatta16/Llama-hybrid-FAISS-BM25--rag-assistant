@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 584261
+[parent_id]: 584234
+[tags]: 
+I've thought about disabling the interface from the agent and then enabling it once the agent is done, but I'm not sure that would work and the biggest problem here is that the agent shouldn't be messing around with the menus. You could make the agent call a method in the GUI class that re-enables the menus, when it is done. The method would, of course, call the appropriate Swing methods on the EDT. class Agent extends Thread { @override public void run() { // run around the room // finally done gui.agentIsDone(); } } class GUI extends JFrame { ... void agentIsDone() { SwingUtilities.invokeLater(new Runnable() { @override public void run() { menus.setEnabled(true); } }); } } If multiple agents can run concurrently, you'll need to check if all of them are done, before re-enabling the menu.

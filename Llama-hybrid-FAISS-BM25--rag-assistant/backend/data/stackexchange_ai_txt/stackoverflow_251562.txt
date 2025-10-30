@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 251562
+[parent_id]: 251278
+[tags]: 
+Less elegant than I would like---- it's essentially what you're doing, just in pure SQL--- but it works and can all be done in SQL. DECLARE @mytable TABLE(mykey NVARCHAR(512), myVal NVARCHAR(512)) DECLARE @keyVal NVARCHAR(512) DECLARE @depVal NVARCHAR(512) DECLARE myCursor CURSOR for SELECT DISTINCT(value) FROM attribute_values OPEN myCursor FETCH NEXT FROM myCursor INTO @keyVal WHILE @@FETCH_STATUS=0 BEGIN SET @depVal = (SELECT TOP 1 attribute_definition_id FROM attribute_values WHERE VALUE=@keyVal ORDER BY attribute_definition_id) INSERT INTO @mytable (mykey, myVal) VALUES (@keyVal, @depVal) FETCH NEXT FROM myCursor INTO @keyVal END DEALLOCATE myCursor SELECT * FROM @mytable You can add a depVal2 and others using this method.

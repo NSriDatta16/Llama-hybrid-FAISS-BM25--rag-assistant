@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 417976
+[parent_id]: 417916
+[tags]: 
+You write a fairly simple shell script in which the trickiest part is munging the name. The outline of the script is easy (bash syntax here): for i in 'transform.php?dappName=Test&transformer=YAML&v_id='* do mv $i done Modifying the name has many options. I think the easiest is probably an awk one-liner like `echo $i | awk -F'=' '{print $4}'` so... for i in 'transform.php?dappName=Test&transformer=YAML&v_id='* do mv $i `echo $i | awk -F'=' '{print $4}'`.txt done update Okay, as pointed out below, this won't necessarily work for a large enough list of files; the * will overrun the command line length limit. So, then you use: $ find . -name 'transform.php?dappName=Test&transformer=YAML&v_id=*' -prune -print | while read do mv $reply `echo $reply | awk -F'=' '{print $4}'`.txt done

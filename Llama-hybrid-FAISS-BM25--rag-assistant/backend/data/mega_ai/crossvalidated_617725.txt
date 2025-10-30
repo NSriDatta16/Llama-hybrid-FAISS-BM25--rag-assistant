@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 617725
+[parent_id]: 396315
+[tags]: 
+Let me also add that you can compute this without using the Numpy library. I am currently working on a journal that requires me to use stick-breaking as a prior for my autoencoder. Method 1: def compute_stick_segment(self, v): n_dims = v.size()[1] pi = torch.ones(size=v.size()).to(device) for idx in range(n_dims): product = 1 for sub_idx in range(idx): product *=1-v[:,sub_idx] pi[:,idx] = v[:,idx] * product return pi Method 2 from numpy.testing import assert_almost_equal def set_v_K_to_one(self, v): # set Kth fraction v_i,K to one to ensure the stick segments sum to one if v.ndim > 2: v = v.squeeze() v0 = v[:, -1].pow(0).reshape(v.shape[0], 1) v1 = torch.cat([v[:, :latent_ndims - 1], v0], dim=1) return v1.to(device) def get_stick_segments(self, v): n_samples = v.size()[0] n_dims = v.size()[1] pi = torch.zeros((n_samples, n_dims)) for k in range(n_dims): if k == 0: pi[:, k] = v[:, k] else: pi[:, k] = v[:, k] * torch.stack([(1 - v[:, j]) for j in range(n_dims) if j Any of the methods works fine.

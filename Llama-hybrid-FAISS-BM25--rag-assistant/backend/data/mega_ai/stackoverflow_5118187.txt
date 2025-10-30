@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5118187
+[parent_id]: 5008938
+[tags]: 
+I ended up solving the problem by embedding the certificate in my service code then reading it from the resource: using System.IO; using System.Reflection; using System.Security.Cryptography.X509Certificates; namespace AcsTest.Shared { public static class CertHelper { public static X509Certificate2 GetCertFromManifest( Assembly assembly, string certName, string password) { byte[] bytes; using (var stream = assembly. GetManifestResourceStream(certName)) { bytes = new BinaryReader(stream). ReadBytes((int)stream.Length); } return new X509Certificate2(bytes, password, X509KeyStorageFlags.MachineKeySet); } } } The key insight was that I'd need to store a password in my service to load the cert from the certificate store so I was gaining no security advantage by keeping it in the store.

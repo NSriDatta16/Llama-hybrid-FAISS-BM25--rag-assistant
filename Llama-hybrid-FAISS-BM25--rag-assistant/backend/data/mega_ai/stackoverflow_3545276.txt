@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3545276
+[parent_id]: 3513866
+[tags]: 
+I figured it out. I discovered that, what I was forgetting to do, was to add: self.isTouchEnabled = YES; to the Layer's init method. After I did that the following code worked for me (beginTouchPoint and endTouchPoint are properties of the class): -(void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { UITouch* myTouch = [touches anyObject]; CGPoint location = [myTouch locationInView: [myTouch view]]; beginTouchPoint = [[CCDirector sharedDirector]convertToGL:location]; } // Handles the continuation of a touch.* -(void) ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{ static BOOL isFirstTouch = YES; UITouch* myTouch = [touches anyObject]; int row,column; int directionSwiped; CGPoint location = [myTouch locationInView: [myTouch view]]; endTouchPoint = [[CCDirector sharedDirector]convertToGL:location]; CGFloat xDelta = endTouchPoint.x - beginTouchPoint.x; CGFloat yDelta = endTouchPoint.y - beginTouchPoint.y; [self findSwipeDirectionWith: xDelta and: yDelta]; }

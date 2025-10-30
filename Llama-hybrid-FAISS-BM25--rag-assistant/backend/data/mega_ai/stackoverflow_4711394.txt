@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4711394
+[parent_id]: 4711179
+[tags]: 
+auto-fill-mode seems to do what you want. When the length of the line exceeds the value of fill-column it breaks the line and insert new comment line. It's not fully automatic though, if the text is inserted in between , you will have to press M-q to refill. [Edit: here is a way to smartify the "space" command. Each time you press SPC your comment block will be refilled: (defun refill-when-in-comment () (interactive) (let ((curr-face (get-char-property (point) 'face))) (if (member "comment" (split-string (prin1-to-string curr-face) "-")) (fill-paragraph t) ) ) ) (defun smart-space (arg) (interactive "P") (refill-when-in-comment) (self-insert-command (prefix-numeric-value arg)) ) (global-set-key " " 'smart-space) Does this work for you?

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5330862
+[parent_id]: 
+[tags]: 
+Securely generating a uniformly random BigInteger
+
+I want to securely generate a random number in the range [0, N), where N is a parameter. However, System.Security.Cryptography.RandomNumberGenerator only provides a GetBytes() method to fill an array with random values. (I need the random integers for nonces used in a slightly modified version of SRP. The "slightly modified" part is out of my control, and the only reason I'm even touching crypto stuff.) I have written a method to do this, but I'm looking for a better way or at least confirmation that I'm doing it right. using System.Numerics /// Generates a uniformly random integer in the range [0, bound). public static BigInteger RandomIntegerBelow(this System.Security.Cryptography.RandomNumberGenerator source, BigInteger bound) { Contract.Requires (source != null); Contract.Requires (bound > 0); Contract.Ensures(Contract.Result () >= 0); Contract.Ensures(Contract.Result () = bound); var validityBound = generatedValueBound - generatedValueBound % bound; Contract.Assert(validityBound >= bound); while (true) { //generate a uniformly random value in [0, 2^(buffer.Length * 8 - 1)) source.GetBytes(buffer); buffer[buffer.Length - 1] &= 0x7F; //force sign bit to positive var r = new BigInteger(buffer); //return unless in the partial fragment if (r >= validityBound) continue; return r % bound; } }

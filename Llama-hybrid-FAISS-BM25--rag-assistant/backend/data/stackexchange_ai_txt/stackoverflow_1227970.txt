@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1227970
+[parent_id]: 1227165
+[tags]: 
+You can't add a to a ControlInitializer to a dictionary that holds ControlInitializer because the first type does not inherit from the second type (even though TextBox inherits from Control .) It's all about the lack of Covariance and Contravariance in generics. You could write your own collection to behave in the way you expect. Here's one possibility: public class CustomStorage { private Dictionary storage = new Dictionary (); public void Remember(string key, object value) { storage[key] = value; } public object Retrieve(string key) { object x = storage[key]; return x; } public U Retrieve (string key) { U u = (U) storage[key]; return u; } } Which could be used this way: CustomStorage cs = new CustomStorage(); ControlInitializer one = c => c.Text = "Init Value"; ControlInitializer two = c => c.SelectedValue = "-1"; //drop the items into the collection ... cs.remember("TextBox", one); cs.remember("DropDownList", two); // ... and fetch them back one = cs.Retrieve >("TextBox"); two = cs.Retrieve >("DropDownList");

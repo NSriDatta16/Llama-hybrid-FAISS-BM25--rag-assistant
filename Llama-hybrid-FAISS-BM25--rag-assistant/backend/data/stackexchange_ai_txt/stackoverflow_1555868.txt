@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1555868
+[parent_id]: 1555607
+[tags]: 
+Just an opinion, but I would avoid the parsing at any cost. I would also encourage strongly typed data whenever possible. I'd go with the 'Expression Tree' idea myself. I've used this in large applications without much issue. We built our own implementation to represent the expression since we were on .Net 2.0 and didn't need a lot of support (equality only). I can't tell from your post if your considering building your own, but we came up with something like the following: class ValueTriple { System.Type FieldType; string Field; object Value; } class AndCritieria { ValueTriple[] Criteria; } class OrCriteria { AndCriteria[] Criteria; } We wrapped these classes with rich-type 'query' classes specific to an entity and eventually extended the OrCriteria with sorting/paging information. The query structure above gave us the ability to express any equality based condition regardless of complexity by essentially normalizing the input query structure. For instance: WHERE x = '1' AND (y = '2' OR z = '3') can also be represented as: WHERE (x = '1' AND y = '2') OR (x = '1' AND z = '3')

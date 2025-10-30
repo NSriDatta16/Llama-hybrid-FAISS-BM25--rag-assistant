@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3667149
+[parent_id]: 
+[tags]: 
+How to figure out which column raises an arithmetic overflow error upon insert?
+
+Imagine a table with like a hundred of different columns in it. Imagine, then, that I have a user-data table from where I want to copy data to the base table. So I wrote this simple insert-select statement and this error pops up. So, what's the most elegant way to figure out which column raises the error? My initial thoughts on the solution are about wrapping it in a transaction that I will ultimately rollback and use a sort of Divide and Conquer approach: begin tran insert into BaseTable (c1,c2,c3,...,cN) select c1,c2,c3,...,cN from UserTable rollback tran And this obviously fails. So we divide the column set in half like so: begin tran insert into BaseTable (c1,c2,c3,...,cK) --where K = N/2 select c1,c2,c3,...,cK --where K = N/2 from UserTable rollback tran And if it fails then the failing column is in the other half. And we continue the process, until we find the pesky column. Anything more elegant than that? Note: I also found a near-duplicate of this question but it barely answers it.

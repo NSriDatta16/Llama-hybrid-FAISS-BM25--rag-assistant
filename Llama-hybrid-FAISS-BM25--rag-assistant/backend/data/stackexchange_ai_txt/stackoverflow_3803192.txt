@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3803192
+[parent_id]: 
+[tags]: 
+using nHibernate to cast unmapped data into a DTO
+
+So I'm doing a postcode lookup provided by an outside data provider on a database that we're controlling with nHibernate. This involves calling a stored procedure and supplying a postcode. In return I get a number of rows each one of which contains multiple columns that make up the parts of the address. We have an address DTO. But I'm struggling with how to cast the DB results into this object since it's not mapped to anything in the database. I'm doing this: Dim spCall As String = String.Format("exec AddressFindListPostCode '{0}'", postcode) Dim tran As Global.NHibernate.Transform.IResultTransformer = Global.NHibernate.Transform.Transformers.AliasToBean(GetType(Concrete.Cms.DataTransferObjects.Address)) Dim streetList As IList(Of Concrete.Cms.DataTransferObjects.Address) = session.CreateSQLQuery(spCall).SetResultTransformer(tran).List(Of Concrete.Cms.DataTransferObjects.Address)() But of course it can't transform the result set into an object without some help from a mapping of some kind. The problem, essentially, is that the SP returns a List of objects. Each object (equivalent to a row) contains sub-objects which correspond to columns within the row. But I see no way of getting the sub-objects. streetList(i, j) won't work and there are no methods or properties on streetList that allow me to access them. How do I get my data out to map it? Cheers, Matt

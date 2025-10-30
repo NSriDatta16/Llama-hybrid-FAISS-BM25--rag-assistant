@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1452446
+[parent_id]: 1452439
+[tags]: 
+I recommend you leverage NHibernate transactions. It's entirely possible that, without their use, NHibernate has no way of determining when to issue your SaveOrUpdate call. You'll find that even read-only statements perform better when using transactions. Please see http://nhprof.com/Learn/Alert?name=DoNotUseImplicitTransactions for further details. For example: using(var session = NHibernateSessionManager.CurrentSession) { using(var transaction = session.BeginTransaction()) { var foo = session.Linq .ToList()[0]; foo.SomeProperty = "test"; session.SaveOrUpdate(foo); transaction.Commit(); } }

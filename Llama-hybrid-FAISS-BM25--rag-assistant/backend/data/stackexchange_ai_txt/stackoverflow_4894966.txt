@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4894966
+[parent_id]: 4894933
+[tags]: 
+This code is illegal in C++ and the compiler is right to reject it. The problem is that if you have a concrete object of type A inside of an object of type B and vice-versa, then there is no meaningful definition of the size of either object. In particular, objects in C++ must each be at least one byte in size. Therefore, given an object of type A (call it a ), there must be one byte of storage for a , a.objB.objA , a.objB.objA.objB.objA , etc. In fact, you'd need infinite storage space, because there's always an object nested further inside of these objects! To fix this, you'll want to change this so that you're storing pointers to objects of type B and A in A and B, respectively. This breaks the chain because while an A* pointer points to an A object, the pointer itself isn't an A object and thus uses only four bytes. Once you have this, you can use forward declarations to declare these pointers. For example: File: A.h: class B; class A { B* objB; }; File: B.h: class A; class B { A* objA; }; Hope this helps!

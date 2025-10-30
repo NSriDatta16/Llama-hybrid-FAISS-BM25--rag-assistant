@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5404712
+[parent_id]: 5402681
+[tags]: 
+You wouldn't use a trigger for this. It might be possible to do something with service broker (I'm not sure). The simplest way of doing it would be to just have a non nullable LockedOutUntil smalldatetime column in the Users table (defaulting to a date in the past) and have your code check that isactive='true' or LockedOutUntil This would consume 4 bytes per row for all users though and presumably at any one time very few will be locked out so a more space efficient way would be to create a new table containing lockout details. Either your code would need to check this table to determine if the user is locked out or you could deactivate the user up front and have a SQL Server Agent job scheduled to run every minute to reactivate users whose lockout period had expired. The job could also delete these from the lockout table unless you wanted to maintain a history of these events.

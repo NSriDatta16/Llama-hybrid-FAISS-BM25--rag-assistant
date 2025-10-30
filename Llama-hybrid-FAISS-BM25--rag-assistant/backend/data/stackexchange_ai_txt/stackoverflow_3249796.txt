@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3249796
+[parent_id]: 3231805
+[tags]: 
+well I found the solution. my JobRunner object was being instantiated in the Application_Start method of Global.asax, and as such held that thread ID instead of the background thread ID. I created a wrapper class that takes a type and uses NInject to create an instance, and every time the background thread comes around to start processing, it uses the wrapper class to get an instance of JobRunner. that creates it on the proper thread which allows me to get the same ISession as my IRepository so I can call session.Flush() after all IJobs have completed. maybe there is a more elegant solution, but until then, this works well.

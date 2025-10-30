@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4990567
+[parent_id]: 4990531
+[tags]: 
+It looks like you're not null-terminating the string in ipA. The compiler has put the two variables next to one another in memory, so string operations assume that the first null terminator is sometime after the second array (whenever the next 0 occurs in memory). Try: char ipA[16], ipB[16]; size_t b = 15; memcpy(ipA,line+15,b); ipA[15] = '\0'; memcpy(ipB,line+31,b); ipB[15] = '\0'; printf("ipA: %s\nipB: %s\n", ipA, ipB) This should confirm whether this is the problem. Obviously you could make the code a bit more elegant than my test code above. As an alternative to manually terminating, you could use printf("%.*s\n", b, ipA); or similar to force printf to print the correct number of characters.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5770634
+[parent_id]: 
+[tags]: 
+Copy-elision of automatic variable for return
+
+I am wondering if in C++0x "12.8 Copying and Moving class objects [class.copy] paragraph 31" when copy elision happens, exactly: When certain criteria are met, an implementation is allowed to omit the copy/move construction of a class object [...]. This elision of copy/move operations, called copy elision, is permitted in the following circumstances [...]: in a return statement in a function with a class return type, when the expression is the name of a non-volatile automatic object [...] with the same cv-unqualified type as the function return type, the copy/move operation can be omitted by constructing the automatic object directly into the function’s return value [...] And now I wonder, if this allows in the following code to elude copy vector gen(const char *fn) { if(fn == nullptr) // this should prevent RVO return {"House", "Horse", "Hen"}; vector res; fillFromFile(res, fn); return res; // copy elision possible? } int main() { vector data = gen("users.dat"); } Or does that rule not fot the example, and I have to do it explicit? return move(res); // explicitly prevent copy Note that my intention of the if was to eliminate the obvious Return Value Optimization (RVO). Or am I completely on the wrong track here? There was a change involving return and move that could use rvalue references , right?

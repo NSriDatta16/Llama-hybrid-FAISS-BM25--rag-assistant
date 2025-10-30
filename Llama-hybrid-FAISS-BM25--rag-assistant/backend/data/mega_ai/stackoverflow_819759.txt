@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 819759
+[parent_id]: 819671
+[tags]: 
+The first step is to make your Person class implement the NSCoding protocol. The basic strategy is to implement two methods to serialize and un-serialize each of the object's instance variables that you want to persist between sessions. #pragma mark NSCoding Protocol - (void)encodeWithCoder:(NSCoder *)encoder; { [encoder encodeObject:[self foo] forKey:@"foo"]; [encoder encodeDouble:[self bar] forKey:@"bar"]; } - (id)initWithCoder:(NSCoder *)decoder; { if ( ![super init] ) return nil; [self setFoo:[decoder decodeObjectForKey:@"foo"]]; [self setBar:[decoder decodeDoubleForKey:@"bar"]]; return self; } To actually write the objects to disk, you could use NSArray's writeToFile: method, or use the NSKeyedUnarchiver class if you want to be more explicit about how it's done. In both cases you can also put your array into another data structure (a dictionary for example) if you want to include other items (such as a file format number) in your data file.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1581309
+[parent_id]: 1581052
+[tags]: 
+You need to read 30m rows from an Oracle DB and write out 30m files from the BLOBs (one zipped XML/text file in one BLOB column per row?) in each row to the file system on the local computer? The obvious solution is open a ADO.NET DataReader on SELECT * FROM tbl WHERE so you can do batches. Read the BLOB from the reader into your API, do your stuff and write out the file. I would probably try to write the program so that it can run from many computers, each doing their own ranges - your bottleneck is most likely going to be the unzipping, manipulation and the rezipping, since many consumers can probably stream data from that table from the server without noticeable effect on server performance. I doubt you'll be able to do this with set-based operations internal to the Oracle database, and I would also be thinking about the file system and how you are going to organize so many files (and whether you have space - remember the size taken up by a file on a the file system is always an even multiple of the file system block size).

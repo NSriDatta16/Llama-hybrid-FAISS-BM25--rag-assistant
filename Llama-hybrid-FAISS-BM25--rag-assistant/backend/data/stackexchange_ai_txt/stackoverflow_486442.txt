@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 486442
+[parent_id]: 392806
+[tags]: 
+I have a few suggestions, but of course the overall answer is "it depends". First, you should be using an ORM tool or you should have a very good reason not to be doing so. Second, implementing Lazy Loading by hand is relatively simple so in the event that you're not going to use an ORM tool, you can simply create properties on your objects that say something like: private Foo _foo; public Foo Foo { get { if(_foo == null) { _foo = _repository.Get(id); } return _foo; } } Third, performance is something that should be considered initially but should not drive you away from an elegant design. I would argue that you should use (3) initially and only deviate from it if its performance is insufficient. This results in writing the least amount of code and having the least duplication in your design. If performance suffers you can address it easily in the UI layer using Caching and/or in your Domain layer using Lazy Loading. If these both fail to provide acceptable performance, then you can fall back to a DTO approach where you only pass back a lightweight collection of value objects needed.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3487254
+[parent_id]: 164427
+[tags]: 
+Detect the user agent in middleware, switch the url bindings, profit! How? Django request objects have a .urlconf attribute, which can be set by middleware. From django docs: Django determines the root URLconf module to use. Ordinarily, this is the value of the ROOT_URLCONF setting, but if the incoming HttpRequest object has an attribute called urlconf (set by middleware request processing), its value will be used in place of the ROOT_URLCONF setting. In yourproj/middlware.py, write a class that checks the http_user_agent string: import re MOBILE_AGENT_RE=re.compile(r".*(iphone|mobile|androidtouch)",re.IGNORECASE) class MobileMiddleware(object): def process_request(self,request): if MOBILE_AGENT_RE.match(request.META['HTTP_USER_AGENT']): request.urlconf="yourproj.mobile_urls" Don't forget to add this to MIDDLEWARE_CLASSES in settings.py: MIDDLEWARE_CLASSES= [... 'yourproj.middleware.MobileMiddleware', ...] Create a mobile urlconf, yourproj/mobile_urls.py: urlpatterns=patterns('',('r'/?$', 'mobile.index'), ...)

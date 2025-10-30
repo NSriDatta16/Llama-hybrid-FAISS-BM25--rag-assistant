@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3606946
+[parent_id]: 3606802
+[tags]: 
+Sounds reasonable enough. You'd need to be sure that your JMS implementation of choice supports a potentially very large number of topics - not all of them can do that elegantly. My main design question would be that when a user first logs in, his session store of messages would be empty, and you'd have to wait for it to fill up. Wouldn't you then have to hit the database anyway, or would this not be an issue. Also, you're not really making use of the event-driven nature of JMS here. Messages received from the topic are just dumped into the session store for later retrieval. Since it's not really event-driven, you could perhaps consider a distributed in-memory data-store instead, such as EhCache+JGroups, or JBossCache3 (which I can highly recommend). New tweets would be dropped into this distributed store, and readers would just need to trawl over that looking for items of interest. This could be more memory-efficient, since only one copy of each tweet would be stored on each node. You could also pre-load the cache at system start-up.

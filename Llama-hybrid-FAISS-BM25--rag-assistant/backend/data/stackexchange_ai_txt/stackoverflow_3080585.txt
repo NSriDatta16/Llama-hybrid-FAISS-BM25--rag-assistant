@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3080585
+[parent_id]: 
+[tags]: 
+Change Unix password from command line over Python/Fabric
+
+I would like a way to update my password on a remote Ubuntu 10.4 box with fabric . I would expect my fabfile.py would look something like this: def update_password(old_pw, new_pw): # Connects over ssh with a public key authentication run("some_passwd_cmd --old %s --new %s" % (old_pw, new_pd)) Unfortunately the only command I know of that lets one change the password is passwd , and on Ubuntu 10.4 there doesn't seem to be any way to pass in the new (or old) password as an argument to passwd . What command could one use to change a user's password on Ubuntu 10.4 via fabric ? EDIT : I've had a look at usermod -p , and that may work but it isn't recommended by the man page. EDIT : For some reason usermod -p wasn't working either over fabric. As well, I've tried a (somewhat insecure) variation on mikej's answer that did solve the problem: # connecting & running as root. from fabric.api import * from fabric.contrib import files files.append("%s\n%s" % (passwd, passwd), '.pw.tmp') # .pw.tmp: # PASSWD # PASSWD run("passwd %s It's not a very elegant solution, but it works. Thank you for reading. Brian

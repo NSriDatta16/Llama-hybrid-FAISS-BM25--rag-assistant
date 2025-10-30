@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 644761
+[parent_id]: 643987
+[tags]: 
+As sgreeve says, separation of concerns is something to take into account in order to get maintainable code. Using a repository idea, the Winform app and the Web app could inject their own storage provider. Those providers could share some common logic if needed by inheritance or composition. public class MyClassRepository { IStorageProvider _provider; public MyClassRepository(IStorageProvider provider) { _provider = provider; } public void Save(MyClass o) { _provider.Save(o); } public MyClass GetBy(string id) { return _provider.GetBy(id); } } The Winforms app would invoke storage through: var provider = new WindowsStorageProvider(); var rep = new MyClassRepository(provider); rep.Save(myClassObject); and the Web app: var provider = new WebStorageProvider(); var rep = new MyClassRepository(provider); rep.Save(myClassObject);

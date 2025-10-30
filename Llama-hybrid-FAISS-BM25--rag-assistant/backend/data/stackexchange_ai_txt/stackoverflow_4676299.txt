@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4676299
+[parent_id]: 4676286
+[tags]: 
+Take a look at the Visitor pattern as a starting point. If your hierarchy changes a lot, the visitor pattern spreads the changes throughout. In that case, also look at the acyclic visitor . The code could look like this: public interface X { void accept(XVisitor v); } public interface XVisitor { void visit(A a); void visit(B b); } public class A implements X { public void accept(XVisitor v) { v.visit(this); } } public class B implements X { public void accept(XVisitor v) { v.visit(this); } } And then your algorithm goes into this class: public class XTransformerVisitor implements XVisitor { private X result; private A first; public void visit(A a) { if (first == null) first = a; else result = a; } public void visit(B b) { if (first == null) throw new RuntimeException(); result = first; } public X transform(X x1, X x2) { x1.accept(this); x2.accept(this); return result; } }

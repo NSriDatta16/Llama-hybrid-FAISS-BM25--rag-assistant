@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 936491
+[parent_id]: 936020
+[tags]: 
+If you want random access to the contents of the file in a manner similar to having loaded it via NSData but without actually reading everything into memory, you can use memory mapping. Doing so means that the file on disk becomes treated as a section of virtual memory, and will be paged in and out just like regular virtual memory. NSError * error = nil; NSData * theData = [NSData dataWithContentsOfFile: thePath options: NSMappedRead error: &error]; If you don't care about getting filesystem error details, you can just use: NSData * theData = [NSData dataWithContentsOfMappedFile: thePath]; Then you would just use NSData's -getBytes:range: method to pull out specific pieces of data, and only the relevant parts of the file will actually be read from permanent storage; they'll also be eligible to be paged out too.

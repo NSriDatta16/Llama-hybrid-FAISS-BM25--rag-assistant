@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 476328
+[parent_id]: 
+[tags]: 
+How to write a nice Low-Pass-Filter in Scala
+
+I needed a Low-Pass-Filter in one of my Scala projects and came up with this: def filter(numbers: Seq[Double], filterSize: Int): Seq[Double] = { assert(filterSize > 0) val ringBuffer = new Array[Double](filterSize) var ringBufferIndex = 0 numbers.map(x => { // update ring buffer ringBuffer(ringBufferIndex) = x // increase ring index ringBufferIndex += 1 if (ringBufferIndex == filterSize) { ringBufferIndex = 0 } // get avarage ringBuffer.foldLeft(0.0)(_ + _) / filterSize }) } However, there are some things I don't like about it: It uses map (nicely functional) but needs a mutable variable (ringBufferIndex - BAD). It work's on Seq[Double] (which is fine), but returns Seq[Double] , which is bad cause it requires the caller to call .toList or whatever he actually uses. I tried using Generics here like this: def filter\[T but that would not compile. Does anyone have suggestionts how to improve those two issues?

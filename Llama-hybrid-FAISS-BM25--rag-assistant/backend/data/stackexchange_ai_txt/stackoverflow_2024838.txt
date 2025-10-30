@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2024838
+[parent_id]: 2024506
+[tags]: 
+You can achieve your goal even without SendMessage using System.Windows.Forms.Message class. If you have done dragging I guess you are familiar with WM_NCLBUTTONDOWN message. Send it to you parent from your control's MouseDown event. Here is an example for moving the form clicking on control label1. Note the first line where sender is used to release the capture from clicked control. This way you can set this handler to all controls intended to move your form. This is complete code to move the form. Nothing else is needed. public const int WM_NCLBUTTONDOWN = 0xA1; public const int HT_CAPTION = 0x2; private void label1_MouseDown(object sender, MouseEventArgs e) { (sender as Control).Capture = false; Message msg = Message.Create(Handle, WM_NCLBUTTONDOWN, (IntPtr)HT_CAPTION, IntPtr.Zero); base.WndProc(ref msg); } Hope this helps.

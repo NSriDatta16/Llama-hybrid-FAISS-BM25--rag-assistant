@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2430131
+[parent_id]: 2429902
+[tags]: 
+Neat bug, after messing around with it, it appears that Firefox remembers the mousedown event on the slider and treats it as if the user had started selecting some text (hence the "stop sign" you were seeing). So then Firefox treats the next mousedown event as if the user was dragging the text away somewhere. There might be a more appropriate solution, but simply adding a $("#slider").focus() does the trick since then Firefox will "reset" the cursor so it won't think the user is dragging some text. I'd also like to comment you're repeatedly binding and unbinding events (which doesn't seem to sit well with ie7 doing multiple drags). I would suggest something like the following, which binds the delegates once. $(function() { var sliderMouseDown = false; $("#slider").mousedown(function() { sliderMouseDown = true; }); $(document).mousemove(function(evnt) { if (sliderMouseDown) { $("#test").html("sliding"); } }); $(document).mouseup(function() { if (sliderMouseDown) { $("#test").html("not sliding"); $("#slider").focus(); //

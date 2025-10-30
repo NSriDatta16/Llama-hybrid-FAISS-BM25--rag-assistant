@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 151514
+[parent_id]: 151483
+[tags]: 
+I was able to reproduce your results: > clf = svm.SVC() > scores = cross_validation.cross_val_score(clf, X, Y, cv=10) I didn't get perfect out of fold classification, but close: > print(scores) array([ 1. , 1. , 1. , 0.99152542, 1. , 1. , 1. , 1. , 1. , 1. ]) It's not very easy to figure out what's going on with a support vector machine, so I fit a decision tree to your data: > tre = tree.DecisionTreeClassifier() > tre.fit(X, Y) The tree is a prefect classifier on the training data: > sum(abs(tre.predict(X) - Y)) 0 Turns out this tree is pretty simple: It looks like the third column in your data (the one named Z ) is a perfect separator. This is easily confirmed with a scatterplot:

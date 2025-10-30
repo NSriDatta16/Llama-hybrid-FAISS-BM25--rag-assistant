@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2000930
+[parent_id]: 2000742
+[tags]: 
+I'd go with B. I don't think this will take complicated string concatenation. Assuming your IDs are plain array keys, you could simply do: $ids = implode(',', array_keys($hashmap)); $query = sprintf('SELECT * from records WHERE id NOT IN (%s)', $ids); You might want to add some sanitizing for the query string though. If you are already using SplObjectStorage for a hashmap, you'd have to iterate over the map to get the IDs from the stored objects. Depending on the amount of items already in there and the amount to fetch, you might be better of with A or B. It depends. But with SplObjectStorage you wouldn't have to bother about attaching already existing objects as this is taken care of already natively, e.g. $map = new SplObjectStorage; $one = new StdObject; $map->attach($one); $map->attach($one); $map->count(); // returns 1 So, yes. I guess it's a benchmarking question and dependent on your specific scenario.

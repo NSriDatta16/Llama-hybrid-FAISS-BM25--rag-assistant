@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 890253
+[parent_id]: 662988
+[tags]: 
+Based on Robert's code here , it can even be done without the division or modulus, replacing them with one shift and one AND, like so: a = [0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4] x = 243 >> 4 # 15 (same as dividing by 16) y = 243 & 0x0f # 3 ( same as modding by 16) result = a[x] + a[y] # 6 bits set Or in C: const unsigned char oneBits[] = {0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4}; unsigned char CountOnes(unsigned char x) { unsigned char results; results = oneBits[x&0x0f]; results += oneBits[x>>4]; return results } For any size integer, you could just loop through the bytes and do a quick lookup, like so: def bits(n) a = [0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4] a[n >> 4] + a[n & 0x0f] end def setBits(n) total = 0 while(n > 0) total += bits(n&0xff) n >>= 8 end total end setBits(6432132132165432132132165436265465465653213213265465) # 78 bits set I'm satisfied with this answer. I knew something more complex and quadtree-esque wouldn't be efficient, I just thought it was a decent thought experiment.

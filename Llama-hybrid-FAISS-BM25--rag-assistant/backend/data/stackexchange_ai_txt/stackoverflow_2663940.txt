@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2663940
+[parent_id]: 2663869
+[tags]: 
+To accept the POST, you can use the hand-rolled code you've shown, but the very best way is to make use of CGI (which is now a core module so it should be in your Perl distribution). For passing on a POST to somewhere else, you can use LWP::UserAgent #/usr/bin/perl use strict; use warnings; use CGI; use LWP::UserAgent; my $cgi = CGI->new; # Will process post upon instantiation my %params = $cgi->Vars; my $ua = LWP::UserAgent->new; my $postTo = 'http://www.somewhere.com/path/to/script'; my $response = $ua->post($postTo, %params); if ($response->is_success) { print $response->decoded_content; # or maybe $response->content in your case } else { die $response->status_line; } }

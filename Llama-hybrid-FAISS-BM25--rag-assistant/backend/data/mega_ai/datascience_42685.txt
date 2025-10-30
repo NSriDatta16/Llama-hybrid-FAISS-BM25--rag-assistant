@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 42685
+[parent_id]: 
+[tags]: 
+GD for logistic regression isn't stable. Why?
+
+Here's my (incomplete) implementation for linear regression using GD: from enum import Enum import numpy as np from math import exp class GDType(Enum): GD = 1 SGD = 2 class LogisticRegression: def __init__(self, gd_type=GDType.GD, learning_rate=0.1, num_iterations=1000): self.gd_type = gd_type self.learning_rate = learning_rate self.num_iterations = num_iterations def __odds(self, x, b): return exp(b.dot(x)) / float(exp(1 + b.dot(x))) def __gd_step(self, X, y): grad = np.zeros(self.p) for j in range(self.p): for i in range(self.m): grad[j] += self.__odds(X[i], self.b) - y[i] grad[j] *= X[i, j] return grad def __gd(self, X, y): for i in range(self.num_iterations): dl = self.__gd_step(X, y) self.b -= (self.learning_rate / float(self.m)) * dl print(self.b) def fit(self, X, y): X = np.column_stack((np.ones(X.shape[0]).T, X)) # 1's column for the bias self.m = X.shape[0] self.p = X.shape[1] self.b = np.zeros(self.p) self.__gd(X, y) print(self.b) I'm testing it on the iris data, as follows: from sklearn.datasets import load_iris iris = load_iris() X = iris.data[:, :2] y = (iris.target != 0) * 1 lr = LogisticRegression() lr.fit(X, y) The problem is that the coefficients are getting larger and larger instead of converging. Why? I doubled checked (correct me if wrong) and it seems to me that __gd_step is correct.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1953721
+[parent_id]: 1952687
+[tags]: 
+I don't really understand why you would be able to make it work in one but not the other. Preventing a form from getting visible when its Show() method is called requires overriding the SetVisibleCore method. Perhaps you can leverage this code: private bool mAllowVisible = false; public bool ReallyVisible { get { return mAllowVisible; } set { mAllowVisible = value; if (value) this.Visible = true; } } protected override void SetVisibleCore(bool value) { if (value && !IsHandleCreated) CreateHandle(); // Ensure Load event runs if (!ReallyVisible) value = false; base.SetVisibleCore(value); }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2151348
+[parent_id]: 2151198
+[tags]: 
+NHibernate is doing a lot of work for you, and that might be slowing it down. It keeps objects you've pulled from in the session, which is basically a first level cache. When you run queries, it will check that set of objects to see if they need to be flushed back to the database (maybe you've changed them so that they now qualify as the result of the query!). So one strong possibility is that your query is secretly walking through a huge number of objects trying to figure out what it should write to the database before it ever sends your query to the database. If this is the case, you can try a periodic session.Clear() or session.Evict(object) which removes objects from the cache, so that NH won't try to make the database consistent with them. You can always reattach objects later if you want NH to "pay attention" to them. Edit : or use a stateless session. Here's an example .

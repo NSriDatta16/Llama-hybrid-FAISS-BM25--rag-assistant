@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3862711
+[parent_id]: 3862473
+[tags]: 
+You need to release _allData before reassigning it. You also need to retain it when you assign it. EDIT: Incorporating Robert's improvement to get rid of an unneeded NSDictionary. EDIT2: Because you're returning an object across an API boundary, it need to be retuned as an autoreleased object. - (NSDictionary *)allData { NSString *path = [saveAlarm getNSPath]; [_allData release]; _allData = [[NSDictionary dictionaryWithContentsOfFile:path] retain]; return [_allData autorelease]; } The code you posted is a bit odd in that you're creating a property called allData, telling it to use _allData as the ivar (with @synthesize) and then implementing a custom getter that sets the ivar. If you declare the property as readonly, you can remove the @synthesize statement. If you're only using _allData inside this method and not anywhere else in this class, you can get rid of it entirely. Here's a much simpler version that does the same thing: - (NSDictionary *)allData { NSString *path = [saveAlarm getNSPath]; return [NSDictionary dictionaryWithContentsOfFile:path]; }

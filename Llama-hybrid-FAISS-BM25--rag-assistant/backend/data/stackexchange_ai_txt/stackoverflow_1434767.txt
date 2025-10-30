@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1434767
+[parent_id]: 1434714
+[tags]: 
+Instead of manually creating your CGContextRef I'd suggest you leverage UIGraphicsBeginImageContext as demonstrated in this post . More details on that set of routines can be found here . I trust it'll help to resolve this issue, or at the very least give you less memory you have to manage yourself. UPDATE: Given the new code, the retainCount of the UIImage as it comes out of the function will be 1, and assigning it to the imageView's image will cause it to bump to 2. At that point deallocating the imageView will leave the retainCount of the UIImage to be 1, resulting in a leak. It is important, then, after assigning the UIImage to the imageView, to release it. It may look a bit strange, but it will cause the retainCount to be properly set to 1.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2288182
+[parent_id]: 2204216
+[tags]: 
+Well, I think you're expecting a lot based on your comments here. You're not going to go from minutes to milliseconds by multithreading. The most you can hope for is the current amount of time divided by the number of cores. That being said, you're in a bit of luck with C++. I've written high performance multiprocessor scientific apps, and what you want to look for is the most embarrassingly parallel loop you can find. In my scientific code, the heaviest piece is calculating somewhere between 100 and 1000 data points. However, all of the data points can be calculated independently of the others. You can then split the loop using openmp. This is the easiest and most efficient way to go. If you're compiler doesn't support openmp, then you will have a very hard time porting existing code. With openmp (if you're lucky), you may only have to add a couple of #pragmas to get 4-8x the performance. Here's an example StochFit

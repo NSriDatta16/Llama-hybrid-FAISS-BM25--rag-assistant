@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3940138
+[parent_id]: 
+[tags]: 
+How to pass previous form data to the constructor of a DynamicForm in FormWizard
+
+I have a FormWizard where I need data from the first form to pass to the constructor of the second form so I can build a dynamic form. I can get the first form's data via the process_step of the FormWizard. I create the fields of the second form with a database call of the list of fields. class ConditionWizardDynamicQuestions(forms.Form): def __init__(self, DynamicQuestions=None, *args, **kwargs): super(ConditionWizardDynamicQuestions, self).__init__(*args, **kwargs) questions = Question.objects.filter(MYDATA = DATA_FROM_1STFORM) for q in questions: dynField = FieldFactory(q) self.fields[q.label] = dynField How can I pass over the DATA_FROM_1STFORM ? my resultant code: I abandoned the init of the form, and switched it to the CreateQuestions def. Then used the wizard's get_form override to alter the form after creation. class ConditionWizard(SessionFormWizard): def get_form(self, request, storage, step=None, data=None, files=None): form = super(ConditionWizard, self).get_form(request, storage, step, data, files) stepIndex = self.get_step_index(request, storage, step) if stepIndex == 1: form.CreateQuestions(request.session["WizardConditionId"]) if stepIndex == 3: form.fields['hiddenConditionId'].initial = request.session["WizardConditionId"] form.fields['medicationName'].queryset = Medication.objects.filter(condition = request.session["WizardConditionId"]) return form

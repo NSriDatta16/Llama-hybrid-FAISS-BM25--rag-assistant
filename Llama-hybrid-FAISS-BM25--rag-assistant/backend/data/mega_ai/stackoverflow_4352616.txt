@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4352616
+[parent_id]: 4352561
+[tags]: 
+Strictly speaking, the fact that it's a const copy has nothing to do with this problem. Blocks will retain any obj-c values that are captured when they are created. It just so happens that the workaround for the const-copy issue is identical to the workaround for the retain issue; namely, using the __block storage class for the variable. In any case, to answer your question, there's no real alternative here. If you're designing your own block-based API, and it makes sense to do so, you could have the block get passed the value of self in as an argument. Unfortunately, this doesn't make sense for most APIs. Please note that referencing an ivar has the exact same issue. If you need to reference an ivar in your block, either use a property instead or use bself->ivar . Addendum: When compiling as ARC, __block no longer breaks retain cycles. If you're compiling for ARC, you need to use __weak or __unsafe_unretained instead.

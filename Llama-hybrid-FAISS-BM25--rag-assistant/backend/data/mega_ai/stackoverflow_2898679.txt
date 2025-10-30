@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2898679
+[parent_id]: 2845183
+[tags]: 
+Quoting Herb Sutter, author of "Exceptional C++" (from here ): If a destructor throws an exception, Bad Things can happen. Specifically, consider code like the following: // The problem // class X { public: ~X() { throw 1; } }; void f() { X x; throw 2; } // calls X::~X (which throws), then calls terminate() If a destructor throws an exception while another exception is already active (i.e., during stack unwinding), the program is terminated. This is usually not a good thing. In other words, regardless of what you would want to believe is elegant in this situation, you cannot blithely throw an exception in a destructor unless you can guarantee that it will not be thrown while handling another exception. Besides, what can you do if you can't successfully get rid of a resource? Exceptions should be thrown for things that can be handled higher up, not bugs. If you want to report odd behavior, log the release failure and simply go on. Or terminate.

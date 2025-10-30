@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2051582
+[parent_id]: 2051524
+[tags]: 
+Although I would not discourage using INSERT IGNORE out of principal reasons in this case, I think there are a few practical considerations here. I think it will be much faster if you'd deduplicate the array before sending it. I looks like you're using PHP - you could use array_unique() to deduplicate. (See http://nl2.php.net/manual/en/function.array-unique.php ) The benefit of this is: No need for INSERT IGNORE - your solution will work for other databases as well Less statements to generate, less statements to send, less statements for MySQL to parse - faster. For typical web apps, database actions are slower than PHP processing, so it doesn't hurt either. Another thing I would recommend is to generate one big INSERT statement like so: $sql = INSERT INTO tab (keyword) VALUES ('word1'), ('word2'), ... Contrary to what many people think this is standard SQL. The benefit of this is that you have one roundtrip, - way less overhead

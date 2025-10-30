@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 562150
+[parent_id]: 
+[tags]: 
+Why the sequence of matrix transformations in The Annotated Transformer?
+
+Forgive me the long introduction, but I want to be very specific with my question. The Annotated Transformer implements the Transformer architecture from " Attention Is All You Need ". The MultiHeadedAttention class implements the multi-headed attention mechanism with what, to me, look like tricks to simplify the code and improve performance. Specifically, the parallel application of multiple attention heads is implemented by handling all heads in the same matrix, one for each step of the attention computation. My question is related to this line: query, key, value = \ [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2) for l, x in zip(self.linears, (query, key, value))] It consists of: applying a linear layer l to the input x transforming the output to a 4D Tensor with dimensions describing, respectively: batch, attention head, word in the phrase, projection dimension The question is: why does it have to be a combination of view() and transpose() rather than just a single call to view() ? I could implement that line as follows: query, key, value = \ [l(x).view(nbatches, self.h, -1, self.d_k) for l, x in zip(self.linears, (query, key, value))] It produces the output of the same shape and I checked that it works (at least on a CPU; I don't know about CUDA). So why is it done this way? What is its advantage?

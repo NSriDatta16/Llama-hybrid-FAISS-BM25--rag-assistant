@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 987294
+[parent_id]: 986784
+[tags]: 
+Effective design steps for this scenario consist of first, determining any and all places where you can partition the records to be processed to allow full-engine parallelization (i.e., four units running against 750k records each is comparatively cheap). Then, depending upon the cost of the rules that summarize your record (I am viewing assignment of a bucket as a summarization operation), determine if your operation is going to be CPU bound or record retrieval bound. If you're CPU bound, increasing the partitioning is your best performance gain. If you're IO bound, rule processing worker threads that can work in parallel in response to chunked data retrieval is a better-performing design. All of this assumes that your rules will not result in state which needs to be tracked between records. Such a scenario deeply threatens the parallelization approach. If parallelization is not a tractable solution because of cumulative state being a component of the rule set, then your best solution may in fact be sequential processing of individual records.

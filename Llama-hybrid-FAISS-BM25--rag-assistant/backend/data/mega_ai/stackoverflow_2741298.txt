@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2741298
+[parent_id]: 2741252
+[tags]: 
+Yes there is, if it's SQL 2005, you can potentially use a CLR stored procedure to install your C# code into the Db. To do it pure TSQL, it's just a matter of it being tedious and needing to use variables for the new keys. Is this just a case of one parent record and then a lot of child records that are only in one child table? You could potentially avoid issuing separate insert commands for each child row in this case by leveraging the fact that you can embed a select statement into an insert, especially if you're using identity columns for the PKs. That will usually be MUCH faster if you can do it. Something like this (syntax may be a bit off, but you'll need to adapt it to your real tables anyhow): insert into tblchild select @newparentId, col1,col2 from tblChild where parentid=@oldparentid Here's a starting point on CLR in SQL Server... http://msdn.microsoft.com/en-us/library/ms131045.aspx (This article is SQL 2008, but much of it probably applies). http://www.sqlteam.com/article/writing-clr-stored-procedures-in-charp-introduction-to-charp-part-1

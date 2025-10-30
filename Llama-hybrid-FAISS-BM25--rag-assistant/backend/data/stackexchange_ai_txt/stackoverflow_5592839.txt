@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5592839
+[parent_id]: 5579415
+[tags]: 
+I think the issue is because the FlowDocument is a DependencyObject which isn't freezable and therefore can't be created on one thread and then used on a different one. I think its because when the FlowDocument is created on the other thread it has a different dispatcher, to the RTB. A workaround for this can be found on AAron's blog : FlowDocument doc = new FlowDocument(new Paragraph(new Run("hi"))); System.IO.MemoryStream stream = new System.IO.MemoryStream(); XamlWriter.Save(doc, stream); stream.Position = 0; this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ZeroDelegate)delegate () { flowDoc = (FlowDocument)XamlReader.Load(stream); });

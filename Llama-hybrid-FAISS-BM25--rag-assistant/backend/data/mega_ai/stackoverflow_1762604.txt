@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1762604
+[parent_id]: 1762513
+[tags]: 
+use a subquery to make things simpler, that way you can test the subquery for correctness seperately of all the joins to other tables. (SELECT supplier_id, AVG(rating) AS avg_rating FROM supplier_feedback WHERE feedback_id != x GROUP BY supplier_id) Assuming that feedback_id (whatever the primary key for the feedback table is) is unchanging you can exclude the record you want to ignore from the subquery, the rest will be averaged. You can then join with this: SELECT s.*, r.avg_rating FROM suppliers s JOIN (SELECT supplier_id, AVG(rating) AS avg_rating FROM supplier_feedback WHERE feedback_id != x GROUP BY supplier_id) r ON s.supplier_id = r.supplier_id

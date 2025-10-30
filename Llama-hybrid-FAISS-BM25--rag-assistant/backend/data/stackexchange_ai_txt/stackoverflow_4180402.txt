@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4180402
+[parent_id]: 
+[tags]: 
+Is CGContextAddArc really that slow (compared to a circle drawn with a few lines
+
+Folks, While coding up a few dials and sliders (e.g. like a big volume button one can rotate around) - I found that the standard CGContextAddArc() used like: - (void)drawRect:(CGRect)rect { CGContextRef ctx = UIGraphicsGetCurrentContext(); CGColorSpaceRef rgbColorspace = CGColorSpaceCreateDeviceRGB(); CGContextSetLineWidth(ctx, radius * (KE-KR)+8); CGContextSetStrokeColorWithColor(ctx,self.foregroundColor.CGColor); .... more some colour/width/etc settings ... CGContextAddArc(ctx, dx,dy,radius, 0, 2*M_PI, 0); to be unbelievable slow. On an iPad - with a handful of filled/stroked circles, less than some 10 clean [self setNeedsDisplay] updates/second during drag. A very quick hack with a hand-drawn circle (shown below) was several orders of magnitude faster. Same applies to the emulator. Why is this. Seems to be the case for both a normal fill and various gradient fills. What am I doing wrong ? Dw. // Stupid replacement for CGContectAddArc() which seems to be very slow. // void CGContextAddCirlce(CGContextRef ctx, float ox, float oy, float radius) { double len = 2 * M_PI * radius; double step = 1.8 / len; // over the top :) // translating/scaling would more efficient, etc.. // float x = ox + radius; float y = oy; // stupid hack - should just do a quadrant and mirror twice. // CGContextMoveToPoint(ctx,x,y); for(double a = step; a

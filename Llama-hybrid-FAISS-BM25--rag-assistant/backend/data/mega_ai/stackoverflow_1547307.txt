@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1547307
+[parent_id]: 1546810
+[tags]: 
+In order to get a value from SessionVar or RequestVar , call is method on it, i.e. sessionUserType.is By the way, did you read " Managing State "? Side note I believe RequestVar is a better fit in your case. I am not sure I could catch your code right without the context, but it could be rewritten at least like: case class LoginType case object StudentLogin extends LoginType case object ProviderLogin extends LoginType object loginType extends RequestVar[Box[LoginType]](Empty) // RequestVar is a storage with request-level scope ... "provider" -> SHtml.link("/providerlogin",() => loginType(Full(ProviderLogin)), Text("Provider")), // `SHtml.link` works in this way. Your closure will be called after a user // transition, that is when /providerlogin is loading. ... val studentSessionType = If(() => { loginType.is map {_ == StudentLogin} openOr false }, "not a student session") // As a result, this test will be true if our RequestVar holds StudentLogin, // but it will be so for one page only (/studentlogin I guess). If you want // scope to be session-wide, use SessionVar

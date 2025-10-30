@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5262771
+[parent_id]: 
+[tags]: 
+What's causing this?
+
+I don't understand "why" SQLiteDB may not respond to "-checkIfDatabaseExists". What's causing this and how do I fix it? (I'm real close to getting this to work, but because I'm a newbie, I am still having problems). I appreciate any assistance I can get on this. Here is the code: #import "SQLiteDB.h" static SQLiteDB *sharedSQLiteDB = nil; // makes this a singleton class @implementation SQLiteDB @synthesize db, dbPath, databaseKey; //-------------- check for database or create it ----------------| #pragma mark Singleton Methods + (SQLiteDB *) sharedSQLiteDB { if(!sharedSQLiteDB) { sharedSQLiteDB = [[SQLiteDB alloc] init]; [sharedSQLiteDB checkIfDatabaseExists]; } return sharedSQLiteDB; } +(id)allocWithZone:(NSZone *)zone { if(!sharedSQLiteDB) { sharedSQLiteDB = [super allocWithZone:zone]; return sharedSQLiteDB; } else { return nil; } } -(id)copyWithZone:(NSZone *)zone { return self; } -(void) release { // no-op } - (void) checkIfDatabaseExists { // Get the path to the database file NSArray *searchPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES); NSString *documentPath = [searchPaths objectAtIndex:0]; NSString *databasePath = [documentPath stringByAppendingPathComponent:@"ppcipher.s3db"]; // Open the database file const char *cDatabasePath = [databasePath cStringUsingEncoding:NSUTF8StringEncoding]; if(sqlite3_open(cDatabasePath, &db) == SQLITE_OK) // does it exist? return; else { // create database file here } } @end

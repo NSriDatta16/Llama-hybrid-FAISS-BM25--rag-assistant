@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2637982
+[parent_id]: 
+[tags]: 
+How to read/write from erlang to a named pipe?
+
+I need my erlang application to read and write through a named pipe. Opening the named pipe as a file will fail with eisdir . I wrote the following module, but it is fragile and feels wrong in many ways. Also it fails on reading after a while. Is there a way to make it more ... elegant ? -module(port_forwarder). -export([start/2, forwarder/2]). -include("logger.hrl"). start(From, To)-> spawn(fun() -> forwarder(From, To) end). forwarder(FromFile, ToFile) -> To = open_port({spawn,"/bin/cat > " ++ ToFifo}, [binary, out, eof,{packet, 4}]), From = open_port({spawn,"/bin/cat " ++ FromFifo}, [binary, in, eof, {packet, 4}]), forwarder(From, To, nil). forwarder(From, To, Pid) -> receive {Manager, {command, Bin}} -> ?ERROR("Sending : ~p", [Bin]), To ! {self(), {command, Bin}}, forwarder(From, To, Manager); {From ,{data,Data}} -> Pid ! {self(), {data, Data}}, forwarder(From, To, Pid); E -> ?ERROR("Quitting, first message not understood : ~p", [E]) end. As you may have noticed, it's mimicking the port format in what it accepts or returns. I want it to replace a C code that will be reading the other ends of the pipes and being launched from the debugger.

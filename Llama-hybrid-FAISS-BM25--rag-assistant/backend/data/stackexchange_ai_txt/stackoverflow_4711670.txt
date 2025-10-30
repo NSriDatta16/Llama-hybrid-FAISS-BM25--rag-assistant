@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4711670
+[parent_id]: 4705796
+[tags]: 
+First of all, you should test performance on a device, rather than in Simulator. Most of graphics-related stuff works very differently in Simulator, some being much faster and some, surprisingly, much slower. That said, if a transparent background does prove to be a performance problem on a device, it's most likely because you fill too many pixels with CGContextClearRect() . I can think of two solutions off the top of my head: In touchesBegan:withEvent: you can make a snapshot of the underlying view(s) using CALayer's renderInContext: method and draw the snapshot as the background instead of clearing it. That way you can leave the view opaque and thus save time on compositing the view with views underneath it. You can create a one-point-tall CALayer representing a line and transform it in touchesMoved:withEvent: so that its ends are in correct positions. Same goes for dots representing the line ends (CAShapeLayer is great for that). There will be some ugly trigonometry involved, but the performance is going to be excellent.

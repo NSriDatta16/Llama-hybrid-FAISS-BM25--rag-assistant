@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 633193
+[parent_id]: 632890
+[tags]: 
+Ok, I've managed to retool this so it is more friendly to a conditions modifier and I think it is doing the sql query correctly.. however, it is returning policies that when I try to list the current status (the policy.status_change.last.status) it is set to the same status used in the query - which is not correct here is my updated condition string.. status_search = "status_changes.created_at between ? and ? and status_changes.status_id = ?) or (status_changes.created_at = (SELECT MAX(sc2.created_at) FROM status_changes sc2 WHERE sc2.policy_id = policies.id and sc2.created_at is there something obvious to this that is not returning all of the remaining associated status changes once it finds the one in the query? here is the updated find.. Policy.find(:all,:include=>[{:client=>[:agent,:source_id,:source_code]},:status_changes], :conditions=>[status_search,status_date_start,status_date_end,search[:status_id].to_s,status_date_start,search[:status_id].to_s])

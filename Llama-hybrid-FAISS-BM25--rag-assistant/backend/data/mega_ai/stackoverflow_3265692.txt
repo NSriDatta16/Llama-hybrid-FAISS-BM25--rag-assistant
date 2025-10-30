@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3265692
+[parent_id]: 2883831
+[tags]: 
+When you write to a key, MongoMapper will ensure that they key is defined on the document (as if you had declared it yourself with the key class method). See that code here: http://github.com/jnunemaker/mongomapper/blob/master/lib/mongo_mapper/plugins/keys.rb#L237 I don't think MongoMapper has any way to distinguish between keys you declared in the class yourself and keys it creates dynamically. That said, you could always make your own "reset_keys!" method that would destroy the @keys variable in your class and rebuild it again. This is kind of gross, and fragile since we're breaking encapsulation. Here's what it might look like! class Product include MongoMapper::Document def self.reset_keys! @keys = nil key :_id, ObjectId key :permanent_biz key :permanent_buz end reset_keys! end Product.create :foo => 123 Product.reset_keys! Product.create :bar => 456 I didn't test this, but what could possibly go wrong?

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4351662
+[parent_id]: 
+[tags]: 
+How to replace a GLSL uniform array with a 1D texture
+
+I am trying to get Ardor3D's terrain system to work on SM3.0 hardware. The current GLSL fragment shader uses a uniform vec2 array to pass an array of xy coordinates into the fragment shader. As dynamic indexed uniform arrays only work on SM4.0+ hardware, to get it running on SM3.0 I need to replace it with a 1D float texture. The current array looks like this: uniform vec2 sliceOffset[8]; and is accessed like this: vec2 offset = sliceOffset[int(unit)]; I am very experienced with OpenGL and GLSL so I am having some problems doing the conversion. So far I have done this: Create a 1D texture - width = 8 - format = RGBA32F Create a 1D buffer for the texture width = 8 * 4 = 32 floats, or 32 * 4 = 32 bytes large fill the float buffer like this: [x0,y0,0,0,x1,y1,0,0,x2,y2,0,0,x3,y3,0,0,x4,y4,0,0,x5,y5,0,0,x6,y6,0,0,x7,y7,0,0] Create a 1D sampler for the texture min filter = nearest, no mip maps mag filter = nearest wrap mode = clamp to edge In the GLSL I define the sampler as: uniform sampler1D sliceOffset; And accesses it: vec2 getSliceOffset(float unit) { float texCoord = (unit * 2.0f + 1.0f) / (2.0f * 8.0f); vec2 offset = texture1D(sliceOffset, texCoord); return offset; } But it is broken. What am I doing wrong?

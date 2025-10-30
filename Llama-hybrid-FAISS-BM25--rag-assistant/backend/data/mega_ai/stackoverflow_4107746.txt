@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4107746
+[parent_id]: 
+[tags]: 
+Kill Bash copy child process to simulate crash
+
+I'm trying to test a Bash script which copies files individually and does some stuff to each file. It is meant to be resumable, so I'd like to make sure to test this properly. What is an elegant solution to kill or otherwise abort the script which does the copying from the test script, making sure it does not have time to copy and process all the files? I have the PID of the child process, I can change the source code of both scripts, and I can create arbitrarily large files to test on. Clarification: I start the script in the background with & , get the PID as $! , then I have a loop which checks that there is at least one file in the target directory (the test script copies three files). At that point I run kill -9 $PID , but the process is not interrupted - The files are copied successfully. This happens even if the files are big enough that creating them (with dd and /dev/urandom ) takes a couple seconds. Could it be that the files are only visible to the shell when cp has finished? It would be a bit strange, but it would explain why the kill command is too late. Also, the idea is not to test resuming the same process, but cutting off the first process (simulate a system crash) and resuming with another invocation.

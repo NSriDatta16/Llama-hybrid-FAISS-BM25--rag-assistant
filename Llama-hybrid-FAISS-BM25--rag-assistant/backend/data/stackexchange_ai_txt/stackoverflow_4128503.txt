@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4128503
+[parent_id]: 4127370
+[tags]: 
+As others have said, you cannot do exactly what you want with bit fields. It looks like you want to store a large number of 6 bit integers with maximum space efficiency. I will not argue whether this is a good idea or not. Instead I will present an old-school C like way of doing exactly that, using C++ features for encapsulation (untested). The idea is that 4 6 bit integers require 24 bits, or 3 characters. // In each group of 3 chars store 4 6 bit ints const int nbr_elements = 1000; struct X { // 1,2,3 or 4 elements require 3 chars, 5,6,7,8 require 6 chars etc. char[ 3*((nbr_elements-1)/4) + 3 ] storage; int get( int idx ); }; int X::get( int idx ) { int dat; int offset = 3*(idx/4); // eg idx=0,1,2,3 -> 0 idx=4,5,6,7 -> 3 etc. char a = storage[offset++]; char b = storage[offset++]; char c = storage[offset]; switch( idx%4) // bits lie like this; 00000011:11112222:22333333 { case 0: dat = (a>>2)&0x3f; break; case 1: dat = ((a >4)&0x0f); break; case 2: dat = ((b >6)&0x03); break; case 3: dat = c&0x3f; break; } return dat; } I will leave the companion put() function as an exercise.

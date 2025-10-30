@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 113235
+[parent_id]: 113229
+[tags]: 
+Names qualify as a 'PROPN' postag. Adding it to the allowed_postags list should likely fix the issue. Edit: a simplified example (accepts raw text, provides a list of postags as debug output and returns lemmatized unsplit text). Basically nothing should be changed apart from allowed_postags , but this might give you some insight on the tags you truly need. import spacy nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner']) def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV', 'PROPN']): texts_out = [] for sent in texts: doc = nlp(sent) print(list(token.pos_ for token in doc)) texts_out.append(' '.join([token.lemma_ for token in doc if token.pos_ in allowed_postags])) return texts_out texts = [ 'Alex Jones caught in lie about Sandy Hook texts during brutal cross-examination', 'China sets military drills around Taiwan', 'Analysis: "Slap in the face": Biden\'s fist bump with MBS fails to pay off', 'Closing arguments expected in WNBA star Brittney Griner\'s Russia drug-smuggling trial' ] lemmatization(texts)

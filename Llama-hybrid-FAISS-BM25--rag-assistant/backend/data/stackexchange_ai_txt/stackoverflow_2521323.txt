@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2521323
+[parent_id]: 2521254
+[tags]: 
+Typically just adding a 'box' is sufficient (e.g. change function to fun x -> match box x with ), but let me try it out... Yeah; basically you cannot sideways cast from one arbitrary generic type to another, but you can upcast to System.Object (via box ) and then downcast to anything you like: type Animal() = class end type Dog() = inherit Animal() type Cat() = inherit Animal() let pets : Animal list = [Dog(); Cat(); Dog(); Cat(); Dog()] printfn "%A" pets open System.Collections.Generic let mergeIntoList (pets:seq ) (dest:IList ) = pets |> Seq.choose (fun p -> match box p with | :? 'a as x -> Some(x) | _ -> None) //' |> Seq.iter dest.Add let l = new List () mergeIntoList pets l l |> Seq.iter (printfn "%A")

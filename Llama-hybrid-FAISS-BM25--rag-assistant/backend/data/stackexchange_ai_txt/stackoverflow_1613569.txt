@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1613569
+[parent_id]: 
+[tags]: 
+Create a deep object graph with Linq to XML, refactoring?
+
+I am writing a simple XML file parser using LINQ to XML. I want to have a TreeNode object (i.e a simple Tree structure) for each element in the XML. I want each element to be strongly typed. It looks ugly and redundant compared to the simple looping approach I was using before (using System.XML). Is there a way to strip out the redundancies here? XElement ops = XElement.Load(@"c:\temp\exp.xml"); Tree domain = new Tree (); domain.Root = new TreeNode (); var cells = from cell in ops.Elements("cell") select new { TreeNodeObj = new TreeNode (new Cell((string)cell.Attribute("name"), (string)cell.Attribute("name"), null)), XElem = cell }; foreach (var cell in cells) { domain.Root.AddChild(cell.TreeNodeObj); var agents = from agent in cell.XElem.Elements("agent") select new { TreeNodeObj = new TreeNode (new Agent((string)agent.Attribute("name"), (string)agent.Attribute("name"), null)), XElem = agent }; foreach (var agent in agents) { cell.TreeNodeObj.AddChild(agent.TreeNodeObj); var nas = from na in agent.XElem.Elements("node-agent") select new { TreeNodeObj = new TreeNode (new NodeAgent((string)na.Attribute("name"), (string)na.Attribute("name"), null)), XElem = agent }; foreach (var na in nas) { agent.TreeNodeObj.AddChild(na.TreeNodeObj); } } }

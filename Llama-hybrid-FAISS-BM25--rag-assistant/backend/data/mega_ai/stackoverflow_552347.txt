@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 552347
+[parent_id]: 
+[tags]: 
+powershell exchange 2003 : query ActiveDirectory for activesync, office, and description?
+
+I'm using powershell to pull a list of exchange 2003 users and based on the user's mailbox "LegacyDN", I was hoping to use an LDAP query to pull their activesyncenabled property (msExchOmaAdminWirelessEnable), description, and office; however, it doesn't seem to be coming up for me. any ideas? here is how i'm querying for the AD attributes: $allusers = get-wmiobject -class exchange_mailbox -namespace root\microsoftexchangev2 -computername srv02 | select mailboxdisplayname, legacyDN foreach ($user in $allusers) { $obj = new-object psobject $exchangever = "2003" $tmp = [adsi]("LDAP://" + $user.legacydn) $obj | add-member -membertype noteproperty -name "Display Name" -value $user.mailboxdisplayname $obj | add-member -membertype noteproperty -name "Office" -value $tmp.physicaldeliveryofficename $obj | add-member -membertype noteproperty -name "Description" -value $tmp.description $obj | add-member -membertype noteproperty -name "Activesync" -value $tmp.msExchOmaAdminWirelessEnable $allusersemail += $obj } $alluseremail | export-csv \\srv02\logs\test.csv

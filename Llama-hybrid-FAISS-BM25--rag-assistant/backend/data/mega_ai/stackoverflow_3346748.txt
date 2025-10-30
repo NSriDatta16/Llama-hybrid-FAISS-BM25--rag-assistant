@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3346748
+[parent_id]: 3129329
+[tags]: 
+I've run in to the same issue and also updated the bug mentioned by ivan.abragimovich. I'm not proud of it, but here is what I did as a work around. $accessToken = "..."; // your OAuth token $uid = "..."; // the id of the page you are using $feed = $this->facebook->api("/$uid/feed", "GET", array('access_token' => $accessToken, 'limit' => 20)); // temp method of retrieving events until the page events bug is fixed. // @see http://bugs.developers.facebook.com/show_bug.cgi?id=10399 if (array_key_exists('data', $feed) && is_array($feed['data'])) { foreach($feed['data'] as $item) { if ($item['type'] == "link" && strpos($item['link'], "eid=") !== false) { preg_match('/eid=(\d+)/', $item['link'], $urlMatches); if (count($urlMatches) == 2) { $eventId = $urlMatches[1]; $event = $this->facebook->api("/$eventId", 'GET', array('access_token' => $accessToken)); print_r($event); } } } }

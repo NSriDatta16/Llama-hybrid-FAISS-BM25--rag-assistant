@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1625707
+[parent_id]: 
+[tags]: 
+Why is Request.ContentType always empty on my requests?
+
+I have a base controller class that attempts to look at Request.ContentType to see if its a json request or a regular HTML request. The base controller then sets a simple enum on the base class and the appropriate controller returns the correct type. However, Request.ContentType is always an empty string. why is that? my base controller: namespace PAW.Controllers { public class BaseController : Controller { public ResponseFormat ResponseFormat { get; private set; } public User CurrentUser { get; private set; } protected override void OnActionExecuting(ActionExecutingContext filterContext) { base.OnActionExecuting(filterContext); Culture.SetCulture(); if (this.Request.ContentType.ToLower() == "application/json") this.ResponseFormat = ResponseFormat.Json; else this.ResponseFormat = ResponseFormat.Html; Response.Cache.SetCacheability(HttpCacheability.NoCache); //setup user object this.CurrentUser = WebUser.CurrentUser; ViewData["CurrentUser"] = WebUser.CurrentUser; } } public enum ResponseFormat { Html, Json, Xml } } my jquery: $.ajax({ type: "GET", contentType: "application/json; charset=utf-8", url: "/Vendor/Details/" + newid, data: "{}", dataType: "json", success: function(data) { ShowVendor(data); }, error: function(req, status, err) { ShowError("Sorry, an error occured (Vendor callback failed). Please try agian later."); } });

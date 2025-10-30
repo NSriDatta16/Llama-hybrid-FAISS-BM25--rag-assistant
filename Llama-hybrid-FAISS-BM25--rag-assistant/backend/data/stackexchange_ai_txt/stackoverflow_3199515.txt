@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3199515
+[parent_id]: 3195737
+[tags]: 
+I don't believe this is any more elegant/efficient than your own version but I will put it up in case any of the techniques are useful for improving your own. This could obviously be done much more simply/elegantly with a script though The basic premise is to use tr to translate the rwx to the relevant octal numbers, then use sed to split into groups of 3 add pluses and then generate an awk command string whicg gets passed to awk to add them up. ls -ld / | \ cut -c2-10 | \ tr 'rwx-t' '42100' | \ sed -E -e 's/(...)(...)(...)/\1 \2 \3/g' \ -e 's/([0-9])([0-9])([0-9])/\1+\2+\3/g' \ -e 's/^(.*)$/BEGIN {print \1}/g'|\ awk -f -`

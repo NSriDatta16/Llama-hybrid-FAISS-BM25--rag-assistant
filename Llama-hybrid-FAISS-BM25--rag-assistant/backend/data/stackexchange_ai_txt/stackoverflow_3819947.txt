@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3819947
+[parent_id]: 3819764
+[tags]: 
+By loading the image into a BitmapFrame I think you'll get by with just reading the metadata. private Size GetImageSize(Uri image) { var frame = BitmapFrame.Create(image); // You could also look at the .Width and .Height of the frame which // is in 1/96th's of an inch instead of pixels return new Size(frame.PixelWidth, frame.PixelHeight); } And then you can do the following when loading the BitmapSource: var img = new Uri(ImagePath); var size = GetImageSize(img); var source = new BitmapImage(); source.BeginInit(); if (size.Width > 1024) source.DecodePixelWidth = 1024; source.CreateOptions = BitmapCreateOptions.IgnoreImageCache; source.CacheOption = BitmapCacheOption.OnLoad; source.UriSource = new Uri(ImagePath); source.EndInit(); myImageControl.Source = source; I tested this a few times and looked at the memory consumption in the Task Manager and the difference was massive (on a 10MP photo, I saved almost 40MB of private memory by loading it @ 1024 instead of 4272 pixels width)

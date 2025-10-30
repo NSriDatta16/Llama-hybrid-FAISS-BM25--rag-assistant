@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 111231
+[parent_id]: 
+[tags]: 
+Pretrain RoBERTa model with new data using PyTorch library
+
+I've pretrained the RoBERTa model with new data using a ' simpletransformers ' library: from simpletransformers.classification import ClassificationModel OUTPUT_DIR = 'roberta_output/' model = ClassificationModel('roberta', 'roberta-base',use_cuda=False, num_labels=22, args={'overwrite_output_dir':True, 'output_dir':OUTPUT_DIR}) model.train_model(train_df) result, model_outputs, wrong_predictions = model.eval_model(test_df) # model evaluation on test data where ' train_df ' is a pandas dataframe that consists of many samples (=rows) with two columns: the 1st column is a text data - input; the 2nd column is a category (=label) - output. I need to create the same model and pretrain it as above but using ' PyTorch ' library instead of ' Simpletransformers ' library. Is there any way to make it simple as the code above? I've loaded the pretrained model as it was said here : import torch roberta = torch.hub.load('pytorch/fairseq', 'roberta.large', pretrained=True) roberta.eval() # disable dropout (or leave in train mode to finetune) I also changed the number of labels to predict in the last layer: roberta.register_classification_head('new_task', num_classes=22) But, I can't find how I can pretrain the classifier with my 'train_df'. The only way I've found so far is from here where we use a PyTorch toolkit ' fairseq ' and fairseq cli to pretrain RoBERTa model. Is this the only option or can it be done more simply?

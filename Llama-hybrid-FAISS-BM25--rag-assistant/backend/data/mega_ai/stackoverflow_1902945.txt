@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1902945
+[parent_id]: 1902832
+[tags]: 
+When you call push_back , assuming that no resizing of the underlying storage is needed, the vector class will use the "placement new" operator to copy-construct the new elements in-place. The elements in the vector will not be default-constructed before being copy-constructed. When you call resize , almost the exact same sequence occurs. vector allocates storage and then copies the default value via placement new into each new location. The construction looks like this: ::new (p) _T1(_Val); Where p is the pointer to the vector storage, _T1 is the type being stored in the vector, and _Val is the "default value" parameter (which defaults to _T1() ). In short, resize and push_back do the same things under the covers, and the speed difference would be due to multiple internal allocations, multiple array bounds checks and function call overhead. The time and memory complexity would be the same.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 548528
+[parent_id]: 
+[tags]: 
+MySQL Performance
+
+Lately my queries before caching into memcache have been taking forever to process! In this example, it took 10 seconds. All I am trying to do is get the 10 most recent hits in this case. I am getting the feeling that it loads all 125,592 rows then only returns 10, am I right? # User@Host: root[root] @ localhost [] # Query_time: 10 Lock_time: 0 Rows_sent: 10 Rows_examined: 125592 SELECT * FROM hits WHERE campaign_id = 30 ORDER BY id DESC LIMIT 10; Here is another slow query: # Time: 090214 5:00:40 # User@Host: root[root] @ localhost [] # Query_time: 3 Lock_time: 0 Rows_sent: 1 Rows_examined: 128879 SELECT count(DISTINCT(ip_address)) AS count_distinct_ip_address FROM `hits` WHERE (campaign_id = 30); When running the query the phpMyAdmin, it takes 1.3395 seconds. Although just doing a SELECT * FROM hits only takes 0.0001 seconds. I find it very odd that returning all of the hits takes less then sorting through them, or is it just that, I am sorting through them? For those who want to see my table: CREATE TABLE `hits` ( `id` int(11) unsigned NOT NULL auto_increment, `hostname` varchar(255) NOT NULL, `url` tinytext NOT NULL, `user_agent` tinytext NOT NULL, `created_at` timestamp NOT NULL default CURRENT_TIMESTAMP, `ip_address` varchar(15) NOT NULL, `campaign_id` int(11) NOT NULL, PRIMARY KEY (`id`), KEY `campaign_id` (`campaign_id`), KEY `ip_address` (`ip_address`) );

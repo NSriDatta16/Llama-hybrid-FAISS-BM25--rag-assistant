@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1271718
+[parent_id]: 1270568
+[tags]: 
+Any of the suggested solutions above will work; it really depends on your workload and data set size. If you have a lot of records and you just want historical archive for reference, you may also consider moving "old/earlier" versions off the database and instead, store them on disk in some kind of linked list format (e.g. insert a version that contains address of the previous version, hence forming a linked list), and just keep a pointer to the latest version in DB. There are pluses and minuses with this approach, but one plus is you can keep your DB small, and just read off older versions from disk. Your older versions should be immutable so you won't need to rely on transactions/concurrency support from the DB. If your "current/up-to-date" data set is, say 100G, and your past versions is 900G, then you can put a database on RAID on the 100G and put the past versions on cheaper storage, and copy it a few times (they are atomic, so no concurrency issues when replicating).

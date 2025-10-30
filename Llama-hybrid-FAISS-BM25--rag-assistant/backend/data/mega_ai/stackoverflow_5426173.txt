@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5426173
+[parent_id]: 5400753
+[tags]: 
+I think you want to stick with the stencil buffer, but the alpha test isn't available in ES 2.0 per the philosophy that anything that can be done in a shader isn't supplied as fixed functionality. Instead, you can insert one of your own choosing inside the fragment shader, thanks to the discard keyword. Supposing you had the most trivial textured fragment shader: varying mediump vec2 texCoordVarying; uniform sampler2D tex2D; void main() { gl_FragColor = texture2D(tex2D, texCoordVarying); } You could throw in an alpha test so that pixels with an alpha of less than 0.1 don't proceed down the pipeline, and hence don't affect the stencil buffer with: varying mediump vec2 texCoordVarying; uniform sampler2D tex2D; void main() { vec4 colour = texture2D(tex2D, texCoordVarying); if(colour.a > 0.1) gl_FragColor = colour; else discard; }

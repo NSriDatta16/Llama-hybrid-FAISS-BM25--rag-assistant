@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 340188
+[parent_id]: 321916
+[tags]: 
+I think the primary issue with the Edward code is that the step_size in your inference step is too small. When the step size is too small, it prevents the MCMC sampler from adequately exploring the sample space, which you can tell was happening because the acceptance rate was 1.0. Even though HMC is more efficient than vanilla MCMC you should still expect to reject some samples. When I changed the stepsize to 1.5e-1 I started getting sensible results, as you can see here: Also, not sure if this makes a difference (I just started learning Edward today) but it seems like in general, when examining posterior output, most of the examples I've seen use y_post rather than y , i.e. ppc_stats = ed.ppc(T, data={X: data[['x']].values, y_post: data['y'].values}, latent_vars={w: qw, b: qb, sigma: qs}, n_samples=1000) instead of ppc_stats = ed.ppc(T, data={X: data[['x']].values, y: data['y'].values}, latent_vars={w: qw, b: qb, sigma: qs}, n_samples=1000)

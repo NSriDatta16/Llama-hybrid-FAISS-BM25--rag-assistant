@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 564527
+[parent_id]: 564319
+[tags]: 
+Simple: don't use shared data. Every time you access shared data you risk running into a problem (if you forget to synchronize access). Even worse, each time you access shared data you risk blocking other threads which will hurt your paralelization. I know this advice is not always applicable. Still, it doesn't hurt if you try to follow it as much as possible. EDIT: Longer response to Smasher's comment. Would not fit in a comment :( You are totally correct. That's why I like to keep a shadow copy of the main data in a readonly thread. I add a versioning to the structure (one 4-aligned DWORD) and increment this version in the (lock-protected) data writer. Data reader would compare global and private version (which can be done without locking) and only if they differr it would lock the structure, duplicate it to a local storage, update the local version and unlock. Then it would access the local copy of the structure. Works great if reading is the primary way to access the structure.

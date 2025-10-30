@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2770551
+[parent_id]: 2770469
+[tags]: 
+Only the server of an HTTP connection should be setting cookies. It does this with a Set-Cookie field in the headers. The cookie storage you linked handles all NSURLConnection cookie action (both getting and setting) and generally -- you shouldn't change the cookies yourself. If you want to override, you can't use NSURLConnection and will need to use a CFReadStreamRef and handle the communication and build a CFHTTPMessageRef manually. You will need to handle cookies if you're implementing the server side of HTTP communication. If you're implementing a server using CFHTTPMessageRef, then: NSDate *expiryDate = /* set some date value */ CFHTTPMessageSetHeaderFieldValue( response, (CFStringRef)@"Set-Cookie", (CFStringRef)[NSString stringWithFormat: @"SomeCookieName=%@;Path=/;expires=%@", someStringValue, [dateFormat stringFromDate:expiryDate]]); where response is the CFHTTPMessageRef you're using for the reply. You can use CFHTTPMessageCopyAllHeaderFields and get the object for key "Cookie" to extract cookies from the client in a CFHTTPMessageRef header.

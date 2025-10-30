@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1075185
+[parent_id]: 1075128
+[tags]: 
+I just use something similar to SHA-256(username + ":" + password + ":" + salt) and store it in the database in a 64-character column called passwd. Wikipedia says, relating to salts: "Salt data complicates dictionary attacks that use pre-encryption of dictionary entries: each bit of salt used doubles the amount of storage and computation required. ... For best security, the salt value is kept secret, separate from the password database. This provides an advantage when a database is stolen, but the salt is not." So to authenticate, get user from database with supplied username, then generate the same hash using the password provided via their login attempt, and compare to that in the database. Also add in some rate limiting for login attempts (e.g., 5 per 5 minute period). If the user forgets their password, NEVER email them the password (as you won't have it stored), nor email them a new generated password, but email them a link to change that password with a change password key/nonce/salt in the URL that you can check against.

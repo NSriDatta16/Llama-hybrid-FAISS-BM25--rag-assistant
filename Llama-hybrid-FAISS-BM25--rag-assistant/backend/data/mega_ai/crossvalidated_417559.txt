@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 417559
+[parent_id]: 416856
+[tags]: 
+I think you have a small error when building the table used to the Friedman's test. Since you have 4 replicates, you may need to consider each of them individually (and not summarize the average result, as you're doing). Thus, I recommend you to do the following: original.dat % group_by(sbj, category,replicate) %>% spread(category, rank) %>% ungroup() Note that I added a replicate column, which was used by dplyr . Then, you can perform the Fridman's test using as input the four columns of this data.frame (A, B, C, and D). You will get the following data.frame: However, the standard R implementation of Friedman's test only accepts a matrix as input. Thus, you may convert your data.frame to a matrix and run the Fridman's test as follows. friedman.test(as.matrix(dat[,3:6])) Hope you get it!

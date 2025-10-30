@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3402421
+[parent_id]: 3402081
+[tags]: 
+EDIT : Here is a solution that does not require the Image Processing Toolbox. It does, however, use conv2nan.m which is part of the free NaN toolbox . This approach relies on doing two different filtering/convolution operations: one that gets the sum of surrounders for each element, and one that gets the count of nonzero surrounders. Then, you are ready to combine them to get the average of nonzero surrounders only. Like this: % set up starting point matrix with some zeros X = magic(4); X(X 0); cmat = [0 1 0; 1 0 1; 0 1 0]; % consider surrounding elements only [m1,c] = conv2nan(X,cmat); % sum of surrounding elements [m2,c] = conv2nan(countmat,cmat); % number of surrounding elements > 0 x_new = m1./m2; % compute average we want x_new = x_new(2:end-1,2:end-1); % trim edges created by conv2 x_new(~countmat) = 0; % restore zero elements x_new(X It does some extra work in that the convolutions are done for all elements and not just those that are >= 10. But it's more general than the manual looping approach.

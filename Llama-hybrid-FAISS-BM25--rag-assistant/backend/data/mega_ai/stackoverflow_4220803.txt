@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4220803
+[parent_id]: 
+[tags]: 
+Atomic state storage in Python?
+
+I'm working on a project on an unreliable system which I'm assuming can fail at any point. What I want to guarantee is that if I write_state and the machine fails mid-operation, a read_state will either read a valid state or no state at all. I've implemented something which I think will work below -- I'm interested in criticism of that or alternative solutions if anyone knows of one. My idea: import hashlib, cPickle, os def write_state(logname, state): state_string = cPickle.dumps(state, cPickle.HIGHEST_PROTOCOL) state_string += hashlib.sha224(state_string).hexdigest() handle = open('%s.1' % logname, 'wb') handle.write(state_string) handle.close() handle = open('%s.2' % logname, 'wb') handle.write(state_string) handle.close() def get_state(logname): def read_file(name): try: f = open(name,'rb') data = f.read() f.close() return data except IOError: return '' def parse(data): if len(data) e.g.: write_state('test_log', {'x': 5}) print get_state('test_log')

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 114433
+[parent_id]: 
+[tags]: 
+Use tensorflow Dataset to extract slices based on array of known indices
+
+I'm trying to gather a dataset for a CNN based on a time series. The model takes 1D tensor inputs of 588 values at a time and classifies the time series based on a prediction that a known event will occur soon after these data points. Because the data set is large, I can't load all positive (event did occur) and negative (event did not occur) slices of the entire timeline at once, hence I've prepared lists of the following: series = [ ... list of entire time series over several years ... ] indices_and_labels = [ (idx1, label1), (idx2, label2), ... ] Thus for each known label I can extract the relevant portion of the time series with: for (idx, label) in indices_and_labels: features = series[idx:idx+588] # 588 is the window size How can I use a Dataset to do this for me automatically without needing to pull everything into memory at once? I tried this: dataset = tf.data.Dataset.from_tensor_slices(indices_and_labels) dataset = dataset.map(lambda x: (series[[x[0]:x[0]+588]], x[1])) But of course this fails because in the mapping function x is a tensor, not a tuple, so I can't use it to slice the series in this way.

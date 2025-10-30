@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 105088
+[parent_id]: 103938
+[tags]: 
+I work in a large J2EE web environment. We have several databases that may be connected to in a single request. We began getting logical deadlocks in some of our applications. The issue was that as follows: User would request page Server connects to DB 1 Server Selects on DB 1 Server "closes" connection to DB 1 Server connects to DB 2 Deadlocked! This occurred for 2 reasons, we were experiencing far higher volume of traffic than normal and the J2EE Spec by default does not actually close your connection until the thread finishes execution. So, in the above example step 4 never actually closed the connection even though they were closed properly in finally . To fix this, you you have to use resource references in the web.xml for your Database Connections and you have to set the res-sharing-scope to unsharable. Example: My Database jdbc/jndi/pathtodatasource javax.sql.DataSource Container Unshareable

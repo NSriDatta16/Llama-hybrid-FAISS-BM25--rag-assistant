@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4151872
+[parent_id]: 
+[tags]: 
+Are there drawbacks to the sqlite3 auto_vacuum pragma?
+
+I'm working with a sqlite3 database that could conceivably become quite large. Storage space is a concern, so I was considering setting the auto_vacuum pragma to on so that space occupied by deleted rows would be actually freed instead of just marked as available for re-use. In my scenario, the database could grow by several hundred MB per month, while rows older than ~6 months would decay in a granular fashion. This is achieved by a job queue that randomly tacks on the task of removing the nn oldest records in addition to the current task, where nn is determined by how many high priority tasks there are in the queue. I'm hoping that this avoids having to write maintenance jobs that cause protracted RW starvation (in the order of minutes, to delete rows and then run VACUUM) when the same could be achieved a few MS at a time. This might mean that 'old' rows remain in the DB a few days longer than they would otherwise, but that is an acceptable trade off. My question is, in your experience (and perhaps opinion), would turning on auto_vacuum be an unacceptable compromise given my description? If so, for what reasons? I have not used sqlite3 extensively, much less the various pragmas it presents for tweaking so I am hoping to solicit the experience I'm lacking prior to making a judgement call that I might regret a few months from now :) I'm using the C interface, if it makes any difference.

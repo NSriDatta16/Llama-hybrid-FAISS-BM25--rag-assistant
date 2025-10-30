@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3593334
+[parent_id]: 
+[tags]: 
+Reflection: Distinguishing event-field from field of delegate type on runtime
+
+The main question I have is: Is it possible in reflection to distinguish a field of some delegate type from a field which is used by an event as storagefield? That comes down to the question: does the FieldInfo class contain information about whether it belongs to an event, as storagefield ? I can't find any properties which might tell, nor custum attributes. In the code below, the relevant properties of both FieldInfos of SomeField and SomeEvent are identical. So I don't know how to sort FieldInfos based on whether they are eventstoragefields or not. using System; using System.Reflection; using System.Runtime.CompilerServices; namespace Test { class Program { public Action SomeField; public event Action SomeEvent; static void Main(string[] args) { FieldInfo[] fields = typeof(Program).GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance); foreach (FieldInfo fi in fields) Console.WriteLine(string.Format("FieldName: {0}, Accessibility: {1}, Has Attributes: {2}.", fi.Name, fi.Attributes, fi.GetCustomAttributes(true).Length != 0)); Console.ReadLine(); } } } One solution is to search for an eventInfo with exactly the same name, but I don't know whether that is foolproof and frankly, I would not be satisfied with that solution. There must be a more direct way.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3441864
+[parent_id]: 
+[tags]: 
+Write request flow in Linux from user space to the device?
+
+I'm confused as to what happens when I issue a write from user space in Linux. What is the full flow, down to the storage device? Supposing I use CFQ and a kernel that still uses pdflush. CFQ is said to place requests into sync and a-sync queues. Writes are a-sync, for example, so they go into an a-sync queue based on the io priority. The queue will get CPU according to CFQ time slices, expiration settings, etc. Fine. At the same time, writes dirty pages. Writing dirty pages is triggered by VM settings and done in the context of pdflush thread that runs a copy of background_writeout() which calls writeback_nodes(). When this happens, the writes pdflush does are surely sync. Does it mean that we have two competing writes going on potentially for the same or similar write requests - one controlled by CFQ queuing mechanisms and another triggered by VM subsystem? Does it mean the VM subsystem effectively breaks CFQ rules as soon as we hit dirty_background_ratio since pdflush doesn't carry the same io priority as the requesting process? And as soon as we hit dirty_ratio CFQ setting become more or less obsolete, since all writes become sync? I've read a lot of specific info on the two subsystems, but I'm yet to understand the whole write request flow. The interactive Linux kernel map does not include IO scheduler. Any pointers to the whole picture would be appreciated. Thanks, Alex

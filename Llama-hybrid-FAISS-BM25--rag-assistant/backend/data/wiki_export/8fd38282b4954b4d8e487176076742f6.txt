@@ -1,0 +1,79 @@
+In statistics, generalized least squares (GLS) is a method used to estimate the unknown parameters in a linear regression model when there is a certain degree of correlation between the residuals in the regression model. GLS is employed to improve statistical efficiency and reduce the risk of drawing erroneous inferences compared to conventional least squares and weighted least squares methods. It was first described by Alexander Aitken in 1935.
+
+Method outline 
+In standard linear regression models, one observes data  on n statistical units. 
+
+The response values are placed in a vector,and the predictor values are placed in the design matrix,where each row is a vector of the  predictor variables (including a constant) for the th data point.
+
+The model assumes that the conditional mean of  given  to be a linear function of  and that the conditional variance of the error term given  is a known non-singular covariance matrix, . That is,where  is a vector of unknown constants, called “regression coefficients”, which are estimated from the data.
+
+If  is a candidate estimate for , then the residual vector for  is . The generalized least squares method estimates  by minimizing the squared Mahalanobis length of this residual vector:which is equivalent to,which is a quadratic programming problem. The stationary point of the objective function occurs when,so,The quantity  is known as the precision matrix (or dispersion matrix), a generalization of the diagonal weight matrix.
+
+Properties 
+The GLS estimator is unbiased, consistent, efficient, and asymptotically normal with, GLS is equivalent to applying ordinary least squares (OLS) to a linearly-transformed version of the data. This can be seen by factoring  using a method like the Cholesky decomposition. Left-multiplying both sides of  by  yields an equivalent linear model: In this model, , where  is the identity matrix. Then,  can be efficiently estimated by applying OLS to the transformed data, which requires minimizing the objective,This transformation effectively standardizes the scale of and de-correlates the errors. When OLS is used on data with homoscedastic errors, the Gauss–Markov theorem applies, so the GLS estimate is the best linear unbiased estimator for β.
+
+Weighted least squares 
+
+A special case of GLS, called weighted least squares (WLS), occurs when all the off-diagonal entries of Ω are 0. This situation arises when the variances of the observed values are unequal or when heteroscedasticity is present, but no correlations exist among the observed variances. The weight for unit i is proportional to the reciprocal of the variance of the response for unit i.
+
+Derivation by maximum likelihood estimation 
+Ordinary least squares can be interpreted as maximum likelihood estimation with the prior that the errors are independent and normally-distributed with zero mean and common variance. In GLS, the prior is generalized to the case where errors may not be independent and may have differing variances. For given fit parameters , the conditional probability density function of the errors are assumed to be,By Bayes' theorem,In GLS, a uniform (improper) prior is taken for , and as  is a marginal distribution, it does not depend on . Therefore the log-probability is,where the hidden terms are those that do not depend on , and  is the log-likelihood. The maximum a posteriori (MAP) estimate is then the maximum likelihood estimate (MLE) which is equivalent to the optimization problem from above,
+
+where  has been substituted for , and the optimization problem has been re-written using that the logarithm is a strictly increasing function and the property that the argument solving an optimization problem is independent of terms in the objective function which do not involve said terms.
+
+Feasible generalized least squares of x 
+
+If the covariance of the errors  is unknown, one can get a consistent estimate of , say , using an implementable version of GLS known as the feasible generalized least squares (FGLS) estimator. 
+
+In FGLS, modeling proceeds in two stages: 
+
+ The model is estimated by OLS or another consistent (but inefficient) estimator, and the residuals are used to build a consistent estimator of the errors covariance matrix (to do so, one often needs to examine the model adding additional constraints; for example, if the errors follow a time series process, a statistician generally needs some theoretical assumptions on this process to ensure that a consistent estimator is available).
+ Then, using the consistent estimator of the covariance matrix of the errors, one can implement GLS ideas.
+
+Whereas GLS is more efficient than OLS under heteroscedasticity (also spelled heteroskedasticity) or autocorrelation, this is not true for FGLS. The feasible estimator is asymptotically more efficient, provided the errors covariance matrix is consistently estimated, but for a small to medium size sample, it can be actually less efficient than OLS. This is why some authors prefer to use OLS, and reformulate their inferences by simply considering an alternative estimator for the variance of the estimator robust to heteroscedasticity or serial autocorrelation.
+However, for large samples FGLS is preferred over OLS under heteroskedasticity or serial correlation. A cautionary note is that the FGLS estimator is not always consistent. One case in which FGLS might be inconsistent is if there are individual specific fixed effects.
+
+In general this estimator has different properties than GLS. For large samples (i.e. asymptotically) all properties are (under appropriate conditions) common with respect to GLS, but for finite samples the properties of FGLS estimators are unknown: they vary dramatically with each particular model, and as a general rule their exact distributions cannot be derived analytically. For finite samples, FGLS may be less efficient than OLS in some cases. Thus, while GLS can be made feasible, it is not always wise to apply this method when the sample is small.
+A method used to improve accuracy of the estimators in finite samples is to iterate, i.e., to take the residuals from FGLS to update the errors' covariance estimator and then update the FGLS estimation, applying the same idea iteratively until the estimators vary less than some tolerance. But this method does not necessarily improve the efficiency of the estimator very much if the original sample was small.
+A reasonable option when samples are not too large is to apply OLS, but discard the classical variance estimator:
+
+(which is inconsistent in this framework) and instead use a HAC (Heteroskedasticity and Autocorrelation Consistent) estimator. For example, in the context of autocorrelation we can use the Bartlett estimator (often known as Newey–West estimator since these authors popularized the use of this estimator among econometricians in their 1987 Econometrica article), and in heteroscedastic contexts we can use the Eicker–White estimator. This approach is much safer, and it is the appropriate path to take unless the sample is large, where "large" is sometimes a slippery issue (e.g. if the error distribution is asymmetric the required sample will be much larger).
+
+The ordinary least squares (OLS) estimator is calculated by:
+
+and estimates of the residuals  are constructed.
+
+For simplicity, consider the model for heteroscedastic and non-autocorrelated errors. Assume that the variance-covariance matrix  of the error vector is diagonal, or equivalently that errors from distinct observations are uncorrelated. Then each diagonal entry may be estimated by the fitted residuals  so  may be constructed by:
+
+It is important to notice that the squared residuals cannot be used in the previous expression; we need an estimator of the errors' variances. To do so, we can use a parametric heteroskedasticity model, or a nonparametric estimator. Once this step is fulfilled, we can proceed.
+
+Estimate  using  using weighted least squares:
+
+The procedure can be iterated. The first iteration is given by:
+
+This estimation of  can be iterated to convergence.
+
+Under regularity conditions the FGLS estimator (or the estimator of its iterations, if we iterate a finite number of times) is asymptotically distributed as:
+
+ 
+
+where n is the sample size and:
+
+here p-lim means limit in probability.
+
+See also 
+ Confidence region
+ Effective degrees of freedom
+ Prais–Winsten estimation
+
+References
+
+Further reading 
+ 
+ 
+  
+ 
+
+Least squares
+Estimation methods
+Regression with time series structure

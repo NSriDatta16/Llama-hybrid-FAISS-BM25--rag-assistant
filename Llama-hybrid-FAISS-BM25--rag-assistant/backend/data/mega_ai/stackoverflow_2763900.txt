@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2763900
+[parent_id]: 
+[tags]: 
+How to test for existence of a script-scoped variable in PowerShell?
+
+Is it possible to test for the existence of a script-scoped variable in PowerShell? I've been using the PowerShell Community Extensions (PSCX) but I've noticed that if you import the module while Set-PSDebug -Strict is set, an error is produced: The variable '$SCRIPT:helpCache' cannot be retrieved because it has not been set. At C:\Users\...\Modules\Pscx\Modules\GetHelp\Pscx.GetHelp.psm1:5 char:24 While investigating how I might fix this, I found this piece of code in Pscx.GetHelp.psm1: #requires -version 2.0 param([string[]]$PreCacheList) if ((!$SCRIPT:helpCache) -or $RefreshCache) { $SCRIPT:helpCache = @{} } This is pretty straight forward code; if the cache doesn't exist or needs to be refreshed, create a new, empty cache. The problem is that calling $SCRIPT:helpCache while Set-PSDebug -Strict is in force casues the error because the variable hasn't been defined yet. Ideally, we could use a Test-Variable cmdlet but such a thing doesn't exist! I thought about looking in the variable: provider but I don't know how to determine the scope of a variable. So my question is: how can I test for the existence of a variable while Set-PSDebug -Strict is in force, without causing an error?

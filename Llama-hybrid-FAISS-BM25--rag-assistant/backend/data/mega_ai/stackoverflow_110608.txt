@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 110608
+[parent_id]: 110436
+[tags]: 
+Assuming you're familiar with "include guards" (#ifdef at the begining of the header..), an additional way of speeding up build time is by using external include guards. It was discussed in " Large Scale C++ Software Design ". The idea is that classic include guards, unlike #pragma once, do not spare you the preprocessor parsing required to ignore the header from the 2nd time on (i.e. it still has to parse and look for the start and end of the include guard. With external include guards you place the #ifdef's around the #include line itself. So it looks like this: #ifndef MY_HEADER #include "myheader.h" #endif and of course within the H file you have the classic include guard #ifndef MY_HEADER #define MY_HEADER // content of header #endif This way the myheader.h file isn't even opened / parsed by the preprocessor, and it can save you a lot of time in large projects, especially when header files sit on shared remote locations, as they sometimes do. again, it's all in that book. hth

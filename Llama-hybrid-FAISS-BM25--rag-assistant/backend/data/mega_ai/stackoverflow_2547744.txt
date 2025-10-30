@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2547744
+[parent_id]: 2547713
+[tags]: 
+That's because Java executes the static section in order it is declared. In your case, the sequence is new MyClass new Object When #1 is executed, obj is still not initialized, so it prints null. Try the following and you will see the difference: class MyClass { private static final Object obj = new Object(); private static MyClass myClass = new MyClass(); public MyClass() { System.out.println(obj); // will print null once } } Generally speaking, it is better to avoid such a construct all together. If you are trying to create a singleton, that's how that code fragment should look like: class MyClass { private static final MyClass myClass = new MyClass(); private Object obj = new Object(); private MyClass() { System.out.println(obj); // will print null once } }

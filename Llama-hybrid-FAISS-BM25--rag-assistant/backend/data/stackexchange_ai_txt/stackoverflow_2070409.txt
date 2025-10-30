@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2070409
+[parent_id]: 2070293
+[tags]: 
+It would have to look like this (this is not valid Java code) // Not a valid Java Code static throws SomeCheckedException { throw new SomeCheckedException(); } but how would ad where you catch it? Checked exceptions require catching. Imagine some examples that may initialize the class (or may not because it is already initialized), and just to draw the attention of the complexity of that it would introduce, I put the examples in another static initalizer: static { try { ClassA a = new ClassA(); Class clazz = Class.forName(ClassB.class); String something = ClassC.SOME_STATIC_FIELD; } catch (Exception oops) { // anybody knows which type might occur? } } And another nasty thing - interface MyInterface { final static ClassA a = new ClassA(); } Imagine ClassA had a static initializer throwing a checked exception: In this case MyInterface (which is an interface with a 'hidden' static initializer) would have to throw the exception or handle it - exception handling at an interface? Better leave it as it is.

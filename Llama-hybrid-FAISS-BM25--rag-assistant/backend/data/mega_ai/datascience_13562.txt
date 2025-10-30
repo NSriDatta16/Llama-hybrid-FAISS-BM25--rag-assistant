@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 13562
+[parent_id]: 13557
+[tags]: 
+If your goal is to minimize the RMSLE, the easier way is to transform the labels directly into log scale and use reg:linear as objective (which is the default) and rmse as evaluation metric. This way XGBoost will be minimizing the RMSLE direclty. You can achieve this by setting: dtrain = DMatrix(X_train, label=np.log1p(y_train)) where np.log1p(x) is equal to np.log(x+1) . When you want to make your prediction in the original space, you will need to compute the inverse transform of np.log1p , that is to say np.expm1 : predictions = np.expm1(bst.predict(dtest)) If you are just interested into monitoring the RMSLE through the training of your XGBoost which actually is minimizing the RMSE, then you should expect to see the RMSLE behave a little strangely as it is not what you are minimizing.

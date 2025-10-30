@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5196359
+[parent_id]: 5189268
+[tags]: 
+The new Query method might help you: var location = context.Locations.SingleOrDefault(); context.Entry(location) .Collection(l => l.Posts) .Query() .OfType () .Load(); Repository Implementation: We can add a new LoadProperty generic method to the Repository class that leverages this new QUery method: public void LoadProperty (T entity, Expression >> navigationProperty, Expression > predicate) where TElement : class { _context.Set ().Attach(entity); _context.Entry(entity) .Collection(navigationProperty) .Query() .Where(predicate) .Load(); } Using the LoadProperty method: Location location = _locationRepository.Find(1); _locationRepository.LoadProperty(location, l => l.Posts, p => p is Discussion);

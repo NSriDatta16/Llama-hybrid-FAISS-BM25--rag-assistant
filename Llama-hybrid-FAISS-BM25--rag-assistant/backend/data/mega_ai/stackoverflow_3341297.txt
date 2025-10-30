@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3341297
+[parent_id]: 3333997
+[tags]: 
+Based on the comment that you want, effectively, an autonomous transaction to log a failure, you can either use a second connection from your datasource and commit that while rolling back the original failed one (which doesn't require XA; the wording in your question suggests you want to commit both connections simultaneously); or if you can use an actual autonomous transaction to handle the logging inside your original connection before rolling back. This is probably simpler and cleaner, particularly if your failure is really coming from a package call anyway as it can be dealt with as the failure occurs rather than having the client worry about it. In outline: PROCEDURE log_failure(...) IS PRAGMA AUTONOMOUS_TRANSACTION; BEGIN insert ... commit; END log_failure;

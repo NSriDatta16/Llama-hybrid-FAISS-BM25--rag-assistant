@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 231463
+[parent_id]: 230084
+[tags]: 
+Actually by default Spring does not do any bytecode postprocessing neither for XML-, nor annotation-configured beans. Instead relevant beans are wrapped into dynamic proxies (see e.g. java.lang.reflect.Proxy in the Java SDK). Dynamic proxies wrap the actual objects you use and intercept method calls, allowing to apply AOP advices. The difference is that proxies are essentially new artificial classes created by the framework, whereas weaving/bytecode postprocessing changes the existing ones. The latter is impossible without using the Instrumentation API you mentioned. As for the annotations, the implementation of tag will scan the classpath for all classes with the Spring annotations and create Spring metadata placeholders for them. After that they are treated as if they were configured via XML (or to be more specific both are treated the same). Although Spring doesn't do bytecode postprocessing itself you can configure the AspectJ weaving agent that should work just fine with Spring, if proxies do not satisfy you.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 299952
+[parent_id]: 299585
+[tags]: 
+I think the issue with your COM example is that by adding the virtual keyword you are saying that all the IOle* interfaces share a common IUnknown implementation. In order to implement this the compiler has to create multiple v-tables, hence you different 'this' values depending on the derived class it came down. COM requires that when you call IQueryInterface on an object for IUnknown that ALL interfaces exposed by the object return the same IUnknown ... which this implementation clearly breaks. Without the virtual inheritance each IOle* nominally has its own IUnknown implementation. However, since IUnknown is an abstract class, and doesn't have any storage the compiler, and all the IUnknown implementations come from FlashContainerWnd there is only a single implementation. (OK, so that last bit sounds weak ... perhaps someone with a better grasp of the language rules can explain it more clearly)

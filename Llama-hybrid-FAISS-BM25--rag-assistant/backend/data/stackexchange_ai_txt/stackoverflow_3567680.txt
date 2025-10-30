@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3567680
+[parent_id]: 3567323
+[tags]: 
+SELECT patron_name, producer.federal_number, hst_number, average_bf_test, ( SELECT MAX(s.statement_number) FROM statement s ) AS statement_number, ( SELECT MAX(s.period_ending) FROM statement s ) AS period_ending, sums.* FROM producer JOIN producer_details ON producer_details.federal_number = producer.federal_number JOIN statement so ON so.patron_number = producer.patron_number CROSS APPLY ( SELECT SUM(quota_payment) AS quota_payment, SUM(total_deductions) AS total_deductions, SUM(net_cheque_or_direct_deposit) AS net_cheque_or_direct_deposit, SUM(interim_payment) AS interim_payment, SUM(final_payment) AS final_payment FROM payment p WHERE p.statement_number = so.statement_number ) sums WHERE producer.patron_number = @PatronNo

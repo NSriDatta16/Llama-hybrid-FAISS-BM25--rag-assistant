@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 566754
+[parent_id]: 566720
+[tags]: 
+You shouldn't be calling this: this.Invoke(new System.Threading.ThreadStart(RequestImage)); I assume that you are deadlocking here, as Invoke method will route the delegate to the UI thread, but you are waiting for your operation to complete. To get the code to execute on another thread, you would do this: private void menuItem1_Click(object sender, EventArgs e) { etiquetaCargando.Visible = true; Thread t = new Thread(RequestImage); t.Start(); } Then, in your RequestImage method, you would call the Invoke method, passing a delegate to be executed on the UI thread, in this case, passing the image you downloaded.

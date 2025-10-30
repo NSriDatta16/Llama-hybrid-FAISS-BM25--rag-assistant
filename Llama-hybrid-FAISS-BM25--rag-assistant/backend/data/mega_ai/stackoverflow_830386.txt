@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 830386
+[parent_id]: 
+[tags]: 
+Unable to retrieve TIFF pages from TiffBitmapDecoder.Frames -- all frames are page 1
+
+I'm trying to convert a multipage tiff image into a multipage XPS document. The problem I'm having is with the TiffBitmapDecoder and its BitmapFrames. Here's the code: private static void ToXpsDocument(string imageName, string xpsName) { using (var p = Package.Open(xpsName)) { PackageStore.AddPackage(new Uri("pack://thedocloljk.xps"), p); XpsDocument doc = new XpsDocument(p); var writer = XpsDocument.CreateXpsDocumentWriter(doc); var dec = new TiffBitmapDecoder (new Uri(imageName), BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.None); var fd = new FixedDocument(); foreach (var frame in dec.Frames) { var image = new System.Windows.Controls.Image(); image.Source = frame; var fp = new FixedPage(); fp.Children.Add(image); fp.Width = frame.Width; fp.Height = frame.Height; var pc = new PageContent(); (pc as IAddChild).AddChild(fp); fd.Pages.Add(pc); } writer.Write(fd); p.Flush(); p.Close(); PackageStore.RemovePackage(new Uri("pack://thedocloljk.xps")); } } This results in an XPS with the correct number of pages. However, every page is a replica of the first page of the tiff. In fact, if I pick out a single frame (say, dec.Frames[4]) and write it to disk, it looks like the first page. What the heck am I doing wrong here? Are the frames not actually the individual pages of the image? How can I get them out and work with them???

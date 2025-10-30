@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2341624
+[parent_id]: 2341615
+[tags]: 
+Of the top of my head, I'd subclass it and overwrite the put method to enforce this. If it goes over throw an exception or do whatever seems appropriate. Something like: public class LimitedPBQ extends PriorityBlockingQueue { private int maxItems; public LimitedPBQ(int maxItems){ this.maxItems = maxItems; } @Override public boolean offer(Object e) { boolean success = super.offer(e); if(!success){ return false; } else if (this.size()>maxItems){ // Need to drop last item in queue // The array is not guaranteed to be in order, // so you should sort it to be sure, even though Sun's Java 6 // version will return it in order this.remove(this.toArray()[this.size()-1]); } return true; } } Edit: Both add and put invoke offer, so overriding it should be enough Edit 2: Should now remove the last element if over maxItems. There may be a more elegant way of doing it though.

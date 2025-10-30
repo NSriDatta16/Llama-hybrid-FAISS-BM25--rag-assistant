@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4357189
+[parent_id]: 4357169
+[tags]: 
+Get out of the habit of thinking that you protect functions with mutexes, you don't. You actually protect resources such as variables shared amongst threads. Once you accept that little pearl of wisdom, you start thinking in terms of what data has to be protected and can minimise the granularity of the protections. For example, if func1() and func2() both access the shared variable x , and you can call func2() either from func1() or main() , you're going to have to engineer a solution that can detect if the mutex is already locked so that func2() can claim/release (when called from main ) or do nothing (when called from func1() ). Either that or use a recursive mutex. Functions which are thread-unsafe (such as using static data areas) can be protected with mutexes but I find it's usually easier to refactor them so that they're inherently thread-safe (with allocated memory or thread-local storage).

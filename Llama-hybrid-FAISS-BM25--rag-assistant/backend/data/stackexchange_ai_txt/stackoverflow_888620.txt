@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 888620
+[parent_id]: 888493
+[tags]: 
+Instead of duplicating the ID column, You could also solve this at retrieval time. For example, say you let the username be NULL for an anynomous user. You can then retrieve the username like: select UserName = IsNull(UserName,UserId) from WebUsers EDIT: If you like a UNIQUE constraint on names, you can use a calculated column: create table WebUsers ( id int identity, name varchar(12), uniqueid as isnull(name,id) ) create unique index ix_webusers_uniqueid on WebUsers (uniqueid) The column uniqueid is a calculated column, that translates to isnull(name,id) whenever you use it. With this setup, you can insert users in one query: insert into WebUsers (name) values ('Dark Lord') insert into WebUsers (name) values ('The Ring') insert into WebUsers (name) values (NULL) insert into WebUsers (name) values (NULL) But not duplicate users; the following will bail out with an error: insert into WebUsers (name) values ('The Ring') You can query on uniqueid to find the username for named users, or the id for anynomous users: select uniqueid from WebUsers

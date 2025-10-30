@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2424681
+[parent_id]: 
+[tags]: 
+XSLT transfer fails because Weblogic cannot find a class located in rt.jar
+
+We have encountered a very strange class not found problem in our web app running on Weblogic 10.3. In our code we do a pretty standard XSLT transformation. UtilRequestManagerBean.java: TransformerFactory tFactory = TransformerFactory.newInstance(); Transformer transformer = tFactory.newTransformer(new StreamSource(new StringReader(xslBuffer.toString()))); transformer.transform(new StreamSource(new StringReader(sourceBuffer.toString())), new StreamResult(sw)); This fails in our production environment (Solaris 10, if that matters) and produces a java.lang.NoClassDefFoundError: This class is part of rt.jar and is definitely in classpath. This is verified by the following Weblogic log snippet: sun.boot.class.path = /opt/jdk1.6.0_12/jre/lib/resources.jar:/opt/jdk1.6.0_12/jre/lib/rt.jar:/opt/jdk1.6.0_12/jre/lib/sunrsasign.jar:/opt/jdk1.6.0_12/jre/lib/jsse.jar:/opt/jdk1.6.0_12/jre/lib/jce.jar:/opt/jdk1.6.0_12/jre/lib/charsets.jar:/opt/jdk1.6.0_12/jre/classes And finally listing the contents of rt.jar shows that the class is there: jar tvf /opt/jdk1.6.0_12/jre/lib/rt.jar | grep BasisLibrary.class 24787 Sat Jan 17 02:25:58 EET 2009 com/sun/org/apache/xalan/internal/xsltc/runtime/BasisLibrary.class So, what on earth could be the problem here?

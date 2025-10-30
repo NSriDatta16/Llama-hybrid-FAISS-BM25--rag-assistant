@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 803488
+[parent_id]: 
+[tags]: 
+Marshalling C dll code into C#
+
+I have the following C-code signature in a dll: extern __declspec(dllexport) unsigned char * funct_name (int *w, int *h, char **enc, int len, unsigned char *text, int *lp, int *mp, int *ep) The C function can modify w, h, enc, lp, mp, and ep (though the latter three can be null and it won't do anything. I'm using the following in C# [DllImport("iec16022ecc200.dll", EntryPoint = "iec16022ecc200", ExactSpelling = false, CharSet = CharSet.Ansi, SetLastError = true, CallingConvention=CallingConvention.Cdecl)] static extern IntPtr CallEncode( [In,Out,MarshalAs(UnmanagedType.LPArray)] Int32[] width, [In,Out,MarshalAs(UnmanagedType.LPArray)] Int32[] height, [In,Out,MarshalAs(UnmanagedType.LPStr)] ref StringBuilder encoding, int barcodeLen, [MarshalAs(UnmanagedType.LPStr)] StringBuilder barcode, IntPtr lenp, IntPtr maxp, IntPtr eccp ); public void Foo (string textToEncode,out int width, out int height) { StringBuilder text = new StringBuilder(textToEncode); StringBuilder encoding = new StringBuilder(new string('a', text.Length)); Int32[] w = new Int32[1]; Int32[] h = new Int32[1]; string encodedStr = Marshal.PtrToStringAnsi(CallEncode(w, h, ref encoding, text.Length, text, (IntPtr)0, (IntPtr)0, (IntPtr)0)); width = w[0]; height = h[0]; } I am getting a SystemAccessViolation and I'm not entirely sure when my problem is.

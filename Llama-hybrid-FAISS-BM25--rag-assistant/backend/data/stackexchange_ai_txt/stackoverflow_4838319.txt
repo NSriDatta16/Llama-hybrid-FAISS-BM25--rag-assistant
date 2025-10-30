@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4838319
+[parent_id]: 4838297
+[tags]: 
+Global.asax contains a class representing your application as a whole. If your dictionary is user-specific (i.e. not common to all users), you need to store it in a user-specific location. The first thing which comes to mind when you need to keep something user-specific is to use the session storage. (See MSDN .) Added per comment: public static class SessionObjects { public static Dictionary > MySessionStoredLists { get { var session = HttpContext.Current.Session; if (session == null) throw new InvalidOperationException(); var fromSession = (Dictionary >)session["MySessionStoredLists"]; if (fromSession == null) { fromSession = new Dictionary >(); MySessionStoredLists = fromSession; } return fromSession; } private set { session["MySessionStoredLists"] = value; } } } This is just an example, but your idea seems a bit suspicious to me – do you want to keep something per-user per-date basis? Isn’t a full-featured persistent storage in a database better?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5239916
+[parent_id]: 5231154
+[tags]: 
+You should not use unit tests to test persistence - you're just testing the mocking framework. Instead, move the criteria query to an appropriately named method in the domain class and test it against a database with an integration test: class Event { ... static Set findAllEventsByDay(Date date, int offset, int max) { ... } } class EventService { Set listEventsForDate(Date date, int offset, int max) { ... return Event.findAllEventsByDay(date, offset, max) } } If there's still value in having the service method as a wrapper (e.g. if it implements some business logic above and beyond the database query), it will now be easy to unit test since it's trivial to mock out the static domain class method call: def events = [new Event(...), new Event(...), ...] Event.metaClass.static.findAllEventsByDay = { Date d, int offset, int max -> events } And that's appropriate since you're testing how the service uses the data it receives and assuming that the retrieval is covered in the integration tests.

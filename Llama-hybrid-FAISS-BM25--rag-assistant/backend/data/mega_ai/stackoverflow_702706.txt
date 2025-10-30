@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 702706
+[parent_id]: 702676
+[tags]: 
+Can you not just use a static variable specifically for those scripts? That will have the same life-time as the AppDomain . You should probably think carefully about any concurrency concerns, but it sounds like the simplest way to keep a value around. (I've just checked, and although one instance of HttpApplication can be used to service multiple requests, each one only serves one request at a time - which suggests that multiple instances are created for concurrent request processing. I haven't validated this, but it does sound like it wouldn't be safe to keep it in an instance variable.) EDIT: Josh's answer suggests that you want this to be per-thread. That sounds slightly odd to me, as unless you've got a lot of these events occurring, you're quite likely to only ever see them execute on different threads, making the whole sharing business pointless. If you really do want that sort of thing, I'd suggest just using an instance variable in the HttpApplication -derived class - for exactly the reason described in the paragraph above :)

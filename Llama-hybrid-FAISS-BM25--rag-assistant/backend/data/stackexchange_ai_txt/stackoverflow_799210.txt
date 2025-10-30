@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 799210
+[parent_id]: 799076
+[tags]: 
+I managed to find the issue. It was the way the C# definition was done. From what I can understand, using the MarshallAs(UnmanagedType.LPStr) in combination with the string return type makes it so that it'll attempt to free the string when its done. But because the string comes from the C++ DLL, and most likely a totally different memory manager, it fails. And even if it didn't fail, I don't want it to be freed anyway. The solution I found was to change the C# declaration to this (the C++ code is unchanged): [DllImport("MyDll", EntryPoint = "GetDLLName")] public static extern IntPtr GetDLLName(); So this makes it so that it just returns a pointer to the string data. And then to change it to a string, pass it to Marshal.PtrToStringAnsi() return Marshal.PtrToStringAnsi(GetDLLName()); And that gets wrapped into another function for cleanliness. I found the solution from this page: http://discuss.fogcreek.com/dotnetquestions/default.asp?cmd=show&ixPost=1108

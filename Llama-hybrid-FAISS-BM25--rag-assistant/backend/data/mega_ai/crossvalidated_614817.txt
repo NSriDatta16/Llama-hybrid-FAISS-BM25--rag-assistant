@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 614817
+[parent_id]: 596807
+[tags]: 
+Expanding on @dx2-66's answer , here is a complete code example that also draws the point where the threshold lies: from sklearn.metrics import PrecisionRecallDisplay, precision_recall_curve, average_precision_score # ... y_true = ... y_pred = ... pos_label = 1 # replace with your positive label name = "My Model". # replace with your desired model name precision, recall, thresholds = precision_recall_curve(y_true, y_pred, pos_label=pos_label) f1_scores = 2 * recall * precision / (recall + precision) best_th_ix = np.nanargmax(f1_scores) best_thresh = thresholds[best_th_ix] average_precision = average_precision_score(y_true, y_pred, pos_label=pos_label) display = PrecisionRecallDisplay( precision=precision, recall=recall, average_precision=average_precision, estimator_name=name, pos_label=pos_label) display.plot(name=name) display.ax_.set_title("Test Data") display.ax_.plot(recall[best_th_ix], precision[best_th_ix], "ro", label=f"f1max (th = {best_thresh:.2f})") display.ax_.legend()

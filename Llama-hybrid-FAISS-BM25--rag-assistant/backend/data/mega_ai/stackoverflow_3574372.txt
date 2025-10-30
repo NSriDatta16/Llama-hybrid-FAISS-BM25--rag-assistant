@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3574372
+[parent_id]: 1202322
+[tags]: 
+I had about 18 months of dealing with this ( http://ianchanning.wordpress.com/2010/08/25/18-months-of-dealing-with-a-mysql-too-many-connections-error/ ) The solutions I had (that would apply to you) in the end were: tune the database according to MySQLTuner . defragment the tables weekly based on this post Defragmenting bash script from the post: #!/bin/bash # Get a list of all fragmented tables FRAGMENTED_TABLES="$( mysql -e `use information_schema; SELECT TABLE_SCHEMA,TABLE_NAME FROM TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema','mysql') AND Data_free > 0` | grep -v '^+' | sed 's,t,.,' )" for fragment in $FRAGMENTED_TABLES; do database="$( echo $fragment | cut -d. -f1 )" table="$( echo $fragment | cut -d. -f2 )" [ $fragment != "TABLE_SCHEMA.TABLE_NAME" ] && mysql -e "USE $database; OPTIMIZE TABLE $table;" > /dev/null 2>&1 done

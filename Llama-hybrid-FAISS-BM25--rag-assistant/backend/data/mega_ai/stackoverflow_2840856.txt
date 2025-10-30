@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2840856
+[parent_id]: 2840708
+[tags]: 
+I would handle this differently. I might, internally, keep a WeakReference to the object, but I would return a hard reference to it. Consumers shouldn't remove the item from the resource manager unless they know they have the only reference to it and it's not needed. Otherwise, they should simply allow the system to determine when to remove the referenced object. That way, as a long as there is a (hard) reference to the object, it will remain in memory. You might remove it from the dictionary, but you'd only be removing that entry -- i.e., any new requests for it would have to create a new object, even if other consumers had a reference to the old object. The retrieval process should recreate the object if the weak reference isn't live. public ResourceManager { private Dictionary Cache = new Dictionary (); public T this[uint key] { var obj = (T)this.Cache[key].Target; if (obj == null) { obj = ...recreate resource... this.Cache[key] = obj; } return obj; } public void Remove( uint key ) { this.Cache.Remove(key); } }

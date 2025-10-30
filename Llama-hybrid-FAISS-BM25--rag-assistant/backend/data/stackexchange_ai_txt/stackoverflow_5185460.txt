@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5185460
+[parent_id]: 5185330
+[tags]: 
+std::vector cats; //I get that cats is a vector of Cat objects You get that wrong. cats is a std::vector of pointers to the class Cat . There's a difference: Cat s reside on the stack, are created by doing Cat morris; and do not have to be deleted. Pointers as in your example, are created by Cat* morris = new Cat(); and have to be deleted once you're done with it before you throw away the pointer: delete morris; I will now add a little code to your example: Cat* morris = new Cat(); if (std::find(cats.begin(), cats.end(), morris) == cats.end()) { cats.push_back(morris); } This creates a dynamically allocated object morris of type Cat on the heap. Then, std::find is used to search the vector cats for the newly created object, which will always fail in this code fragment. If std::find fails, it returns an iterator to the element one past the last element in the container (which is exactly what std::vector::end() returns). So if morris is not found, the code will create a new element at the back of the vector and add morris to it.

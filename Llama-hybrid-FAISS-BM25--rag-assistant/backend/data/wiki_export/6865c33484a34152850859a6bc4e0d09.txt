@@ -1,0 +1,279 @@
+Corner detection is an approach used within computer vision systems to extract certain kinds of features and infer the contents of an image. Corner detection is frequently used in motion detection, image registration, video tracking, image mosaicing, panorama stitching, 3D reconstruction and object recognition. Corner detection overlaps with the topic of interest point detection.
+
+Formalization 
+A corner can be defined as the intersection of two edges. A corner can also be defined as a point for which there are two dominant and different edge directions in a local neighbourhood of the point.
+
+An interest point is a point in an image which has a well-defined position and can be robustly detected. This means that an interest point can be a corner but it can also be, for example, an isolated point of local intensity maximum or minimum, line endings, or a point on a curve where the curvature is locally maximal.
+
+In practice, most so-called corner detection methods detect interest points in general, and in fact, the term "corner" and "interest point" are used more or less interchangeably through the literature. As a consequence, if only corners are to be detected it is necessary to do a local analysis of detected interest points to determine which of these are real corners.  Examples of edge detection that can be used with post-processing to detect corners are the Kirsch operator and the Frei-Chen masking set.
+
+"Corner", "interest point" and "feature" are used interchangeably in literature, confusing the issue. Specifically, there are several blob detectors that can be referred to as "interest point operators", but which are sometimes erroneously referred to as "corner detectors". Moreover, there exists a notion of ridge detection to capture the presence of elongated objects.
+
+Corner detectors are not usually very robust and often require large redundancies introduced to prevent the effect of individual errors from dominating the recognition task.
+
+One determination of the quality of a corner detector is its ability to detect the same corner in multiple similar images, under conditions of different lighting, translation, rotation and other transforms.
+
+A simple approach to corner detection in images is using correlation, but this gets very computationally expensive and suboptimal.  An alternative approach used frequently is based on a method proposed by Harris and Stephens (below), which in turn is an improvement of a method by Moravec.
+
+Moravec corner detection algorithm 
+This is one of the earliest corner detection algorithms and defines a corner to be a point with low self-similarity. The algorithm tests each pixel in the image to see if a corner is present, by considering how similar a patch centered on the pixel is to nearby, largely overlapping patches. The similarity is measured by taking the sum of squared differences (SSD) between the corresponding pixels of two patches. A lower number indicates more similarity.
+
+If the pixel is in a region of uniform intensity, then the nearby patches will look similar. If the pixel is on an edge, then nearby patches in a direction perpendicular to the edge will look quite different, but nearby patches in a direction parallel to the edge will result in only a small change. If the pixel is on a feature with variation in all directions, then none of the nearby patches will look similar.
+
+The corner strength is defined as the smallest SSD between the patch and its neighbours (horizontal, vertical and on the two diagonals). The reason is that if this number is high, then the variation along all shifts is either equal to it or larger than it, so capturing that all nearby patches look different.
+
+If the corner strength number is computed for all locations, that it is locally maximal for one location indicates that a feature of interest is present in it.
+
+As pointed out by Moravec, one of the main problems with this operator is that it is not isotropic: if an edge is present that is not in the direction of the neighbours (horizontal, vertical, or diagonal), then the smallest SSD will be large and the edge will be incorrectly chosen as an interest point.
+
+The Harris & Stephens / Shi–Tomasi corner detection algorithms 
+
+Harris and Stephens improved upon Moravec's corner detector by considering the differential of the corner score with respect to direction directly, instead of using shifted patches. (This corner score is often referred to as autocorrelation, since the term is used in the paper in which this detector is described. However, the mathematics in the paper clearly indicate that the sum of squared differences is used.)
+
+Without loss of generality, we will assume a grayscale 2-dimensional image is used. Let this image be given by . Consider taking an image patch over the area  and shifting it by . The weighted sum of squared differences (SSD) between these two patches, denoted , is given by:
+
+ can be approximated by a Taylor expansion.  Let  and  be the partial derivatives of , such that
+
+This produces the approximation
+
+which can be written in matrix form:
+
+where A is the structure tensor,
+
+In words, we find the covariance of the partial derivative of the image intensity  with respect to the  and  axes.
+
+Angle brackets denote averaging (i.e. summation over ).  denotes the type of window that slides over the image. If a Box filter is used the response will be anisotropic, but if a Gaussian is used, then the response will be isotropic.
+
+A corner (or in general an interest point) is characterized by a large variation of  in all directions of the vector .  By analyzing the eigenvalues of , this characterization can be expressed in the following way:  should have two "large" eigenvalues for an interest point.
+Based on the magnitudes of the eigenvalues, the following inferences can be made based on this argument:
+If  and  then this pixel  has no features of interest.
+If  and  has some large positive value, then an edge is found.
+If  and  have large positive values, then a corner is found.
+
+Harris and Stephens note that exact computation of the eigenvalues is computationally expensive, since it requires the computation of a square root, and instead suggest the
+following function , where  is a tunable sensitivity parameter:
+
+Therefore, the algorithm does not have to actually compute the eigenvalue decomposition of the matrix  and
+instead it is sufficient to evaluate the determinant and trace of  to find
+corners, or rather interest points in general.
+
+The Shi–Tomasi corner detector directly computes  because under certain assumptions, the corners are more stable for tracking. Note that this method is also sometimes referred to as the Kanade–Tomasi corner detector.
+
+The value of  has to be determined empirically, and in the literature values in the range 0.04–0.15 have been reported as feasible.
+
+One can avoid setting the parameter  by using Noble's corner measure  which amounts to the harmonic mean of the eigenvalues:
+
+ being a small positive constant.
+
+If  can be interpreted as the precision matrix for the corner position, the covariance matrix for the corner position is , i.e.
+
+The sum of the eigenvalues of , which in that case can be interpreted as a generalized variance (or a "total uncertainty") of the corner position, is related to Noble's corner measure  by the following equation:
+
+The Förstner corner detector 
+
+In some cases, one may wish to compute the location of a corner with subpixel accuracy. To achieve an approximate solution, the Förstner algorithm solves for the point closest to all the tangent lines of the corner in a given window and is a least-square solution. The algorithm relies on the fact that for an ideal corner, tangent lines cross at a single point.
+
+The equation of a tangent line  at pixel  is given by:
+
+where  is the gradient vector of the image  at .
+
+The point  closest to all the tangent lines in the window  is:
+
+The distance from  to the tangent lines  is weighted by the gradient magnitude, thus giving more importance to tangents passing through pixels with strong gradients.
+
+Solving for :
+
+ are defined as:
+
+Minimizing this equation can be done by differentiating with respect to  and setting it equal to 0:
+
+Note that  is the structure tensor. For the equation to have a solution,  must be invertible, which implies that  must be full rank (rank 2). Thus, the solution
+
+only exists where an actual corner exists in the window .
+
+A methodology for performing automatic scale selection for this corner localization method has been presented by Lindeberg by minimizing the normalized residual
+
+over scales. Thereby, the method has the ability to automatically adapt the scale levels for computing the image gradients to the noise level in the image data, by choosing coarser scale levels for noisy image data and finer scale levels for near ideal corner-like structures.
+
+Notes:
+
+ can be viewed as a residual in the least-square solution computation: if , then there was no error.
+this algorithm can be modified to compute centers of circular features by changing tangent lines to normal lines.
+
+The multi-scale Harris operator 
+
+The computation of the second moment matrix (sometimes also referred to as the structure tensor)  in the Harris operator, requires the computation of image derivatives  in the image domain as well as the summation of non-linear combinations of these derivatives over local neighbourhoods. Since the computation of derivatives usually involves a stage of scale-space smoothing, an operational definition of the Harris operator requires two scale parameters: (i) a local scale for smoothing prior to the computation of image derivatives, and (ii) an integration scale for accumulating the non-linear operations on derivative operators into an integrated image descriptor.
+
+With  denoting the original image intensity, let  denote the scale space representation of  obtained by convolution with a Gaussian kernel
+
+with local scale parameter :
+
+and let  and  denote the partial derivatives of .
+Moreover, introduce a Gaussian window function  with integration scale parameter . Then, the multi-scale second-moment matrix can be defined as
+
+Then, we can compute eigenvalues of  in a similar way as the eigenvalues of  and define the multi-scale Harris corner measure as 
+
+Concerning the choice of the local scale parameter  and the integration scale parameter , these scale parameters are usually coupled by a relative integration scale parameter  such that , where  is usually chosen in the interval . Thus, we can compute the multi-scale Harris corner measure  at any scale  in scale-space to obtain a multi-scale corner detector, which responds to corner structures of varying sizes in the image domain.
+
+In practice, this multi-scale corner detector is often complemented by a scale selection step, where the scale-normalized Laplacian operator
+
+is computed at every scale in scale-space and scale adapted corner points with automatic scale selection (the "Harris-Laplace operator") are computed from the points that are simultaneously:
+
+ spatial maxima of the multi-scale corner measure 
+
+ local maxima or minima over scales of the scale-normalized Laplacian operator :
+
+The level curve curvature approach 
+
+An earlier approach to corner detection is to detect points where the curvature of level curves and the gradient magnitude are simultaneously high. 
+A differential way to detect such points is by computing the rescaled level curve curvature (the product of the level curve curvature and the gradient magnitude raised to the power of three)
+
+and to detect positive maxima and negative minima of this differential expression at some scale  in the scale space representation  of the original image. 
+A main problem when computing the rescaled level curve curvature entity at a single scale however, is that it may be sensitive to noise and to the choice of the scale level. A better method is to compute the -normalized rescaled level curve curvature
+
+with  and to detect signed scale-space extrema of this expression, that are points and scales that are positive maxima and negative minima with respect to both space and scale
+
+in combination with a complementary localization step to handle the increase in localization error at coarser scales. In this way, larger scale values will be associated with rounded corners of large spatial extent while smaller scale values will be associated with sharp corners with small spatial extent. This approach is the first corner detector with automatic scale selection (prior to the "Harris-Laplace operator" above) and has been used for tracking corners under large scale variations in the image domain and for matching corner responses to edges to compute structural image features for geon-based object recognition.
+
+Laplacian of Gaussian, differences of Gaussians and determinant of the Hessian scale-space interest points 
+
+LoG is an acronym standing for Laplacian of Gaussian, DoG is an acronym standing for difference of Gaussians (DoG is an approximation of LoG), and DoH is an acronym standing for determinant of the Hessian. These scale-invariant interest points are all extracted by detecting scale-space extrema of scale-normalized differential expressions, i.e., points in scale-space where the corresponding scale-normalized differential expressions assume local extrema with respect to both space and scale
+
+where  denotes the appropriate scale-normalized differential entity (defined below).
+
+These detectors are more completely described in blob detection. The scale-normalized Laplacian of the Gaussian and difference-of-Gaussian features (Lindeberg 1994, 1998; Lowe 2004) 
+
+do not necessarily make highly selective features, since these operators may also lead to responses near edges. To improve the corner detection ability of the differences of Gaussians detector, the feature detector used in the SIFT system therefore uses an additional post-processing stage, where the eigenvalues of the Hessian of the image at the detection scale are examined in a similar way as in the Harris operator. If the ratio of the eigenvalues is too high, then the local image is regarded as too edge-like, so the feature is rejected. Also Lindeberg's Laplacian of the Gaussian feature detector can be defined to comprise complementary thresholding on a complementary differential invariant to suppress responses near edges.
+
+The scale-normalized determinant of the Hessian operator (Lindeberg 1994, 1998)
+
+is on the other hand highly selective to well localized image features and does only respond when there are significant grey-level variations in two image directions and is in this and other respects a better interest point detector than the Laplacian of the Gaussian. The determinant of the Hessian is an affine covariant differential expression and has better scale selection properties under affine image transformations than the Laplacian operator
+(Lindeberg 2013, 2015). Experimentally this implies that determinant of the Hessian interest points have better repeatability properties under local image deformation than Laplacian interest points, which in turns leads to better performance of image-based matching in terms higher efficiency scores and lower 1−precision scores.
+
+The scale selection properties, affine transformation properties and experimental properties of these and other scale-space interest point detectors are analyzed in detail in (Lindeberg 2013, 2015).
+
+Scale-space interest points based on the Lindeberg Hessian feature strength measures 
+
+Inspired by the structurally similar properties of the Hessian matrix  of a function  and the second-moment matrix (structure tensor) , as can e.g. be manifested in terms of their similar transformation properties under affine image deformations
+,
+,
+Lindeberg (2013, 2015) proposed to define four feature strength measures from the Hessian matrix in related ways as the Harris and Shi-and-Tomasi operators are defined from the structure tensor (second-moment matrix).
+Specifically, he defined the following unsigned and signed Hessian feature strength measures:
+ the unsigned Hessian feature strength measure I:
+
+ the signed Hessian feature strength measure I:
+
+ the unsigned Hessian feature strength measure II:
+
+ the signed Hessian feature strength measure II:
+
+where  and  
+denote the trace and the determinant of the Hessian matrix  of the scale-space representation  at any scale , 
+whereas 
+
+ 
+denote the eigenvalues of the Hessian matrix.
+
+The unsigned Hessian feature strength measure  responds to local extrema by positive values and is not sensitive to saddle points, whereas the signed Hessian feature strength measure  does additionally respond to saddle points by negative values. The unsigned Hessian feature strength measure  is insensitive to the local polarity of the signal, whereas the signed Hessian feature strength measure  responds to the local polarity of the signal by the sign of its output.
+
+In Lindeberg (2015) these four differential entities were combined with local scale selection based on either scale-space extrema detection 
+
+or scale linking. Furthermore, the signed and unsigned Hessian feature strength measures  and  were combined with complementary thresholding on .
+
+By experiments on image matching under scaling transformations on a poster dataset with 12 posters with multi-view matching over scaling transformations up to a scaling factor of 6 and viewing direction variations up to a slant angle of 45 degrees with local image descriptors defined from reformulations of the pure image descriptors in the SIFT and SURF operators to image measurements in terms of Gaussian derivative operators (Gauss-SIFT and Gauss-SURF) instead of original SIFT as defined from an image pyramid or original SURF as defined from Haar wavelets, it was shown that scale-space interest point detection based on the unsigned Hessian feature strength measure  allowed for the best performance and better performance than scale-space interest points obtained from the determinant of the Hessian . Both the unsigned Hessian feature strength measure , the signed Hessian feature strength measure  and the determinant of the Hessian  allowed for better performance than the Laplacian of the Gaussian . When combined with scale linking and complementary thresholding on , the signed Hessian feature strength measure  did additionally allow for better performance than the Laplacian of the Gaussian .
+
+Furthermore, it was shown that all these differential scale-space interest point detectors defined from the Hessian matrix allow for the detection of a larger number of interest points and better matching performance compared to the Harris and Shi-and-Tomasi operators defined from the structure tensor (second-moment matrix).
+
+A theoretical analysis of the scale selection properties of these four Hessian feature strength measures and other differential entities for detecting scale-space interest points, including the Laplacian of the Gaussian and the determinant of the Hessian, is given in Lindeberg (2013) and an analysis of their affine transformation properties as well as experimental properties in Lindeberg (2015).
+
+Affine-adapted interest point operators 
+
+The interest points obtained from the multi-scale Harris operator with automatic scale selection are invariant to translations, rotations and uniform rescalings in the spatial domain. The images that constitute the input to a computer vision system are, however, also subject to perspective distortions. To obtain an interest point operator that is more robust to perspective transformations, a natural approach is to devise a feature detector that is invariant to affine transformations. In practice, affine invariant interest points can be obtained by applying affine shape adaptation where the shape of the smoothing kernel is iteratively warped to match the local image structure around the interest point or equivalently a local image patch is iteratively warped while the shape of the smoothing kernel remains rotationally symmetric (Lindeberg 1993, 2008; Lindeberg and Garding 1997; Mikolajzcyk and Schmid 2004). Hence, besides the commonly used multi-scale Harris operator, affine shape adaptation can be applied to other corner detectors as listed in this article as well as to differential blob detectors such as the Laplacian/difference of Gaussian operator, the determinant of the Hessian and the Hessian–Laplace operator.
+
+The Wang and Brady corner detection algorithm 
+
+The Wang and Brady detector considers the image to be a surface, and looks for places where there is large curvature along an image edge. In other words, the algorithm looks for places where the edge changes direction rapidly. The corner score, , is given by:
+
+where  is the unit vector perpendicular to the gradient, and  determines how edge-phobic the detector is. The authors also note that smoothing (Gaussian is suggested) is required to reduce noise.
+
+Smoothing also causes displacement of corners, so the authors derive an expression for the displacement of a 90 degree corner, and apply this as a correction factor to the detected corners.
+
+The SUSAN corner detector 
+
+SUSAN is an acronym standing for smallest univalue segment assimilating nucleus. This method is the subject of a 1994 UK patent which is no longer in force.
+
+For feature detection, SUSAN places a circular mask over the pixel to be tested (the nucleus). The region of the mask is , and a pixel in this mask is represented by . The nucleus is at . Every pixel is compared to the nucleus using the comparison function:
+
+where  is the brightness difference threshold,  is the brightness of the pixel and the power of the exponent has been determined empirically. This function has the appearance of a smoothed top-hat or rectangular function. The area of the SUSAN is given by:
+
+If  is the rectangular function, then  is the number of pixels in the mask which are within  of the nucleus. The response of the SUSAN operator is given by:
+
+where  is named the 'geometric threshold'. In other words, the SUSAN operator only has a positive score if the area is small enough. The smallest SUSAN locally can be found using non-maximal suppression, and this is the complete SUSAN operator.
+
+The value  determines how similar points have to be to the nucleus before they are considered to be part of the univalue segment. The value of  determines the minimum size of the univalue segment. If  is large enough, then this becomes an edge detector.
+
+For corner detection, two further steps are used. Firstly, the centroid of the SUSAN is found. A proper corner will have the centroid far from the nucleus. The second step insists that all points on the line from the nucleus through the centroid out to the edge of the mask are in the SUSAN.
+
+The Trajkovic and Hedley corner detector
+
+In a manner similar to SUSAN, this detector directly tests whether a patch under a pixel is self-similar by examining nearby pixels.  is the pixel to be considered, and  is point on a circle  centered around . The point  is the point opposite to  along the diameter.
+
+The response function is defined as:
+
+This will be large when there is no direction in which the centre pixel is similar to two nearby pixels along a diameter.  is a discretised circle (a Bresenham circle), so interpolation is used for intermediate diameters to give a more isotropic response. Since any computation gives an upper bound on the , the horizontal and vertical directions are checked first to see if it is worth proceeding with the complete computation of .
+
+AST-based feature detectors 
+
+AST is an acronym standing for accelerated segment test. This test is a relaxed version of the SUSAN corner criterion. Instead of evaluating the circular disc, only the pixels in a Bresenham circle of radius  around the candidate point are considered. If  contiguous pixels are all brighter than the nucleus by at least  or all darker than the nucleus by , then the pixel under the nucleus is considered to be a feature. This test is reported to produce very stable features. The choice of the order in which the pixels are tested is a so-called Twenty Questions problem. Building short decision trees for this problem results in the most computationally efficient feature detectors available.
+
+The first corner detection algorithm based on the AST is FAST (features from accelerated segment test). Although  can in principle take any value, FAST uses only a value of 3 (corresponding to a circle of 16 pixels circumference), and tests show that the best results are achieved with  being 9. This value of  is the lowest one at which edges are not detected.  The order in which pixels are tested is determined by the ID3 algorithm from a training set of images. Confusingly, the name of the detector is somewhat similar to the name of the paper describing Trajkovic and Hedley's detector.
+
+Automatic synthesis of detectors 
+
+Trujillo and Olague introduced a method by which genetic programming is used to automatically synthesize image operators that can detect interest points. The terminal and function sets contain primitive operations that are common in many previously proposed man-made designs. Fitness measures the stability of each operator through the repeatability rate, and promotes a uniform dispersion of detected points across the image plane. The performance of the evolved operators has been confirmed experimentally using training and testing sequences of progressively transformed images. Hence, the proposed GP algorithm is considered to be human-competitive for the problem of interest point detection.
+
+Spatio-temporal interest point detectors 
+
+The Harris operator has been extended to space-time by Laptev and Lindeberg.
+Let  denote the spatio-temporal second-moment matrix defined by
+
+Then, for a suitable choice of , 
+spatio-temporal interest points are detected from spatio-temporal extrema of the following spatio-temporal Harris measure:
+
+The determinant of the Hessian operator has been extended to joint space-time by Willems et al  and Lindeberg, leading to the following scale-normalized differential expression:
+
+In the work by Willems et al, a simpler expression corresponding to  and  was used. In Lindeberg, it was shown that  and  implies better scale selection properties in the sense that the selected scale levels obtained from a spatio-temporal Gaussian blob with spatial extent  and temporal extent  will perfectly match the spatial extent and the temporal duration of the blob, with scale selection performed by detecting spatio-temporal scale-space extrema of the differential expression.
+
+The Laplacian operator has been extended to spatio-temporal video data by Lindeberg, leading to the following two spatio-temporal operators, which also constitute models of receptive fields of non-lagged vs. lagged neurons in the LGN:
+
+For the first operator, scale selection properties call for using  and , if we want this operator to assume its maximum value over spatio-temporal scales at a spatio-temporal scale level reflecting the spatial extent and the temporal duration of an onset Gaussian blob. For the second operator, scale selection properties call for using  and , if we want this operator to assume its maximum value over spatio-temporal scales at a spatio-temporal scale level reflecting the spatial extent and the temporal duration of a blinking Gaussian blob.
+
+Colour extensions of spatio-temporal interest point detectors have been investigated by Everts et al.
+
+Bibliography
+
+Reference implementations 
+
+This section provides external links to reference implementations of some of the detectors described above. These reference implementations are provided by the authors of the paper in which the detector is first described. These may contain details not present or explicit in the papers describing the features.
+DoG detection (as part of the SIFT system), Windows and x86 Linux executables
+Harris-Laplace, static Linux executables. Also contains DoG and LoG detectors and affine adaptation for all detectors included.
+FAST detector, C, C++, MATLAB source code and executables for various operating systems and architectures.
+lip-vireo, [LoG, DoG, Harris-Laplacian, Hessian and Hessian-Laplacian], [SIFT, flip invariant SIFT, PCA-SIFT, PSIFT, Steerable Filters, SPIN][Linux, Windows and SunOS] executables.
+SUSAN Low Level Image Processing, C source code.
+Online Implementation of the Harris Corner Detector - IPOL
+
+See also 
+
+blob detection
+affine shape adaptation
+scale space
+ridge detection
+interest point detection
+feature detection (computer vision)
+Image derivative
+
+External links
+
+ Brostow, "Corner Detection -- UCL Computer Science"
+
+Feature detection (computer vision)

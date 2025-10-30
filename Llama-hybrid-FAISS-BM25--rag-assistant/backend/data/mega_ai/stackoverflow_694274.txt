@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 694274
+[parent_id]: 694252
+[tags]: 
+First, you probably want to use AVG() instead of SUM()/COUNT() . Your problem is the inner join - if no ratings where submitted for a joke then that joke would not be returned as only jokes with a rating value match the inner join. I would recommend using a left join instead, or even a sub-select. While I normally prefer JOIN s as they are usually faster, I would have tried something like this: SELECT id AS joke_id, joketitle AS joke_title, ( SELECT AVG(rating) AS avgrating FROM ratings WHERE content_type = 'joke' AND relative_id = joke_id GROUP BY relative_id ) AS average FROM jokedata WHERE jokecategory = '$cur_category' GROUP BY id ORDER BY joketitle LIMIT $offset, $jokes_per_page

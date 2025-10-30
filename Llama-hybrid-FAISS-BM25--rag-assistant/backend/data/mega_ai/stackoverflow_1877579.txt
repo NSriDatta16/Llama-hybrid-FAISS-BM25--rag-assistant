@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1877579
+[parent_id]: 
+[tags]: 
+Dealing with char arrays in C++
+
+I have this C-styled piece of initialization code: const char * const vlc_args[] = { "-I", "dummy", "--ignore-config", "--extraintf=logger", "--verbose=2" "--plugin-path=/usr/lib/vlc" }; //tricky calculation of the char space used libvlc_new(sizeof(vlc_args)/sizeof(vlc_args[0]), vlc_args, &exc); Since I need to make the --plugin-path parameter dynamic, I can't use a static array anymore. So I came up with a C++ alternative: std::string pluginpath = "test"; libvlc_exception_t exc; std::vector args; args.push_back("-I"); args.push_back("dummy"); args.push_back("--ignore-config"); args.push_back("--extraintf=logger"); args.push_back("--verbose=2"); args.push_back("--ipv4"); args.push_back("--plugin-path=" + pluginpath); std::string combinedString; for (size_t idx = 0; idx error occurs here (not at end of scope or anything) But this results in a segmentation fault. So there must be an error in my code, which I can't seem to find.. Can anyone spot it? Solved! Thanks to Joseph Grahn and Jason Orendorff. My idea on the memory layout of the C-style array was wrong. I thought all data was organized as a big sequential block. In reality it's a list of pointers to the first character of each individual string. This code works: std::vector charArgs; for (size_t idx = 0; idx

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1481826
+[parent_id]: 
+[tags]: 
+Dragging an UIView inside UIScrollView
+
+I am trying to solve a basic problem with drag and drop on iPhone. Here's my setup: I have a UIScrollView which has one large content subview (I'm able to scroll and zoom it) Content subview has several small tiles as subviews that should be dragged around inside it. My UIScrollView subclass has this method: - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event { UIView *tile = [contentView pointInsideTiles:[self convertPoint:point toView:contentView] withEvent:event]; if (tile) { return tile; } else { return [super hitTest:point withEvent:event]; } } Content subview has this method: - (UIView *)pointInsideTiles:(CGPoint)point withEvent:(UIEvent *)event { for (TileView *tile in tiles) { if ([tile pointInside:[self convertPoint:point toView:tile] withEvent:event]) return tile; } return nil; } And tile view has this method: - (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event { UITouch *touch = [touches anyObject]; CGPoint location = [touch locationInView:self.superview]; self.center = location; } This works, but not fully correct: the tile sometimes "falls down" during the drag process. More precisely, it stops receiving touchesMoved: invocations, and scroll view starts scrolling instead. I noticed that this depends on the drag speed: the faster I drag, the quicker the tile "falls". Any ideas on how to keep the tile glued to the dragging finger?

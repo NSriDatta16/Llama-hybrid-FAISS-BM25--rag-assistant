@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3138974
+[parent_id]: 
+[tags]: 
+Get & Set system time in C#
+
+I found one piece of sample code from web forum. When I began to learn it. I found the output is very strange. Why does the code can't work well? It always go forward 8 hours when I run the code below. VS2005 and WinXP used.Thank you. class Tester { [System.Runtime.InteropServices.DllImport("kernel32", SetLastError = true)] private static extern bool GetSystemTime(out SYSTEMTIME systemTime); [System.Runtime.InteropServices.DllImport("kernel32", SetLastError = true)] private static extern bool SetSystemTime(ref SYSTEMTIME systemTime); struct SYSTEMTIME { internal short wYear; internal short wMonth; internal short wDayOfWeek; internal short wDay; internal short wHour; internal short wMinute; internal short wSecond; internal short wMilliseconds; } static void Main() { SYSTEMTIME st; if (GetSystemTime(out st)) { st.wHour = 2; // new system time was set to nearby 10:00 AM, 2 + 8 // If i replace the line with below one. // st.wHour = 18; // new system time was set to nearby 2:00 AM next day, 18 + 8 = 26, 26 - 24. go to next day! if (SetSystemTime(ref st)) Console.WriteLine("success"); else Console.WriteLine(System.Runtime.InteropServices.Marshal.GetLastWin32Error()); } else Console.WriteLine("GetSystemTime failed: {0}", System.Runtime.InteropServices.Marshal.GetLastWin32Error()); } }

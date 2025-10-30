@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5339167
+[parent_id]: 
+[tags]: 
+Rails timestamps: updated_on / created_on versus created_at / updated_at
+
+I'm writing a Rails migration to create a table: create_table(TABLE, :options => FEDERATED_TABLE_CONFIG % TABLE) do |table| table.timestamps table.string :country_tld end This results in the following table: CREATE TABLE `sites` ( `id` int(11) NOT NULL AUTO_INCREMENT, `created_at` datetime DEFAULT NULL, `updated_at` datetime DEFAULT NULL, `country_tld` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`) ) ENGINE=FEDERATED DEFAULT CHARSET=utf8 CONNECTION='mysql://foo:bar@localhost/baz/sites' Tragically, my foreign data source uses the old-school Rails updated_on and created_on columns for its timestamps. Of course I can get around this: create_table(TABLE, :options => FEDERATED_TABLE_CONFIG % TABLE) do |table| table.datetime :created_on, :updated_on table.string :country_tld end If there's a trivial way to still use timestamps and get the behaviour I want, I'd love to hear about it. And no, I don't consider monkey-patching ActiveRecord::Timestamp a trivial way of doing it, considering this just affects one migration. ;)

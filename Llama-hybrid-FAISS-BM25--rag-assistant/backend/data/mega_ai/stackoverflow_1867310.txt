@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1867310
+[parent_id]: 1863318
+[tags]: 
+I had a similar situation using WCF and callbacks. I did not want to use polling, but I was using a "reilable" protocol, so if a client died, then it would hang the server until it timed out and crashed. I do not know if this is the most correct or elegant solution, but what I did was create a class in the service to represent the client proxy. Each instance of this class contained a reference to the client proxy, and would execute the callback function whenever the server set the "message" property of the class. By doing this, when a client disconnected, the individual wrapper class would get the timeout excetpion, and remove itself from the server's list of listeners, but the service would not have to wait for it. This doesn't actually answer your question about determining if the client is alive, but it is another way of structuring the service to addrss the issue. If you needed to know when a client died, you would be able to pick up when the client wrapper removed itself from the listener list.

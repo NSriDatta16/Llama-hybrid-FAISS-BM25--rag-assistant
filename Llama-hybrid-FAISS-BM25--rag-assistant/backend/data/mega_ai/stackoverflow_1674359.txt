@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1674359
+[parent_id]: 1671297
+[tags]: 
+I could not resist the temptation to see how it could be done with inherit_linearly . Turns out to be not that bad, IMHO: template struct PolicyWrapper : Base, Self { PolicyWrapper(const ExpensiveType& E) : Base(E), Self(E) {} }; struct EmptyWrapper { EmptyWrapper(const ExpensiveType& E) {} }; template > class Host : public inherit_linearly , EmptyWrapper >::type { typedef typename inherit_linearly , EmptyWrapper >::type BaseType; public: Host() : BaseType(m_expensiveType) {} private: const ExpensiveType m_expensiveType; }; A warning though: Passing a reference to an uninitialized member like what is done in the Host ctor is very fragile. If, for example, one writes a Policy like this: struct BadPolicy { BadPolicy(const ExpensiveType& E) : m_expensiveType(E) {} ExpensiveType m_expensiveType; }; bad things will happen, as the copy ctor of ExpensiveType will be invoked with an uninitialized object.

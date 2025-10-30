@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4893506
+[parent_id]: 
+[tags]: 
+Fastest Python method for search and replace on a large string
+
+I'm looking for the fastest way to replace a large number of sub-strings inside a very large string. Here are two examples I've used. findall() feels simpler and more elegant, but it takes an astounding amount of time. finditer() blazes through a large file, but I'm not sure this is the right way to do it. Here's some sample code. Note that the actual text I'm interested in is a single string around 10MB in size, and there's a huge difference in these two methods. import re def findall_replace(text, reg, rep): for match in reg.findall(text): output = text.replace(match, rep) return output def finditer_replace(text, reg, rep): cursor_pos = 0 output = '' for match in reg.finditer(text): output += "".join([text[cursor_pos:match.start(1)], rep]) cursor_pos = match.end(1) output += "".join([text[cursor_pos:]]) return output reg = re.compile(r'(dog)') rep = 'cat' text = 'dog cat dog cat dog cat' finditer_replace(text, reg, rep) findall_replace(text, reg, rep) UPDATE Added re.sub method to tests: def sub_replace(reg, rep, text): output = re.sub(reg, rep, text) return output Results re.sub() - 0:00:00.031000 finditer() - 0:00:00.109000 findall() - 0:01:17.260000

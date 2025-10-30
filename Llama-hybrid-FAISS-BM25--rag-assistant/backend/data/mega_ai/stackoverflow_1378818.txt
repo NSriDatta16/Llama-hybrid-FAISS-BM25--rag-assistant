@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1378818
+[parent_id]: 1378325
+[tags]: 
+The SQLAlchemy PickleType is meant exactly for this. class SomeEntity(Base): __tablename__ = 'some_entity' id = Column(Integer, primary_key=True) attributes = Column(PickleType) # Just set the attribute to save it s = SomeEntity(attributes={'baked': 'beans', 'spam': 'ham'}) session.add(s) session.commit() # If mutable=True on PickleType (the default) SQLAlchemy automatically # notices modifications. s.attributes['parrot'] = 'dead' session.commit() You can change the serialization mechanism by changing out the pickler with something else that has dumps() and loads() methods. The underlying storage mechanism by subclassing PickleType and overriding the impl attritbute: class TextPickleType(PickleType): impl = Text import json class SomeOtherEntity(Base): __tablename__ = 'some_other_entity' id = Column(Integer, primary_key=True) attributes = Column(TextPickleType(pickler=json))

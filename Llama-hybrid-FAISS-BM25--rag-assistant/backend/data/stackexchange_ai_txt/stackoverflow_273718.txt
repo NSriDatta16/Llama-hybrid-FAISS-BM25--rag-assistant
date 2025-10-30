@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 273718
+[parent_id]: 
+[tags]: 
+How can I write a simple HTTP proxy in Perl?
+
+I don't want to use the HTTP::Proxy package because I want to dump out a couple requests. My one liner looks like this, but breaks on trying to pass the header in: perl -MData::Dumper -MHTTP::Daemon -MHTTP::Status -MLWP::UserAgent -e 'my $ua = LWP::UserAgent->new;my $d=new HTTP::Daemon(LocalPort=>1999);print "Please contact me at: url, ">\n";while (my $c = $d->accept) {while (my $r = $c->get_request) {if ($r->method eq 'GET' and $r->url->path eq "/uploader") {$c->send_response("whatever.");print Dumper($r);}else{$response=$ua->request($r->method,"http://localhost:1996".$r->uri,$r->headers,$r->content);$c->send_response($response);}}}' formatted, that's: #perl -e ' use Data::Dumper; use HTTP::Daemon; use HTTP::Status; use LWP::UserAgent; my $ua = LWP::UserAgent->new; my $d=new HTTP::Daemon(LocalPort=>1999); print "Please contact me at: url, " >\n"; while (my $c = $d->accept) { while (my $r = $c->get_request) { if ($r->method eq 'GET' and $r->url->path eq "/uploaded") { $c->send_response("whatever."); print Dumper($r); } else { $response = $ua -> request( $r->method, "http://localhost:1996" . $r->uri, $r->headers, $r->content); $c->send_response($response); } } }#' So I can't just pass in the request, because I need to change the host, and I can't just pass in the headers it seems... so what should I do to keep it short. So can anyone make this a better one-liner?

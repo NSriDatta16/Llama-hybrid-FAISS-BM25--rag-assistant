@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1947939
+[parent_id]: 1944373
+[tags]: 
+There might well be a better way, but this is my shot. ALLOWD_OPTIONS = [:s3, :scp, :ftp ,:sftp].freeze type = ALLOWD_OPTIONS.detect { |e| e == backup.procedure.storage_name.to_sym } if type records = send(%s"Backup::Record::#{type.upcase}.all", :conditions => {:trigger => trigger}) end or if [:s3, :scp, :ftp, :sftp].include?(backup.procedure.storage_name.to_sym) records = __send__ (%s"Backup::Record::#{backup.procedure.storage_name.to_sym.upcase}.all", :conditions => {:trigger => trigger}) end You could use public_send() for extra security if you are using Ruby 1.9. I looked at the file in question. There are many case statements. You could make a private method to do something like I wrote above to minimize duplication. ALLOWD_OPTIONS = [:s3, :scp, :ftp ,:sftp].freeze records = send_method_with_type("all", backup.procedure.storage_name.to_sym, :conditions => {:trigger => trigger}) private def send_method_with_type(method, type, *args) raise unless ALLOWD_OPTIONS.inlucde? type send(%s"Backup::Record#{type.upcase}.#{method}", args) end

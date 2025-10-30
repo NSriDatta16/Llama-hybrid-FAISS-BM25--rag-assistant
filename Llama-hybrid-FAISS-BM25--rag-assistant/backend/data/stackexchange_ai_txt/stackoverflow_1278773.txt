@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1278773
+[parent_id]: 
+[tags]: 
+How to apply dependency injection to UserControl views while keeping Designer happy?
+
+public class StatisticsViewPresenter { private IStatisticsView view; private Statistics statsModel; public StatisticsViewPresenter(IStatisticsView view, Statistics statsModel) { this.view = view; this.statsModel = statsModel; } } I don't use events (but am willing to if it can solve my problem), so my View classes look like this: public class StatisticsForm : Form, IStatisticsView { public StatisticsForm() { InitializeComponent(); } [Inject] public StatisticsViewPresenter Presenter { private get; set; } } With kernel.Bind ().ToSelf().InSingletonScope(); kernel.Bind ().To (); kernel.Get (); it builds up the Form, builds up the presenter, then injects the presenter into the Presenter property. Everything's peachy. (Except for that singleton-scoped presenter--any thoughts on a better way to do that? Perhaps just manually inject the presenter into the view's Presenter property inside the presenter's constructor: this.view.Presenter = this). But if I turn StatisticsForm into StatisticsUserControl and drag-drop it onto my MainForm, it's not being injected into MainForm by Ninject, it's simply being new'd by the Designer. I see three solutions here: 1) Don't use UserControls and just use one giant form that implements these multiple views (eww); 2) Inject UserControls into my form and lose Designer support; 3) Your solution! :)

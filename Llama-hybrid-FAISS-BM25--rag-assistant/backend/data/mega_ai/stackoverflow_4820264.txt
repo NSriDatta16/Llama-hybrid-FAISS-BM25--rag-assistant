@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4820264
+[parent_id]: 4820112
+[tags]: 
+Well if that stuff is not well-formed then don't expect to be able to treat it as XML. Thus if you want to put not well-formed HTML markup into an XML element then consider to use a CDATA section e.g. string value = "Steet, City"; XElement address = new XElement("Address", new XCData(value)); which will result in City]]> If you want to parse the value as XML then do so with an XmlReader in fragment mode e.g. static void Main() { string value = "Steet, City"; XElement address = new XElement("Address", ParseFragment(value)); Console.WriteLine(address); } static IEnumerable ParseFragment(string fragment) { using (StringReader sr = new StringReader(fragment)) { using (XmlReader xr = XmlReader.Create(sr, new XmlReaderSettings() { ConformanceLevel = ConformanceLevel.Fragment })) { xr.Read(); XNode node; while (!xr.EOF && (node = XNode.ReadFrom(xr)) != null) { yield return node; } } } } That results in Steet, City

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1133476
+[parent_id]: 1133364
+[tags]: 
+If you indeed need "the fastest way", I guess you're building a webserver that would handle many concurrent requests. This raises another problem - the concurrency issue. Generally, many process reading and writing to the same important file is a recipe for a catastrophe. Build a small independent process to handle the task. It should have a minimal interface that will receive requests from the clients, and updates for the the /etc/sudoer file. Something like has_NOPASSWD_access() and set_NOPASSWD_access() . It should read the file only when it needs to be written, so you'll greatly reduce the I/O time required to serve a request. Pros - Fast : No I/O needed for just reading the file, because it is stored in the buffer since the initial read Thread safe: Only one server writes and reads the sudoer file Single choice principle - only this process handles the sudoer file Elegant (I hope) :-) Cons - - List them in the comments, and I'll add.

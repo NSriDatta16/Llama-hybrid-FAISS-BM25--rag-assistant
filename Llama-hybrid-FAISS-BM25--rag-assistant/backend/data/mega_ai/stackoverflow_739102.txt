@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 739102
+[parent_id]: 738909
+[tags]: 
+Usually you are encouraged to use the thread pool in .Net because it of the many benefits of having things managed on your behalf.....but NOT in ASP.net. Since ASP.net is already multi-threaded, it uses the thread pool to serve requests that are mapped to the ASP.net ISAPI filter, and since the thread pool is fixed in size, by using it you are basically taking threads away that are set aside to do the job of handling request. In small, low-traffic websites, this is not an issue, but in larger, high-traffic websites you end up competing for and consuming threads that the ASP.net process relies on. If you want to use threading, it is fine to do something like.... Thread thread = new Thread(threadStarter); thread.IsBackground = true; thread.Start(); but with a warning: be sure that the IsBackground is set to true because if it isn't the thread exists in the foreground and will likely prevent the IIS worker process from recycling or restarting.

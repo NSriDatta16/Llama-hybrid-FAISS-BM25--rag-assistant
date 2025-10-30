@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 470708
+[parent_id]: 392284
+[tags]: 
+There's a good explanation of how to adapt regression algorithms to forecasting problems here , including how to generate forecasts from the fitted regression models. If you're interested, we're developing a toolbox that extends scikit-learn for exactly these use cases. So with sktime , you could write: import numpy as np from sktime.datasets import load_airline from sktime.forecasting.compose import ReducedRegressionForecaster from sklearn.tree import DecisionTreeRegressor from sktime.forecasting.model_selection import temporal_train_test_split from sktime.performance_metrics.forecasting import smape_loss y = load_airline() # load 1-dimensional time series y_train, y_test = temporal_train_test_split(y) fh = np.arange(1, len(y_test) + 1) # forecasting horizon regressor = DecisionTreeRegressor() # the ReducedRegressionForecaster takes care of adapting the # regressor to the forecasting problem forecaster = ReducedRegressionForecaster(regressor, window_length=10) forecaster.fit(y_train) y_pred = forecaster.predict(fh) print(smape_loss(y_test, y_pred)) >>> 0.38916286717988746

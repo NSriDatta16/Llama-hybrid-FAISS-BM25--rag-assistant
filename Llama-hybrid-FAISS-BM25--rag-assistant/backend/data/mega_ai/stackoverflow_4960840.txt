@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4960840
+[parent_id]: 
+[tags]: 
+Enum's String property used for Annotation
+
+I would like to reuse safetype enum which I already have to specify argument for @Resource annotation which requires String compile time constant. I have not found any elegant solution how to reuse DATASOURCE except this that I enclose: public enum DATASOURCE { // Enum constants DataSource1, DataSource2; public final static String DataSource1_jndi = "java:/jdbc/DataSource1"; public final static String DataSource2_jndi = "java:/jdbc/DataSource2"; public String getJndiName() { switch(this) { case DataSource1: return DataSource1_jndi; case DataSource2: return DataSource2_jndi; default: throw new RuntimeException("Not defined jndi name for DATASOURCE " + this); } } } Usage of enum itself public class DataSourceFactory { /** * @param ds Identifier of datasource */ public static DataSource getDataSource(DATASOURCE ds) { // maybe some caching for datasource identified by constant ... return (DataSource) new InitialContext().lookup(ds.getJndiName()); } } But now I would like to use the same DATASOURCE constant also in SessionBeans along with @Resource annotation @Stateless public class SomeSessionBean { // This is what I would love to use but // annotation wants compile time constant :-( // @Resource(mappedName=DATASOURCE.DataSource1.getJndiName()); @Resource(mappedName=DATASOURCE.DataSource1_jndi); DataSource ds; ... } Any idea?

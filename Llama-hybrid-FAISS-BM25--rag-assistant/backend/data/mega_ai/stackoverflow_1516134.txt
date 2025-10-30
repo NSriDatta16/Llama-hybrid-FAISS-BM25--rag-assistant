@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1516134
+[parent_id]: 1516085
+[tags]: 
+@ile - I've had that problem - it's because the index of the foreach iterator happily keeps incrementing, while calling removeChild() on the DOM also seems to remove the nodes from the DomNodeList ($spans). So for every span you remove, the nodelist shrinks one element and then gets its foreach counter incremented by one. Net result: it skips one span. I'm sure there is a more elegant way, but this is how I did it - I moved the references from the DomNodeList to a second array, where they would not be removed by the removeChild() operation. foreach($spans as $span) { $nodes[] = $span; } foreach($nodes as $span) { $span->parentNode->removeChild($span); }

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 503863
+[parent_id]: 126384
+[tags]: 
+To complement amoeba's answer, I made the following example to visualize the difference between sklearn's DictionaryLearner (Sparse Coding) and SparsePCA. >>> import numpy as np >>> from sklearn.decomposition import DictionaryLearner, SparsePCA >>> X = np.random.randn(1000, 100) With DictionaryLearner the code is dense , but the transformed data is sparse : >>> dict_learner = DictionaryLearning(n_components=50, max_iter=10) >>> X_code = dict_learner.fit_transform(X) >>> np.mean(X_code == 0) 0.8 >>> np.mean(dict_learner.components_ == 0) 0.0 With Sparse PCA with code is sparse , but the transformed data is dense : >>> pca = SparsePCA(n_components=50) >>> X_pca = pca.fit_transform(X) >>> np.mean(X_pca == 0) 0.0 >>> np.mean(pca.components_ == 0) 0.759 They both do a reasonable job at reconstructing the original X: >>> np.linalg.norm(X - X_code @ dict_learner.components_)/np.linalg.norm(X) 0.7383553164896911 >>> np.linalg.norm(X - X_pca @ pca.components_)/np.linalg.norm(X) 0.6361587872554082 Though obviously on random data like this example, you can't expect miracles.

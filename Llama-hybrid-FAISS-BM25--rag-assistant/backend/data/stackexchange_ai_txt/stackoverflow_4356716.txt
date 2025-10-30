@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4356716
+[parent_id]: 4356671
+[tags]: 
+It could be because you are using ObjectOutputStreams . Remember that ObjectOutputStreams will cache all objects written to them so that if the same object is written again in the future it can write a back-reference instead of re-writing the whole object. This is necessary when writing an Object graph. Your code fragment: if (req.getRequest().equals(Request.GET_CARS)) { Response response = new Response(); response.setCars(manager.getAvailableCars()); out.writeObject(response); continue; } is writing the object returned by manager.getAvailableCars() . The next time a request is received the same object (but now with different contents) is written - but the ObjectOutputStream doesn't know about the new contents so it just writes a back-reference. The ObjectInputStream at the other end sees the back-reference and returns the same object it read last time, i.e. the original data. You can fix this by calling ObjectOutputStream.reset() after each response. This will clear the stream's cache.

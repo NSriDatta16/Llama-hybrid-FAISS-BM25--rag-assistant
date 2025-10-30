@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4364953
+[parent_id]: 4364283
+[tags]: 
+aggregate is the easiest way probably, but I don't agree with the "cleaner because you don't have to write a custom function." Readibility goes up when defining some clear functions. Especially if you need that average a couple of times in your scripts. Aggregate is quite a bit faster than your custom function though, because you forgot about indices. You wanted to do this : avgProfit 0]) } This is again faster than aggregate, due to the lack of overhead : > tmpData system.time( + with(tmpData,tapply(TCurr,instrument,avgProfit))) user system elapsed 0.02 0.00 0.02 > system.time( + aggregate(TCurr~instrument,mean,data=subset(tmpData,TCurr>0))) user system elapsed 0.09 0.00 0.10 In most cases you can just ignore that difference. On huge datasets (n > 100,000 ) you'll start to feel it, especially if you need to do this for a whole set of variables. EDIT : just saw that mdsummer had exactly the same solution hidden neatly between the output :-). I leave this as a timing reference.

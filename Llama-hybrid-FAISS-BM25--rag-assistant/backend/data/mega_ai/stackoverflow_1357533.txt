@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1357533
+[parent_id]: 1347613
+[tags]: 
+It seems that there are two views on this CDbObject : the 'client code' view, which sees it as not changeable, and the server connection, which receives updates for the object. So why not keep a CDbObject* (which is writeable) in the database layer, and provide the client with a const CDbObject* pointer to it? This solves the need for different views. struct CDataBaseLayer { // map of mutable objects typedef std::map objectmap; objectmap objects; // retrieval of non-writeable objects const CDbObject* readObject( CDbObject::key key ) { objectmap::iterator it = objectmap.find( key ); if( it == objectmap.end() ) { return fetchObject( key ); } else { it->second->refresh(); return it->second; } } }; In a further stage, the CDbObject could even implement an observer pattern to notify the client when it's updated...

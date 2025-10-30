@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1535890
+[parent_id]: 1534310
+[tags]: 
+The basic problem is that your code does not protect the loop itself using a mutex. As you probably realized, that would make a huge mutex that slows down the system significantly. Here is a good solution: Replace the for-loop with a while-loop Create code that finds the next URL, and mutex-protect that code Make the image retrieval use variables that do not relate to the list, so that it does not need mutex protection. Save the retrieved image by finding the correct index using the URL. This finding and storing must be mutex protected. Something like this: while not terminated do begin currenturl:=''; while true do begin Mutex begin currenturl:=FindNextUrl(currentUrl); Mutex end if currenturl='' then break; // No more URLs to be found RetrieveImage(currenturl,image); Mutex begin index:=FindUrlIndex(currenturl) List[index].image:=image; Mutex end end; sleep(100); end; Add the necessary mutex code, try-statements etc. yourself.

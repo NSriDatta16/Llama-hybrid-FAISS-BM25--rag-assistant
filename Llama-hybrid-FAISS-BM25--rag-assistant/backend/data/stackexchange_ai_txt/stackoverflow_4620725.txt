@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4620725
+[parent_id]: 4620476
+[tags]: 
+If you only care about running on little-endian systems (like Windows), you could add a constraint on IConvertible (which I believe all the numeric types support), use that to convert the value to a 64-bit integer, get the bytes for that, and then throw away the bytes you know you don't need. Something like this: private byte[] NumberToBytes (T value) where T : new(), struct, IConvertible { var longValue = value.ToUInt64(); var bytes = BitConverter.GetBytes(longValue); Array.Resize(ref bytes, sizeof(T)); return bytes; } Of course, this assumes that you're only working with integers -- it wouldn't work for float, double, or decimal. And as noted above, it would only work on little-endian systems; for big-endian, you would need to keep the last sizeof(T) elements from the array, not the first.

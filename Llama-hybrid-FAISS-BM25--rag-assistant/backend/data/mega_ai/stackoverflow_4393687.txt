@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4393687
+[parent_id]: 4393545
+[tags]: 
+A few comments, although I'm only guessing at your actual intent: You are up-sampling at a rate 44100 times the original sample rate. For example, if your input was at 10kHz your intermediate cbuf[] would be at 441MHz which is a tad high for most audio analysis. Assuming you want cbuf[] to be at 44100Hz then you only need to create 44100/OrigSampleRate of samples in cbuf[] per sample in sampdata[] . You are incrementing z twice in the up-sampling loop. This results in all odd elements of cbuf[] to have their original values. I believe this ultimately results in the final buf[] having invalid odd elements which may be the source of your noise. There is also a potential buffer overflow in cbuf if you didn't create it with at least twice the required number of elements. As mentioned by Steve a linear interpolation is generally the simplest that creates a good result when up-sampling. More complicated up-sampling can be done if desired (polynomials, splines, etc...). Similarly, when down-sampling you may wish to average samples instead of just truncating.

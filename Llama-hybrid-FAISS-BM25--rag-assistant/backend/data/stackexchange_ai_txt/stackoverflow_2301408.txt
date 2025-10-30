@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2301408
+[parent_id]: 2301396
+[tags]: 
+public void SetStatus(string msg) { if (lblStatus.InvokeRequired) lblStatus.Invoke(new MethodInvoker(delegate { lblStatus.Text = msg; })); else lblStatus.Text = msg; } This will get your label text updated. For a BeginInvoke, this is the way I know (I know there are more elegant implementations) - but I haven't tried this in a multi-threaded app yet: Action setStatus= target.AppendText; void OnSomeEvent (object sender, EventArgs e) { IAsyncRes iares = setStatus.BeginInvoke("status message", null, null); setStatus.EndInvoke(iares); } public void SetStatus(string msg) { lblStatus.Text = msg; } For the different methods of synchronizing to the control thread, SnOrfus references an excellent link. My example above on BeginInvoke is not correct for synchronizing to the control's thread. As far as what is causing the thread: About WiimoteChanged event

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 394493
+[parent_id]: 393742
+[tags]: 
+Ok, after some research, I gave up on an elegant approach, and took the straight-forward path of writing directly to the registry. To make things simple, I did this: I store the arguments I wanted to pass in variables on my TService. Then, I set the AfterInstall event to write directly into the registry (using a TRegistry object) the exact command line I wanted. uses Registry; procedure MyService.AfterInstall(Sender: TObject) ; var reg:TRegistry; begin reg := TRegistry.Create; try reg.RootKey := 'HKEY_LOCAL_MACHINE'; if reg.OpenKey('SYSTEM\CurrentControlSet\Services\MyService', True) then begin reg.WriteExtendString ('ImagePath', ParamStr(0) + ' -some -arguments') ; reg.CloseKey; end; finally reg.Free; end; end; Not the elegant solution I was looking for, but it does the job. Thanks for the other answers through!

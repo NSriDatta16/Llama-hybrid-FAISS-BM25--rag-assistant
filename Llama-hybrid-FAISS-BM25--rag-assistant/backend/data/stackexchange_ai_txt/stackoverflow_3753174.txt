@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3753174
+[parent_id]: 
+[tags]: 
+Throwing custom exceptions in JAX-WS
+
+I have a JAX-WS web service with a web method that may throw an exception. @WebMethod public Folder getTree() throws UnauthorizedException { //... // Get authorization data.. //... if (!authorized) { throw new UnauthorizedException(); } //... } It works all right if user is authorized, but when the exception is thrown it doesn't generate SOAP message with a fault, it just crashes web service with SEVERE: Unauthorized ru.cos.xdoc.storage.UnauthorizedException: Unauthorized at ru.cos.xdoc.storage.Storage.getTree(Storage.java:136) at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ... and closes connection HTTP/1.1 500 Internal Server Error X-Powered-By: Servlet/2.5 Server: Sun GlassFish Enterprise Server v2.1.1 Content-Type: text/xml;charset="utf-8" Transfer-Encoding: chunked Date: Mon, 20 Sep 2010 15:43:59 GMT Connection: close I feel like I miss something simple EDIT The problem has proven to arise only in the case an exception is thrown not long after the beginning of web method. When a delay is introduced before throwing an exception, like try { Thread.sleep(3000); } catch (InterruptedException e) { e.printStackTrace(); } throw new UnauthorizedException(); everything works fine. Does anybody have a clue what may cause such a strange behaviour?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2005705
+[parent_id]: 2005649
+[tags]: 
+First point is that if you explicitly create threads like this, you aren't using the thread pool. The CLR will oblige by creating all these threads, even though it'll ultimately create far too many and drag itself down. 1000 explicit threads is way too many. Are you trying to do this on another thread because you want it to happen asynchronously, or becuase you actually want multiple threads doing the sends? If the former, then try something like: ThreadStart ts1 = new ThreadStart(sendMails); Thread thread1 = new Thread(ts1); thread1.Start(); public void sendMails() { foreach (DataRow dataRow in dataTable.Rows) { //mail code } } If you do feel that sending performance will be improved with some multithreading, then you'll need to manually throttle the number of threads created at any one time, or use the .Net thread pool, as this will let you queue up work items which will block until a thread becomes free. This is certainly preferable to creating loads of explicit threads.

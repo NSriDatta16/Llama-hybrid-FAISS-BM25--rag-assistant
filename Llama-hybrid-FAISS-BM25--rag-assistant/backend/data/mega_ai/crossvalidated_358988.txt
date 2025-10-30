@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 358988
+[parent_id]: 
+[tags]: 
+Question about port of R code from the library "rethinking" to PyMC3
+
+A very generous human named Osvaldo Martin did us the favor of porting all the R sample code in Richard McElreath's superb book Statistical Rethinking to PyMC3. I'm hugely grateful, but I've already encountered an example where the port depends on some knowledge about what the R code is doing "under the hood" and I would like to know what algorithm is being implemented. Here's the R code (which uses McElreath's library "rethinking"): # 2.6 - MAP library(rethinking) globe.qa which is ported to the following PyMC3 code: data = np.repeat((0, 1), (3, 6)) with pm.Model() as normal_approximation: p = pm.Uniform('p', 0, 1) w = pm.Binomial('w', n=len(data), p=p, observed=data.sum()) mean_q = pm.find_MAP() std_q = ((1/pm.find_hessian(mean_q, vars=[p]))**0.5)[0] mean_q['p'], std_q I am new to Bayesian statistics, but I know that Hessians are used in quadratic approximations, and I assume something of that sort is in play here, but where does this precise formula come from? std_q = ((1/pm.find_hessian(mean_q, vars=[p]))**0.5)[0]

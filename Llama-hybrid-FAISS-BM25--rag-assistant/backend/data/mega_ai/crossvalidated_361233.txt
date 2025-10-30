@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 361233
+[parent_id]: 
+[tags]: 
+Cooks distance and categorical features
+
+I try to detect outliers by cook´s distance for a regression. If I only use numeric features as explanatory variables it works fine. However, if I add categorical features to the explanatory features I get some NA values. Has that something to do with the measure? I have no NA/NaN/Inf values in the data set. Even if I transform the categorical features into dummy variables there is no change. Here is an example (The dataset has 1460 obs and 83 variables so I can´t create a dput of the whole data): library(dplyr) Checking NA/Inf/NaN: any(is.na(out)) [1] FALSE any(sapply(out,is.infinite)) [1] FALSE any(sapply(out,is.nan)) [1] FALSE Calculating Cook´s distance for numerics: out_num = out %>% select_if(is.numeric) mod = lm(SalePrice~., data = out_num) cooksd = cooks.distance(mod) is.na(cooksd) %>% table() FALSE 1460 Calculating Cook´s distance for all data: out mod = lm(SalePrice~., data = out) cooksd = cooks.distance(mod) is.na(cooksd) %>% table() FALSE TRUE 1441 19 If I calculate the diagnostic plots I get the following message: plot(mod, which = 2) # or plot(mod, which = 3) not plotting observations with leverage one: 121, 272, 326, 347, 376, 399, 584, 596, 667, 811, 822, 1004, 1012, 1188, 1231, 1271, 1276, 1299, 1322, 1371, 1387 plot(mod, which = 4) NaNs produced This may have something to do with it but I did´t found the reason yet.

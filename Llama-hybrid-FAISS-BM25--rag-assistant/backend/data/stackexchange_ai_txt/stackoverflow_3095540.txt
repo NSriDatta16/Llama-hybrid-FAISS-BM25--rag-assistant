@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3095540
+[parent_id]: 3063233
+[tags]: 
+I generally agree with Peter that you should try and tap into the events more elegantly. However, you can (and probably should) extract that code into a function and keep a flag that tells you if it's been called before. Something like this: var foo = new Array(); var flag = false; function checkDB() { $.post( ajax_folder + 'fetchData' , { ref: "someValue" } , function( data ){ foo[ queueID ] = data.result; flag = true; } , 'json' ); return true; } function onSelectHandler(event, queueID , fileObj){ checkDB(); } function someOnCompleteStuff(){ if(flag){ //do oncomplete stuff }else{ // try again later setTimeout(someOnCompleteStuff,500); } } function onCompleteHandler(event, queueID , fileObj){ someOnCompleteStuff(); } Of course you could always check the length of foo instead of using a flag.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1878467
+[parent_id]: 1878001
+[tags]: 
+At the risk of being flamed for using C constructs, I do think this sscanf example is more elegant than most Boost solutions. And you don't have to worry about linkage if you're running anywhere that has a Python interpreter! #include #include int main(int argc, char **argv) { for (int i = 1; i != argc; ++i) { int number = 0; int size = 0; sscanf(argv[i], "--foo=%d%n", &number, &size); if (size == strlen(argv[i])) { printf("number: %d\n", number); } else { printf("not-a-number\n"); } } return 0; } Here's some example output that demonstrates the solution handles leading/trailing garbage as correctly as the equivalent Python code, and more correctly than anything using atoi (which will erroneously ignore a non-numeric suffix). $ ./scan --foo=2 --foo=2d --foo='2 ' ' --foo=2' number: 2 not-a-number not-a-number not-a-number

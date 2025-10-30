@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1069119
+[parent_id]: 1068689
+[tags]: 
+A URIResolver is supposed to return null when it cannot resolve the reference. This allows the underlying resolver to try. If you design your resolver so that it takes as a parameter another URIResolver on construction, then you can use resolver chaining . TransformerFactory tf; tf.setURIResolver(new SomeOtherResolver()); tf.setURIResolver(new MyResolver(tf.getURIResolver()); public class MyResolver implements URIResolver { public MyResolver(URIResolver nextInLine) { this.nextInLine = nextInLine; } private URIResolver nextInLine; public Source resolve(String href, String base) throws TransformerException { ...try to solve and return Source object... return nextInLine; // instead of returning null on failure, return nextInLine } } An alternative would be to write a resolver which allowed you to set a chain of resolvers as a list, and would keep calling them until a non- null answer was returned, and then return that.

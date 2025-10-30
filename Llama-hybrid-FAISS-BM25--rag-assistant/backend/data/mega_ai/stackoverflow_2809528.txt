@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2809528
+[parent_id]: 2809084
+[tags]: 
+pGameStates.push_back( (CGameState*)gameLogo ); Since CGameStateLogo inherits publically from CGameState , the cast is unneccesary. Upcasts are implicit. Simply write pGameStates.push_back( gameLogo ); instead. This does probably not solve your compile troubles, though. As to that, you seem to be mixing up GameState.h and CGameState.h . If that's an actual error in your code, instead of just a copy/paste mistake while writing your question, it could cause this problem. It could also be that there is some circular dependency problem in your headers. You write #include "GameState.h" which should define the GameState class, unless the file has already been included once, but the class definition has not yet been read. This could happen for example in this way: Some .cpp file includes GameState.h . GameState.h includes GameMain.h . GameMain.h includes GameStateLogo.h . GameStateLogo.h includes GameState.h , but this has already been included, so the include is ignored due to #pragma once . Generally, such circular dependencies in header files are a thing to avoid.

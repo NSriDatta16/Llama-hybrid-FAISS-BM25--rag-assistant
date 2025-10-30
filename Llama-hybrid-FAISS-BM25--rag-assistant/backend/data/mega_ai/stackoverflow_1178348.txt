@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1178348
+[parent_id]: 1074801
+[tags]: 
+Silly me. I forgot that there were some triggers on the folders table, and of course it was a query inside one of these triggers which caused my problems... There's an additional table tree which maintains the associations between the folders, and the triggers update these associations when a folder is deleted or moved in the hierarchy. In the UPDATE trigger, it has to delete all existing references to the folder, before adding the new references. The relevant DELETE query began as follows: DELETE FROM `tree` WHERE `folder_id` IN ( SELECT `folder_id` FROM `children` ) AND ... children is a temporary table where I previously store the folder ID's I need. Now for some reason MySQL can't optimize this query, but if I use a RIGHT JOIN instead it works perfectly fine: DELETE `tree`.* FROM `tree` RIGHT JOIN children USING (folder_id) WHERE ... Since I've changed this query MySQL's slow-query log remains blissfully empty, and we haven't experienced any MySQL lockups.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2109430
+[parent_id]: 2109056
+[tags]: 
+The other answer is great, but instead of the "rather monstrous" perl script i suggest perl -pe 's!([^/]+)$!lc $1!e' Which will lowercase just the filename part of the path. Edit 1: In fact the entire problem can be solved with: find . | perl -ne 's!([^/]+)$!lc $1!e; print if 1 == $seen{$_}++' Edit 3: I found a solution using sed, sort and uniq that also will print out the duplicates, but it only works if there are no whitespaces in filenames: find . |sed 's,\(.*\)/\(.*\)$,\1/\2\t\1/\L\2,'|sort|uniq -D -f 1|cut -f 1 Edit 2: And here is a longer script that will print out the names, it takes a list of paths on stdin, as given by find . Not so elegant, but still: #!/usr/bin/perl -w use strict; use warnings; my %dup_series_per_dir; while (<>) { my ($dir, $file) = m!(.*/)?([^/]+?)$!; push @{$dup_series_per_dir{$dir||'./'}{lc $file}}, $file; } for my $dir (sort keys %dup_series_per_dir) { my @all_dup_series_in_dir = grep { @{$_} > 1 } values %{$dup_series_per_dir{$dir}}; for my $one_dup_series (@all_dup_series_in_dir) { print "$dir\{" . join(',', sort @{$one_dup_series}) . "}\n"; } }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4348876
+[parent_id]: 4348157
+[tags]: 
+I'm assuming the "Mark" model is how users vote. To get all media models with their mark counts, you need aggregation : from django.db.models import Count media_with_vote_count = Media.objects.annotate(vote_count=Count('mark_set')) You can then use filter() that refers to that annotation: voted_media = media_with_vote_count.filter(vote_count__gt=0) There are also other useful aggregates. For example, you could calculate an average mark for every media: from django.db.models import Avg media_with_markavg = Media.objects.annotate(average_mark=Avg('mark_set__mark'))

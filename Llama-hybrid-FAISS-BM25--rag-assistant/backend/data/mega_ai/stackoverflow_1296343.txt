@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1296343
+[parent_id]: 1296311
+[tags]: 
+class Borg: _shared_state = {} def __init__(self): self.__dict__ = self._shared_state 1) since Borg._shared_state is initialized at class-level (not in __init__ ) it is effectively static, e.g. shared by all instances of the class. 2) self.__dict__ is a dictionary that all objects have; it contains all instance attributes. thus, self.a=1 assert(self.a == self.__dict__['a']) #True 3) Note that a Borg means 'all instances share the same state', a singleton means 'only one instance'. It's pretty much the same effect. Alex Martelli pointed out that Borg is a pythonic Monostate, so see Monostate vs Singleton on SO . It seems that his Singleton class is more aptly named class ThisClassHasSingletonBehavior(Borg): .... because proves that x,y,z are not the same instance, even though they share the same state. So it's not REALLY a singleton, it just has the same overall effect, and is easy. AFAICT Borg is a elegant python-pattern for shared state (same state) behavior, where Singleton is an elegant cpp-pattern for same. not that this behavior is ever elegant.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 671148
+[parent_id]: 669989
+[tags]: 
+Perhaps this is overkill for a single process, but I've used shared sections to achieve something similar to what you describe. Every 32-bit DLL (or EXE) is composed of a collection of sections. By convention, each section name begins with a period. (The period is not required.) These sections can have the following attributes: READ, WRITE, SHARED, and EXECUTE. DLLs that need to share data among different mappings can use the #pragma pre-processor command in the DLL source file to create a shared data section that contains the data to be shared. #pragma data_seg(".shared") int iSharedVar = 0; #pragma data_seg() You must also tell the linker that the variables in the section you defined are to be shared by modifying your .DEF file to include a SECTIONS section or by specifying /SECTION:.shared,RWS in your link line. Here's an example SECTIONS section: SECTIONS .shared READ WRITE SHARED

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4157491
+[parent_id]: 
+[tags]: 
+Is there an 'upgrade_to_unique_lock' for boost::interprocess?
+
+I am looking for the best way to effectively share chunks of data between two (or more) processes in a writer-biased reader/writer model. My current tests are with boost::interprocess . I have created some managed_shared_memory and am attempting to lock access to the data chunk by using an interprocess mutex stored in the shared memory. However, even when using sharable_lock on the reader and upgradable_lock on the writer, the client will read fragmented values during write operations instead of blocking . While doing a similar reader/writer setup between threads in a single process, I used upgrade_to_unique_lock to solve this issue. However, I have not found its boost::interprocess equivalent. Does one exist? Server (writer): while (1) { // Get upgrade lock on the mutex upgradable_lock lock(myMutex); // Need 'upgrade_to_unique_lock' here so shared readers will block until // write operation is finished. // Write values here } Client (reader) while (1) { // Get shared access sharable_lock lock(myMutex); // Read p1's data here -- occasionally invalid! } I guess the bigger question at hand is this: is an interprocess mutex even the proper way to access shared memory between processes in a writer-biased setup? Note: using Boost 1.44.0

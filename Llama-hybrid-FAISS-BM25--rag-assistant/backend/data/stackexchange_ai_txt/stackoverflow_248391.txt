@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 248391
+[parent_id]: 248327
+[tags]: 
+It can work but a dedicated fiber attached SAN will be better. Local will usually be faster but it has limited size and won't scale easily. I'm not familiar with the hardware but we initially deployed a warehouse on a shared NAS. Here's what we found. We were regularly competing for resources on the head unit -- there was only so much bandwidth that it could handle. Massive warehouse queries and data loads were severely impacted. We needed 1.5 TB for our warehouse (data/indexes/logs) we put each of these resources onto a separate set of LUNS (like you might do with attached storage). Data was spanning just 10 disks. We ran into all sorts of IO bottlenecks with this. the better solution was to create one big partition across lots of small disks and store data, index and logs all in the same place. This sped things up considerably. If you're dealing with a moderately used OLTP system, you might be fine but a NAS can be troublesome.

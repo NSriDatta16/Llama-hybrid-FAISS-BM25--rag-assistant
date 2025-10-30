@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2122739
+[parent_id]: 
+[tags]: 
+Lifetime of a thrown object caught by reference
+
+The C++ Standard, paragraph 15.1.4 sais: The memory for the temporary copy of the exception being thrown is allocated in an unspecified way, except as noted in 3.7.3.1. The temporary persists as long as there is a handler being executed for that exception. I'm wondering why this code crashes (I know that it's not best practice): class magicException { private: char* m_message; public: magicException(const char* message) { m_message = new char[strlen(message) + 1]; strcpy(m_message, message); } ~magicException() { cout Specifically, the destructor of the thrown magicException object gets called before the catch block. If I however add a copy constructor to my class: magicException(const magicException& other) { cout Then the code works, the destructor gets called at the expected place (the end of the catch block), but interestingly the copy constructor still doesn't get called. Is it optimized away by the compiler (Visual C++ 2008 with optimizations turned off), or am I missing something?

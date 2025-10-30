@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2551666
+[parent_id]: 
+[tags]: 
+Import C++ dll failed in Python
+
+Following document in "Extending and Embedding the Python Interpreter", I created a VC project, and a dll file was successfully created with name "spam_d.dll" Main code was static PyObject * spam_system(PyObject *self, PyObject *args) { const char *command; int sts; if (!PyArg_ParseTuple(args, "s", &command)) return NULL; sts = system(command); return Py_BuildValue("i", sts); } static PyMethodDef SpamMethods[] = { {"system", spam_system, METH_VARARGS, "Execute a shell command."}, {NULL, NULL, 0, NULL} /* Sentinel */ }; PyMODINIT_FUNC initspam(void) { (void) Py_InitModule("spam", SpamMethods); } Then I typed following command in python: import spam [39003 refs] spam.system("pwd") /SVN/Python/PCbuild 0 [39005 refs] It looks working correctly. But when I rename the dll name from spam_d.pyd to spam.pyd. Python can't find the module. >>> import spam Traceback (most recent call last): File " ", line 1, in ImportError: No module named spam [39005 refs] From the first case, it looks python could setup relationship between "import spam" and "spam_d.pyd" correctly. How did python know "spam" module is "spam_d.pyd", but not "spam.pyd"? And is there any documents mention it.

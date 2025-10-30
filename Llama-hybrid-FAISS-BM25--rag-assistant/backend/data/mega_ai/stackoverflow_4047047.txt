@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4047047
+[parent_id]: 4046667
+[tags]: 
+Depending on the size of your data and the actual condition, you have two basic approaches: 1) use MERGE MERGE TOP (...) INTO table1 USING table2 ON table1.column = table2.column WHEN MATCHED THEN UPDATE SET table1.counter += 1 WHEN NOT MATCHED SOURCE THEN INSERT (...) VALUES (...); the TOP is needed because when you're doing a huge update like this (you mention the table is 'big', big is relative, but lets assume truly big, +100MM rows) you have to batch the updates, otherwise you'll overwhelm the transaction log with one single gigantic transaction. 2) use a cursor, as you are trying. Your original question can be easily solved, simply always update and then check the count of rows updated: UPDATE table SET column += 1 WHERE ...; IF @@ROW_COUNT = 0 BEGIN -- no match, insert new value INSERT INTO (...) VALUES (...); END Note that this approach is dangerous though because of race conditions: there is nothing to prevent another thread from inserting the value concurrently, so you may end up with either duplicates or a constraint violation error (preferably the latter...).

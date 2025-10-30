@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1546300
+[parent_id]: 
+[tags]: 
+How can I optimize this query?
+
+I've got a bit of a nasty query with several subselects that are really slowing it down. I'm already caching the query, but the results of it changes often and the query results are meant to be shown on a high traffic page. SELECT user_id, user_id AS uid, (SELECT correct_words FROM score WHERE user_id = `uid` ORDER BY correct_words DESC, incorrect_words ASC LIMIT 0, 1) AS correct_words, (SELECT incorrect_words FROM score WHERE user_id = `uid` ORDER BY correct_words DESC, incorrect_words ASC LIMIT 0, 1) AS incorrect_words FROM score WHERE user_id > 0 AND DATE(date_tested) = DATE(NOW()) GROUP BY user_id ORDER BY correct_words DESC,incorrect_words ASC LIMIT 0,7 The goal of the query is to pick out the top score for users for that day, but only show the highest scoring instance of that user instead of all of their scores (So, for instance, if one user actually had 4 of the top 10 scores for that day, I only want to show that user's top score and remove the rest) Try as I might, I've yet to replicate the results of this query any other way. Right now its average run time is about 2 seconds, but I'm afraid that might increase greatly as the table gets bigger. Any thoughts?

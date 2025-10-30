@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3047400
+[parent_id]: 
+[tags]: 
+Using @Context, @Provider and ContextResolver in JAX-RS
+
+I'm just getting acquainted with implementing REST web services in Java using JAX-RS and I ran into the following problem. One of my resource classes requires access to a storage backend, which is abstracted away behind a StorageEngine interface. I would like to inject the current StorageEngine instance into the resource class serving the REST requests and I thought a nice way of doing this would be by using the @Context annotation and an appropriate ContextResolver class. This is what I have so far: In MyResource.java : class MyResource { @Context StorageEngine storage; [...] } In StorageEngineProvider.java : @Provider class StorageEngineProvider implements ContextResolver { private StorageEngine storage = new InMemoryStorageEngine(); public StorageEngine getContext(Class type) { if (type.equals(StorageEngine.class)) return storage; return null; } } I'm using com.sun.jersey.api.core.PackagesResourceConfig to discover the providers and the resource classes automatically, and according to the logs, it picks up the StorageEngineProvider class nicely (timestamps and unnecessary stuff left out intentionally): INFO: Root resource classes found: class MyResource INFO: Provider classes found: class StorageEngineProvider However, the value of storage in my resource class is always null - neither the constructor of StorageEngineProvider nor its getContext method is called by Jersey, ever. What am I doing wrong here?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2150627
+[parent_id]: 2089370
+[tags]: 
+I got this myself. Here is what I did. First,I made mistake on counting in the above. By default Magento lets SKU# be 64 max long. This is because the shortest of the SKU attributes( in table catalog_product_entity) in the DB is set to varchar(64). Change SKU attribute in catalog_product_entity table to varchar(255) or any length you want. If this length is less than 255 you are fine otherwise you have to change other SKU attributes such as Order SKU, Quote SKu and other in the DB By setting the SKU length too large it breaks the grid in the Catalog->Product Manage. One solutions is to insert following code in /design/adminhtml/default/default/template/widget/grid.phtml line 157 (after this line: getCollection() as $_index=>$_item): ?> ) getData('sku'); if(strlen($sku)>60){ $sku = substr($sku,0,60); } $_item->setData('sku',$sku); ?> Now even though you will not be able to see the full SKU number in Catalog->Product Manage, you will see full SKU when double click/edit the product individually. I hope it was useful. Best

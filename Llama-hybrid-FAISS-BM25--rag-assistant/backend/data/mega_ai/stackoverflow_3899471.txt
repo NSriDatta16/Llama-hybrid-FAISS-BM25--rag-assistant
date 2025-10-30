@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3899471
+[parent_id]: 3898482
+[tags]: 
+You hit the nail on the head with the observation that you're getting the same data from self.body because it's the same in memory of the Python process running CherryPy. self.debug maintains 'state' for this reason, it's an attribute of the running server. To set data for the current session, use cherrypy.session['fieldname'] = 'fieldvalue', to get data use cherrypy.session.get('fieldname'). You (the programmer) do not need to know the session ID, cherrypy.session handles that for you -- the session ID is automatically generated on the fly by cherrypy and is persisted by exchanging a cookie between the browser and server on subsequent query/response interactions. If you don't specify a storage_type for cherrypy.session in your config, it'll be stored in memory (accessible to the server and you), but you can also store the session files on disk if you wish which might be a handy way for you to debug without having to write a bunch of code to dig out session IDs or key/pair values from the running server. For more info check out http://www.cherrypy.org/wiki/CherryPySessions

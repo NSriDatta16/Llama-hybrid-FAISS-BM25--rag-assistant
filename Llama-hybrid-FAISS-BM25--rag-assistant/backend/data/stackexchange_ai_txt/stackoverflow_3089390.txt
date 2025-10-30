@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3089390
+[parent_id]: 3088282
+[tags]: 
+I believe your problem is that directory including the file you are trying to load is within the codebase where class files and application resources are looked up. So, you end up mixing trusted and untrusted resources, which is not secure. If the applet is hosted on an http, or better https, server then the issue doesn't arise for files. Note you can use the JNLP APIs for applets to "open" or write files through a file dialog. Your resource handling leaves the file open in the case of exceptions. Resource handling should be written in the style: Resource resource = acquire(); try { use(resource); } finally { resource.release(); } In your specific case: final FileOutputStream rawOut = new FileOutputStream(file); try { ... out.flush(); } finally { rawOut.close(); }

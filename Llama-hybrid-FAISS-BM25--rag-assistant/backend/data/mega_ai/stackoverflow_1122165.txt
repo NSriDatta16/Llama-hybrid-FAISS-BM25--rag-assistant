@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1122165
+[parent_id]: 1122153
+[tags]: 
+The space you are seeing is for SEGMENTS on tablespace. A Tablespace contains Segments. Each Segment is associated to an Index or a Table. Segments contains extends, and extends contains blocks. An for a table, a block contains rows. When you delete rows on a table you are freeing the space ocuppied by rows but the space for new segments remains equal. To free this space you can try to: ALTER TABLESPACE xxx COALESCE; or ALTER TABLE xxx MOVE; The first one, will "combine all contiguous free extents into larger contiguous extents" . Depending on your configuracion, this can be executed by Oracle automatically. Also, may be it does not free to much because the location of data relative to the highwatermark on segment. The second one "lets you relocate data of a nonpartitioned table or of a partition of a partitioned table into a new segment, optionally in a different tablespace, and optionally modify any of its storage attributes." . Be carefull with this because you need free space to achieve this, execute it against another tablespace or add more datafiles.

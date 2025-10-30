@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1173332
+[parent_id]: 1172598
+[tags]: 
+It's kind of ugly, but you can inherit from the role provider you're currently using (SqlRoleProvider, WindowsTokenRoleProvider, AuthorizationStoreRoleProvider), override GetRolesForUser, call the base implementation to get the roles, and combine them as necessary there. Then obviously put your custom role provider in your web.config in the configuration section. You'd only need to override the one method (and maybe GetUsersInRole) and combine them as necessary. public override string[] GetRolesForUser( string username ) { List roles = new List ( base.GetRolesForUser(username) ); if( roles.Contains("Reporting") && roles.Contains("Archiving") ) { roles.Add("ReportingAndArchiving"); } return roles.ToArray(); }

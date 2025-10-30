@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2935678
+[parent_id]: 2935616
+[tags]: 
+You can first build an uninitialized array: pixarray = (ctypes.c_int * (w_px * h_px))() and then copy the image's contents into it: # dylib in MacOSX, cdll.wincrt in Win, libc.so.? in Unix, ... clib = ctypes.CDLL('libc.dylib') _ = clib.memcpy(pixarray, im.tostring(), w_px * h_px * 4) The return value of memcpy is an address you don't care about, so I "swallowed" it by assigning it to name "single underscore" (which by convention means "I don't care about this one";-). Edit : as @Mu Mind points out in a comment, the latter fragment can usefully be simplified to use ctypes.memmove without the need to go platform-dependent to ferret out clib : just do _ = ctypes.memmove(pixarray, im.tostring(), w_px * h_px * 4)

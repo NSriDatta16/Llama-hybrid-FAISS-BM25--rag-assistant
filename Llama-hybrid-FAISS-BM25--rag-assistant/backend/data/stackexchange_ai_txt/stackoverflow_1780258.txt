@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1780258
+[parent_id]: 1778092
+[tags]: 
+Unless you have other requirements (such as watching the rate and size during the download), the steps that you outlined are the easiest to think about and implement. You can export the underlying user-agent object in LWP::Simple. If you just want to watch the download for a one-off, you can set the show_progress bit of the user-agent: use LWP::Simple qw($ua getstore); $ua->show_progress(1); getstore( 'http://www.theperlreview.com/Issues/subscribers.html', 'subscribers.html' ); To do more work, you can use LWP::Simple and still do the same thing ysth suggests : use LWP::Simple qw($ua); $ua->response_header( sub { my($response, $ua, $h) = @_; ... } ); In that subroutine, you read the data and do whatever you like with it, including keeping a timer. Once you get your answer, you can delete that bit of code and go back to just getstore . Flavio Poletti wrote "Watching LWP's Activity" for The Perl Review, Spring 2009 and shows many uses of this technique.

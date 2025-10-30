@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4513820
+[parent_id]: 4513761
+[tags]: 
+Try SynchronizationContext.Current instead. This has the Post and Send members which roughly map to BeginInvoke and Invoke on Control . These operations will continue to function so long as the UI thread is alive vs. a specific control. The type SynchronizationContext is not specific to WinForms and solutions leveraging it will be portable to other frameworks such as WPF. For example. BeginInvoke Code void OnButtonClicked() { DoBackgroundOperation(this); } void DoBackgroundOperation(ISynchronizedInvoke invoke) { ThreadPool.QueueUserWorkItem(delegate { ... delegate.BeginInovke(new MethodInvoker(this.BackgroundOperationComplete), null); }); } SynchronizationContext code void OnButtonClicked() { DoBackgroundOperation(SynchronizationContext.Current); } void DoBackgroundOperation(SynchronizationContext context) { ThreadPool.QueueUserWorkItem(delegate { ... context.Post(delegate { this.BackgroundOperationComplete() }, null); }); }

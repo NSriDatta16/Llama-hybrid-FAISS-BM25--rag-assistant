@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3762595
+[parent_id]: 3761624
+[tags]: 
+If you use pragma pack(1), you can do the writes/reads in one hit on a chunk of memory. #include #include typedef struct ca_tag{ int i[4]; float f[3]; }ca_type; #pragma pack(1) void init(ca_type* c) // fill it with something { c->i[0] = 1; c->i[1] = 2; c->i[2] = 3; c->i[3] = 12; c->f[0] = 2.3; c->f[1] = 32.3; c->f[2] = 42.3; } int main() { FILE *stream; ca_type ca; char *ptr = (char*)&ca; char *ptr2 = (char*)&ca; init(&ca); if( (stream = fopen( "test.out", "wb" )) != NULL ) fwrite( ptr, sizeof( ca ), 1, stream ); else printf( "Problem opening for write\n" ); fclose(stream); memset((void *)&ca, 0, sizeof(ca));// zero the lot if( (stream = fopen( "test.out", "rb" )) != NULL ) fread( (void*)ptr2, sizeof( ca ), 1, stream ); else printf( "Problem opening for read\n" ); return 0; } Error checking needs doing as before

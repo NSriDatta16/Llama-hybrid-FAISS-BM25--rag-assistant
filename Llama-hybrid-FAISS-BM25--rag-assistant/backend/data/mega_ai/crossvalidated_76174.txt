@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 76174
+[parent_id]: 
+[tags]: 
+Autoregressive prior distributions
+
+I have a set of 50 ( P ) time series' and each one is on a slightly different but should be influenced by the same effects of time. To get the time effects I have constructed the following model random intercept GLM with a Poisson Link Function (below). Since I think observations from day to day are likley to be correlated, I put a prior on the coefficient for each day ( betastar[d] on beta[d] ) centered at the previous day. I haven't really seen this done before so I wanted to see if anyone sees any serious issues with this fairly simple model structure. Here is some jags/bugs code to explain: model { #prior on random intercepts for (p in 1:P){ alpha[p] ~ dnorm(0,0.001) } for (d in 2:D){ betastar[d] ~ dnorm(beta[d-1],0.001) beta[d] ~ dnorm(betastar[d],0.001) } beta[1] ~ dnorm(0,0.001) #likelihood for (i in 1:PDs){ y[i] ~ dpois(exp(alpha[lookupP[i]] + beta[lookupD[i]])) }}

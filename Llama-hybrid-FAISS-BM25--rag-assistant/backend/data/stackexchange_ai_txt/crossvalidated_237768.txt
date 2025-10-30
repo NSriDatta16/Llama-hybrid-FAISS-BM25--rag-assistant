@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 237768
+[parent_id]: 
+[tags]: 
+Under periodic BPTT, is softmax evaluated only at the end of the period?
+
+Suppose I have a continuous sequence $X$ of words and I wish to train a RNN language model. According to [1], I would split $X$ into subsequences $X^{1..|X|/k_1}$ $k_1$ sized subsequences ($k_1$ is our period), then for each subsequence $X^i$, propagate $X^i_1$ through the network, then $X^i_2$, ... $X^i_{k_1}$, storing the hidden state of the network for the last $k_2$ of these forward propagations. Finally, the softmax is evaluated only for the $X^i_{k_1}$ word, ie: how well did the the network predict this last word. This error is then backpropagated through time for $k_2$ time steps, using the hidden state for these time steps that we stored previously to calculate the gradients. My question is: I feel it's a bit strange to only evaluate the softmax at the end of the $k_1$ period. How does doing it this way actually account for errors made in the timesteps prior to the last? BPTT will backpropagate the error made at $X^i_{k_1}$ for $k_2$ timesteps, but what about the errors made at $X^i_{1...k_1-1}$ which were never calculated using softmax? Don't these matter just as much? Thanks for your help! [1] Mikolov, Tomáš. "Statistical language models based on neural networks." Presentation at Google, Mountain View, 2nd April (2012).

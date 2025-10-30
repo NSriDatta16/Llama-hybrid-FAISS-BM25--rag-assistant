@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3294915
+[parent_id]: 3293429
+[tags]: 
+As Steve mentioned, you're trying to retrieve settings from the Azure configuration settings, which don't exist in a console app. If you want to write your code to run in either non-Azure or Azure environments, you can specify a configuration publisher. When in Azure, it's simply a wrapper. Otherwise, you basically redirect to app.config / web.config. There's a great CodeProject article that demonstrates this. Here's a code snippet from that article. In essence, you'd specify the configuration publisher in your OnStart method: CloudStorageAccount.SetConfigurationSettingPublisher( StorageAccountFactory.GetConfigurationSettingPublisher() ); In this case, you'd have a factory method deciding where to store/retrieve config settings, based on whether you're in Azure (RoleEnvironment.IsAvailable): public static Action > GetConfigurationSettingPublisher() { if (RoleEnvironment.IsAvailable) return (configName, configSetter) => configSetter(RoleEnvironment.GetConfigurationSettingValue(configName)); return (configName, configSetter) => configSetter(ConfigurationManager.AppSettings[configName]); }

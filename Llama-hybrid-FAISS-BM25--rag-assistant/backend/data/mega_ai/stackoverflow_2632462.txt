@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2632462
+[parent_id]: 2632347
+[tags]: 
+Keys on VARCHAR columns can be very long which results in less records per page and more depth (more levels in the B-Tree ). Longer indexes also increase the cache miss ratio. How many strings in average map to each integer? If there are relatively few, you can create an index only on integer column and PostgreSQL will do the fine filtering on records: CREATE INDEX ix_mytable_assoc ON mytable (assoc); SELECT floatval FROM mytable WHERE assoc = givenint AND phrase = givenstring You can also consider creating the index on the string hashes: CREATE INDEX ix_mytable_md5 ON mytable (DECODE(MD5(phrase), 'HEX')); SELECT floatval FROM mytable WHERE DECODE(MD5(phrase), 'HEX') = DECODE(MD5('givenstring'), 'HEX') AND phrase = givenstring -- who knows when do we get a collision? Each hash is only 16 bytes long, so the index keys will be much shorter while still preserving the selectiveness almost perfectly.

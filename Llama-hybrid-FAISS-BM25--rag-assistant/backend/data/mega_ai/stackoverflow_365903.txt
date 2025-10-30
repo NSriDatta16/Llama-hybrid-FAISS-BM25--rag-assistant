@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 365903
+[parent_id]: 
+[tags]: 
+Complex or Deep Object Storage in Ramaze Session is Broken?
+
+(this is regarding the Ramaze.net framework) I ran into some really strange problems while storing custom Objects in session. I noticed that only the attributes on the objects immediately stored in session were being updated. However, if those objects contained references to other objects, those referenced objects were not updated if the immediate objects contained in session did not change during the request. This problem only became apparent to me when using Ramaze::FileCache as my session caching backend. I believe the problem is masked or not an issue when using in-memory sessions. I discovered the problem is because of a "shallow copy" in the session logic found in Ramaze::Session::Hash#method_missing (lib/ramaze/current/session/hash.rb). As a quick test to make sure my thinking was correct, I commented out the "difference check," essentially forcing session to be updated every time. def method_missing(*args, &block) old = @hash.dup result = @hash.send(*args, &block) #unless old == @hash Cache.sessions[@session.session_id] = self #end result end This little hack fixed my problem. Now my questions are: is it a safe and reasonable solution? Should I just avoid storing complex/deep objects in session? Is there something I'm missing?

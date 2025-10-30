@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3363999
+[parent_id]: 
+[tags]: 
+linkage error with non-member functions
+
+------------------blah.h------------------------ #pragma once namespace SomeNamespace{ static void someMethod(){} } -----------------blah.c-------------------------- #include “blah.h” int main(int argc, char**argv){ SomeNamespace::someMethod(); return 0; } The above works fine but if I omit ‘static’ I get: >stdafx.obj : error LNK2005: "void __cdecl SomeNamespace::someMethod(void)" (?someMethod@SomeNamespace@@YAXXZ) already defined in Dude.obj 1>...\Debug\Dude.exe : fatal error LNK1169: one or more multiply defined symbols found I read about what ‘static’ does to non-member functions – http://www.velocityreviews.com/forums/t284052-static-functions.html … ...give it internal linkage so that it won't be visible outside the compilation unit -- i.e., (over-simplified) the linker will not see it. This use of 'static' is deprecated, and imposes the limitation that the function cannot be used as a template argument. The modern way is to instead place the function in an anonymous namespace… But the thing is I want the method to be exposed. What am I doing wrong?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5108160
+[parent_id]: 5108064
+[tags]: 
+Looking at all the fields involved, a covering index on each table would involve may columns t1: Y, F, H, A t2: X, G, C, D, E How selective are ANY of the criteria: t2.X, t2.G or t1.Y, t1.F, t1.H ? If none of the individual columns are selective enough (ideally 0.5% or less), you may want to create a or several covering index that involve multiple columns, for example t2 (G, X) t1 (H, F, Y) Note: The order of columns in an index is very important - always put the most selective (the one that divides the column data into the most distinct sets) first. At the expense of storage, you can make the index COVER the query by providing all the necessary columns in the index itself. This means the query does not need to go back to table data at all. create index ix_t2 on t2 (G,X) INCLUDE (C,D,E) create index ix_t1 on t1 (H,F,Y) INCLUDE (A) EDIT Looks like I slipped a SQL Server DDL in there. In Oracle, you would have to expand the index to become t2 (G,X, C,D,E) - but that increases selectivity requirements for index usage since the index key becomes very long.

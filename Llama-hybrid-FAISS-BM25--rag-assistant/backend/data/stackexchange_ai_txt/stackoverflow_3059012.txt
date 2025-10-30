@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3059012
+[parent_id]: 3058912
+[tags]: 
+BeautifulSoup isn't a DOM library per se (it doesn't implement the DOM APIs). To make matters more complicated, you're using namespaces in that xml fragment. To parse that specific piece of XML, you'd use BeautifulSoup as follows: from BeautifulSoup import BeautifulSoup xml = """ 4000 0 """ doc = BeautifulSoup( xml ) print doc.find( 'web:total' ).string print doc.find( 'web:offset' ).string If you weren't using namespaces, the code could look like this: from BeautifulSoup import BeautifulSoup xml = """ 4000 0 """ doc = BeautifulSoup( xml ) print doc.xml.web.total.string print doc.xml.web.offset.string The key here is that BeautifulSoup doesn't know (or care) anything about namespaces. Thus web:Web is treated like a web:web tag instead of as a Web tag belonging to th e web namespace. While BeautifulSoup adds web:web to the xml element dictionary, python syntax doesn't recognize web:web as a single identifier. You can learn more about it by reading the documentation .

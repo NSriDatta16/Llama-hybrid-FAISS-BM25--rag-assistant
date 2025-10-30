@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4359520
+[parent_id]: 4359023
+[tags]: 
+Why was the previous answer not OK? Your version use a binary search, which is a good idea. But it works on a TListView, so every Items[] call will be dead slow. The suggestion was: Use TStringList to store the data Use your TListView in virtual mode, to draw the TStringList content by events Use some optimized code, without binary search, because code will be more easy to debug, and performance will be good enough Here was the code: procedure Extract(List, Dest: TStrings; Char1, Char2: char); var i,j: integer; V: cardinal; type PC = {$ifdef UNICODE}PCardinal{$else}PWord{$endif}; begin V := ord(Char1)+ord(Char2) shl (8*sizeof(char)); Dest.BeginUpdate; Dest.Clear; for i := 0 to List.Count-1 do begin if PC(pointer(List[i]))^=V then begin for j := i to List.Count-1 do begin Dest.Add(List[j]); if PC(pointer(List[j]))^<>V then break; // end the for j := loop end; break; // end the for i := loop end; Dest.EndUpdate; end; This procedure, applied on a TStringList (and not TListView.Items), will be much faster than any binary-search on a TListView.Items.

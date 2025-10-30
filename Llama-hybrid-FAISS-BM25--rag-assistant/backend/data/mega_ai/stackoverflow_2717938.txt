@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2717938
+[parent_id]: 2717846
+[tags]: 
+You're right, this is highly subjective matter however I would probably use a mix of your two options. You have a class (say Helper) that has the __call() (and/or __callStatic() if you're using PHP 5.3+) magic methods , when a non defined [static] method is called it'll load the respective helper file and execute the helper function. Keep in mind though that including files decreases performance, but I believe the benefit you gain in terms of file organization far outweighs the tiny performance hit. A simple example: class helper { function __callStatic($m, $args) { if (is_file('./helpers/' . $m . '.php')) { include_once('./helpers/' . $m . '.php'); return call_user_func_array($m, $args); } } } helper::isFilePhp(/*...*/); // ./helpers/isFilePhp.php helper::getCurrentFolder(/*...*/); // ./helpers/getCurrentFolder.php You can further optimize this snippet and even have several types of helpers (Folder, File) and so on, by adding a __call[Static]() magic method to each of your classes and implementing some logic in the folder/file structure of your helper files/functions.

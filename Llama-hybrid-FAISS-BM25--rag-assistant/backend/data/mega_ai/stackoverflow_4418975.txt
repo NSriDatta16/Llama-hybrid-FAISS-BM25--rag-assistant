@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4418975
+[parent_id]: 
+[tags]: 
+returning meaningful error messages from a parser written with Scala Parser Combinators
+
+I try to write a parser in scala using Parser Combinators. If I match recursively, def body: Parser[Body] = ("begin" ~> statementList ) ^^ { case s => { new Body(s); } } def statementList : Parser[List[Statement]] = ("end" ^^ { _ => List() } )| (statement ~ statementList ^^ { case statement ~ statementList => statement :: statementList }) then I get good errormessages whenever there is a fault in a statement. However, this is ugly long code. So I'd like to write this: def body: Parser[Body] = ("begin" ~> statementList { new Body(s); } } def statementList : Parser[List[Statement]] = rep(statement) This code works, but only prints meaningful messages if there is an error in the FIRST statement. If it is in a later statement, the message becomes painfully unusable, because the parser wants to see the whole erroneous statement replaced by the "end" token: Exception in thread "main" java.lang.RuntimeException: [4.2] error: "end" expected but "let" found let b : string = x(3,b,"WHAT???",!ERRORHERE!,7 ) ^ My question: is there a way to get rep and repsep working in combination with meaningful error messages, that place the caret on the right place instead of on the begin of the repeating fragment?

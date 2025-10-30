@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 612874
+[parent_id]: 611323
+[tags]: 
+The only really compiler-agnostic answer I can give you is that it is just as possible as calling C++ from C on your system. Much like with C, you have to figure out your C++ routine's name-mangled symbol and write a binding on the C (in this case the Ada) side that links to that mangled name. You will also probably have to do some things on the C++ side, like declaring the C++ function extern. If you can declare your C++ function extern "C", it's easy. Just do that on the C++ side, and use Ada's standard C import features on the Ada side. Example: in your cpp: extern "C" int cpp_func (int p1, int p2) { ; // Whatever.. } in your .adb: function cpp_func (p1, p2 : Interfaces.C.Int) return Interfaces.C.Int; pragma Import (C, cpp_func); ... Result : constant Interfaces.C.Int := cpp_func (1, 2);

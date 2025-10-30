@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2410580
+[parent_id]: 
+[tags]: 
+How to only pay the dependency penalty for the implementation you use in Python?
+
+I have a fairly simple set of functionality for which I have multiple implementations, e.g., a datastore that could be backed by Redis, MongoDB, or PostgreSQL. How should I structure/write my code so that code that wants to use one of these implementations only needs the dependencies for that implementation, e.g., they don't need to have psycopg2 installed if they are using the Redis backend. Here's an example. Assume the following module, example.py . class RedisExample(object): try: import redis except ImportError: print("You need to install redis-py.") def __init__(self): super(RedisExample, self).__init__() class UnsatisfiedExample(object): try: import flibbertigibbet except ImportError: print("You need to install flibbertigibbet-py") def __init__(self): super(UnsatisfiedExample, self).__init__() Here's my Python shell experience: >>> import example You need to install flibbertigibbet-py Alternately: >>> from example import RedisExample You need to install flibbertigibbet-py I'd really rather I didn't get that error until I tried to instantiate an UnsatisfiedExample . Is there any sort of common way to approach this problem? I've thought about making example a package with each backend getting its own module and using a factory function, but I wanted to make sure I wasn't missing something better. Thanks.

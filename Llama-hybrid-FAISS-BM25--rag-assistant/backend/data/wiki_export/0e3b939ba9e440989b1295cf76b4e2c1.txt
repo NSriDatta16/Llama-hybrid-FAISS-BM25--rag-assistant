@@ -1,0 +1,28 @@
+A guard byte is a part of a computer program's memory that helps software developers find buffer overflows while developing the program.
+
+Principle
+When a program is compiled for debugging, all memory allocations are prefixed and postfixed by guard bytes. Special memory allocation routines may then perform additional tasks to determine unwanted read and write attempts outside the allocated memory. These extra bytes help to detect that the program is writing into (or even reading from) inappropriate memory areas, potentially causing buffer overflows. In case of accessing these bytes by the program's algorithm, the programmer is warned with information assisting him/her to locate the problem.
+
+Checking for the inappropriate access to the guard bytes may be done in two ways:
+ by setting a memory breakpoint on a condition of write and/or read to those bytes, or
+ by pre-initializing the guard bytes with specific values and checking the values upon deallocation.
+
+The first way is possible only with a debugger that handles such breakpoints, but significantly increases the chance of locating the problem. The second way does not require any debuggers or special environments and can be done even on other computers, but the programmer is alerted about the overflow only upon the deallocation, which is sometimes quite late.
+
+Because guard bytes require additional code to be executed and additional memory to be allocated, they are used only when the program is compiled for debugging. When compiled as a release, guard bytes are not used at all, neither the routines working with them.
+
+Example
+A programmer wants to allocate a buffer of 100 bytes of memory while debugging. The system memory allocating routine will allocate 108 bytes instead, adding 4 leading and 4 trailing guard bytes, and return a pointer shifted by the 4 leading guard bytes to the right, hiding them from the programmer. The programmer should then work with the received pointer without the knowledge of the presence of the guard bytes.
+
+If the programmer's algorithm writes right outside the assigned space, it will overwrite the guard bytes. Later, upon deallocation, the deallocating routine will check, whether the guard bytes are modified and reports an error if appropriate.
+
+Problems
+Memory allocation routines fill guard bytes with values that are not supposed to be used by the programmer's algorithms. This is, however, not predictable. When the algorithm uses those values and overwrites the guard bytes with them (only the last write before deallocation is relevant), the overflow can not be detected, because the bytes have not actually changed. Instead, the memory breakpoint option can be used, set on a condition of access to those bytes in a debugger.
+
+See also
+
+ Buffer overflow protection
+
+Computer memory
+Programming idioms
+Debugging

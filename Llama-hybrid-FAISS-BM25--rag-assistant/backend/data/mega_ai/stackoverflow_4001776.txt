@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4001776
+[parent_id]: 
+[tags]: 
+Issue with exceptions being caught by Win32 message dispatcher
+
+This is kinda a very low-level type question, but maybe someone here has some insight... I'm having an issue where unhandled SEH exceptions (such as Access Violations) are seemingly being caught at the Win32 message dispatch level, rather than terminating the program. I found the following reference blog, which explains the problem, but in the context of WM_TIMER messages only: http://bugswar.blogspot.com/2010/07/why-its-not-crashing.html I'm experiencing the issue with Win 2008R2, and on "normal" messages (eg: WM_COMMAND, etc.). I suspect it might be Windows trying to "help" by masking exceptions, but I want it to error out; the "continue and ignore" behavior is causing problems with the application in general. I realize I could try to wrap every function in a try/catch, and use the compiler option /EHa to convert SEH exceptions into C++ exceptions (which is itself very discouraged and dangerous), but this is obviously sub-optimal. According to the referenced blog, there's a flag in the AppCompatFlags2 in the TIB structure (http://en.wikipedia.org/wiki/Win32_Thread_Information_Block) which can cause the Win32 handler to not catch/discard the SEH exception, but I have no idea how to set/enable it. Anyone have any insight on this? Is there an AppCompat setting I can enable to have Windows not catch and ignore exceptions?

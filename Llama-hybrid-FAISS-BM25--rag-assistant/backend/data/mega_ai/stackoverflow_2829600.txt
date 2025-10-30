@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2829600
+[parent_id]: 2829567
+[tags]: 
+Warning: these commands modify your database. Make sure you have a backup copy so that you can restore the data again if necessary. You can add the requirement that v1 must be less than v2 which will cut your storage requirement roughly in half. You can make sure all the rows in the database satisfy this condition and reorder those that don't and delete one of the rows when you have both. This query will insert any missing rows where you have for example (5, 1) but not (1, 5): INSERT INTO table1 SELECT T1.v2, T1.v1 FROM table1 T1 LEFT JOIN table1 T2 ON T1.v1 = T2.v2 AND T1.v2 = T2.v1 WHERE T1.v1 > T1.v2 AND T2.v1 IS NULL Then this query deletes the rows you don't want, like (5, 1): DELETE table1 WHERE v1 > v2 You might need to change other places in your code that were programmed before this constraint was added.

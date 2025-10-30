@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2255426
+[parent_id]: 2255333
+[tags]: 
+What you are trying to do is neither elegant nor advisable. You have somehow managed to invoke the routine in scalar context (that's what the "1/8" corresponds to). Return a hash reference. Now, take a look at: #!/usr/bin/perl package My::Mine; use strict; use warnings; sub test { my %h = ( a => { z => 1}, b => { y => 2}, ); return %h; } package main; use strict; use warnings; my $class = 'My::Mine'; print { $class->test }->{a}{z}, "\n"; That will not work. Instead, you will have to do: print +{ $class->test }->{a}{z}, "\n"; Now, that's elegant ( Not! ) See perldoc -f print . Long story short, return a reference to the hash. Note that the fresh anonymous hash you are constructing is not free. Nor is the cost of returning a hash as a flat list from a subroutine.

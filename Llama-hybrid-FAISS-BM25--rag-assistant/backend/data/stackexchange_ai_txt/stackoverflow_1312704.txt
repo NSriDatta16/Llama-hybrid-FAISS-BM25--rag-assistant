@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1312704
+[parent_id]: 1312331
+[tags]: 
+The best, safest, portable way to have each thread work with independent data is: import threading tloc = threading.local() Now each thread works with a totally independent tloc object even though it's a global name. The thread can get and set attributes on tloc , use tloc.__dict__ if it specifically needs a dictionary, etc. Thread-local storage for a thread goes away at end of thread; to have threads record their final results, have them put their results, before they terminate, into a common instance of Queue.Queue (which is intrinsically thread-safe). Similarly, initial values for data a thread is to work on could be arguments passed when the thread is started, or be taken from a Queue . Other half-baked approaches, such as hoping that operations that look atomic are indeed atomic, may happen to work for specific cases in a given version and release of Python, but could easily get broken by upgrades or ports. There's no real reason to risk such issues when a proper, clean, safe architecture is so easy to arrange, portable, handy, and fast.

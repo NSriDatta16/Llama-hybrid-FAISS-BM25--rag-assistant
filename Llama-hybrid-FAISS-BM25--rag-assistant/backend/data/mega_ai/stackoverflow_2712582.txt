@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2712582
+[parent_id]: 2710528
+[tags]: 
+No, not a bug, AFAIK. Take your expr rule for example: expr : factor ('*' factor)* -> ^('*' factor+) ; since the * might not be present, it should also not be in your AST rewrite rule. So, the above is incorrect and ANTLR complaining about it is correct. Now if you insert an imaginary token like MULT instead: expr : factor ('*' factor)* -> ^(MULT factor+) ; all is okay since your rule will always produce one or more factor 's. What you probably meant to do is something like this: expr : (factor -> factor) ('*' f=factor -> ^('*' $expr $f))* ; Also see chapter 7: Tree Construction from The Definitive ANTLR Reference . Especially the paragraphs Rewrite Rules in Subrules (page 173) and Referencing Previous Rule ASTs in Rewrite Rules (page 174/175).

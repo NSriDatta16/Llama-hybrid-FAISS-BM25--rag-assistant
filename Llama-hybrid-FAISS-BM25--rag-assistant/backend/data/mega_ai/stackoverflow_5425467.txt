@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5425467
+[parent_id]: 
+[tags]: 
+Castle Windsor's Resolve Caching Issue
+
+The WindsorContainer::Resolve method doesn't seem to be paying close enough attention to the arguments I'm using. That, or it's doing some caching and not resolving the second time. I have ILogger , which isn't important to see, and a single implementation of it: public class log4netLogger : ILogger { private log4net.ILog _logger; public log4netLogger(string name) { _logger = log4net.LogManager.GetLogger(name); } public log4netLogger(Type type) { _logger = log4net.LogManager.GetLogger(type); } // ... } And I have the following code that resolves ILogger from configuration: WindsorContainer c = new WindsorContainer(new XmlInterpreter()); var a = c.Resolve (new { name = "asdf" }); var b = c.Resolve (new { type = typeof(int) }); When a is assigned, the first constructor is used... when b is assigned, neither constructor is used and a == b is true. If I reverse the order and assign b first, the 2nd constructor will be used and the instances of ILogger will still be identical. Do I have to do something extra for it to pay closer attention to parameters (in the config perhaps), or am I just totally doing wrong? Config looks like:

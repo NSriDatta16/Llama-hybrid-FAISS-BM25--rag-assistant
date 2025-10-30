@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2549936
+[parent_id]: 2549801
+[tags]: 
+There's a few issues here. For one thing, add() is a member function of ARB, not BT. And, BT is a private subclass of ARB, so it can't be accessed from main(). p is a private member of ARB (as it should be), but it should really be a direct variable, not a pointer, so it will be automatically created and destroyed with ARB. As is, p is never initialized and there's no way to do so from outside ARB. I'm guessing here that ARB uses its internal BT p for internal storage, so the implementations of add() and del() both operate on p, and that MyFunct() is supposed to take that BT and generate a stack from it. If so, MyFunct() should take no parameters and simply reference p directly. So main() would look something like: ARB arb; arb.add(3) arb.add(5) STACK s = arb.myFunct(); // which should maybe be makeStack() or such This is all assuming I've correctly deduced your intentions here.

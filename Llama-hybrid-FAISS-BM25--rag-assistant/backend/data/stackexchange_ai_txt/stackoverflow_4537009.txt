@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4537009
+[parent_id]: 4530027
+[tags]: 
+require 'nokogiri' html = " var x = 10; Hello Hi " hdoc = Nokogiri::HTML(html) hdoc.xpath( '//*[text()]' ).each do |el| el.content='' unless el.name=="script" end puts hdoc #=> #=> #=> var x = 10; #=> #=> Warning : As you did not specify how to handle a case like foo bar the above may or may not do what you expect. Alternatively, the following may match your needs: hdoc.xpath( '//text()' ).each do |el| el.remove unless el.parent.name=="script" end Update Here's a more elegant solution using a single xpath to select all text nodes not part of a element. I've added more text nodes to show how it handles them. require 'nokogiri' hdoc = Nokogiri::HTML var x = 10; Hello foo Hi bar ENDHTML hdoc.xpath( '//text()[not(parent::script)]' ).each{ |text| text.remove } puts hdoc #=> #=> #=> var x = 10; #=> #=> For Ruby 1.9, the meat is more simply: hdoc.xpath( '//text()[not(parent::script)]' ).each(&:remove)

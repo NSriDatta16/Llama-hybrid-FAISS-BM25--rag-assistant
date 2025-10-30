@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2293307
+[parent_id]: 2293091
+[tags]: 
+The answer depends on what you mean by returning , because the ForAll method doesn't return anything. It invokes the delegate you specify in parallel for all elements of the collection. I would suppose that your code looks like this: data.AsParallel().ForAll(() => /* calculate and store result somewhere */); // more code The ForAll method doesn't wait for all delegates to complete, so more code can execute before all the delegates complete (and you also need to be careful in the store result somewhere bit, because it may run concurrently for multiple delegates!) I think the code could be rewritten more elegantly using the Select method: var res = data.AsParallel().Select(() => /* calculate the result */); In this case, the delegate simply returns the result. The Where method collects all the results and when you iterate over the returned IEnumerable , it guarantees that all delegates finished calculating.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3625696
+[parent_id]: 3625387
+[tags]: 
+you should use static method in this case and yes, look into man pthread_create. Signature of functiona is significant. Also if you create thread way your code show it will be terminated as soon as main() exits. You need to wait for thread to accomplish. I put example below. It is not ideal but seems good enough for demonstration. Please pay attention to static -> non-static method transition while handling thread start. It is common approach (although not the only one possible). #include #include class Test { public: static void* Run(void* me) { static_cast (me)->RunMe(); return NULL; } private: void RunMe() { printf("%p: %p is running.\n", pthread_self(), this); } }; int main() { pthread_t tid; Test test; printf("%p: creating thread for %p is running.\n", pthread_self(), &test); pthread_create(&tid, NULL, Test::Run, &test); printf("%p: waiting %p to finish.\n", pthread_self(), &test); // In real code you should check 'create' operation result. pthread_join(tid, NULL); printf("%p: OK, exiting\n", pthread_self()); return 0; }

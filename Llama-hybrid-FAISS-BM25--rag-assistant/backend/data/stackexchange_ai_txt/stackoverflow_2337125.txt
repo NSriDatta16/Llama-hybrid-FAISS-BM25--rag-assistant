@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2337125
+[parent_id]: 2336862
+[tags]: 
+I would most likely store the images by a hash of their contents. A 128-bit SHA, for instance. So, I'd rename a user's uploaded image 'foo.jpg' to be its 128-bit sha (probably in base 64, for uniform 16-character names) and then store the user's name for the file and its SHA in a database. I'd probably also add a reference count. Then if some folks all upload the same image, it only gets stored once and you can delete it when all references vanish. As for actual physical storage, now that you have a guaranteed uniform naming scheme, you can use your file system as a balanced tree. You can either decide how many files maximum you want in a directory, and have a balancer move files to maintain this, or you can imagine what a fully populated tree would look like, and store your files that way. The only real drawback to this scheme is that it decouples file names from contents so a database loss can mean not knowing what any file is called, but you should be careful to back up that kind of information anyway.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 694813
+[parent_id]: 694804
+[tags]: 
+You need to reorganize your loop a little bit. Right now you are holding the lock on runLock for a very long period of time. This will cause anyone calling the Stop method to hang until the if block succeeds or the Sleep call returns. This can lead to issues because you cannot look at _isRunning when the Stop method is called, only when it returns. Try reorganizing your code as follows private void SendLoop() { do { if ( _sockets.Count > 0 ) { } else { System.Threading.Thread.Sleep(10); } bool shouldContinue; lock ( runLock ) { shouldContinue = _IsRunning; } while(shouldContinue); } I'm not 100% sure this is the issue. But at least it should help clear things up a bit.

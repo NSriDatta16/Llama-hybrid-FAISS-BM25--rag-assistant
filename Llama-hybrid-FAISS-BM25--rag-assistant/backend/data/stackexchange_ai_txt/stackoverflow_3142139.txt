@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3142139
+[parent_id]: 
+[tags]: 
+Repository pattern, one interface, multiple classes
+
+Given this code public interface IRepository { IQueryable GetAll(); } and this public class XmlProductRepository : IRepository { private const string RelativePath = "~/data/products.xml"; public string Filename { get; private set; } public XmlLoader Loader { get; private set; } public XmlProductRepository(HttpContextBase httpContext, XmlLoader loader) { Filename = httpContext.Server.MapPath(RelativePath); Loader = loader; } public IQueryable GetAll() { return Loader.Load (Filename).AsQueryable(); } } what would you do to support many object types (apart from Product, additional 20 types like Plugin, Extension, Page, Section, etc.)? The implementation of the interface is the same for all object types, the only thing that is different is the RelativePath - we want to save different types into different folders organised by their type name, like so ~/data/Product/... ~/data/Plugin/... ~/data/Page/... So assume the only thing that changes is the path. Obviously we don't want to make a repository class for each one of those object types and copy the same code into each one of those classes. We just want to construct the path based on the object used for T.

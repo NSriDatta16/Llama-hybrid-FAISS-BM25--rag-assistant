@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5332390
+[parent_id]: 5330862
+[tags]: 
+That implementation looks correct for generating unbiased integers in a range. Another approach would be to take the random bytes as the infinite digits in the binary fraction 0.xxxxxx... , multiply that by bound and round down. It wouldn't actually take infinite digits, just as many as needed to determine what the rounded-down result is. I think that's more complex though. But generating numbers in the full range may be unnecessary for your protocol. RFC 5054 section 3.1 requires only 256-bit private exponents. That number comes from doubling the bit-length of the hash output and requires that a safe prime is used. An earlier draft of that RFC referred to On Diffie-Hellman key agreement with short exponents for an explanation, which is in the first paragraph of section 4 there. If you prefer more random bits, take the bit length of range minus 1. This is what OpenSSL does for Diffie-Hellman (search for BN_rand and the line before it). That's still easier to generate and less that twice shorter than the full range, and if that makes a difference you should use a larger prime.

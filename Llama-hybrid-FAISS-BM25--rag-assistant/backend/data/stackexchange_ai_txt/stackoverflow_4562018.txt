@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4562018
+[parent_id]: 
+[tags]: 
+One-off and no-data-problem
+
+I'm just getting started using RRDtool to collect climate data. I don't use the graph functionality, but rather use "fetch" to retrieve data. I then use another graphing solution (flot) to display the data, and that seems to work somewhat. But I had some small problems and decided to check the details of the update and fetching and was suddenly not so sure that things worked as I expected. So I've created a tiny shell script that creates a database, put a single value in it and then print the contents: #!/bin/sh RRD=test.rrd STEP=300 HB=600 # Remove previous databse to be sure that # old data does not affect the test rm -f $RRD # Create database rrdtool create $RRD \ --start 2999999999 --step $STEP \ DS:a:GAUGE:$HB:U:U \ RRA:AVERAGE:0.5:1:1000 # Do a single update rrdtool update $RRD \ 3000000400:123 # Fetch data and print to stdout rrdtool fetch $RRD \ --start 3000000000 --end 3000000900 AVERAGE I would expect this to print three (or perhaps four, not sure about the last one) values like this: 3000000000: -nan 3000000300: 123 3000000600: -nan 3000000900: -nan But this is what I get: 3000000300: -nan 3000000600: -nan 3000000900: -nan 3000001200: -nan So I've three questions: Why does the fetch command start at 300, instead of 0? Why does the fetch command include not only the last step (900) but also one more (1200)? Why was not the updated value accepted?

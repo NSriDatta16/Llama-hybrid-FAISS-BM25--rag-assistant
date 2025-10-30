@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2796487
+[parent_id]: 2796470
+[tags]: 
+The "responsible" answer would be for me to suggest building a ViewModel for the dialog and use two-way databinding on the TextBox so that the ViewModel had some "ResponseText" property or what not. This is easy enough to do but probably overkill. The pragmatic answer would be to just give your text box an x:Name so that it becomes a member and expose the text as a property in your code behind class like so: Then in your code behind... partial class MyDialog : Window { public MyDialog() { InitializeComponent(); } public string ResponseText { get { return ResponseTextBox.Text; } set { ResponseTextBox.Text = value; } } private void OKButton_Click(object sender, System.Windows.RoutedEventArgs e) { DialogResult = true; } } Then to use it... var dialog = new MyDialog(); if (dialog.ShowDialog() == true) { MessageBox.Show("You said: " + dialog.ResponseText); }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4905384
+[parent_id]: 4894976
+[tags]: 
+You don't need to put anything in your settings.py . Just use it directly in your model. For example, create storage.py wherever your app is located and put OverwriteStorage() in it. Then, your model could look like this: from storage import OverwriteStorage ... class MyModel(models.Model): ... image = ImageField(upload_to='images', storage=OverwriteStorage()) I am also using a custom storage system to overwrite existing files. My storage.py looks like this: from django.core.files.storage import FileSystemStorage class OverwriteStorage(FileSystemStorage): """ Returns same name for existing file and deletes existing file on save. """ def _save(self, name, content): if self.exists(name): self.delete(name) return super(OverwriteStorage, self)._save(name, content) def get_available_name(self, name): return name

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 42628
+[parent_id]: 
+[tags]: 
+How can I avoid requiring global information for performing regression on meter variables?
+
+Note: With a meter variable a timestamped value is the sum of all previous differences plus a difference to the most recent value. Think of a electricity meter counting the use of energy. The goal here is to perform some form of regression (e.g. a Random Forest method) on a data series of a meter variable and then use the resulting model to fix gaps in the data series and possibly do further analysis on the data, for example removing noise from a faulty sensor. However the possible patterns in the data are likely periodic on timescales smaller than the entire series. Thus we're not interested in modeling the sum of the values. We transform the data by calculating $$\delta_i=\frac{v_i-v_{i-1}}{t_i - t_{i-1}}$$ and then perform the regression on $\delta$ . With the generated model $m(t)$ we can calculate a missing value $v_i$ as $$v_i = v_{i-1} + (t_i - t_{i-1})\cdot m(t).$$ Easy, right? But now let's throw in some serious noise. Depending on the chosen regression method this doesn't matter much and only makes the predictions worse, but still useful. But what if we want to calculate a missing $v_i$ and $v_{i-1}$ happens to be some bogus value? The model doesn't mind, but for the calculation of $v_i$ we have to assume that $v_{i-1}$ is correct. Is there a way around that? Is it possible to calculate missing values using only (time-)local information?

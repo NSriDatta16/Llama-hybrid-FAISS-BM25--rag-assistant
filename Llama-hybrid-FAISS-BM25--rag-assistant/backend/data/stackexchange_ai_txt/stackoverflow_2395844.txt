@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2395844
+[parent_id]: 2395816
+[tags]: 
+You can write a mapping iterator that decorates an existing iterator and applies a function on it. In this case, the function transforms the objects from one type to another "on-the-fly". Something like this: import java.util.*; abstract class Transformer implements Iterable , Iterator { public abstract U apply(T object); final Iterator source; Transformer(Iterable source) { this.source = source.iterator(); } @Override public boolean hasNext() { return source.hasNext(); } @Override public U next() { return apply(source.next()); } @Override public void remove() { source.remove(); } public Iterator iterator() { return this; } } public class TransformingIterator { public static void main(String args[]) { List list = Arrays.asList("1", "2", "3"); Iterable it = new Transformer (list) { @Override public Integer apply(String s) { return Integer.parseInt(s); } }; for (int i : it) { System.out.println(i); } } }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4890867
+[parent_id]: 4890793
+[tags]: 
+Hash column should be a CHAR(32) as that is the length of the hash: CREATE TABLE `hashes` ( `id` INT NOT NULL AUTO_INCREMENT, `hash` CHAR(32), PRIMARY KEY (`id`) ); mysql> describe hashes; +-------+----------+------+-----+---------+----------------+ | Field | Type | Null | Key | Default | Extra | +-------+----------+------+-----+---------+----------------+ | id | int(11) | NO | PRI | NULL | auto_increment | | hash | char(32) | YES | | NULL | | +-------+----------+------+-----+---------+----------------+ If you want to select from the table given user input: -- Insert sample data: mysql> INSERT INTO `hashes` VALUES (null, MD5('hello')); Query OK, 1 row affected (0.00 sec) -- Test retrieval: mysql> SELECT * FROM `hashes` WHERE `hash` = MD5('hello'); +----+----------------------------------+ | id | hash | +----+----------------------------------+ | 1 | 5d41402abc4b2a76b9719d911017c592 | +----+----------------------------------+ 1 row in set (0.00 sec) You can add a key on hash for better performance.

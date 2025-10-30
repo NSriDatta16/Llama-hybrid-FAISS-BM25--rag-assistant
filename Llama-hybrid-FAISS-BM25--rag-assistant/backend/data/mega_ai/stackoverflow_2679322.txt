@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2679322
+[parent_id]: 2678850
+[tags]: 
+On my box, it takes about half a second to run the non-async one. Since there are about a half a million work items here, that means each one runs in about 1 microsecond on average. These items are too small to try to parallelize individually. The overhead of doing the thread-scheduling and synchronization will dominate the actual work. You need to choose better granularity. (I'll work on some quick code...) EDIT: Ok, the code as-is is not too easy to re-do to change the batch granularity without some major rewriting, so I don't have new code to share that doesn't give too much away. But I was able to make it run nearly twice as fast on my 2-core box by making batches of 50,000 elements each and doing the "map reduce" on each batch and a "parallel-map reduce" on the 10 or so batches. See also http://blogs.msdn.com/pfxteam/archive/2008/08/12/8849984.aspx especially the "task granularity" section.

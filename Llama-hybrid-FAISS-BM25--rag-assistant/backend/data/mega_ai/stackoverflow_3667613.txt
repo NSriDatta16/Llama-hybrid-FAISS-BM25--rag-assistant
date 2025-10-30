@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3667613
+[parent_id]: 3666678
+[tags]: 
+There is no SelectedItemsChanged event, I'm guessing you mean SelectedIndexChanged. What you can do is leverage the Control.BeginInvoke() method. The delegate target starts running when the UI thread goes idle again, after all the events have been fired. Make it look like this: bool listUpdated = false; private void listView1_SelectedIndexChanged(object sender, EventArgs e) { if (!listUpdated) { this.BeginInvoke(new MethodInvoker(updateList)); listUpdated = true; } } private void updateList() { listUpdated = false; // etc... }

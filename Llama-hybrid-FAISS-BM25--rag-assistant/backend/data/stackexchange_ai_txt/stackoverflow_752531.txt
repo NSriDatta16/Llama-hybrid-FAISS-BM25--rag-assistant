@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 752531
+[parent_id]: 186062
+[tags]: 
+Using the release version of MVC, here is what I do: [AcceptVerbs(HttpVerbs.Get)] [OutputCache(CacheProfile = "CustomerImages")] public FileResult Show(int customerId, string imageName) { var path = string.Concat(ConfigData.ImagesDirectory, customerId, "\\", imageName); return new FileStreamResult(new FileStream(path, FileMode.Open), "image/jpeg"); } I obviously have some application specific stuff in here regarding the path construction, but the returning of the FileStreamResult is nice and simple. I did some performance testing in regards to this action against your everyday call to the image (bypassing the controller) and the difference between the averages was only about 3 milliseconds (controller avg was 68ms, non-controller was 65ms). I had tried some of the other methods mentioned in answers here and the performance hit was much more dramatic... several of the solutions responses were as much as 6x the non-controller (other controllers avg 340ms, non-controller 65ms).

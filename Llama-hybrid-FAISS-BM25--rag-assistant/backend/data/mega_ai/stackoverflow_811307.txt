@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 811307
+[parent_id]: 811248
+[tags]: 
+First you should look into Swing DragDrop support . After that there are few little tricks for different operating systems. Once you've got things going you'll be handling the drop() callback. In this callback you'll want to check the DataFlavor of the Transferable. For Windows you can just check the DataFlavor.isFlavorJavaFileListType() and then get your data like this List dropppedFiles = (List )transferable.getTransferData(DataFlavor.javaFileListFlavor) For Linux (and probably Solaris) the DataFlavor is a little trickier. You'll need to make your own DataFlavor and the Transferable type will be different nixFileDataFlavor = new DataFlavor("text/uri-list;class=java.lang.String"); String data = (String)transferable.getTransferData(nixFileDataFlavor); for(StringTokenizer st = new StringTokenizer(data, "\r\n"); st.hasMoreTokens();) { String token = st.nextToken().trim(); if(token.startsWith("#") || token.isEmpty()) { // comment line, by RFC 2483 continue; } try { File file = new File(new URI(token)) // store this somewhere } catch(...) { // do something good .... } }

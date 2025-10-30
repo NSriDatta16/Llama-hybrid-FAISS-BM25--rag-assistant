@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 221252
+[parent_id]: 218909
+[tags]: 
+Ok, I got this working. Here's how I did it: JSP: Java Bean method: //earlier in the class... private static FopFactory fopFactory = FopFactory.newInstance(); public void getDownload(ServletOutputStream servletOutputStream) throws UtilException { OutputStream outputStream = null; File fo = new File("C:\\some\\path", "HelloWorld.fo"); try { FOUserAgent foUserAgent = fopFactory.newFOUserAgent(); outputStream = new BufferedOutputStream(servletOutputStream); Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, outputStream); TransformerFactory factory = TransformerFactory.newInstance(); Transformer transformer = factory.newTransformer(); //identity transformer Source src = new StreamSource(fo); Result res = new SAXResult(fop.getDefaultHandler()); transformer.transform(src, res); } catch (Exception e) { throw new UtilException("Could not get download. Msg = "+e.getMessage()); } finally { try { outputStream.close(); } catch (IOException io) { throw new UtilException("Could not close OutputStream. Msg = "+io.getMessage()); } } } Thanks to everyone for their input!

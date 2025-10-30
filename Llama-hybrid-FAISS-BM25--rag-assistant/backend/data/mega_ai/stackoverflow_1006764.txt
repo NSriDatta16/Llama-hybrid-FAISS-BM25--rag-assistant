@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1006764
+[parent_id]: 1006655
+[tags]: 
+A read or write from integer or any smaller type should be atomic, but as Robert noted, longs and doubles may or may not depending on the implementation. However, any operation that uses both a read and a write, including all of the increment operators, are not atomic. Thus, if you have to threads operating on an integer i=0, one does i++ and the other does i=10, the result could be 1, 10, or 11. For operations like this, you should look at AtomicInteger which has methods for atomically modifying a value while retrieving the old one or to atomically increment the value. Finally, threads may cache the value of the variable and won't see changes made to it from other threads. To make sure that both threads always see changes made by the other thread, you need to mark the variable as being volatile.

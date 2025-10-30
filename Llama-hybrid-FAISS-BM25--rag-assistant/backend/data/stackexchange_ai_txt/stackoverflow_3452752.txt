@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3452752
+[parent_id]: 3451546
+[tags]: 
+I think it's easiest if you look at how you would solve this problem without using Reader, then compare the translated version. Here's a trimmed-down example from a program I'm working on where the environment is a set of callback functions to update the display. It's slightly more complicated because it uses ReaderT instead of Reader, but everything works in basically the same way. runProcess :: Env -> State -> Action -> IO State runProcess env state action = do newstate Now I'll change it to use the Reader monad to pass along the environment. Since the code was already in IO, it's necessary to use the monad transformer version, ReaderT . runProcessR :: State -> Action -> ReaderT Env IO State runProcessR state action = do newstate At this point, the program's main loop will essentially be: loop :: State -> ReaderT Env IO () loop = do action So that's how you can use Reader. Every function that used to take an environment parameter no longer needs to. Functions that don't take the environment can be used directly or lifted if they're monadic.

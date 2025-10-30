@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 860880
+[parent_id]: 
+[tags]: 
+Why would I get a GPF in DLLMain when run as a restricted user?
+
+Why is this code crashing when run as a restricted user, but not when run as an admin of the machine? extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved) { hInstance; m_hInstance=hInstance; return _AtlModule.DllMain(dwReason, lpReserved); } The code is crashing on the return... and I don't know why. I am getting: The instruction at "0x7c90100b" referenced memory at "0x00000034". The memory could not be "read". Furthermore, _AtlModule.DLLMain looks like this: inline BOOL WINAPI CAtlDllModuleT ::DllMain(DWORD dwReason, LPVOID lpReserved) throw() { #if !defined(_ATL_NATIVE_INITIALIZATION) dwReason; lpReserved; #pragma warning(push) #pragma warning(disable:4483) using namespace __identifier(" "); #pragma warning(pop) if (dwReason == DLL_PROCESS_ATTACH) { ATLASSERT(DllModuleInitialized == false); } return TRUE; #else return _DllMain(dwReason, lpReserved); #endif } We are importing the ATL DLL, and tried linking statically as well... no luck. UPDATE Using ProcMon, I get a buffer overflow here: RegQueryValue HKU\S-1-5-21-448539723-854245398-1957994488-1005\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders\Cache BUFFER OVERFLOW Length: 144 What does this mean?

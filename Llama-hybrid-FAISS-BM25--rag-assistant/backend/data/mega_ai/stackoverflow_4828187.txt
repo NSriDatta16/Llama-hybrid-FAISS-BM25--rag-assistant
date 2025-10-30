@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4828187
+[parent_id]: 4828029
+[tags]: 
+A slightly different answer to those above; use the timestamp property on the UITouch object rather than getting the current time from NSDate. It's an NSTimeInterval (ie, a C integral type) rather than an NSDate object. So, e.g. // include an NSTimeInterval member variable in your class definition @interface ...your class... { NSTimeInterval timeStampAtTouchesBegan; } // use it to store timestamp at touches began - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { UITouch *interestingTouch = [touches anyObject]; // or whatever you do timeStampAtTouchesBegan = interestingTouch.timestamp // assuming no getter/setter } // and use simple arithmetic at touches ended - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event { if([touches containsObject:theTouchYouAreTracking]) { NSLog(@"That was a fun %0.2f seconds", theTouchYouAreTracking.timestamp - timeStampAtTouchesBegan); } }

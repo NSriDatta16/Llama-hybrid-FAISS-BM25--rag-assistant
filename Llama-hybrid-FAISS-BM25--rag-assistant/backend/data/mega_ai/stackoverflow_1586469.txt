@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1586469
+[parent_id]: 1586436
+[tags]: 
+If you intend to make it a MyISAM table, why are you creating it in memory in the first place? If it's only for speed, I think the conversion to a MyISAM table is going to negate any speed improvement you get by creating it in memory to start with. You say inserting directly into an "on disk" table is too slow (though I'm not sure how you're deciding it is when your current method is taking days), you may be able to turn off or remove the uniqueness constraints and then use a DELETE query later to re-establish uniqueness, then re-enable/add the constraints. I have used this technique when importing into an INNODB table in the past, and found even with the later delete it was overall much faster. Another option might be to create a CSV file instead of the INSERT statements, and either load it into the table using LOAD DATA INFILE (I believe that is faster then the inserts, but I can't find a reference at present) or by using it directly via the CSV storage engine , depending on your needs.

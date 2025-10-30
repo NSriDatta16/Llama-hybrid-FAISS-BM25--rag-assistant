@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3462020
+[parent_id]: 
+[tags]: 
+UIImageView frame memory issue
+
+I am setting the frame property of a UIImageView at a frequency of about 30Hz. Instruments shows that QuartsCore is allocating (and releasing) 88 bytes at this frequency. The following code causes this issue. CGPoint point = vectorToCircle(vec) ; CGRect dotFrame = self.dot.frame ; dotFrame.origin.y = (center.y - kDotHalfHeight) - point.y * kFlatRadius ; dotFrame.origin.x = (center.x - kDotHalfWidth) + point.x * kFlatRadius ; ; // MEMORY: this is causing allocations in QuartsCore self.dot.frame = dotFrame ; Instruments is showing a heavy net and overall ratio for allocations. I am a bit worried about memory fragmentation over time. Is there a way to eliminate this, or do I need to rethink my design? Update I tried this on the layer and it still occurs. If I set the frame to a constant the allocations do not occur. It is only when the origin changes that 88 bytes gets allocated Update 2 Using the transform property also shows that QuartsCore continuously allocates memory. The addresses for the allocations do increase, but never recycle (checking for a circular buffer space).

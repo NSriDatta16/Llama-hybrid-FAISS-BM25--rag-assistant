@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2811400
+[parent_id]: 2806801
+[tags]: 
+A good compromise for you is probably packing three values into a 32 bit int (with two bits unused). Untangling 10 bits from a bit array is a lot more expensive, and doesn't save much space. You can either use bit fields, or do it by hand yourself: (i&0x3FF) // Get i[0] (i>>10)&0x3FF // Get i[1] (i>>20)&0x3FF // Get i[2] i = (i&0x3FFFFC00) | (j&0x3FF) // Set i[0] to j i = (i&0x3FF003FF) | ((j&0x3FF) You can see here how much extra expense it is: a bit operation and 2/3 of a shift (on average) for get, and three bit operations and 2/3 of a shift (on average) to set. Probably not too bad, especially if you're mostly getting the values not setting them.

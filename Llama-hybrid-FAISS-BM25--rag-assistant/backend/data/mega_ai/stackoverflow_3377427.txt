@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3377427
+[parent_id]: 3377417
+[tags]: 
+Re var oaps1 = employees.Where(oapCalculator); vs var oaps2 = (from employee in employees where oapCalculator(employee) select employee); There is a slight difference, in particular around the where oapCalculator(employee) . The second query is mapped to: var oaps2 = employees.Where(employee => oapCalculator(employee)); so this is an extra layer of delegate, and will also incur the (small) overhead of a capture-class due to the closure over the variable oapCalculator , and a dereference of this per iteration. But otherwise they are the same. In particular, the Select is trivially removed (in accordance with the spec). In general, use whichever is clearest in any scenario. In this case, either seems fine, but you will find it easier to use .Where etc if you are regularly dealing in scenarios that involving delegates or Expression s.

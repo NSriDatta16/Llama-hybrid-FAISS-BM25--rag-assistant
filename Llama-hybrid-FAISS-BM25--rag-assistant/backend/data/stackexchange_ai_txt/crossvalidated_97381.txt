@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 97381
+[parent_id]: 
+[tags]: 
+Why is this distribution uniform?
+
+We are investigating Bayesian statistical testing, and come across an odd (to me atleast) phenomenon. Consider the following case: we are interested in measuring which population, A or B, has a higher conversion rate. For a sanity check, we set $p_A = p_B$, that is, the probability of conversion is equal in both groups. We generate artificial data using a binomial model, e.g. $$n_A \sim \text{Binomial}(N, p_A)$$ We then try to estimate the $p_A, p_B$ using a Bayesian beta-binomial model so we get posteriors for each conversion rate, e.g. $$P_A \sim \text{Beta}(1 + n_A, N - n_A +1 )$$ Our test statistic is computed by calculating $S = P(P_A > P_B\; |\; N, n_A, n_B)$ via monte carlo. What surprised me was that if $p_A = p_B$, then $S \sim \text{Uniform(0,1)}$. My thoughts were that it would be centered around 0.5, and even converge to 0.5 as the sample size, $N$, grows. My question is, why is $S \sim \text{Uniform(0,1)}$ when $p_A = p_B$? Here's some Python code to demonstrate: %pylab from scipy.stats import beta import numpy as np import pylab as P a = b = 0.5 N = 10000 samples = [] #collects the values of S for i in range(5000): assert a==b A = np.random.binomial(N, a); B = np.random.binomial(N, b) S = (beta.rvs(A+1, N-A+1, size=15000) > beta.rvs(B+1, N-B+1, size=15000)).mean() samples.append(S) P.hist(samples) P.show()

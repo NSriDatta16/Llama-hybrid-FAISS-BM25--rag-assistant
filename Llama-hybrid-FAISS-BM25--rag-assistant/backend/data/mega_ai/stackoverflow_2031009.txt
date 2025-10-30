@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2031009
+[parent_id]: 2030967
+[tags]: 
+Pull all your DB operations out into a single class, and pass the class to the objects that need it. You can do this via constructor injection (each new object gets an IDBProvider passed to it which it then uses for database operations). Something like this: public interface IDBProvider { // ... list of DB operations you care about List GetProducts(string vendor) } public class SomeWorkerClass { private IDBProvider dbConnection; public SomeWorkerClass(IDBProvider dbProvider) { dbConnection = dbProvider; } public void SomeFunction() { List = dbConnection.GetProducts("test"); } } There are lots of frameworks that do this kind of stuff for you, like NHibernate , but in some cases its just as easy to roll your own (upgrading existing code, organizations that dont want external framework dependencies, etc).

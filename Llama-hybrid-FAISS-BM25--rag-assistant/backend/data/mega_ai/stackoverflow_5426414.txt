@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5426414
+[parent_id]: 5398986
+[tags]: 
+We had this same problem and we created a work around... When we ran symbolicatecrash with the -v parameter (verbose) we saw it was complaining about not having a binary file inside the dSYM package. So we manually copied the binary file from within the app package into the dSYM package and that worked. Something like [MyProject].app/[MyProject] to [MyProject].app.dSYM/[MyProject]. We then created this as a Custom Command to run After Build: cp ${TargetDir}/${ProjectName}.app/[MyProject] ${TargetDir}/${ProjectName}.app.dSYM/${ProjectName} Note the [MyProject] portion as the binary created in the app package is a different name than the project name for us for some reason. Now all builds symbolicate fine from terminal and within Xcode organizer. I hope there's a less band-aid way, but we were in a time crunch and this worked.

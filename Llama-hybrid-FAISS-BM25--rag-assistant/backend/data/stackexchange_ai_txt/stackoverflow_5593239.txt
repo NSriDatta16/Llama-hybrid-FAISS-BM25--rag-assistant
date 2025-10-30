@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5593239
+[parent_id]: 5590898
+[tags]: 
+Ok this is how you could do it easily with NotificationCenter. The object that needs to know which subview is dragged can listen to the notification named let's say "SubviewIsDragged" and each subview can send the notification "SubviewIsDragged" passing itself as a parameter. This is the code: Object that needs to know about dragging registers in it's init method the following: [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(subviewIsDragged) name:@"SubviewIsDragged" object:nil]; Method that performs actions after dragging has been discovered: -(void)subviewIsDragged:(NSNotification *)notification { //Here you can get your subclass of UIView UIView* view = [notification object]; // do what ever you want with the object } Now in your UIView subclass add the following to your dragging method: [[NSNotificationCenter defaultCenter] postNotificationName:@"SubviewIsDragged" object:self]; Notice that you pass object "self" but you can pass any other object you want like NSString ID. Hopes this help.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2275578
+[parent_id]: 2274378
+[tags]: 
+Basically, you need to use a WebServiceMessageCallback in your client to modify the message after its creation but before it is sent. To rest of the code has been described pretty accurately by @skaffman so the whole stuff might look like this: public void marshalWithSoapActionHeader(MyObject o) { webServiceTemplate.marshalSendAndReceive(o, new WebServiceMessageCallback() { public void doWithMessage(WebServiceMessage message) { try { SoapMessage soapMessage = (SoapMessage)message; SoapHeader header = soapMessage.getSoapHeader(); StringSource headerSource = new StringSource(" \n + "+username+" \n + "+password"+ \n + "); Transformer transformer = TransformerFactory.newInstance().newTransformer(); transformer.transform(headerSource, header.getResult()); } catch (Exception e) { // exception handling } } }); } Personally, I find that Spring-WS sucks hard for such a basic need, they should fix SWS-479 .

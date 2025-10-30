@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3888409
+[parent_id]: 
+[tags]: 
+How to resolve linker error "cannot find -lgcc_s"
+
+I have 3 tiny files which I use to make a static library and an app: test.h #ifndef TEST_H #define TEST_H class Test { public: Test(); }; extern Test* gpTest; #endif test.cpp #include "test.h" Test::Test() { gpTest = this; } Test test; main.cpp #include "test.h" #include using namespace std; Test* gpTest = NULL; int main() { return 0; } BUILD g++ -c test.cpp -o test.o ar cr test.a test.o g++ -c main.cpp -o main.o g++ main.o -o app -Wl,--whole-archive -L/home/dumindara/intest/test.a -Wl,-no--whole-archive ERROR (linking step) /usr/lib64/gcc/x86_64-suse-linux/4.3/../../../../x86_64-suse-linux/bin/ld: cannot find -lgcc_s collect2: ld returned 1 exit status I tried everything: using -static-libgcc and linking to static libstdc++. Can't get this to work. It is all due to --whole-archive flag. But I can't do without it.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4769243
+[parent_id]: 4768592
+[tags]: 
+Original: Seems like that should work to me. Depending on what your side effects are, you might want to use send-off (for IO-bound ops) instead of send (for cpu-bound ops). The send/send-off will enqueue the task into one of the internal agent executor pools (there is a fixed size pool for cpu and unbounded size pool for io ops). Once the task is enqueued, the work is off the dosync's thread so you're disconnected at that point. You'll need to capture any values you need from within the transaction into the sent function of course. And you need to deal with that send possibly occurring multiple times due to retries. Update (see comments): Agent sends within the ref's transaction are held until the ref transaction successfully completes and are executed once. So in my answer above, the send will NOT occur multiple times, however it won't occur during the ref transaction which may not be what you want (if you expect to log or do side-effecty stuff).

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 730266
+[parent_id]: 729683
+[tags]: 
+As pointed out by Pontus, you probably broken the one definition rule somehow. You've probably included the header file with the definition of class C in two translation units where other code, often in a preceding header file, changes the way the definition of class C is interpreted so that it has a different size in the two translation units. One possibility, is that you've accidently changed the default member alignment (either through a command line argument to the compiler or via a #pragma in the source) so that two different translation units think the structure has a different size because of differing amounts of padding (most x86 compilers default to alignment on 4-byte boundaries, but allow you to request alignment on 1-byte boundaries as needed). Look in the other header files for a #pragma changing the default alignment that is missing a following #prama to restore it back to the previous value (you don't specify what compiler, so I can't give specifics).

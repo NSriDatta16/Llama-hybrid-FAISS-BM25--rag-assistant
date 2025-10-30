@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 516725
+[parent_id]: 516431
+[tags]: 
+Looking at the atltls.cpp file from my VC9 install, the crash is occurring here: inline void* CThreadSlotData::GetThreadValue(int nSlot) { EnterCriticalSection(&m_sect); ASSERT(nSlot != 0 && nSlot So the reason the crash doesn't occur in release build is because the ASSERT() is a no-op in that build. I'm not familiar with ATL's use of thread local storage, but this assertion indicates that something is asking for a value in a slot where nothing has been stored yet. Whether the initialization of that TLS slot is your responsibility or the 3rd party DLL's responsibility, I don't know. It looks like GetThreadValue() has some additional protections such that it'll return a NULL pointer in the release build for an uninitialized slot (though I'm not sure that this would be guaranteed) - I'd bet that the 3rd party DLL relies on that behavior (ie., it checks for a NULL return) so no crash occurs in release builds. Note that the vendor might be using the CThreadSlotData class indirectly (the stack trace would give a clue about this), so they might not be aware of its expectations.

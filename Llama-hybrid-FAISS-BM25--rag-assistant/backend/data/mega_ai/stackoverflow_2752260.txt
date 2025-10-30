@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2752260
+[parent_id]: 2751964
+[tags]: 
+Now let us take the code snippet in question (probable root cause) Code DWORD indices[NUM_VERTSX * NUM_VERTSY]; int curIndex = 0; for(int z=0; z Analysis Here indices have max number of 'cells' = NUM_VERTX * NUM_VERTSY = (16 + 1) * (16+1) = 289. So there are 0...288 'cells'. During the boundary condition - there value of z = 15, x = 15. So curIndex would be 15 * 15 * 6 = 1350. This far exceeds allocated cells. Suggestion Since three values determine the size of the target array, all three must be part of the allocation of the array. so if you use DWORD indices[NUM_VERTSX * NUM_VERTSY * UNIT_BLOCK], where UNIT_BLOCK = 6, it should work fine. Also instead of embedding magic number inside the code, you can use a const variable - it would help a great deal later (if you want to change the value of the index). HTH

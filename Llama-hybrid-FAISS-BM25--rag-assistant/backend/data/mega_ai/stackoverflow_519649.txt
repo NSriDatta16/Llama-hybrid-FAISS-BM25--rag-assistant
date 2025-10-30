@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 519649
+[parent_id]: 519461
+[tags]: 
+I vote to not rely on object serialization. It's costly and bad practice. public static TObj CloneObject (this TObj obj) where TObj : ICloneable { return (TObj)obj.Clone(); } The above method is a lot more elegant, and you should really care to implement a clonable interface if you need one. You could also make it generic. public interface ICloneable : IClonable { T CloneObject(); } Optionally, you could refrain from using the IClonable interface as a base type as it's poorly maintained. The method name has to change to because you can't do overloads on return types. public static List CloneList(this List source) where TObj : ICloneable { return source.Select(x=>x.CloneObject()).ToList(); } It's as simple as that. Maybe your problem can be solved though using value types instead. They are always pass-by-copy. So you never have to clone anything as long as your data structure is by value.

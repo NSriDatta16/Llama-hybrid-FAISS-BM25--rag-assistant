@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1429540
+[parent_id]: 917146
+[tags]: 
+We recently had the same problem, and it turned out (in our case) that the page output cache module is rather sensitive to how you set your Response.Cache.VaryByXyz properties. We used code like the following in our HTTP compression module: if (IsBrowserSupported(userAgent)) { Response.Cache.VaryByHeaders["Accept-Encoding"] = true; ... } Unfortunately, this causes ASP.NET to throw a fit when the page is cached after a call by a non-supported browser, and subsequently requested from the cache by a supported browser. Not setting any VaryByXyz causes a CachedRawResponse to be stored in the ASP.NET output cache, but if you do set any VaryByXyz during your request, ASP.NET expects a CachedVary at that location. And instead of checking whether the cached page is of the right type, the framework just casts, resulting in an InvalidCastException . Moral of the story: always set the VaryByXyz consistently, regardless of the request headers or other non-request-related variables. In our case, placing the VaryByHeaders outside of the if solved the error.

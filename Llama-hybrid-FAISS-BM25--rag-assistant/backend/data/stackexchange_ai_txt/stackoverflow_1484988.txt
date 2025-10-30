@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1484988
+[parent_id]: 1429143
+[tags]: 
+Below is my (Delphi) code: This is using DirectShow/ActiveX, It enumurates DirectSound devices, which include wrapped WaveOut devices as well. procedure EnumAudioDevices; var dsCreateDevEnum : ICreateDevEnum; EnumDevice : IEnumMoniker; DeviceMoniker : IMoniker; Data : Integer; DevicePropBag : IPropertyBag; DeviceName : OLEVariant; I : Integer; begin // CLSID_CQzFilterClassManager = Entire DirectShow Filter List If CoCreateInstance(CLSID_SystemDeviceEnum,nil,CLSCTX_INPROC_SERVER,IID_ICreateDevEnum,dsCreateDevEnum) = S_OK then Begin If dsCreateDevEnum.CreateClassEnumerator(CLSID_AudioRendererCategory,EnumDevice,0) = S_OK then Begin I := 0; EnumDevice.Reset; While EnumDevice.Next(1,DeviceMoniker,@Data) = S_OK do Begin If DeviceMoniker.BindToStorage(nil,nil,IID_IPropertyBag,DevicePropBag) = NOERROR then Begin If DevicePropBag.Read('FriendlyName',DeviceName,nil) = NOERROR then Begin // Success ShowMessage(DeviceName); Inc(I); End; DevicePropBag := nil; End; DeviceMoniker := nil; End; EnumDevice := nil; End; dsCreateDevEnum := nil; End; End;

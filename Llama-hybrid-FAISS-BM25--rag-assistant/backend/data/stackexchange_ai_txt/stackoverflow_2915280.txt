@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2915280
+[parent_id]: 2915224
+[tags]: 
+javax.crypto.SecretKey is binary data, so you can't convert it directly to a String. You can encode it as a hex string or in Base64. See Apache Commons Codec . Update : If you dont want to depend on third-party libraries (and can't/don't want to store plain binary data, as Jon suggests) you can do some ad-hoc encoding, for example, following erickson's suggestion: public static String bytesToString(byte[] b) { byte[] b2 = new byte[b.length + 1]; b2[0] = 1; System.arraycopy(b, 0, b2, 1, b.length); return new BigInteger(b2).toString(36); } public static byte[] stringToBytes(String s) { byte[] b2 = new BigInteger(s, 36).toByteArray(); return Arrays.copyOfRange(b2, 1, b2.length); } It's rather, ugly, non-standard and not optimal (in output size). But it's also very small, correct and it has no dependencies; it can be practical, specially if your data is small sized. Updated: I replaced the Character.MAX_RADIX by the literal value (36), following GregS's comment. It might seem less elegant but it's actually more secure. (You can also use 32 or 16).

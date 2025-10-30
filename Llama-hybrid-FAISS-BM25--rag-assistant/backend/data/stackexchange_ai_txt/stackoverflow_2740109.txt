@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2740109
+[parent_id]: 
+[tags]: 
+Can someone please explain this lazy evaluation code?
+
+So, this question was just asked on SO: How to handle an "infinite" IEnumerable? My sample code: public static void Main(string[] args) { foreach (var item in Numbers().Take(10)) Console.WriteLine(item); Console.ReadKey(); } public static IEnumerable Numbers() { int x = 0; while (true) yield return x++; } Can someone please explain why this is lazy evaluated? I've looked up this code in Reflector, and I'm more confused than when I began. Reflector outputs: public static IEnumerable Numbers() { return new d__0(-2); } For the numbers method, and looks to have generated a new type for that expression: [DebuggerHidden] public d__0(int <>1__state) { this.<>1__state = <>1__state; this.<>l__initialThreadId = Thread.CurrentThread.ManagedThreadId; } This makes no sense to me. I would have assumed it was an infinite loop until I put that code together and executed it myself. EDIT : So I understand now that .Take() can tell the foreach that the enumeration has 'ended', when it really hasn't, but shouldn't Numbers() be called in it's entirety before chaining forward to the Take()? The Take result is what is actually being enumerated over, correct? But how is Take executing when Numbers has not fully evaluated? EDIT2 : So is this just a specific compiler trick enforced by the 'yield' keyword?

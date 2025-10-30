@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1159408
+[parent_id]: 1155815
+[tags]: 
+If you use a client side cache, you might consider using Expression Trees (see http://thegrenade.blogspot.com/2009/07/using-expression-trees-for-more-elegant.html ): private static TEntity GetItem (Expression > expression, TProxy proxy, TIdentity id) where TEntity : class where TProxy : ICommunicationObject { TEntity item = Cache.GetItem (id); if (item == null) { try { var originalDelegate = expression.Compile(); item = originalDelegate.Invoke(proxy, id); } finally { try{ proxy.Close(); } finally { proxy.Abort(); } } Cache.AddItem (item); } return item; } Usage: Product p = GetItem((client, identifier) => client.GetProduct(identifier), new CatalogServiceClient(), 123);

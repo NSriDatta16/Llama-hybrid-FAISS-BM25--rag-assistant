@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 655420
+[parent_id]: 655326
+[tags]: 
+How is the grouping going to be performed? Assuming something very simple (take 10 at a time ), you can start with something like: List input = Enumerable.Range(0, 500) .Select(i => new TimeSpan(0, 0, i)) .ToList(); var res = input.Select((t, i) => new { time=t.Ticks, index=i }) .GroupBy(v => v.index / 10, v => v.time) .Select(g => new TimeSpan((long)g.Average())); int n = 0; foreach (var t in res) { Console.WriteLine("{0,3}: {1}", ++n, t); } Notes: Overload of Select to get the index, then use this and integer division pick up groups of 10. Could use modulus to take every 10th element into one group, every 10th+1 into another, ... The result of the grouping is a sequence of enumerations with a Key property. But just need those separate sequences here. There is no Enumerable.Average overload for IEnumerable so use Ticks (a long). EDIT: Take groups of 10 to fit better with question. EDIT2: Now with tested code.

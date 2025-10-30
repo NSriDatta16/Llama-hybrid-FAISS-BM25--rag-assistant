@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5423358
+[parent_id]: 5422499
+[tags]: 
+I'd guess that this comment from decNumber.h should explain things: /* Notes: */ /* 1. If digits is > DECDPUN then there will be more than one */ /* decNumberUnits immediately following the first element of lsu. */ /* These contain the remaining (more significant) digits of the */ /* number, and may be in the lsu array, or may be guaranteed by */ /* some other mechanism (such as being contained in another */ /* structure, or being overlaid on dynamically allocated storage). */ In other words, the decNumber structure contains the decNumberUnit lsu[DECNUMUNITS] array to hold a 'default' number of digits, but the library will grow the array beyond that size if necessary. Update: A quick look at decNumber.c (I don't know how close it is to latest though) looks as if they haven't implemented any support for storing digits beyond what can be held in decNumber.lsu[DECNUMUNITS] . It looks like decNumberCopy() is more concerned with copying only the used lsu[DECNUMUNITS] elements instead of the whole thing (as an optimization and/or to allow testing to detect possible corruption of data).

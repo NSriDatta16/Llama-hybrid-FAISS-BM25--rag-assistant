@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2330677
+[parent_id]: 2330609
+[tags]: 
+This is the typical dequeue pattern, is implemented using the OUTPUT clause and and is described in the MSDN, see the Queues paragraph in OUTPUT Clause (Transact-SQL) : UPDATE TOP(1) Tasks_Table WITH (ROWLOCK, READPAST) SET task_active = 1 OUTPUT INSERTED.id,INSERTED.column_1, ...,INSERTED.column_N WHERE task_active = 0; The ROWLOCK,READPAST hint allows for high throughput and high concurency: multiple threads/processed can enqueue new tasks while mutliple threads/process dequeue tasks. There is no order guarantee. Updated If you want to order the result you can use a CTE: WITH cte AS ( SELECT TOP(1) id, task_active, column_1, ..., column_N FROM Task_Table WITH (ROWLOCK, READPAST) WHERE task_active = 0 ORDER BY ) UPDATE cte SET task_active = 1 OUTPUT INSERTED.id, INSERTED.column_1, ..., INSERTED.column_N; I discussed this and other enqueue/dequeue techniques on the article Using Tables as Queues .

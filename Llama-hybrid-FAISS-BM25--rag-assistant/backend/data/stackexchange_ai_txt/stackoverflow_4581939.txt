@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4581939
+[parent_id]: 4581880
+[tags]: 
+I would just change the configure script to drop the -u option to mktemp and remove the set -C; (which sets no-clobber mode, and requires the file to be absent; removing the -u means you need to remove the set -C too). The MacOS X manual pages for mktemp(1) say: -u Operate in ``unsafe'' mode. The temp file will be unlinked before mktemp exits. This is slightly better than mktemp(3) but still introduces a race condition. Use of this option is not encouraged. The generated file name is unlinked by mktemp, and then immediately re-created by the configure script, which is a trifle silly. Dropping the -u means that the file name will already exist, having been created securely. If the software is something you are going to use often, then report the issue to the developer or maintainer of the software.

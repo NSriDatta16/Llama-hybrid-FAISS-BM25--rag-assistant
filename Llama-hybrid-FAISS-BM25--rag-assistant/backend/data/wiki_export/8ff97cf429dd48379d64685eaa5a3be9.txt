@@ -1,0 +1,461 @@
+In the x86 architecture, the CPUID instruction (identified by a CPUID opcode) is a processor supplementary instruction (its name derived from CPU Identification) allowing software to discover details of the processor. It was introduced by Intel in 1993 with the launch of the Pentium and SL-enhanced 486 processors.
+
+A program can use the CPUID to determine processor type and whether features such as MMX/SSE are implemented.
+
+History 
+Prior to the general availability of the CPUID instruction, programmers would write esoteric machine code which exploited minor differences in CPU behavior in order to determine the processor make and model. With the introduction of the 80386 processor, EDX on reset indicated the revision but this was only readable after reset and there was no standard way for applications to read the value.
+
+Outside the x86 family, developers are mostly still required to use esoteric processes (involving instruction timing or CPU fault triggers) to determine the variations in CPU design that are present.
+
+In the Motorola 680x0 family — that never had a CPUID instruction of any kind — certain specific instructions required elevated privileges. These could be used to tell various CPU family members apart. In the Motorola 68010 the instruction MOVE from SR became privileged. This notable instruction (and state machine) change allowed the 68010 to meet the Popek and Goldberg virtualization requirements. Because the 68000 offered an unprivileged MOVE from SR the 2 different CPUs could be told apart by a CPU error condition being triggered.
+
+While the CPUID instruction is specific to the x86 architecture, other architectures (like ARM) often provide on-chip registers which can be read in prescribed ways to obtain the same sorts of information provided by the x86 CPUID instruction.
+
+Calling CPUID 
+The CPUID opcode is 0F A2.
+
+In assembly language, the CPUID instruction takes no parameters as CPUID implicitly uses the EAX register to determine the main category of information returned. In Intel's more recent terminology, this is called the CPUID leaf. CPUID should be called with EAX = 0 first, as this will store in the EAX register the highest EAX calling parameter (leaf) that the CPU implements.
+
+To obtain extended function information CPUID should be called with the most significant bit of EAX set. To determine the highest extended function calling parameter, call CPUID with EAX = 80000000h.
+
+CPUID leaves greater than 3 but less than 80000000 are accessible only when the model-specific registers have IA32_MISC_ENABLE.BOOT_NT4 [bit 22] = 0 (which is so by default). As the name suggests, Windows NT 4.0 until SP6 did not boot properly unless this bit was set, but later versions of Windows do not need it, so basic leaves greater than 4 can be assumed visible on current Windows systems. , basic valid leaves go up to 14h, but the information returned by some leaves are not disclosed in the publicly available documentation, i.e. they are "reserved".
+
+Some of the more recently added leaves also have sub-leaves, which are selected via the ECX register before calling CPUID.
+
+EAX=0: Highest Function Parameter and Manufacturer ID 
+
+This returns the CPU's manufacturer ID string a twelve-character ASCII string stored in EBX, EDX, ECX (in that order). The highest basic calling parameter (the largest value that EAX can be set to before calling CPUID) is returned in EAX.
+
+Here is a list of processors and the highest function implemented.
+
+The following are known processor manufacturer ID strings:
+ "AMDisbetter!" early engineering samples of AMD K5 processor
+ "AuthenticAMD" AMD
+ "CentaurHauls" IDT WinChip/Centaur (Including some VIA and Zhaoxin CPUs)
+ "CyrixInstead" Cyrix/early STMicroelectronics and IBM
+ "GenuineIntel" Intel
+ "TransmetaCPU" Transmeta
+ "GenuineTMx86" Transmeta
+ "Geode by NSC" National Semiconductor
+ "NexGenDriven" NexGen
+ "RiseRiseRise" Rise
+ "SiS SiS SiS " SiS
+ "UMC UMC UMC " UMC
+ "VIA VIA VIA " VIA
+ "Vortex86 SoC" DM&P Vortex86
+ "  Shanghai  " Zhaoxin
+ "HygonGenuine" Hygon
+ "Genuine  RDC" RDC Semiconductor Co. Ltd.
+ "E2K MACHINE" MCST Elbrus
+
+The following are ID strings used by open source soft CPU cores:
+ "MiSTer AO486" ao486 CPU
+ "GenuineIntel" v586 core (this is identical to the Intel ID string)
+
+The following are known ID strings from virtual machines:
+ "bhyve bhyve " bhyve
+ "KVMKVMKVM\0\0\0" KVM, \0 denotes an ASCII NUL character
+ "TCGTCGTCGTCG" QEMU
+ "Microsoft Hv" Microsoft Hyper-V or Windows Virtual PC
+ "MicrosoftXTA" –  Microsoft x86-to-ARM
+ " lrpepyh  vr" Parallels (it possibly should be "prl hyperv  ", but it is encoded as " lrpepyh  vr" due to an endianness mismatch)
+ "VMwareVMware" VMware
+ "XenVMMXenVMM" Xen HVM
+ "ACRNACRNACRN" Project ACRN
+ " QNXQVMBSQG " QNX Hypervisor
+ "GenuineIntel" Apple Rosetta 2
+ "VirtualApple" –  Newer versions of Apple Rosetta 2
+
+For instance, on a GenuineIntel processor values returned in EBX is 0x756e6547, EDX is 0x49656e69 and ECX is 0x6c65746e. The following example code displays the vendor ID string as well as the highest calling parameter that the CPU implements.
+
+	.intel_syntax noprefix
+	.text
+.m0: .string "CPUID: %x\n"
+.m1: .string "Largest basic function number implemented: %i\n"
+.m2: .string "Vendor ID: %s\n"
+
+    .globl main
+
+main:
+	push    r12
+	mov	    eax, 1
+	sub	    rsp, 16
+    cpuid
+    lea	    rdi, .m0[rip]
+	mov	    esi, eax
+	call	printf
+	mov     eax, 0
+    cpuid
+	lea	    rdi, .m1[rip]
+	mov	    esi, eax
+	mov	    r12d, edx
+	mov	    ebp, ecx
+	call    printf
+	mov     3[rsp], ebx
+	lea	    rsi, 3[rsp]
+    lea	    rdi, .m2[rip]
+    mov     7[rsp], r12d
+    mov     11[rsp], ebp
+	call	printf
+	add	    rsp, 16
+	pop	    r12
+	ret
+
+    .section .note.GNU-stack,"",@progbits
+
+EAX=1: Processor Info and Feature Bits 
+
+This returns the CPU's stepping, model, and family information in register EAX (also called the signature of a CPU), feature flags in registers EDX and ECX, and additional feature info in register EBX.
+
+ Stepping ID is a product revision number assigned due to fixed errata or other changes.
+ The actual processor model is derived from the Model, Extended Model ID and Family ID fields. If the Family ID field is either 6 or 15, the model is equal to the sum of the Extended Model ID field shifted left by 4 bits and the Model field. Otherwise, the model is equal to the value of the Model field.
+ The actual processor family is derived from the Family ID and Extended Family ID fields. If the Family ID field is equal to 15, the family is equal to the sum of the Extended Family ID and the Family ID fields. Otherwise, the family is equal to the value of the Family ID field.
+ The meaning of the Processor Type field is given in the table below.
+
+As of October 2023, the following x86 processor family IDs are known:
+
+The processor info and feature flags are manufacturer specific but usually, the Intel values are used by other manufacturers for the sake of compatibility.
+
+Reserved fields should be masked before using them for processor identification purposes.
+
+EAX=2: Cache and TLB Descriptor information 
+This returns a list of descriptors indicating cache and TLB capabilities in EAX, EBX, ECX and EDX registers.
+
+On processors that support this leaf, calling CPUID with EAX=2 will cause the bottom byte of EAX to be set to 01h and the remaining 15 bytes of EAX/EBX/ECX/EDX to be filled with 15 descriptors, one byte each. These descriptors provide information about the processor's caches, TLBs and prefetch. This is typically one cache or TLB per descriptor, but some descriptor-values provide other information as well - in particular, 00h is used for an empty descriptor, FFh indicates that the leaf does not contain valid cache information and that leaf 4h should be used instead, and FEh indicates that the leaf does not contain valid TLB information and that leaf 18h should be used instead. The descriptors may appear in any order.
+
+For each of the four registers (EAX,EBX,ECX,EDX), if bit 31 is set, then the register should not be considered to contain valid descriptors (e.g. on Itanium in IA-32 mode, CPUID(EAX=2) returns 80000000h in EDX - this should be interpreted to mean that EDX contains no valid information, not that it contains a 512K L2 cache.)
+
+The table below provides, for known descriptor values, a condensed description of the cache or TLB indicated by that descriptor value (or other information, where that applies). The suffixes used in the table are:
+ K,M,G : binary kilobyte, megabyte, gigabyte (capacity for caches, page-size for TLBs)
+ E : entries (for TLBs; e.g. 64E = 64 entries)
+ p : page-size (e.g. 4Kp for TLBs where each entry describes one 4KByte page, 4K/2Mp for TLBs where each entry can describe either one 4Kbyte page or one 2MByte hugepage)
+ L : cache-line size (e.g. 32L = 32-byte cache line size)
+ S : cache sector size (e.g. 2S means that the cache uses sectors of 2 cache-lines each)
+ A : associativity (e.g. 6A = 6-way set-associative, FA = fully-associative)
+
+EAX=3: Processor Serial Number 
+
+This returns the processor's serial number. The processor serial number was introduced on Intel Pentium III, but due to privacy concerns, this feature is no longer implemented on later models (the PSN feature bit is always cleared). Transmeta's Efficeon and Crusoe processors also provide this feature. AMD CPUs however, do not implement this feature in any CPU models.
+
+For Intel Pentium III CPUs, the serial number is returned in the EDX:ECX registers. For Transmeta Efficeon CPUs, it is returned in the EBX:EAX registers. And for Transmeta Crusoe CPUs, it is returned in the EBX register only.
+
+Note that the processor serial number feature must be enabled in the BIOS setting in order to function.
+
+EAX=4 and EAX=Bh: Intel thread/core and cache topology 
+These two leaves are used for processor topology (thread, core, package) and cache hierarchy enumeration in Intel multi-core (and hyperthreaded) processors.  AMD does not use these leaves but has alternate ways of doing the core enumeration.
+
+Unlike most other CPUID leaves, leaf Bh will return different values in EDX depending on which logical processor the CPUID instruction runs; the value returned in EDX is actually the x2APIC id of the logical processor. The x2APIC id space is not continuously mapped to logical processors, however; there can be gaps in the mapping, meaning that some intermediate x2APIC ids don't necessarily correspond to any logical processor. Additional information for mapping the x2APIC ids to cores is provided in the other registers. Although the leaf Bh has sub-leaves (selected by ECX as described further below), the value returned in EDX is only affected by the logical processor on which the instruction is running but not by the subleaf.
+
+The processor(s) topology exposed by leaf Bh is a hierarchical one, but with the strange caveat that the order of (logical) levels in this hierarchy doesn't necessarily correspond to the order in the physical hierarchy (SMT/core/package). However, every logical level can be queried as an ECX subleaf (of the Bh leaf) for its correspondence to a "level type", which can be either SMT, core, or "invalid". The level id space starts at 0 and is continuous, meaning that if a level id is invalid, all higher level ids will also be invalid. The level type is returned in bits 15:08 of ECX, while the number of logical processors at the level queried is returned in EBX. Finally, the connection between these levels and x2APIC ids is returned in EAX[4:0] as the number of bits that the x2APIC id must be shifted in order to obtain a unique id at the next level.
+
+As an example, a dual-core Westmere processor capable of hyperthreading (thus having two cores and four threads in total) could have x2APIC ids 0, 1, 4 and 5 for its four logical processors. Leaf Bh (=EAX), subleaf 0 (=ECX) of CPUID could for instance return 100h in ECX, meaning that level 0 describes the SMT (hyperthreading) layer, and return 2 in EBX because there are two logical processors (SMT units) per physical core. The value returned in EAX for this 0-subleaf should be 1 in this case, because shifting the aforementioned x2APIC ids to the right by one bit gives a unique core number (at the next level of the level id hierarchy) and erases the SMT id bit inside each core. A simpler way to interpret this information is that the last bit (bit number 0) of the x2APIC id identifies the SMT/hyperthreading unit inside each core in our example. Advancing to subleaf 1 (by making another call to CPUID with EAX=Bh and ECX=1) could for instance return 201h in ECX, meaning that this is a core-type level, and 4 in EBX because there are 4 logical processors in the package; EAX returned could be any value greater than 3, because it so happens that bit number 2 is used to identify the core in the x2APIC id. Note that bit number 1 of the x2APIC id is not used in this example. However, EAX returned at this level could well be 4 (and it happens to be so on a Clarkdale Core i3 5x0) because that also gives a unique id at the package level (=0 obviously) when shifting the x2APIC id by 4 bits. Finally, you may wonder what the EAX=4 leaf can tell us that we didn't find out already. In EAX[31:26] it returns the APIC mask bits reserved for a package; that would be 111b in our example because bits 0 to 2 are used for identifying logical processors inside this package, but bit 1 is also reserved although not used as part of the logical processor identification scheme. In other words, APIC ids 0 to 7 are reserved for the package, even though half of these values don't map to a logical processor.
+
+The cache hierarchy of the processor is explored by looking at the sub-leaves of leaf 4. The APIC ids are also used in this hierarchy to convey information about how the different levels of cache are shared by the SMT units and cores. To continue our example, the L2 cache, which is shared by SMT units of the same core but not between physical cores on the Westmere is indicated by EAX[26:14] being set to 1, while the information that the L3 cache is shared by the whole package is indicated by setting those bits to (at least) 111b. The cache details, including cache type, size, and associativity are communicated via the other registers on leaf 4.
+
+Beware that older versions of the Intel app note 485 contain some misleading information, particularly with respect to identifying and counting cores in a multi-core processor; errors from misinterpreting this information have even been incorporated in the Microsoft sample code for using CPUID, even for the 2013 edition of Visual Studio, and also in the sandpile.org page for CPUID, but the Intel code sample for identifying processor topology has the correct interpretation, and the current Intel Software Developer’s Manual has a more clear language. The (open source) cross-platform production code from Wildfire Games also implements the correct interpretation of the Intel documentation.
+
+Topology detection examples involving older (pre-2010) Intel processors that lack x2APIC (thus don't implement the EAX=Bh leaf) are given in a 2010 Intel presentation. Beware that using that older detection method on 2010 and newer Intel processors may overestimate the number of cores and logical processors because the old detection method assumes there are no gaps in the APIC id space, and this assumption is violated by some newer processors (starting with the Core i3 5x0 series), but these newer processors also come with an x2APIC, so their topology can be correctly determined using the EAX=Bh leaf method.
+
+EAX=6: Thermal and power management 
+This returns feature bits in the EAX register and additional information in the EBX, ECX and EDX registers.
+
+EAX=7, ECX=0: Extended Features 
+This returns extended feature flags in EBX, ECX, and EDX. Returns the maximum ECX value for EAX=7 in EAX.
+
+EAX=7, ECX=1: Extended Features 
+This returns extended feature flags in EAX, EBX, and EDX. ECX is reserved.
+
+EAX=7, ECX=2: Extended Features 
+This returns extended feature flags in EDX. 
+
+EAX, EBX and ECX are reserved.
+
+EAX=0Dh: XSAVE features and state-components 
+
+This leaf is used to enumerate XSAVE features and state-components.
+
+The XSAVE instruction set extension is designed to save/restore CPU extended state (typically for the purpose of context switching) in a manner that can be extended to cover new instruction set extensions without the OS context-switching code needing to understand the specifics of the new extensions. This is done by defining a series of state-components, each with a size and offset within a given save area, and each corresponding to a subset of the state needed for one CPU extension or another. The EAX=0Dh CPUID leaf is used to provide information about which state-components the CPU supports and what their sizes/offsets are, so that the OS can reserve the proper amount of space and set the associated enable-bits.
+
+The state-components can be subdivided into two groups: user-state (state-items that are visible to the application, e.g. AVX-512 vector registers), and supervisor-state (state items that affect the application but are not directly user-visible, e.g. user-mode interrupt configuration). The user-state items are enabled by setting their associated bits in the XCR0 control register, while the supervisor-state items are enabled by setting their associated bits in the IA32_XSS (0DA0h) MSR - the indicated state items then become the state-components that can be saved and restored with the XSAVE/XRSTOR family of instructions.
+
+The XSAVE mechanism can handle up to 63 state-components in this manner. State-components 0 and 1 (x87 and SSE, respectively) have fixed offsets and sizes - for state-components 2 to 62, their sizes, offsets and a few additional flags can be queried by executing CPUID with EAX=0Dh and ECX set to the index of the state-component. This will return the following items in EAX, EBX and ECX (with EDX being reserved):
+
+Attempting to query an unsupported state-component in this manner results in EAX,EBX,ECX and EDX all being set to 0.
+
+Sub-leaves 0 and 1 of CPUID leaf 0Dh are used to provide feature information:
+
+As of July 2023, the XSAVE state-components that have been architecturally defined are:
+
+EAX=12h: SGX capabilities 
+This leaf provides information about the supported capabilities of the Intel Software Guard Extensions (SGX) feature. The leaf provides multiple sub-leaves, selected with ECX.
+
+Sub-leaf 0 provides information about supported SGX leaf functions in EAX and maximum supported SGX enclave sizes in EDX; ECX is reserved. EBX provides a bitmap of bits that can be set in the MISCSELECT field in the SECS (SGX Enclave Control Structure) - this field is used to control information written to the MISC region of the SSA (SGX Save State Area) when an AEX (SGX Asynchronous Enclave Exit) occurs.
+
+Sub-leaf 1 provides a bitmap of which bits can be set in the 128-bit ATTRIBUTES field of SECS in EDX:ECX:EBX:EAX (this applies to the SECS copy used as input to the ENCLS[ECREATE] leaf function). The top 64 bits (given in EDX:ECX) are a bitmap of which bits can be set in the XFRM (X-feature request mask) - this mask is a bitmask of which CPU state-components (see leaf 0Dh) will be saved to the SSA in case of an AEX; this has the same layout as the XCR0 control register. The other bits are given in EAX and EBX, as follows:
+
+Sub-leaves 2 and up are used to provide information about which physical memory regions are available for use as EPC (Enclave Page Cache) sections under SGX.
+
+EAX=14h, ECX=0: Processor Trace 
+This sub-leaf provides feature information for Intel Processor Trace (also known as Real Time Instruction Trace).
+
+The value returned in EAX is the index of the highest sub-leaf supported for CPUID with EAX=14h. EBX and ECX provide feature flags, EDX is reserved.
+
+EAX=19h: AES Key Locker features 
+
+This leaf provides feature information for AES Key Locker in EAX, EBX and ECX. EDX is reserved.
+
+EAX=24h, ECX=0: AVX10 Features 
+This returns a maximum supported sub-leaf in EAX and AVX10 feature information in EBX. (ECX and EDX are reserved.)
+
+EAX=80000000h: Get Highest Extended Function Implemented 
+The highest calling parameter is returned in EAX.
+
+EBX/ECX/EDX return the manufacturer ID string (same as EAX=0) on AMD but not Intel CPUs.
+
+EAX=80000001h: Extended Processor Info and Feature Bits 
+This returns extended feature flags in EDX and ECX.
+
+Many of the bits in EDX (bits 0 through 9, 12 through 17, 23, and 24) are duplicates of EDX from the EAX=1 leaf - these bits are highlighted in light yellow. (These duplicated bits are present on AMD but not Intel CPUs.)
+
+AMD feature flags are as follows:
+
+EAX=80000002h,80000003h,80000004h: Processor Brand String 
+These return the processor brand string in EAX, EBX, ECX and EDX. CPUID must be issued with each parameter in sequence to get the entire 48-byte ASCII processor brand string. It is necessary to check whether the feature is present in the CPU by issuing CPUID with EAX = 80000000h first and checking if the returned value is not less than 80000004h.
+
+The string is specified in Intel/AMD documentation to be null-terminated, however this is not always the case (e.g. DM&P Vortex86DX3 and AMD Ryzen 7 6800HS are known to return non-null-terminated brand strings in leaves 80000002h-80000004h), and software should not rely on it.
+
+#include <stdio.h>
+#include <string.h>
+#include <cpuid.h>
+
+int main()
+{
+    unsigned int regs[12];
+    char str[sizeof(regs)+1];
+
+    __cpuid(0x80000000, regs[0], regs[1], regs[2], regs[3]);
+
+    if (regs[0] < 0x80000004)
+        return 1;
+
+    __cpuid(0x80000002, regs[0], regs[1], regs[2], regs[3]);
+    __cpuid(0x80000003, regs[4], regs[5], regs[6], regs[7]);
+    __cpuid(0x80000004, regs[8], regs[9], regs[10], regs[11]);
+
+    memcpy(str, regs, sizeof(regs));
+    str[sizeof(regs)] = '\0';
+    printf("%s\n", str);
+
+    return 0;
+}
+
+EAX=80000005h: L1 Cache and TLB Identifiers 
+This function contains the processor’s L1 cache and TLB characteristics.
+
+EAX=80000006h: Extended L2 Cache Features 
+Returns details of the L2 cache in ECX, including the line size in bytes (Bits 07 - 00), type of associativity (encoded by a 4 bits field; Bits 15 - 12) and the cache size in KB (Bits 31 - 16).
+#include <stdio.h>
+#include <cpuid.h>
+
+int main()
+{
+    unsigned int eax, ebx, ecx, edx;
+    unsigned int lsize, assoc, cache;
+
+    __cpuid(0x80000006, eax, ebx, ecx, edx);
+    
+    lsize = ecx & 0xff;
+    assoc = (ecx >> 12) & 0x07;
+    cache = (ecx >> 16) & 0xffff;
+
+    printf("Line size: %d B, Assoc. type: %d, Cache size: %d KB.\n", lsize, assoc, cache);
+
+    return 0;
+}
+
+EAX=80000007h: Processor Power Management Information and RAS Capabilities 
+This function provides information about power management, power reporting and RAS (Reliability, availability and serviceability) capabilities of the CPU.
+
+EAX=80000008h: Virtual and Physical address Sizes
+
+EAX=8000000Ah: Secure Virtual Machine features 
+This leaf returns information about AMD SVM (Secure Virtual Machine) features in EAX, EBX and EDX.
+
+EAX=8000001Fh: Encrypted Memory Capabilities
+
+EAX=80000021h: Extended Feature Identification 2
+
+EAX=8FFFFFFFh: AMD Easter Egg 
+Several AMD CPU models will, for CPUID with EAX=8FFFFFFFh, return an Easter Egg string in EAX, EBX, ECX and EDX. Known Easter Egg strings include:
+
+EAX=C0000000h: Get Highest Centaur Extended Function 
+Returns index of highest Centaur leaf in EAX. If the returned value in EAX is less than C0000001h, then Centaur extended leaves are not supported.
+
+Present in CPUs from VIA and Zhaoxin.
+
+On IDT WinChip CPUs (CentaurHauls Family 5), the extended leaves C0000001h-C0000005h do not encode any Centaur-specific functionality but are instead aliases of leaves 80000001h-80000005h.
+
+EAX=C0000001h: Centaur Feature Information 
+This leaf returns Centaur feature information (mainly VIA PadLock) in EDX.   (EAX, EBX and ECX are reserved.)
+
+CPUID usage from high-level languages
+
+Inline assembly 
+This information is easy to access from other languages as well. For instance, the C code for gcc below prints the first five values, returned by the cpuid:
+
+#include <stdio.h>
+#include <cpuid.h>
+
+int main()
+{
+    unsigned int i, eax, ebx, ecx, edx;
+
+    for (i = 0; i < 5; i++) {
+        __cpuid(i, eax, ebx, ecx, edx);
+        printf ("InfoType %x\nEAX: %x\nEBX: %x\nECX: %x\nEDX: %x\n", i, eax, ebx, ecx, edx);
+    }
+
+    return 0;
+}
+
+In MSVC and Borland/Embarcadero C compilers (bcc32) flavored inline assembly, the clobbering information is implicit in the instructions:
+
+#include <stdio.h>
+
+int main()
+{
+    unsigned int a, b, c, d, i = 0;
+
+    __asm {
+        /* Do the call. */
+        mov EAX, i;
+        cpuid;
+        /* Save results. */
+        mov a, EAX;
+        mov b, EBX;
+        mov c, ECX;
+        mov d, EDX;
+    }
+
+    printf ("InfoType %x\nEAX: %x\nEBX: %x\nECX: %x\nEDX: %x\n", i, a, b, c, d);
+    return 0;
+}
+
+If either version was written in plain assembly language, the programmer must manually save the results of EAX, EBX, ECX, and EDX elsewhere if they want to keep using the values.
+
+Wrapper functions 
+
+GCC also provides a header called <cpuid.h> on systems that have CPUID. The __cpuid is a macro expanding to inline assembly. Typical usage would be:
+#include <stdio.h>
+#include <cpuid.h>
+
+int main()
+{
+    unsigned int eax, ebx, ecx, edx;
+
+    __cpuid(0 /* vendor string */, eax, ebx, ecx, edx);
+    printf("EAX: %x\nEBX: %x\nECX: %x\nEDX: %x\n", eax, ebx, ecx, edx);
+
+    return 0;
+}
+But if one requested an extended feature not present on this CPU, they would not notice and might get random, unexpected results. Safer version is also provided in <cpuid.h>. It checks for extended features and does some more safety checks. The output values are not passed using reference-like macro parameters, but more conventional pointers.
+
+#include <stdio.h>
+#include <cpuid.h>
+
+int main()
+{
+    unsigned int eax, ebx, ecx, edx;
+
+    /* 0x81234567 is nonexistent, but assume it exists */
+    if (!__get_cpuid (0x81234567, &eax, &ebx, &ecx, &edx)) {
+        printf("Warning: CPUID request 0x81234567 not valid!\n");
+        return 1;
+    }
+
+    printf("EAX: %x\nEBX: %x\nECX: %x\nEDX: %x\n", eax, ebx, ecx, edx);
+
+    return 0;
+}
+
+Notice the ampersands in &a, &b, &c, &d and the conditional statement. If the __get_cpuid call receives a correct request, it will return a non-zero value, if it fails, zero.
+
+Microsoft Visual C compiler has builtin function __cpuid() so the cpuid instruction may be embedded without using inline assembly, which is handy since the x86-64 version of MSVC does not allow inline assembly at all. The same program for MSVC would be:
+
+#include <stdio.h>
+#ifdef 
+    #include <intrin.h>
+#endif
+
+int main()
+{
+    unsigned int regs[4];
+    int i;
+
+    for (i = 0; i < 4; i++) {
+        __cpuid(regs, i);
+        printf("The code %d gives %d, %d, %d, %d", regs[0], regs[1], regs[2], regs[3]);
+    }
+
+    return 0;
+}
+
+Many interpreted or compiled scripting languages are capable of using CPUID via an FFI library. One such implementation shows usage of the Ruby FFI module to execute assembly language that includes the CPUID opcode.
+
+.NET 5 and later versions provide the System.Runtime.Intrinsics.X86.X86base.CpuId method. For instance, the C# code below prints the processor brand if it supports CPUID instruction:using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.X86;
+using System.Text;
+
+namespace X86CPUID {
+    class CPUBrandString {
+        public static void Main(string[] args) {
+            if (!X86Base.IsSupported) {
+                Console.WriteLine("Your CPU does not support CPUID instruction.");
+            } else {
+                Span<int> raw = stackalloc int[12];
+                (raw[0], raw[1], raw[2],  raw[3])  = X86Base.CpuId(unchecked((int)0x80000002), 0);
+                (raw[4], raw[5], raw[6],  raw[7])  = X86Base.CpuId(unchecked((int)0x80000003), 0);
+                (raw[8], raw[9], raw[10], raw[11]) = X86Base.CpuId(unchecked((int)0x80000004), 0);
+
+                Span<byte> bytes = MemoryMarshal.AsBytes(raw);
+                string brand = Encoding.UTF8.GetString(bytes).Trim();
+                Console.WriteLine(brand);
+            }
+        }
+    }
+}
+
+CPU-specific information outside x86 
+Some of the non-x86 CPU architectures also provide certain forms of structured information about the processor's abilities, commonly as a set of special registers:
+
+ ARM architectures have a CPUID coprocessor register which requires EL1 or above to access.
+ The IBM System z mainframe processors have a Store CPU ID (STIDP) instruction since the 1983 IBM 4381 for querying the processor ID.
+ The IBM System z mainframe processors also have a Store Facilities List Extended (STFLE) instruction which lists the installed hardware features.
+ The MIPS32/64 architecture defines a mandatory Processor Identification (PrId) and a series of daisy-chained Configuration Registers.
+ The PowerPC processor has the 32-bit read-only Processor Version Register (PVR) identifying the processor model in use. The instruction requires supervisor access level.
+
+DSP and transputer-like chip families have not taken up the instruction in any noticeable way, in spite of having (in relative terms) as many variations in design. Alternate ways of silicon identification might be present; for example, DSPs from Texas Instruments contain a memory-based register set for each functional unit that starts with identifiers determining the unit type and model, its ASIC design revision and features selected at the design phase, and continues with unit-specific control and data registers. Access to these areas is performed by simply using the existing load and store instructions; thus, for such devices, there is no need for extending the register set for device identification purposes.
+
+See also 
+ CPU-Z, a Windows utility that uses CPUID to identify various system settings
+ CPU-X, an alternative of CPU-Z for Linux and FreeBSD
+ Spectre (security vulnerability)
+ Speculative Store Bypass (SSB)
+ , a text file generated by certain systems containing some of the CPUID information
+
+References
+
+Further reading
+
+External links 
+ Intel  Processor Identification and the CPUID Instruction (Application Note 485), last published version. Said to be incorporated into the Intel® 64 and IA-32 Architectures Software Developer’s Manual in 2013, but  the manual still directs the reader to note 485.
+ Contains some information that can be and was easily misinterpreted though, particularly with respect to processor topology identification.
+ The big Intel manuals tend to lag behind the Intel ISA document, available at the top of this page, which is updated even for processors not yet publicly available, and thus usually contains more CPUID bits. For example, as of this writing, the ISA book (at revision 19, dated May 2014) documents the CLFLUSHOPT bit in leaf 7, but the big manuals although apparently more up-to-date (at revision 51, dated June 2014) don't mention it.
+ AMD64 Architecture Programmer’s Manual Volume 3: General-Purpose and System Instructions
+ cpuid command-line program for Linux
+ cpuprint.com, cpuprint.exe, cpuprint.raw command-line programs for Windows
+ instlatx64 - collection of x86/x64 Instruction Latency, Memory Latency and CPUID dumps
+
+X86 architecture
+Machine code
+X86 instructions

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 111431
+[parent_id]: 
+[tags]: 
+XGBClassifier's predictions are not probabilities with objective='binary:logistic'
+
+I am using a XGBoost's XGBClassifier , a binary 0-1 target, and I am trying to define a custom metric function. It supposedly receives an array of predictions and a DMatrix with the training set according to the XGBoost Tutorials . I have used objective='binary:logistic' in order to get probabilities but the prediction values passed to the custom metric function are not between 0 and 1. They can be like between -3 and 5 and the range of values seems to grow with the iterations. What is wrong with the code below? import numpy as np from xgboost import XGBClassifier from sklearn.metrics import brier_score_loss def brier_score(y_pred, dtrain): y_train = dtrain.get_label() y_prob = y_pred print(f'Min: {min(y_prob)}, max: {max(y_prob)}') # for testing return 'Brier_score', brier_score_loss(y_train, y_prob) SEED = 42 model = XGBClassifier(n_estimators=100, objective='binary:logistic', disable_default_eval_metric=1, scale_pos_weight=12, n_jobs=-1, random_state=np.random.RandomState(SEED), verbosity=1) model.fit(X_train, y_train, eval_metric=brier_score, eval_set=[(X_test, y_test)], verbose=1) Output: Min: -1.21437, max: 1.46595 ValueError: y_prob contains values less than 0.

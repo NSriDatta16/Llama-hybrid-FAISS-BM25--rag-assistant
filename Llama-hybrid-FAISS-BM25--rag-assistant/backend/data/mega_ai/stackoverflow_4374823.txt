@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4374823
+[parent_id]: 
+[tags]: 
+Use non-lating characters for product and category URL key in magento
+
+Magento converts non-Latin characters in the URL key of products and categories to Latin characters. How can I use non-Latin characters? formatUrlKey in Mage/Catalog/Model/Product/Url.php uses $_convertTable in Mage/Catalog/Helper/Product/Url.php . I've tried to change the code but I can't make Magento save non-Latin URLs and show them correctly in the admin. I've removed hebrew letters from the $_convertTable as you suggsted. The problem is that the formatUrlKey replaces characters which are not 0-9 or a-z with '-': public function formatUrlKey($str) { $urlKey = preg_replace('#[^0-9a-z]+#i', '-', Mage::helper('catalog/product_url')->format($str)); $urlKey = strtolower($urlKey); $urlKey = trim($urlKey, '-'); return $urlKey; } So I'm overriding this method and changing it to: $urlKey = preg_replace('#[^0-9a-zא-ת]+#i', '-', Mage::helper('url')->format($str)); Now magento correctly saves and display the url string but it doesn't work in the browser. When trying to access the product url I'm getting 404. If instead of preg_replace, strtolower and trim I'm using only: $urlKey = urlencode($str); It also doesn't work because magento calls formatUrlKey several times. I don't understand why. Thanks

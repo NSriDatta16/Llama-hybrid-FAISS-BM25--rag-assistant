@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4936651
+[parent_id]: 4936497
+[tags]: 
+Mixing the various input methods on istream ( get , getline , operator>> ) can be fraught with peril if you're not aware of which methods leave the delimiter character in the stream and which don't, and handle them accordingly. In this case, get will read 300 characters of input or input up until the newline, whichever happens first. The newline will not be extracted, and so will remain in the stream. That means your call to scanf() will read the newline and stop, leaving the y or n you just typed in the stream. There are several ways to reorganize this code to make it do what it seems like you want. This is one way: #include #include using namespace std; int main() { string cevap; char tekrar='y'; while (tekrar!='n') { getline(cin,cevap); cout This uses std::string and the non-member getline to read input in such a way as to not require you to be limited to 300 characters (not strictly speaking related to the question, but good practice usually). getline consumes and discards the delimiter, but get , used to read the continuation input, doesn't, so we discard it manually via ignore .

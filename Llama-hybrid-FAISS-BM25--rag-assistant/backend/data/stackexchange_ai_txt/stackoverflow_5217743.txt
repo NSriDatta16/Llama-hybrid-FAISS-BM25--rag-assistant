@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5217743
+[parent_id]: 5217339
+[tags]: 
+Ideally you want to write an http fifo queue using HTML5 local storage. It's very overkill in most situations but at work we have a native client library for iOS, WP7, Android and Javascript and all offer persistent queuing and reliable delivery so they have to handle the server connection dropping out for whatever reason. Get/Post -> In to In-Memory queue -> Save to storage -> Send -> remove from storage -> raise "sent" callback. If a message fails to send then leave it in storage and requeue it in memory. Have a timer event that kicks the queue every few seconds (As well as kicking it when messages are added/removed). Limit that max simultaneous connections (Http should be 2 per client). Then each time your web app is loaded try read all items in local storage back in to the In-Memory queue. Then you have persistent/reliable queuing and won't lose any messages :)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4820595
+[parent_id]: 4819724
+[tags]: 
+Good plan for world domination with the memory leaks is to not use heap at all. Instead of: class A { A() { m_a = new int; } ~A() { delete m_a; } int *m_a; }; can always use: class A { int m_a; }; and it's considerably simpler and more convinient. It also works in other situations, Instead of: MyObject *create_obj(int a) { switch(a) { case 0: return new MyDerived1; case 1: return new MyDerived2; }; } int main() { MyObject *o = create_obj(1); o->do_x(); o->do_y(); delete o; } Could always use this: class Obj { Obj(int a) : a(a) { } void do_x() { switch(a) { case 0: ... break; case 1: ... break; }; } void do_y() { switch(a) { case 0: ... break; case 1: ... break; }; } int a; }; int main() { Obj o(1); o.do_x(); o.do_y(); } Copying a large data structure from scope to another for stack allocation works like this: void Collect(MyStorage &s) { MyObject o; MyObject2 o2(o); MyObject3 o3(o2); s.Copy(o3); } void f(const MyStorage &s); int main() { MyStorage s; Collect(s); f(s); } This way creating large data structure on stack will work fine. The Storage class needs heap.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3902709
+[parent_id]: 3902392
+[tags]: 
+Since the items are not directly inside the canvas, you need to walk up the visual tree until you find the canvas. I usually use the following extension method to do that: public static T FindAncestor (this DependencyObject obj) where T : DependencyObject { DependencyObject tmp = VisualTreeHelper.GetParent(obj); while(tmp != null && !(tmp is T)) { tmp = VisualTreeHelper.GetParent(tmp); } return tmp as T; } Put the method above in a static class, and import the namespace where it is declared. In the DraggableExtender code, just replace this line: Canvas canvas = element.Parent as Canvas; With this one: Canvas canvas = element.FindAncestor ();

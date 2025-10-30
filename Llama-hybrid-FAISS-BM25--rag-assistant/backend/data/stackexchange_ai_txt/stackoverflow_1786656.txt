@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1786656
+[parent_id]: 1786436
+[tags]: 
+$ret = $prep->execute(array(':searchTerm' => '"%'.$searchTerm.'%"')); This is wrong. You don't need the double quotes. WHERE hs.hs_text LIKE ":searchTerm" $ret = $prep->execute(array(':searchTerm' => '%'.$searchTerm.'%')); This is also wrong. Try with: $prep = $dbh->prepare($sql); $ret = $prep->execute(array(':searchTerm' => '%'.$searchTerm.'%')); Explanation: Prepared statements don't simply do a string-replace. They transport the data completely separate from the query. Quotes are only needed when embedding values into a query.

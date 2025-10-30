@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3703745
+[parent_id]: 3703658
+[tags]: 
+In short, you should probably just create a vector. It isn't that much overhead, especially if you use something like boost::list_of or C++0x's initializer list. The syntactic overhead is minimal, and it is more flexible (you could pass list with a number of arguments known only at runtime). If you really wanted, you could use variadic template parameters to do this: // Using pass-by-value since I'm assuming it is primitive: template void make_dragon_list_internal( dragon_list_t* dragon_list, T t, Args... args ) { // add T to dragon_list. make_dragon_list_internal( dragon_list, args... ); } void make_dragon_list_internal( dragon_list_t* dragon_list ) { // Finalize dragon_list. } template dragon_list_t make_dragon_list( Args... args ) { dragon_list_t dragon_list; make_dragon_list_internal( &dragon_list, args... ); return dragon_list; } It's typesafe, and extensible (you could make this take things other than dragons, if you feel like).

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4606682
+[parent_id]: 4606492
+[tags]: 
+sys.allocation_units , look at total_pages. Each rowset (partition of an index) has 3 allocation units (DATA, SLOB and LOB), see Table and Index Organization . Join with sys.partitions to get the object_id and the index_id. Index_id 0is the heap of an unordered table, index id 1 is the clustered index. Every table (index) has at least one partition, if is not partitioned: select object_name(p.object_id) as [name], object_schema_name(p.object_id) as [schema], i.name as [index], i.type_desc, au.type_desc, p.partition_number, p.rows, au.total_pages * 8 as [space (kb)] from sys.allocation_units au join sys.partitions p on au.container_id = p.partition_id join sys.indexes i on p.object_id = i. object_id and i.index_id = p.index_id order by [space (kb)] desc;

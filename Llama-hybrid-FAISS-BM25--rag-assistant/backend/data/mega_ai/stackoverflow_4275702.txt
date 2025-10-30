@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4275702
+[parent_id]: 4275488
+[tags]: 
+If you're worried about making the syntax look nice, try this: sub routine3 (\@) { for (@{$_[0]}) { $_++ } } my @list = (0 .. 9); routine3(@list); say "@list"; # prints 1 .. 10 This declares routine3 with a prototype - it takes an array argument by reference. So $_[0] is a reference to @list , no rather unsightly \ needed by the caller. (Some people discourage prototypes, so take this as you will. I like them.) But unless this is a simplification for what your actual routine does, what I'd do is this: my @list = 0 .. 9; my @new_list = map { $_ + 1 } @list; say "@new_list"; Unless routine is actually really complicated, and it's vital somehow that you modify the original array, I'd just use map . Especially with map , you can plug in a subroutine: sub complex_operation { ... } my @new_list = map { complex_operation($_) } @list; Of course, you could prototype complex_operation with (_) and then just write map(complex_operation, @list); but I like the bracket-syntax personally.

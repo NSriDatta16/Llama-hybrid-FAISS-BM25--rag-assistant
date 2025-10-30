@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 359700
+[parent_id]: 288220
+[tags]: 
+I would just model the fact that each tree in a binary random forest votes for class 0 or class 1. This means that for $T$ trees, you have $T$ Bernoulli trials for each sample, and each sample $i$ has a different probability $p_i$ of being classified as 1 by a tree. These Bernoulli trials are IID because trees in a random forest are IID . A tree votes for class 1 some number of times $0\le k_i \le T$. Adopting a Bayesian framework, we can leverage the beta-binomial model. The posterior distribution over $p_i$ for each sample is $$ p_i \sim \text{Beta}(\alpha+k_i, \beta + T-k_i) $$ where $(\alpha,\beta)$ is a prior belief about $p_i$. I wouldn't worry over choosing $(\alpha,\beta)$ too much; a uniform prior of $\alpha=\beta=1$ implies two "psuedo-RF-trees" voted for class 0 and class 1 once for each sample. The rest is just monte carlo: for each $i$, sample from the posterior distribution and compute the ROC curve. Repeat this $M$ times, and you have a distribution of $M$ ROC curves drawn from this model.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5287888
+[parent_id]: 
+[tags]: 
+Mechanize question regarding submit()
+
+I tried looking around on the forum and googling for answers but cannot figure it out. After submitting a form for a webpage that requires time to do some computation does Mechanize wait for all the computation to finish (even if it's taking an hour?). It seems as if that doesn't happen. I am iterating through a subroutine that creates a Mechanize object and submits a form and downloads the output file after computation is done. However, I feel like it jumps to the next iteration of loop without completing all those tasks since some times the computation takes a long time. Does anyone have any suggestions? Thanks. This is the subroutine sub microinspector { my ($sequence, $folder) = @_; print STDOUT "subroutine sequence: $sequence\n"; my $browser = WWW::Mechanize->new(); $browser->get("http://bioinfo.uni-plovdiv.bg/microinspector/"); $browser->form_number(1); $browser->field("target_sequence", $sequence); $browser->select("Choose an organism : ", "Mus musculus"); $browser->submit(); #print $browser->content(); my @links = $browser->links(); chdir($folder) or die "Cannot chdir to $folder"; foreach my $link (@links) { #print $link->url(); if( $link->url() =~ /csv$/i ){ my $result = $browser->get( $link->url() ); my $filename = ( $link->url() =~ /\/([^\/]+)$/ )[0]; print "Saving $filename\n"; open( OUT, ">$filename" ); print OUT $result->content(); close( OUT ); } } }

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1214071
+[parent_id]: 
+[tags]: 
+rsync and MyISAM tables
+
+I'm trying to use rsync to backup MySQL data. The tables use the MyISAM storage engine. My expectation was that after the first rsync, subsequent rsyncs would be very fast. It turns out, if the table data was changed at all, the operation slows way down. I did an experiment with a 989 MB MYD file containing real data: Test 1 - recopying unmodified data rsync -a orig.MYD copy.MYD takes a while as expected rsync -a orig.MYD copy.MYD instantaneous - speedup is in the millions Test 2 - recopying slightly modified data rsync -a orig.MYD copy.MYD takes a while as expected UPDATE table SET counter = counter + 1 WHERE id = 12345 rsync -a orig.MYD copy.MYD takes as long as the original copy! What gives? Why is rsync taking forever just to copy a tiny change? Edit: In fact, the second rsync in Test 2 takes as long as the first. rsync is apparently copying the whole file again. Edit: Turns out when copying from local to local, --whole-file is implied. Even with --no-whole-file, the performance is still terrible.

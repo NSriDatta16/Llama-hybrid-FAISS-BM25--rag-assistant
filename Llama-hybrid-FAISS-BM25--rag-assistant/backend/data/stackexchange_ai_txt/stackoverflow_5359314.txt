@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5359314
+[parent_id]: 5359288
+[tags]: 
+You are getting the syntax error since 5:8 isn't a valid Python statement on its own; eval expects normal Python code, not just fragments. If you really want to use eval , you can say: string = '1234567890' sliceInput = '5:8' result = eval('string[' + sliceInput + ']') However this is not at all secure if you're allowing user input. A safer way would be: string = '1234567890' sliceInput = '5:8' sliceParts = sliceInput.split(':') if len(sliceParts) != 2: # Invalid input -- either no ':' or too many else: try: start, end = [ int(x) for x in sliceParts ] except ValueError: # Invalid input, not a number else: result = string[start : end] Note that slice() is a built-in Python function, so it isn't considered good practice to use it as a variable name.

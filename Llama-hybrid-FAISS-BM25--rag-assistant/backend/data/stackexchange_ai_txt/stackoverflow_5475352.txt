@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5475352
+[parent_id]: 5475115
+[tags]: 
+You have to pass the updated XML as a string to your SqlParameter , so something like this: SqlCommand cmd=new SqlCommand("Update Setting set SettingXml=@SettingXml where settingId=5",cnn); cmd.Parameters.Add(new SqlParameter("@SettingXml", SqlDbType.Xml)).Value = xdoc.OuterXml; You might find it easier using Linq to XML for updating your XML going forward - XmlDocument is not very easy to use. Also your current XML is not valid - let's assume it looks like this: Then you can increment your id's using Linq to XML like this: XDocument doc = XDocument.Load("test.xml"); doc.Root .Elements() .ToList() .ForEach(node => node.Attribute("id").Value = (Convert.ToInt32(node.Attribute("id").Value) + 1).ToString()); string xml = doc.ToString();

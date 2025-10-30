@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3644181
+[parent_id]: 3644122
+[tags]: 
+If this helps, here's a FileFilter I wrote that will return a list of folders that contain images. You simply take a File representing a directory (I use it for Environment.getExternalStorageDirectory()) use .listFiles(filterForImageFolders) and it will return a File[] with the directories that contain images. You can then use this list to populate your list of images in your settings: FileFilter filterForImageFolders = new FileFilter() { public boolean accept(File folder) { try { //Checking only directories, since we are checking for files within //a directory if(folder.isDirectory()) { File[] listOfFiles = folder.listFiles(); if (listOfFiles == null) return false; //For each file in the directory... for (File file : listOfFiles) { //Check if the extension is one of the supported filetypes for (String ext : imageExtensions) { if (file.getName().endsWith("." + ext)) return true; } } } return false; } catch (SecurityException e) { Log.v("debug", "Access Denied"); return false; } } }; (ImageExtensions is a String[] containing "png", "bmp", "jpg", "jpeg")

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5587414
+[parent_id]: 5587318
+[tags]: 
+Checking the object in every method is definitely not right. The purpose of constructor arguments is to have a valid object to work with after it is instantiated: class Validator { private $db; public function __construct(PDO $db) { // validate $db here } public checkIfUsernameAlreadyExists($username) { $this->db->query('SELECT * FROM table'); // exception thrown here // never reaches here } } try { $validator = new Validator(new PDO('mysql:dbname=db', 'user', 'pass')); $validator->checkIfUsernameAlreadyExists('foo'); } catch (PDOException $e) { echo 'Database error occured: ', $e->getMessage(); exit(1); } So, you validate $db once in the constructor and that's it. If the database connection fails, then the $db object should (and will if it's PDO) throw an exception which will halt the execution of the method anyway. Note: I'd discourage the use of Singleton pattern or global variables for a lot of reasons that can easily be found on Stack Overflow or Google.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1128527
+[parent_id]: 1128458
+[tags]: 
+You can use pragma directives to save and restore the new macro when undefing for overloads. See [MSDN]( http://msdn.microsoft.com/en-us/library/hsttss76(VS.71).aspx) for the exact syntax. E.g. #pragma push_macro("new") #undef new void FAR* operator new(size_t cb); #pragma pop_macro("new") You can put these in headers, e.g. begin_new_override.h: #ifdef new #define NEW_WAS_DEFINED #pragma push_macro("new") #undef new #endif end_new_override.h: #ifdef NEW_WAS_DEFINED #undef NEW_WAS_DEFINED #pragma pop_macro("new") #endif And then #include "begin_new_override.h" void FAR* operator new(size_t cb); #include "end_new_override.h"

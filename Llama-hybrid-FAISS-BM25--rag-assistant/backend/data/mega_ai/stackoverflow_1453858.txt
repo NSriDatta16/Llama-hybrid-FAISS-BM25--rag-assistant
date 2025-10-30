@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1453858
+[parent_id]: 1453538
+[tags]: 
+As an alternative to writing to a file, how about writing to a table? Instead of calling DBMS_OUTPUT.PUT_LINE you could call your own DEBUG.OUTPUT procedure something like: procedure output (p_text varchar2) is pragma autonomous_transaction; begin if g_debugging then insert into debug_messages (username, datetime, text) values (user, sysdate, p_text); commit; end if; end; The use of an autonomous transaction allows you to retain debug messages produced from transactions that get rolled back (e.g. after an exception is raised), as would happen if you were using a file. The g_debugging boolean variable is a package variable that can be defaulted to false and set to true when debug output is required. Of course, you need to manage that table so that it doesn't grow forever! One way would be a job that runs nightly/weekly and deletes any debug messages that are "old".

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2884838
+[parent_id]: 
+[tags]: 
+Firefox -- Dynamically embedding element in SVG
+
+I am trying dynamically to append an element to an existing SVG island on an XHTML page (Firefox 3.6.3). And it is crashing the browser. Done manually, this works as expected: ... However, if you dynamically add this element using JavaScript, the browser crashes. Simple example: SVG island example Crash Firefox Interestingly, if I do a getElementById , it works fine . Interesting, but not particularly helpful in my situation since I'm storing pointers to SVGDocument s. Example: function doesntCrash( ) { var svg = document.getElementById( "mySVG" ); var e = document.createElementNS( "http://www.w3.org/2000/svg", "svg" ); svg.appendChild( e ); } As far as I can tell, this is a Firefox bug. Does anyone have any insight into this matter? UPDATED (solution): As stated below, the issue was the "liveness" of the HTMLCollection returned by the getElementsByTagNameNS call which I mistook for a native array ( tsk, tsk! ) A quick hackaround would be to either store the array length in a variable, if you're only appending. A better solution might be to copy the array contents to a native array, as described here . Here's an updated using that method: function doesntCrash( ) { var svgs = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "svg" ); // copy contents to native a static, array svgs = Array.prototype.slice.call( svgs ); for ( var i = 0; i Thank you Sergey Ilinsky for your quick response!

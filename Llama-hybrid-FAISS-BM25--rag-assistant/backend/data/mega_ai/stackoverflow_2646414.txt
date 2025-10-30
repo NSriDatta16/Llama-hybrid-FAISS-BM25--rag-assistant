@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2646414
+[parent_id]: 2646364
+[tags]: 
+I would add memory fragmentation to the list. That can occur when using objects that encapsulate native resources which after they are allocated can not be moved by the Garbage Collector and could potentially fragment the heap. One real-life example is when you create and destroy lots of sockets. The buffers they use to read/write data have to be pinned in order to be transferred to the native WinSock API which means that when garbage collection occurs, even though some of the memory is reclaimed for the sockets that where destroyed - it could leave the memory in a fragmented state since the GC can't compact the heap after collection. Thus the read/write buffers are prime candidates for pooling. Also, if you're using SocketEventArgs objects, those would also be good candidates. Here's a good article that talks about the garbage collection process, memory compacting and why object pooling helps.

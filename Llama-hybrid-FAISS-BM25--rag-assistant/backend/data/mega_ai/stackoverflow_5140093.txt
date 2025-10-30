@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5140093
+[parent_id]: 5139467
+[tags]: 
+You have a few options: Use the the Dynamic Linq libraries to construct you queries on the fly. The best place to get started is by reading ScottGu's blog entry . However, I don't think these libraries support the contains method in your example. Here is a blog post explaining how to add this support. Directly execute SQL statements. Check out the MSDN docs for Linq to Sql or Linq to Entities . var _Products = myEntities.ExecuteStoreQuery (@"SELECT * FROM Products WHERE [Name] In ('Item1', 'Item2')"); Use Linq's composable behaviour . This might not be the most elegant solution but it works really well if you do not have too many options. You can just construct your query in multiple parts. var _Products = from product in myEntities.Products select product _Products = from product in _Products where product.Name.Contains(_Name) select product if FilterByPrice { _Products = from product in _Products where product.Price > 100 select product }

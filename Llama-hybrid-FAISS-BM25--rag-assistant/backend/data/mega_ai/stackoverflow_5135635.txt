@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5135635
+[parent_id]: 5135556
+[tags]: 
+You can use a callable in the upload_to argument rather than using custom storage. See the docs , and note the warning there that the primary key may not yet be set when the function is called. This can happen because the upload may be handled before the object is saved to the database, so using ID might not be possible. You might want to consider using another field on the model such as slug. E.g: import os def get_upload_path(instance, filename): return os.path.join( "user_%d" % instance.owner.id, "car_%s" % instance.slug, filename) then: photo = models.ImageField(upload_to=get_upload_path)

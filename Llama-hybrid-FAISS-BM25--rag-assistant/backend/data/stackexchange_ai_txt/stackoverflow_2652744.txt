@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2652744
+[parent_id]: 2651007
+[tags]: 
+An alternative way to do parsing like this is to read entire paragraphs. For more information on the input record separator ( $/ ), see perlvar . For example: use strict; use warnings; use Data::Dumper qw(Dumper); my %bighash; { local $/ = "\n\n"; # Read entire paragraphs. while (my $paragraph = <>){ # Filter out comments and handle extra blank lines between sections. my @lines = grep {/\S/ and not /^\#/} split /\n/, $paragraph; next unless @lines; # Extract the key and the SRR* items. my $key = $lines[0]; $key =~ s/^\d+://; $bighash{$key} = [map { /^Run \#\d+: +(SRR\d+)/ ? $1 : () } @lines]; } } print Dumper(\%bighash);

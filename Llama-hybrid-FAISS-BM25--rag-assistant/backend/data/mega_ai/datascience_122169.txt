@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 122169
+[parent_id]: 122140
+[tags]: 
+Just cross-validate your model. Basically, you keep apart a portion of the training data (now called the validation data or split) which are then used for validation (same as testing but on such validation split). There are various cross-validation methods, like the leave-one-out or the k-fold cross-validation. In practice you can use the cross_validate function from scikit-learn : from sklearn.linear_model import LogisticRegression from sklearn.model_selection import cross_validate # this would perform (stratified) 5-fold cross-validation on ROC-AUC metric scores = cross_validate(estimator=LogisticRegression(...), X=x_train, y=y_train, cv=5, scoring='roc_auc', return_train_score=True, return_estimator=True) And then compare the scores['train_score'] with the scores['test_score'] , if the gap is large the model is likely overfitting: you get a score for each cross-val fold, so you can plot and/or aggregate them for example. If you haven't used scikit-learn to train your logistic regression model you can still set-up the validation procedure manually.

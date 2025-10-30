@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4684969
+[parent_id]: 
+[tags]: 
+Using resque for implementing a command pattern
+
+I am working on a multi-user tree editing app. It uses resque gem for background processes. To avoid runtime multiuser conflicts I want to use command pattern and store user actions in a resque queue so if someone is deleting a branch other user cannot edit children of that branch. It works, but it is quite slow to pick the job first time from a queue, because resque worker checks for the jobs using 5 seconds interval. It slows down editing interface significantly. It is possibe to do something like this: cmd = MyCommand.create!(:attr1 => 'foo', :attr2 => 'bar') Resque.enqueue(MyCommand, cmd.id) workers = Resque.workers.select {|w| w.queues.include?('my_queue') } raise "Should be only one queue for commands!" if workers.size != 1 not_done = true while not_done not_done = workers[0].process end It does what I need, but I wonder if there is a more elegant way of doing this. Also, :process is a deprecated method for Worker instances.

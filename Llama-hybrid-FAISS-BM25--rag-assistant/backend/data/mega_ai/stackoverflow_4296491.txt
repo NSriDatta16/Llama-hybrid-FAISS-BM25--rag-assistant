@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4296491
+[parent_id]: 4296462
+[tags]: 
+You have this tables: RECORD (ID, NAME) SHARE(ID,VALUE) If your SQL engine supports LEFT OUTER JOINS, the best way is: SELECT RECORD.* FROM RECORD LEFT OUTER JOIN SHARE WHERE RECORD.ID=SHARE.ID WHERE SHARE.ID IS NULL Important place an index on SHARE.ID How it works: SQL Engine span all the RECORD table looking for a record in SHARE, for each record in RECORD if it is found a "linked" record in SHARE the where clause is falso, so the record is not included in the result set, if no records are found in share the where clause is true and the RECORD.* is included in result set. This works thanks to LEFT OUTER JOIN. Note: Another way of doing the same thing is to use the WHERE RECORD.ID NOT IN (SELECT ID FROM SHARE). Pay attention that depending on the sql engine you are using this may lead to serious performance issues because the internal engine can run the (SELECT ID FROM SHARE) once per record in RECORD table.

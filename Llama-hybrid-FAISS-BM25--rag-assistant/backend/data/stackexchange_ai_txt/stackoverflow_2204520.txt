@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2204520
+[parent_id]: 2204471
+[tags]: 
+Yes you can do it, here are instructions: http://code.djangoproject.com/wiki/CookBookThreadlocalsAndUser Although this works I personally would prefer to pass the user to the form in the view. This feels less like a hack. You could also show your code, maybe it can be improved. Why do you have to access the user in the form? Update: You could do something like this: class LicenseForm(forms.Form): def __init__(self, *args, **kwargs): super(LicenseForm, self).__init__(*args, **kwargs) self._user = kwargs.get('user',None) self.fields['licenses'] = forms.ModelChoiceField(queryset=self.license_queryset(), empty_label='None', widget=forms.RadioSelect()) def license_queryset(self): queryset = License.objects.filter(organization__isnull=True) if self._user and self._user.belongsTo('SomeOrganization'): queryset = queryset.filter(whatever='fits') return queryset Imho this is a much cleaner approach as messing with local threads.

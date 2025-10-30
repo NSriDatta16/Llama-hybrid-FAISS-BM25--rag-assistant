@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2640907
+[parent_id]: 
+[tags]: 
+What is the best way to create a running integer id on the AppEngine data storage?
+
+For various reasons, I need a unique running integer id for my entities stored on the Google AppEngine. The automatically generated key sort of has this behaviour, but it doesn't start from 1 (or 0) and doesn't guarantee that the generated integer part will come from a continuous sequence. What would be the best way to efficiently implement this on AppEngine? Is there any support from the storage system? To add to the complexity, I might need to do this over entities from different entity groups, meaning I can't just get the highest id right now and save an entity with the next id in a transaction. Might memcache be the way to go..? Edit: I havn't yet implemented this, but to clarify on the memcache idea. I know memcache is unreliable, but in practice it probably won't lose data "too often" to hurt performance. Basically, I would have a memcache entry for the last used id, update it (somehow atomically) whenever I create a new entity and use that id. In the case of memcache not having a value for this entry, I'd get the highest id so far by doing a query on my entities sorted by the id and update memcache (unless someone else had already done so). The only problem I can see with this right now would be atomicity of the operation as a whole if the save of my new entity was also part of a transaction. Thoughts..?

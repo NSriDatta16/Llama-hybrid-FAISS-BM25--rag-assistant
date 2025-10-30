@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 205351
+[parent_id]: 
+[tags]: 
+Oracle database allows invalid time portion of datetime column values under what circumstances?
+
+This case arises in a real-life situation where invalid data was in (and continuing to come into) an Oracle database which is extracted into a data processing system in Focus. Focus would choke and die on some rows with invalid time portions. The Oracle DBA would then go and copy the datetime into the affected column from a good column to allow the process to continue (yeah, I know). I assisted troubleshooting the problem and found that in Oracle on an affected row: DUMP(START_TIME) gives: 'Typ=12 Len=7: 100,99,255,255,0,0,0' While: TO_CHAR(START_TIME, 'YYYY/MM/DD HH24:MI:SS') gives: ORA-01801: date format is too long for internal buffer Looking at the DUMP() results, 'Typ=12 Len=7: 100,99,255,255,0,0,0' , and the storage conventions , it appears that they are able to bypass the column's semantic limits and insert the equivalent of 0, -1, -1, -1, -1, -1, -1 or 0x00 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF Which makes "sense", since 0xFF = 255 = -1 might potentially result in 0000/255/255 255:255:255 depending on how you interpret the bytes, signs and overflows. Under what conditions (connection mechanism, etc) does Oracle allow invalid data to come into datetime columns?

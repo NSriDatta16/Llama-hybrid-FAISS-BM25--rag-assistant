@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5065397
+[parent_id]: 
+[tags]: 
+strange behavior of lua_getfield
+
+I have spotted strange behavior with lua_getfield() function. Please look at this code fragment, which should just get a field from table located at the stack top: if(lua_istable(L,-1)){ lua_getfield(L,-1,"field_name"); int type = lua_type(L,-1); // returns LUA_TNIL int field_value = lua_tointeger(L,-1); // returns 0 lua_pop(L,1); // and now let's try iterating all table's fields: lua_pushnil(L); // first key while(lua_next(L, -2) != 0){ // uses 'key' (at index -2) and 'value' (at index -1) CString key = lua_tostring(L,-2); int type = lua_type(L,-1); if(key == "field_name"){ // int value = lua_tointeger(L,-1); // returns correct value!!!! (type == LUA_TNUMBER) // ????? what the heck ???? } // removes 'value'; keeps 'key' for next iteration lua_pop(L, 1); } The question is, why lua_getfield() doesn't work, while lua_next() works perfectly? I have used lua_getfield() tens of times with no problems and now I'm bumping my head into my keyboard... reagards Marcin

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1469036
+[parent_id]: 1468774
+[tags]: 
+The main issue has already been answered, but here's something I noticed. Your main while loop seems a bit fragile to me... while(true) { if(FindNextFileA(dhandle, &fdata)) { //... } else if(GetLastError() == ERROR_NO_MORE_FILES) break; } This ends if FindNextFile ends because there are no more files in the directory. But what if it ever ends for some other reason? If something abnormal happens, it seems you could end up with an infinite loop. I'd think if FindNextFile fails for any reason, then you'll want to stop the loop and start returning through the recursive calls. So I'd suggest simply removing the GetLastError test and just making it " else break; " Actually, after a moment's thought I would probably just reduce it to: while(FindNextFileA(dhandle, &fdata)) { //... }

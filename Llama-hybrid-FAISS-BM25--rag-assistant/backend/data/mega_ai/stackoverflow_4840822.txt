@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4840822
+[parent_id]: 4840173
+[tags]: 
+We need another list level. The second argument should be a list of assoc lists. CL-USER > (mapcar #'assoc '(a s) '(((a . b) (c . d) (s . f)))) ((A . B)) But the second argument is only one element long. Now we can use a trick and make it a circular list: CL-USER > (mapcar #'assoc '(a s) '#1=(((A . B) (C . D) (S . F)) . #1#)) ((A . B) (S . F)) If we construct a circular list for the second argument, then it works. As a function: (defun circular (list) (if (null list) list (setf (cdr (last list)) list))) CL-USER > (mapcar #'assoc '(a s) (circular '(((a . b) (c . d) (s . f))))) ((A . B) (S . F))

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5280532
+[parent_id]: 5280011
+[tags]: 
+a) Set it up like this: A.h: #ifndef A_HEADER_GUARD #define A_HEADER_GUARD class A {...}; #endif A.cpp: // A::method1 implementation // A::method2 implementation // etc... B.h: #ifndef B_HEADER_GUARD #define B_HEADER_GUARD #include "A.h" template class B {...} #endif Note that class B can't be implemented in a cpp file. This is because class B is a template and its implementation must completely visible to whoever instantiates the template. Make sure you understand the use of header guards (aka include guards). b) Writing private helper methods to "factor out" frequently repeated code is quite normal, and I'd say even encouraged. c) Yes, shared_ptr::get() is guaranteed to be 0 when uninitialised, as stated in the postconditions clauses in the documentation . Instead of checking shared_ptr::get() in a condition expression, you can just check the shared_ptr itself. It automatically converts itself to bool when used in a boolean context. For example: shared_ptr a_ptr; if (!a_ptr) cout This is the idiomatic way of checking smart pointer validity.

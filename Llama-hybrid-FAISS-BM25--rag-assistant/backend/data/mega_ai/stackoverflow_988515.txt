@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 988515
+[parent_id]: 987916
+[tags]: 
+looks like someone recognized that PIL doesn't really read ICO correctly (I can see the same thing after reconciling its source code with some research on the ICO format - there is an AND bitmap which determines transparency) and came up with this extension: http://www.djangosnippets.org/snippets/1287/ since this is useful for non-django applications, I've reposted here with a few tweaks to its exception throws: import operator import struct from PIL import BmpImagePlugin, PngImagePlugin, Image def load_icon(file, index=None): ''' Load Windows ICO image. See http://en.wikipedia.org/w/index.php?oldid=264332061 for file format description. ''' if isinstance(file, basestring): file = open(file, 'rb') try: header = struct.unpack(' > 1 d, e, o, a = image.tile[0] image.tile[0] = d, (0, 0) + image.size, o, a # Calculate AND bitmap dimensions. See # http://en.wikipedia.org/w/index.php?oldid=264236948#Pixel_storage # for description offset = o + a[1] * image.size[1] stride = ((image.size[0] + 31) >> 5)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2180803
+[parent_id]: 2180577
+[tags]: 
+There's nothing operationally wrong with doing something like: raise ValueError("invalid input encoding") In fact, I do that quite often when I'm writing the first pass of some code. The main problem with doing it that way is that clients of your code have a hard time being precise in their exception handling; in order to catch that specific exception, they would have to do string matching on the exception object they caught, which is obviously fragile and tedious. Thus, it would be better to introduce a ValueError subclass of your own; this could still be caught as ValueError, but also as the more specific exception class. A general rule of thumb is that whenever you have code like: raise ValueError('some problem: %s' % value) You should probably replace it with something like: class SomeProblem(ValueError): """ Raised to signal a problem with the specified value. """ # ... raise SomeProblem(value) You might say that the exception type specifies what went wrong, whereas the message / attributes specify how it went wrong.

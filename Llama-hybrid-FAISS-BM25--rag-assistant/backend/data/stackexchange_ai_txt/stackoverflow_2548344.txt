@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2548344
+[parent_id]: 2548322
+[tags]: 
+It's the LocationChanged event you want: private void YourApp_LocationChanged(object sender, EventArgs e) { this.Opacity = 0.8; } You'll have to override WndProc and handle the exit move event to reset the opacity back to 1: protected override void WndProc(ref Message m) { Trace.WriteLine(m.ToString()); switch (m.Msg) { case WMEXITSIZEMOVE: this.Opacity = 1.0; break; } base.WndProc(ref m); } Not forgetting to define the message code: private const int WMEXITSIZEMOVE = 0x0232; It might be more efficient to handle the WM_ENTERSIZEMOVE (code 0x0231 ) message instead of LocationChanged as this would only result in setting the opacity once (at the start of the drag) rather than continually throughout the drag.

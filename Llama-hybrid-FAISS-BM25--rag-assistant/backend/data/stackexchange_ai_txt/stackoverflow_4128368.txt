@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4128368
+[parent_id]: 4128061
+[tags]: 
+For the version of GCC I have handy, it looks like yes: #include typedef struct { char a; int b; }inner_t; #pragma pack(1) typedef struct { char a; inner_t inner; } outer_t; int main() { outer_t outer; outer.inner.a = 'a'; outer.inner.b = 0xABCDEF01; printf ("outer.inner.a: %c\n", outer.inner.a); return 0; } And gdb breaking on the printf gives me... (gdb) x/5xw &outer 0x7fffffffe4b0: 0xffff61a0 0xcdef01ff 0x000000ab 0x00000000 0x7fffffffe4c0: 0x00000000 inner.b is not word aligned. So under GCC 4.4.5 on a little endian 64-bit machine, nested structures are packed if the outer structure is packed. Pardon my typedefs, those of you who don't like them.

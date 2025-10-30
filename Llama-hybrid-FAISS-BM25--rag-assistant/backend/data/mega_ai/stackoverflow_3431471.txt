@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3431471
+[parent_id]: 3422095
+[tags]: 
+You can subclass UITableView and override the touchesEnded:withEvent:. This method gets hit when the user lifts their finger off. Since you may not want to disable the user interaction when the user just taps the screen, you can capture the initial touch start point and the touch end point. From these two, you can compare the deltas of the Y to figure out how much you want the user to move before disabling the the user interaction. Here's some code that will help you along the way. - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { UITouch * touch = [touches anyObject]; touchStartPoint = [touch locationInView:self]; } - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event { UITouch * touch = [touches anyObject]; CGPoint touchEndPoint = [touch locationInView:self]; CGFloat deltaY = touchStartPoint.y - touchEndPoint.y; if (fabsf(deltaY) >= kMinimumYMoved) { self.userInteractionEnabled = NO; } }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 735814
+[parent_id]: 735797
+[tags]: 
+I don't know that using CallContext is the right move here if the desire is simply to provide thread-safe access to your properties. If that is the case, the lock statement is all you need. However, you have to make sure you are applying it correctly . With CallContext, you are going to get thread-safe access because you are going to have separate instances of CallContext when calls come in on different threads (or different stores, rather). However, that's very different from making access to a resource thread-safe. If you want to share the same value across multiple threads, then the lock statement is the way to go. Otherwise, if you want specific values on a per-thread/call basis, use the CallContext, or use the static GetData/SetData methods on the Thread class, or the ThreadStatic attribute (or any number of thread-based storage mechanisms).

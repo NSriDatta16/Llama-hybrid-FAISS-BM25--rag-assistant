@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1509204
+[parent_id]: 1508995
+[tags]: 
+keyup is the only event that gets to see the post-keypress state. One approach is to trap keydown and set a timeout to do some processing after the keypress: input.onkeydown= function() { setTimeout(function() { // do something }, 1); }; However if it is also possible to do edits without a keypress (and it usually is, via drag-and-drop and menu items like cut-and-paste), no amount of checking for key events will help. Instead, you must simply poll the state to see if it has changed. You can back this up with an onkeyup handler or onkeydown timeout to make that particular case update quicker. var oldstate= input.value; function checkState() { if (input.value!=oldstate) { // do something oldstate= input.value; } } setInterval(checkState, 1000); input.onkeyup= checkState; (This uses an input element for simplicity, but is equally applicable to contentEditable.)

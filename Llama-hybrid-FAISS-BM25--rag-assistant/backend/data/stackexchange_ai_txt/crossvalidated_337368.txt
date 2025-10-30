@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 337368
+[parent_id]: 
+[tags]: 
+which part is wrong with my RNN bptt paritial deritaives?
+
+forward use cross entroy as loss. $$ s_t = tanh(Ux_t+Ws_{t-1}) \\ o_t = softmax(Vs_t) \\ L(y,o) = - \sum_t y_t log(o_t) = - \sum_t L_t $$ backpropagation firtly, $$ \frac{\partial L}{\partial V} = \sum_{t}\frac{\partial L_t}{\partial V} = \sum_{t}(y_t - o_t)s_t $$ suppose: $$ \begin{align} \frac{\partial L}{\partial U} &= \sum_{t}\frac{\partial L_t}{\partial U} \\ \frac{\partial L}{\partial W} &= \sum_{t}\frac{\partial L_t}{\partial W} \\ \frac{\partial L_t}{\partial s_t} &= \alpha_t = (y_t-o_t)V \\ \end{align} $$ $$z_t = Ux_t + Ws_{t-1}$$.So,$$\frac{\partial s_t}{\partial z_t} = \beta_t= 1-tanh^2(z_t)$$。 then for W, $$ \begin{align} \frac{\partial z_t}{\partial W} &= \sigma_t = W\frac{\partial s_{t-1}}{\partial W} \\ \frac{\partial L_t}{\partial W} &= \frac{\partial L_t}{\partial s_t}\frac{\partial s_t}{\partial W} \\ &= \frac{\partial L_t}{\partial s_t}\frac{\partial s_t}{\partial z_t}\frac{\partial z_t}{\partial W} \\ &=\alpha_t \beta_t ( W\frac{\partial s_{t-1}}{\partial W}) \\ &=\alpha_t \beta_t ( W^2\frac{\partial s_{t-2}}{\partial W}) \\ \end{align} $$ which confused me is that,my deritaive seems different with this blog and wikipedia they all sum the $s_t$ gradient. Please help to figure it out.Thanks a lot

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 942861
+[parent_id]: 
+[tags]: 
+Compress Filter + MVC + Yahoo YSlow
+
+I've been using Yahoo's YSLOW to try and make my pages go faster at AgentX I am using the below compress filter. When I run the site through visual studio YSLOW says that all the files are compressed and I get an A when I view the live site it gets an E and says my files need to be gzipped. Can anyone explain? public class CompressFilter : ActionFilterAttribute { public override void OnActionExecuting(ActionExecutingContext filterContext) { HttpRequestBase request = filterContext.HttpContext.Request; string acceptEncoding = request.Headers["Accept-Encoding"]; if (string.IsNullOrEmpty(acceptEncoding)) return; acceptEncoding = acceptEncoding.ToUpperInvariant(); HttpResponseBase response = filterContext.HttpContext.Response; if (acceptEncoding.Contains("GZIP")) { response.AppendHeader("Content-encoding", "gzip"); response.Filter = new GZipStream(response.Filter, CompressionMode.Compress); } else if (acceptEncoding.Contains("DEFLATE")) { response.AppendHeader("Content-encoding", "deflate"); response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress); } } }

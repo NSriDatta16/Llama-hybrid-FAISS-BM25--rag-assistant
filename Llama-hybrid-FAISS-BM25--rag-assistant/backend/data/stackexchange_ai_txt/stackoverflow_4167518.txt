@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4167518
+[parent_id]: 4166899
+[tags]: 
+No, that is not how it works. Database will not hold rows in RAM/swap. However, it will try, and mysql tries hard here, to cache as much as possible (indexes, results, etc...). Your mysql configuration gives values for the available memory buffers for different kinds of caches (for different kinds of storage engines) - you should not allow this cache to swap. Test it Bottom line - it should be very easy to test this using client only (I don't know perl's dbi, it might, but I doubt it, be doing something that forces mysql to load everything on prepare). Anyway... test it: If you actually issue a prepare on SELECT SQL_NO_CACHE million_rows FROM table and then fetch only few rows out of millions. You should then compare performance with SELECT SQL_NO_CACHE only_fetched_rows FROM table and see how that fares. If the performance is comparable (and fast) then I believe that you can call your colleague's bluff. Also if you enable log of the statements actually issued to mysql and give us a transcript of that then we (non perl folks) can give more definitive answer on what would mysql do.

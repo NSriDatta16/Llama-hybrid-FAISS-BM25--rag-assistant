@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4838043
+[parent_id]: 4837399
+[tags]: 
+I'm sure I've seen this case offered by a C++ bigwig, not sure which: struct Base { void f(const Base&); }; struct Derived : Base { using Base::f; void f(double); }; int main() { Derived d; d.f('a'); // calls Derived::f } Now, add void f(int); to Base , and the meaning of main changes - it calls Base::f because int is a better match for char - it's an integer promotion rather than a standard conversion. It's not clear whether that change to the base would really be intended by the programmer to catch calls with char , so requiring using to be explicit means the default behavior is that the change doesn't affect the calling code. I believe it's a marginal call, but I think the committee decided that base classes in C++ were fragile enough as they are, without this too :-) There's no need for a "hide" keyword because there's no comparable case for hiding "f" from the Base when it isn't overloaded in Derived. Btw, I've chosen the types, and char is deliberately incongruous. You can get more subtle cases with int vs unsigned int rather than int vs char .

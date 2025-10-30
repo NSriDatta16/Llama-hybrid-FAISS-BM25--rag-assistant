@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 427889
+[parent_id]: 427861
+[tags]: 
+Comet is generally used for this kind of thing, and it can be a fragile setup as it's not a particularly common technology so it can be easy not to "get it right." That said, there are more resources available now than when I last tried it ~2 years ago. I don't think you can do what you're thinking and have handler.php simply not return anything and stop execution: The web server will keep the connection open and prevent any further polling until handler.php does something (terminates or provides output). When it does, you're still handling a response. You can try a long polling technique, where your AJAX allows a very large timeout (e.g. 30 seconds), and handler.php spins without responding until it has something to report, then returns. (You'll want to make sure the spinning is not resource-intensive). If handler.php "expires" and nothing happens, have it exit and let AJAX poll again. Since it only happens every 30 seconds, it will be a huge improvement over ~5 times a second. That would keep your polling to a minimum. But that's the sort of thing Comet is designed for.

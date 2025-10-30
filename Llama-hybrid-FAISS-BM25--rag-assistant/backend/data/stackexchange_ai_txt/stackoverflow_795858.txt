@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 795858
+[parent_id]: 795842
+[tags]: 
+Here's the pseudocode of how I would approach it (this doesn't leverage ThreadPool, so someone might have a better answer:) main { create queue of 100 jobs create new array of 15 threads start threads, passing each the job queue do whatever until threads are done } thread(queue) { while(queue isn't empty) { lock(queue) { if queue still isn't empty dequeue a thing } process the thing } queue is empty so exit thread } EDIT: If your issue is how to tell when the threads are finished, and you're using normal C# threads, (not ThreadPooled threads) you can call Thread.Join() on each thread with an optional timeout and it will return only once the thread is done. If you want to keep track of just how many threads are done without getting hung up on one, you can cycle through them in a way like this: for(int i = 0; allThreads.Count > 0; i++) { var thisThread = allThreads[i % threads.Count]; if(thisThread.Join(timeout)) // something low, maybe 100 ms or something allThreads.Remove(thisThread); }

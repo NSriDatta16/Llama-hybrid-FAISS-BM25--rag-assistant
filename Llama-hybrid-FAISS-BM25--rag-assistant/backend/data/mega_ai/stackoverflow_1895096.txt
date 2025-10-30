@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1895096
+[parent_id]: 1894363
+[tags]: 
+This wont really answer your question, but I dont like to have the risk of polluting my ebin/ with test-enabled code. So this is how I organize my toplevel Makefile: all: (cd src && erl -make) test: (cd test && erl -make && \ erl -noinput -eval 'eunit:test({dir, "."}, [verbose]), init:stop()') Then I put the following into src/Emakefile : {['*'], [{outdir,"../ebin"}]}. And into test/Emakefile I put {['../src/*'], [debug_info, {d, 'TEST'}]}. {['*'], [debug_info, {d, 'TEST'}]}. So if I run make all then src/*.erl is compiled into ebin/, but if I run make test I compile src/*.erl and test/*.erl into test/ and run all beam files there with unit tests. When compiling the tests the TEST macro is enabled so that unit-tests are disabled if surrounded with ifdefs as the eunit guide suggest: -ifdef(TEST). test_code_() -> ... -endif. Its a setup that I'm quite pleased with.

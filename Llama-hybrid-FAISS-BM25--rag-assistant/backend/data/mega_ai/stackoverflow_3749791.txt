@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3749791
+[parent_id]: 3749749
+[tags]: 
+You should switch the order of the columns in your index: (organization, year, isSystem, userType, status, createdBy) This allows it to better serve these two queries: select * from user where organization=1 and year=2010 and isSystem=false and userType=Manager select * from user where organization=1 and year=2010 and isSystem=false and userType=Employee Does [6] need a different multi column index, consisting of the above 3 columns? It doesn't need a new index - it can use the existing one but in a less efficient way - only the first two columns will be used. Adding a new index for this query looks like a good idea though. can I safely remove the individual indexes Yes. You should remove unused indexes otherwise they will just take up disk space and slow down table modifications without providing any benefit.

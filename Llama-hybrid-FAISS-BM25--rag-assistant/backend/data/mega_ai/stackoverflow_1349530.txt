@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1349530
+[parent_id]: 
+[tags]: 
+Loader lock (regsvr32 R6033 error) with managed C++ dll
+
+I have a C++ dll which implements several COM interfaces, that I'm trying to migrate to managed C++. I set the /clr compiler flag and changed the Runtime Library property from /MT to /MD to avoid the conflict between these two flags, but that's all I've changed. When it attempts to register the dll during the build process, I get the following error: R6033 - Attempt to use MSIL code from this assembly during native code initialization This indicates a bug in your application. It is most likely the result of calling an MSIL-compiled (/clr) function from a native constructor or from DllMain. I read about Loader Lock and can't figure it out - I have not added a single call to any managed code. Here's the entire body of the DllMain procedure: [Edit - per comment below, I added #pragma unmanaged to the top of the cpp file with no improvement. The Module init is all code contained in the ATL libraries from what I can tell.] extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved) { lpReserved; if (dwReason == DLL_PROCESS_ATTACH) { _Module.Init(ObjectMap, hInstance, &MYGUID); DisableThreadLibraryCalls(hInstance); } else if (dwReason == DLL_PROCESS_DETACH) _Module.Term(); return TRUE; // ok }

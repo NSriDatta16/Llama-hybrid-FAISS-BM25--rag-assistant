@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5535134
+[parent_id]: 
+[tags]: 
+Hadoop PIG ouput is not split in mutliple files with PARALLEL operator
+
+Looks like I'm missing something. Number of reducers on my data creates that many number of files in HDFS, but my data is not split into multiple files. What I noticed is that if I do a group by on a key that is in sequential order it works fine, like the data below split nicely into two files based on the key: 1 hello 2 bla 1 hi 2 works 2 end But this data doesn't split: 1 hello 3 bla 1 hi 3 works 3 end The code that I used that works fine for one and not for the other is InputData = LOAD 'above_data.txt'; GroupReq = GROUP InputData BY $0 PARALLEL 2; FinalOutput = FOREACH GroupReq GENERATE flatten(InputData); STORE FinalOutput INTO 'output/GroupReq' USING PigStorage (); The above code creates two output part files but in first input it splits the data nicely and put the key 1 in part-r-00000 and key 2 in part-r-00001 . But for the second input it creates two part files but all the data ends up in part-r-00000 . What is it I'm missing, what can I do to force the data to split in to multiple output files based on the unique keys? Note: for the second input if I use PARALLEL 3 (3 reducers), it creates three part files and add all the data for key 1 in part-0 and all the data for key 3 in part-3 file. I found this behavior strange. BTW I'm using Cloudera CDH3B4.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1820271
+[parent_id]: 
+[tags]: 
+ASP.NET MVC - test the controller returning different views depending on action method logic
+
+my controller can return different views depending on action method logic. Action method 'Create' asks service to do some validation and persistence. If validation fails, action method returns same 'Create' view. If validation and save runs OK, action method returns 'Index' view (RedirectToAction). I know that getting view name is possible only when you explicitly provide the view name like follows : return View("Create", data); I don't wan't to hardcode the view name only because of tests, but can't figure out how to find which view was returned. Is there a clean and elegant way to test which view was returned depending on action method logic? BTW, here is my test code.. [TestMethod] public void Create_Post_Should_Return_Create_View_When_Saving_Invalid_Court() { var courtServiceMock = new Mock (); var userServiceMock = new Mock (); courtServiceMock.Setup(x => x.Add(It.IsAny ())).Returns((int?)null); userServiceMock.Setup(x => x.Get(It.IsAny (), It.IsAny ())).Returns(new UserInfo { Id = 1 }); var controller = new CourtsController(courtServiceMock.Object, userServiceMock.Object); var controllerContextMock = new Mock (); controllerContextMock.SetupGet(x => x.HttpContext.User.Identity.Name).Returns("admin"); controller.ControllerContext = controllerContextMock.Object; var view = controller.Create(new CourtInfo()) as ViewResult; Assert.IsTrue(view.ViewName == "Create"); //this line is not working }

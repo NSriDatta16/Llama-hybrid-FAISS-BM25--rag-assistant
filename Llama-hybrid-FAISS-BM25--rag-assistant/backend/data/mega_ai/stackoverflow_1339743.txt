@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1339743
+[parent_id]: 1339470
+[tags]: 
+For functions like these, I use a utility class, SizedPtr that basically holds a pointer and an element count. A set of converter functions creates the SizedPtr from different inputs. So the call changes to: vector foo; callFunction(sizedptr(foo)); One could even add an implicit std::vector constructor to SizedPtr , but I wanted to avoid this dependency. This helps only if callFunction is under your control. It is a pleasure to work with, if you work with different vector types in one application and you want to consolidate. If you generally work with std::vector , it's mostly pointless. Roughly: template class SizedPtr { T * m_ptr; size_t m_size; public: SizedPtr(T* p, size_t size) : ... {} T * ptr() { return m_ptr; } size_t size() const { return m_size; } // index access, STL container interface, Sub-Sequence, ... } The idea behind this is to separate the operation - manipulating a contiguous sequence of elements - from the storage (std::vector). It's similar to what STL does with iterators, but avoids template infection.

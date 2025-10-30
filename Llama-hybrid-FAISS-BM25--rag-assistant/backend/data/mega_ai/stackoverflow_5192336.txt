@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5192336
+[parent_id]: 5182285
+[tags]: 
+Since your string is 14 long you cannot use DT_I4 - it'll just figure out that this is very wrong and give you the error about potential loss of data. You could edit the error and ignore possible truncations, but a better way is to use a datatype that can hold your number Your Derivation should look like this: (DT_NUMERIC,X,2)((DT_NUMERIC,X+2,2)([InputColumn]))*0.01) In your example (DT_NUMERIC,14,2)(((DT_NUMERIC,16,2)([PRICE]))*0.01) By using the extra step with x+2,2 makes you able to hold 99999999999999 into the numeric, then divide by 100 (or multiply with 0.01) and cast back to the minimum possible numeric (x,2) - you might want to use a bigger standardized numeric type - look at MSDN/BOL to see the storage requirements for each of them, and just pick the biggest type taking the same amount of bytes as your requirement.

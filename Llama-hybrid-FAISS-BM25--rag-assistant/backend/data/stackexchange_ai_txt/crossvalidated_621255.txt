@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 621255
+[parent_id]: 
+[tags]: 
+How to make predictions with parameters obtained from a zero-inflated Poisson model with Bayesian approach?
+
+I have a dataset with one response variable and one explanatory variable. Here is my zero-inflated Poisson model with a Bayesian approach. bayes_mod_string = " model { for (i in 1:length(response)) { response[i] ~ dpois(mu[i]) # the response variable follows a Poisson distribution mu[i] = lambda[i]*z[i] + 0.00001 z[i] ~ dbern(w) # w is the weight (proportion) for non-zero values log(lambda[i]) = int + b_coeff*explanatory[i] # int is the intercept and b_coeff is the coefficient } int ~ dnorm(0.0, 1.0/1e6) # prior for int b_coeff~ dnorm(0.0, 1.0/1e4) # prior for b_coeff w ~ dunif(0, 1) # prior for w } " # compling and running model data_jags = as.list(train_set[1:1000, ]) params = c("int", "b_coeff", "w") bayes_mod_string = jags.model(textConnection(bayes_mod_string), data = data_jags, n.chains = 3) update(bayes_mod_string, 1e2) bayes_mod_sim = coda.samples(model = bayes_mod_string, variable.names = params, n.iter = 2e3) bayes_mod_csim = as.mcmc(do.call(rbind, bayes_mod_sim)) How can I predict new values after obtaining the parameters? Thank you.

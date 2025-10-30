@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 64017
+[parent_id]: 
+[tags]: 
+Training a model for Single Image Super Reoslution
+
+I'm trying to implement the Attention-based approach for SISR paper. However, during something odd happens. The MAE for the first output of the model is very small. But as the training progresses, the loss is extremely high as shown below. 1/101 loss: 0.563045883178711 1/101 loss: 31225273443.6775 1/101 loss: 21936102.43 1/101 loss: 5351808.445 2/101 loss: 22829.5 2/101 loss: 2118322.8925 Doesn't this mean that the model is somehow better off without the training procedure? The train function is shown below. I'm quite new to PyTorch, so please let me know if there's some fairly obvious semantic error. def train(model, optimizer, criterion, train_loader, epochs=100, batch_size=8, steps=400): for epoch in range(epochs): train_loss = 0.0 for i, data in enumerate(train_loader): x_train_bic, x_train, y_train = data[0], data[1], data[2] x_train_bic = x_train_bic.requires_grad_(False) x_train = x_train.requires_grad_(False) y_train = y_train.requires_grad_(False) optimizer.zero_grad() output = model(data[0], data[1]) # loss = ssim(output, data[2], data_range=data[2].max()-data[2].min(), multichannel=True) loss = criterion(output, data[2]) loss.backward() optimizer.step() train_loss += loss.item() if i%100 == 0: print("{}/{} loss: {}".format(epoch+1, epochs+1, train_loss/100)) train_loss = 0.0 The rest of my code can be found here.

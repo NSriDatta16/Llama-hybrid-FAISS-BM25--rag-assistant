@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2182357
+[parent_id]: 2182306
+[tags]: 
+Let's take a look at your segmentation fault line: result+=_labels[ nnIdx[i] ]; result is local -- OK. nnIdx is local -- also OK. i is local -- still OK. _labels ... what is it? Is it global? Did you define access to it via #pragma shared ? Same goes for the former: _search_struct->annkSearch(queryPt, k_max, nnIdx, dists, _eps); Seems as we have here a problem that is not easily solvable -- _search_struct is not thread safe -- probably values in it are modified by threads at once. You have to have a dedicated _search_struct per-thread, probably by allocating it in classify_various_k. The really bad news however is that ANN is probably completely non-threadable: The library allocates a small amount of storage, which is shared by all search struc- tures built during the program’s lifetime. Because the data is shared, it is not deallocated, even when the all the individual structures are deleted. As seen above there'll always be problems with parallel data modification, because the library itself has some shared data -- hence it's not thread-safe itself :/.

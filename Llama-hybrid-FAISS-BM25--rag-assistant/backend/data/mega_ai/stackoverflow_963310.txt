@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 963310
+[parent_id]: 963119
+[tags]: 
+You don't show what you tried or what the error was, so all of the answers are only guesswork. Here's a checklist of things that must be true before foreign keys can work: InnoDB storage engine must be enabled. mysql> SHOW VARIABLES LIKE 'have_innodb'; Both tables must use the InnoDB storage engine (MyISAM doesn't support referential integrity constraints). mysql> SHOW CREATE TABLE ; mysql> SHOW CREATE TABLE ; The column(s) in the referenced table must be the leftmost column(s) of a key. Typically this is the PRIMARY KEY, but InnoDB actually allows them to be part of any key. The foreign key column and its referenced primary key column must be of exactly the same data type (must match signed vs. unsigned, int vs. bigint, string charset, etc.). Only the string length is allowed to be different. You have to get the constraint declaration syntax right. :-) If you're adding a constraint to a populated table, all the existing values must satisfy the constraint (thanks to Jordan S. Jones' answer on this thread).

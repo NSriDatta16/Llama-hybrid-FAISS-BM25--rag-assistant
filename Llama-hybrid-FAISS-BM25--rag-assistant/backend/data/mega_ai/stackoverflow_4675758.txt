@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4675758
+[parent_id]: 4409404
+[tags]: 
+From your comments, it seems that you are calling an agent within an agent. Not really the best way to go about it. You may get the result you want if you merely call the "TextExternalUse" agent directly from the button. This means creating a regular action button rather than a shared action and calling the agent directly. UPDATE: I think I know what your problem is. If you're using formula to call the agent in the other database, it won't work, because formula can only call agents in the current database. So if you're using "ToolsRunMacro" it has no parameter for specifying a different database. Try calling the agent with LotusScript. Here is an example. I created 2 databases one with an agent called "clickme", which simply displays a "notesUIWorkspace.prompt", and another database with a view that has an action button with the following code that calls the agent from db1 Sub Click(Source As Button) Dim agnt As notesAgent Dim db2 As notesDatabase Set db2 = New notesDatabase("","test2.nsf") Set agnt = db2.GetAgent("clickme") Call agnt.Run End Sub Can you test something like the above ?

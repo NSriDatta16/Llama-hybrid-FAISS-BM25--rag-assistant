@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2337238
+[parent_id]: 2336793
+[tags]: 
+Best fix would be to enhance the code so that it does not unnecessarily duplicate the data in memory. The stacktrace suggests that the code is trying to clone the file contents in memory. If it is not possible to enhance the (3rd party?) code so that it does not do that, but instead immediately processes it, then rather configure/use commons FileUpload so that it does not keep the uploaded files in memory, but instead in a temp storage at the local disk file system. Your best try to minimize the memory used would then be using the DiskFileItemFactory with a little threshold (which defaults to 10KB by the way, which is affordable). ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory()); This way you've enough memory for the real processing. If you still hits the heap memory limits, then the next step would indeed be increasing the heap.

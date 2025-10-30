@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 775354
+[parent_id]: 775161
+[tags]: 
+You say you're using SOLR, don't care about storage, and want the lookups to be fast. Then instead of storing open/close tuples, index an entry for every open block of time at the level of granularity you need (15 mins). For the encoding itself, you could use just cumulative hours:minutes. For example, a store open from 4-5 pm on Monday, would have indexed values added for [40:00, 40:15, 40:30, 40:45]. A query at 4:24 pm on Monday would be normalized to 40:15, and therefore match that store document. This may seem inefficient at first glance, but it's a relatively small constant penalty for indexing speed and space. And makes the searches as fast as possible.

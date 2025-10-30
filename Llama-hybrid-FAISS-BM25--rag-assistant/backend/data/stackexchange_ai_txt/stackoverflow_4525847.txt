@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4525847
+[parent_id]: 
+[tags]: 
+Handles Comparison: empty classes vs. undefined classes vs. void*
+
+Microsoft's GDI+ defines many empty classes to be treated as handles internally. For example, (source GdiPlusGpStubs.h ) //Approach 1 class GpGraphics {}; class GpBrush {}; class GpTexture : public GpBrush {}; class GpSolidFill : public GpBrush {}; class GpLineGradient : public GpBrush {}; class GpPathGradient : public GpBrush {}; class GpHatch : public GpBrush {}; class GpPen {}; class GpCustomLineCap {}; There are other two ways to define handles. They're, //Approach 2 class BOOK; //no need to define it! typedef BOOK *PBOOK; typedef PBOOK HBOOK; //handle to be used internally //Approach 3 typedef void* PVOID; typedef PVOID HBOOK; //handle to be used internally I just want to know the advantages and disadvantages of each of these approaches. One advantage with Microsoft's approach is that, they can define type-safe hierarchy of handles using empty classes, which (I think) is not possible with the other two approaches, though I wonder what advantages this hierarchy would bring to the implementation? Anyway, what else? EDIT: One advantage with the second approach (i.e using incomplete classes) is that we can prevent clients from dereferencing the handles (that means, this approach appears to support encapsulation strongly, I suppose). The code would not even compile if one attempts to dereference handles. What else? The same advantage one has with third approach as well, that you cannot dereference the handles.

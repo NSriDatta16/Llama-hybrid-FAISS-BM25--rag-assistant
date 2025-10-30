@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 97052
+[parent_id]: 97003
+[tags]: 
+I think you will need to make a custom step method. This is what I did for a project on sampling random spanning trees with PyMC2, and you can see my spanning tree Metropolis step method here . Here is a minimal PyMC2 version: class StandardNormal(pm.Gibbs): def __init__(self, stochastic, verbose=None): pm.Gibbs.__init__(self, stochastic, verbose=verbose) def step(self): self.stochastic.value = np.random.normal() A = pm.Uninformative('A', value=0) B = pm.Normal('B', mu=20+A, tau=10) mc = pm.MCMC([A,B]) mc.use_step_method(StandardNormal, A) mc.sample(iter=5000, burn=100) And here is a corresponding PyMC3 version: class StandardNormal(object): def __init__(self, var): self.var = var.name def step(self, point): new = point.copy() new[self.var] = np.random.normal() return new with pm.Model() as model: A = pm.Flat('A') B = pm.Normal('B', mu=20+A, sd=10) step_A = StandardNormal(var=A) step_B = pm.step_methods.Metropolis(vars=[B]) trace = pm.sample(5000, [step_A, step_B]) You can see it all in action here .

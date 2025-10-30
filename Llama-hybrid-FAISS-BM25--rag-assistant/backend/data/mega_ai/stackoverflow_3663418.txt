@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3663418
+[parent_id]: 3663396
+[tags]: 
+Why not just store the element to a variable? This will scope it to the outer function, making it available to the inner (success) function. You're (sort of) already doing this with the currentRating variable, so it's just a case of re-using that variable later, instead of looking up the ID: $("#products select[id*='ddlRatingOptions']").change(function () { ... // Determine the "Current Average Rating" element that needs to be updated after the ajax call completes var currentRating = $(this).parent().siblings(".currentRating").eq(0); $.ajax({ url: ' ', data: { ProductID: productId, Rating: rating, // Do you need this now? CurrentRatingId: currentRating.attr('id') }, cache: false, dataType: 'json', success: function (results) { // Update the current rating using the variable we stored above currentRating.text(results.AverageRating + ' Stars'); } }); }); I added .eq(0) to make sure we're only grabbing the first element (whose ID attribute would be sent to the server anyway).

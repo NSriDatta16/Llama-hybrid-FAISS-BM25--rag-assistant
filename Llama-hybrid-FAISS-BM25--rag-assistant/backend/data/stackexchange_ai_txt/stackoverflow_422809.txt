@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 422809
+[parent_id]: 
+[tags]: 
+C# socket abnormal latency
+
+I am working on a little online multiplayer pong game with C# and XNA. I use sockets to transfer data between two computers on my personnal LAN. It works fine. The issue is with speed : the transfer is slow. When I ping the second computer, it shows a latency of 2 ms. I set up a little timer inside my code, and it shows a latency of about 200 ms. Even when the server and the client are on the same computer (using 127.0.0.1), the latency still about 15 ms. I consider this as slow. Here are some fragment of my code : server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp); server.Bind(new IPEndPoint(IPAddress.Any, port)); server.Listen(1); // Begin Accept server.BeginAccept(new AsyncCallback(ClientAccepted), null); in ClientAccepted, I set up a NetworkStream, a StreamReader and a StreamWriter. This is how I send a message when I want to update the player's location : string message = "P" + "\n" + player.Position + "\n"; byte[] data = Encoding.ASCII.GetBytes(message); ns.BeginWrite(data, 0, data.Length, new AsyncCallback(EndUpdate), null); the only thing EndUpdate do is to call EndWrite. This is how I receive data : message = sr.ReadLine(); It dosen't block my game since it's on a second thread. These are the stuff I tried : - Use IP instead of TCP - Use binary message instead of text - Use IPv6 instead of IPv4 Nothing really did help. Any thoughts about how I can improve the latency? Thank you

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3868432
+[parent_id]: 3764650
+[tags]: 
+I've just started doing the research for using Zookeeper for a number of cases in my companies infrastructure. The one that seems to fit ZK the best is where we have an array of 30+ dynamic content servers that rely heavily on file based caching ( Memcached is too slow ). Each of these servers will have an agent watching a specific ZK path and when a new node shows up, all servers join into a barrier lock, then once all of them are present, they all update their configuration at the exact same time. This way we can keep all 30 servers configuration / run-states consistent. Second use case, we receive 45-70 million page views a day in a typical bell curve like pattern. The caching strategy implemented falls from client, to CDN, to memcache, and then to file cache before determining when to make a DB call. Even with a series of locks in place, it's pretty typical to get race conditions ( I've nicknamed them stampedes ) that can strain our backend. The hope is that ZK can provide a tool for developing a consistent and unified locking service across multiple servers and maybe data-centers.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5329617
+[parent_id]: 5328971
+[tags]: 
+Usually if I have to do complicate elaboration I use csv to load the rows in a table of a relational DB (sqlite is the fastest way) then I use the standard sql methods to extract data and calculate average values: import csv from StringIO import StringIO import sqlite3 data = """1,19003,27.50 2,19003,31.33 3,19083,41.4 4,19083,17.9 5,19102,21.40 """ f = StringIO(data) reader = csv.reader(f) conn = sqlite3.connect(':memory:') c = conn.cursor() c.execute('''create table data (ID text, ZIPCODE text, RATE real)''') conn.commit() for e in reader: e[2] = float(e[2]) c.execute("""insert into data values (?,?,?)""", e) conn.commit() c.execute('''select ZIPCODE, avg(RATE) from data group by ZIPCODE''') for row in c: print row

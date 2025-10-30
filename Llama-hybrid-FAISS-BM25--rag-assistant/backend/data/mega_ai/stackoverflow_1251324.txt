@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1251324
+[parent_id]: 1250965
+[tags]: 
+You can always do a little bit of mokeypatching import httplib # override the HTTPS request class class DebugHTTPS(httplib.HTTPS): real_putheader = httplib.HTTPS.putheader def putheader(self, *args, **kwargs): print 'putheader(%s,%s)' % (args, kwargs) result = self.real_putheader(self, *args, **kwargs) return result httplib.HTTPS = DebugHTTPS # set a new default urlopener import urllib class DebugOpener(urllib.FancyURLopener): def open(self, *args, **kwargs): result = urllib.FancyURLopener.open(self, *args, **kwargs) print 'response:' print result.headers return result urllib._urlopener = DebugOpener() params = urllib.urlencode({'spam': 1, 'eggs': 2, 'bacon': 0}) f = urllib.urlopen("https://www.google.com/", params) gives the output putheader(('Content-Type', 'application/x-www-form-urlencoded'),{}) putheader(('Content-Length', '21'),{}) putheader(('Host', 'www.google.com'),{}) putheader(('User-Agent', 'Python-urllib/1.17'),{}) response: Content-Type: text/html; charset=UTF-8 Content-Length: 1363 Date: Sun, 09 Aug 2009 12:49:59 GMT Server: GFE/2.0

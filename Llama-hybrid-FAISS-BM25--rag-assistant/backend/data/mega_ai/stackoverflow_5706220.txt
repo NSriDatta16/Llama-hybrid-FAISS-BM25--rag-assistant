@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5706220
+[parent_id]: 5706042
+[tags]: 
+Assuming you're not doing any weighted average funny business: List ints = new List () { 11,22,22,33,44,44,55,55,55,100 }; int min = ints.Min(); double range = (ints.Max() - min); var results = ints.Select(o => new { IntegralValue = o, Weight = (o - ints.Min()) / range} ); results.Where(o => o.Weight >= .1 && o.Weight You can then filter on Weight as needed. Drop the top/botton n % as desired. In your case: results.Where(o => o.Weight >= .1 && o.Weight Edit: As an extension method, because I like extension methods: public static class Lulz { public static List MiddlePercentage(this List ints, double Percentage) { int min = ints.Min(); double range = (ints.Max() - min); var results = ints.Select(o => new { IntegralValue = o, Weight = (o - ints.Min()) / range} ); double tolerance = (1 - Percentage) / 2; return results.Where(o => o.Weight >= tolerance && o.Weight o.IntegralValue).ToList(); } } Usage: List ints = new List () { 11,22,22,33,44,44,55,55,55,100 }; var results = ints.MiddlePercentage(.8);

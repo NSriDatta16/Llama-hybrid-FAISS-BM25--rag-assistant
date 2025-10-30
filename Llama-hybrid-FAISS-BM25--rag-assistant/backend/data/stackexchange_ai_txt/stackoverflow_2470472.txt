@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2470472
+[parent_id]: 
+[tags]: 
+HasMany relation inside a Join Mapping
+
+So, I'm having a problem mapping in fluent nhibernate. I want to use a join mapping to flatten an intermediate table: Here's my structure: [Vehicle] VehicleId ... [DTVehicleValueRange] VehicleId DTVehicleValueRangeId AverageValue ... [DTValueRange] DTVehicleValueRangeId RangeMin RangeMax RangeValue Note that DTValueRange does not have a VehicleID. I want to flatten DTVehicleValueRange into my Vehicle class. Tgis works fine for AverageValue, since it's just a plain value, but I can't seem to get a ValueRange collection to map correctly. public VehicleMap() { Id(x => x.Id, "VehicleId"); Join("DTVehicleValueRange", x => { x.Optional(); x.KeyColumn("VehicleId"); x.Map(y => y.AverageValue).ReadOnly(); x.HasMany(y => y.ValueRanges).KeyColumn("DTVehicleValueRangeId"); // This Guy }); } The HasMany mapping doesn't seem to do anything if it's inside the Join. If it's outside the Join and I specify the table, it maps, but nhibernate tries to use the VehicleID, not the DTVehicleValueRangeId. What am I doing wrong?

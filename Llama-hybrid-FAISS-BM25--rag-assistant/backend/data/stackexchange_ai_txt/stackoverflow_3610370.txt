@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3610370
+[parent_id]: 3609958
+[tags]: 
+Your code sample really confirms that you have a problem with your variable declaration. As @Graham hinted, the proper way to define globals is: define the variable in a cpp file declare the variable as extern in a header file I.e. //ProgramName.cpp #include "stdafx.h" #include "Form1.h" int g_iAllData[MAX_LEN][MAX_WIDTH]; //Form1.h #include #include ... #pragma once const int MAX_LEN = 4033; const int MAX_WIDTH = 21; extern int g_iAllData[MAX_LEN][MAX_WIDTH]; This way the linker will find the definition of the global variable in exactly one compilation unit, and in all other compilation units which #include the header, it will be able to link the extern declarations to the correct variable definition. Barring this, strange things may happen: you may get cryptic linker error messages complaining about multiple variable definitions, or you might even get multiple distinct variables in your app instead of one global variable - the latter explains why your method doesn't seem to change the contents of your variable.

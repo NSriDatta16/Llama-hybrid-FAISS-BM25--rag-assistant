@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1728104
+[parent_id]: 1723925
+[tags]: 
+Try this CREATE OR REPLACE PACKAGE value_tests AS FUNCTION get_number( pv_value IN VARCHAR2 ) RETURN NUMBER; END; / CREATE OR REPLACE PACKAGE BODY value_tests AS FUNCTION get_number( pv_value IN VARCHAR2 ) RETURN NUMBER IS converted_number NUMBER; invalid_number EXCEPTION; PRAGMA EXCEPTION_INIT( invalid_number, -01722 ); value_error EXCEPTION; PRAGMA EXCEPTION_INIT( value_error, -06502 ); BEGIN > BEGIN converted_number := TO_NUMBER( pv_value ); EXCEPTION WHEN invalid_number OR value_error THEN converted_number := NULL; END try_conversion; RETURN converted_number; END get_number; END; / Running it on this... select my_column , value_tests.get_number( my_column ) my_column_num from ( select 'mydoghas3legs' my_column from dual union all select '27.5' my_column from dual union all select '27.50.5' my_column from dual ) returns MY_COLUMN MY_COLUMN_NUM ------------- ------------- mydoghas3legs 27.5 27.5 27.50.5

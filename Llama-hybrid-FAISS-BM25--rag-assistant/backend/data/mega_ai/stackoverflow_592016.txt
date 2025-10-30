@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 592016
+[parent_id]: 591392
+[tags]: 
+The idiomatic way to do it is to use the functions and macros in the cl packages. They come as standard with Emacs Lisp and there's nothing wrong with using them. I doubt you'll find a way to do it that's as terse and clear as (loop for x in list if (oddp x) sum x) There are more functional ways to do it, such as (apply #'+ (remove-if-not #'oddp list)) but this uses remove-if-not which is from the cl-seq package. You could write out a loop by hand: (let ((sum 0)) (dolist (x list sum) (when (oddp x) (incf sum x)))) but this uses dolist and incf which are both in the cl-macs package. Basically you can't escape the cl package: oddp itself is a cl function! My best effort using absolutely no cl facilities is this: (apply #'+ (mapcar (lambda (x) (* x (mod x 2))) list)) but it would absurd to use this in practice instead of the (loop ...) version.

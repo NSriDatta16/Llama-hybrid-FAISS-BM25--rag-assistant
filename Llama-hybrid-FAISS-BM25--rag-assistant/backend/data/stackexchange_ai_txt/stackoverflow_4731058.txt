@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4731058
+[parent_id]: 4730929
+[tags]: 
+What you have will work as is, as long as you make sure to call methods on self instead of Foo in the body of the average method. When calling methods on a scope of Foo , self in the body of that method will be assigned to the scope object rather than Foo . Here's a slightly more concrete example: # app/models/club.rb class Club Let's see what happens when we create some clubs and people: $ rails console Loading development environment (Rails 3.0.3) irb(main):001:0> boys_club = Club.create(:name => 'boys') irb(main):002:0> girls_club = Club.create(:name => 'girls') irb(main):003:0> boys_club.people.create(:name => 'bob', :age => 20) irb(main):004:0> boys_club.people.create(:name => 'joe', :age => 22) irb(main):005:0> girls_club.people.create(:name => 'betty', :age => 30) irb(main):006:0> Person.average_age => 24 irb(main):007:0> boys_club.people.average_age => 21 irb(main):008:0> Person.where("name LIKE 'b%'").average_age => 25

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1976290
+[parent_id]: 1975290
+[tags]: 
+The pre-defined PL/SQL exceptions are special to Oracle. You really can't mess with those. When you want to have a set of predefined exceptions of your own you can't declare them "globally" like the standard ones. Instead, create an exceptions package which has all of the exception declarations and use that in your application code. Example: CREATE OR REPLACE PACKAGE my_exceptions AS insert_null_into_notnull EXCEPTION; PRAGMA EXCEPTION_INIT(insert_null_into_notnull, -1400); update_null_to_notnull EXCEPTION; PRAGMA EXCEPTION_INIT(update_null_to_notnull, -1407); END my_exceptions; / Now use the exception defined in the package CREATE OR REPLACE PROCEDURE use_an_exception AS BEGIN -- application specific code ... NULL; EXCEPTION WHEN my_exceptions.insert_null_into_notnull THEN -- application specific handling for ORA-01400: cannot insert NULL into (%s) RAISE; END; / Source: http://www.orafaq.com/wiki/Exception

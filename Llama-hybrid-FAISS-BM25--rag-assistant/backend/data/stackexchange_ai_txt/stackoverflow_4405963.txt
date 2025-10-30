@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4405963
+[parent_id]: 4405909
+[tags]: 
+First, your generator function there doesn't output a full MAC address before it gets to the third digit; I solved that by using the following code: def generate_macs_2(): for a in range(0, 0x100): for b in range(0, 0x100): for c in range(0, 0x100): yield "{0:02X}:{1:02X}:{2:02X}".format(a, b, c) for mac in generate_macs_2(): print 'E8:06:88:' + mac It also returns the MAC addresses in the order of lowest to highest, in terms of numerical value, in uppercase, and is simpler to look at and understand at a glance (IMHO). For completeness, and because it was mentioned below, here is how to do it with itertools.product : def generate_macs_3(): for item in itertools.product(range(0, 0x100), repeat = 3): yield "{0:02X}:{1:02X}:{2:02X}".format(item[0], item[1], item[2]) for mac in generate_macs_3(): print 'E8:06:88:' + mac The OP's runs in ~40 seconds on my system, my first one runs in ~26 seconds average, and the second one (using itertools ) takes about ~32 seconds average.

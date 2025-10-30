@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1575176
+[parent_id]: 1574922
+[tags]: 
+A general solution to this (can look) something like the following: (defvar ignore-windows-containing-buffers-matching-res '("\\*Help") "List of regular expressions specifying windows to skip (if window contains buffer that matches, skip)") (defadvice other-window (before other-window-ignore-windows-containing activate) "skip over windows containing buffers which match regular expressions in 'ignore-windows-containing-buffers-matching-res" (if (and (= 1 (ad-get-arg 0)) (interactive-p)) (let* ((win (next-window)) (bname (buffer-name (window-buffer win)))) (when (some 'identity (mapcar '(lambda (re) (string-match re bname)) ignore-windows-containing-buffers-matching-res)) (ad-set-arg 0 2))))) Customize the variable to be a regular expression matching the buffer names you want to skip.

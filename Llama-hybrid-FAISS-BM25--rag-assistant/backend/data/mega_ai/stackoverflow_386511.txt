@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 386511
+[parent_id]: 385796
+[tags]: 
+Yes, you absolutely can. Create a SyncTable for each table you want to sync, and add it to the Configuration.SyncTables in the SyncAgent. I found this article from Bill Ryan very instructive. He goes into how to filter data within each table, but there is stuff in there that does what you are looking for. Sample from Bill Ryan: public class SampleSyncAgent : Microsoft.Synchronization.SyncAgent { public SampleSyncAgent() { SqlCeClientSyncProvider clientSyncProvider = new SqlCeClientSyncProvider(Properties.Settings.Default.ClientConnString, true); this.LocalProvider = clientSyncProvider; clientSyncProvider.ChangesApplied += new EventHandler (clientSyncProvider_ChangesApplied); this.RemoteProvider = new SampleServerSyncProvider(); SyncTable customerSyncTable = new SyncTable("Customer"); customerSyncTable.CreationOption = TableCreationOption.DropExistingOrCreateNewTable; customerSyncTable.SyncDirection = SyncDirection.DownloadOnly;** this.Configuration.SyncTables.Add(customerSyncTable); this.Configuration.SyncParameters.Add(new SyncParameter("@CustomerName", "Sharp Bikes")); } }

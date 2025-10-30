@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3789634
+[parent_id]: 3789526
+[tags]: 
+You are certainly invoking undefined (or at least unspecified) behavior. You declare a buffer and then pass it via setvbuf to stdout . From that point on, the buffer is owned by stdout and not you anymore. That means you may not access it anymore. But this is exactly what you do. I cannot prove it from the wording of the standard, but there sure is some combination of paragraphs that leads to my conclusion. Update: ISO C99 says in 7.19.5.6p2 about the setvbuf function: The contents of the array at any time are indeterminate. So what you are seeing is just coincidence. You might also see anything else, there is no guarantee from ISO C99 alone. Update 2: Because the contents of the array are indeterminate, they might as well all be non-null characters. And in that case, buf does not contain a string anymore. Therefore, you clearly invoke undefined behavior .

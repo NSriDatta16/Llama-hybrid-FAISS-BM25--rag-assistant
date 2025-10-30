@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2212189
+[parent_id]: 2212172
+[tags]: 
+There are many, many reasons not to do this: Your solution, as written, is not transactionally-safe; two transactions at the same time could both generate the same "random" ID. If you serialize the transaction in order to make it safe, you will slaughter performance because the query will keep every single collision row locked until it finds a spare ID. Using a random ID as the primary key will fragment the hell out of your clustered index. This is bad enough with uuids - the whole point of an auto-generated identity column is so you can generate a safe sequence out of it. Why not use a regular primary key, but just don't use that in any of your URLs? Generate a secondary non-sequential ID along with it - such as a uuid - index it, and use this column in any public-facing segments of your application instead of the primary key if you are really worried about security.

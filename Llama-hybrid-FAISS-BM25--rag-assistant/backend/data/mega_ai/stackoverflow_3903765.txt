@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3903765
+[parent_id]: 3903729
+[tags]: 
+First step, drop a .htaccess file in the folder with the image that says "deny from all". This will prevent anyone from access the file even if they know the folder. Then, you write use a PHP function like this $file = 'path/to/folder' . $filename; //Make sure you check that $filename does not contain ".." for security if (file_exists($file)) { header('Content-Description: File Transfer'); header('Content-Disposition: attachment; filename='.basename($file)); header('Content-Transfer-Encoding: binary'); header('Expires: 0'); header('Cache-Control: must-revalidate, post-check=0, pre-check=0'); header('Pragma: public'); header('Content-Length: ' . filesize($file)); ob_clean(); flush(); readfile($file); exit; } else { //Show error message } You should be checking session variables to see if the user is logged and has a role that can download this. This code will also force download of the image than show it.

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 520979
+[parent_id]: 520972
+[tags]: 
+You are right that MA(1) simulation is an iterated process, and the iteration needs to start at something. The starting value of iteration is defined by the start.innov parameter of arima.sim . In case of missing start.innov , arima.sim seems to use a random number generator to choose the initial value, and the random numbers seem to come from a distribution with a variance higher than 0.1^2. (I could not find the defaults but perhaps someone else knows this?) You can manually set a0: x1 = arima.sim(model = list(ma = 0.2), n = 100, innov=rnorm(100, 0, 0.01^2), start.innov=0) Or in the case of stationary MA, you can just simulate a slightly longer time series so that it is not affected by the inital values: x1 = arima.sim(model = list(ma = 0.2), n = 130, innov=rnorm(130, 0, 0.01^2) )[31:130]

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5409851
+[parent_id]: 5405532
+[tags]: 
+I would first think about it as how to be best map your functional operations over a stream: Group condition/key/value into a chunk Filter chunks where the condition is not true Drop the conditions Flatten the chunks Create a map from the result Which looks like: (def coll [true :a "v1" false :b "v2" true :c "v3"]) (apply hash-map (flatten (map #(drop 1 %) (filter #(first %) (partition 3 coll))))) Or if you're feeling thready: (->> coll (partition 3) (filter #(first %)) (map #(drop 1 %)) flatten (apply hash-map)) I'm not sure this is elegant or concise, but I think it's easy to read. Note that if you frequently deal with data in this shape, you may find that steps like (partition 3 coll) or (first %) might be useful reusable functions in their own right leading to something like: (defn condition-group [coll] (partition 3 coll)) (defn condition [group] (first group)) (defn but-condition [group] (drop 1 group)) (defn kv-map [kv-pairs] (apply hash-map (flatten kv-pairs))) (->> coll condition-group (filter condition) (map but-condition) kv-map)

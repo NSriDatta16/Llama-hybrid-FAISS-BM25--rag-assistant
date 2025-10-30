@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4475868
+[parent_id]: 4475795
+[tags]: 
+The code is correct, you need the Invoke call so that the control is updated in the GUI thread. However, there are some other things that doesn't really make sense in the code: You are doing parallel operations that is using a resource that is not parallel. Your threads will be fighting for attention from the disk, which is clearly the bottle neck due to it's relatively low speed. You will read lines from several files, and dump them intermixed in a textbox. That might be all right in this specific situation, but generally it gives an unpredictable result. You are using the += operation to concatenate strings, a method that is notorious for it's bad scalability. It might not be a big problem in this case though, as the disk bottle neck is probably a lot worse.

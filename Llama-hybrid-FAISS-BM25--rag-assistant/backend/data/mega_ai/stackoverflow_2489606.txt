@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2489606
+[parent_id]: 2489133
+[tags]: 
+While quite doable, it's just a little bit tricky because the getting of a method (or other attribute) and the calling thereof are separate operations. Here's a solution: class Wrapper(object): def __init__(self): self.ws = [Wrapped(1),Wrapped(2),Wrapped(3)] def __getattr__(self, n): meth = getattr(Wrapped, n) def caller(): results = [meth(w) for w in self.ws] sum_ = sum(results,0.0) average = sum_/len(self.ws) return average return caller It's a bit simplistic (assumes no change in self.ws between the getting and the calling -- one could of course "snapshot" self.ws at the moment of the getting, if that's the desired semantics; doesn't use @functools.wraps so doesn't preserve the docstring &c if those need preserving), but should be mostly workable for your purposes.

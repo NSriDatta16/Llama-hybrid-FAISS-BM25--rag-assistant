@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1707619
+[parent_id]: 1707575
+[tags]: 
+Are any of the parameters passed to the callback function user defined? Is there any way you can attach a user defined value to data passed to these callbacks? I remember when I implemented a wrapper library for Win32 windows I used SetWindowLong() to attach a this pointer to the window handle which could be later retrieved in the callback function. Basically, you need to pack the this pointer somewhere so that you can retrieve it when the callback gets fired. struct CALLBACKDATA { int field0; int field1; int field2; }; struct MYCALLBACKDATA : public CALLBACKDATA { Callback* ptr; }; registerCallback( Callback::StaticCallbackFunc, &myCallbackData, ... ); void Callback::StaticCallbackFunc( CALLBACKDATA* pData ) { MYCALLBACKDATA* pMyData = (MYCALLBACKDATA*)pData; Callback* pCallback = pMyData->ptr; pCallback->virtualFunctionCall(); }

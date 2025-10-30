@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 269616
+[parent_id]: 269570
+[tags]: 
+Your informant is wrong, if he is talking about Oracle database triggers: 1) You cannot put a COMMIT in an Oracle trigger that is not autonomous: SQL> create trigger this_wont_work 2 after insert on emp 3 begin 4 commit; 5 end; 6 / Trigger created. SQL> insert into emp (empno) values (123) 2 / insert into emp (empno) values (123) * ERROR at line 1: ORA-04092: cannot COMMIT in a trigger ORA-06512: at "TONY.THIS_WONT_WORK", line 2 ORA-04088: error during execution of trigger 'TONY.THIS_WONT_WORK' 2) If the trigger is autonomous (i.e. has PRAGMA AUTONOMOUS_TRANSACTION in its declaration section) then it can only commit any changes it (the trigger) makes. There is no danger whatsoever of a trigger committing work you did outside of that trigger. Note: the use of autonomous transactions in triggers is dangerous except for certain cases, because actions performed by the autonomous trigger will be committed even if the triggering statement is rolled back. This can easily lead to data corruption if mis-used.

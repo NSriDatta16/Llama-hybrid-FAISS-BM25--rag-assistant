@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4255740
+[parent_id]: 
+[tags]: 
+design class aggregation - stack allocation vs dynamic memory allocation
+
+Please have a look at the two simplified examples of designing a class aggregation below. Solution 1 Header // need include, forward declaration is not enough #include "door.h" class CGarage { public: CGarage(const std::string &val); private: CDoor m_door; }; Source #include "garage.h" CGarage::CGarage(const std::string &val) :m_door(val) { } Solution 2 Header #include "smart_ptr.hpp" // forward declaration class CDoor; class CGarage { public: CGarage(const std::string &val); private: scoped_ptr m_door; }; Source #include "garage.h" #include "door.h" CGarage::CGarage(const std::string &val) :m_door(new CDoor(val)) { } Questions concerning the creation of the CDoor member What advantages/disadvantages do you see in the design of the examples (dynamic allocation of CDoor vs automatic allocation)? This is what I came up with: Solution 1: + no issues with memory handling or lifetime + no need for expensive memory allocation at runtime - need additional include in header (compilation speed slower?, closer coupling to CDoor) -> many includes in header files are considered bad... Solution 2: + loose coupling with CDoor in header (only forward declaration needed) - memory needs to be handled by programmer Which design do you usually prefer for what reason?

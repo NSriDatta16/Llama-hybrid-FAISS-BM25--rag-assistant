@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3970654
+[parent_id]: 3969063
+[tags]: 
+void fun(Flight ptr1[],Runway ptr2[]) is interpreted as void fun(Flight *ptr1, Runway *ptr2) This is called "decomposition," and I think it's rotten. It's mainly a feature for backward compatibility with C. If you want pointers, specify pointers, not arrays, because pointers and arrays are different things. You can also do void fun(Flight (&arr1)[5], Runway (&arr2)[7]) Now the parameters remain arrays inside the function, not pointers, so ++ arr1 is illegal and sizeof arr1/sizeof arr1[0] is 5 . The argument arrays when you call the function also must be the correct size, exactly 5 and 7 respectively. In this context, & means pass-by-reference, so the arrays are not copied when you call the function. You can leverage the template system to generate a function for any size argument array, as well: template void fun(Flight (&arr1)[NF], Runway (&arr2)[NR]) Such a template may be called with any-sized arrays, and NF and NR will be integral constants set to the proper sizes.

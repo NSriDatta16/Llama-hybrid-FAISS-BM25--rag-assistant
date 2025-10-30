@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1664880
+[parent_id]: 1664840
+[tags]: 
+Looks like I can answer my own question, opened up the source and guess what I found: static PyObject * string_slice(register PyStringObject *a, register Py_ssize_t i, register Py_ssize_t j) ... snip ... return PyString_FromStringAndSize(a->ob_sval + i, j-i); ..and no reference to interning. FromStringAndSize() only explicitly interns on strings of size 1 and 0 So it seems clear that you'll always get a totally new object and they won't share any buffers.

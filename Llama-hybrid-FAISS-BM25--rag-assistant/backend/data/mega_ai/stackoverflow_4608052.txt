@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4608052
+[parent_id]: 4607900
+[tags]: 
+Since you specified that you have subviews from a NIB , it sounds like you also may need to pay close attention to the viewDidUnload method. Any views which are automatically allocated from the nib you can implicitly release by setting the outlet to nil. For example: - (void)viewDidUnload { [super viewDidUnload]; self.subviewOutletOne = nil; self.subviewOutletTwo = nil; } Then for any objects which you explicitly retain, you release them in the dealloc method like you are planning to do: - (void)dealloc { [myDataArray release]; [coolAnimatedImage release]; [myCustomSubview release]; [super dealloc]; } Also be sure to check out the LEAKS instrument. This is a random tutorial for using the built in leak analysis tool. There may be others / better ones. It can a pain to get up and running the first time but is completely worth it.

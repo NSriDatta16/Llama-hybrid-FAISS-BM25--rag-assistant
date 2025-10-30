@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3805598
+[parent_id]: 3804884
+[tags]: 
+The requirement that std containers only take copyable objects has more to do with the C++03 container interfaces than it does with the allocator implementation. For example vector b(100); vector a; a=b; assert(a==b); The standard assures us a==b is true. However, if T were not copyable, then in the best case a=b will not compile, in the worst a=b is undefined. Furthermore, a.push_back(T()); may cause a to allocate new space, and under the hood there are copies made to the new underlying storage from the old. Furthermore, there is nothing in the C++03 standard that says an implementation actually has to call allocator.construct, and in fact many (gcc for example) do not. The C++0x standard adds new member functions to the container interface for moveable types, and clarifies how things like operator= behave in their presence. See www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2486.pdf

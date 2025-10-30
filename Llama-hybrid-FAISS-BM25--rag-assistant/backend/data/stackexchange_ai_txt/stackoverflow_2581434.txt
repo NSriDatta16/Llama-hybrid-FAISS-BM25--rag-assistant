@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2581434
+[parent_id]: 2581061
+[tags]: 
+I wrote something just like this a while back, and I chose what I felt was a simple method, pretty much what you described: each agent (task runner) registers itself with the "management server" for admin purposes. It then polls the server periodically for work. If there is anything in the queue, it takes the first (oldest) job. The server marks this job as in-progress so no other agents will take it. Load balancing wasn't an issue because each agent only ran 1 job at a time. WCF took care of the message queuing very nicely, such that there was no concern of two agents taking the same job. When an agent finishes a job, it tells the server and passes back any output. I defined three WCF endpoints for my management server: one for the agents, one for the "console" used to submit jobs (a winforms app), and one for the admin tool. My management server was implemented as a web service hosted in a Windows service. I know this doesn't answer all your questions, but this is an example of a working solution: Whether it will work for you depends on the complexity of your requirements.

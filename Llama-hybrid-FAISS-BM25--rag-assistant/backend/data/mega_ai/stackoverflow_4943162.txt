@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4943162
+[parent_id]: 4924233
+[tags]: 
+I can't find a correct "Type for Type" mapping but just to be sure, can you try it this way and get back a string (length > 0). [ Edit : see Technomage Comment] ATTENTION : You should be much much more careful when using Memory objects. They get free'd at the native level when the java object gets garbadge collected. This means that your code super(new Memory(value.length()*2+6).share(4)); is just a waste of time because your new Memory(..) disappear the very moment after you pass the line since the .share(4) give a new independant Pointer class BSTRUtils { private BSTR() { } public static Memory toNative(String value) { Memory m = new Memory(value.length()*2+6); m.setInt(0, value.length()*2); m.setString(4, value, true); return m; } public static String toString(PointerByReference pbr) { return toString(pbr.getValue()); } public static String toString(Pointer p) { int length = p.getInt(0); char[] data = p.getCharArray(4, length/2); return new String(data); } }

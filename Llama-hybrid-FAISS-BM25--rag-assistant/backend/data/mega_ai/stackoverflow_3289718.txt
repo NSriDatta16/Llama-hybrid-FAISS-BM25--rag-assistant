@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3289718
+[parent_id]: 3283768
+[tags]: 
+You can't, or at least you shouldn't, interfere with application server threads directly. So a "kill switch" look definitively inappropriate to me in a Java EE environment. I do however understand the problem you have, but would rather suggest to take an asynchronous approach where you split you job in smaller work unit. I did that using EJB Timers and was happy with the result: An initial timer is created for the first work unit. When the app. server executes the timer, it then register as second one that correspond to the 2nd work unit, etc. Information can be passed form one work unit to the other because EJB Timers support the storage of custom information. Also, timer execution and registration is transactional, which is fine to work with database. You can even shutdown and restart the application sever with this approach. Before each work unit ran, we checked in database if the job had been canceled in the meantime.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5376131
+[parent_id]: 5373987
+[tags]: 
+If your simple test page is located on other protocol/domain/port than your hello world node.js example you are doing cross-domain requests and violating same origin policy therefore your jQuery ajax calls (get and load) are failing silently. To get this working cross-domain you should use JSONP based format. For example node.js code: var http = require('http'); http.createServer(function (req, res) { console.log('request received'); res.writeHead(200, {'Content-Type': 'text/plain'}); res.end('_testcb(\'{"message": "Hello world!"}\')'); }).listen(8124); and client side JavaScript/jQuery: $(document).ready(function() { $.ajax({ url: 'http://192.168.1.103:8124/', dataType: "jsonp", jsonpCallback: "_testcb", cache: false, timeout: 5000, success: function(data) { $("#test").append(data); }, error: function(jqXHR, textStatus, errorThrown) { alert('error ' + textStatus + " " + errorThrown); } }); }); There are also other ways how to get this working, for example by setting up reverse proxy or build your web application entirely with framework like express .

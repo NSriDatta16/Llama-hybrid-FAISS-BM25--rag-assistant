@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2701176
+[parent_id]: 
+[tags]: 
+why optimization does not happen?
+
+I have C/C++ code, that looks like this: static int function(double *I) { int n = 0; // more instructions, loops, for (int i; ...; ++i) n += fabs(I[i] > tolerance); return n; } function(I); // return value is not used. compiler inlines function, however it does not optimize out n manipulations. I would expect compiler is able to recognize that value is never used as rhs only. Is there some side effect, which prevents optimization? compiler does not seem to matter, I tried Intel and gcc. Aggressive optimization, -O3 Thanks fuller code (full code is repetition of such blocks): 280 // function registers 281 double q0 = 0.0; 282 double q1 = 0.0; 283 double q2 = 0.0; 284 285 #if defined (__INTEL_COMPILER) 286 #pragma vector aligned 287 #endif // alignment attribute 288 for (int a = 0; a = tol); 313 I[1] = scale*NORMALIZE[2]*NORMALIZE[0]*(qK1 + I[1]); 314 num += (fabs(I[1]) >= tol); 315 I[2] = scale*NORMALIZE[3]*NORMALIZE[0]*(qK2 + I[2]); 316 num += (fabs(I[2]) >= tol); 317 } 318 else { 319 I[0] = scale*(qK0 + I[0]); 320 num += (fabs(I[0]) >= tol); 321 I[1] = scale*(qK1 + I[1]); 322 num += (fabs(I[1]) >= tol); 323 I[2] = scale*(qK2 + I[2]); 324 num += (fabs(I[2]) >= tol); 325 } 326 327 328 return num; my only guess is potentially floating-point exceptions, which introduced side effects

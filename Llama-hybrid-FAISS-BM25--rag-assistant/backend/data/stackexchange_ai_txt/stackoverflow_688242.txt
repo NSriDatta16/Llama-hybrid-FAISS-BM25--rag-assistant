@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 688242
+[parent_id]: 685882
+[tags]: 
+If you were using Oracle then I'd advise benchmarking three approaches: Heap table with primary key index Index-organised table Single table hash cluster 1 represents a very vanilla approach -- really it's the lowest common denominator, but could mean 5+ logical reads to get each row, with one of those being a probable physical read of the table if it is not completely cached. 2 will save you one of those logical read by avoiding the probe to a separate table segment, but might not save you the physical read because the IOT segment will be larger and harder to cache than the index alone. 3 will potentially get you the row with a single logical read, but unless you have the entire table cached that's probably going to translate into a physical read. Benchmarking is highly recommended.

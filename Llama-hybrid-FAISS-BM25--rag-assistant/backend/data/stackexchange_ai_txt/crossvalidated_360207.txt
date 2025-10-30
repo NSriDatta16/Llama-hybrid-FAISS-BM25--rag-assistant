@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 360207
+[parent_id]: 360085
+[tags]: 
+One theory: your data matrix is ill-conditioned. Common in machine learning problems is to not care about co-linearity of columns (ex: dummy encoding categorical variables, and a baseline category is not dropped from the matrix). When the cross-validation is performed, you get lucky 13 out of 15 times: the matrix is conditioned fine (no colinearity). But in 2 / 15 cases, you've dropped enough rows that cause some colinearity => unstable solution => terrible predictions on the hold-out. This normally isn't a problem in machine learning because users will use penalizers which help in fitting. In linear models, using ridge regression ( sklearn.linear_models.Ridge ) is a common way to add a penalizer. I would suspect if you redid your program and replaced LinearRegression with Ridge with even the slightest alpha value, the problem would go away.

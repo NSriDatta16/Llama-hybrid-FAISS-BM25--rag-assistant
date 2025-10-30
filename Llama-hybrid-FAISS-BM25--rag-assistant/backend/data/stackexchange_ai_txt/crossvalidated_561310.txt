@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 561310
+[parent_id]: 419012
+[tags]: 
+A alternative solution to transforming the data inputs is to let the Gaussian Process (GP) model directly handle the categorical inputs. The model kernel can be combined as a sum of a categorical kernel and a regular kernel of the form: K((x1, c1), (x2, c2)) = K_cont_1(x1, x2) + K_cat_1(c1, c2) + K_cont_2(x1, x2) * K_cat_2(c1,c2) A readily available implementation can be found in BoTorch, a Bayesian Optimization package built on PyTorch. An example use of such a kernel: import torch from botorch.models import MixedSingleTaskGP train_X = torch.cat([torch.rand(20, 2), torch.randint(3, (20, 1))], dim=-1) train_Y = torch.sin(train_X[..., :-1]).sum(dim=1, keepdim=True) model = MixedSingleTaskGP(train_X, train_Y, cat_dims=[-1]) The link to the BoTorch MixedSingleTaskGP kernel docs page can be found here .

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1362794
+[parent_id]: 
+[tags]: 
+Eager loading child and child-of-child collections in NHibernate
+
+I've got a problem with NHibernate trying to load a small hierarchy of data. My domain model looks like: class GrandParent { int ID{get;set;} IList Parents {get; set;} } class Parent { IList Children {get; set;} } class Child { } and I would like to eager load all parents and children for a given GrandParent. This Linq-to-NH query creates the correct SQL and loads the GrandParent as expected: (the example assumes the grandparent has 2 parents who each have 2 child objects - so 4 child objects in total). var linq = session.Linq (); linq.Expand("Parents"); linq.Expand("Parents.Children"); linq.QueryOptions.RegisterCustomAction(c => c.SetResultTransformer(new DistinctRootEntityResultTransformer())); var grandparent = (select g from session.Linq () where g.ID == 1 select g).ToList(); Assert(grandparent.Count == 1); //Works Assert(grandparent.Parents.Count == 2); //Fails - count = 4! The grandparent.Parents collection contains 4 items, 2 of which are duplicates. It seems the DistinctRootEntityResultTransformer only works on collections 1 level deep, so the Parents collection is duplicated depending on how many Child objects each parent has. Is it possible to get NH to only include the distinct Parent objects? Thanks very much.

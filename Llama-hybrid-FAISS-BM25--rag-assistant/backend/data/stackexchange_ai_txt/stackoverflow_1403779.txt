@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1403779
+[parent_id]: 1402844
+[tags]: 
+Unfortunately, you will need to change your design, since SSIS package storage is just that - storage. Execution always takes place on the machine from which the package is called, and all references are treated as relative to that machine. One option is to add a task to the SSIS package which copies and registers the DLL in the GAC of the calling machine - but if you do not have control over some of the executing machines, there is no guarantee the executing SQL Agent account will have sufficient rights to register a DLL. Another solution would be to convert the DLL code into a script task inside the SSIS package. This would mean converting the code from C# to VB, and may be non-trivial depending on the detail of your code. Without more details of the purpose of the package and the functionality of the DLL it's difficult to evaluate other alternatives, but you could consider whether it would be possible to parameterise the package to enable it always to run from the storage server.

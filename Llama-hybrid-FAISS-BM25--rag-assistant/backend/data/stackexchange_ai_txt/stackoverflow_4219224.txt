@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4219224
+[parent_id]: 4219013
+[tags]: 
+Yes, you either have to run a large enough number of cases so that the randomness averages out, or you make the random source another input to your function or method so you can test it independently. An example of the first kind (this is Python, but the principle can apply in any language). def test_random_number(): total = sum(random.uniform(0, 1) for _ in xrange(1000)) assert 100 So this test can fail if you're unlucky, but it's still a reasonable test since it'll pass nearly all the time, and it's pretty simple to make this kind of test. To do things 'properly', you need to inject the random source. class DefaultRandomBehavior(object): def pick_left_or_right(self): return random.choice(['left', 'right']) class AardvarkModeller(object): def __init__(self, random_source=None): self.random_source = random_source or DefaultRandomBehavior() def aardvark_direction(self): r = self.random_source.pick_left_or_right() return 'The aardvark faces ' + r Now you can unit test this by either mocking out or faking the DefaultRandomBehavior class, thus completely side-stepping the non-determinism.

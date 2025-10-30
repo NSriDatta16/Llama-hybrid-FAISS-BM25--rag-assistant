@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 768417
+[parent_id]: 768338
+[tags]: 
+Are you looking for speed or readability and organization? Speed of execution, your shortened example is probably the best way to go. For a few extra milliseconds, you could re-write this utility method as an extension method like so: public static bool ToBoolean(this string value) { // Exit now if no value is set if (string.IsNullOrEmpty(value)) return false; switch (value.ToUpperInvariant()) { case "ON": case "TRUE": return true; } return false; } ... and then you would use it as follows: public static void TestMethod() { bool s = "Test".ToBoolean(); } EDIT: Actually, I'm wrong... a quick performance test shows that the extension method is FASTER than the inline method. The source of my test is below, as well as the output on my PC. [Test] public void Perf() { var testValues = new string[] {"true", "On", "test", "FaLsE", "Bogus", ""}; var rdm = new Random(); int RunCount = 100000; bool b; string s; Stopwatch sw = Stopwatch.StartNew(); for (var i=0; i Output: Method 1: 21ms Method 2: 30ms

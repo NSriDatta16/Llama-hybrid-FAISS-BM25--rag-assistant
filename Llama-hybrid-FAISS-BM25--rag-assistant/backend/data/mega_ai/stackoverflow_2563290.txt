@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2563290
+[parent_id]: 2560022
+[tags]: 
+Here are a couple of additional security measures you could add. First, I think it is pretty common to use information stored in the session instance to validate each new request. For example, you could verify that the IP address and user-agent don't change during a session: newip = str( request.remote_addr ); if sesh.ip_addr != newip: logging.warn( "Session IP has changed to %s." % newip); newua = rh.request.headers.get( 'User-Agent', None ); if sesh.agent != newua: logging.warn( "Session UA has changed to %s." % newua ); Also, perhaps it would be better to prevent the session from being renewed indefinitely? I think that sites such as Google will eventually ask you to sign-in again if you try to keep a session going for a long time. I guess it would be easy to slowly decrease the _SESSION_EXPIRE_TIME each time the session gets renewed, but that isn't really a very good solution. Ideally the choice of when to force the user to sign-in again would take into account the flow and security requirements of your site.

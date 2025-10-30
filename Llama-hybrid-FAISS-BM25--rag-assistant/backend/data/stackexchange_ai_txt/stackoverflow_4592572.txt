@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4592572
+[parent_id]: 4158758
+[tags]: 
+I assume you are using logging module. You can use separate named logger per task set to do the job. They will inherit all configuration from upper level. in task.py : import logging @task step1(*args, **kwargs): # `key` is some unique identifier common for a piece of data in all steps of processing logger = logging.getLogger("myapp.tasks.processing.%s"%key) # ... logger.info(...) # log something @task step2(*args, **kwargs): logger = logging.getLogger("myapp.tasks.processing.%s"%key) # ... logger.info(...) # log something Here, all records were sent to the same named logger. Now, you can use 2 approaches to fetch those records: Configure file listener with name that depends on logger name. After last step, just read all info from that file. Make sure output buffering is disabled for this listener or you risk loosing records. Create custom listener that would accumulate records in memory then return them all when told so. I'd use memcached for storage here, it's simpler than creating your own cross-process storage.

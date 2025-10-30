@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 401508
+[parent_id]: 379210
+[tags]: 
+Do you mean that the application is storing a files as blobs in the MySQL database, and/or creating lots of temporary tables? Or that you just want temporary files - themselves unrelated to a database - to be stored in MySQL as a backup? I'm not sure that trying to use MySQL as an net-new intermediary for backups of files is a good idea. If the app already uses it, thats one thing, if not, MySQL isn't the right tool here. Anyway. If you are interested in capturing a filesystem at point-in-time, the answer is to utilize LVM snapshots . You would likely have to rebuild your server to get your filesystems onto LVM, and have enough free storage there for as many snapshots as you think you'd need. I would recommend having a new mount point just for this apps temporary files. If your MySQL tables are using InnoDB, a simple script to run mysqldump --single-transaction in the background, and then the lvm snapshot process, you could get these synced up to less then a second.

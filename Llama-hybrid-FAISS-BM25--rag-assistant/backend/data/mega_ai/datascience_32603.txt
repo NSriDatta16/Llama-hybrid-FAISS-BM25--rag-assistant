@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 32603
+[parent_id]: 32457
+[tags]: 
+I think the problem might be due to the data, as this code: from sklearn import svm from sklearn.model_selection import GridSearchCV import pandas as pd import numpy as np X_pca = np.random.rand(100, 2) labels = X_pca[:, 0] + X_pca[:, 1] > 0.5 model = svm.SVC() params = {'C' : [0.01, 0.1, 1, 10], 'gamma' : [0., 0.1, 1, 'auto'], 'probability' : [True] } clf = GridSearchCV(model, params, cv=2, return_train_score=False) clf.fit(X_pca, labels) print(pd.DataFrame(clf.cv_results_).loc[:, ['mean_test_score', 'rank_test_score']] \ .sort_values(by='rank_test_score')) gives better output: mean_test_score rank_test_score 10 1.00 1 13 1.00 1 14 1.00 1 15 1.00 1 11 0.95 5 0 0.83 6 1 0.83 6 2 0.83 6 3 0.83 6 4 0.83 6 5 0.83 6 6 0.83 6 7 0.83 6 8 0.83 6 9 0.83 6 12 0.83 6 (consider the fact that the results will depend on the seed of the rand function, but with other seeds they are similar and the mean test score changes using different values of the parameters.

@@ -1,0 +1,37 @@
+Remote Initial Program Load (RIPL or RPL) is a protocol for starting a computer and loading its operating system from a server via a network. Such a server runs a network operating system such as LAN Manager, LAN Server, Windows NT Server, Novell NetWare, LANtastic, Solaris or Linux.
+
+RIPL is similar to Preboot Execution Environment (PXE), but it uses the Novell NetWare-based boot method. It was originally developed by IBM.
+
+IBM LAN Server 
+IBM LAN Server enables clients (RIPL requesters) to load the operating systems DOS or OS/2 via the 802.2/DLC-protocol from the LAN (often Token Ring). Therefore, the server compares the clients' requests with entries in its RPL.MAP table. Remote booting DOS workstations via boot images was supported as early as 1990 by IBM LAN Server 1.2 via its PCDOSRPL protocol. IBM LAN Server 2.0 introduced remote booting of OS/2 stations (since OS/2 1.30.1) in 1992.
+
+RPL and DOS 
+For DOS remote boot to work, the RPL boot loader is loaded into the client's memory over the network before the operating system starts. Without special precautions the operating system could easily overwrite the RPL code during boot, since the RPL code resides in unallocated memory (typically at the top of the available conventional memory). The RPL code hides and thereby protects itself from being overwritten by hooking INT 12h and reducing the memory reported by this BIOS service by its own size. INT 12h is used by DOS to query the amount of available memory when initializing its own real-mode memory allocation scheme. This causes problems on more modern DOS systems, where free real-mode address ranges may be utilized by the operating system in order to relocate parts of itself and load drivers high, so that the amount of available conventional memory is maximized. Typically, various operating system vendor and version specific "dirty tricks" had to be used by the RPL code in order to survive this very dynamic boot process and let DOS regain control over the memory occupied by RPL once the boot is complete in a seamless manner.
+
+Since MS-DOS/PC DOS 5.0 and DR DOS 6.0, the operating system checks if the RPL has hooked INT 2Fh by looking for a "RPL" signature at the code pointed to by INT 2Fh. If present, DOS calls INT 2Fh/AX=4A06h to retrieve the amount of memory from the RPL and integrate it into its own memory allocation, thereby protecting the RPL code from being overwritten by other programs. Still, it remained the RPL's difficult responsibility to cleanly remove itself from memory at the end of the boot phase, if possible.
+
+RPLOADER and DR-DOS 
+In addition to this "RPL" interface, DR DOS 6.0 and higher since 1991 support a more flexible extension named "RPLOADER". If DR DOS detects the presence of RPLOADER rather than RPL only, it starts to issue INT 2F/AX=12FFh/BX=0005h broadcasts at certain critical stages in the boot process. The RPL code can use them to relocate itself in memory (in order to avoid conflicts with other resident software or to avoid memory fragmentation when the RPL memory is freed later on), or to hook into and better integrate with the operating system in order to perform its final cleanup tasks in a well-defined and coordinated manner through a robust and supported backend interface rather than mere hacks. This helps to improve compatibility without having to adapt the RPL code with each new version of the operating system, and it avoids unnecessary memory fragmentation and thereby increases available memory for DOS programs to run. The interface can also be utilized to run DR DOS as a task under a host operating system such as Concurrent DOS.
+
+Since 2018, RxDOS 7.24 supports the "RPLOADER" broadcasts as well.
+
+See also
+ Initial Program Load
+ Network booting
+ PROTMAN$ (Protocol Manager from Microsoft LAN Manager)
+ Self-relocation
+ Self-replication
+ NetWare DOS Requester
+ NetWare Client 32 for DOS/Windows
+
+References
+
+Further reading
+ 
+ 
+ 
+ 
+ 
+ GG24-3671-00: IBM Personal System/2 Advanced Server Planning Guide (IBM Redbook)
+
+Network booting

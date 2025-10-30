@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 488914
+[parent_id]: 488844
+[tags]: 
+There is nothing in the self-attention parameterization that would make it limited to a pre-defined length. The attention is done by a dot-product of all state-pairs and then as a weighted sum of the projected states. The transformer encoder uses position encoding. This is the only component that could be length-dependent, however, this is not part of the TransformerEncoder class. You can either learn the position embeddings (that can only learn for positions in your training data) or use analytically computed (as can be seen in the PyTorch Transformers tutorial ). The only tricky part is that sequences in a single batch can have different lengths. You can avoid that by using a batch size of 1 (at the expense of a significant slowdown). Alternatively, you can provide the encoder with a binary mask telling what positions in the sequences are valid. It is done by the src_key_padding_mask attribute in the encoder call.

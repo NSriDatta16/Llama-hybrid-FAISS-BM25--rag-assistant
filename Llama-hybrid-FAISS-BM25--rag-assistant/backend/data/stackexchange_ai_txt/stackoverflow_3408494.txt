@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3408494
+[parent_id]: 
+[tags]: 
+string to datetime with fractional seconds, on Google App Engine
+
+I need to convert a string to a datetime object, along with the fractional seconds. I'm running into various problems. Normally, i would do: >>> datetime.datetime.strptime(val, "%Y-%m-%dT%H:%M:%S.%f") But errors and old docs showed me that python2.5's strptime does not have %f... Investigating further, it seems that the App Engine's data store does not like fractional seconds. Upon editing a datastore entity, trying to add .5 to the datetime field gave me the following error: ValueError: unconverted data remains: .5 I doubt that fractional seconds are not supported... so this is just on the datastore viewer, right? Has anyone circumvented this issue? I want to use the native datetime objects... I rather not store UNIX timestamps... Thanks! EDIT: Thanks to Jacob Oscarson for the .replace(...) tip! One thing to keep in mind is to check the length of nofrag before feeding it in. Different sources use different precision for seconds. Here's a quick function for those looking for something similar: def strptime(val): if '.' not in val: return datetime.datetime.strptime(val, "%Y-%m-%dT%H:%M:%S") nofrag, frag = val.split(".") date = datetime.datetime.strptime(nofrag, "%Y-%m-%dT%H:%M:%S") frag = frag[:6] # truncate to microseconds frag += (6 - len(frag)) * '0' # add 0s return date.replace(microsecond=int(frag))

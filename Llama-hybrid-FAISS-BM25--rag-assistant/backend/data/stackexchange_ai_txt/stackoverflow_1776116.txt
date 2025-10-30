@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1776116
+[parent_id]: 
+[tags]: 
+Parsing urls in .Net (ASP.Net MVC) to figure out what host they are for
+
+I'm trying to add validation to our redirects to prevent us allowing redirections out of the domain. The urls I need to pass aren't trusted since they could come from the user via the url so I'm wondering what's a good way to parse the url to figure out the host? I knocked up an initial implementation using Uri.Parse but that doesn't like relative paths. Most of the legitimate redirects will be just that, and should fairly obviously be allowed. Here's a snippet of what I've done in my action filter, bool validRedirection = true; RedirectResult redirect = filterContext.Result as RedirectResult; if (redirect != null) { validRedirection = false; try { Uri redirectUri = new Uri(redirect.Url); Uri sourceUri = filterContext.RequestContext.HttpContext.Request.Url; if (redirectUri.Host == sourceUri.Host) validRedirection = true; The problem is that if I have /Home/About as the redirect.Url then the Uri throws a UriFormatException. It would also throw one of those exceptions for http:///www.dilbert.com too (because of the three slashses) but I don't want to let that through. Is there a more suitable class or an easy way to determine if I have a relative url? I'm half inclined to use a regex to check for https?:// on the front but given all the ways that hackers seem to be able to subvert url's I'm worried I'll miss a hole.

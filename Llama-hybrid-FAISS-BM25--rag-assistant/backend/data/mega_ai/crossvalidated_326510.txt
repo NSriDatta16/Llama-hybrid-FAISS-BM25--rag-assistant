@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 326510
+[parent_id]: 
+[tags]: 
+Posterior predictive regression lines in Bayesian linear regression seem to exclude most data points
+
+I have some data to which I'd like to fit a GLM using PyMC3. Here are the posterior predictive regression lines plotted along with the data points: Domain knowledge indicates that a linear model with zero-intercept is appropriate and the data looks linearly related. However, it feels as though the fit is not OK since the post predictive lines seem to cover only a few data points, leaving most out. Is this intuition correct? In this case, 64% of the data points are not covered by the regression lines. The PyMC3 model I used is really simple: with pm.Model() as geom_glm: pm.GLM.from_formula('delta_p ~ 0 + sot', dados) step = pm.Metropolis() trace = pm.sample(draws = 10**4, step = step) plt.plot(dados['sot'], dados['delta_p'], 'x', label='dados') pm.plot_posterior_predictive_glm(trace, lm = lambda x, sample: sample['sot'] * x, eval = dados['sot'], label = 'posterior predictive check', samples = 1000) If I allow the intercept to be inferred from the data as well (even though domain knowledge indicates this is inappropriate), the situation doesn't seem to improve much:

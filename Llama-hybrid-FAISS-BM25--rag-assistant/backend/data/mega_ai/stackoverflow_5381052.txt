@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5381052
+[parent_id]: 5379004
+[tags]: 
+Brad Christie's preg_replace_callback() recommendation is a good one. Here is one possible implementation: function smartConvertPost($post) { // Disclaimer: This "URL plucking" regex is far from ideal. $pattern = '!http://[a-z0-9\-._~\!$&\'()*+,;=:/?#[\]@%]+!i'; $replace='_handle_URL_callback'; return preg_replace_callback($pattern,$replace, $post); } function _handle_URL_callback($matches) { // preg_replace_callback() is passed one parameter: $matches. if (preg_match('/\.(?:jpe?g|png|gif)(?:$|[?#])/', $matches[0])) { // This is an image if path ends in .GIF, .PNG, .JPG or .JPEG. return ' '; } // Otherwise handle as NOT an image. return ' '. $matches[0] .' '; } Note that the regex used to pluck out a URL is not ideal. To do it right is tricky. See the following resources: The Problem With URLs by Jeff Atwood. An Improved Liberal, Accurate Regex Pattern for Matching URLs by John Gruber. URL Linkification (HTTP/FTP). by yours truly. Edit: Added ability to recognize image URLs having a query or fragment.

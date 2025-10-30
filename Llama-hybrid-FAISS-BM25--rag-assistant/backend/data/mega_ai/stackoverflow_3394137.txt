@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3394137
+[parent_id]: 
+[tags]: 
+Create multiple SquashFS partitions
+
+I'm working on embedded platform (Broadcom's bcm5358u processor with MIPS core), where I need extra partitions for the purpose of further upgrade procedure. The filesystem used is SquashFS, so I modified 'struct mtd_partition' accordingly, which is passed to MTD related code, and I ended up with this: #cat /proc/partitions major minor #blocks name - 31 0 128 mtdblock0 - 31 0 128 mtdblock0 - 31 1 6016 mtdblock1 - 31 2 4573 mtdblock2 - 31 3 6016 mtdblock3 - 31 4 4445 mtdblock4 - 31 5 4160 mtdblock5 - 31 6 64 mtdblock6 Now I want to be able to mount /dev/mtdblock4 as a temporary storage during system upgrade, but I can't do this, because it appears that this partition mtdblock4 doesn't have any FS installed. The kernel image and FS are integrated in one image, which is flashed down the /dev/mtdblock2 (which is supplied as root_fs to kernel). I see only one solution: create a empty squashFS image, write it on /dev/mtdblock4 and may be it will work as I want (?). Is there a way to, like, format the partition on the fly, whenever the kernel boots, or it violates the MTD concepts? Thanks.

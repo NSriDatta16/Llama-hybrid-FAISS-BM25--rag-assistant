@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2914723
+[parent_id]: 
+[tags]: 
+How to enable gzip compression using PHP Simple HTML DOM Parser
+
+I have tried a few things to enable gzip compression using PHP Simple HTML DOM Parser but nothing has seemed to work thus far. Using ini_set I've manged to change the user agent, so I figured it might be possible to also enable gzip compression? include("simpdom/simple_html_dom.php"); ini_set('zlib.output_compression', 'On'); $url = 'http://www.whatsmyip.org/http_compression/'; $html = file_get_html($url); print $html; The website above tests it. Please let me know if I am going about this the wrong way completely. ==== UPDATE For anyone else trying to achieve the same thing, it's best to just use cURL, then use the dom parser like so: $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); // Define target site curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // Return page in string curl_setopt($cr, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.2 (KHTML, like Gecko) Chrome/5.0.342.3 Safari/533.2'); curl_setopt($ch, CURLOPT_ENCODING , "gzip"); curl_setopt($ch, CURLOPT_TIMEOUT,5); curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE); // Follow redirects $return = curl_exec($ch); $info = curl_getinfo($ch); curl_close($ch); $html = str_get_html("$return");

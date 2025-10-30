@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 149586
+[parent_id]: 149380
+[tags]: 
+There may be a third option, since your server has lots of spare cycles - use a helper procedure to do the sorting via a temporary table. Something like create procedure uspCallAndSort ( @sql varchar(2048), --exec dbo.uspSomeProcedure arg1,'arg2',etc. @sortClause varchar(512) --comma-delimited field list ) AS insert into #tmp EXEC(@sql) declare @msql varchar(3000) set @msql = 'select * from #tmp order by ' + @sortClause EXEC(@msql) drop table #tmp GO Caveat: I haven't tested this, but it "should" work in SQL Server 2005 (which will create a temporary table from a result set without specifying the columns in advance.)

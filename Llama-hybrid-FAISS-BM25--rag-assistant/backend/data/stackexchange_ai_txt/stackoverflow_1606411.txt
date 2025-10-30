@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1606411
+[parent_id]: 
+[tags]: 
+CodeCoverage vs ExpectedException
+
+I've got several unittests of this pattern: [TestMethod ()] [ExpectedException (typeof (ArgumentNullException))] public void DoStuffTest_Exception () { var foo = new Foo (); Foo.DoStuff (null); } It turns out that code coverage markes the throwing line as half-run, so I get 1 block of uncovered code each time. After thinking about this problem for a while, the best solution I could come up with was adding a try/catch. Since this is a repeated pattern, I'm going to create a helper method along the lines of public static void ExpectException (Action action) where _T: Exception { try { action(); } catch (_T) { return; } Assert.Fail ("Expected " + _T); } This would have the nice side benefit that I could add all exception tests to the non-throwing tests. Is this a valid design, or did I miss something? Edit: Ugs... seems like the above ExpectException method leaves me with 1 uncovered block as well.

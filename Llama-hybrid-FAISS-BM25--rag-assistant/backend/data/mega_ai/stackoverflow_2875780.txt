@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2875780
+[parent_id]: 2875693
+[tags]: 
+Following the principle of least surprise , it is correct to maintain the reference to the assigned object as you've done. If you did internally dup the object assigned to bar , it would be extremely frustrating to a consumer of your library who wanted bar to refer to the identical object. > class Moo > attr_accessor :bar > end => nil > a = 'a string' => "a string" > b = Moo.new => # > b.bar = a => "a string" > a.upcase! => "A STRING" > b.bar # should be uppercase as expected since `a` was modified *in-place* => "A STRING" > b.bar = a.dup # now modifications to `a` will not affect `bar` => "A STRING" > a.downcase! => "a string" > b.bar => "A STRING" As a side note, def initialize() self end is completely unnecessary as it is identical to the default initialize .

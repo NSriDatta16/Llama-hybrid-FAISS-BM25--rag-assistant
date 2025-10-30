@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4169852
+[parent_id]: 4169591
+[tags]: 
+If you want to have the year and a sequence number stored in the database, and create an invoice number from that, I'd use: a InvoiceYear column (which could totally be computed as YEAR(InvoiceDate) ) an InvoiceID INT IDENTITY column which you could reset every year to 1 create a computed column InvoiceNumber as: ALTER TABLE dbo.InvoiceTable ADD InvoiceNumber AS CAST(InvoiceYear AS VARCHAR(4)) + '-' + RIGHT('000000' + CAST(InvoiceID AS VARCHAR(6)), 6) PERSISTED This way, you automagically get invoice numbers: 2010-000001 ...... 2010-001234 ...... 2010-123456 Of course, if you need more than 6 digits (= 1 million invoices) - just adjust the RIGHT() and CAST() statements for the InvoiceID column. Also, since this is a persisted computed column, you can index it for fast retrieval. This way: you don't have to worry about concurrency, stored procs, transactions and stuff like that - SQL Server will do that for you - for free!

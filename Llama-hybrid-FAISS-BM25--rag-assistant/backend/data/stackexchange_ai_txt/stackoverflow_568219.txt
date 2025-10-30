@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 568219
+[parent_id]: 567969
+[tags]: 
+To everyone suggesting atoi: My atoi() implementation does not set errno. My atoi() implementation does not return INT_MIN or INT_MAX on overflow. We cannot rely on sign reversal. Consider 0x4000...0. *2 and the negative bit is set. *4 and the value is zero. With base-10 numbers our next digit would multiply this by 10. This is all nuts. Unless your lexer is parsing gigs of numerical data, stop the premature optimization already. It only leads to grief. This approach may be inefficient, but it's adequate for your needs: const char * p = "1234567890123"; int i = atoi( p ); ostringstream o; o Or, leveraging the stack: const char * p = "1234567890123"; int i = atoi( p ); char buffer [ 12 ]; snprintf( buffer, 12, "%d", i ); return strcmp(buffer,p) == 0;

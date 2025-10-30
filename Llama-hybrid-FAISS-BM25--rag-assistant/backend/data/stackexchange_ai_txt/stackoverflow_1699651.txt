@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1699651
+[parent_id]: 1699028
+[tags]: 
+It has been my experience that the biggest trouble with TEXT/BLOB columns that are consistently large, is that people are not careful to prevent reading them when scanning many rows. On MyISAM, this will waste your VFS cache, and on InnoDB, it will waste your InnoDB buffer pool. A secondary problem is that as tables get bigger, they become harder to maintain.. adding a column or index can rebuild the whole table, and a 500MB table rebuilds a lot slower than a 5MB table. I've had good success moving things like this off into offline key/value storage such as MogileFS, and/or TokyoTyrant. If you don't need to be crazy scalable, or you must value transactional consistency over performance, then simply moving this column into another table with a 1:1 relationship with the original table will at least require a join to blow out the buffer pool, and allow you to maintain the original table w/o having to tip-toe around the 500MB gorilla.

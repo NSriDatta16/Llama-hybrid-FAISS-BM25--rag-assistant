@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5251860
+[parent_id]: 5157902
+[tags]: 
+It is not pretty but I solved it by positioning a custom filter at position LAST. public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException { Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); if (authentication != null && authentication.isAuthenticated()) { User user = (User) authentication.getPrincipal(); if (user.isLoggingIn()) { if (authentication.getAuthorities().contains(AppRole.ROLE_NEW_USER)) { ((HttpServletResponse) response).sendRedirect(RegistrationServlet.URL); } else { ((HttpServletResponse) response).sendRedirect("/" + OrganizationListServlet.URL); } user.setLoggingIn(false); } else if (user.isLoggingOut()) { ((HttpServletRequest) request).getSession().invalidate(); } } filterChain.doFilter(request, response); } I think the problem is that the gaeFilter bypasses the normal login procedure and therefore I can't use the authentication-success-handler.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5684737
+[parent_id]: 
+[tags]: 
+Why GetProcAddress doesn't work?
+
+First, I create a simple dll called SimpleDll.dll , its head file: // SimpleDll.h #ifdef MYLIBAPI #else #define MYLIBAPI __declspec(dllimport) #endif MYLIBAPI int Add(int a. int b); its source code: // SimpleDll.c #include #define MYLIBAPI __declspec(dllexport) #include "SimpleDll.h" int Add(int a, int b) { return a + b; } Then I call it in another project, and it works fine: // TestSimpleDll.c #include "stdafx.h" #include #include "SimpleDll.h" #pragma comment(lib, "SimpleDll.lib") int _tmain(int argc, _TCHAR* argv[]) { printf("%d", Add(10, 30)); // Give the expected result 40 return 0; } However, when I call GetProcAddress to get it's address, it doesn't work! // TestSimpleDll2.c #include "stdafx.h" #include #include "SimpleDll.h" #pragma comment(lib, "SimpleDll.lib") int _tmain(int argc, _TCHAR* argv[]) { printf("%d", Add(10, 30)); // Give the expected result 40 HMODULE hModule = GetModuleHandleA("SimpleDll.dll"); // hModule is found PROC add_proc = GetProcAddress(hModule, "Add"); // but Add is not found ! // add_proc is NULL! return 0; } Thanks for your help. (PS: I use VS2010 on Windows7) Update: This is what the depedency walker show for the SimpleDll.dll file:

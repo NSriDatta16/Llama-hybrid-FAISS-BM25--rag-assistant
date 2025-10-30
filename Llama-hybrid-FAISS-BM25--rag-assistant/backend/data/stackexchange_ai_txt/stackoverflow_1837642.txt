@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1837642
+[parent_id]: 1837495
+[tags]: 
+Two things I would note. First, you probably don't want to be doing this query every time you render any page in your application. You definitely want to cache your MenuItems. Second, it might be helpful to put a convenience method on MenuItems class to cache this value. So, if I define a method def MenuItem.all_for_menu @@all_for_menu ||= MenuItem.find(:all) #returns value if exists, or initializes it end I can call MenuItem.all_for_menu in my layout and get all the menu items. When ever you add a new one or edit one, you'd have to invalidate that. Another caching approach would be to put the data in a partial and cache that fragment using the standard caching call: "menu_items", :action => "list", :action_suffix => "all_menu_items") do %> "menu", :collection => MenuItem.all_for_menu %> You can then expire that fragment by calling: expire_fragment(:controller => "menu_items", :action => "list", :action_suffix => "all_menu_items")

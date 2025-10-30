@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1752447
+[parent_id]: 1752319
+[tags]: 
+If you have latency requirements that the OS cache can't meet on its own (the default IO scheduler is usually optimized for bandwidth, not latency), you are probably going to have to manage your own memory buffering. Are you writing out the incoming data immediately? If you are, I'd suggest dropping that architecture and going with something like a ring buffer, where one thread (or multiplexed I/O handler) is writing from one side of the buffer while the reads are being copied into the other side. At some size, this will be large enough to handle the latency required by a pessimal OS cache flush. Or not, in which case you're actually bandwidth limited and no amount of software tuning will help you until you get faster storage.

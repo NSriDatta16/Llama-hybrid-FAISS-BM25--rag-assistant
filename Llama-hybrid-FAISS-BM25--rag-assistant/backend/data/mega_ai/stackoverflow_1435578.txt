@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1435578
+[parent_id]: 1434980
+[tags]: 
+Based on the comment, I've an alternative suggestion. Since your error is coming from SQL, and you aren't using the new column as a filter, you can move your calculation to the client. For this to work, you'll need to pull all the relevant records (using DataLoadOptions.LoadWith<> on your context). To further your desire for use with binding to a DataGrid, it'd probably be easiest to bury the complexity in a property of Principal. partial class Principal { public decimal Capacity { get { return this.Scale == 0 ? 0 : this.Visits.Select(v => (v.Frequency.Value == 1 ? 1 : v.Frequency.Value * 1.8) / this.Scale).Sum(); } } } Then your retrieval gets really simple: using (ShopManagerDataContext context = new ShopManagerDataContext()) { DataLoadOptions options = new DataLoadOptions(); options.LoadWith (p => p.Visits); options.LoadWith (v => v.Frequency); context.LoadOptions = options; return (from p in context.Principals select p).ToList(); }

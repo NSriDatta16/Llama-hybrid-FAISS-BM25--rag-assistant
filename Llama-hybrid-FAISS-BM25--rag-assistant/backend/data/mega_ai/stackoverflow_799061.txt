@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 799061
+[parent_id]: 798800
+[tags]: 
+You could use an averaging algorithm where the old values decay linearly. If S_n is the speed at time n and A_{n-1} is the average at time n-1, then define your average speed as follows. A_1 = S_1 A_2 = (S_1 + S_2)/2 A_n = S_n/(n-1) + A_{n-1}(1-1/(n-1)) In English, this means that the longer in the past a measurement occurred, the less it matters because its importance has decayed. Compare this to the normal averaging algorithm: A_n = S_n/n + A_{n-1}(1-1/n) You could also have it geometrically decay, which would weight the most recent speeds very heavily: A_n = S_n/2 + A_{n-1}/2 If the speeds are 4,3,5,6 then A_4 = 4.5 (simple average) A_4 = 4.75 (linear decay) A_4 = 5.125 (geometric decay) Example in PHP Beware that $n+1 (not $n ) is the number of current data points due to PHP's arrays being zero-indexed. To match the above example set n == $n+1 or n-1 == $n Output array (size=4) 0 => int 4 1 => float 3.5 2 => float 4 3 => float 4.5 array (size=4) 0 => int 4 1 => float 3.5 2 => float 4.25 3 => float 4.8333333333333 array (size=4) 0 => int 4 1 => float 3.5 2 => float 4.25 3 => float 5.125

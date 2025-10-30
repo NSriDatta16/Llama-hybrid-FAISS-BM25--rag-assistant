@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2718559
+[parent_id]: 
+[tags]: 
+StorageClientException: The specified message does not exist?
+
+I have a simple video encoding worker role that pulls messages from a queue encodes a video then uploads the video to storage. Everything seems to be working but occasionally when deleting the message after I am done encoding and uploading I get a "StorageClientException: The specified message does not exist." Although the video is processed, I believe the message is reappearing in the queue because it's not being deleted correctly. I have the message visablilty set to 5 mins, none of the videos have taken more than 2 to process. Is it possible that another instance of the Worker role is processing and deleting the message? Doesn't the GetMessage() prevent other worker roles from picking up the same message? Am I doing something wrong in the setup of my queue? What could be causing this message to not be found on delete? some code... //onStart() queue setup var queueStorage = _storageAccount.CreateCloudQueueClient(); _queue = queueStorage.GetQueueReference(QueueReference); queueStorage.RetryPolicy = RetryPolicies.Retry(5, new TimeSpan(0, 5, 0)); _queue.CreateIfNotExist(); public override void Run() { while (true) { try { var msg = _queue.GetMessage(new TimeSpan(0, 5, 0)); if (msg != null) { EncodeIt(msg); PostIt(msg); _queue.DeleteMessage(msg); } else { Thread.Sleep(WaitTime); } } catch (StorageClientException exception) { BlobTrace.Write(exception.ToString()); Thread.Sleep(WaitTime); } } }

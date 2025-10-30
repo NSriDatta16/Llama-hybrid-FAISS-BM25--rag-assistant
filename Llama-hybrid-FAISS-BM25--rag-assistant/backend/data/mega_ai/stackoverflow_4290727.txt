@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4290727
+[parent_id]: 
+[tags]: 
+Initializing a large global constant object
+
+How do you use a file to initialize a global const object that is too large to be created in the stack? This is my attempt so far: // test.h #pragma once #include typedef boost::array bigLut_t; extern const bigLut_t constLut; // test.cpp #include #include #include "test.h" bigLut_t& initializeConstLut() { if( boost::filesystem::exists("my_binary_file") == false ) { std::ofstream outStream( "my_binary_file", ios::out | ios::binary ); bigLut_t* tempLut = new bigLut_t; for(int i = 0; i at(i) = i; } outStream.write( reinterpret_cast (tempLut), sizeof(bigLut_t) ); outStream.close(); delete tempLut; } // We can't write "bigLut_t lut;" because that would cause a stack overflow bigLut_t* lut = new bigLut_t; // lut gets never deallocated std::ifstream inStream( "my_binary_file", ios::in | ios::binary ); inStream.read( reinterpret_cast (lut), sizeof(bigLut_t) ); inStream.close(); return *lut; } const bigLut_t constLut = initializeConstLut(); AFAIK this works in a sense that constLut gets corretly initialized, but there's a memory leak since bigLut_t* lut gets never deallocated. I tried using a smart pointer for it, but that resulted in the values in constLut being quite random. I'm baffled by the lack of information I found by trying to google the solution.

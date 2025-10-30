@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1195320
+[parent_id]: 
+[tags]: 
+Avoiding repeated replacements in the C pre-processor
+
+I've been hacking on a program that itself creates simulation programs in C . The user specifies the top-level design, and this programs inserts small C-fragments and a helluvalot glue-code (a few thousand lines). It does local naming by #defines : #define x local_x #define vx local_vx /* user code that uses x, ex */ vx = x / 2 #undef vx #undef x This approx expands to the following: local_vx = local_x / 2 BUT if I use structs for the local_* -variables (optimize away having to pass 11 variables to every single function...): #define x local->position.x #define vx local->velocity.x vx = x / 2 #undef vx #undef x Which gets expanded to local->velocity.x = local->position.x And - here's the problem - the x in the velocity gets expanded again: local->velocity.local->position.x = local->position.x I can't put parenthesis around, as it is not allowed to assign to the variables ( (x) = 1 is illegal C , unfortunately...). Any hints? Update: The generated simulations generally weigh in around 15 to 20.000 LOC, and there are roughly ten years worth of simulations to be backwards compatible with. Alas, simply renaming anything is not simple at all... As there does not seem to be any easy way to get around this particular problem without some major re-engineering (I thought I'd missed some particularities of the C pre-processor), I've chosen to take a step back and see what other options I have.

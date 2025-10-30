@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3263456
+[parent_id]: 3263371
+[tags]: 
+The foreign key in your schema definition is the UID column in the Company table. This refers to a single row in the Users table. You can ensure that an invalid UID is never inserted into the Company table by adding a foreign key constraint... ALTER TABLE COMPANY ADD FOREIGN KEY COMPANY_USER_FK (UID) REFERENCES USER(UID); and this will cause attempts to add a UID into the Company name that don't exist in the User table to fail. You can add extra features so that deleting a User from the User table deletes all the matching rows in the Company table, as follows... ALTER TABLE COMPANY ...etc... REFERENCES USER(UID) ON DELETE CASCADE; or you can prevent users from being deleted if rows for them exist in the company table by... ALTER TABLE COMPANY ...etc... REFERENCES USER(UID) ON DELETE RESTRICT; Although it doesn't apply to your schema, you could also cascade changes to the UID in the Users table by... ALTER TABLE COMPANY ...etc... REFERENCES USER(UID) ON UPDATE CASCADE; Note that all of this only works on MySQL if the storage engine is INNODB;

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3065264
+[parent_id]: 3065200
+[tags]: 
+The point of virtual functions is that once you have the right kind of object, you can call the right function without knowing which derived class this object is -- you just call the virtual function, and it does the right thing. You only need a dynamic_cast when you have a derived class that defines something different that's not present in the base class, and you need/want to take the extra something into account. For example: struct Base { virtual void do_something() {} }; struct Derived : Base { virtual void do_something() {} // override dosomething virtual void do_something_else() {} // add a new function }; Now, if you just want to call do_something() , a dynamic_cast is completely unnecessary. For example, you can have a collection of Base * , and just invoke do_something() on every one, without paying any attention to whether the object is really a Base or a Derived . When/if you have a Base * , and you want to invoke do_something_else() , then you can use a dynamic_cast to figure out whether the object itself is really a Derived so you can invoke that.

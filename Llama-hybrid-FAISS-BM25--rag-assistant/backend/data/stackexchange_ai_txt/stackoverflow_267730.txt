@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 267730
+[parent_id]: 267091
+[tags]: 
+I would recommend investigating something other than a flat layout. In my experience, databases have restrictions on column counts and row byte sizes. Your SQL may allow for 1000 columns to be defined. A SQL row cannot exceed the row byte limit. Each database implementation has a page size (4k / 8k), and a single row must fit within this data size. NULLs are typically freebies. This means that 1000 ints 1000 x 4 bytes will just fit within a 4k page size. If you are talking data with varchars, then the problem is worse. How many characters are in each column? How many columns can be filled in? If you have 10 characters on average, and your page size is 8k, then you lose the data with a SQL error. Laugh if you must, but this situation did occur with a particularly long winded typist in a flat datatable that I knew was pushing the limits.

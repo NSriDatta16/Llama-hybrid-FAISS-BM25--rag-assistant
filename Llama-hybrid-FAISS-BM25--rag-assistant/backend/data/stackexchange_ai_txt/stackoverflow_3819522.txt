@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3819522
+[parent_id]: 3736972
+[tags]: 
+I ended up doing this with some xlst that transformed the node to itself but ordered, here is the code // Create a reader for the existing control block var controlReader = controlBlock.CreateReader(); // Create the writer for the new control block XmlWriterSettings settings = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment, Indent = false, OmitXmlDeclaration = false }; StringBuilder sb = new StringBuilder(); var xw = XmlWriter.Create(sb, settings); // Load the style sheet from the assembly Stream transform = Assembly.GetExecutingAssembly().GetManifestResourceStream("ControlBlock.xslt"); XmlReader xr = XmlReader.Create(transform); // Load the style sheet into the XslCompiledTransform XslCompiledTransform xslt = new XslCompiledTransform(); xslt.Load(xr); // Execute the transform xslt.Transform(controlReader, xw); // Swap the old control element for the new one controlBlock.ReplaceWith(XElement.Parse(sb.ToString()));

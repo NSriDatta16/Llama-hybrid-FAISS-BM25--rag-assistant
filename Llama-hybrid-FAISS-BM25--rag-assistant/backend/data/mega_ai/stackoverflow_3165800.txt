@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3165800
+[parent_id]: 
+[tags]: 
+Are there any problems with this browser-cache system?
+
+I have a app-type web site with a couple of long list pages (such as a list of companies grouped by country) that take a few seconds to build, but don't change very often. I use APC & Memcache to some extent, but I also thought "why have it hit the server at all" so I devised this: ob_start(); require_once '../bootstrap.inc.php'; request_router(); // MVC style system, all work starts here header("Expires: " . gmdate("D, d M Y H:i:s",time()+300) . " GMT"); // 5 minutes header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); header("Cache-Control: private"); header("Pragma: private"); echo ob_get_clean(); I just basically want to have it set so that when they go to the big list, it's built, but when they click into a link, then click another link to return to the list, it doesn't check to rebuild the list every time. Spot any flaws before I try to implement it? (FYI, I tried to do this with ExpiresActive in apache, but I couldn't get it to work; this seems easier to me, though, and in a place that makes it easier for me to control the Expires header)

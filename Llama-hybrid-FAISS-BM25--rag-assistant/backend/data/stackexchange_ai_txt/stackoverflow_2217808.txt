@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2217808
+[parent_id]: 
+[tags]: 
+Nhibernate: distinct results in second level Collection
+
+I have an object model like this: class EntityA { ... IList BList; ... } class EntityB { ... IList CList; } I have to fetch all the colelctions (Blist in EntityA and CList in EntityB), because if they all will be needed to make some operations, if i don't eager load them i will have the select n+1 problem. So the query was this: select a from EntityA a left join fetch a.BList b left join fetch b.CList c The fist problem i faced with this query, was the return of duplicates from the DB, i had EntityA duplicates, because of the left join fetch with BList. A quick read through the hibernate documentation and there were some solutions, first i tried the distinct keyword that supposelly wouldn't replicate the SQL distinct keyword except in some cases, maybe this was one of those cases because i had a SQL error saying that i cannot select distict text columns (column [Observations] in EntityA table). So i used one of the other solutions: query.SetResultTransformer(new DistinctRootEntityResultTransformer()); This worked fine. But the result of the operations were still not passing the tests. I checked further and i found out that now there were duplicates of EntityB, because of the left join fetch with CList. The question is, how can i use the distinct in a second level collection? I searched and i only find solutions for the root entity's direct child collection, but never for the second level child collections... Thank you for your time

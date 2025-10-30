@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1687736
+[parent_id]: 1687579
+[tags]: 
+You already show yourself changing the class by adding the "friend" line (which does nothing for you without the serialize function being inside the class). Without being able to change the class, you are stuck with more fragile solutions (here is one I had to do once, that I'm not proud of (but it does show the whole point of protected over private)) #include #include // class definition class NetElement { protected: int nelements; int ids; public: static NetElement* New(){return new NetElement;} virtual void Delete(){delete this;} protected: NetElement(){}; ~NetElement(){}; }; class NetElementS : public NetElement { friend class boost::serialization::access; template void serialize(Archive & ar, const unsigned int version) { ar & nelements & ids; } }; int main(void) { NetElement *el = NetElement::New(); std::ofstream os("Pipe1.txt"); boost::archive::text_oarchive oa(os); oa & *reinterpret_cast (el); }

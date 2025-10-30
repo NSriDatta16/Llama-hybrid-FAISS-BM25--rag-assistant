@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4857399
+[parent_id]: 4857225
+[tags]: 
+The answer to this question is, unless you've explicitly set the value that what() should return from std::exception then you don't want to call it. Fact of the matter is that it's going to behave in ways you might not expect and dissimilarly on different implementations. Note that the standard provides no functionality in std::exception to provide the string value to begin with. Those implementations that actually provide useful information from calling std::exception::what() add additional, non-standard functionality to the class. For example, MSVC has an exception(char const* const&) constructor. This isn't in the standard and you probably don't want to depend upon it. Your better bet is to never call std::exception::what from a derived class. Sure, do upcalls in your custom versions that subclass things UNDER std::exception, but don't do it in direct derivatives. If you do insist on calling this function directly then you'd damn well better check for NULL because that's what you're probably going to get.

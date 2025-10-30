@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 526480
+[parent_id]: 
+[tags]: 
+Hyperparameter tuning of gradient boosting and neural network quantile regression
+
+I have am using Sklearns GradientBoostingRegressor for quantile regression as wells as a nonlinear neural network implemented in Keras. I do however not know how to find the hyperparameters. For the GradientBoostingRegressor a separate regression is fitted for each quantile. Do I find a new set of hyperparameters for every quantile or do I fit the same set of hyperparameters for every quantile? And for Keras how do I decide on the hyperparameters as the way I have implemented the model, it predicts all quantiles at the same time. Below is an example of my implementation in Keras: def quantile_loss_nn(y_true, y_pred): loss = 0 for q_i, q in enumerate(quantiles): e = y_true - y_pred[:, q_i:q_i+1] loss += K.mean(K.maximum(q*e, (q-1)*e)) return loss def nonlinear_M1(input_size, output_size, loss): inputs = Input(shape=(input_size,)) h = Dense(256, activation='relu')(inputs) h = Dense(256, activation='relu')(h) h = Dense(256, activation='relu')(h) h = Dense(256, activation='relu')(h) output = Dense(output_size)(h) model = Model(inputs=inputs, outputs=output) optimiser = RMSprop(lr=0.01, rho=0.9) model.compile(optimizer=optimiser, loss=loss, metrics=['mae']) return model model_nonlinear_M1 = nonlinear_M1(X_train1.shape[1], len(quantiles), quantile_loss_nn) epochs = 200 batch_size = 32 model_nonlinear_M1.fit(X_train1, y_train1, batch_size=batch_size, epochs=epochs, verbose=0)

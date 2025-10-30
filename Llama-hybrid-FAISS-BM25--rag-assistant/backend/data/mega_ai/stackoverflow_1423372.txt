@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1423372
+[parent_id]: 
+[tags]: 
+Using SQL Server Agent to Run a Remote SSIS Package Programmatically on the Server
+
+Based on the example here from MSDN , how could one provide SSIS package level variables if one were to invoke the package via "sp_start_job" procedure? Here is the example code from MSDN: Dim jobConnection As SqlConnection Dim jobCommand As SqlCommand Dim jobReturnValue As SqlParameter Dim jobParameter As SqlParameter Dim jobResult As Integer jobConnection = New SqlConnection("Data Source=(local);Initial Catalog=msdb;Integrated Security=SSPI") jobCommand = New SqlCommand("sp_start_job", jobConnection) jobCommand.CommandType = CommandType.StoredProcedure jobReturnValue = New SqlParameter("@RETURN_VALUE", SqlDbType.Int) jobReturnValue.Direction = ParameterDirection.ReturnValue jobCommand.Parameters.Add(jobReturnValue) jobParameter = New SqlParameter("@job_name", SqlDbType.VarChar) jobParameter.Direction = ParameterDirection.Input jobCommand.Parameters.Add(jobParameter) jobParameter.Value = "RunSSISPackage" jobConnection.Open() jobCommand.ExecuteNonQuery() jobResult = DirectCast(jobCommand.Parameters("@RETURN_VALUE").Value, Integer) jobConnection.Close() Select Case jobResult Case 0 Console.WriteLine("SQL Server Agent job, RunSISSPackage, started successfully.") Case Else Console.WriteLine("SQL Server Agent job, RunSISSPackage, failed to start.") End Select Console.Read() How can I supply values to the variables inside the SSIS package named "RunSSISPackage"?

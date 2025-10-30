@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3543740
+[parent_id]: 3543716
+[tags]: 
+Hibernate is not complaining about database uniqueness here, it's complaining that the current Session already contains an object with the same ID as a new object that you're trying to save. It won't permit this - Hibernate has a strict requirement that a given ID cannot be represented by two different objects in the scope of a single session. At some point, your application has save dor loaded an entity with that same ID, and that object is already "registered" with the session. It's hard to tell in this specific case which ID it's complaining about, since the exception text isn't clear. Try temporarily removing the cascade directives and see if it still happens, try to it narrow down. If necessary, you can force the session to "forget" about any existing objects for a given ID (using Session.evict() in the Hibernate API, or EntityManager.detach() in the JPA 2.0 API), but that's not a very elegant solution. To reiterate - this exception has nothing at all to do with the database constraints, it's about Hibernate protecting the consistency of its internal in-memory state.

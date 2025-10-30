@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2856882
+[parent_id]: 2856682
+[tags]: 
+Sometimes, the only way to acheive an end is to create a piece of SQL so ugly and heinous, that the alternative of doing multiple queries becomes attractive :-) I would just do one query to get a list of your friends then, for each friend, get the three most recent photos. Something like: friend_list = sqlexec "select user2_id from relations where user1_id = " + current_user_id photolist = [] for friend in friend_list: photolist += sqlexec "select user_id, id, date_uploaded from photos" + " where user_id = " + friend.get("user2_id") + " order by date_uploaded desc fetch first 3 rows only" # Now do something with photolist You don't have to do it as one query any more than you're limited to one regular expression for matching a heinous pattern. Sure it'd be nice to be "clever" but it's rarely necessary. I prefer a pragmatic approach.

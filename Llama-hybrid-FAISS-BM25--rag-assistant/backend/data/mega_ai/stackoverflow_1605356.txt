@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1605356
+[parent_id]: 1605312
+[tags]: 
+Look closely at the line from = new char[stringLen+1]; It is the same as from = MyString(new char[stringLen+1]); so your constructor of MyString get uninitialized array of chars. Then you trying to get the length of the string, but strlen just looping through chars of the string looking for 0 char. As we don't know what content uninitialized array of chars might have, we don't know what length strlen could return. It can even go further than array boundary and crash your program with segfault. But I can say for sure, after that there's not enough space in from.stringPtr to hold the string you want to copy in it. So, use from.stringPtr = new char[stringLen+1]; or better from = MyString(*this); since you have copy constructor already.

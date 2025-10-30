@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1786118
+[parent_id]: 1785801
+[tags]: 
+To get around the unavailability of self in PHP4, you should change your getInstance method to the following: class Conf { function Conf( $filename ) { $this->__construct( $filename ); } function getInstance( $filename ) { static $instance = null; if ( $instance == null ) { $class = __CLASS__; $instance = new $class( $filename ); } return $instance; } // Don't forget to block cloning function __clone() { trigger_error("Cannot clone a singleton", E_USER_WARNING); } } Edit: Because __CLASS__ will always be the class name of the class in which the function was defined, to support inheritance, you must redefine the getInstance method in every child class. class Conf2 extends Conf { function newMethod() { echo "Do something"; } function getInstance( $filename ) { static $instance = null; if ( $instance == null ) { $instance = new self($filename); } return $instance; } } It's a drag, yes, but if you use the above method, you can just copy and paste. I believe this is fixed in PHP 5.3 with late static binding , but I haven't installed it yet to confirm.

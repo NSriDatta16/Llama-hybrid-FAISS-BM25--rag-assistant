@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4104204
+[parent_id]: 4091166
+[tags]: 
+The reason is in fact the is_virtual_base_of check from boost type traits. This check-construct will generate warning C4250 if the check is successful, as can be seen by this example: ... struct base { virtual void mf() { }; }; struct derived_normal : public base { virtual void mf() { }; }; struct derived_virt : virtual public base { virtual void mf() { }; }; int main() { using namespace std; cout ::value reports: "; // The following line DOES NOT cause C4250 cout ::value reports: "; // The following line causes C4250: cout ::value FWIW, the usage of this type-traits tool in boost serialization goes like this: macro BOOST_EXPORT_CLASS -> macro BOOST_CLASS_EXPORT_IMPLEMENT -> struct guid_initializer (in export.hpp) -> (...) void_cast.hpp / void_cast_register -> is_virtual_base_of is used here As far as I can tell the warning is completely harmless in this case and can be prevented by wrapping the header in: #pragma warning( push ) #pragma warning( disable : 4250 ) // C4250 - 'class1' : inherits 'class2::member' via dominance #include ... #pragma warning( pop ) // C4250

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2915110
+[parent_id]: 2914904
+[tags]: 
+Toplink requires a load-time weaving support. I guess in Geronimo it can be configured by using META-INF/context.xml and putting instrumentation jar into lib folder, as in Tomcat, see here . EDIT: So, your problem is that Toplink requires class transformation support. When Toplink's entity manager is configured in Spring's configuration ( LocalContainerEntityManagerFactoryBean ), it tries to use Spring's support for class transformation ( ), but Spring doesn't have a built-in support for class transformation in Geronimo. So, you have 3 options: Use JPA implementation which doesn't require class transformation instead of Toplink (for example, Hibernate) Don't configure Toplink's entity manager in Spring configuration file. Configure it using Geronimo configuration (I don't know how) and obtain it using JNDI. For maniacs: Implement a custom LoadTimeWeaver for Geronimo (I guess, it will use TransformerAgent.addTransformer() ).

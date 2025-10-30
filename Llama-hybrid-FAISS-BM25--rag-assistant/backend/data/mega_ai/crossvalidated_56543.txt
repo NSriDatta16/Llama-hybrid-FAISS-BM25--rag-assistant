@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 56543
+[parent_id]: 
+[tags]: 
+PyMC: how can I define a function of two stochastic variables, with no closed-form distribution?
+
+I'm learning PyMC and basically I have a random variable $Z = X + Y$ where (say) $X \sim \mathrm{Normal}(\theta_X)$ and $Y \sim \mathrm{Lognormal}(\theta_Y)$ and $Z$ has no simple closed-form distribution. Now I have observations $z_i,\,i=1...N$ of $Z$ and I want to infer $\theta_X$ and $\theta_Y$. What's the most straight-forward way of doing this with PyMC? If I had the distribution of $Z$ available, then I think I could do: Z = DistZ('Z', param_x=theta_x, param_y=theta_y, value=z, observed=True) and then do inference, but I don't know DistZ . It's also easy to define the sum as: @pymc.deterministic def z_sum(x=Y, Y=y): return x + y but then I don't think I can define an observed deterministic function. I think I could do something like: @pymc.stochastic(observed=True) def z_sum(value=z, x=X, y=Y): def logp(z, x): # return log-likelihood but I'm not clear on the details. I do know the joint likelihood $\mathcal{L}(z, x)$, but I was hoping it wouldn't be needed. I was able to do this with a custom Gibbs sampler (using the joint likelihood), but I'm looking for a more "elegant" solution with PyMC. EDIT : found a similar question in the BUGS FAQ that says functions of random variables aren't supported. Not sure if that applies to PyMC, and what the standard approach is.

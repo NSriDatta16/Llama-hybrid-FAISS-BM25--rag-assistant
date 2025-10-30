@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5306533
+[parent_id]: 5305414
+[tags]: 
+While it is true that a DateTime itself can't be null, if you use a Nullable (or DateTime? if you prefer) instead then you are able to set that date to null (and the Storage Client Library understands what to do with Nullable<> types. This may not make sense for the other places you're using this object though. If using a nullable type doesn't make sense for that you could try this alternate idea (I'm not sure how sensible this is, but I think it will do what you want). Create a new class TableEntityJustLastAccessed which has the usual PartitionKey / RowKey / Timestamp properties plus just the DateLastAccessedUtc property that you want to update. In your update code, rather than creating a TableEntity , create a TableEntityJustLastAccessed with the same PartitionKey / RowKey and save that. Because by default the storage client library merges changes rather than override the whole object, it should update just the property you care about.

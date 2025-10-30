@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4556463
+[parent_id]: 4556401
+[tags]: 
+You can't reliably interrupt a thread without cooperation from that thread. As an ugly hack (not for practical use!), you can substitute System.out and make println throw an exception when interruption condition is met and the thread in question is a current thread (i.e. use it as a hook to provide some cooperation in context of the target thread). EDIT: Even more elegant option - you can make println interruptable by throwing an exception when Thread.interrupted() is true , so that the thread can be interrupted by calling thread.interrupt() . Semantic of this method would be very close to the ordinary interruptable methods (i.e. methods that throw InterruptedException ), although you can't use InterruptedException since it's a checked exception and need to use unchecked RuntimeException instead: System.setOut(new PrintStream(System.out) { public void println(String s) { if (Thread.interrupted()) throw new RuntimeException(); super.println(s); } });

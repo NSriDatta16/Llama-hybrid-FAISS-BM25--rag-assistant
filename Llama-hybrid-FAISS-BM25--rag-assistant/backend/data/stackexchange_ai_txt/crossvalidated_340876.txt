@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 340876
+[parent_id]: 
+[tags]: 
+My loss is either 0.0 or randomly very high - Tensorflow
+
+I am making a CNN with 6 classes. The 8400 training samples are batched into 84 batches of size 100. I run the model and print out the loss after every batch, the loss is always either 0.0 or some arbitrary number in scientific notation such as 1.74463e+06. Is this normal or am i doing something terrible wrong? def train_network(x): pred = convolutional_network(x) loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels = y, logits = pred)) train_op = tf.train.AdamOptimizer(learning_rate=0.01).minimize(loss) with tf.Session() as sess: sess.run(tf.global_variables_initializer()) # Initialize all the variables saver = tf.train.Saver() print("RUNNING SESSION...") for epoch in range(num_epochs): train_batch_x = [] train_batch_y = [] for i in range(0, 84): train_batch_x = BATCHES_IMAGES[i] train_batch_y = BATCHES_LABELS[i] print('Starting feed_dict on batch ', i) _, loss_value = sess.run([train_op, loss], feed_dict={x: train_batch_x, y: train_batch_y}) print('Finished batch --- loss: ', loss_value) print('Epoch : ', epoch+1, ' of ', num_epochs, ' - Loss: ', loss_value) correct = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1)) acc = tf.reduce_mean(tf.cast(correct, 'float')) print('Accuracy:', acc) save_path = saver.save(sess, MODEL_PATH) print("Model saved in file: " , save_path) ``` When printing the output i get something like this:

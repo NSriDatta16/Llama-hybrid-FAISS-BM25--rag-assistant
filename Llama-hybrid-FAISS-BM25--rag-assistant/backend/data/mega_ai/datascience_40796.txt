@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 40796
+[parent_id]: 
+[tags]: 
+Logistic regression from scratch in Python
+
+Here is my logisticRegression class I developed to do gradient descent. There is this one line I marked as problematic import numpy as np class logisticRegression(): """Logistic Regression classifier Parameters ---------- alpha : float Learning rate(between 0.0 and 1.0). iters : int Number of iterations. Attributes ---------- w_ : 1d-array Weights after fitting. """ def __init__(self, alpha = 0.001, iters = 100000): self.alpha = alpha self.iters = iters def fit(self, X, y): """Fit training data Parameters ---------- X : array-like, shape = [n_samples, n_features] Training vectors y : array-like, shape = [n_samples] Target values Returns ------- self : object""" # Initialize weight self.w_ = np.zeros(1 + X.shape[1]) self.errors_ = [] m = X.shape[0] x0 = np.ones(X.shape[0]) for _ in range(self.iters): h = self.hyp(X) gradient = (X.T)@(h - y)/m self.w_[1:] -= self.alpha*gradient self.w_[0] -= self.alpha*x0@(h - y)/m # This line is problematic !!! return self def sigmoid(self, z): """Compute sigmoid""" return 1/(1+ np.exp(-z)) def hyp(self, X): """Compute hypothesis (probability)""" return self.sigmoid(self.w_[0] + X@self.w_[1:] ) I got wrong result. But if I rewrite this line as: self.w_[0] -= x0@(h - y)/m # Remove the learning rate term Then I got correct result. But this doesn't seem right. Did I oversee something here?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3911505
+[parent_id]: 3908577
+[tags]: 
+CherryPy does not cache GET requests by default; you have to explicitly turn on the caching tool as described in that documentation. To answer your first question, yes, it's perfectly valid to store things like "pageoutput" that do not change between calls. However, there are a couple of caveats: HTTP caching is far better than what you can write on your own. So prefer that for whole responses. Therefore, use ad-hoc caching for parts of responses, such as templates and banners and such. Be very careful to design your storage to be safely concurrent. See effbot's writeup on that subject for a start. In general, try to generate and store such values at application startup if feasible, instead of during a request; if you write such data in the main thread only at startup, it should be safely readable by multiple threads for each request. If you need such data to change as the application state progresses, you probably want to use a database or some other mechanism that has had hundreds of man-years of work to make it safely concurrent.

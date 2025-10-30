@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3368064
+[parent_id]: 3366490
+[tags]: 
+You're getting an error because you're trying to request a second instance of a PDFWriter when you already have one. The second PdfWriter.GetInstance(pdfDoc, new FileStream("TestPDF.pdf", FileMode.OpenOrCreate)); is not needed. I made a small edit to your code and this now seems to work Document pdfDoc = new Document(); PdfWriter writer = PdfWriter.GetInstance(pdfDoc, new FileStream("TestPDF.pdf", FileMode.OpenOrCreate)); pdfDoc.Open(); pdfDoc.Add(new Paragraph("Some Text added")); PdfContentByte cb = writer.DirectContent; cb.MoveTo(pdfDoc.PageSize.Width / 2, pdfDoc.PageSize.Height / 2); cb.LineTo(pdfDoc.PageSize.Width / 2, pdfDoc.PageSize.Height); cb.Stroke(); pdfDoc.Close(); Console.WriteLine("The file was created."); Console.ReadLine();

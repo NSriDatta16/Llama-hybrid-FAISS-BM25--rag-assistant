@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4943622
+[parent_id]: 
+[tags]: 
+Returning unique results in a joined select
+
+I need help with a query that check the MSDB-database for SQL Server Agent Job results. My query is as follows: SELECT CONVERT(VARCHAR(30), Serverproperty('ServerName')), a.run_status, b.run_requested_date, c.name, CASE c.enabled WHEN 1 THEN 'Enabled' ELSE 'Disabled' END, CONVERT(VARCHAR(10), CONVERT(DATETIME, Rtrim(19000101))+(a.run_duration * 9 + a.run_duration % 10000 * 6 + a.run_duration % 100 * 10) / 216e4, 108), b.next_scheduled_run_date FROM (msdb.dbo.sysjobhistory a LEFT JOIN msdb.dbo.sysjobactivity b ON b.job_history_id = a.instance_id) JOIN msdb.dbo.sysjobs c ON b.job_id = c.job_id ORDER BY c.name So far so good, but running it returns several results for the same jobs depending on how many times they have ran up until the query. This is no good. I want only one result per job, and only the latest. If I add the the string: WHERE b.session_id=(SELECT MAX(session_id) from msdb.dbo.sysjobactivity) It works better, but then it only lists the latest jobs depending on the session_id parameter. This will exclude jobs that haven't run for a while and is not good either. Can someone help me with this? I have tried with DISTINCT and/or GROUP BY but can't get it to work.

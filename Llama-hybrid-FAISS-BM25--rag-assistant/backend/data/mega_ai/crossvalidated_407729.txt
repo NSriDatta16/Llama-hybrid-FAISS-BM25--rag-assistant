@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 407729
+[parent_id]: 
+[tags]: 
+MCMC algorithm going wrong
+
+Given this integral \begin{equation} \int_0^\infty \chi_{[1,2]}(x)\Gamma(C,x)\left|\cos(R x)\right| \, dx \end{equation} where $\chi_{[1,2]}=\begin{cases}1, & x \in [1,2] \\ 0, & x\not \in [1,2]\end{cases}$ I need to estimate its value using MCMC with Metropolis algorithm and acceptance. I wrote the sampler as it follows: def sampler(N): step=1 old=1.5 i=0 points=[] while i np.random.uniform(): old=new i+=1 points.append(old) return points sampler(N) generates $N$ points by using the Metropolis Algorithm with N(0,step) as kernel and starting in 1.5. The function func(x) evaluates $\chi_{[1,2]}(x)\Gamma(C,x)\left|\cos(R x) \right|$ . After generating $N$ points $x_0,x_1,\ldots,x_N$ the estimative is \begin{equation} \frac{1}{N}\sum_{i=1}^N \chi_{[1,2]}(x_i)\Gamma(C,x_i) \left|\cos(R x_i)\right| \end{equation} The problem is that doing like that I find approximately 0.28 while I need to find 0.26 My algorithm is wrong? Or there is something that I'm not seeing? EDIT: Implementation of func and the Monte Carlo algorithm mc def func(x): c=1.398031095 d=1.9298378 if x =1: return gamma.pdf(c,x)*abs(np.cos(d*x)) return 0 def mc(N): points=sampler(N) i=0 g=0 while i

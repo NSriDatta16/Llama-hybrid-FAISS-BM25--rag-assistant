@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2514406
+[parent_id]: 2514245
+[tags]: 
+The memory of the string will be part of your struct, even though the array type is promoted to a pointer in many cases, the type stored in the struct is the array, not the pointer. typedef struct { block_number_t inode; filename_t filename; //char[SOME_SIZE] some_other_field_t other_field; } fs_directory_table_item_t; So your read statement: read(disk_fd, directory_table_item, sizeof(fs_directory_table_item_t)); will work and bring in the data. When reading and writing memory blocks you should take padding into consideration. Padding is extra, empty fields added by the compiler to align data on relevant boundaries; e.g. a 32-byte value should often start at 4-byte boundary in the memory to allow the processor to read it efficiently. This is normally nothing to be concerned about, but when persisting the struct to disk it can pose problems if you recompile the code with another setting. There are often some kind of #pragma directives that disables padding, I think it is named #pragma pack in MS Visual c++.

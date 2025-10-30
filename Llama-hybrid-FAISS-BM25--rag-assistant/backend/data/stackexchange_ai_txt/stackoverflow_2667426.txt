@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2667426
+[parent_id]: 2662655
+[tags]: 
+I use this to kill the scratch buffer and open a new buffer in text mode called Untitled. Found it on a newsgroup and modified it slightly. (defun my-close-scratch () (kill-buffer "*scratch*") (if (not (delq nil (mapcar 'buffer-file-name (buffer-list)))) (new-untitled-buffer) )) (defun my-emacs-startup-hook () (my-close-scratch)) (add-hook 'emacs-startup-hook 'my-emacs-startup-hook) (defun new-untitled-buffer () "Opens a new empty buffer." (interactive) (let ((buf (generate-new-buffer "Untitled"))) (switch-to-buffer buf) (normal-mode) (setq buffer-offer-save t)) (add-hook 'kill-buffer-query-functions 'ask-to-save-modified nil t) ) To close Untitled when opening files from filemanager when emacs is not open I use this: (defun my-close-untitled () (if (get-buffer "Untitled") (kill-buffers-by-name "Untitled"))) (add-hook 'find-file-hook 'my-close-untitled)

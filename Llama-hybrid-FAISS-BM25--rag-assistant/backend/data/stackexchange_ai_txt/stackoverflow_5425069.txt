@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5425069
+[parent_id]: 
+[tags]: 
+Tried to call an unmanaged DLL, but it always returns junk values. Please help!
+
+Could someone please help me figure out what is wrong with the following code snippet. I tried to call an old DLL and have spent about 3 days but couldn't find why my returned array and the string is always junk. Unmanaged Codes: typedef struct { double a; double b; }UnmanagedStruct, far *lpUnmagedStruct; //.h file: __declspec( dllexport ) double far pascal Process(lpUnmagedStruct lpStruct, int size, char far szMessage[]); //.cpp extern double far pascal Process(lpUnmagedStruct lpStruct, int size, char far szMessage[]) { //Please pay attention here. It's being seen as a pointer to an array lpStruct[0] = ... lpStruct[2] = ... _fstrcpy (szMsg, "Welcome"); } And here's my codes in the .NET: [StructLayout(LayoutKind.Sequential)] public struct ManagedStruct { public double a; public double b; } [DllImport("MyDll.dll", EntryPoint="Process", CharSet = CharSet.Ansi)] public static extern double Process([In, Out]ManagedStruct[] myStruct, int size, string message); //Implementation ManagedStruct[] arrayOfStruct = new ManagedStruct[3]; string message; //Assign values to arrayOfStruct //Call interop Process(arrayOfStruct, 3, message);

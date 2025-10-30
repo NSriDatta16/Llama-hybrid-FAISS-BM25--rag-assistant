@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2840188
+[parent_id]: 2840116
+[tags]: 
+JSP has no responsibility here. Just transform the XML in servlet using XSL and write its result directly to the OutputStream of the response. StreamSource xml = new StreamSource(new URL("http://external.com/file.xml").openStream()); StreamSource xsl = new StreamSource(new File("/path/to/file.xsl")); StreamResult out = new StreamResult(response.getOutputStream()); try { Transformer transformer = TransformerFactory.newInstance().newTransformer(xsl); transformer.transform(xml, out); } catch (TransformerException e) { throw new ServletException("Transforming XML failed.", e); } Don't forget to set the Content-Type using HttpServletResponse#setContentType() , else the webbrowser may handle it as plaintext.

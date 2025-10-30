@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 229890
+[parent_id]: 
+[tags]: 
+Class design for serialization - ideas or patterns?
+
+Let me begin with an illustrative example (assume the implementation is in a statically typed language such as Java or C#). Assume that you are building a content management system (CMS) or something similar. The data is hierarchically organised into Folder s. Each folder has a collection of children; a child may be a Page or a Folder . All items are stored within a root folder. No cycles are allowed. We have an acyclic graph. The system will have a remote API and instances of Folder and Page must be serialized / de-serialized across the network. With a typical implementation of folder, in which a folder's children are a List , serialization of the root node would send the entire graph. This is unacceptable for obvious reasons. I am interested to hear people have solved this problem in the past. I have two potential suggestions: Navigation by query : Change the domain model so that the folder class contains only a list of IDs for each child. To access a child we must query for it. Serialisation is now trivial since the graph ends at a well defined point. The major downside is that we lose type safety - the ID could be for something other than a folder/child. Stop and re-attach : During serialization stop whenever we detect a reference to a folder or page, send the ID instead. When de-serializing we must then look up the corresponding object for each ID and re-attach it at the relevant position in the nascent object.

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 611578
+[parent_id]: 
+[tags]: 
+Large values in the inverse of a Hessian
+
+I'm implementing Newton's method for a simple logistic regression model but I keep getting very large values for the inverse of the Hessian matrix. I am using the standard formulas found in books... I'm pasting a working example: import numpy as np from math import log, exp obs_x = np.array([0, 0, 0, 0.1, 0.1, 0.3, 0.3, 0.9, 0.9, 0.9]) obs_y = np.array([0, 0, 1, 0, 1, 1, 1, 0, 1, 1]) def g(b): negative_loglik = 0.0 for i in range(len(obs_x)): val = b[0] + b[1] * obs_x[i] negative_loglik += log(1 + exp(val)) - val * obs_y[i] return negative_loglik def grad(b): gradient = np.array([0.0, 0.0]) for i in range(len(obs_x)): val = b[0] + b[1] * obs_x[i] val = 1 / (1 + exp(-val)) - obs_y[i] gradient[0] += val gradient[1] += val * obs_x[i] return gradient def hess(b): hessian = np.array([[0.0, 0.0], [0.0, 0.0]]) for i in range(len(obs_x)): val = b[0] + b[1] * obs_x[i] val = 1 / (1 + exp(-val)) val = val * (1 - val) hessian[0, 0] += val hessian[0, 1] += val * obs_x[i] hessian[1, 0] += val * obs_x[i] hessian[1, 1] += val * obs_x[i] * obs_x[i] return hessian init_b = np.array([-7, -7]) print("Negative log likelihood:", g(init_b)) print("Gradient:", grad(init_b)) print("Hessian:", hess(init_b)) print("Inverse of Hessian:", np.linalg.inv(hess(init_b))) Can someone help me?

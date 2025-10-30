@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4650236
+[parent_id]: 
+[tags]: 
+How to create a DSL in Elisp
+
+I want to create a DSL in Elisp looking something like this: (install ;; do install ) (uninstall ;; do uninstall ) However, since Elisp have a global namespace, this is not a good idea. And prefixing the functions like this, is so darn ugly. (package-install ;; do install ) (package-uninstall ;; do uninstall ) So I thought as a compromise all commands could be wrapped in a commands call like this: (commands (install ;; do install ) (uninstall ;; do uninstall ) ;; ... ) But since I don't want install and uninstall in the global namespace, I somehow have to in the commands macro, replace all occurrences of the commands with maybe for example the prefix names, like this: (defmacro commands (&rest body) (mapcar (lambda (exp) (setcar exp (intern (concat "package-" (symbol-name (car exp))))) (setcdr exp (list (cons 'progn (cdr exp))))) body) `(progn ,@body)) (commands (install ;; do install ) (uninstall ;; do uninstall ) ;; ... ) This seems like such a hack. Plus it will not work if there are any nested commands. Is there any good solution for this or is hack the way to go? Thanks!

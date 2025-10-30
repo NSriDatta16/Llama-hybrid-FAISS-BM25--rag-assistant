@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5759220
+[parent_id]: 5759063
+[tags]: 
+That's a good question. Even if you don't need to use a database, you can still take an OOP / MVC approach to organise your code and wrap your data, logic and behaviour in models. Code organisation and encapsulation within model objects is still useful & important! In Rails 3, you can make non-persisting models by including just some of the ActiveModel modules that ActiveRecord contains. For example: # This class exists as a fairly simple DTO that is not expected to be persisted, but # it does have validation, attributes & a hash constructor, just like ActiveRecord models class MyProduct include ActiveModel::Conversion include ActiveModel::Naming include ActiveModel::Validations attr_accessor :title, :quantity validates :title, :quantity, :presence => true validates :quantity, :numericality => {:greater_than_or_equal_to => 1} def initialize(attributes = {}) attributes.each do |name, value| send("#{name}=", value) end end def persisted? false end end

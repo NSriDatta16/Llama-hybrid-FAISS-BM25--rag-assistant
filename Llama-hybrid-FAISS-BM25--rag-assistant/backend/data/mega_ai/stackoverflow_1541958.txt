@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1541958
+[parent_id]: 1541682
+[tags]: 
+Here's how I'd wrap your routines to get what you're after. Note: I did change the routines to simply princ the strings as opposed to inserting them in a buffer. #!/usr/local/bin/emacs --script (require 'cl) (defun gen-row (lst) (mapcar (lambda (elm) (princ (concat " " elm " "))) lst)) (defun parse-csv-line (txt) (princ "\n \n") (gen-row (split-string txt ",")) (princ "\n \n")) ; (parse-csv-line "this,is,a test") (defun run-it (&optional argv) (with-temp-buffer (if argv (find-file (car argv)) (condition-case nil (let ((line (read-from-minibuffer ""))) (while line (insert line) (insert "\n") (setq line (read-from-minibuffer "")))) (error nil))) ;; the current buffer has the file contents (or stdin contents) ;; now process each line (goto-char (point-min)) (while ( If you're going to do more involved processing of the tables, it might be easier to manipulate the input as lists to get what you want and then use the xmlgen package to generate all the HTML tags.

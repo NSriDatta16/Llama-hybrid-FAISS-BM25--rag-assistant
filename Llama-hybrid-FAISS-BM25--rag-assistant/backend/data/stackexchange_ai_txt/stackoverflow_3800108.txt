@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3800108
+[parent_id]: 
+[tags]: 
+Possible to implement journaling with a single fsync per commit?
+
+Let's say you're building a journaling/write-ahead-logging storage system. Can you simply implement this by (for each transaction) appending the data (with write(2)), appending a commit marker, and then fsync-ing? The scenario to consider is if you do a large set of writes to this log then fsync it, and there's a failure during the fsync . Are the inode direct/indirect block pointers flushed only after all data blocks are flushed, or are there no guarantees that blocks are being flushed in order? If the latter, then during recovery, if you see a commit marker at the end of the file, you can't trust that the data between it and the previous commit marker is meaningful. Thus you have to rely on another mechanism (involving at least another fsync) to determine what extent of the log file is consistent (e.g., writing/fsyncing the data, then writing/fsyncing the commit marker). If it makes a difference, mainly wondering about ext3/ext4 as the context.

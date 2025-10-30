@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2791775
+[parent_id]: 
+[tags]: 
+Need help optimizing a NHibernate criteria query that uses Restrictions.In(..)
+
+I'm trying to figure out if there's a way I can do the following strictly using Criteria and DetachedCriteria via a subquery or some other way that is more optimal. NameGuidDto is nothing more than a lightweight object that has string and Guid properties. public IList GetByManager(Employee manager) { // First, grab all of the Customers where the employee is a backup manager. // Access customers that are primarily managed via manager.ManagedCustomers. // I need this list to pass to Restrictions.In(..) below, but can I do it better? Guid[] customerIds = new Guid[manager.BackedCustomers.Count]; int count = 0; foreach (Customer customer in manager.BackedCustomers) { customerIds[count++] = customer.Id; } ICriteria criteria = Session.CreateCriteria(typeof(Customer)) .Add(Restrictions.Disjunction() .Add(Restrictions.Eq("Manager", manager)) .Add(Restrictions.In("Id", customerIds))) .SetProjection(Projections.ProjectionList() .Add(Projections.Property("Name"), "Name") .Add(Projections.Property("Id"), "Guid")) // Transform results to NameGuidDto criteria.SetResultTransformer(Transformers.AliasToBean(typeof(NameGuidDto))); return criteria.List (); }

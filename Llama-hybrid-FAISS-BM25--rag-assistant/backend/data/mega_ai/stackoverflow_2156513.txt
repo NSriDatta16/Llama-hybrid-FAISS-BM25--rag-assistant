@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2156513
+[parent_id]: 1633397
+[tags]: 
+Here's the code lifted straight from my app. You should add these methods (and a boolean _cancelTouches member) to a class you derive from UITableViewCell. -(void) tapNHoldFired { self->_cancelTouches = YES; // DO WHATEVER YOU LIKE HERE!!! } -(void) cancelTapNHold { [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(tapNHoldFired) object:nil]; } - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { self->_cancelTouches = NO; [super touchesBegan:touches withEvent:event]; [self performSelector:@selector(tapNHoldFired) withObject:nil afterDelay:.7]; } - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event { [self cancelTapNHold]; if (self->_cancelTouches) return; [super touchesEnded:touches withEvent:event]; } - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{ [self cancelTapNHold]; [super touchesMoved:touches withEvent:event]; } - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event { [self cancelTapNHold]; [super touchesCancelled:touches withEvent:event]; }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 562535
+[parent_id]: 562278
+[tags]: 
+The file is a real file, but the cgi.FieldStorage unlinked it as soon as it was created so that it would exist only as long as you keep it open, and no longer has a real path on the file system. You can, however, change this... You can extend the cgi.FieldStorage and replace the make_file method to place the file wherever you want: import os import cgi class MyFieldStorage(cgi.FieldStorage): def make_file(self, binary=None): return open(os.path.join('/tmp', self.filename), 'wb') You must also keep in mind that the FieldStorage object only creates a real file if it recieves more than 1000B (otherwise it is a cStringIO.StringIO ) EDIT : The cgi module actually makes the file with the tempfile module, so check that out if you want lots of gooey details.

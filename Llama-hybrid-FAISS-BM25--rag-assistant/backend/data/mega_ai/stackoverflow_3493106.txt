@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3493106
+[parent_id]: 
+[tags]: 
+FluentNhibernate and References
+
+I was trying to change a convention so that my IDs follow this simple rule: ProductCode , CustomerCode , OrderCode etc etc. I've found a simple way to do that adding a convention: public class PrimaryKeyNameConvention : IIdConvention { public void Apply(FluentNHibernate.Conventions.Instances.IIdentityInstance instance) { instance.Column(instance.EntityType.Name + "Code"); } } Now I've got what I wanted but it seems that FluentNhibernate refuses to apply the same rule with column referencing my primary keys. EX: my table Customer will have a PK called CustomerCode but my table Order will have a reference column called Customer_Id . I've tried different ways to rename the column Customer_Id in CustomerCode (table Order ) but it seems that nothing works properly. The only solution which seems to work is adding a convention like this: public class ReferenceConvention : IReferenceConvention { public void Apply(FluentNHibernate.Conventions.Instances.IManyToOneInstance instance) { instance.Column(instance.Property.PropertyType.Name + "Code"); } } but now FluentNhibernate creates two columns which reference my primary key: CostumerCode and Customer_Id . I can't figure out what I am doing wrong. Any help would be apreciated. Regards, Alberto

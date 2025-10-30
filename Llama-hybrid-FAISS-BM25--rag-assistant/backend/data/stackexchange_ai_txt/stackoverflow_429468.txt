@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 429468
+[parent_id]: 
+[tags]: 
+Schema design for when users can define fields
+
+Greetings stackers, I'm trying to come up with the best database schema for an application that lets users create surveys and present them to the public. There are a bunch of "standard" demographic fields that most surveys (but not all) will include, like First Name, Last Name, etc. And of course users can create an unlimited number of "custom" questions. The first thing I thought of is something like this: Survey ID SurveyName SurveyQuestions SurveyID Question Responses SurveyID SubmitTime ResponseAnswers SurveyID Question Answer But that's going to suck every time I want to query data out. And it seems dangerously close to Inner Platform Effect An improvement would be to include as many fields as I can think of in advance in the responses table: Responses SurveyID SubmitTime FirstName LastName Birthdate [...] Then at least queries for data from these common columns is straightforward, and I can query, say, the average age of everyone who ever answered any survey where they gave their birthdate. But it seems like this will complicate the code a bit. Now to see which questions are asked in a survey I have to check which common response fields are enabled (using, I guess, a bitfield in Survey) AND what's in the SurveyQuestions table. And I have to worry about special cases, like if someone tries to create a "custom" question that duplicates a "common" question in the Responses table. Is this the best I can do? Am I missing something?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 321437
+[parent_id]: 321377
+[tags]: 
+In any case - make note that this is no longer going to be thread safe. You can often rely on an object to be thread safe if it only has const methods (or you use only the const methods after initialization). But if those const methods are only logically const, then you lose that benefit (unless of course you start locking it all the time). The only compiler optimization that could cause havok would be for the compiler to figure out that you're calling the method twice with the same arguments, and just reuse the first return value - which is fine as long as the function truly is logically const, and returns the same value for a given set of arguments (and object state). Even that optimization isn't valid if it's possible that anyone (including another thread) has had access to the object to call non-const methods on it. mutable was added to the language specifically for this case. C++ is a pragmatic language, and is happy to allow corner cases like this to exist for when they are needed.

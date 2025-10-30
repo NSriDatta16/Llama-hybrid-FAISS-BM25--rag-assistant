@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 815034
+[parent_id]: 815013
+[tags]: 
+Well, be careful with your backup because it will contain unencrypted user passwords :-) Assuming that the passwords are stored in a database, an easy solution would go something like this: 1) Make a secure backup of the entire table data 2) Create new column (PasswordEncrypted or similar name) 3) Use an UPDATE query to update each row's new column with an MD5 of the unencrypted password while using a 32 byte or larger salt. Pretty much every database system today has an MD5 function so you won't even have to leave your SQL prompt 4) Keep the plaintext column in the interim and update your application/scripts accordingly to work with the salted password. 5) Rename the plaintext old password column to temporarily take it out of play and test your application- if there are any problems then go back to step 4 and fix your mistakes. 6) When everything is working properly drop the plaintext password column 7) Encourage users to pick a new password now that you have some level of security in place to mitigate the effects of any previous attacks which may have been successful.

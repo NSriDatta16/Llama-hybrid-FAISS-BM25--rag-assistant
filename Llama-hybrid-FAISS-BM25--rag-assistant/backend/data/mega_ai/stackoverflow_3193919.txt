@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3193919
+[parent_id]: 
+[tags]: 
+modalPanel lazy rendering when displayed
+
+Motivation: I want to reduce the size of the page when is accessed, so I thought that lazy rendering on modalPanels would help. The idea is to render the modalPanel when the user clicks the link that displays it. I want to lazy render on rich:modalPanel when the link to display it is clicked. To achieve this I've found a way: Code of the modalPanel , wrapped inside a a4j:outputPanel Code of the backing bean (session scope): public boolean isRenderPanel() { return renderPanel; //default value is false; } public void setRenderPanel(boolean value){ this.renderPanel=value; } public setRenderFalse(){ this.setRenderPanel(false); } Code of the page where it is invoked: Problems: The modalPanel needs to be wrapped inside an a4j:outputPanel because reRendering directly the modalPanel does not work (I never understood why). After rendering it, an extra request is needed to set the render value to false (the bean is session scoped). Otherwise if we reload the page there would not be any lazy rendering because the value was set to true . The backing bean has to handle one property to keep the state for each modalPanel, although this property is set to true whenever the link is clicked and set to false when the request is finished. I've tried to keep the rendered state with JS variables but it does not seem to work (they are just read once the page is loaded and never again). Any more elegant way to do this?

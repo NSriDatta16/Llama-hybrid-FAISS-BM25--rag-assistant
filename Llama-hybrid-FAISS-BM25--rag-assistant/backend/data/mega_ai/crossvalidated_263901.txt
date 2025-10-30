@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 263901
+[parent_id]: 263887
+[tags]: 
+The zconfint() function takes its critical values from the standard normal distribution, instead of from the $t$ distribution (which is appropriate for small samples such as yours). The normal critical values tend to be smaller, which yields narrower confidence intervals, and explains why your intervals seem to succeed in covering less frequently. If you increase the size argument from 30 to something like 300 then you should see coverage closer to (but still slightly less than) 0.95. If you really want to construct a $t$ confidence interval, you should create a DescrStatsW object and call the tconfint_mean() function: import numpy as np from statsmodels.stats.weightstats import DescrStatsW pop = np.random.randn(1000000) true = 0. mean = pop.mean() nsim = 10000 for i in range(nsim): sample = np.random.choice(pop, size=30) d = DescrStatsW(sample) interval = d.tconfint_mean() if interval[0]

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1021554
+[parent_id]: 
+[tags]: 
+Why size of lucene index increased if i index the same data?
+
+I implemented Hibernate Search in my application i.e. based on Lucene. Whenever, i indexes the database, the size of the lucene indexes increase. But, the result of the query return same no of results every time. Why the size of lucene increases each time if i index the same data everytime? FullTextSession fullTextSession = Search.getFullTextSession(getSession()); org.hibernate.Transaction tx = fullTextSession.beginTransaction(); Criteria criteria = fullTextSession.createCriteria(getPersistentClass()) .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY) .setCacheMode(CacheMode.IGNORE) .setFetchSize(pageSize) .setFlushMode(FlushMode.MANUAL); int i = 0; List results = null; do { criteria = criteria.setFirstResult(i) .setMaxResults(pageSize); results = criteria.list(); for (ProdAttrAssociationVO entity : results) { fullTextSession.delete(entity); fullTextSession.index(entity); } // flush the index changes to disk so we don't hold until a commit if (i % batchSize == 0) { fullTextSession.flushToIndexes(); fullTextSession.clear(); } i += pageSize; } while (results.size() > 0); System.out.println("ProdAttrAssociation Indexing Completed"); tx.commit();

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3522802
+[parent_id]: 3522771
+[tags]: 
+If you just want to materialise it you can do ;WITH Temp1 AS ( SELECT SkillTargetID = Agent_Logout.SkillTargetID, LogoutDateTime = Agent_Logout.LogoutDateTime, LogonDate = DateAdd(s,-1 * Agent_Logout.LoginDuration,Agent_Logout.LogoutDateTime), ROW_NUMBER() OVER(PARTITION BY Agent_Logout.SkillTargetID ORDER BY Agent_Logout.LogoutDateTime ASC) RowVersion, LoginDuration = Agent_Logout.LoginDuration FROM Agent_Logout) SELECT * INTO #Temp1 FROM Temp1 SELECT AgentID = Base.SkillTargetID, LogonDate = Base.LogonDate, BaseLogout = Base.LogoutDateTime, BaseDuration = Base.LoginDuration, NextLogon = #Temp1.LogonDate, LogoutDuration = DateDiff(s,Base.LogoutDateTime,#Temp1.LogonDate) FROM #Temp1 Base LEFT JOIN #Temp1 ON Base.SkillTargetID = #Temp1.SkillTargetID AND Base.RowVersion = #Temp1.RowVersion-1 It don't really understand what you mean by hanging when running on your frontend program though. Are you using the query exactly as written or are you parameterising it in some way? Are you running it against the same data both times?

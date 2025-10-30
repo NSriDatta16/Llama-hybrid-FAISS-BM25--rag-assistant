@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 621273
+[parent_id]: 459316
+[tags]: 
+I observed problems with an oscillating WGAN-GP loss, too, although my oscillation started early on during training. Therefore, the reason might be different. However, as it may be worth a try, I resolved the problems by replacing the Gradient penalty through Lipschitz Penalty ( Source ) as described in this post . Basically, all that has to be done is to modify the last line of the gradient penalty computation. TensorFlow: if not liptschitz_penalty: # This is the standard gradient penalty gradient_penalty = tf.reduce_mean((slopes-1.)**2) else: # Standard gradient pental gradient_penalty = tf.reduce_mean(tf.clip_by_value(slopes - 1., 0., np.infty)**2) PyTorch: if not lipschitz_penalty: # WGAN-GP Gradient Penalty for comparison penalty = ((slopes - 1) ** 2).mean() else: # Lipschitz Penalty penalty = (torch.clamp(slopes - 1., min=0, max=None) ** 2).mean()

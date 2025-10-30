@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1931993
+[parent_id]: 1929973
+[tags]: 
+This is a very common point of confusion when iterating over Table object, When you iterate over a Table the type of item you get is not the data at the item, but an accessor to the table at the current row. So with [x for x in coords if x['agent'] == 1] you create a list of row accessors that all point to the "current" row of the table, the last row. But when you do [x["agent"] for x in coords if x['agent'] == 1] you use the accessor as you build the list. The solution to get all the data you need as you build the list, by using the accessor on each iteration. There are two options [x[:] for x in coords if x['agent'] == 1] or [x.fetch_all_fields() for x in coords if x['agent'] == 1] The former builds a list of tuples. The latter returns a NumPy void object. IIRC, the second is faster, but the former might make more sense for you purposes. Here's a good explanation from the PyTables developer. In future releases, printing a row accessor object may not simply show the data, but state that it's a row accessor object .

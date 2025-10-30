@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1086524
+[parent_id]: 1085383
+[tags]: 
+You want to get the WM_WINDOWPOSCHANGED message, add this to your Window class: internal enum WM { WINDOWPOSCHANGING = 0x0047, } [StructLayout(LayoutKind.Sequential)] internal struct WINDOWPOS { public IntPtr hwnd; public IntPtr hwndInsertAfter; public int x; public int y; public int cx; public int cy; public int flags; } private override void OnSourceInitialized(EventArgs ea) { HwndSource hwndSource = (HwndSource)HwndSource.FromVisual((Window)this); hwndSource.AddHook(DragHook); } private static IntPtr DragHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handeled) { switch ((WM)msg) { case WM.WINDOWPOSCHANGED: { WINDOWPOS pos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS)); if ((pos.flags & (int)SWP.NOMOVE) != 0) { return IntPtr.Zero; } Window wnd = (Window)HwndSource.FromHwnd(hwnd).RootVisual; if (wnd == null) { return IntPtr.Zero; } // ** do whatever you need here ** // the new window position is in the pos variable // just note that those are in Win32 "screen coordinates" not WPF device independent pixels } break; } return IntPtr.Zero; }

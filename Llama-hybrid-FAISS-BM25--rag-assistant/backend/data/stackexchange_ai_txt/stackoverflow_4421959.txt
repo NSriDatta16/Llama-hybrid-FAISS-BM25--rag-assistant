@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4421959
+[parent_id]: 
+[tags]: 
+ASM: Stateful Transformation
+
+I want to write a MethodVisitor that transforms LDC instructions that are for multiplication. Example bytecode: ldc #26 imul This basically pushes a constant and then multiplies it. It has to be a stateful transformation because I first have to check that it is for multiply and, if it is, I need to go back to the ldc instruction and modify the constant. I'm not entirely sure how I would go about this, and I don't know how to modify the constant (when I tried to pass a different value, the old value still remained in the constant pool). Edit: public class AdditionTransformer extends MethodAdapter { boolean replace = false; int operand = 0; AdditionTransformer(MethodVisitor mv) { super(mv); } @Override public void visitInsn(int opcode) { if (opcode == IMUL && replace) { operand *= 2; visitLdcInsn(operand); replace = false; } mv.visitInsn(opcode); } @Override public void visitLdcInsn(Object cst) { if (cst instanceof Integer && !replace) { operand = (Integer) cst; replace = true; } else { mv.visitLdcInsn(cst); } } } This is what I have, but it doesn't remove the old value in the constant pool, and it may have bugs.

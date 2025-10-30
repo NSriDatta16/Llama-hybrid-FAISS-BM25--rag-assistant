@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 880307
+[parent_id]: 879267
+[tags]: 
+If you're dealing with float values, it's best to have them as an attribute instead of a field: define_index do # ... other fields has height end Attributes are sortable by default (indeed, if you add :sortable to a field, all it is doing is creating an attribute under the hood of Thinking Sphinx), so this should allow you to sort. Of course, this doesn't allow you to search for the height, though, so you'll need a field as well: define_index do # ... other fields indexes height, :as => :height_field has height end I've given the field an alias, because you can't have fields and attributes named the same thing. Given all that, you're searching on a float, and to Sphinx, all fields are strings. It reads 6.5 as two words - 6 and 5, separated by a full stop/period. So I wouldn't expect that side of things to work out elegantly, unfortunately.

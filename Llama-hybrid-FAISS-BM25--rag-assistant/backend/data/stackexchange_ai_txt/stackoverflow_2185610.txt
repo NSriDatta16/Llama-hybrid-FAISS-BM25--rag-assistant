@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2185610
+[parent_id]: 2183206
+[tags]: 
+Sorry I'm answering this myself. Thanks Arthur for the links, they were useful (so I up-voted your answer). We updated the statistics but it didn't help. We checked the defragmentation with DBCC SHOWCONTIG, but it wasn't very different from the other databases. I'm sorry for not posting the query AdaTheDev, but I'd have to change all the columns and stuff (because it's fairly business critical stuff), and we've found a solution now. We noticed the table had much more records than the other databases. We added indexes on the correct columns. We did a join like: inner join table2 t2 on t1.t1Id = t2.t1Id and t2.someOtherId = @parameter where t2.aThirdId = @otherParameter So we added three separate indexes for each Id column, which sped it up from 30s to 3-5s (we did have an index on t1Id and someOtherId together though). In the end we also did a clean up of the table, because a lot of records were logically deleted and no longer necessary. But the indexes did the trick.

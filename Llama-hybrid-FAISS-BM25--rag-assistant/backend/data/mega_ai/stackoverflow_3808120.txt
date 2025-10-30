@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3808120
+[parent_id]: 3807698
+[tags]: 
+I don't have any hard fact or numbers to back this up, but from my experience and knowledge, I'd say: no . Surprised?? Let me explain: the clustering index in SQL Server must be unique. Yes, it must. No, you don't have to make it unique - if you don't, SQL Server itself will take care of that by adding a 4-byte "uniqueifier" (an INT) to your rows that clash in the clustering index. So in the end, you always have a unique clustering key - you have to, since this is really the "physical" pointer to the actual data - how else would a non-clustered index be able to find that data quickly and efficiently, if not for a unique "pointer" of sorts?? So even if you're a bit careless and chose a column (or set of columns) for your clustering key that aren't guaranteed to be unique, SQL Server will make sure they are, in the end - possibly at the expense of additional storage needed for those uniqueifiers. So you're really always left with a unique clustering key, and thus, there shouldn't be any difference in the likelihood of page level locks.

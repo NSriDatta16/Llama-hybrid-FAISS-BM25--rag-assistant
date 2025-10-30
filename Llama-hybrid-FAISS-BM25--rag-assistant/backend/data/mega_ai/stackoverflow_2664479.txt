@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2664479
+[parent_id]: 451952
+[tags]: 
+It should be safe to do a repozo backup of the Data.fs followed by an rsync of the blobstorage directory, as long as the database doesn't get packed while those two operations are happening. This is because, at least when using blobs with FileStorage, modifications to a blob always results in the creation of a new file named based on the object id and transaction id. So if new or updated blobs are written after the Data.fs is backed up, it shouldn't be a problem, as the files that are referenced by the Data.fs should still be around. Deletion of a blob doesn't result in the file being removed until the database is packed, so that should be okay too. Performing a backup in a different order, or with packing during the backup, may result in a backup Data.fs that references blobs that are not included in the backup.

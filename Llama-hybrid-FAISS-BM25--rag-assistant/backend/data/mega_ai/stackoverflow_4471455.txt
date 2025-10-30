@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4471455
+[parent_id]: 
+[tags]: 
+Create a view to show average over a set
+
+I have a table, tbl_courses ------------ int id //pk int id_formation //fk int credits enum lang // en, fr, etc The data in the table looks like this id | id_formation | credits | lang 1 | 101 | 4 | en 2 | 101 | 6 | en 3 | 101 | 5 | fr 4 | 102 | 8 | en 5 | 102 | 2 | fr 6 | 103 | 3 | fr I want to have a view that shows the percentage of lang-credits for each id_formation , something like id_formation | en_percent | fr_percent 101 | 66 | 33 102 | 80 | 20 103 | 0 | 100 I managed to make a query to do this, but mysql won't let me make a view out of it SELECT a.id_formation, en_percent //fr_percent FROM tbl_courses a JOIN ( SELECT a.id_formation, FORMAT(SUM(a.credits)*100/b.total,0) AS 'en_percent' FROM tbl_courses a LEFT JOIN ( SELECT id_formation, SUM(credits) as total FROM tbl_courses GROUP BY id_formation) AS b ON b.id_formation = a.id_formation GROUP BY a.id_formation, a.lang HAVING a.lang='en' ) AS en ON en.id_formation=a.id_formation //repeat join code and switch en to fr GROUP BY id_formation I repeat the code in the JOIN to get the fr_percent . Is there a way to write this to make it view friendly?

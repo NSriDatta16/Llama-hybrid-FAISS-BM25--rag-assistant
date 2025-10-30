@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4005576
+[parent_id]: 4005552
+[tags]: 
+To create header files that can be shared between obj-c and cpp code, you could use the compiler predefined macros to do something like: // A .h file defining a objc class and a paired cpp class // The implementation for both the objective C class and CPP class // MUST be in a paired .mm file #pragma once #ifdef __OBJC__ #import #else #include #endif #ifdef __OBJC__ @interface ObjectiveCClass : ... typedef ObjectiveCClass* ObjectiveCClassRef; #else typedef id ObjectiveCClassRef; #endif #ifdef __cplusplus class CPlusPlusClass { ObjectiveCClassRef obj; void doSomethind(); }; #endif Im not 100% sure its legal to have ObjectiveCClassRef change type like that between c/cpp and obj-c builds. But id is a c/cpp compatible type defined in the objective C header files as capable of storing an objective C class pointer, and, when used in .m or .mm files, allows you to call the object directly using objective C syntax.

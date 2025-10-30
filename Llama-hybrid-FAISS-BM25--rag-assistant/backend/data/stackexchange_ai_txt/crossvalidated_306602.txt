@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 306602
+[parent_id]: 280995
+[tags]: 
+You can recover the LSTM weights from your tensorflow session "sess" as follows: trainable_vars_dict = {} for key in tvars: trainable_vars_dict[key.name] = sess.run(key) # Checking the names of the keys print(key) From this code you will get the key names. One key name corresponds to a matrix containing all weights of LSTM. The key in your case should have the name "LSTM/rnn/basic_lstm_cell/weights:0". Assuming the size of your input is input_size, you have to do: lstm_weight_vals = trainable_vars_dict["LSTM/rnn/basic_lstm_cell/weights:0"] w_i, w_C, w_f, w_o = np.split(lstm_weight_vals, 4, axis=1) w_xi = w_i[:input_size, :] w_hi = w_i[input_size:, :] w_xC = w_C[:input_size, :] w_hC = w_C[input_size:, :] w_xf = w_f[:input_size, :] w_hf = w_f[input_size:, :] w_xo = w_o[:input_size, :] w_ho = w_o[input_size:, :] Where the matrices with "h" in them should be quadratic at the end (of size $128\times128$ in your case). I think for you the input size is $28$.

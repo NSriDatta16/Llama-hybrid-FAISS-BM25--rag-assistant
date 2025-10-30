@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3152117
+[parent_id]: 2818152
+[tags]: 
+Lewis, You will not be able to animate any properties of a ProgammaticSkin in Flex 3 because the way UIComponent does skins is by instantiating an entire new instance of your skin and then setting its name property. Then when the component needs to display a new state, it makes another new instance, sets its name property to something different, makes the old skin invisible and makes the new skin visible. In this way, it "caches" the skins, instead of switching states and redrawing in UpdateDisplayList. Now because of that you can't easily animate any drawing of the skin itself, however, there is a solution although it's not entirely elegant. ProgammaticSkin extends FlexShape, so you can't add any children to your skin, but UIComponent looks for something that implements IProgrammaticSkin, so you can make your own ProgrammaticSkin that extends FlexSprite instead of FlexShape. This allows you addChild to your skin. If you are clever enough, you can synchronize transitions between the various cached skins to make them animatable. Hope that helps, Jonathan

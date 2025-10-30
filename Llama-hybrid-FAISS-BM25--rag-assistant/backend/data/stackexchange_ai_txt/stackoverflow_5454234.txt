@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5454234
+[parent_id]: 5454075
+[tags]: 
+This could be considered horrific or elegant, depending on your sensibilities: input.inject(Hash.new {|h1,k1| h1[k1] = Hash.new {|h2,k2| h2[k2] = Array.new}}) {|hash,elem| hash[elem[0]][elem[1]].push(elem[2]); hash} => {38=>{"s"=>["hum"], "t"=>["foo", "bar"]}, 45=>{"s"=>["hum"], "t"=>["ram"]}, 52=>{"s"=>["hum"], "t"=>["cat", "dog"]}} A more readable version of this would ideally be: input.inject(Hash.new(Hash.new(Array.new))) {|hash,elem| hash[elem[0]][elem[1]].push(elem[2]); hash} That is, start with an empty hash with default value equal to an empty hash with default value equal to an empty array. Then iterate over the input, storing the elements in the appropriate locations. The problem with the latter syntax is that Hash.new(Hash.new(Array.new)) will cause all the hashes and arrays to have the same location in memory, and thus the values will be overwritten. The former syntax creates a new object each time and thus gives the desired result.

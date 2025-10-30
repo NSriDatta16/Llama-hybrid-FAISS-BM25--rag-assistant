@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4616284
+[parent_id]: 4615877
+[tags]: 
+In your draggable setup, add this: start: function(event,ui){ ui.helper.data('from-id', $(this).parent().attr('id') ); } This will attach, as data, the ID of the container from which the element is being dragged. Then, in the droppable , you can have: alert( 'I was dragged from ' + ui.draggable.data('from-id') ); Here's the updated jsBin . Edit: The start function creates a closure, so $(this).parent().attr('id') continues to point to the original parent. One solution to this problem (if you wish to keep a start function) is to clear start when the drag stops: stop: function(event,ui){ ui.helper.draggable({ start: null }); } This will allow the data methods in the droppable handlers to update the from-id without being immediately reverted to the original value by the start function. Here's a revised jsBin example.

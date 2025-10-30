@@ -1,0 +1,49 @@
+Alias analysis is a technique in compiler theory, used to determine if a storage location may be accessed in more than one way. Two pointers are said to be aliased if they point to the same location.
+
+Alias analysis techniques are usually classified by flow-sensitivity and context-sensitivity. They may determine may-alias or must-alias information. The term alias analysis is often used interchangeably with points-to analysis, a specific case.
+
+Alias analysers intend to make and compute useful information for understanding aliasing in programs.
+
+Overview
+In general, alias analysis determines whether or not separate memory references point to the same area of memory.  This allows the compiler to determine what variables in the program will be affected by a statement. For example, consider the following section of code that accesses members of structures:
+
+p.foo = 1;
+q.foo = 2;
+i = p.foo + 3;
+
+There are three possible alias cases here: 
+The variables p and q cannot alias (i.e., they never point to the same memory location).
+The variables p and q must alias (i.e., they always point to the same memory location).
+It cannot be conclusively determined at compile time if p and q alias or not.
+
+If p and q cannot alias, then i = p.foo + 3; can be changed to i = 4. If p and q must alias, then i = p.foo + 3; can be changed to i = 5 because p.foo + 3 = q.foo + 3. In both cases, we are able to perform optimizations from the alias knowledge (assuming that no other thread updating the same locations can interleave with the current thread, or that the language memory model permits those updates to be not immediately visible to the current thread in absence of explicit synchronization constructs). On the other hand, if it is not known if p and q alias or not, then no optimizations can be performed and the whole of the code must be executed to get the result. Two memory references are said to have a may-alias relation if their aliasing is unknown.
+
+Performing alias analysis
+
+In alias analysis, we divide the program's memory into alias classes. Alias classes are disjoint sets of locations that cannot alias to one another. For the discussion here, it is assumed that the optimizations done here occur on a low-level intermediate representation of the program. This is to say that the program has been compiled into binary operations, jumps, moves between registers, moves from registers to memory, moves from memory to registers, branches,  and function calls/returns.
+
+Type-based alias analysis
+If the language being compiled is type safe, the compiler's type checker is correct, and the language lacks the ability to create pointers referencing local variables, (such as ML, Haskell, or Java) then some useful optimizations can be made. There are many cases where we know that two memory locations must be in different alias classes:
+
+Two variables of different types cannot be in the same alias class since it is a property of strongly typed, memory reference-free (i.e., references to memory locations cannot be changed directly) languages that two variables of different types cannot share the same memory location simultaneously.
+Allocations local to the current stack frame cannot be in the same alias class as any previous allocation from another stack frame. This is the case because new memory allocations must be disjoint from all other memory allocations.
+Each record field of each record type has its own alias class, in general, because the typing discipline usually only allows for records of the same type to alias. Since all records of a type will be stored in an identical format in memory, a field can only alias to itself.
+Similarly, each array of a given type has its own alias class.
+
+When performing alias analysis for code, every load and store to memory needs to be labeled with its class. We then have the useful property, given memory locations  and  with  alias classes, that if  then  may-alias , and if  then the memory locations will not alias.
+
+Flow-based alias analysis
+Analysis based on flow, can be applied to programs in a language with references or type-casting. Flow based analysis can be used in lieu of or to supplement type based analysis. In flow based analysis, new alias classes are created for each memory allocation, and for every global and local variable whose address has been used. References may point to more than one value over time and thus may be in more than one alias class. This means that each memory location has a set of alias classes instead of a single alias class.
+
+See also
+
+ Escape analysis
+ Pointer analysis
+ Shape analysis
+
+References
+
+External links
+ Taxonomy and applications of alias analysis - Master's Thesis giving an introduction to the field.
+
+Static program analysis

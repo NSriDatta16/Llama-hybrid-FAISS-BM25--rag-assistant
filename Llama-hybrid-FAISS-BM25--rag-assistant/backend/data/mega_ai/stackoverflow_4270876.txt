@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4270876
+[parent_id]: 4270673
+[tags]: 
+if I'm understanding you correctly, you want to avoid one window to catch the messages from another. One way to avoid this is to use the solution proposed in this thread, which keeps track of the windows that is created by you and makes sure that the correct windows gets the messages associated to it by storing the pointer for the caller in the GWL_USERDATA . // ... m_hWnd = CreateWindowEx(0,"Classname","Title",WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,CW_USEDEFAULT, 320,200,NULL,NULL,hInstance, /*the magic pointer*/ this); // ... if(uMsg == WM_CREATE) { // collected here.. pParent = (CWindow*)((LPCREATESTRUCT)lParam)->lpCreateParams; // .. and then stored for later lookup SetWindowLongPtr(hWnd,GWL_USERDATA,(LONG_PTR)pParent); } // ... You can also catch the WM_NCCREATE message, as proposed by Moo-Juice . And I don't think you should worry about the messages pre- WM_CREATE , because the window isn't even fully initialized at that point. If you need to set text you do that after the call to CreateWindow(Ex) , be it user input or a SendMessage call.

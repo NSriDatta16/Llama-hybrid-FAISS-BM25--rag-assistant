@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3868716
+[parent_id]: 
+[tags]: 
+How can I limit memory acquired with `malloc()` without also limiting stack?
+
+I'm trying to keep student code from running wild with allocations and dragging my test machine to a halt. I've tried setrlimit(RLIMIT_DATA, r); where r is a struct holding the limits. But unfortunately although this limit stops brk and sbrk from allocating, the C library just fails over to mmap and keeps right on allocating. I've also tried setrlimit(RLIMIT_AS, r) and this stops the process in its tracks, but this remedy is too severe—it is impossible for the process to recover from the ENOMEM error because there's no stack space for the calls the code makes on encountering a NULL value returned from malloc() . I have limited controls over the binaries, so if it's possible to do with a system call, I'd prefer that. But I need some means of capping allocation without destroying the process's ability to recover. Does anyone have suggestions? UPDATE : I found something called failmalloc , but it is not very sophisticated, and although I can cause a failure with it, I always get a segfault that gdb cannot diagnose. FURTHER UPDATE : I found that setrlimit(RLIMIT_AS, r) does seem to do the job I want, at least in some cases—the segfaults that were occurring afterward were caused by a fault in an unrelated module. Unless somebody comes up with something interesting (or a reason to keep the question), I will probably delete the question.

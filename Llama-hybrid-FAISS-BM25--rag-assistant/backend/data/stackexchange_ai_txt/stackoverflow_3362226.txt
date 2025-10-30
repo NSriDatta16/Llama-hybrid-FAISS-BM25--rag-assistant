@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3362226
+[parent_id]: 3358749
+[tags]: 
+You need not store each term within a separate field. Lucene creates tokens out of each term (if you are using a whitespace tokenizer) hence allows for great flexibility of search. To your question about: Example field : "generic brand strength" Should match searches : "generic brand strength" "brand generic strength" The above query will return both the results, the latter with a lower score for obvious reasons. However, "gen bran str" "bran generic str" ... etc. is tricky, since it appears the terms are not standard "stems" in which case you can use a stemmer analyzer. The simplest approach would be to: Split your query phrase by the white space, so you have a string[] Use a Booleanquery and create a query for each term appending a wildcard at the end. Something like: string[] terms = query.split(" "); BooleanQuery bq = new BooleanQuery(); foreach(string term in terms) bq.Add(new Query("FieldName", term + "*",...); There are better query types such as SpanQuery, DisMax etc. , but since you mentioned a noob alert, think the above is simplest (although prolly not most elegant) approach. HTH

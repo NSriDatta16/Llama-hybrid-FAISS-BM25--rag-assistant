@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4897405
+[parent_id]: 
+[tags]: 
+How to force Lazy object to create/re-create value?
+
+I try to Lazy for lazy caching any lookup data in my ASP.NET MVC project. But I cannot force Lazy object to reload lookup data when it is changed. I create derived class like the following code. I found that Lazy use IsValueCreated property to keep current state. However, in MappingFunc method I cannot change value of IsValueCreated because it is static method. public class LazySelectList : Lazy { public LazySelectList(Func initFn, string dataValueField, string dataTextField) : base(MapingFunc(initFn, dataValueField, dataTextField)) { } public new bool IsValueCreated { get; set; } public static Func MapingFunc(Func valueFactory, string dataValueField, string dataTextField) { return () => { var context = ObjectFactory.GetInstance (); return new SelectList(valueFactory(context), dataValueField, dataTextField); }; } } I use the below code the call this function. But it always creates new value because IsValueCreated value is always false. LookupCache.DocTypeList = new LazySelectList(db => db.DocTypes.OrderBy(x => x.Name), "ID", "Name");

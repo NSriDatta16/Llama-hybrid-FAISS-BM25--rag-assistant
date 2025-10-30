@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 217500
+[parent_id]: 217464
+[tags]: 
+You could use Dynamic Time Warping (DTW) to do this: DTW is an algorithm for measuring similarity between two temporal sequences which may vary in speed. The advantage of DTW is that it neither needs to have a steady rise/declination in the time series (as in your example), nor needs the variance in speed be steady over time: DTW can deal with both using its warping. Therefore the timestamps of samples don't play any role any more, just the ordering of samples in the series matters. The downside of DTW is that it has $n^2$ complexity, so you will probably need to downsample very long series first, or use a complexity limitation like the Sakoe Chiba band (see e.g. here or here ). Here's a short DTW example in R using the dtw package: > library(dtw) > plot(beaver1[,3], type='l', ylim=c(36,39)) > lines(beaver2[,3], col=2) > d1 d1$distance [1] 54.9 > plot(d1) # shows the warping path ... adding a Sakoe Chiba window to restrict complexity: > d2 d2$distance [1] 97.97 > plot(d2) # shows the warping path

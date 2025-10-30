@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3675086
+[parent_id]: 3674930
+[tags]: 
+Perl-style regular expressions (which the Java regex engine is more or less based upon) treat the following characters as special characters: .^$|*+?()[{\ have special meaning outside of character classes, ]^-\ have special meaning inside of character classes ( [...] ). So you need to escape those (and only those) symbols depending on context (or, in the case of character classes, place them in positions where they can't be misinterpreted). Needlessly escaping other characters may work, but some regex engines will treat this as syntax errors, for example \_ will cause an error in .NET. Some others will lead to false results, for example \ is interpreted as a literal in Perl, but in egrep it means "word boundary". So write -?\d+\.\d+\$ to match 1.50$ , -2.00$ etc. and [(){}[\]] for a character class that matches all kinds of brackets/braces/parentheses. If you need to transform a user input string into a regex-safe form, use java.util.regex.Pattern.quote . Further reading: Jan Goyvaert's blog RegexGuru on escaping metacharacters

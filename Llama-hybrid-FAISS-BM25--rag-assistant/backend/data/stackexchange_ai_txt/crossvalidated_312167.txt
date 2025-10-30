@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 312167
+[parent_id]: 312137
+[tags]: 
+The problem is that the logistic regression has fitted values near to 0 and 1, and the asymptotic formula for standard errors in a binary regression are not at all accurate in this situation. The regression itself is fine, it just means you have to use a likelihood ratio test instead of a z-test to test significance: > x y fit anova(fit, test="Chi") Analysis of Deviance Table Model: binomial, link: logit Response: y Terms added sequentially (first to last) Df Deviance Resid. Df Resid. Dev Pr(>Chi) NULL 28 39.336 x 1 39.336 27 0.000 3.568e-10 *** --- Signif. codes: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 As you can see, the p-value for the regression of $y$ on $x$ is $3.6\times 10^{-10}$. Highly significant! This problem occurs in logistic regression whenever the fit is "too good" and the regression coefficient becomes infinitely large. In this case, dividing the coefficient by its standard error to get a z-statistic becomes meaningless (infinity divided by infinity) so you have to switch to the much better likelihood ratio test provided by anova.

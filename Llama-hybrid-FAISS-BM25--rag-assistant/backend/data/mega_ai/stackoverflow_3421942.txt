@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3421942
+[parent_id]: 3421734
+[tags]: 
+No wonder you get an OutOfMemoryException . AFAIK Isolated Storage size defaults to a maximum of 1MB. You can either prompt the user to increase that value ( IncreaseQuotaTo() ) or use a smaller font (preferrable). Edit : In regards to the comment. I have noticed in the original post that you are doing TextBlock.Fontsource = new Fontsource(stream) for each TextBlock ! Which means it's ~22MB for each TextBlock you create. So for 100 TextBlocks, you get 2.2GB of memory consumed. You should cache the variable AND somehow use a smaller font. You could make it a static property that gets created only on the first use (or if you use it every time, simply a static property initialized by constructor): public static class FontCache { public static FontSource MyCoolFontSource { get; set; } static FontCache() { using (Stream fontStream = ...) { FontCache.MyCoolFontSource = new FontSource(fontStream); } } } and in code: TextBlock.Fontsource = FontCache.MyCoolFontSource; Also note that you should really stream the font from either isolated storage , or from Application.GetResourceStream .

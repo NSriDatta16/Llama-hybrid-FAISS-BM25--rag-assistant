@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3252059
+[parent_id]: 3245062
+[tags]: 
+OCaml is quite suitable for writing network servers, although as Pascal observes, there are limitations on threading. Fortunately, however, threading isn't the only way to organize such a program. The Lwt library (for Light Weight Threads) provides an abstraction of asynchronous I/O that is quite easy to use (particularly when combined with a bit of syntax support). Everything actually runs in one thread, but it's all driven by an asynchronous I/O loop (built on the Unix select call), and the programming style lets you write code that looks like direct code (avoiding much of the normal code overhead of doing asynchronous I/O in many other languages). For example: lwt my_message = read_message socket in let repsonse = compute_response my_message in send_response socket response Both the read and the write happen back in the main event loop, but you avoid the normal "read, calling this function when you're done" manual overhead.

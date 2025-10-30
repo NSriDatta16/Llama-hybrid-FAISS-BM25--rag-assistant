@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4155473
+[parent_id]: 4135430
+[tags]: 
+Ah ha! there is an event-driven way to do it. I borrowed the Dispatcher from WPF. I just give the spinning thread access to the main thread's CurrentDispatcher I let the thread spin and when it needs attention it invokes a delegate on the Dispatcher and sleeps waiting for the main thread to interrupt it. I know I could use Invoke instead of BeginInvoke , but I needed to use the interrupt because the method that restarts the worker thread is not a synchronous part of the dispatched delegates stack. For better or worse, here is my code: private void Run() { while (true) { ... // Need attention from the main thread // "_main" is the main thread's Dispatcher instance. _main.BeginInvoke(new MyEventHandler(OnNeedsAttention), this, new MyEventArgs(...)); try { Thread.Sleep(Timeout.Infinite); } catch (ThreadInterruptedException) { } } }

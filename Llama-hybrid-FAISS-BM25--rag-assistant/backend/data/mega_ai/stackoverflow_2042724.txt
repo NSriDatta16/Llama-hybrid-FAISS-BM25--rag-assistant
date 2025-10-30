@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2042724
+[parent_id]: 2040088
+[tags]: 
+Looking at your code I think this could be resolved by loading the child tables of ServiceGroups. It is likely that the Services & User reference was not loaded in the original Entity Framework query. Therefore, as you are trying to iterate through the children in the foreach loop, it does not see a collection, it just sees null. You should try altering your retrieval statements: _db.ServiceGroupSet.ToList() to _db.ServiceGroupSet.Include("ServiceSet").Include("UserSet").ToList() If this doesn't fix your issue, I would put a break point on the below line of code and traverse the List to see if it has the data you expect. this.ServiceGroups = servicegroups;

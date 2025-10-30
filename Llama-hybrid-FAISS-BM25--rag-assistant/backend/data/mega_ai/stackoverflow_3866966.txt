@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3866966
+[parent_id]: 3866770
+[tags]: 
+This is by design. Reading the documentation for the unique_together option, it states that: It's used in the Django admin and is enforced at the database level . If you look at the table that a subclass creates, you'll see that it doesn't actually have the fields that its parent has. Instead, it gets a soft Foreign Key to the parent table with a field name called [field]_ptr_id , where [field] is the name of the table you're inheriting from excluding the app name. So your division table has a Primary Foreign Key called organization_ptr_id . Now because unique_together is enforced at the database level using the UNIQUE constraint, there's no way that I know of for the database to actually apply that to a field not in the table. Your best bet is probably through using Validators at your business-logic level, or re-thinking your database schema to support the constraint. Edit: As Manoj pointed out, you could also try using Model Validators such as validate_unique .

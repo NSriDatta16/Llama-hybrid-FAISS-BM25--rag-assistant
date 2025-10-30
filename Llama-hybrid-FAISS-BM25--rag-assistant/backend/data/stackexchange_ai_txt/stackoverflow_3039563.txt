@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3039563
+[parent_id]: 3039355
+[tags]: 
+You need to properly encode the URL (iso-8859-9 in your case), separate it into parts, urllib.quote the query part, and put it together again. I.e.: >>> import urlparse >>> import urllib >>> x = u'http://www.odevsitesi.com/ara.asp?kelime=doğanın dengesinin bozulması' >>> y = x.encode('iso-8859-9') >>> # just to show what the split of y looks like (we can also handle it as a tuple): >>> urlparse.urlsplit(y) SplitResult(scheme='http', netloc='www.odevsitesi.com', path='/ara.asp', query='kelime=do\xf0an\xfdn dengesinin bozulmas\xfd', fragment='') >>> z = urlparse.urlsplit(y) >>> quoted = z[:3] + (urllib.quote(z.query), z.fragment) >>> # now just to show you what the 'quoted' tuple looks like: >>> quoted ('http', 'www.odevsitesi.com', '/ara.asp', 'kelime%3Ddo%F0an%FDn%20dengesinin%20bozulmas%FD', '') >>> # and finally putting it back together: >>> urlparse.urlunsplit(quoted) 'http://www.odevsitesi.com/ara.asp?kelime%3Ddo%F0an%FDn%20dengesinin%20bozulmas%FD'

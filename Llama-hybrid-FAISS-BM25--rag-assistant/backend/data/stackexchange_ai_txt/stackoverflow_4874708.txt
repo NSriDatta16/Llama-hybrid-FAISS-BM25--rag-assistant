@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4874708
+[parent_id]: 
+[tags]: 
+How to elegantly swap out (patch) a Django FileSystemStorage setting in your unit tests?
+
+I'm faced with the following problem. I have a Model that looks somewhat like this: class Package(models.Model): name = models.CharField(max_length=64) file = models.FileField(upload_to="subdir", storage=settings.PACKAGE_STORAGE, null=True) Essential in this example is the storage= argument to the FileField constructor. It is filled with a value from settings.py . In there is the following code: from django.core.files.storage import FileSystemStorage PACKAGE_STORAGE = FileSystemStorage(location="/var/data", base_url="/") For production use, this works fine. But in my unit tests, uploads I make are now written to /var/data , which contains production data. I tried to swap out the PACKAGE_STORE in packages/tests.py like this from django.conf import settings # This is line 1 from tempfile import mkdtemp settings.PACKAGE_STORAGE = FileSystemStorage(location=mkdtemp(), base_url="/") # rest of the imports and testing code below but the real problem is that before the test file is loaded, the packages app and its models have been loaded already, and therefore, the PACKAGE_STORAGE setting has been resolved before I'm able to change it in the test setup code. Is there an elegant way to override this specific setting in a testing context?

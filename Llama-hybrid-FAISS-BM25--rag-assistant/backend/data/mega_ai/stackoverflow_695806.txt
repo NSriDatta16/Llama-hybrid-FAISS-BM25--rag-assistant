@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 695806
+[parent_id]: 695768
+[tags]: 
+What ceejayoz said Or, you can add a caching headers to the bootstrap of your application, a cache for as many years as you think you want it. You put a call to the attached function with number of hours you want to clientside cache the page, be sure to call this function after session_start if you have it, as session_start emits headers that prevents caching. function client_side_cache($hours) { //in the event a session start is used, I have to clean all the #$%# headers it sends to prevent caching header('Cache-Control: ',true); header("Pragma: ", true); header("Expires: ", true); //get the If-Modified-Since header in a unix time format $headers = getallheaders(); if (isset($headers['If-Modified-Since'])) { $modifiedSince = explode(';', $headers['If-Modified-Since']); $modifiedSince = strtotime($modifiedSince[0]); } else { $modifiedSince = 0; } //calculate the Last-Modified timestamp $current_time=time(); $last_modified=($current_time)/($hours*3600); $last_modified=(int)$last_modified; $last_modified=$last_modified*$hours*3600; //check cache not expires if ($last_modified

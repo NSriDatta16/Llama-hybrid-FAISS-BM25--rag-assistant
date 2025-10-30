@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1799409
+[parent_id]: 1793138
+[tags]: 
+Can't think of any way to do it with tabulate right off hand. It might be easiest to jut do it manually. data grades; input name $ 1-15 gender $ 16-16 grade 19-20; datalines; Anderson M 75 Aziz F 67 Bayer M 77 Burke F 63 Chung M 85 Cohen F 89 Drew F 49 Dubos M 41 Elliott F 85 Hazelton M 55 Hinton M 85 Hung F 98 Jacob F 64 Janeway F 51 Judson F 89 Litowski M 85 Malloy M 79 Meyer F 85 Nichols M 58 Oliver F 41 Park F 77 Patel M 73 Randleman F 46 Robinson M 64 Shien M 55 Simonson M 62 Smith N M 71 Smith R M 79 Sullivan M 77 Swift M 63 Wolfson F 79 Wong F 89 Zabriski M 89 ; run; proc sort data=grades;by gender;run; data _null_; set grades end=last; by gender; if _n_=1 then do; put @1 "gender" @8 "total" @16 "A_or_B" @27 "pct"; end; if first.gender then do; A_or_B=0; total=0; end; total+1; if grade ge 80 and grade le 100 then A_or_B+1; if last.gender then do; pct=A_or_B/total; put @1 gender @8 total @16 A_or_B @24 pct nlpct.; end; run;

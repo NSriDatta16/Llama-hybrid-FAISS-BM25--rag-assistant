@@ -1,0 +1,200 @@
+Platform Invocation Services, commonly referred to as P/Invoke, is a feature of Common Language Infrastructure implementations, like Microsoft's Common Language Runtime, that enables managed code to call native code.
+
+Managed code, such as C# or VB.NET, provides native access to classes, methods, and types defined within the libraries that make up the .NET Framework.  While the .NET Framework provides an extensive set of functionality, it may lack access to many lower level operating system libraries normally written in unmanaged code or third party libraries also written in unmanaged code.  P/Invoke is the technique a programmer can use to access functions in these libraries.  Calls to functions within these libraries occur by declaring the signature of the unmanaged function within managed code, which serves as the actual function that can be called like any other managed method.  The declaration references the library's file path and defines the function parameters and return in managed types that are most likely to be implicitly marshaled to and from the unmanaged types by the common language run-time (CLR).  When the unmanaged data types become too complex for a simple implicit conversion from and to managed types, the framework allows the user to define attributes on the function, return, and/or the parameters to explicitly refine how the data should be marshaled so as not to lead to exceptions in trying to do so implicitly.
+
+There are many abstractions of lower-level programming concepts available to managed code programmers as compared to programming in unmanaged languages.  As a result, a programmer with only managed code experience will need to brush up on programming concepts such as pointers, structures, and passing by reference to overcome some of the obstacles in using P/Invoke.
+
+Architecture
+
+Overview
+Two variants of P/Invoke currently in use are:
+
+Explicit
+ Native code is imported via dynamic-linked libraries (DLLs)
+ Metadata embedded in the caller's assembly defines how the native code is to be called and data accessed (usually requires attributed source specifiers to aid the compiler in generating marshal glue)
+ This definition is the "Explicit" part
+
+Implicit
+ By using C++/CLI, an application may simultaneously use the managed heap (by way of tracking pointers) and any native memory region, without the explicit declaration. (Implicit)
+ A primary benefit in this case being, if underlying native data structures change, so long as the naming is compatible, a breaking change is avoided.
+ i.e. Adding/removing/re-ordering structures in a native header will be transparently supported so long as the structure member names did not also change.
+
+Details
+When using P/Invoke, the CLR handles DLL loading and conversion of the unmanaged previous types to CTS types (also referred to as parameter marshalling). To perform this, the CLR:
+ Locates the DLL containing the function.
+ Loads the DLL into memory.
+ Locates the address of the function in memory and pushes its arguments onto the stack, marshaling data as required.
+
+P/Invoke is useful for using standard (unmanaged) C or C++ DLLs. It can be used when a programmer needs to have access to the extensive Windows API, as many functions provided by the Windows libraries lack available wrappers.  When a Win32 API is not exposed by the .NET Framework the wrapper to this API must be written manually.
+
+Pitfalls
+Writing P/Invoke wrappers can be difficult and error prone. Using native DLLs means that the programmer can no longer benefit from type safety and garbage collection as is usually provided in the .NET environment. When they are used improperly this may cause problems such as segmentation faults or memory leaks. Getting the exact signatures of the legacy functions for use in the .NET environment can be hard, which can result in such problems. For this purpose tools and websites exist to obtain such signatures, helping to prevent signature problems. 
+
+Other pitfalls include:
+ Incorrect data alignment of user-defined types in the managed language: there are different ways data can be aligned depending on compilers or compiler directives in C and care must be taken to explicitly tell the CLR how to align data for non-blittable types.  A common example of this is when trying to define a data type in .NET to represent a union in C.  Two different variables overlap in memory, and defining these two variables in a type in .NET would cause them to be in different locations in memory, so special attributes must be used to correct the issue.
+ Interference with the location of data by the managed language's garbage collector: if a reference is local to a method in .NET and is passed to a native function, when the managed method returns, the garbage collector may reclaim that reference. Care should be taken that the object reference is pinned, preventing it from being collected or moved by the garbage collector, which would result in an invalid access by the native module.
+
+When using C++/CLI, emitted CIL is free to interact with objects located on the managed heap and simultaneously any addressable native memory location. A managed heap resident object may be called, modified or constructed, using simple "object->field;" notation to assign values or specify method calls. Significant performance gains result from having eliminated any needless context switching, memory requirements are reduced (shorter stacks).
+
+This comes with new challenges:
+ Code is prone to Double Thunking if not specifically addressed
+ The Loader Lock  issue 
+
+These references specify solutions for each of these issue if they are encountered.  A primary benefit is the elimination of the structure declaration, the order of field declaration and alignment issues are not present in the context of C++ Interop.
+
+Examples
+
+Basic examples
+This first simple example shows how to get the version of a particular DLL:
+
+DllGetVersion function signature in the Windows API:
+HRESULT DllGetVersion
+(
+    DLLVERSIONINFO* pdvi
+)
+
+P/Invoke C# code to invoke the DllGetVersion function:
+
+[StructLayout(LayoutKind.Sequential)]
+private struct DLLVERSIONINFO {
+    public int cbSize;
+    public int dwMajorVersion;
+    public int dwMinorVersion;
+    public int dwBuildNumber;
+    public int dwPlatformID;
+}
+[DllImport("shell32.dll")]
+static extern int DllGetVersion(ref DLLVERSIONINFO pdvi);
+
+The second example shows how to extract an icon in a file:
+
+ExtractIcon function signature in the Windows API:
+HICON ExtractIcon
+(      
+    HINSTANCE hInst,
+    LPCTSTR lpszExeFileName,
+    UINT nIconIndex
+);
+
+P/Invoke C# code to invoke the ExtractIcon function:
+[DllImport("shell32.dll")]
+static extern IntPtr ExtractIcon(
+    IntPtr hInst, 
+    [MarshalAs(UnmanagedType.LPStr)] string lpszExeFileName, 
+    uint nIconIndex);
+
+This next complex example shows how to share an Event between two processes in the Windows platform:
+
+CreateEvent function signature:
+ HANDLE CreateEvent(
+     LPSECURITY_ATTRIBUTES lpEventAttributes,
+     BOOL bManualReset,
+     BOOL bInitialState,
+     LPCTSTR lpName
+ );
+
+P/Invoke C# code to invoke the CreateEvent function:
+[DllImport("kernel32.dll", SetLastError=true)]
+static extern IntPtr CreateEvent(
+    IntPtr lpEventAttributes, 
+    bool bManualReset,
+    bool bInitialState, 
+    [MarshalAs(UnmanagedType.LPStr)] string lpName);
+
+A more complex example
+// native declaration
+typedef struct _PAIR 
+{ 
+	DWORD Val1; 
+	DWORD Val2; 
+} PAIR, *PPAIR;
+
+// Compiled with /clr; use of #pragma managed/unmanaged can lead to double thunking;
+// avoid by using a stand-alone .cpp with .h includes.
+// This would be located in a .h file.
+
+template<>
+inline CLR_PAIR^ marshal_as<CLR_PAIR^, PAIR> (const PAIR&Src) {    // Note use of de/referencing. It must match your use.
+	CLR_PAIR^ Dest = gcnew CLR_PAIR;
+	Dest->Val1 = Src.Val1;
+	Dest->Val2 = Src.Val2;
+	return Dest;
+};
+
+CLR_PAIR^ mgd_pair1;
+CLR_PAIR^ mgd_pair2;
+PAIR native0,*native1=&native0;
+
+native0 = NativeCallGetRefToMemory();
+
+// Using marshal_as. It makes sense for large or frequently used types.
+mgd_pair1 = marshal_as<CLR_PAIR^>(*native1);
+
+// Direct field use
+mgd_pair2->Val1 = native0.Val1;
+mgd_pair2->val2 = native0.val2;
+
+return(mgd_pair1); // Return to C#
+
+Tools
+
+There are a number of tools which are designed to aid in the production of P/Invoke signatures.
+
+Writing a utility application that would import C++ header files and native DLL files and produce an interface assembly automatically turns out to be quite difficult. The main problem with producing such an importer/exporter for P/Invoke signatures is the ambiguity of some C++ function call parameter types.
+
+Brad Abrams has this to say on the subject:
+
+The problem lies with C++ functions like the following: 
+__declspec(dllexport) void MyFunction(char *params);
+
+What type should we use for the parameter params in our P/Invoke signature ? This could be either a C++ null terminated string, or could be a  array or could be an output  parameter. So should we use , ,  or  ?
+
+Regardless of this issue, there are a few tools available to make the production of P/Invoke signatures simpler.
+
+One of the tools listed below, xInterop C++ .NET Bridge has resolved this issue by implementing multiple overrides of the same C++ method in .NET world, developers can then pick the correct one to make the call.
+
+PInvoke.net
+PInvoke.net is a wiki containing P/Invoke signatures for a large number of standard Windows APIs. It is owned by Redgate Software and has around 50000 hits per month.
+
+The signatures are manually produced by users of the wiki. They can be searched using a free addin to Microsoft Visual Studio.
+
+PInvoker
+PInvoker is an application which imports native DLLs and C++ .h files and exports fully formed and compiled  interop DLLs. It overcomes the ambiguity problem by wrapping native pointer function parameters in PInvoker specific .NET interface classes. Instead of using standard .NET parameter types in P/Invoke method definitions (, , etc.) it uses these interface classes in the P/Invoke function calls.
+
+For instance, if we consider the above example code, PInvoker would produce a .NET  function accepting a .NET interface class wrapping the native  pointer. The construction of this class could be from a  or from a  array. The actual native memory structure for both is the same, but the respective interface class constructors for each type will populate the memory in different ways. The responsibility for deciding what .NET type needs to be passed into the function is therefore passed to the developer.
+
+Microsoft Interop Assistant
+Microsoft Interop Assistant is a free tool available with binaries and source code available for download on CodePlex. It is licensed under the Microsoft Limited Public License (Ms-LPL).
+
+It has two parts:
+ A converter which takes small sections of native C++ header file code containing  and method definitions. It then produces C# P/Invoke code for you to copy and paste into your applications.
+ A searchable database of converted Windows API constant, method and struct definitions.
+
+Because this tool produces C# source code rather than a compiled dll the user is free to make any changes necessary to the code before use. So the ambiguity problem is solved by the application picking one particular .NET type to use in the P/Invoke method signature and if necessary the user can change this to the required type.
+
+P/Invoke Wizard
+The P/Invoke Wizard uses a similar method to the Microsoft Interop Assistant in that it accepts native C++ .h file code and produces C# (or VB.NET) code for you to paste into your .NET application code.
+
+It also has options for which framework you wish to target: .NET Framework for the desktop or .NET Compact Framework for Windows Mobile smart devices (and Windows CE).
+
+xInterop C++ .NET Bridge 
+xInterop C++ .NET Bridge is a windows application to created C# wrapper for native C++ DLLs and C++ bridge to access .NET assemblies, it comes with a C#/.NET library which wraps the standard C++ classes, such as string, iostream, etc., C++ classes and objects can be accessed from .NET.
+
+This tool generates C# wrapper DLLs with source code from existing native C++ DLLs and the associated header files which are required by the tool to build a C# wrapper DLL. The P/Invoke signatures and data marshaling are generated by the application. The resulting C# wrapper has the similar interface of the C++ counterpart with the parameter type converted to the .NET code.
+
+This tool recognizes template classes which is not exported from the C++ DLL and instantiates the template class and export it in a supplement DLL and the corresponding C++ interface can be used in .NET.
+
+See also
+ Blittable types
+ Java Native Interface, the standard way for Java programs to access native code
+ Java Native Access, the Java equivalent of P/Invoke
+ Windows library files
+ J/Direct, the no-longer maintained equivalent API for Microsoft Java Virtual Machine
+
+References
+
+External links 
+ A site devoted to P/Invoke
+
+.NET terminology
+Common Language Infrastructure

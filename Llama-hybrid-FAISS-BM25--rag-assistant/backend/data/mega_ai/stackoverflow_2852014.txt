@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2852014
+[parent_id]: 2850483
+[tags]: 
+SiteMesh is a bit fragile, and you don't get much logging information from it, so it can be tricky to determine if anything is actually happening. My guess is that the decorator is being bypassed because the content-type doesn't match. Your sitemesh.xml file contains the following entry: In other words, the decorator will only be invoked if the response content-type is text/html . You said that it works if you point it at a path that does not go through Spring, and I think that's because Spring is changing the content-type, and is therefore bypassing the decorator. Try adding the following additional entry to sitemesh.xml : Note the charset added to the content-type. Spring MVC is pretty fastideous with content-types, and I suspect it's changing it to something that includes the charset. If your local charset is something other than ISO-8859-1 , then try that. You can add as many entries as you like.

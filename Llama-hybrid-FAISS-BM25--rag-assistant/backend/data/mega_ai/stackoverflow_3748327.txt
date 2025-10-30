@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3748327
+[parent_id]: 3748205
+[tags]: 
+Generally, you'd want to just host the file in apache etc., and provide a link to the location. If the file is generated dynamically, or you want to "embargo" it, here's how you might do it with cherrypy : @cherrypy.expose def download(self, filename): """ Download the specified XML file """ # only if it's one of these files if filename not in "foo.xml bar.xml".split(): return "Nice try" content = open("/path/to/media/" + filename).read() cherrypy.response.headers['Content-Type'] = 'application/xml' cherrypy.response.headers['Content-Length'] = len(content) disp = 'attachment; filename=%s' filename cherrypy.response.headers['Content-Disposition'] = disp cherrypy.response.headers['filename'] = 'application/xml' cherrypy.response.headers['pragma'] = "" cherrypy.response.headers['content-cache'] = "" return content The link would be like this: http://example.com/download/foo.xml

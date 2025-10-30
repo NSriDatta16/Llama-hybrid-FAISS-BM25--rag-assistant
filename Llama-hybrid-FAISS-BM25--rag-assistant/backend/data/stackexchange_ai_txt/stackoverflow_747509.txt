@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 747509
+[parent_id]: 741269
+[tags]: 
+Draggables has options to allow you to associate functions with the start and stop of the drag. (see http://api.jquery.com/ , click jQuery UI at the top for docs). So you can use that and perhaps have a global boolean that gets set when the drag starts and unset when the drag ends. Have your req() function check this boolean and exit if it's set. Something like: var halt_request = 0; $(".draggable").draggable({ containment: '#container', scroll: false, start: function(){ halt_request = 1; }, stop: function(){ halt_request = 0; } }); ... var req = function () { if (halt_request) { sleep(10); // so you're not looping too quickly req(); return; } $.ajax({ url: "out.php", ... And better yet, instead of having req() call itself, have it use setTimeout. Have the timeout as a global and have the start/stop functions clear/set the timeout.

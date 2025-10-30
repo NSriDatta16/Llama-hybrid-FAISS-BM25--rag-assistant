@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3343916
+[parent_id]: 3335126
+[tags]: 
+iText has more than one way of doing this. The PdfStamper class is one option. But I find the easiest method is to create a new PDF document then import individual pages from the existing document into the new PDF. // Create output PDF Document document = new Document(PageSize.A4); PdfWriter writer = PdfWriter.getInstance(document, outputStream); document.open(); PdfContentByte cb = writer.getDirectContent(); // Load existing PDF PdfReader reader = new PdfReader(templateInputStream); PdfImportedPage page = writer.getImportedPage(reader, 1); // Copy first page of existing PDF into output PDF document.newPage(); cb.addTemplate(page, 0, 0); // Add your new data / text here // for example... document.add(new Paragraph("my timestamp")); document.close(); This will read in a PDF from templateInputStream and write it out to outputStream . These might be file streams or memory streams or whatever suits your application.

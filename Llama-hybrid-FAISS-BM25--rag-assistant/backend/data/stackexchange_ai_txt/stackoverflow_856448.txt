@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 856448
+[parent_id]: 856363
+[tags]: 
+OK, this is hacky - but it works. It inserts a small delay into the drag, allowing the check/uncheck to work normally: (edited to include cancelDrag to help avoid some UI glitches with clicks) volatile bool cancelDrag; protected override void OnMouseUp(MouseEventArgs e) { cancelDrag = true; base.OnMouseUp(e); } protected override void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); cancelDrag = false; ThreadPool.QueueUserWorkItem(delegate { Thread.Sleep(250); if (!cancelDrag) { BeginInvoke((MethodInvoker)delegate { if (!cancelDrag) { // your code here... var sel = this.SelectedRows; if (sel.Count > 0) { this.DoDragDrop("test", DragDropEffects.All); } } }); } }); }

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4178688
+[parent_id]: 
+[tags]: 
+stopping a photo from a new thread to load
+
+I'm loading images with this class. I need help on how to stop them from loading when dealloc is called. This class is extending UIImageView. Also any other advice for designing the class is appreciated, i'll want for example to dispatch the loaded bytes. @implementation RCPhoto - (id)initWithFrame:(CGRect)frame delegate:(id)d { if ((self = [super initWithFrame:frame])) { // Initialization code delegate = d; self.contentMode = UIViewContentModeScaleAspectFit; } return self; } - (void)dealloc { [super dealloc]; } #pragma mark Load photo - (void)loadImage:(NSString *)path { // Create a new thread for loading the image [NSThread detachNewThreadSelector:@selector(load:) toTarget:self withObject:path]; } - (void)load:(NSString *)path { // You must create a autorelease pool for all secondary threads. NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; //NSLog(@"RCPhoto loadImage into a new thread: %@", path); NSURL *url = [NSURL URLWithString: path]; NSData *data = [NSData dataWithContentsOfURL: url]; UIImage *image = [[UIImage alloc] initWithData: data]; [self performSelectorOnMainThread: @selector(performCompleteEvent:) withObject: image waitUntilDone: NO]; [pool release]; } - (void)performCompleteEvent:(UIImage *)image { //NSLog(@"RCPhoto finish loading"); [self setImage:image]; self.opaque = YES; if ([delegate respondsToSelector:@selector(onPhotoComplete)]) { [delegate performSelector:@selector(onPhotoComplete)]; } } @end

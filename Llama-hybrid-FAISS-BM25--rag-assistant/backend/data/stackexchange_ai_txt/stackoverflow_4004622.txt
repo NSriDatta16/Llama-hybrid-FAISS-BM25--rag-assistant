@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4004622
+[parent_id]: 4004608
+[tags]: 
+There are at least two approaches you could use: Ensure that the userid is always less than the friendid . Store each relationship in both directions (i.e. store both a,b and b,a). The second approach costs twice as much storage and is redundant but it does mean that some queries can be much simpler and will perform better. For example, consider fetching all the common friends of user 'a' and 'b' with each of the approaches: Approach 1: SELECT friendid FROM ( SELECT friendid FROM friendships WHERE userid = 'a' UNION SELECT userid FROM friendships WHERE friendid = 'a' ) T1 JOIN ( SELECT friendid FROM friendships WHERE userid = 'b' UNION SELECT userid FROM friendships WHERE friendid = 'b' ) T2 ON T1.friendid = T2.friendid Approach 2: SELECT T1.friendid FROM friendships T1 JOIN friendships T2 ON T2.userid = 'b' AND T1.friendid = T2.friendid WHERE T1.userid = 'a'

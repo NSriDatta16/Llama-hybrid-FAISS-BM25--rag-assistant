@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4582059
+[parent_id]: 4582038
+[tags]: 
+You need to embed a manifest file into the executable that tells Windows you want the version of the controls that have themes enabled ( there's MSDN documentation specifically for this topic ). This is really for compatibility reasons because some people really like to write programs that mess around with the internal data structures of other programs . In Visual C++, probably the easiest way to do this is via a #pragma : #pragma comment(linker,"/manifestdependency:\"" \ "type='win32' " \ "name='Microsoft.Windows.Common-Controls' " \ "version='6.0.0.0' " \ "processorArchitecture='*' " \ "publicKeyToken='6595b64144ccf1df' " \ "language='*'\"") This causes the linker to add something like this to the generated manifest file: You also need to call InitCommonControlsEx() to register the appropriate control classes, or the dialog box won't appear. As Mark Ransom has mentioned in the comments below, Windows 2000 ignores theming manifests , so this should still work in Windows 2000, Windows XP and later. Also, some frameworks like MFC define the #pragma and performs the initialization for you.

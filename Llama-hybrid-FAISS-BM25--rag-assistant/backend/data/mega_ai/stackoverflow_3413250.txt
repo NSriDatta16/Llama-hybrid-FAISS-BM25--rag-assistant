@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3413250
+[parent_id]: 3396966
+[tags]: 
+A solution is to make sure that python is preloading the C++ main library in the global scope. This is not a very elegant solution, and I don't want to do it, but it makes it work for the moment. After a little poking around here and recognising the LD_LIBRARY_PATH environment variable that I have to set every time I start the terminal in order for it to even find the main C++ library that has been SWIGed, I noticed the LD_PRELOAD environment variable. Upon setting this to the filename of the main C++ library the program worked. I suspect this is because it "can be used to selectively override functions in other shared libraries". If anyone comes up with a better answer than setting environment variables it'd be awesome, as I'm not sure how portable this is. Edit: The original problem is that the functions that the user provided library is looking for are not in the global scope. In order to fix this simply using python's "dl.open" to open the main library's .so file, using dl.RTLD_NOW and dl.RTLD_GLOBAL. Success!

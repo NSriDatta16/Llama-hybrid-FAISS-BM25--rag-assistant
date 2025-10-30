@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2663536
+[parent_id]: 2658286
+[tags]: 
+Zend_Auth is a singleton, so you can't. What I do is to use Zend_Acl ensure that only users with a role of "admin" can get at the administration stuff. To create a second Auth object, in principle, you could derive Zend_Auth to App_Auth and use a different session namespace. I've never tried this, but my starting code would look like this: class App_Auth { /** * Returns the persistent storage handler * * Session storage is used by default unless a different storage adapter has been set. * * @return Zend_Auth_Storage_Interface */ public function getStorage() { if (null === $this->_storage) { /** * @see Zend_Auth_Storage_Session */ require_once 'Zend/Auth/Storage/Session.php'; $this->setStorage(new Zend_Auth_Storage_Session('App_Auth')); } return $this->_storage; } } It's possible that you have to override more.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3075326
+[parent_id]: 
+[tags]: 
+unusual django admin behavior when storing string values
+
+Using django trunk r13359 and django piston, I created a small restful service that stores string values. This is the model I am using to store strings: class DataStore(models.Model): data = models.CharField(max_length=200) url = models.URLField(default = '', verify_exists=False, blank = True) I used curl to post following data: curl -d "data=somedata" http://localhost:8000/api/datastorage/ This is the code that handles storage as part of the django-piston handler store = DataStore() store.url = request.POST.get('url',""), store.data = request.POST['data'], store.save() return {'data':store} When I post the data with curl I get the following response body, which is expected: { "result": { "url": [ "" ], "data": [ "somedata" ], "id": 1 } } Whats not expected however is when I look at the stored instance from django admin, the value stored in the data field looks something like this: (u'somedata',) and the following is stored in the url: ('',) Whats even more interesting is when I query the service with curl to see what is stored, I get the following: { "result": { "url": [ "('',)" ], "data": [ "(u'somedata',)" ], "id": 1 } } I'm stumped .. any ideas what could be going on?

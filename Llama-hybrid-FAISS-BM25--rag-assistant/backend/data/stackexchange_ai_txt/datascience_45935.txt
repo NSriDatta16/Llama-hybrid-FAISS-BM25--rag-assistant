@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 45935
+[parent_id]: 45933
+[tags]: 
+Your loss does go down, but not significantly. This is because your target values are very large ~10e7 and the default learning rate is scaled for smaller values. The easiest way to fix this is to normalize Y. If your intention is for your code scale Y, then the problem is that Pipeline does not apply StandardScaler (or any transformations) to Y. You have to use sklearn.compose.TransformedTargetRegressor, or apply the transforms to Y outside of Pipeline. Pick 1: Outside the pipeline: Y = dataframe['revenue'].values Y = StandardScaler().fit_transform(dataframe['revenue'].values.reshape(-1,1)) Inside the pipeline: estimators.append(('mlp', KerasRegressor(build_fn=baseline_model, epochs=100, batch_size=5, verbose=1))) from sklearn.compose import TransformedTargetRegressor estimators.append(('mlp',TransformedTargetRegressor( regressor=KerasRegressor(build_fn=baseline_model, epochs=100, batch_size=5, verbose=1), transformer=StandardScaler())))

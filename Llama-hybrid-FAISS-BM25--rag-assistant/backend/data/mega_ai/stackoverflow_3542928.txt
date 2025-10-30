@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3542928
+[parent_id]: 
+[tags]: 
+Rails way to render different actions & views based on user type?
+
+I have a couple different user types (buyers, sellers, admins). I'd like them all to have the same account_path URL, but to use a different action and view. I'm trying something like this... class AccountsController [:show] def show # see *_show below end def admin_show ... end def buyer_show ... end def client_show ... end end This is how I defined render_by_user in ApplicationController... def render_by_user action = "#{current_user.class.to_s.downcase}_#{action_name}" if self.respond_to?(action) instance_variable_set("@#{current_user.class.to_s.downcase}", current_user) # e.g. set @model to current_user self.send(action) else flash[:error] ||= "You're not authorized to do that." redirect_to root_path end end It calls the correct *_show method in the controller. But still tries to render "show.html.erb" and doesn't look for the correct template I have in there named "admin_show.html.erb" "buyer_show.html.erb" etc. I know I can just manually call render "admin_show" in each action but I thought there might be a cleaner way to do this all in the before filter. Or has anyone else seen a plugin or more elegant way to break up actions & views by user type? Thanks! Btw, I'm using Rails 3 (in case it makes a difference).

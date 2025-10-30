@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5290639
+[parent_id]: 
+[tags]: 
+In an Observer method, how do you tell Magento to not process code after the dispatched event
+
+I have some code in the checkout where I set a key in the session if that key is set to false anywhere in the checkout I need to send them back to the billing page. I have the code for it, but I also can't have any of the code that is typically ran after the observer because it will call a third party service and come back as wrong because of this key that is missing in the session Here is my code, I have everything I want but i need the response to happen immediatly and for nothing after the dispatched event line to be fired only the response sent back to the browser. public function checkForOrdKey(Varien_Event_Observer $observer) { $controllerAction = $observer->getControllerAction(); $request = $controllerAction->getRequest(); $controllerName = $request->getControllerName(); $stepData = $this->_getCheckoutSession()->getStepData(); $ordKeyRemoved = $this->_getCheckoutSession()->getOrdKeyRemoved(); // if it is the checkout onepage controller or inventory controller don't do anything if (isset($controllerName) && $controllerName === "onepage" && $stepData['shipping']['complete'] && $ordKeyRemoved) { $this->_getCheckoutSession()->setStepData('shipping', 'complete', false); $result['goto_section'] = 'billing'; Mage::app()->getResponse()->setBody(Mage::helper('core')->jsonEncode($result)); $this->_getCheckoutSession()->setOrdKeyRemoved(false); } }

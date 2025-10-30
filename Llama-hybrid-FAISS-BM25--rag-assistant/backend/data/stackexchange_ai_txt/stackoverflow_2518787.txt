@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2518787
+[parent_id]: 
+[tags]: 
+Issue with creating index organized table
+
+I'm having a weird problem with index organized table. I'm running Oracle 11g standard. i have a table src_table SQL> desc src_table; Name Null? Type --------------- -------- ---------------------------- ID NOT NULL NUMBER(16) HASH NOT NULL NUMBER(3) ........ SQL> select count(*) from src_table; COUNT(*) ---------- 21108244 now let's create another table and copy 2 columns from src_table set timing on SQL> create table dest_table(id number(16), hash number(20), type number(1)); Table created. Elapsed: 00:00:00.01 SQL> insert /*+ APPEND */ into dest_table (id,hash,type) select id, hash, 1 from src_table; 21108244 rows created. Elapsed: 00:00:15.25 SQL> ALTER TABLE dest_table ADD ( CONSTRAINT dest_table_pk PRIMARY KEY (HASH, id, TYPE)); Table altered. Elapsed: 00:01:17.35 It took Oracle now same exercise but with IOT table SQL> CREATE TABLE dest_table_iot ( id NUMBER(16) NOT NULL, hash NUMBER(20) NOT NULL, type NUMBER(1) NOT NULL, CONSTRAINT dest_table_iot_PK PRIMARY KEY (HASH, id, TYPE) ) ORGANIZATION INDEX; Table created. Elapsed: 00:00:00.03 SQL> INSERT /*+ APPEND */ INTO dest_table_iot (HASH,id,TYPE) SELECT HASH, id, 1 FROM src_table; "insert" into IOT takes 18 hours !!! I have tried it on 2 different instances of Oracle running on win and linux and got same results. What is going on here ? Why is it taking so long ?

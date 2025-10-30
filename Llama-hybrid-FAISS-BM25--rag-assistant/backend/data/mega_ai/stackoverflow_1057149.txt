@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1057149
+[parent_id]: 
+[tags]: 
+Django users and authentication from external source
+
+I have a Django app that gets it's data completely from an external source (queried via HTTP). That is, I don't have the option for a local database. Session data is stored in the cache (on my development server I use a SQLite database, so that is no error source). I'm using bleeding edge Django 1.1svn. Enter the problem: I want to use Django's own authentication system for the users. It seems quite simple to write my own Authentication Backend, but always just under the condition that you have a local database where to save the users. Without database my main problem is persistence. I tried it with the following (assume that datasource.get() is a function that returns some kind of dict): class ModelBackend (object): """Login backend.""" def authenticate (self, username=None, password=None): """Check, if a given user/password combination is valid""" data = datasource.get ('login', username, password) if data and data['ok']: return MyUser (username=username) else: raise TypeError return None def get_user (self, username): """get data about a specific user""" try: data = datasource.get ('userdata', username) if data and data['ok']: return data.user except: pass return None class MyUser (User): """Django user who isn't saved in DB""" def save (self): return None But the intentionally missing save() method on MyUser seems to break the session storage of a login. How should MyUser look like without a local database?

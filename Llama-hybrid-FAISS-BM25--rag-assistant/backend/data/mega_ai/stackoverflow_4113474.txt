@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4113474
+[parent_id]: 4051577
+[tags]: 
+Well... The 403 error was because hosting security rules were so strict what Google's OpenID response (long enough to be suspicious) was rejected. Resolved by hosting support. To resolve the problem with port number within return_to parameter (addressed by freiwillen ) I've made the following (monkey path) initializer: module OmniAuth module Strategies # OmniAuth strategy for connecting via OpenID. This allows for connection # to a wide variety of sites, some of which are listed [on the OpenID website](http://openid.net/get-an-openid/). class OpenID protected def callback_url uri = URI.parse(request.url) uri.path += '/callback' # by KirylP: to overcome hosting subdomain forwarding to rails port uri.port = '' if request.env.has_key? 'HTTP_X_FORWARDED_SERVER' uri.to_s end end end end module Rack class OpenID SERVER_PORT_TO_AVOID = 12002 private def realm_url(req) url = req.scheme + "://" url I hope someone will propose more elegant solution.

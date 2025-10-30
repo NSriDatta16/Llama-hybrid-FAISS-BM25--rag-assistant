@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2613617
+[parent_id]: 2613005
+[tags]: 
+You could use a nested select like this: SELECT Post.Id, temp.Count FROM Post LEFT JOIN (SELECT Post.Id, COUNT(Comment.ID) AS Count FROM Post LEFT JOIN Comment ON Comment.PostId = Post.ID LEFT JOIN Profile ON Profile.ID = Comment.ProfileID WHERE Profile.Approved = 1 GROUP BY Post.Id) temp ON temp.Id = Post.ID Which would give you null where there are no posts, rather than no record: 1 1 2 null 3 1 Just to improve on that, you could use an if to get rid of the nulls SELECT Post.Id, if(temp.Count >= 1,temp.Count,0) as newCount FROM Post LEFT JOIN (SELECT Post.Id, COUNT(Comment.ID) AS Count FROM Post LEFT JOIN Comment ON Comment.PostId = Post.ID LEFT JOIN Profile ON Profile.ID = Comment.ProfileID WHERE Profile.Approved = 1 GROUP BY Post.Id) temp ON temp.Id = Post.ID Which gives you what you originally wanted: 1 1 2 0 3 1 Note: There is most probably a more elegant solution though!!!!

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1481473
+[parent_id]: 
+[tags]: 
+Simple TCP server using select(), why is "longest request" so high?
+
+I am implementing a simple TCP server using the select() method - everything is fine and performance is quite acceptable, but when benchmarking with ab (apachebench) the "longest request" is insanely high compared to the average times: I am using: ab -n 5000 -c 20 http://localhost:8000/ snippet: Requests per second: 4262.49 [#/sec] (mean) Time per request: 4.692 [ms] (mean) Time per request: 0.235 [ms] (mean, across all concurrent requests) Percentage of the requests served within a certain time (ms) 50% 2 66% 2 75% 2 80% 2 90% 2 95% 3 98% 3 99% 4 100% 203 (longest request) and the same against apache: Requests per second: 5452.66 [#/sec] (mean) Time per request: 1.834 [ms] (mean) Time per request: 0.183 [ms] (mean, across all concurrent requests) Percentage of the requests served within a certain time (ms) 50% 1 66% 2 75% 2 80% 2 90% 3 95% 3 98% 4 99% 4 100% 8 (longest request) For reference, i am using stream_select, and sockets are non-blocking. Is this a common effect of using the select() call? Are there any kinds of performance considerations i should worry about? Update: When using a concurrency value Update2: After replacing the stream functions with equivalent socket functions, and some proper testing/benchmarking, the issue no longer occurs - so i will attribute this behavior to some obscure detail on the PHP implementation of streams.

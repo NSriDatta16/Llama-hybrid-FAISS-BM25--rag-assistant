@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2273776
+[parent_id]: 2273603
+[tags]: 
+An ugly way would be to run a system call with a dumpbin command and parse the output. But that has about the same elegance as a bull in the proverbial china shop. dumpbin /exports c:\windows\system32\user32.dll | grep FunctionOfInterest Otherwise, you could write a simple loop calling GetProcAddress with ordinals (passed in the low two bytes of the name parameter). When the function pointer matches the pointer returned when passing the actual name, then you are done. Here is the basic idea without error checking: HANDLE hMod; HANDLE byname, byord; int ord; hMod = LoadLibrary( "user32.dll" ); byname = GetProcAddress( hMod, "GetWindow" ); byord = 0; ord = 1; while ( 1 ) { byord = GetProcAddress( hMod, (LPCSTR)ord ); if ( byord == byname ) { printf( "ord = %d\n", ord ); break; } ord++; }

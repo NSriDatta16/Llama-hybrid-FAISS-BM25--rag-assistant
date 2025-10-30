@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5695860
+[parent_id]: 5691031
+[tags]: 
+Assumes Imports System.Runtime.InteropServices, System.Drawing.Imaging at the top of the code file. (LockBits isn't that hard, I do a lot of image processing with it and much prefer VB.NET over C#.) Private Sub To4BitGrayScale(ByVal b As Bitmap) Dim bd As BitmapData = b.LockBits(New Rectangle(0, 0, b.Width, b.Height), ImageLockMode.ReadWrite, ImageFormat.Format24BppRgb) Dim arr(bd.Width * bd.Height * 3 - 1) As Byte Marshal.Copy(bd.Scan0, arr, 0, arr.Length) For i As Integer = 0 To arr.Length - 1 Step 3 Dim c As Color = Color.FromArgb(255, arr(i), arr(i + 1), arr(i + 2)) ' Convert c to grayscale however you want; weighted, average, whatever. arr(i) = c.R arr(i + 1) = c.G arr(i + 2) = c.B Next Marshal.Copy(arr, 0, bd.Scan0, arr.Length) b.UnlockBits(bd) End Sub This method is not fast, of course (it takes about 1-2 seconds for an 8 megapixel image for me) but it's not bad.

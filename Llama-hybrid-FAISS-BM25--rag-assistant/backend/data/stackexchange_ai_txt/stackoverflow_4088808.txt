@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4088808
+[parent_id]: 4086936
+[tags]: 
+I can't get your if test a -ne b approach to work (shell scripting isn't really my strongest hold), but personally I'd do it this way: FILE = ./root/lib/modules/$(KERNEL_VERSION)/modules.dep PREFIX = /lib/modules/$(KERNEL_VERSION) foo: sed -i -e 'H;$$!d;x;s/.//;/^\//!{s|^|$(PREFIX)|;s|\n|\n$(PREFIX)|g}' $(FILE) EDIT: Come to think of it, this is a little more elegant: sed -i '1{h;s/\(.\).*/\1/;s/\//a$(PREFIX)/;s/.//;x};H;g;s/\n.*//;x;s/\n//' $(FILE) EDIT: Wait, this is even better: @sed -i '1{/^\//!{x;s/^/$(PREFIX)/;x}};G;s/\(.*\)\n\(.*\)/\2\1/' $(FILE)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5083518
+[parent_id]: 5080914
+[tags]: 
+I believe that send_file depends on support from your web server to work. Are you running your app using the rails built in server? If so, I think you'll see the behaviour you've got here. Basically, the idea behind send_file is that it sets an HTTP header 'X-Sendfile' pointing to the file you want to send. The web server sees this header and rather than returning the body of your response, sends the specified file instead. The benefit of this approach is that your average web server is highly optimised for sending the content of static files very quickly, and will typically get the job done many times more quickly than rails itself can. So, the solutions to your problem are to either: * Use a webserver that supports X-Sendfile (e.g. Apache), or * As rubyprince commented, use send_data instead, which will make ruby do the heavy lifting. Just as an aside, you should be able to confirm that this is what's happening by looking at the response headers using either Firebug or Safari/Chrome's developer tools.

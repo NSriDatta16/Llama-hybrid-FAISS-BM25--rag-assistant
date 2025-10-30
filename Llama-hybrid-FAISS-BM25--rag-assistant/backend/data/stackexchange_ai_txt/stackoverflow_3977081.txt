@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3977081
+[parent_id]: 3975909
+[tags]: 
+I would add another field to your model, vendor . Then add per-vendor methods to your model, and invoke them with getattr: class Foo(models.Model): name = models.CharField(max_length=255) vendor = models.CharField(max_length=50) def vendor_fedex(self, arg): blah blah def vendor_ups(self, arg): blah blah def vendor_usps(self, arg): blah blah def do_instance_specific_stuff(self, arg): fn = getattr(self, "vendor_"+self.vendor, None) if not fn: raise Exception("Uh-oh, bad vendor") fn(arg) Depending on particular values of id seems very fragile. In your data model, each vendor string will appear only once, but it will be readable and malleable. You can decide what you want to do if the getattr can't find the vendor code.

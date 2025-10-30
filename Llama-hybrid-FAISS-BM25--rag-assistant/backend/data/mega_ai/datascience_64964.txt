@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 64964
+[parent_id]: 
+[tags]: 
+Prediction issue with xgboost custom loss
+
+I have an issue with xgboost custom objectives: I do not manage to get consistent forecasts. In other words, the scale of my forecasts is not in line with the values I would like to predict. I tried many custom loss, but I always get the same issue. import numpy as np import pandas as pd import xgboost as xgb from sklearn.datasets import make_regression n_samples_train = 500 n_samples_test = 100 n_features = 200 X, y = make_regression(n_samples_train, n_features,noise=10) X_test, y_test = make_regression(n_samples_test, n_features,noise=10) param = {'verbosity' : 1, 'max_depth' : 12, 'learning_rate' : 0.01, 'nthread' : 3, } dtrain = xgb.DMatrix(X, y) best_nrounds = 50 bst_reglinear = xgb.train(param, dtrain, best_nrounds) def reg_obj(preds,dtrain): y = dtrain.get_label() N = len(y) #residual = (preds-y).astype("float") grad = 2*preds-y hess = 2*N*np.ones(len(y)) return grad, hess bst_custom = xgb.train(param, dtrain, best_nrounds, obj = reg_obj) dtest = xgb.DMatrix(X_test) pred = bst_reglinear.predict(dtest) print(np.abs(pred).mean()) pred_custom = bst_custom.predict(dtest) print(np.abs(pred_custom).mean())

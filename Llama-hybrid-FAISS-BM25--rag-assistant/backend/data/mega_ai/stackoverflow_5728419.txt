@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5728419
+[parent_id]: 
+[tags]: 
+decorate Grails tag
+
+The taglib provided by the Grails bean fields plugin uses a naming convention to determine the label key that should be used for each element it generates. I would like to change the details of this convention without changing the plugin's source code directly. The approach I'm considering is to create my own tag lib class MyBeanTagLib { static namespace = 'mybean' private void setLabelKey (attrs) { if (!attrs.labelKey) { // in reality calculation of the default key is a bit more complicated :) attrs.labelKey = 'my.default.key' } return attrs } // renders a combo box def select = { attrs -> attrs = setLabelKey(attrs) // Now call the bean-fields select tag, passing along attrs } // renders a datePicker def date = { attrs - attrs = setLabelKey(attrs) // Now call the bean-fields date tag, passing along attrs } } My first question is how to invoke the tag I'm trying to decorate. In other words, what code should replace the comment // Now call the bean-fields... I could do this: new BeanTagLib().select(attrs) But I doubt this is the correct way to invoke one taglib from another. Secondly, is there a more elegant way to decorate a taglib than this? In reality there are a lot more tags than just select and date that I need to decorate and the code in each decorating tag will be almost identical. I'd like to eliminate this duplication if possible?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4405240
+[parent_id]: 4404421
+[tags]: 
+They ( pAge and pYear ) are native pointers, and passing them to a native function is safe. Stack variables (locals with automatic storage lifetime) are not subject to being rearranged by the garbage collector, so pinning is not necessary. Copying managed data to the stack, then passing it to native functions, solves the gc-moving-managed-data-around problem in many cases (of course, don't use it in conjunction with callbacks that expect the original variable to be updated before your wrapper has a chance to copy the value back). To get a native pointer to managed data, you have to use a pinning pointer. This can be slower than the method of copying the value to the stack, so use it for large values or when you really need the function to operate directly on the same variable (e.g. the variable is used in callbacks or multi-threading). Something like: pin_ptr p = &mgd_obj.field; See also the MSDN documentation

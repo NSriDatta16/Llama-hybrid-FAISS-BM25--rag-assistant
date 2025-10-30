@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2296440
+[parent_id]: 
+[tags]: 
+Does the creation of TcpClient have much overhead?
+
+I tried to send/receive data by using TcpClient. I did two experiments and found something interesting. I setup the TcpListener in a server in Japan and the TcpClient in UK. I kept sending 500 bytes to the TcpListener and when TcpListener sends 10KB back to the TcpClient. I kept this send/receive looping for 500 times in each experiment. Experiment 1: In every send/receive loop, I create a brand new TcpClient (the time ticks from just before the creation) and send/receive Experiment 2: For all loops, I only have one TcpClient, and it keeps the connection with TcpListener and do the send/receive for 500 times. Result: The average value of the time cost for one loop: E1: 1.8 seconds, E2: 0.49 seconds. I am quite surprised by this result. So keeping connection for constant send/receive can save that lots of time??? nearly 2/3 of the time. Is this true??? Thanks ====new==== @Jon Skeet, @dbemerlin, Thanks for the reply. I guessed the Tcp handshakes take some time tool. So I did Experiment 3. I setup a HttpListener as the server and use a WebClient to send/receive, the data sizes are exactly the same. And every time I used a new WebClient to send/receive between UK and Japan. The result is 0.86 (average from 500 times loop, i.e., send/receive). I assume that WebClient / HttpLisener themselves are Tcp, right? How can they be faster than raw TcpClient/TcpListener in my experiments?? THanks again

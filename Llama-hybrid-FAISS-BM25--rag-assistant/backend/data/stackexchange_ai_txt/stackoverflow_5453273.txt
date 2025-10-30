@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5453273
+[parent_id]: 
+[tags]: 
+ParallelCurl with CURLOPT_WRITEFUNCTION
+
+I am trying to use ParallelCurl with a callback when cURL receives data from the server it is connected to. Here is the code I currently have: function request_finished($content, $url, $ch, $user_data) { echo "Request Finished: ", $content, "\n"; } $pc=new ParallelCurl(); $servers=Server::loadNewAllFromDB(); //Returns an array of 'Server' objects which store connection information foreach ($servers as $server) { $pc->setOptions( array( CURLOPT_USERAGENT=>'My UserAgent String', CURLOPT_WRITEFUNCTION=> function ($ch, $string) { echo "WRITEFUNCTION Called! | ", $string; return strlen($string); } ) ); //print_r($pc->options); $pc->startRequest( 'http://' . $server->address . ':' . $server->portbase . '/someurl'), 'request_finished' ); } $pc->finishAllRequests(); Now, what I expect to happen is for my anonymous function to be called when cURL has data to output. Instead, it simply seems to ignore the fact that CURLOPT_WRITEFUNCTION is set at all. Note that if I am not using ParallelCurl, I can set the very same anonymous function as CURLOPT_WRITEFUNCTION just fine. It as if my function is being overridden somewhere later. I have also verified that it is in fact being set. You can see the line that I have commented out, //print_r($pc->options) . It outputs my closure object. Any thoughts on this would be most appreciated. Thanks.

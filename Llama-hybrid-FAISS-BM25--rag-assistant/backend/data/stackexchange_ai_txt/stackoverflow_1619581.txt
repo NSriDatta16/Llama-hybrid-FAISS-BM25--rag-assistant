@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1619581
+[parent_id]: 1619562
+[tags]: 
+There is nothing wrong. Remember that git objects: commits, trees and blobs are immutable, so a git object storage is like a log, you only write new objects to it without removing anything, even when you "rewrite history". Not before git gc do you stop the world and prune. Git makes it hard to lose data. If your repository is very big, and you repack it, rsync has to transfer the whole object database again, since git packs everything into a new, big pack file. If you want to repack, you can either use git repack instead which will create new packs for new objects without touching the old. Or you can repack once good, and mark the big pack file for keeping: If you have a pack file called .git/objects/pack-fe017c0e9ea12841cd29458df7bd4421c2b12458.pack , just create one named .keep beside it: touch .git/objects/pack-fe017c0e9ea12841cd29458df7bd4421c2b12458.keep Now, git gc won't rewrite that pack file, but it will take all other small packs and objects and collect them together. The difference to git repack is that you won't build up a collection of lots of small pack files.

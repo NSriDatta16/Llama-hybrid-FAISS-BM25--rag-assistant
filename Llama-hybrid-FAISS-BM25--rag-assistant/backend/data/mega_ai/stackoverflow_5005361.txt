@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5005361
+[parent_id]: 
+[tags]: 
+Function to set an auth_token
+
+In my form I have a hidden field: "> This value is also stored in a session and a variable: $_SESSION['auth_token'] = hash('sha256', rand() . time() . $_SERVER['HTTP_USER_AGENT']); # TODO: put this in a function $auth_token = $_SESSION['auth_token']; When the form is submitted the two values are compared. It's a basic form token. Should this be made into two functions or just one when refactored? set_form_token() and get_form_token() , get_form_token() returning the session value, then I can compare it in my main code. What is the proper way of doing this? EDIT: Considering both Joel L and RobertPitt's answers I have made these: function set_auth_token() { if (!isset($_SESSION['auth_token'])) { $_SESSION['auth_token'] = hash('sha256', rand() . time() . $_SERVER['HTTP_USER_AGENT']); } } function get_auth_token() { if (isset($_SESSION['auth_token'])) { return $_SESSION['auth_token']; } else { die('No auth token.'); } } function check_auth_token() { if (array_key_exists('auth_token', $_SESSION) && array_key_exists('auth_token', $_POST)) { if ($_SESSION['auth_token'] === $_POST['auth_token']) { # what happens if user fills the form in wrong first time(?) $_SESSION['auth_token'] = hash('sha256', rand() . time() . $_SERVER['HTTP_USER_AGENT']); } else { return false; } } else { return false; } } I can then check if check_auth_token returns false or not and then record it after the form has been submitted. Would this be acceptable?

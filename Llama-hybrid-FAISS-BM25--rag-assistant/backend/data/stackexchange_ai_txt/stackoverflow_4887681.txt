@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4887681
+[parent_id]: 4887202
+[tags]: 
+You're likely viewing a page which is been served from browser cache. You need to add HTTP response headers which instructs the webbrowser to not cache the dynamic pages. You can do this with a javax.servlet.Filter which is mapped on an of interest, e.g. *.jsf or something and does the following job in doFilter() method: HttpServletResponse httpResponse = (HttpServletResponse) response; httpResponse.setHeader("Cache-Control", "no-cache,no-store,must-revalidate"); // HTTP 1.1 httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0 httpResponse.setDateHeader("Expires", 0); // Proxies. chain.doFilter(request, response); Don't forget to clear the browser cache before testing ;) Unrelated to the problem, the if (session != null) nullcheck in your code is superfluous since session can never be null when it reaches that nullcheck. If it was null, it would have thrown a NullPointerException at the removeAttribute() call and thus never reach the nullcheck.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 335027
+[parent_id]: 330178
+[tags]: 
+As others have pointed out, this code will do what you intend as is, but only under a strict set of non-obvious assumptions: The Java code is non-clustered (see @Greg H's answer) The "row" reference is only being checked for null in the first line, before the synchronization block. The reason the double-checked locking idiom is broken (per section 16.2.4 of Java Concurrency in Practice ) is that it's possible for a thread running this method to see a non-null but improperly initialized reference to "row", before entering the synchronized block (unless "dao" provides proper synchronization). If your method were doing anything with "row" other than checking that it's null or not, it would be broken. As it stands, it is probably okay but very fragile - personally I wouldn't be comfortable committing this code if I thought there were even a remote chance that some other developer at some later time might modify the method without understanding the subtleties of DCL.

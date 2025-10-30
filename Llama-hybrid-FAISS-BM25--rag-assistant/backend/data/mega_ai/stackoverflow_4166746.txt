@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4166746
+[parent_id]: 4166650
+[tags]: 
+There is likely a more elegant way to solve this, but my first thought is to simply grab the newest TradeShow record to join with SELECT SalePersonID, FirstName, LastName, TradeShow.DateLastWent FROM SalesPerson INNER JOIN ( SELECT * FROM ( SELECT TradeShowId, DateLastWent, City, State, SalesPersonId FROM TradeShow ORDER BY datelastwent DESC ) WHERE ROWNUM Edit Oops... been playing with Oracle too much ROW_NUMBER() OVER(order by date) or SELECT TOP X would be thw SQL Server way for doing this... don't have an instance of SQL-Server running, but pretty sure the syntax ends up being something like SELECT SalePersonID, FirstName, LastName, TradeShow.DateLastWent FROM SalesPerson INNER JOIN ( SELECT TradeShowId, DateLastWent, City, State, SalesPersonId, ROW_NUMBER() OVER(PARTITION BY TradeShow.SalesPersonId ORDER BY DateLastWent DESC) RowNumber FROM TradeShow ) ON SalesPerson.SalesPersonId = TradeShow.SalesPersonId AN TradeShow.RowNumber = 1

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3153675
+[parent_id]: 3153483
+[tags]: 
+You don't say whether you're using Rails 2 or 3 but let's assume Rails 2 for this purpose (Rails 3 provides the a new DSL for constructing queries). You could consider creating a named scope for in your Organization model as follows: named_scope :update_credits, lambda { |id| { :include => :card_signup, :conditions => [ "id = ? AND card_signups.credit_status = TRUE", id ] } } And then use it as follows: def credit_status_on_create Organization.update_credits(self.organization_id) end Admittedly I don't quite understand the role of the counter in your logic but I'm sure you could craft that back into this suggestion if you adopt it.

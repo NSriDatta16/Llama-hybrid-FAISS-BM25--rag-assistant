@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3283810
+[parent_id]: 3281999
+[tags]: 
+This seems to work OK (edited so it accepts pipeline input): function Format-SortedList { param ( [Parameter(ValueFromPipeline = $true)] [Object]$InputObject, [Parameter(Mandatory = $false)] [Switch]$Descending ) process { $properties = $InputObject | Get-Member -MemberType Properties if ($Descending) { $properties = $properties | Sort-Object -Property Name -Descending } $longestName = 0 $longestValue = 0 $properties | ForEach-Object { if ($_.Name.Length -gt $longestName) { $longestName = $_.Name.Length } if ($InputObject."$($_.Name)".ToString().Length -gt $longestValue) { $longestValue = $InputObject."$($_.Name)".ToString().Length * -1 } } Write-Host ([Environment]::NewLine) $properties | ForEach-Object { Write-Host ("{0,$longestName} : {1,$longestValue}" -f $_.Name, $InputObject."$($_.Name)".ToString()) } } } $Host, $MyInvocation | Format-SortedList $Host, $MyInvocation | Format-SortedList -Descending

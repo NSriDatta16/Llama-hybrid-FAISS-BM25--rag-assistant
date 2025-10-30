@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5143455
+[parent_id]: 5143171
+[tags]: 
+A couple questions have to be asked about this third-party code: Does it write to persistent storage during processing? i.e. files or to a database If it writes to persistent storage, does that affect future runs? (probably not, as you've been able to run in parallel) If the answer to both questions is yes, you're in a difficult situation. It's hard to imagine any way of restoring the persistent storage to a consistent state which wouldn't be more expensive than just letting the algorithm run to completion. (Although if long-running means more than a couple minutes, doing a VM clone and transferring the data to it might be less work.) If either question is no, you can abort processing. But the smallest unit which Windows allows you to cleanly abort is a process . You'll have to spawn a worker process to perform the calculation. The most straightforward way is to build a TCP service (.NET comes with tools for this -- WCF). If the third-party code only reads its input data, you can use tools like shared memory to reduce the cost of transferring data to this subprocess.

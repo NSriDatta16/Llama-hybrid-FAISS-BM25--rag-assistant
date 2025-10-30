@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 40460
+[parent_id]: 
+[tags]: 
+Bidirectional GRU: validation loss stuck on plateau diverges from well performing training loss
+
+tl;dr: What's the interpretation of the validation loss decreasing faster than training loss at first but then get stuck on a plateau earlier and stop decreasing? The accuracy behaviour is similar. Background: The task is multi-class document classification with a high number of labels (L = 48) and a highly imbalanced dataset. It's a NLP task, using only word-embeddings as features. The model implemented is a Recurrent Neural Network based on Bidirectional GRU layer. The full implementation is as follows: inp = Input(shape=(MAX_LEN,)) x = Embedding(num_words, embed_size, weights=[embedding_matrix])(inp) x = SpatialDropout1D(0.2)(x) x = Bidirectional(GRU(80, return_sequences=True, dropout=0.5, recurrent_dropout=0.5))(x) avg_pool = GlobalAveragePooling1D()(x) max_pool = GlobalMaxPooling1D()(x) conc = concatenate([avg_pool, max_pool]) dense = Dense(num_classes)(conc) bn = BatchNormalization()(dense) outp = Activation("softmax")(bn) adam = Adam(lr=LEARNING_RATE) model = Model(inputs=inp, outputs=outp) model.compile(loss=focal_loss, optimizer=adam) Relevant insights: Highly regularized: SpatialDropot, Dropout, Recurrent Dropout, Batch normalization... Imbalanced sensible loss function: Focal loss Adaptative optimizer: Adam Training setup: Epochs: 300 Learning rate: $1e-4$ Batch size: 32

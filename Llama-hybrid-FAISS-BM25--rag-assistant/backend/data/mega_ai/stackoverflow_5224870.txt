@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5224870
+[parent_id]: 5221977
+[tags]: 
+Memcache is such a volatile storage to store valuable data like guestbook entries; remember that memcache data could be evicted in case of low memory for example. If your guestbook has an high traffic and you are suffering write datastore timeouts/contention, try with another approach using a rate limited taskqueue to slow down the number of writes to datastore. Let the user compile the guestbook entries Pass each data entry to a rate limited taskqueue via deferred library Write to datastore You can relax the write to datastore defining a low rate execution in your queue.yaml with something like this: queue: - name: relaxed-write rate: 1/s bucket_size: 1 With one write per second, you would probably get some sporadic timeout errors; in this case the task will be executed again until it succeeds.

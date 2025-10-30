@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 32464
+[parent_id]: 
+[tags]: 
+cnn classifier failing on image after contour selecting
+
+I have a trained mnist-based cnn classifier which is working fine when there is only one number in the image.For more than 1 number in the image I am taking contours and separating the numbers using ROI. But my model is failing on the separated images Original image Contoured image Here 5 is being classified as 3. Here is my code: import cv2 image = cv2.imread("im1.png") gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY) # grayscale ret,thresh1 = cv2.threshold(gray,127,255,cv2.THRESH_BINARY) gray = cv2.bilateralFilter(thresh1, 11, 17, 17) kernel = np.ones((5,5), np.uint8) img_dilation = cv2.dilate(gray, kernel, iterations=1) img_erosion = cv2.erode(img_dilation, kernel, iterations=1) #edged = cv2.Canny(gray, 30, 200) plt.imshow(img_erosion[:,:], 'gray') im2,contours, hierarchy = cv2.findContours(img_erosion.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) contours = sorted(contours, key = cv2.contourArea, reverse = True) # get contours # for each contour found, draw a rectangle around it on original image roi=[] i=0 for contour in contours: # get rectangle bounding contour [x,y,w,h] = cv2.boundingRect(contour) # discard areas that are too large if h>300 and w>300: continue # discard areas that are too small if h Here classifier is the trained cnn model

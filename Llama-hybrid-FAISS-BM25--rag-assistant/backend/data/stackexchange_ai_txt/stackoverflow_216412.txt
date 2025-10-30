@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 216412
+[parent_id]: 216315
+[tags]: 
+As you mentioned, checking the System property as follows is probably the cleanest way: private boolean isRunningJavaWebStart() { return System.getProperty("javawebstart.version", null) != null; } In a production system I have used the above technique for years. You can also try to check to see if there are any properties that start with "jnlpx." but none of those are really "guaranteed" to be there either as far as I know. An alternative could be to attempt to instantiate the DownloadService us suggested by Tom: private boolean isRunningJavaWebStart() { try { DownloadService ds = (DownloadService) ServiceManager.lookup("javax.jnlp.DownloadService"); return ds != null; } catch (UnavailableServiceException e) { return false; } } Of course that does have the downside of coupling your code to that API.

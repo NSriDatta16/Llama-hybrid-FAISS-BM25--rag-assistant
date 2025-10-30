@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5608886
+[parent_id]: 5608083
+[tags]: 
+First off, testLayer has been released in -viewDidLoad. When you access it again in -touchesBegan it is not valid. That layer it referenced still exists, but it is only being retained by the sublayers array. You could change the code to create an autoreleased CALayer, like this: - (void)viewDidLoad { testLayer = [CALayer layer]; testLayer.bounds = CGRectMake(0, 0, 100, 100); testLayer.position = CGPointMake(400, 400); [testLayer setBackgroundColor:[UIColor redColor].CGColor]; testLayer.delegate = self; [self.view.layer addSublayer:testLayer]; } Now it will actually get removed from the layer hierarchy in -touchesBegan. Keep mind that it will also be released in -touchesBegan because nothing is holding a reference to it any more. You will have to reinitialize it or you need to retain it yourself before you call -removeFromSuperlayer.

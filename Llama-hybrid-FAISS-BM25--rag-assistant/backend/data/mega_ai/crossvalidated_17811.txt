@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 17811
+[parent_id]: 
+[tags]: 
+Fit a robust regression line using an MM-estimator in R
+
+Context. I'd like to fit a regression line to study to relation between some response variable $y$ and some continuous covariate $x$. Because of the presence of bad leverage points, I have opted for an MM-estimator instead of the usual LS-estimator. Methodology. Basically, MM-estimation is M-estimation initialised by an S-estimator. Hence, two loss functions have to be picked. I have chosen the widely used Tukey Biweight's loss function $\rho ( u ) = \left\{ \begin{array}{ll} 1 - \left[ 1 - \left( \tfrac{u}{k} \right)^{2} \right]^{3} & \textrm{if } | u | \leq k \\ 1 & \textrm{if } | u | > k, \end{array} \right.$ with $k = 1.548$ at the preliminary S-estimator (which gives a breakdown point equal to $50 \%$), and with $k = 2.697$ at the M-estimation step (to guarantee $70\%$ Gaussian efficiency). I'd like to use R to fit my robust regression line. Question. library(MASS) rlm(y~x, method="MM", k0=1.548, c=2.697, maxit=50) Is my code consistent with the previous paragraph? Would you use other optional arguments? EDIT. Following my discussion with @Jason Morgan, I realise that my previous code is wrong. (@Jason Morgan: Thank you very much for this!) However, I am still not convinced by his proposal. Instead, here is what I propose now: library(robustbase) lmrob(y~x, tuning.chi=1.548, tuning.psi=2.697) I think it sticks to the methodology now. Do you agree? Thanks!

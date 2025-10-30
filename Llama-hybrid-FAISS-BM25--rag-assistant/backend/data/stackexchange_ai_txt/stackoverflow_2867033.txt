@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2867033
+[parent_id]: 2866936
+[tags]: 
+You could pass the event name as a string and then use Reflection to implement this, but that would be quite ugly (and slow as well). Unfortunately, there is no other way to pass events as arguments to a method. However, you can write this elegantly using lambda functions. Instead of writing function to add handler, you can write a function that calls a lambda expression for every control: private void TraverseControls(Control control, Action f) { f(control); foreach (Control subControl in control.Controls) TraverseControls(subControl, f); } Then you can solve your original problem using a single call: TraverseControls(form, ctl => { ctl.MouseDown += handler; ctl.MouseUp += handler); }); The lambda expression ctl => { .. } will be called for every control in the tree and inside the lambda expression, you can add handlers to any events of the control. You could also write this using two calls (adding handlers to MouseDown in the first one and to MouseUp in the second one). Compared to solution using Reflection, this is faster and safer.

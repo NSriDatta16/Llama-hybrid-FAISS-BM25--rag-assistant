@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2976919
+[parent_id]: 2976879
+[tags]: 
+You need to create the server login "mark" before creating a database user "mark" e.g. For Windows Authentication CREATE LOGIN [mark] FROM WINDOWS WITH DEFAULT_DATABASE=[master] e.g. Or For SQL Server Authentication CREATE LOGIN [mark] WITH PASSWORD=N'YourPassword', DEFAULT_DATABASE=[master], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF Then once the login is created the following should work CREATE USER [mark] FOR LOGIN [mark] By the way to get a list of server logins this is the query that management studio uses SELECT log.name AS [Name], CASE WHEN N'U' = log.type THEN 0 WHEN N'G' = log.type THEN 1 WHEN N'S' = log.type THEN 2 WHEN N'C' = log.type THEN 3 WHEN N'K' = log.type THEN 4 END AS [LoginType], log.is_disabled AS [IsDisabled], log.create_date AS [CreateDate] FROM sys.server_principals AS log WHERE (log.type in ('U', 'G', 'S', 'C', 'K') AND log.principal_id not between 101 and 255 AND log.name <> N'##MS_AgentSigningCertificate##') ORDER BY [Name] ASC

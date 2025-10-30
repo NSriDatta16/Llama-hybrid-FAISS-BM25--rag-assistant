@@ -1,0 +1,246 @@
+The concept of a stable model, or answer set, is used to define a declarative semantics for logic programs with negation as failure. This is one of several standard approaches to the meaning of negation in logic programming, along with program completion and the well-founded semantics. The stable model semantics is the basis of
+answer set programming.
+
+Motivation
+Research on the declarative semantics of negation in logic programming was motivated by the fact that the behavior of SLDNF resolution—the generalization of SLD resolution used by Prolog in the presence of negation in the bodies of rules—does not fully match the truth tables familiar from classical propositional logic. Consider, for instance, the program
+
+Given this program, the query  will succeed, because the program includes  as a fact; the query  will fail, because it does not occur in the head of any of the rules. The query  will fail also, because the only rule with  in the head contains the subgoal  in its body; as we have seen, that subgoal fails. Finally, the query  succeeds, because each of the subgoals ,  succeeds. (The latter succeeds because the corresponding positive goal  fails.) To sum up, the behavior of SLDNF resolution on the given program can be represented by the following truth assignment:
+
+{| cellpadding=5 style="width:18em"
+|
+|
+|
+|
+|-
+|T
+|F
+|F
+|T.
+|}
+
+On the other hand, the rules of the given program can be viewed as propositional formulas if we identify the comma with conjunction , the symbol  with negation , and agree to treat  as the implication  written backwards. For instance, the last rule of the given program is, from this point of view, alternative notation for the propositional formula
+
+If we calculate the truth values of the rules of the program for the truth assignment shown above then we will see that each rule gets the value T. In other words, that assignment is a model of the program. But this program has also other models, for instance
+
+{| cellpadding=5 style="width:18em"
+|
+|
+|
+|
+|-
+|T
+|T
+|T
+|F.
+|}
+
+Thus one of the models of the given program is special in the sense that it correctly represents the behavior of SLDNF resolution. What are the mathematical properties of that model that make it special? An answer to this question is provided by the definition of a stable model.
+
+Relation to nonmonotonic logic
+
+The meaning of negation in logic programs is closely related to two theories of nonmonotonic reasoning—autoepistemic logic and default logic. The discovery of these relationships was a key step towards the invention of the stable model semantics.
+
+The syntax of autoepistemic logic uses a modal operator that allows us to distinguish between what is true and what is known. Michael Gelfond [1987] proposed to read  in the body of a rule as " is not known", and to understand a rule with negation as the corresponding formula of autoepistemic logic. The stable model semantics, in its basic form, can be viewed as a reformulation of this idea that avoids explicit references to autoepistemic logic.
+
+In default logic, a default is similar to an inference rule, except that it includes, besides its premises and conclusion, a list of formulas called justifications. A default can be used to derive its conclusion under the assumption that its justifications are consistent with what is currently known. Nicole Bidoit and Christine Froidevaux [1987] proposed to treat negated atoms in the bodies of rules as justifications. For instance, the rule
+
+can be understood as the default that allows us to derive  from  assuming that  is consistent. The stable model semantics uses the same idea, but it does not explicitly refer to default logic.
+
+Stable models
+
+The definition of a stable model below, reproduced from [Gelfond and Lifschitz, 1988], uses two conventions. First, a truth assignment is identified with the set of atoms that get the value T. For instance, the truth assignment
+
+{| cellpadding=5 style="width:18em"
+|
+|
+|
+|
+|-
+|T
+|F
+|F
+|T.
+|}
+
+is identified with the set . This convention allows us to use the set inclusion relation to compare truth assignments with each other. The smallest of all truth assignments  is the one that makes every atom false; the largest truth assignment makes every atom true.
+
+Second, a logic program with variables is viewed as shorthand for the set of all ground instances of its rules, that is, for the result of substituting variable-free terms for variables in the rules of the program in all possible ways. For instance, the logic programming definition of even numbers
+
+is understood as the result of replacing  in this program by the ground terms
+
+in all possible ways. The result is the infinite ground program
+
+Definition
+
+Let  be a set of rules of the form
+
+where  are ground atoms. If  does not contain negation ( in every rule of the program) then, by definition, the only stable model of  is its model that is minimal relative to set inclusion. (Any program without negation has exactly one minimal model.) To extend this definition to the case of programs with negation, we need the auxiliary concept of the reduct, defined as follows.
+
+For any set  of ground atoms, the reduct of  relative to  is the set of rules without negation obtained from  by first dropping every rule such that at least one of the atoms  in its body
+
+belongs to , and then dropping the parts  from the bodies of all remaining rules.
+
+We say that  is a stable model of  if  is the stable model of the reduct of  relative to . (Since the reduct does not contain negation, its stable model has been already defined.) As the term "stable model" suggests, every stable model of  is a model of .
+
+Example
+
+To illustrate these definitions, let us check that  is a stable model of the program
+
+The reduct of this program relative to  is
+
+(Indeed, since , the reduct is obtained from the program by dropping the part ) The stable model of the reduct is . (Indeed, this set of atoms satisfies every rule of the reduct, and it has no proper subsets with the same property.) Thus after computing the stable model of the reduct we arrived at the same set  that we started with. Consequently, that set is a stable model.
+
+Checking in the same way the other 15 sets consisting of the atoms  shows that this program has no other stable models. For instance, the reduct of the program relative to  is
+
+The stable model of the reduct is , which is different from the set  that we started with.
+
+Programs without a unique stable model
+
+A program with negation may have many stable models or no stable models. For instance, the program
+
+has two stable models , . The one-rule program
+
+has no stable models.
+
+If we think of the stable model semantics as a description of the behavior of Prolog in the presence of negation then programs without a unique stable model can be judged unsatisfactory: they do not provide an unambiguous specification for Prolog-style query answering. For instance, the two programs above are not reasonable as Prolog programs—SLDNF resolution does not terminate on them.
+
+But the use of stable models in answer set programming provides a different perspective on such programs. In that programming paradigm, a given search problem is represented by a logic program so that the stable models of the program correspond to solutions. Then programs with many stable models correspond to problems with many solutions, and programs without stable models correspond to unsolvable problems. For instance, the eight queens puzzle has 92 solutions; to solve it using answer set programming, we encode it by a logic program with 92 stable models. From this point of view, logic programs with exactly one stable model are rather special in answer set programming, like polynomials with exactly one root in algebra.
+
+Properties of the stable model semantics
+
+In this section, as in the definition of a stable model above, by a logic program we mean a set of rules of the form
+
+where  are ground atoms.
+
+Head atoms If an atom  belongs to a stable model of a logic program  then  is the head of one of the rules of .
+
+Minimality Any stable model of a logic program  is minimal among the models of  relative to set inclusion.
+
+The antichain property If  and  are stable models of the same logic program then  is not a proper subset of . In other words, the set of stable models of a program is an antichain.
+
+NP-completeness Testing whether a finite ground logic program has a stable model is NP-complete.
+
+Relation to other theories of negation as failure
+
+Program completion
+
+Any stable model of a finite ground program is not only a model of the program itself, but also a model of its completion [Marek and Subrahmanian, 1989]. The converse, however, is not true. For instance, the completion of the one-rule program
+
+is the tautology . The model  of this tautology is a stable model of , but its other model  is not. François Fages [1994] found a syntactic condition on logic programs that eliminates such counterexamples and guarantees the stability of every model of the program's completion. The programs that satisfy his condition are called tight.
+
+Fangzhen Lin and Yuting Zhao [2004] showed how to make the completion of a nontight program stronger so that all its nonstable models will be eliminated. The additional formulas that they add to the completion are called loop formulas.
+
+Well-founded semantics
+
+The well-founded model of a logic program partitions all ground atoms into three sets: true, false and unknown. If an atom is true in the well-founded model of  then it belongs to every stable model of . The converse, generally, does not hold. For instance, the program
+
+has two stable models,  and . Even though  belongs to both of them, its value in the well-founded model is unknown.
+
+Furthermore, if an atom is false in the well-founded model of a program then it does not belong to any of its stable models. Thus the well-founded model of a logic program provides a lower bound on the intersection of its stable models and an upper bound on their union.
+
+Strong negation
+
+Representing incomplete information
+
+From the perspective of knowledge representation, a set of ground atoms can be thought of as a description of a complete state of knowledge: the atoms that belong to the set are known to be true, and the atoms that do not belong to the set are known to be false. A possibly incomplete state of knowledge can be described using a consistent but possibly incomplete set of literals; if an atom  does not belong to the set and its negation does not belong to the set either then it is not known whether  is true or false.
+
+In the context of logic programming, this idea leads to the need to distinguish between two kinds of negation—negation as failure, discussed above, and strong negation, which is denoted here by . The following example, illustrating the difference between the two kinds of negation, belongs to John McCarthy. A school bus may cross railway tracks under the condition that there is no approaching train. If we do not necessarily know whether a train is approaching then the rule using negation as failure
+
+is not an adequate representation of this idea: it says that it's okay to cross in the absence of information about an approaching train. The weaker rule, that uses strong negation in the body, is preferable:
+
+It says that it's okay to cross if we know that no train is approaching.
+
+Coherent stable models
+
+To incorporate strong negation in the theory of stable models, Gelfond and Lifschitz [1991] allowed each of the expressions , ,  in a rule
+
+to be either an atom or an atom prefixed with the strong negation symbol. Instead of stable models, this generalization uses answer sets, which may include both atoms and atoms prefixed with strong negation.
+
+An alternative approach [Ferraris and Lifschitz, 2005] treats strong negation as a part of an atom, and it does not require any changes in the definition of a stable model. In this theory of strong negation, we distinguish between atoms of two kinds, positive and negative, and assume that each negative atom is an expression of the form , where  is a positive atom. A set of atoms is called coherent if it does not contain "complementary" pairs of atoms . Coherent stable models of a program are identical to its consistent answer sets in the sense of [Gelfond and Lifschitz, 1991].
+
+For instance, the program
+
+has two stable models,  and . The first model is coherent; the second is not, because it contains both the atom  and the atom .
+
+Closed world assumption
+
+According to [Gelfond and Lifschitz, 1991], the closed world assumption for a predicate  can be expressed by the rule
+
+(the relation  does not hold for a tuple  if there is no evidence that it does). For instance, the stable model of the program
+
+consists of 2 positive atoms
+
+and 14 negative atoms
+
+i.e., the strong negations of all other positive ground atoms formed from .
+
+A logic program with strong negation can include the closed world assumption rules for some of its predicates and leave the other predicates in the realm of the open world assumption.
+
+Programs with constraints
+
+The stable model semantics has been generalized to many kinds of logic programs other than collections of "traditional" rules discussed above—rules of the form
+
+where  are atoms. One simple extension allows programs to contain constraints—rules with the empty head:
+
+Recall that a traditional rule can be viewed as alternative notation for a propositional formula if we identify the comma with conjunction , the symbol  with negation , and agree to treat  as the implication  written backwards. To extend this convention to constraints, we identify a constraint with the negation of the formula corresponding to its body:
+
+We can now extend the definition of a stable model to programs with constraints. As in the case of traditional programs, to define stable models, we begin with programs that do not contain negation. Such a program may be inconsistent; then we say that it has no stable models. If such a program  is consistent then  has a unique minimal model, and that model is considered the only stable model of .
+
+Next, stable models of arbitrary programs with constraints are defined using reducts, formed in the same way as in the case of traditional programs (see the definition of a stable model above). A set  of atoms is a stable model of a program  with constraints if the reduct of  relative to  has a stable model, and that stable model equals .
+
+The properties of the stable model semantics stated above for traditional programs hold in the presence of constraints as well.
+
+Constraints play an important role in answer set programming because adding a constraint to a logic program  affects the collection of stable models of  in a very simple way: it eliminates the stable models that violate the constraint. In other words, for any program  with constraints and any constraint , the stable models of  can be characterized as the stable models of  that satisfy .
+
+Disjunctive programs
+
+In a disjunctive rule, the head may be the disjunction of several atoms:
+
+(the semicolon is viewed as alternative notation for disjunction ). Traditional rules correspond to , and constraints to . To extend the stable model semantics to disjunctive programs [Gelfond and Lifschitz, 1991], we first define that in the absence of negation ( in each rule) the stable models of a program are its minimal models. The definition of the reduct for disjunctive programs remains the same as before. A set  of atoms is a stable model of  if  is a stable model of the reduct of  relative to .
+
+For example, the set  is a stable model of the disjunctive program
+
+because it is one of two minimal models of the reduct
+
+The program above has one more stable model, .
+
+As in the case of traditional programs, each element of any stable model of a disjunctive program  is a head atom of , in the sense that it occurs in the head of one of the rules of . As in the traditional case, the stable models of a disjunctive program are minimal and form an antichain. Testing whether a finite disjunctive program has a stable model is -complete [ and Gottlob, 1993].
+
+Stable models of a set of propositional formulas
+
+Rules, and even disjunctive rules, have a rather special syntactic form, in comparison with arbitrary propositional formulas. Each disjunctive rule is essentially an implication such that its antecedent (the body of the rule) is a conjunction of literals, and its consequent (head) is a disjunction of atoms. David Pearce [1997] and Paolo Ferraris [2005] showed how to extend the definition of a stable model to sets of arbitrary propositional formulas. This generalization has applications to answer set programming.
+
+Pearce's formulation looks very different from the original definition of a stable model. Instead of reducts, it refers to equilibrium logic—a system of nonmonotonic logic based on Kripke models. Ferraris's formulation, on the other hand, is based on reducts, although the process of constructing the reduct that it uses differs from the one described above. The two approaches to defining stable models for sets of propositional formulas are equivalent to each other.
+
+General definition of a stable model
+
+According to [Ferraris, 2005], the reduct of a propositional formula  relative to a set  of atoms is the formula obtained from  by replacing each maximal subformula that is not satisfied by  with the logical constant  (false). The reduct of a set  of propositional formulas relative to  consists of the reducts of all formulas from  relative to . As in the case of disjunctive programs, we say that a set  of atoms is a stable model of  if  is minimal (with respect to set inclusion) among the models of the reduct of  relative to .
+
+For instance, the reduct of the set
+
+relative to  is
+
+Since  is a model of the reduct, and the proper subsets of that set are not models of the reduct,  is a stable model of the given set of formulas.
+
+We have seen that  is also a stable model of the same formula, written in logic programming notation, in the sense of the original definition. This is an instance of a general fact: in application to a set of (formulas corresponding to) traditional rules, the definition of a stable model according to Ferraris is equivalent to the original definition. The same is true, more generally, for programs with constraints and for disjunctive programs.
+
+Properties of the general stable model semantics
+
+The theorem asserting that all elements of any stable model of a program  are head atoms of  can be extended to sets of propositional formulas, if we define head atoms as follows. An atom  is a head atom of a set  of propositional formulas if at least one occurrence of  in a formula from  is neither in the scope of a negation nor in the antecedent of an implication. (We assume here that equivalence is treated as an abbreviation, not a primitive connective.)
+
+The minimality and the antichain property of stable models of a traditional program do not hold in the general case. For instance, (the singleton set consisting of) the formula
+
+has two stable models,  and . The latter is not minimal, and it is a proper superset of the former.
+
+Testing whether a finite set of propositional formulas has a stable model is -complete, as in the case of disjunctive programs.
+
+See also 
+ Answer set programming
+ Logic programming
+ Negation as failure
+
+Notes
+
+References
+
+Logic programming

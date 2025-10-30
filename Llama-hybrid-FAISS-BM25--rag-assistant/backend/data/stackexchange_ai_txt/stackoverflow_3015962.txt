@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3015962
+[parent_id]: 
+[tags]: 
+Zipping with padding in Haskell
+
+A couple of times I've found myself wanting a zip in Haskell that adds padding to the shorter list instead of truncating the longer one. This is easy enough to write. ( Monoid works for me here, but you could also just pass in the elements that you want to use for padding.) zipPad :: (Monoid a, Monoid b) => [a] -> [b] -> [(a, b)] zipPad xs [] = zip xs (repeat mempty) zipPad [] ys = zip (repeat mempty) ys zipPad (x:xs) (y:ys) = (x, y) : zipPad xs ys This approach gets ugly when trying to define zipPad3 . I typed up the following and then realized that of course it doesn't work: zipPad3 :: (Monoid a, Monoid b, Monoid c) => [a] -> [b] -> [c] -> [(a, b, c)] zipPad3 xs [] [] = zip3 xs (repeat mempty) (repeat mempty) zipPad3 [] ys [] = zip3 (repeat mempty) ys (repeat mempty) zipPad3 [] [] zs = zip3 (repeat mempty) (repeat mempty) zs zipPad3 xs ys [] = zip3 xs ys (repeat mempty) zipPad3 xs [] zs = zip3 xs (repeat mempty) zs zipPad3 [] ys zs = zip3 (repeat mempty) ys zs zipPad3 (x:xs) (y:ys) (z:zs) = (x, y, z) : zipPad3 xs ys zs At this point I cheated and just used length to pick the longest list and pad the others. Am I overlooking a more elegant way to do this, or is something like zipPad3 already defined somewhere?

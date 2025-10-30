@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1039667
+[parent_id]: 
+[tags]: 
+Why does std::fstream set the EOF bit the way it does?
+
+I recently ran into a problem caused by using fstream::eof(). I read the following line from here : The function eof() returns true if the end of the associated input file has been reached, false otherwise. and (mistakenly) assumed this meant that if I used fstream::read() and read past the end of the file, the function eof() would tell me. So I did something like this (very generalized): for(int i = 0; i The problem came because of what is explained later on the page linked above (which I failed to read initially, thanks to the misleading first paragraph): Conversely, the stream does not go into EOF state if there happens to be any whitespace after the last token, but trying to read another token will still fail. Therefore, the EOF flag cannot be used as a test in a loop intended to read all stream contents until EOF. Instead, one should check for the fail condition after an attempt to read. So I changed, and now my loop checks against file.fail() rather than file.eof(), and I understand HOW eof() works. My question is, why does it work that way? Are there situations where this is desirable? It seems to me that once you've passed EOF, you've passed EOF and eof() should return true. UPDATE Thanks for the responses, I think I've got it. The only operation I'm performing is read(), and I immediately check for fail(), so I think I'm okay. Now, my question is, what would I use eof() for?

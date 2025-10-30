@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 111353
+[parent_id]: 
+[tags]: 
+Ignoring features in XGBoost by setting them as "missing"
+
+I have some data n x m and I want to ignore certain features. One idea I had is to mark those features as "missing", since XGBoost can handle missing values by default, e.g. using nan when constructing the DMatrix : n, m = 100, 10 X = np.random.uniform(size=(n, m)) y = (np.sum(X, axis=1) >= 0.5 * m).astype(int) # ignore certain features: mark them as missing X[:, 2:7] = np.nan dtrain = xgb.DMatrix(X, label=y, missing=np.nan) model = xgb.train(params={'objective': 'binary:logistic'}, dtrain=dtrain) My question is whether now all such missing features will be ignored during inference. Experimentally, I observed that if I feed the model a dtrain matrix copy, but such that the missing values are filled with random data, I get the same predictions as on the original dtrain : X2 = X.copy() X2[np.isnan(X2)] = np.random.uniform() np.allclose( model.predict(dtrain), model.predict(xgb.DMatrix(X2, missing=np.nan)), rtol=0, atol=1e-12 ) # True Is it safe to say that, in general, any missing values during train, but which may be present during inference are ignored? Are there any caveats?

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1852667
+[parent_id]: 
+[tags]: 
+C# DragEnter event of the Winforms DragDrop
+
+Why do we actually need to handle DragEnter event of the drop destination? What is its effect at the destination? At Source public partial class ToolBoxForm : System.Windows.Forms.Form { public ToolBoxForm() { InitializeComponent(); } private void lbl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) { Label lbl = (Label)sender; lbl.DoDragDrop(lbl.Image, DragDropEffects.Link); } } At Destination: public partial class DrawingArea : Form { public DrawingArea() { InitializeComponent(); } private void DrawingArea_Load(object sender, System.EventArgs e) { ToolBoxForm toolBoxForm = new ToolBoxForm(); this.AddOwnedForm(toolBoxForm); toolBoxForm.Show(); pictureBox1.AllowDrop = true; } private void picDrawingArea_DragEnter(object sender, System.Windows.Forms.DragEventArgs e) { if (e.Data.GetDataPresent(DataFormats.Bitmap)) { e.Effect = DragDropEffects.Copy; } else { e.Effect = DragDropEffects.None; } } private void picDrawingArea_DragDrop(object sender, System.Windows.Forms.DragEventArgs e) { Graphics g = pictureBox1.CreateGraphics(); g.DrawImage((Image)e.Data.GetData(DataFormats.Bitmap), new Point(e.X - this.Left - 12, e.Y - this.Top - 30)); } } When I am commenting out the code: if (e.Data.GetDataPresent(DataFormats.Bitmap)) { e.Effect = DragDropEffects.Copy; } else { e.Effect = DragDropEffects.None; } The image is not being dropped.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2403654
+[parent_id]: 2403564
+[tags]: 
+There is no really "elegant" way. When you have group Group By queries like this, you're going to have either sub-queries or temporary tables. This will work: Select ID, A.PersonID, A.StoreID, Data1, Data2, A.EntryDate From ExampleTable As A Inner Join (select PersonID, StoreID, max(EntryDate) As EntryDate from ExampleTable group by PersonID, StoreID, dbo.dayof(EntryDate)) As B On ExampleTable.PersonID = B.PersonID And ExampleTable.StoreID = B.StoreID And ExampleTable.EntryDate = B.EntryDate You should not be too down on the solution you came up with though. Using temporary tables never looks elegant, but it is efficient; I would not be surprised if your original two-step solution is actually faster than my one-step solution. (you'll have to test to know for sure.)

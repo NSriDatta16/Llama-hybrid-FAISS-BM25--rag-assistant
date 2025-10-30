@@ -1,0 +1,101 @@
+The C and C++ programming languages are closely related but have many significant differences. C++ began as a fork of an early, pre-standardized C, and was designed to be mostly source-and-link compatible with C compilers of the time.  Due to this, development tools for the two languages (such as IDEs and compilers) are often integrated into a single product, with the programmer able to specify C or C++ as their source language. 
+
+However, C is not a subset of C++, and nontrivial C programs will not compile as C++ code without modification. Likewise, C++ introduces many features that are not available in C and in practice almost all code written in C++ is not conforming C code. This article, however, focuses on differences that cause conforming C code to be ill-formed C++ code, or to be conforming/well-formed in both languages but to behave differently in C and C++.
+
+Bjarne Stroustrup, the creator of C++, has suggested that the incompatibilities between C and C++ should be reduced as much as possible in order to maximize interoperability between the two languages. Others have argued that since C and C++ are two different languages, compatibility between them is useful but not vital; according to this camp, efforts to reduce incompatibility should not hinder attempts to improve each language in isolation. The official rationale for the 1999 C standard (C99) "endorse[d] the principle of maintaining the largest common subset" between C and C++ "while maintaining a distinction between them and allowing them to evolve separately", and stated that the authors were "content to let C++ be the big and ambitious language."
+
+Several additions of C99 are not supported in the current C++ standard or conflicted with C++ features, such as variable-length arrays, native complex number types and the restrict type qualifier. On the other hand, C99 reduced some other incompatibilities compared with C89 by incorporating C++ features such as // comments and mixed declarations and code.
+
+Constructs valid in C but not in C++
+C++ enforces stricter typing rules (no implicit violations of the static type system), and initialization requirements (compile-time enforcement that in-scope variables do not have initialization subverted) than C, and so some valid C code is invalid in C++. A rationale for these is provided in Annex C.1 of the ISO C++ standard.
+
+C99 and C11 added several additional features to C that have not been incorporated into standard C++ as of C++20, such as complex numbers, variable length arrays (note that complex numbers and variable length arrays are designated as optional extensions in C11), flexible array members, the restrict keyword, array parameter qualifiers, and compound literals. 
+
+C++ adds numerous additional keywords to support its new features. This renders C code using those keywords for identifiers invalid in C++. For example:
+
+struct template 
+{
+    int new;
+    struct template* class;
+};
+
+is valid C code, but is rejected by a C++ compiler, since the keywords template, new and class are reserved.
+
+Constructs that behave differently in C and C++
+There are a few syntactic constructs that are valid in both C and C++ but produce different results in the two languages.
+
+ Character literals such as 'a' are of type int in C and of type char in C++, which means that sizeof 'a' will generally give different results in the two languages: in C++, it will be 1, while in C it will be sizeof(int). As another consequence of this type difference, in C, 'a' will always be a signed expression, regardless of whether or not char is a signed or unsigned type, whereas for C++ this is compiler implementation specific.
+ C++ assigns internal linkage to namespace-scoped const variables unless they are explicitly declared extern, unlike C in which extern is the default for all file-scoped entities. Note that in practice this does not lead to silent semantic changes between identical C and C++ code but instead will lead to a compile-time or linkage error.
+ In C, use of inline functions requires manually adding a prototype declaration of the function using the extern keyword in exactly one translation unit to ensure a non-inlined version is linked in, whereas C++ handles this automatically. In more detail, C distinguishes two kinds of definitions of inline functions: ordinary external definitions (where extern is explicitly used) and inline definitions.  C++, on the other hand, provides only inline definitions for inline functions.  In C, an inline definition is similar to an internal (i.e. static) one, in that it can coexist in the same program with one external definition and any number of internal and inline definitions of the same function in other translation units, all of which can differ.  This is a separate consideration from the linkage of the function, but not an independent one.  C compilers are afforded the discretion to choose between using inline and external definitions of the same function when both are visible.  C++, however, requires that if a function with external linkage is declared inline in any translation unit then it must be so declared (and therefore also defined) in every translation unit where it is used, and that all the definitions of that function be identical, following the ODR. Note that static inline functions behave identically in C and C++.
+ Both C99 and C++ have a boolean type bool with constants true and false, but they are defined differently.  In C++, bool is a built-in type and a reserved keyword.  In C99, a new keyword, _Bool, is introduced as the new boolean type.  The header stdbool.h provides macros bool, true and false that are defined as _Bool, 1 and 0, respectively. Therefore, true and false have type int in C. This is likely to change in C23 however, whose draft includes changing bool, true, and false to become keywords, and giving true and false the type bool.
+
+Several of the other differences from the previous section can also be exploited to create code that compiles in both languages but behaves differently.  For example, the following function will return different values in C and C++:
+
+extern int T;
+
+int size(void)
+{
+    struct T {  int i;  int j;  };
+    
+    return sizeof(T);
+    /* C:   return sizeof(int)
+     * C++: return sizeof(struct T)
+     */
+}
+
+This is due to C requiring struct in front of structure tags (and so sizeof(T) refers to the variable), but C++ allowing it to be omitted (and so sizeof(T) refers to the implicit typedef). Beware that the outcome is different when the extern declaration is placed inside the function: then the presence of an identifier with same name in the function scope inhibits the implicit typedef to take effect for C++, and the outcome for C and C++ would be the same. Observe also that the ambiguity in the example above is due to the use of the parenthesis with the sizeof operator. Using sizeof T would expect T to be an expression and not a type, and thus the example would not compile with C++.
+
+Linking C and C++ code
+While C and C++ maintain a large degree of source compatibility, the object files their respective compilers produce can have important differences that manifest themselves when intermixing C and C++ code.  Notably:
+ C compilers do not name mangle symbols in the way that C++ compilers do.
+ Depending on the compiler and architecture, it also may be the case that calling conventions differ between the two languages.
+
+For these reasons, for C++ code to call a C function foo(), the C++ code must prototype foo() with extern "C". Likewise, for C code to call a C++ function bar(), the C++ code for bar() must be declared with extern "C".
+
+A common practice for header files to maintain both C and C++ compatibility is to make its declaration be extern "C" for the scope of the header:
+
+/* Header file foo.h */
+#ifdef __cplusplus /* If this is a C++ compiler, use C linkage */
+extern "C" {
+#endif
+
+/* These functions get C linkage */
+void foo();
+ 
+struct bar { /* ... */ };
+
+#ifdef __cplusplus /* If this is a C++ compiler, end C linkage */
+}
+#endif
+
+Differences between C and C++ linkage and calling conventions can also have subtle implications for code that uses function pointers. Some compilers will produce non-working code if a function pointer declared extern "C" points to a C++ function that is not declared extern "C".
+
+For example, the following code:
+void my_function();
+extern "C" void foo(void (*fn_ptr)(void));
+
+void bar()
+{
+   foo(my_function);
+}
+
+Using Sun Microsystems' C++ compiler, this produces the following warning:
+ $ CC -c test.cc
+ "test.cc", line 6: Warning (Anachronism): Formal argument fn_ptr of type
+ extern "C" void(*)() in call to foo(extern "C" void(*)()) is being passed
+ void(*)().
+This is because my_function() is not declared with C linkage and calling conventions, but is being passed to the C function foo().
+
+References
+
+External links
+
+ Detailed comparison, sentence by sentence, from a C89 Standard perspective.
+  Incompatibilities Between ISO C and ISO C++, David R. Tribble (August 2001).
+ Oracle (Sun Microsystems) C++ Migration Guide, section 3.11, Oracle/Sun compiler docs on linkage scope.
+ Oracle: Mixing C and C++ Code in the Same Program, overview by Steve Clamage (ANSI C++ Committee chair).
+
+Comparison of individual programming languages
+C (programming language)
+C++
+Articles with example C++ code

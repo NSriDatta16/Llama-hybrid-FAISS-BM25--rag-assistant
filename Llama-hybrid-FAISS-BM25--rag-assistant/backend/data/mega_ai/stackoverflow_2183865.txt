@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2183865
+[parent_id]: 2183520
+[tags]: 
+Your loop is causing deadlock, the BGWs cannot complete. The problem is the RunWorkerCompleted event, it is raised on the UI thread. That bit of BGW magic requires the UI thread to be idle, it must be pumping its message loop. Problem is, the UI thread is not idle and it isn't pumping messages, it is stuck in the for loop. Thus, the event handler cannot run and IsBusy stays true. You'll need to do this differently. Leverage the RunWorkerCompleted event to run the code that you'd normally run after this for loop. Resist all temptation to call Application.DoEvents() inside the loop.

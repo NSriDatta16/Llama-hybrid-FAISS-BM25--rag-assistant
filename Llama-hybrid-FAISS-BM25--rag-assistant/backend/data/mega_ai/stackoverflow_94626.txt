@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 94626
+[parent_id]: 94502
+[tags]: 
+FasterCSV is definitely the way to go, but if you want to serve it directly from your Rails app, you'll want to set up some response headers, too. I keep a method around to set up the filename and necessary headers: def render_csv(filename = nil) filename ||= params[:action] filename += '.csv' if request.env['HTTP_USER_AGENT'] =~ /msie/i headers['Pragma'] = 'public' headers["Content-type"] = "text/plain" headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0' headers['Content-Disposition'] = "attachment; filename=\"#{filename}\"" headers['Expires'] = "0" else headers["Content-Type"] ||= 'text/csv' headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" end render :layout => false end Using that makes it easy to have something like this in my controller: respond_to do |wants| wants.csv do render_csv("users-#{Time.now.strftime("%Y%m%d")}") end end And have a view that looks like this: ( generate_csv is from FasterCSV) UserID,Email,Password,ActivationURL,Messages

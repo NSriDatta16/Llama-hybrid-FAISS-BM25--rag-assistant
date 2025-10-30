@@ -1,0 +1,123 @@
+Distributed constraint optimization (DCOP or DisCOP) is the distributed analogue to constraint optimization.  A DCOP is a problem in which a group of agents must distributedly choose values for a set of variables such that the cost of a set of constraints over the variables is minimized.
+
+Distributed Constraint Satisfaction is a framework for describing a problem in terms of constraints that are known and enforced by distinct participants (agents). The constraints are described on some variables with predefined domains, and have to be assigned to the same values by the different agents.
+
+Problems defined with this framework can be solved by any of the algorithms that are designed for it.
+
+The framework was used under different names in the 1980s. The first known usage with the current name is in 1990.
+
+Definitions
+
+DCOP
+The main ingredients of a DCOP problem are agents and variables. Importantly, each variable is owned by an agent; this is what makes the problem distributed. Formally, a DCOP is a tuple , where:
+ is the set of agents, .
+ is the set of variables, .
+ is the set of variable-domains,  where each  is a finite set containing the possible values of variable .
+If  contains only two values (e.g. 0 or 1), then  is called a binary variable.
+ is the cost function. It is a function that maps every possible partial assignment to a cost. Usually, only few values of  are non-zero, and it is represented as a list of the tuples that are assigned a non-zero value. Each such tuple is called a constraint. Each constraint  in this set is a function  assigning a real value to each possible assignment of the variables. Some special kinds of constraints are:
+Unary constraints - constraints on a single variable, i.e.,  for some .
+Binary constraints - constraints on two variables, i.e,  for some 
+ is the ownership function. It is a function  mapping each variable to its associated agent.  means that variable  "belongs" to agent . This implies that it is agent 's responsibility to assign the value of variable .  Note that  is not necessarily an injection, i.e., one agent may own more than one variables. It is also not necessarily a surjection, i.e., some agents may own no variables.
+ is the objective function. It is an operator that aggregates all of the individual  costs for all possible variable assignments.  This is usually accomplished through summation:
+
+The objective of a DCOP is to have each agent assign values to its associated variables in order to either minimize or maximize  for a given assignment of the variables.
+
+Assignments
+A value assignment is a pair  where  is an element of the domain .
+
+A partial assignment is a set of value-assignments where each  appears at most once. It is also called a context. This can be thought of as a function mapping variables in the DCOP to their current values:
+Note that a context is essentially a partial solution and need not contain values for every variable in the problem; therefore,  implies that the agent  has not yet assigned a value to variable . Given this representation, the "domain" (that is, the set of input values) of the function f can be thought of as the set of all possible contexts for the DCOP.  Therefore, in the remainder of this article we may use the notion of a context (i.e., the  function) as an input to the  function.
+
+A full assignment is an assignment in which each  appears exactly once, that is, all variables are assigned. It is also called a solution to the DCOP.
+
+An optimal solution is a full assignment in which the objective function  is optimized (i.e., maximized or minimized, depending on the type of problem).
+
+Example problems
+Various problems from different domains can be presented as DCOPs.
+
+Distributed graph coloring
+The graph coloring problem is as follows: given a graph  and a set of colors , assign each vertex, , a color, , such that the number of adjacent vertices with the same color is minimized.
+
+As a DCOP, there is one agent per vertex that is assigned to decide the associated color. Each agent has a single variable whose associated domain is of cardinality  (there is one domain value for each possible color). For each vertex , there is a variable  with domain .  For each pair of adjacent vertices , there is a constraint of cost 1 if both of the associated variables are assigned the same color:  The objective, then, is to minimize .
+
+Distributed multiple knapsack problem
+The distributed multiple- variant of the knapsack problem is as follows: given a set of items of varying volume and a set of knapsacks of varying capacity, assign each item to a knapsack such that the amount of overflow is minimized.  Let  be the set of items,  be the set of knapsacks,  be a function mapping items to their volume, and  be a function mapping knapsacks to their capacities.
+
+To encode this problem as a DCOP, for each  create one variable  with associated domain .  Then for all possible contexts :where  represents the total weight assigned by context  to knapsack :
+
+Distributed item allocation problem 
+The item allocation problem is as follows. There are several items that have to be divided among several agents. Each agent has a different valuation for the items. The goal is to optimize some global goal, such as maximizing the sum of utilities or minimizing the envy. The item allocation problem can be formulated as a DCOP as follows.
+
+ Add a binary variable vij for each agent i and item j. The variable value is "1" if the agent gets the item, and "0" otherwise. The variable is owned by agent i.
+ To express the constraint that each item is given to at most one agent, add binary constraints for each two different variables related to the same item, with an infinite cost if the two variables are simultaneously "1", and a zero cost otherwise.
+ To express the constraint that all items must be allocated, add an n-ary constraint for each item (where n is the number of agents), with an infinite cost if no variable related to this item is "1".
+
+Other applications 
+DCOP was applied to other problems, such as:
+
+ coordinating mobile sensors;
+ meeting and task scheduling.
+
+Algorithms 
+
+DCOP algorithms can be classified in several ways:
+
+ Completeness - complete search algorithms finding the optimal solution, vs. local search algorithms finding a local optimum.
+ Search strategy - best-first search or depth-first branch-and-bound search;
+ Synchronization among agents - synchronous or asynchronous;
+ Communication among agents - point-to-point with neighbors in the constraint graph, or broadcast;
+ Communication topology - chain or tree.
+
+ADOPT, for example, uses best-first search, asynchronous synchronization, point-to-point communication between neighboring agents in the constraint graph and a constraint tree as main communication topology.
+
+Hybrids of these DCOP algorithms also exist. BnB-Adopt, for example, changes the search strategy of Adopt from best-first search to depth-first branch-and-bound search.
+
+Asymmetric DCOP 
+An asymmetric DCOP is an extension of DCOP in which the cost of each constraint may be different for different agents. Some example applications are:
+
+ Event scheduling: agents who attend the same event might derive different values from it.
+ Smart grid: the increase in price of electricity in loaded hours may be different agents.
+
+One way to represent an ADCOP is to represent the constraints as functions:
+
+Here, for each constraint there is not a single cost but a vector of costs - one for each agent involved in the constraint. The vector of costs is of length k if each variable belongs to a different agent; if two or more variables belong to the same agent, then the vector of costs is shorter - there is a single cost for each involved agent, not for each variable.
+
+Approaches to solving an ADCOP 
+A simple way for solving an ADCOP is to replace each constraint  with a constraint , which equals the sum of the functions . However, this solution requires the agents to reveal their cost functions. Often, this is not desired due to privacy considerations.
+
+Another approach is called Private Events as Variables (PEAV). In this approach, each variable owns, in addition to his own variables, also "mirror variables" of all the variables owned by his neighbors in the constraint network. There are additional constraints (with a cost of infinity) that guarantee that the mirror variables equal the original variables. The disadvantage of this method is that the number of variables and constraints is much larger than the original, which leads to a higher run-time.
+
+A third approach is to adapt existing algorithms, developed for DCOPs, to the ADCOP framework. This has been done for both complete-search algorithms and local-search algorithms.
+
+Comparison with strategic games 
+The structure of an ADCOP problem is similar to the game-theoretic concept of a simultaneous game. In both cases, there are agents who control variables (in game theory, the variables are the agents' possible actions or strategies). In both cases, each choice of variables by the different agents result in a different payoff to each agent. However, there is a fundamental difference:
+
+ In a simultaneous game, the agents are selfish - each of them wants to maximize his/her own utility (or minimize his/her own cost). Therefore, the best outcome that can be sought for in such setting is an equilibrium - a situation in which no agent can unilaterally increase his/her own gain.
+ In an ADCOP, the agents are considered cooperative: they act according to the protocol even if it decreases their own utility. Therefore, the goal is more challenging: we would like to maximize the sum of utilities (or minimize the sum of costs). A Nash equilibrium roughly corresponds to a local optimum of this problem, while we are looking for a global optimum.
+
+Partial cooperation 
+There are some intermediate models in which the agents are partially-cooperative: they are willing to decrease their utility to help the global goal, but only if their own cost is not too high. An example of partially-cooperative agents are employees in a firm. On one hand, each employee wants to maximize their own utility; on the other hand, they also want to contribute to the success of the firm. Therefore, they are willing to help others or do some other time-consuming tasks that help the firm, as long as it is not too burdensome on them. Some models for partially-cooperative agents are:
+
+ Guaranteed personal benefit: the agents agree to act for the global good if their own utility is at least as high as in the non-cooperative setting (i.e., the final outcome must be a Pareto improvement of the original state).
+ Lambda-cooperation: there is a parameter . The agents agree to act for the global good if their own utility is at least as high as  times their non-cooperative utility.
+
+Solving such partial-coopreation ADCOPs requires adaptations of ADCOP algorithms.
+
+See also
+ Constraint satisfaction problem
+ Distributed algorithm
+ Distributed algorithmic mechanism design
+
+Notes and references
+
+Books and surveys
+
+ 
+  A chapter in an edited book.
+ 
+  See Chapters 1 and 2; downloadable free online.
+ 
+ 
+
+Mathematical optimization
+Constraint programming

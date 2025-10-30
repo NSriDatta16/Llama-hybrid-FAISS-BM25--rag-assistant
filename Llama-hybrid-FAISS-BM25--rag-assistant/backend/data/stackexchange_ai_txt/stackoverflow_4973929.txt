@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4973929
+[parent_id]: 4973335
+[tags]: 
+Is there any particular reason you want to avoid using monad transformers? if you get the MaybeT package from Hackage you can achieve what you want like this: import Control.Monad import Control.Monad.Maybe import Control.Monad.State import qualified Data.Map as Map type MapM k v a = MaybeT (State (Map.Map k v)) a lookupM k = MaybeT $ Map.lookup k `liftM` get insertM k = modify . Map.insert k deleteM k = modify $ Map.delete k runMap m = (flip execState) m . runMaybeT foo = runMap Map.empty $ do insertM 5 20 v When lookupM fails the rest of the computation fails. You can enter and escape these monads at any time so you can hide these under a pure function interface, it's only the IO monad that you not suppose to escape out of except in main (and using unsafe functions). All you need to remember is any state action that returns Maybe type just lift into the MaybeT constructor. If you want to do IO change State to StateT.

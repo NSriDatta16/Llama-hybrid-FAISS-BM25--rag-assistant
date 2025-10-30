@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3951214
+[parent_id]: 3950679
+[tags]: 
+The only solution I've found is somewhat dirty: array("pipe", "r"), // stdin 1 => array("pipe", "w"), // stdout 2 => array("pipe", "w") // stderr ); $process = proc_open('tail -f -n 0 /tmp/file.txt',$descriptorspec,$pipes); fclose($pipes[0]); stream_set_blocking($pipes[1],1); $read = fgets($pipes[1]); fclose($pipes[1]); fclose($pipes[2]); //if I try to call proc_close($process); here, it fails / hangs untill a second line is //passed to the file. Hence an inelegant kill in the next 2 line: $status = proc_get_status($process); exec('kill '.$status['pid']); proc_close($process); echo $read;

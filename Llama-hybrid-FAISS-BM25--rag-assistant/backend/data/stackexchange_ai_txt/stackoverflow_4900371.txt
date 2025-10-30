@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4900371
+[parent_id]: 4628458
+[tags]: 
+After leaving this a while, as it was quite frustrating, and got back to it today. Debugging the sqlite3.dll gives me the answer. If you are accessing it via JDBC in Java, you don't have the key functions for a byte[] password, so need to enter the password via PRAGMA key='' in a statement. It seems from the documentation that these are equivalent and that if you need a binary key, you hex encode it and put "x'" in front. So in java I had: PRAGMA key="x'899e7c6475756d887a759a93a0a3979a62827e85919898a49394a29c7b88aa8a" whereas in C# I was using those binary digits in a byte array. Turns out that the string is being used as a password literally, a 42 character password. So I can make a database in java and read it in C# and vice versa, using the pragma or key methods, as long as I don't want a binary password, which I can't use in java. Guess which method I needed!

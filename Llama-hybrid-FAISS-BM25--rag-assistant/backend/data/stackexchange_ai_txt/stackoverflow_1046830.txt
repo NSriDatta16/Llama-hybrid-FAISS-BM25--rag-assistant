@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1046830
+[parent_id]: 284821
+[tags]: 
+Actually, you can use a very simple Lotuscript agent to connect to a server and walk through all databases on the server, using the NotesDbDirectory class. Here is some code, modified slightly from what's in the 6.5 Help files - this dumps the title and path of all databases to a csv file. Note: the one argument to the GetFirstDatabase method let's you specify which objects on the server you want to scan - 1247 is the constant for "Databases" - basically, all NSF files. There are other constants for finding templates only (NTF's), only database with replication enabled, etc. Sub Initialize Dim db As NotesDatabase Dim f As Integer f = Freefile Open "c:\dbExport.csv" For Output As #f Dim dbdir As New NotesDbDirectory("") ' opens LOCAL - put a server name here Set db = dbdir.GetFirstDatabase(1247) ' all databases - NSF, NSG and NSH (no templates) While Not(db Is Nothing) Print #f, """" + db.Title + """, """ + db.FileName + """" Set db = dbdir.GetNextDatabase Wend Close #f End Sub

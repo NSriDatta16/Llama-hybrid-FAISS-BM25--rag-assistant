@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5059603
+[parent_id]: 4373074
+[tags]: 
+After reviewing the Calendar App in the Android source code you can only invoke the AgendaActivity directly. The others will not work. As the other posters have noted you can interact directly with the cursor to read/create events, but you can't invoke the calendar app to a view other than the AgendaView. The reason is that the developers have limited that ability in the manifest for the Cal app by using the following activity definitions: Note that only the AgendaActivity has android:exported="true". If you attempt to call the other activities you will get a permission exception. However, you can invoke the AgendaActivity to an arbitrary day with the following code: Calendar tempCal = (Calendar) mCalendar.clone(); tempCal.set(year, month, day); Intent calendarIntent = new Intent() ; calendarIntent.putExtra("beginTime", tempCal.getTimeInMillis()); calendarIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP); calendarIntent.setClassName("com.android.calendar","com.android.calendar.AgendaActivity"); startActivity(calendarIntent);

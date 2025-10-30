@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5366819
+[parent_id]: 5366779
+[tags]: 
+If it's a read-only database, try opening it with sqlite3_open_v2("path/to/database", &connection, SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX, 0); sqlite3_exec(connection, "PRAGMA locking_mode = EXCLUSIVE; PRAGMA journal_mode = OFF;", 0, 0, &errmsg); then sharing the connection object among all your threads. That ought to get you all the performance benefits of leaving a transaction open, without having to leave a transaction open. (You might not need the second command. I'd like to think SQLite was clever enough to recognize that it didn't need locking or journaling for a read-only connection, but I don't trust it to be.)

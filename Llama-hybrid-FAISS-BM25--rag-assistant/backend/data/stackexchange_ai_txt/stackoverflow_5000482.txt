@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5000482
+[parent_id]: 4998299
+[tags]: 
+To combine your vertex color with your texture the way OpenGL ES 1.1 does by default, you’ll want your fragment shader to be: varying lowp vec4 colorVarying; varying mediump vec2 texcoordVarying; uniform sampler2D texture; void main(){ gl_FragColor = texture2D(texture, texcoordVarying) * colorVarying; } Note that GL_MODULATE multiplies the texture by the color, rather than adding to it. You’re seeing a gradient in your image because passing a stride of 0 to vertex array specification functions in OpenGL ES (both 1.1 and 2.0) doesn’t result in a stride of 0—rather, OpenGL ES calculates the stride for you, assuming tightly packed elements of the format/type you specified. As a result, you’re actually reading past the end of your array into random memory. If you want the same value across all vertices, you should set the current attribute value and disable the associated array: void gl2Color4f(GLfloat r, GLfloat g, GLfloat b, GLfloat a){ const GLfloat pointer[] = {r, g, b, a}; glVertexAttrib4fv(ATTRIB_COLOR, pointer); glDisableVertexAttribArray(ATTRIB_COLOR); }

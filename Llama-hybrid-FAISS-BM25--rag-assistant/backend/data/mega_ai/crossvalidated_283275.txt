@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 283275
+[parent_id]: 255203
+[tags]: 
+I am sure you have found your answer by now, but for others. The truncated part of Truncated Backpropagation through Time simply refers to at which point in time to stop calculating the gradients for the backpropagation phase. Lets say you truncate after $k$ steps then the difference is you calculate the below instead. $$ \frac{\partial{L}}{\partial A}\approx\sum_{t=T-k}^{T}\frac{\partial{L}}{\partial h_{t}}\frac{\partial^{+}{h_{t}}}{\partial A}=\sum_{t=T-k}^{T}(\frac{\partial{L}}{\partial h_{t}}\odot f'(Ah_{t-1}+Bx_{t}))h_{t-1}^{T}. $$ Where $\frac{\partial^{+}}{\partial{A}}$ is the "immediate" partial wrt A, i.e. the one that assumes all terms other than an explicit A are constant. Essentially you are truncating the sum in Equation (4) of Pascanu, Mikolov, and Bengio . At least this is my understanding of it judging from Ilya Sutskever's psuedo-code in his thesis . Truncated BPTT is given below: 1: for t from 1 to T do 2: Run the RNN for one step, computing ht and zt 3: if t divides k1 then 4: Run BPTT (as described in sec. 2.5), from t down to t − k2 5: end if 6: end for

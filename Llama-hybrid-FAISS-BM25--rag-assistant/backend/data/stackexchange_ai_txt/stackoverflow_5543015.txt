@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5543015
+[parent_id]: 5542945
+[tags]: 
+Try eval(parse(text=...)) or eval(substitute(...)) . parse(text=...) turns the string in an expression, eval evaluates the expression. Be sure to use the text argument, as parse normally looks for a file. Forgetting that is a common mistake. See also ?parse and ?eval . > a x eval(parse(text=x)) [1] 10 To show how to use it, your adjusted code : for(i in 1:10) eval(parse(text=paste("rp.slider(rpplot,param",i,")",sep=""))) substitute substitutes values in a language object by the strings given in the second argument : for(i in 1:10) eval( substitute( rp.slider(rpplot,x), list(x=as.name(paste("param",i,sep=""))) ) ) Or, using the example in the help files : library(rpanel) rpplot The explanation why this is necessary, can be found within the source code of rp.slider. The construct to get the varname inside the function is not the standard used in R. In fact, the use of 'deparse(substitute())' is strongly discouraged, exactly for this reason. With most functions, as.expression("x") works to get the variable in using a variable name. Alas, the author of the rpanel package made this impossible.

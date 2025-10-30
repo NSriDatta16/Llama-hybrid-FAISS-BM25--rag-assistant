@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4624128
+[parent_id]: 4623963
+[tags]: 
+Under the as-if rule: struct A { EmptyThing x; int y; }; A a; assert((void*)&(a.x) != (void*)&(a.y)); The assert must not be triggered. So I don't see any benefit in secretly making x have size 0, when you'd just need to add padding to the structure anyway. I suppose in theory a compiler could track whether pointers might be taken to the members, and make the optimization only if they definitely aren't. This would have limited use, since there'd be two different versions of the struct with different layouts: one for the optimized case and one for general code. But for example if you create an instance of A on the stack, and do something with it that is entirely inlined (or otherwise visible to the optimizer), yes, parts of the struct could be completely omitted. This isn't specific to empty objects, though - an empty object is just a special case of an object whose storage isn't accessed, and therefore could in some situations never be allocated at all.

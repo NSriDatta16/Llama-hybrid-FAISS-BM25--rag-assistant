@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3554596
+[parent_id]: 3554296
+[tags]: 
+You could do this instead: User-Agents { id - INT user-agent - TEXT hash - UNSIGNED INT (CRC32, indexed) } $crc32 = sprintf("%u", crc32($user_agent)); SELECT * FROM user_agents WHERE hash=$crc32 AND user_agent='$user_agent'; It's unlikely that you'll get collisions with crc32 for this kind of data. To guarantee that collisions will not cause problems, add a secondary search parameter. MySQL will be able to use the index to quickly find the record. Then it can do a simple string search to guarantee that match is correct. PS: The sprintf() is there to work around signed 32-bit integers. Should be unnecessary on 64-bit systems.

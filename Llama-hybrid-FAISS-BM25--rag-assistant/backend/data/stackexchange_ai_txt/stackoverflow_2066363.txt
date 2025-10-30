@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2066363
+[parent_id]: 2064297
+[tags]: 
+Like Wayne said in his comment, it depends on the protocol that is used to transfer the files. With HTTP for example, the HTTP response will include a Content-Length header which will tell you the length of the file that you are downloading. After you know that you will have to keep track of the number of bytes that you've read from the HTTP connection. Something like this seems to work (for HTTP), but I wouldn't be surprised if it could be done more elegantly: require 'net/http' url = URI.parse('http://www.google.com/index.html') req = Net::HTTP::Get.new(url.path) res = Net::HTTP.start(url.host, url.port) do |http| http.request(req) do |res| remaining = res.content_length puts "total length: #{remaining}" res.read_body do |segment| puts "read #{segment.length} bytes" remaining = remaining - segment.length puts "#{remaining} bytes remaining" end end end www.google.com/index.html is a bad example since the content gets returned in one segment, but try it on a larger object and you should see multiple "read..." lines.

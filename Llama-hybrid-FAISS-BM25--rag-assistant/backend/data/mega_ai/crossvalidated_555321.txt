@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 555321
+[parent_id]: 555136
+[tags]: 
+The primary effect on a model of downsampling like this is a shift in the predicted log-odds. This is rigorously shown for logistic regression, see https://stats.stackexchange.com/a/68726/232706; for other models, I've observed the same effect (though I don't do a lot of neural nets). Assuming that's really true in your case, you can "fix" the probability estimates by adding the adjustment term listed in the above link. Note too that such a monotonic adjustment should not affect AUROC or AUPRC at all. Using class weights in training instead should produce a very similar effect; see https://datascience.stackexchange.com/a/58899/55122 You have "plenty" (difficult to say without more context, but 1M is a lot) of positive examples, so the suggestion to sample without affecting class balance given by @StephanKolassa in a comment may also be fine. In other contexts where the positive class is so small that you wouldn't want to throw away any information from them, I think downsampling the giant negative class is fine (and note that Scortchi in the first link mentions exactly this case).

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2430185
+[parent_id]: 2430129
+[tags]: 
+void make_box(struct Box *box, int no_of_particles){ Particle po[no_of_particles]; //... box->p = po; } po is a local variable, and the storage for it is allocated automatically on the stack; returning its address is a bad idea. You should instead allocate memory from the heap, and remember freeing that memory when you're done with the boxes: #include #include typedef struct Particle_ { float x; float y; float vx; float vy; } Particle; typedef struct Box_ { Particle *p; } Box; void make_box(Box *box, int no_of_particles); void make_box(Box *box, int no_of_particles){ Particle *po = (Particle *) malloc ( no_of_particles*sizeof(Particle) ); po[0].x = 1; po[1].y = 2; //so on and so forth... box->p = po; } void destroy_box(Box *box){ free(box->p); } int main(){ Box b1, b2; make_box(&b1, 5); //create a box containing 5 particles make_box(&b2, 10); //create a box containing 10 particles // do the job... printf("box b1, point 0, x: %5.2f\n", b1.p[0].x); printf("box b2, point 1, y: %5.2f\n", b2.p[1].y); destroy_box(&b1); destroy_box(&b2); return 0; }

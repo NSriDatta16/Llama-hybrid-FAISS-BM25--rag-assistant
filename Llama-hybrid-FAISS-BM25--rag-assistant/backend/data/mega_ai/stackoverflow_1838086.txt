@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1838086
+[parent_id]: 1656411
+[tags]: 
+It seems like your query cache size is far too large. While the query cache is usually a good thing, if it is too large it can hurt more then it helps. This behavior is discussed in this article : The issue here was that the customer had a moderate level of write traffic, and the current query cache implementation invalidates all result sets for a given table whenever that table is updated. As the query cache grows in size, the number of entries that must be invalidated for a given table may grow as well. In addition, the coarse locking on the cache can lead to lock contention that can kill performance, particularly on multi-core hardware. I would recommend lowering the size of your query cache to somewhere between 16-128MB and see how that effects performance. Another possibility is that the queries are generating really small result sets which is causing memory fragmentation. More information on this is available here , look for the "query_cache_min_res_unit" setting.

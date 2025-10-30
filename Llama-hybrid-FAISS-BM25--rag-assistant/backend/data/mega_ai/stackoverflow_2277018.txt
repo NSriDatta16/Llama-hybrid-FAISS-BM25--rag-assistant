@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2277018
+[parent_id]: 
+[tags]: 
+Wrapping a pure virtual method with arguments using Boost::Python
+
+I'm currently trying to expose a c++ Interface (pure virtual class) to Python using Boost::Python. The c++ interface is: Agent.hpp #include "Tab.hpp" class Agent { virtual void start(const Tab& t) = 0; virtual void stop() = 0; }; And, by reading the "official" tutorial, I managed to write and build the next Python wrapper: Agent.cpp #include #include #include using namespace boost::python; struct AgentWrapper: Agent, wrapper { public: void start(const Tab& t) { this->get_override("start")(); } void stop() { this->get_override("stop")(); } }; BOOST_PYTHON_MODULE(PythonWrapper) { class_ ("Agent") .def("start", pure_virtual(&Agent::start) ) .def("stop", pure_virtual(&Agent::stop) ) ; } Note that I have no problems while building it. What concerns me, though, is that as you can see AgentWrapper::start doesn't seem to pass any argument to Agent::start in: void start(const Tab& t) { this->get_override("start")(); } How will the python wrapper know "start" recieves one argument? How can i do so?

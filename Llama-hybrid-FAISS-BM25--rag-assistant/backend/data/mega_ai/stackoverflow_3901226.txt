@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3901226
+[parent_id]: 
+[tags]: 
+Tomcat 6 connection pool goes wacky when CMS GC is used
+
+We recently changed to the CMS garbage collector on our server ( XX:+UseConcMarkSweepGC ) which worked fine in tests. When we went to production, things were OK for the first few hours, but then we suddenly began to see the dreaded: org.apache.tomcat.dbcp.dbcp.SQLNestedException: Cannot get a connection, pool error Timeout waiting for idle object We have seen these messages when the database is physically down or heavily loaded, but this wasn't the case this time. So I began wondering if the recent GC change might be the culprit. What I don't understand is why we haven't seen this before. Would the change of GC to concurrent-mark-sweep change something (finalizers, perhaps) that would expose problems with this configuration? My context.xml params look something like this: I read this link and began wondering if these were incredibly naive parameters. From my understanding, above 60 connections we will start opening and closing connections without returning them to the pool. But I don't still understand if there is a connection between this and our GC change. We're using Tomcat 6.0.29 with the MySQL 5.1.45 (5.1.12 JDBC connector).

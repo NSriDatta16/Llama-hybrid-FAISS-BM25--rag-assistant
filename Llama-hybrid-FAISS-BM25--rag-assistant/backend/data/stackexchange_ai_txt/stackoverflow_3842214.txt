@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3842214
+[parent_id]: 
+[tags]: 
+Lazy Correlation Matrix Computation in F#
+
+I have to compute the correlation matrix on vectors contained in a csv file of 5GB. Each row contains one observation for each random variable. To do this I wrote the following: let getCorrMatrix data = let getMatrixInfo nCol (count,crossProd:float array array,sumVector:float array,sqVector:float array) (newLine:float array) = for i in 0..(nCol-1) do sumVector.[i] Seq.head|>Seq.length //Initialize objects for the fold let matrixStart = Array.init nCol (fun i -> Array.create (nCol-i-1) 0.0) let sumVector = Array.init nCol (fun _ -> 0.0) let sqVector = Array.init nCol (fun _ -> 0.0) let init = (0,matrixStart,sumVector,sqVector) //Run the fold and obtain all the elements to build te correlation matrix let (count,crossProd,sum,sq) = data |>PSeq.fold(getMatrixInfo nCol) init //Compute averages standard deviations, and finally correlations let averages = sum|>Array.map(fun s ->s/(float count)) let std = Array.zip3 sum sq averages |> Array.map(fun (elemSum,elemSq,av)-> let temp = elemSq-2.0*av*elemSum+float(count)*av*av sqrt (temp/(float count-1.0))) //Map allteh elements to correlation let rec getCorr i j = if i=j then 1.0 elif i getCorr i j) corrMatrix I have tested it against R computation and it matches. Since I plan to use this again and again if you have some feedback (or spot a mistake) it would be greatly appreciated. (Note I post this because thought it might be useful to others too). Thanks

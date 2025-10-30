@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5606608
+[parent_id]: 5605620
+[tags]: 
+There's no problem as long as N is known at runtime; I'm not sure why you think it has to be known at compile time. OMP loop constructs would be of very limited use indeed if everything had to be known at compile time. #include #include #include int main(int argc, char **argv) { int n; int chunksize; if (argc != 2) { fprintf(stderr,"Usage: %s n, where n = number of iterations.\n", argv[0]); exit(-1); } n = atoi(argv[1]); if (n 200) n = 10; chunksize = n/2; #pragma omp parallel num_threads(2) default(none) shared(n,chunksize) { int nthread = omp_get_thread_num(); #pragma omp for schedule(static,chunksize) for (int i=0; i And it runs simply enough, as so: $ gcc -v [...] gcc version 4.4.0 (GCC) $ gcc -o loop loop.c -fopenmp $ ./loop 10 Iter 5 being done by thread 1 Iter 6 being done by thread 1 Iter 7 being done by thread 1 Iter 8 being done by thread 1 Iter 9 being done by thread 1 Iter 0 being done by thread 0 Iter 1 being done by thread 0 Iter 2 being done by thread 0 Iter 3 being done by thread 0 Iter 4 being done by thread 0

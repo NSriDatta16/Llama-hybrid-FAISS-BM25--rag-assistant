@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5745133
+[parent_id]: 5744980
+[tags]: 
+First up, the use of input() is discouraged as it expects the user to type in valid Python expressions. Use raw_input() instead: app = raw_input('Name of the application: ') Next up, the return value from system('pidof') isn't the PID, it's the exit code from the pidof command, i.e. zero on success, non-zero on failure. You want to capture the output of pidof . import subprocess # Python 2.7 only pid = int(subprocess.check_output(['pidof', app])) # Python 2.4+ pid = int(subprocess.Popen(['pidof', app], stdout=subprocess.PIPE).communicate()[0]) # Older (deprecated) pid = int(os.popen('pidof ' + app).read()) The next line is missing a space after the grep and would have resulted in a command like grep1234 . Using the string formatting operator % will make this a little easier to spot: os.system('top -d 30 | grep %d > test.txt' % (pid)) The third line is badly quoted and should have caused a syntax error. Watch out for the single quotes inside of single quotes. os.system("awk '{print $10, $11}' test.txt > test2.txt")

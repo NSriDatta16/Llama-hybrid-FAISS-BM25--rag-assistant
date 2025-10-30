@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2284064
+[parent_id]: 2283089
+[tags]: 
+As APC mentioned, there appears to be a problem with the data model. The right way to model that sort of heirarchical data is: key_field [data_type] primary key parent_key_field [data_type] null foreign key references key_field The serialization problem you have here is why such relationships should be mapped with foriegn keys. That said, if you open a cursor with SELECT FOR UPDATE against your table, it should exclusively lock the rows you're interested in deleting. You can't prevent someone from "referencing" that table in your "foreign key", because ITEM_ID's just another value. What might work is embedding this: procedure delete_me (p_item_key) as l_child_count number; begin -- verify the value being deleted exists and has no children as you already do delete from tbl a where not exists (select null from tbl b where b.item_id = a.item_id) if sql%rowcount = 0 then -- your delete failed; raise an error. end if; end;

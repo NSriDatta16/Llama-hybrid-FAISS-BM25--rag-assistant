@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4197817
+[parent_id]: 4181120
+[tags]: 
+Here's a solution that does work. Again, elegance was left behind. There are two callbacks defined by JAXB: beforeUnmarshal and afterUnmarshal. By implementing afterUnmarshal to clean up the list, I was able to achieve the desired result. class Course { @XmlElement (name = "book") List requiredBooks = new ArrayList (); ... void afterUnmarshal(Unmarshaller aUnmarshaller, Object aParent) { if (requiredBooks != null) { Iterator iterator = requiredBooks.iterator(); while (iterator.hasNext()) { Book book = iterator.next(); if (StringUtils.isEmpty(book.getTitle())) { // a book without title is considered invalid iterator.remove(); } } } } } While this works, by biggest issue with it is the absence of an interface for implementing afterUnmarshal. It's looked up by JAXB using reflection, but I think it would've been convenient (and would reduce debugging/maintenance) if JAXB simply supplied interfaces and/or absract implementations. As it is, what if the signature of afterUnmarshal changes in the future? This code will just mysteriously stop working as it's supposed to.

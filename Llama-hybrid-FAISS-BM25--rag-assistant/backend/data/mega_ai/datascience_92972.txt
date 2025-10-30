@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 92972
+[parent_id]: 92968
+[tags]: 
+It probably is fairly rare to need to use fit and not instead fit_transform for a sklearn transformer . It nevertheless makes sense to keep the method separate: fitting a transformer is learning relevant information about the data, while transforming produces an altered dataset. Fitting still makes sense for sklearn predictors , and only some of those (particularly clusterers and outlier detectors) provide a combined fit_predict . I can think of at least one instance where a transformer gets fitted but does not (immediately) transform data, but it is internal. In KBinsDiscretizer , if encode='onehot' , then an internal instance of OneHotEncoder is created, and at fit time for the discretizer, the encoder is fitted (to dummy data) just to prepare it to transform future data. Transforming the data given to KBinsDiscretizer.fit would be wasteful at this point. Finally, one comment on your post: we have fit_transform which is much faster than using fit and transform separately In most (but not all) cases, fit_transform is literally the same as fit(X, y).transform(X) , so this should not be faster.

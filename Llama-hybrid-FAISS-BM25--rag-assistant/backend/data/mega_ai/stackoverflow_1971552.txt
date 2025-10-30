@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1971552
+[parent_id]: 1971341
+[tags]: 
+Would aborting transaction still block the space allocated for blob as though it's committed? Index physical changes occur on separate transactions from logical changes. When an INSERT needs to allocate a new page for the table in order to acomodate the new row, the page allocation occurs on a different transaction that is immediately commited. If the INSERT rolls back, the page allocation is unaffected. Think what would happen if the page allocation would be rolled back and another insert had already allocated a different row slot in it and commited that insert. Things are a bit more complicated, specially for BLOB storage hobts, but the idea is that a high rate of modifications in the BLOB columns may cause a high ratio of unused pages. A high rate of rollbacks may accentuate the problem. sys.allocation_units will easily reveal this if total_pages is much higher than used_pages for allocation units of type 2 and 3. You can try an (online) index rebuild macking sure LOB_COMPACTION is ON.

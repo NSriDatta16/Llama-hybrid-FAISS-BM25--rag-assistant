@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4152194
+[parent_id]: 
+[tags]: 
+Automatically generating sums in Mathematica
+
+This is a design issue I came across while working on implementation of Generalized Distributive Law . Suppose you need to automatically generate expressions of the following form (source: yaroslavvb.com ) Terms inside the sum, fixed variables and "summed over" variables are automatically generated for each such expression, and "f" functions are defined separately. To generate expression above, I may need to call sumProduct(factors,fixedVariables,fixedValues,freeVariables,freeRanges) where factors={{1,4},{3,4},{3,4,5}} fixedVariables={1,3} fixedValues={-1,9} freeVariables={4,5} freeRanges={Range[5],Range[6]} and the output of that function will be equivalent to Total[{f14[-1,1]f34[9,1]f345[9,1,1],f14[-1,2]f34[9,2]f345[9,2,1],....}] Representation of f terms could be different, ie f[{1,4},{-1,1}] instead of f14[-1,1]. Also using Integer to refer to each variable is just one design choice. Can anyone suggest an elegant approach to implementing sumProduct? Edit 11/11 Janus' solution, rewritten for readability factors = {{1, 4}, {3, 4}, {3, 4, 5}}; vars = {{1, {-1}}, {3, {9}}, {4, Range[5]}, {5, Range[6]}}; (* list of numbers => list of vars *) arglist[factor_] := Subscript[x, #] & /@ factor; (* list of factors => list of functions for those factors *) terms = Apply[f[#], arglist[#]] & /@ factors; (* {var,range} pairs for each variable *) args = {Subscript[x, #1], #2} & @@@ vars; Sum[Times @@ terms, Sequence @@ args]

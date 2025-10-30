@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 315778
+[parent_id]: 
+[tags]: 
+LSTM Output Structure
+
+import tensorflow as tf import numpy as np from tensorflow.python.ops import rnn_cell, rnn data = np.random.randint(0, 10, size = (1000, 18)) batch_size = 10 chunk_size = 6 n_timesteps = 3 rnn_size = 128 x = tf.placeholder('float', [batch_size, n_timesteps, chunk_size]) y = tf.placeholder('float') def neural_network(x): x = tf.transpose(x, [1,0,2]) x = tf.reshape(x, (-1, chunk_size)) x = tf.split(x, n_timesteps) lstm = rnn_cell.BasicLSTMCell(rnn_size) outputs, states = rnn.static_rnn(lstm, x, dtype = tf.float32) print("Number of outputs: ", len(outputs)) print("Last output: ", outputs[-1]) print("LSTM Cell: ", lstm) print("Input Data: ", x[0]) return outputs[-1] prediction = neural_network(x) with tf.Session() as sess: sess.run(tf.global_variables_initializer()) p = sess.run(prediction, feed_dict = {x:data[:batch_size].reshape((batch_size, n_timesteps, chunk_size))}) Running the code gives me the following output: ('Number of outputs: ', 3) ('Last output: ', ) ('LSTM Cell: ', ) ('Input Data: ', ) It makes sense that the number of outputs is 3 because the number of timesteps is 3. What I don't understand is how the last output of the LSTM has a shape of (batch_size, rnn_size).

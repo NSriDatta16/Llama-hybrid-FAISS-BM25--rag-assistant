@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2095844
+[parent_id]: 1863564
+[tags]: 
+Decoding a TCP stream into HTTP request/response pairs is non-trivial. Tools like WireShark do this with considerable effort. I wrote a WireShark wrapper for Ruby (not that that will help you), but before I wrote it I tried using tshark (the command-line version of WireShark). That didn't solve my problem but it may work for you. Here's how: You capture the packets and write them to a pcap file (SharpPcap probably has a way to do this). At some point close the cap file and start another one, then on the old one run tshark with a filter for HTTP traffic, and a flag indicating you want the output in the PDML format. You'll find this is an XML format, easily parsed with the System.Xml tools, which contains the value of every HTTP field in a variety of formats. You can write C# code to spawn tshark, and pipe its StdOut stream into an XML reader so you get the packets out of tshark as they emerge. I don't recommend using the DOM parser as the PDML output for a large capture file can get crazy very quickly. Unless your requirements are complex (as mine were), this may be all you need.

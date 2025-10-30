@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1095096
+[parent_id]: 1094868
+[tags]: 
+First I would eliminate the chunking which is so 90's. Then there is:- rs.Open "MyTable",Cnn, , , adCmdTable rs.Find "MyDataId=" & request("DataId"),,adSearchForward,1 Yikes! You'd like to think that ADO intelligently asked SQL server to find that record based on the indexed MyDataId field but bet it doesn't. Its most likely pulling the entire contents of the table across until the record is arrived at. This really should be done with an UPDATE T-SQL statement and an ADODB.Command object. Set cmd = Server.CreateObject("ADODB.Command") cmd.ActiveConnection = cnn cmd.CommandType = 1 '' // adCmdText cmd.CommandText = "UPDATE MyTable SET MyDataField = ? WHERE MyDataId = ?" cmd.Parameters.Append cmd.CreateParameter("dataField", 203, 1, Len(txtMyEntry), txtMyEntry) '' // 203 = asLongVarWChar, 1 = adParamInput cmd.Parameters.Append cmd.CreateParameter("id", 3, 1, , CInt(DataID)) '' // 3 = adInteger cmd.Execute

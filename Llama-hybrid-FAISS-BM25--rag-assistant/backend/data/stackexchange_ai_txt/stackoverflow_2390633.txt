@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2390633
+[parent_id]: 2388033
+[tags]: 
+Bryan's answer of using partial mocks is incorrect. That's not what partial mocks are for. Jon Erickson's answer is mostly correct: Rhino Mocks and Moq can't intercept non-virtual calls, nor can they intercept static methods or properties. That means you can't fake the following: DateTime.Now; // static property, can't fake static property someClass.SomeNonVirtualMethod(); // can't fake non-virtual method sealedClass.Foo(); // can't fake anything on sealed classes Utilities.SomeStaticMethod(); // can't fake static methods someList.Any(); // can't fake extension methods like Linq's .Any() TypeMock can fake these, as Jon mentioned. It should be noted there is an additional mocking framework that can intercept all calls: the Microsoft Moles framework . It works the same way TypeMock does, it uses the .NET profiler API to intercept calls. Moles is free (for now). It's also beta. Moles only only works with Microsoft Pex tools . And its API is clearly inferior to TypeMock's refined, elegant API.

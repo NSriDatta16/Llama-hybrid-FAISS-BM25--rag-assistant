@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2338758
+[parent_id]: 
+[tags]: 
+Zip up all Paperclip attachments stored on S3
+
+Paperclip is a great upload plugin for Rails. Storing uploads on the local filesystem or Amazon S3 seems to work well. I'd just assume store files on the localhost, but the use of S3 is required for this app as it will be hosted on Heroku. How would I go about getting all of my uploads/attachments from S3 in a single zipped download? Getting a zip of files from the local filesystem seems straight forward. It's getting the files from S3 that has me puzzled. I think it may have something to do with the way that rubyzip handles files referenced by URL. I've tried various approaches but can't seem to avoid errors. format.zip { registrations_with_attachments = Registration.find_by_sql('SELECT * FROM registrations WHERE abstract_file_name NOT LIKE ""') headers['Cache-Control'] = 'no-cache' tmp_filename = "#{RAILS_ROOT}/tmp/tmp_zip_" No such file or directory - http://s3.amazonaws.com/bucket/original/abstract.txt # Should note that these files in S3 bucket are publicly accessible. No ACL. # works with local storage. Thanks to Henrik Nyh # registrations_with_attachments.each { |e| zip.add("abstracts/#{e.abstract.original_filename}", e.abstract.path(:original)) } end send_data(File.open(tmp_filename, "rb+").read, :type => 'application/zip', :disposition => 'attachment', :filename => tmp_filename.to_s) File.delete tmp_filename }

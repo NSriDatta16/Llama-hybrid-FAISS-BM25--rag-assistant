@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4973458
+[parent_id]: 4944505
+[tags]: 
+If you want to handle the empty case you need a nullable integer on your model because otherwise it is the default model binder that will automatically add a validation error when it tries to parse the empty string to a non-nullable integer: public int? MaxNumberTeamMembers { get; set; } and then you could have the following validation rules on this property: RuleFor(x => x.MaxNumberTeamMembers) .NotEmpty() .WithMessage("Max. number of team members is required") .Must(x => x.Value > 0) .When(x => x.MaxNumberTeamMembers != null) .WithMessage("Max. number of team members must be greater than 0"); UPDATE: The following works fine with the latest version of FluentValidation: RuleFor(x => x.MaxNumberTeamMembers) .NotNull() .WithMessage("Max. number of team members is required") .GreaterThan(0) .WithMessage("Max. number of team members must be greater than 0");

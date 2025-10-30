@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1848450
+[parent_id]: 1843395
+[tags]: 
+A small drawback in Marc's answer is that both datefields have been typecast, meaning you'll be unable to leverage any indexes. So, if there is a need to write a query that can benefit from an index on a date field, then the following (rather convoluted) approach is necessary. The indexed datefield (call it DF1) must be untouched by any kind of function. So you have to compare DF1 to the full range of datetime values for the day of DF2. That is from the date-part of DF2, to the date-part of the day after DF2. I.e. (DF1 >= CAST(DF2 AS DATE)) AND (DF1 NOTE : It is very important that the comparison is >= (equality allowed) to the date of DF2, and (strictly) the day after DF2. Also the BETWEEN operator doesn't work because it permits equality on both sides. PS: Another means of extracting the date only (in older versions of SQL Server) is to use a trick of how the date is represented internally. Cast the date as a float. Truncate the fractional part Cast the value back to a datetime I.e. CAST(FLOOR(CAST(DF2 AS FLOAT)) AS DATETIME)

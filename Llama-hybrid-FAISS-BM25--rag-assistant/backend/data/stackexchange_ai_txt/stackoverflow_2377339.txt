@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2377339
+[parent_id]: 2377131
+[tags]: 
+If you wish to use the Windows logged in user account as the credentials against AD, you have to use the following: public bool IsExistingUser() { DirectoryEntry de = new DirectoryEntry(Environment.UserDomainName) DirectorySearcher ds = new DirectorySearcher(de) ds.Filter = string.Format("((objectClass=user)(SAMAccountName={0}))", Environment.UserName) try SearchResult sr = ds.FindOne(); if (sr != null && sr.DirectoryEntry.Name.Contains(Environment.UserName)) return true; catch (DirectoryServicesCOMException ex) catch (COMException ex) throw new Exception("Can't find logged in user in AD", ex); return false; } Assuming this code would compile and run, it will verify whether the existing logged in user is known by your Domain Controller. Impersonation is discouraged as it lets litteral password strings travel in your network. So, try to avoid it as much as possible. EDIT Here's a pretty useful link for AD: Howto: (Almost) Everything In Active Directory via C# I found this post awesome!

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 102659
+[parent_id]: 
+[tags]: 
+Explanation of Karpathy tweet about common mistakes. #5: "you didn't use bias=False for your Linear/Conv2d layer when using BatchNorm"
+
+I recently found this twitter thread from Andrej Karpathy. In it he states a few common mistakes during the development of a neural network. you didn't try to overfit a single batch first. you forgot to toggle train/eval mode for the net. you forgot to .zero_grad() (inpytorch) before .backward(). you passed softmaxed outputs to a loss that expects raw logits. you didn't use bias=False for your Linear/Conv2d layer when using BatchNorm, or conversely forget to include it for the output layer. This one won't make you silently fail, but they are spurious parameters thinking view() and permute() are the same thing (& incorrectly using view) I am specifically interested in an explanation or motivation for the fifth comment . Even more so given I have a network built akin to self.conv0_e1 = nn.Conv2d(f_in, f_ot, kernel_size=3, stride=1, padding=1) self.conv1_e1 = nn.Conv2d(f_ot, f_ot, kernel_size=3, stride=1, padding=1) self.norm_e1 = nn.BatchNorm2d(num_features=f_ot, eps=0.001, momentum=0.01) self.actv_e1 = nn.ReLU() self.pool_e1 = nn.MaxPool2d(kernel_size=2, stride=2) Where the torch.Conv2d has an implicit bias=True in the constructor. How would I go about implementing the fifth point in the code sample above? Though, based on the second sentence of the point, it doesn't seem like this matters?..

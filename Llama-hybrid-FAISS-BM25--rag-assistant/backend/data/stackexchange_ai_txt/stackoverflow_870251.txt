@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 870251
+[parent_id]: 870080
+[tags]: 
+A guess: Since you query one table with 2 unions, it might be,that mysql has difficulties to decide on a locking strategy for the table, or it tries some caching, that doesn't work here since you query for disjoint sets, tries to multithread the access (very reasonable) but runs into some locking/concurrency/file-seeking issues.. unions might also generally employ a higher safety setting, since these two selects have to be consistent. If you put them into separate transactions, they do not. Experiment: Make a duplicate of the table and union those. If I'm right, it should be faster. Possible solution: Split the single file into multiple files, to allow for better concurrency strategies. This wouldn't/shouldn't help with locking issues, but rules out the multithreading/seeking problems in the database. It would be useful to know, which storage engine you use. Well just my 2 cents. Can't test this here right now.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1829281
+[parent_id]: 1829174
+[tags]: 
+:first-of-type selects the first p , as the name suggests, not the first non-empty p as you might want. They stack just fine, but :first-of-type purely operates on the tag (i.e. type), not on the preceding complex selector. So you just end up looking for the first p , and that first paragraph also shouldn't be empty. And that doesn't exist. Assuming empty paragraphs might appear throughout the text, and you only want the first, non-empty paragraph to be affected, I don't think it's possible to do this with just one selector. This is the best I can come up with: p:first-of-type::first-letter, p:empty + p::first-letter { text-transform: uppercase; /* ... */ } p:not(:empty) ~ p::first-letter { text-transform: inherit; /* reset */ } That will apply the CSS only to the first non-empty paragraph (well, and to a first empty paragraph, but it won't do anything then anyway).

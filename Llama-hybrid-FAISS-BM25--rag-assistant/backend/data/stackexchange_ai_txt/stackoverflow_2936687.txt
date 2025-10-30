@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2936687
+[parent_id]: 
+[tags]: 
+Delayed Jobs is not finding Records and failing
+
+In my app, delayed jobs isn't running automatically on my server anymore. It used to.. When I manually ssh in, and perform rake jobs:work I return this : *** Starting job worker host:ip-(censored) pid:21458 * [Worker(host:ip-(censored) pid:21458)] acquired lock on PhotoJob * [JOB] host:ip-(censored) pid:21458 failed with ActiveRecord::RecordNotFound: Couldn't find Photo with ID=9237 - 4 failed attempts This returns roughly 20 times over for what I think is several jobs. Then I get a few of these: * [Worker(host:ip-(censored) pid:21458)] failed to acquire exclusive lock for PhotoJob And then finally one of these : 12 jobs processed at 73.6807 j/s, 12 failed ... Any ideas what I should be mulling over? Thanks so much! Edit : Here is the photo controller that calls delayed jobs: def update @gallery = @organization.media.find_by_media_id(params[:gallery_id]).media @photo = @gallery.photos.find(params[:id]) if @photo.update_attributes(params[:photo]) @photo.update_attribute(:processing, true) logger.info "HERE IS PROCESSING #{@photo.processing}" Delayed::Job.enqueue PhotoJob.new(@photo.id) respond_to do |format| format.html do if params[:captions_screen] == 'true' logger.info "WE ARE GOING TO DO NOTHING AT ALL" render :text => '' else redirect_to organization_media_url(@organization) end end format.js { redirect_to organization_media_url(@organization) } end else render :action => 'edit' end end

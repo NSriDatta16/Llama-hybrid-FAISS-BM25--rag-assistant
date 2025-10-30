@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3058553
+[parent_id]: 3056628
+[tags]: 
+The June release of the Azure SDK and Tools, version 1.2, now supports .NET 4. You can now take advantage of the parallel extensions included with .NET 4. This includes Parallel.ForEach() and Parallel.For(), as examples. The Task Parallel Library (TPL) will only help you on a single VM - it's not going to help divide your work across multiple VMs. So if you set up, say, a 2-, 4-, or 8-core VM, you should really see significant performance gains with parallel execution. Now: if you wanted to divide work up across instances, you'll need to create a way of assigning work to each instance. For example: set up one worker role as a coordinator vm, and another worker role, with n instances, as the computation vm. Then, have the coordinator vm enumerate all instances of the computation vm and divide up work n ways. Send send 1/ n work messages to each instance over WCF calls over an internal endpoint. Each vm instance processes each work message (potentially with the TPL as well) and stores its result in either blob or table storage, accessible to all instances.

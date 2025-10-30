@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 120807
+[parent_id]: 
+[tags]: 
+Is it possible to train a single input->neuron->relu->neuron->relu for input > 0.5?
+
+The neural network is simply: y=max(max(x*w+b,0)*v+d,0) w,b is weight and bias of first neuron. v,d is weight and bias of second neuron. If data is for example: x = tensor([[1.0], [0.9], [0.8], [0.75], [0.7], [0.6], [0.51], [0.49], [0.3], [0.25], [0.2], [0.1], [0.0]]) y = tensor([[1.0], [1.0], [1.0], [1.0 ], [1.0], [1.0], [1.0 ], [0.0 ], [0.0], [0.0 ], [0.0], [0.0], [0.0]]) Then, below values fit the data: w=-12 b=6 v=-12 d=1 Is it possible to train the network to find above values (or other possible values) ? I tried below code (which actually works sometimes but fails most of the times): l1 = nn.Linear(1, 1) l2 = nn.Linear(1, 1) relu1 = nn.ReLU() relu2 = nn.ReLU() x = tensor([[1.0], [0.9], [0.8], [0.75], [0.7], [0.6], [0.51], [0.49], [0.3], [0.25], [0.2], [0.1], [0.0]]) y = tensor([[1.0], [1.0], [1.0], [1.0 ], [1.0], [1.0], [1.0 ], [0.0 ], [0.0], [0.0 ], [0.0], [0.0], [0.0]]) lr = 0.5 for i in range(0, 100): out = relu2(l2(relu1(l1(x)))) lss = F.mse_loss(out, y) lss.backward() with torch.no_grad(): l1.weight -= l1.weight.grad * lr l1.bias -= l1.bias.grad * lr l2.weight -= l2.weight.grad * lr l2.bias -= l2.bias.grad * lr l1.zero_grad() relu1.zero_grad() l2.zero_grad() relu2.zero_grad() relu2(l2(relu1(l1(x))))

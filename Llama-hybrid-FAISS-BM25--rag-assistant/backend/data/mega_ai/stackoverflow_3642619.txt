@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3642619
+[parent_id]: 
+[tags]: 
+Getting multiple queries when transaction is committed, why?
+
+public Parent GetByName(string Name) { return _session.CreateCriteria () .Add(Restrictions.Eq("Name", Name)) .SetFetchMode("Children", FetchMode.Eager) .SetResultTransformer(new DistinctRootEntityResultTransformer()) .UniqueResult (); } public ParentDetailVM GetMeAParent(string Name) { Parent parent; using (var tx = _session.BeginTransaction()) { //This works well, one single query loading //both parent and children parent = _parentRepository.GetByName(Name); //If I include this as suggested by NHProfiler //it all of the sudden sends a new query for each child //and a query for the grandchildren collection tx.Commit(); } return Mapper.Map (parent); } I have checked to make sure that nothing in the mapping files has been set to eager load. I can't figure out why it works if I leave off the transaction commit but otherwise it issues N more queries. Anyone know why this might be happening?

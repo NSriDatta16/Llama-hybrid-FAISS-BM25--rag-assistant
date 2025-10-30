@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5239032
+[parent_id]: 5235518
+[tags]: 
+As was already mentioned, using Windows Azure Diagnostics is the way to go. However, all the logging from all your instances ends up in one big list, which can be hard to read through. Therefore I try to only send relatively important messages (Warn level and higher) to the diagnostics tables. Even so it's a pain to read the table directly. There are a few tools out there, I personally use Cerebrata Diagnostics Manager. Although using the Trace functions directly works fine, I'd suggest using a logging framework such as NLog or log4net. That gives you a bit more flexibility to send some messages Trace/Azure Diagnostics and others to local storage. For example, I added a ton of trace logging to track down a thread-hanging problem. I found that giving a root-relative file path such as "\ServiceLogs\MyLog.txt" will output to the F: drive on the instance. So I routed all that to the instance filesystem, rather than the Diagnostics tables. You have to remote into each instance to see those logs, but in this circumstance it's a good trade off.

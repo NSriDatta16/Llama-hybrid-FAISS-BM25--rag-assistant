@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1665114
+[parent_id]: 1645238
+[tags]: 
+I'm going to go out on a limb here and assume you want to copy the camera image in a serial fashion, then operate on the copied data (the IplImage) in a multi-threaded way. To safely do this, as the unknown guy pointed out, you have to lock the memory (or variable(s)) you're potentially accessing with your threads. A very short example of how to do this with a Windows CRITICAL_SECTION is as follows: CRITICAL_SECTION cs; /* Initialize the critical section -- This must be done before locking */ InitializeCriticalSection(&cs); ... /* Release system object when all finished -- usually at the end of the cleanup code */ DeleteCriticalSection(&cs); Now when you're accessing the camera (or any un-sharable resource for that matter) you simply surround the thing you're accessing with the following two lines: EnterCriticalSection(&cs); /* Operate on your shared data */ LeaveCriticalSection(&cs); Surrounding your code (e.g. IplImage* frame = cvQueryFrame(xyz);) with these two lines should fix your collisions.. but it sounds like your code could do with a little more organization..

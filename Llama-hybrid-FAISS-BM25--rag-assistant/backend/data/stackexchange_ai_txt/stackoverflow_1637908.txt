@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1637908
+[parent_id]: 
+[tags]: 
+WPF : Assigning to RichTextBox.Document extremely slow (7 minutes!)
+
+I'm constructing a formatted FlowDocument from XML. The XML is well formed and consists mainly of 10,000 nodes each with a single node with a 6 character string value. Parsing the XML to an XElement and constructing the FlowDocument in memory takes about 5 seconds. Assigning the FlowDocument to the Document property of a RichTextBox in my application then takes about 7 minutes, and maxes out the CPU for that time. Here is the relevant piece of code: // The following six lines of code execute in about 5 seconds var xml = XElement.Parse(response.Data); PrettyXmlConverter px = new PrettyXmlConverter(); FlowDocument fd = px.Render(xml); Paragraph p = new Paragraph(); p.Inlines.Add(new Run(response.TimeStamp.ToShortDateString() + " " + response.TimeStamp.ToLongTimeString())); fd.Blocks.InsertBefore(fd.Blocks.ElementAt(0), p); // This line of code takes about 7 minutes and maxes out the CPU for that time. tbResponse.Document = fd; I'm wondering what's going on here. I've profiled the code and see scores of thousands of calls to unmanaged methods such as fsFormatSubtrackBottomless and SubtrackFormatParaBottomless . Can anyone shed any light on the problem, or come up with a workaround?

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3900890
+[parent_id]: 
+[tags]: 
+How to typedef a type derived through several layers of templates?
+
+Maybe my Google-fu just isn't strong enough. Using GCC 4.4.3, I've got a set of classes like this: template struct btree_node { public: typedef btree_node this_t; typedef boost::shared_ptr handle_t; // [...] }; template class btree { public: class caching_storage_t; typedef btree_node node_t; typedef typename node_t::handle_t nodehandle_t; // [...] class caching_storage_t { public: //typedef typename btree::nodehandle_t nodehandle_t; // Fails -- why? typedef typename boost::shared_ptr nodehandle_t; // [...] }; }; As you can see, I've had to redefine nodehandle_t in caching_storage_t , because if I try it with the commented-out typedef line (which I'd prefer), I get an error "no type named ‘handle_t’ in ‘struct btree_node ’" -- which is obviously incorrect, and the compiler knows it since the typedef works fine in btree . I've also tried a using typename btree::nodehandle_t; , and every variation I've been able to think of on both, to no avail. Is this a language/syntax problem (and if so, what is the right syntax), or is it a compiler bug? (There's a similar question here , but it doesn't seem to apply because the thing I'm trying to typedef isn't itself a template. Nothing else I've been able to find seems even close.)

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 414705
+[parent_id]: 
+[tags]: 
+Using residuals as noise and EWMA to fill in missing values?
+
+For some time series data on booking transactions, I am attempting to use EWMA (exponential weighted moving average) + randomized residuals to fill in the missing data. That is, after calculating the EWMA from the datapoints, I calculate the residuals, then resample the residuals and then add them to the ewma to fill in the null totalBookings. TotalBookings are expressed in $ and their distribution is lognormal. This approach follows the same one used in Chapter 12 of Allen Downey's book, "thinkstats" I follow his approach for my own dataset: def FillMissing(daily, span=30): """Fill missing values with exponentially weighted moving average""" daily = daily.set_index('bookedDate') dates = pd.date_range(daily.index.min(), daily.index.max()) reindexed = daily.reindex(dates) ewma = reindexed.totalBookings.ewm(span=span).mean() resid = (reindexed.totalBookings - ewma).dropna() fake_data = ewma + np.random.choice(resid, len(reindexed), replace=True) reindexed.totalBookings.fillna(fake_data, inplace=True) reindexed['ewma'] = ewma reindexed['resid'] = reindexed.totalBookings - ewma return reindexed The problem I'm encountering is that fake_data can take on negative values because some of the residuals are so large. How should I handle these cases and proceed?

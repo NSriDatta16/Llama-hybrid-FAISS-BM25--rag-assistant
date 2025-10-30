@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 575886
+[parent_id]: 535955
+[tags]: 
+Your implementation of the Jeffreys prior for the standard deviation parameter appears to be correct . However, I suspect that you may not be bounding your sigma parameters to be positive, and hence stan may often be initializing sigma to negative values, resulting in a MCMC divergence warning, since log is not defined for negative numbers. For example, you can declare real sigma to specify it as a positive parameter. data { int N; vector[N] y; } parameters { real mu; real sigma; } model { target += -2 * log(sigma); y ~ normal(mu, sigma); } Alternatively, the Jeffreys prior on $log(\sigma)$ is uniform, so if you reparameterize the model using log(sigma) as your parameter, then you can eliminate the target += -2 * log(sigma); statement, for example: data { int N; vector[N] y; } parameters { real mu; real log_sigma; } transformed parameters { real sigma = exp(log_sigma); } model { y ~ normal(mu, sigma); }

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 876493
+[parent_id]: 
+[tags]: 
+ANTLR equivalent to bison REJECT action?
+
+I'm trying to parse a list of Name=Value pairs, where the value can contain anything except whitespace (i.e. values can contain equal signs). The name is restricted to usual identifier characters. The problem is, the 'Value' token matches everything. For example, for the input: dude=sweet the parser will match the whole input with a 'Value' token (and throw a MismatchedTokenException ). In bison , there was the possibility to assign states to tokens (or was this just for nonterminals?) so that they only become 'eligible' for matching after an explicit transition to that state. EDIT Thinking about it, this won't work in bison either - the token splitting has already taken place (in flex ); however, I think there was a way to REJECT tokens, forcing flex try a second-best match. Here's my ANTLR grammar. grammar command_string; start : commandParam* EOF ; commandParam : IDENTIFIER '=' CONTINUOUS_VALUE ; IDENTIFIER : ('-'|'_'|'a'..'z'|'A'..'Z'|'0'..'9')+ ; CONTINUOUS_VALUE : ~( ALL_WS )+ ; WS : (ALL_WS) + { $channel = HIDDEN; } ; fragment ALL_WS : ' ' | '\t' | '\r' | '\n' ;

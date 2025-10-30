@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1471879
+[parent_id]: 
+[tags]: 
+SQL Server 2005 - Row_Number()
+
+I'm trying to understand the unusual behaviour seen when ordering results in a descending order using the row_number() function when using a DISITINCT on the outermost select in my query as below: SELECT DISTINCT (ID), State_Id, Name_Of_Trip, Date_Of_Travel, Creation_Date, Locking_Id, Applicant_Name, Reference_Number, State_Name FROM ( SELECT app.ID, app.State_Id, app.Name_Of_Trip, app.Date_Of_Travel, app.Creation_Date, app.Locking_Id, app.Applicant_Name, app.Reference_Number, State.Name AS State_Name, ROW_NUMBER() OVER(ORDER BY Reference_Number DESC) as rowNum FROM Application_Leg AS app INNER JOIN State AS state ON app.State_Id = state.ID WHERE (app.State_Id = 5 OR app.State_Id = 6 OR app.State_Id = 8) AND app.Organisation_Id=12 AND Leg_Number IN (SELECT DISTINCT Leg_Number from Application_Leg as al INNER JOIN Organisation as org ON al.Organisation_Id = org.ID WHERE al.ID=app.ID AND org.Approval_Required=1 AND Mode_Of_Transport=1)) as pagedApplications WHERE rowNum BETWEEN 0 AND (0 + 10) When the outermost DISTINCT is taken out then the descending order is fine but when it is included the results are not shown in descending order.

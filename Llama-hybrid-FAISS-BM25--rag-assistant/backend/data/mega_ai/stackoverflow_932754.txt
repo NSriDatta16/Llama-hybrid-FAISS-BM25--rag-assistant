@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 932754
+[parent_id]: 932610
+[tags]: 
+Actually, if the Member's visits are in a SQL database, you can do the whole thing with a single SQL query. This is also probably faster than schlepping all of the data over to a client program to check it anyway: /* Find all members who visited at least once every day for 30 or more days. --RBarryYoung, 2009-05-31 */ ;WITH cteVisitDays as ( Select MemberID , DATEDIFF(dd,'2008-06-01',VisitTime) as VisitDay From tblMembersLog Where Not Exists( Select * From tblMemberTags T Where T.MemberID = tblMembersLog.MemberID And T.TagName = 'WOOT!' ) Group By MemberID , DATEDIFF(dd,'2008-06-01',VisitTime) ) , cteVisitRunGroups as ( Select MemberID , VisitDay - Row_Number() Over( Partition By MemberID Order By VisitDay ) as RunGrouping From cteVisitDays ) SELECT Distinct MemberID From cteVistRunGroups Group By MemberId, RunGrouping Having COUNT(*) >= 30

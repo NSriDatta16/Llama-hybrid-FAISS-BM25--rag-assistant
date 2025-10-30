@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5428816
+[parent_id]: 5427506
+[tags]: 
+Translation from python to PowerShell works pretty well: function sort-dir { param($dir) $toarray = { @($_.BaseName -split '(\d+)' | ?{$_} | % { if ([int]::TryParse($_,[ref]$null)) { [int]$_ } else { $_ } }) } gci $dir | sort -Property $toarray } #try it mkdir $env:TEMP\mytestsodir 1..10 + 100..105 | % { '' | Set-Content $env:TEMP\mytestsodir\$_.txt } sort-dir $env:TEMP\mytestsodir Remove-Item $env:TEMP\mytestsodir -Recurse You can do it even better when you use Proxy function approach . You add -natur parameter to Sort-Object and you have pretty beautiful solution. Update : First I was quite surprised that PowerShell handles comparing arrays in this way. After I tried to create test files ("a0", "a100", "a2") + 1..10 + 100..105 | % { '' | Set-Content $env:TEMP\mytestsodir\$_.txt } , it turned out that it doesn't work. So, I think there is no elegant solution like, because PowerShell is static under the covers, whereas python is dynamic.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3139736
+[parent_id]: 3135703
+[tags]: 
+Providing you really do have a lot of area effects happening simultaneously, and that they will have arbitrary shapes, I'd do it this way: when a new effect is created, it is stored in a global list of effects (not necessarily a global variable, just something that applies to the whole game or the current game-map) it calculates which tiles it affects, and stores a list of those tiles against the effect each of those tiles is notified of the new effect, and stores a reference back to it in a per-tile list (in C++ I'd use a std::vector for this, something with contiguous storage, not a linked list) ending an effect is handled by iterating through the interested tiles and removing references to it, before destroying it moving it, or changing its shape, is handled by removing the references as above, performing the change calculations, then re-attaching references in the tiles now affected you should also have a debug-only invariant check that iterates through your entire map and verifies that the list of tiles in the effect exactly matches the tiles in the map that reference it.

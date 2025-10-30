@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4262179
+[parent_id]: 4261603
+[tags]: 
+Reading between the lines of your question and comment, what you are trying to do is use a memory mapped file to share memory/objects between a Java and C++ application. My advice is don't try to do this . There are difficult issues that would need to be addressed to make this reliable: synchronizing the two applications' use of the shared data structure, ensuring that changes made by one application get reliably written to main memory and read by the other one, ensuring that changes get flushed to disc in the expected order. A Java specific problem is that you cannot put your Java objects in the memory mapped area. Instead you have to serialize and deserialize them in some way that is compatible with the representations that the C++ side is expecting. Finally, even if you do succeed in addressing all of those issues, your solution is likely to be fragile because it depends on unspecified behaviour of the OS, C++ and Java implementations that potentially may change if you change versions of any of the above.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 632308
+[parent_id]: 
+[tags]: 
+Rolling back records created by PersistenceSpecifications in Fluent NHibernate
+
+I'm learning some Fluent NHibernate and I've run across the semi-awesome PersistenceSpecification class. I've set it up in a unit test to verify my mappings and it works great. However, it leaves the record in the database when done. I tried throwing it in a transaction so I can rollback the changes but I get an error: System.ObjectDisposedException: Cannot access a disposed object. Object name: 'AdoTransaction'.. Without a transaction I have to figure out the ID's of the record, retrieve them and delete them and that doesn't seem very elegant. Any thoughts? EDIT: Here is the code snippet: var factory = GetSessionFactory(); using (var session = factory.OpenSession()) using (var transaction = session.BeginTransaction()) { new PersistenceSpecification (session) .CheckProperty(x => x.EndDate, DateTime.Today) .VerifyTheMappings(); transaction.Rollback(); }

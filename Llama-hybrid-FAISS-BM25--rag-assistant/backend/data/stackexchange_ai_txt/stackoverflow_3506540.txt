@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3506540
+[parent_id]: 3485857
+[tags]: 
+By accessing request.FILES['file'] directly, you're bypassing any processing that your UploadFileForm is doing (you don't even need a form class to handle files like that). form.cleaned_data['file'] would access the processed (and cleaned, if you added a clean method) form data. You could also access the request.POST dictionary directly, instead of the form data. Unless you have a good reason to, it's better to use the cleaned form data. In the example you gave, there was also a model being used (which is what the save() method was being called on), and it was the model's field that was handling the file access. If you want to save information about your uploaded files in a database, that's the way to go. You can use the built-in file storage API for saving files: http://docs.djangoproject.com/en/dev/ref/files/storage/#ref-files-storage . Also, it's not a good idea to simply call open(MEDIA_ROOT + '/images/'+file.name, 'wb+') , with the user-specified file name. That's just asking for directory traversal or other issues.

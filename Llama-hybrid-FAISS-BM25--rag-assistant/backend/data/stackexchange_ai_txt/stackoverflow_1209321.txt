@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1209321
+[parent_id]: 1208990
+[tags]: 
+pydoc.writedocs just loops calling writedoc , which is documented (and implemented) to "write a file in the current directory". The only way out that I can see is by making a modified version and forcing it (i.e., sigh, monkeypatching it) into the module, or monkeypatching some key aspect of it, namely where 'open' opens for writing the HTML files it's asked to open. Specifically, in your code, you could do something like: import pydoc def monkey_open(name, option): if option == 'w' and name.endswith('.html'): name_pieces = name.split('.') name_pieces[-2:] = '.'.join(name_pieces[-2:]) name = '/'.join(name_pieces) return open(name, option) pydoc.open = monkey_open Not an elegant or extremely robust solution, but "needs must"... pydoc just isn't designed to allow you to do what you want, so the thing needs to be "shoehorned in" a bit.

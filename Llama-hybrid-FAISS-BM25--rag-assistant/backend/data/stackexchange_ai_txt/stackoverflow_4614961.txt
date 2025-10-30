@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4614961
+[parent_id]: 4610522
+[tags]: 
+What @gregg said plus: The wording in the standard (N1905 25.2.3 paragraph 2) forbids the transformation function from directly modifying elements in the given ranges, i.e. it cannot write to an input iterator. It is only supposed to calculate a value, which the transform function then assigns to the result iterator. In fact, paragraph 5 explicitly allows result to be equal to first . I guess this may allow implementations to perform safety-checks or optimizations in specific cases. For instance, suppose transform were specialized for std::vector . On a 32 bit machine, the implementation could unroll the main loop 4 times and perform 32 bit loads and stores instead of 8 bit ones. Clearly this would not work, if the first call to the transformation function modified the input range (the remaining 3 calls before the store would then operate on dirty data). Here's C++03 one-liner to add 3 to each value off arr : std::transform(arr.begin(), arr.end(), arr.begin(), std::bind1st(std::plus (), 3));

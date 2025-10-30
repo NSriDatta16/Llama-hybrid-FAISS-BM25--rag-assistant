@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3859520
+[parent_id]: 3859427
+[tags]: 
+Try this: $this->auth = Zend_Auth::getInstance(); $this->auth->setStorage(new Zend_Auth_Storage_Session('Test_User')); if (!$this->auth->hasIdentity()) { $this->_redirector->gotoUrl('/entry'); } the problem is if you don't set a storage class, it will default to using Zend_Auth_Storage_Session with the Zend_Auth namespace. And because your session data isn't in that namespace, Zend_Auth doesn't see it and behaves as if the user is not logged in. Depending on how your application is structured (and how big a part of it the auth is), you might want to do this in a bootstrap method instead so you only have to do it once: protected function _initAuth() { $auth = Zend_Auth::getInstance(); $auth->setStorage(new Zend_Auth_Storage_Session('Test_User')); return $auth; }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1745149
+[parent_id]: 1728415
+[tags]: 
+after parsing your object into datetime, you have to add timezone. for that you need to create class derived from the datetime.tzinfo import datetime as dt class SomeZone(dt.tzinfo): # a helper class to quickly create simple timezones - give gmt_offset def __init__(self, gmt_offset): dt.tzinfo.__init__(self) self.gmt_offset = gmt_offset def utcoffset(self, dtime): return dt.timedelta(hours=self.gmt_offset) def dst(self, dtime): return dt.timedelta(0) def tzname(self, dtime): return None start = strptime("2009-11-16 10:15", "%Y-%m-%d %H:%M") start.replace(tzinfo=SomeZone(your_offset_here)) et voila, now it is a datetime with timezone. from here google will take over, as the datetime fields are zone aware and on storage will store it in utc. just remember about daylight savings and everything. if you would like to scavenge around, i'm using the class described up there here

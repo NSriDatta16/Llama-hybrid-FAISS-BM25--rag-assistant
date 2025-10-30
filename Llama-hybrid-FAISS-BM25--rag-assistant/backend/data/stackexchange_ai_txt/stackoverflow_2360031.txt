@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2360031
+[parent_id]: 1319891
+[tags]: 
+Here's a purely functional solution in Clojure. More complex than those already provided, but it is lazy and only adjusts the average at each step, instead of recalculating it from scratch . It's actually slower than a simple solution which calculates a new average at each step if the period is small; for larger periods, however, it experiences virtually no slowdown, whereas something doing (/ (take period ...) period) will perform worse for longer periods. (defn moving-average "Calculates the moving average of values with the given period. Returns a lazy seq, works with infinite input sequences. Does not include initial zeros in the output." [period values] (let [gen (fn gen [last-sum values-old values-new] (if (empty? values-new) nil (let [num-out (first values-old) num-in (first values-new) new-sum (+ last-sum (- num-out) num-in)] (lazy-seq (cons new-sum (gen new-sum (next values-old) (next values-new)))))))] (if (

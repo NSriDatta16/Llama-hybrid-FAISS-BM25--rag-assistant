@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2777
+[parent_id]: 2732
+[tags]: 
+Allright, I figured it out! This is a hard bug to catch, but results from the way pipes are handled by the shell. Every element of a pipeline runs in a separate process. When the read command sets var1 and var2, is sets them it its own subshell, not the parent shell. So when the subshell exits, the values of var1 and var2 are lost. You can, however, try doing var1=$(echo "Hello") echo var1 which returns the expected answer. Unfortunately this only works for single variables, you can't set many at a time. In order to set multiple variables at a time you must either read into one variable and chop it up into multiple variables or use something like this: set -- $(echo "Hello World") var1="$1" var2="$2" echo $var1 echo $var2 While I admit it's not as elegant as using a pipe, it works. Of course you should keep in mind that read was meant to read from files into variables, so making it read from standard input should be a little harder.

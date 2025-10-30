@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 62680
+[parent_id]: 61517
+[tags]: 
+Note that best practice in Python 2.7 is to use new-style classes (not needed with Python 3), i.e. class Foo(object): ... Also, there's a difference between an 'object' and a 'class'. To build a dictionary from an arbitrary object , it's sufficient to use __dict__ . Usually, you'll declare your methods at class level and your attributes at instance level, so __dict__ should be fine. For example: >>> class A(object): ... def __init__(self): ... self.b = 1 ... self.c = 2 ... def do_nothing(self): ... pass ... >>> a = A() >>> a.__dict__ {'c': 2, 'b': 1} A better approach (suggested by robert in comments) is the builtin vars function: >>> vars(a) {'c': 2, 'b': 1} Alternatively, depending on what you want to do, it might be nice to inherit from dict . Then your class is already a dictionary, and if you want you can override getattr and/or setattr to call through and set the dict. For example: class Foo(dict): def __init__(self): pass def __getattr__(self, attr): return self[attr] # etc...

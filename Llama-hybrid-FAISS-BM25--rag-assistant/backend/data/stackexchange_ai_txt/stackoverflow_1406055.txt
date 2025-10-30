@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1406055
+[parent_id]: 1401886
+[tags]: 
+As a general rule, write-host is not the best way to generate output. Ideally, you want to emit objects out of your function and let PowerShell do the formatting for you. This is the more "pipeline friendly" way of doing things. In this case, if you had a function Get-GroupMembers you could pipe it to something like Get-Person | ft CN The trick is creating a new object and adding properties to it, or just emitting the DirectoryServices object you are pulling already. To create a new custom object you can do the following: $obj = new-object psobject $obj | add-member -membertype noteproperty name $PropName -value $valueToStore People can use your function and pipe it to format-table, format-list, select-object, group-object, sort-object and a variety of other things. Keith Hill's Effective PowerShell has a great chapter on Output that you might find helpful. There is also an article by Don Jones on using objects instead of text that is quite good as well.

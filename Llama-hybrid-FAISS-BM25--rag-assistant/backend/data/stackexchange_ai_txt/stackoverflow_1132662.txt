@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1132662
+[parent_id]: 1132561
+[tags]: 
+I don't know about the issue in your second paragraph, but I was bitten once by leaked strings in a record. If you call FillChar() on a record that contains strings you overwrite the ref count and the address of the dynamically allocated memory with zeroes. Unless the string is empty this will leak the memory. The way around this is to call Finalize() on the record before clearing the memory it occupies. Unfortunately calling Finalize() when there are no record members that need finalizing causes a compiler hint. It happened to me that I commented out the Finalize() call to silence the hint, but later when I added a string member to the record I missed uncommenting the call, so a leak was introduced. Luckily I'm generally using the FastMM memory manager in the most verbose and paranoid setting in debug mode, so the leak didn't go unnoticed. The compiler hint is probably not such a good thing, silently omitting the Finalize() call if it's not needed would be much better IMHO.

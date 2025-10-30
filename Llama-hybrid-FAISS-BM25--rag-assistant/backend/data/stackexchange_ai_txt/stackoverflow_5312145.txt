@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5312145
+[parent_id]: 
+[tags]: 
+Problem reading dBase DBF with non-English characters
+
+I have a tool which reads dBase files and uploads the contents to SQL Server, part of a system to import shapefiles. It works but now we have a requirement to import files that include non-English characters (Norwegian in this case, could be other languages later) and they're being corrupted. The dBase files are being read using an OleDbDataAdapter. Stepping through the code I can see that the text is wrong as it is read in. I'm assuming it's something to do with code pages or Unicode but I have no idea how to fix it. A dBase Reader application tells me the DBFs are in code page 1252 - I don't know if this is correct. My upload tool runs on Win7 with English (UK) regional settings. Examples: ÅSGARD in DBF becomes +SGARD in VB.Net & SQL Server. RINGHORNE ØST in DBF becomes RINGHORNE ÏST in VB.Net & SQL Server. The code that reads the DBF: dbfConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & strPath & ";Extended Properties=dBASE IV" Cnn.ConnectionString = dbfConnectionString Cnn.Open() strSQL = "SELECT * FROM [" & strDBF & "]" DA = New OleDb.OleDbDataAdapter(strSQL, Cnn) DS = New DataSet DA.Fill(DS) If DS.Tables(0).Rows.Count > 0 Then dtDBF = DS.Tables(0) Else dtDBF = Nothing End If Data is read like: Name = dtDBF.Rows(index)("NAME_1") Is there a way to tell OleDbDataAdapter what code page to use or a better way to read dBase files from VB.Net?

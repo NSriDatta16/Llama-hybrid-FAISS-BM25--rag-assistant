@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4087852
+[parent_id]: 
+[tags]: 
+omp_set_num_threads always returns 0 and im unable to get thread num with omp_get_thread_num()
+
+I have a C++ class library that uses omp for parallelization. I noticed my problem when it always used up all cores on my processor no mather what omp_set_num_threads(threadCount) had as input. So when investegating I realized that the only way to get num_threads to work was to not use the omp_set_num_threads() method, but set num_threads on the parallel directive like so: #pragma omp parallel num_threads(4) { int i = omp_get_thread_num(); printf_s("Hello from thread %d\n", i); } In the above case the output is: Hello from thread 0 Hello from thread 0 Hello from thread 0 Hello from thread 0 If I instead use the following: omp_set_num_threads(4); #pragma omp parallel //num_threads(4) { int i = omp_get_thread_num(); printf_s("Hello from thread %d\n", i); } The output is Hello from thread 0 Hello from thread 0 Hello from thread 0 Hello from thread 0 Hello from thread 0 Hello from thread 0 Hello from thread 0 Hello from thread 0 However, I created a new project of type Win32 Console Application the omp_set_num_threads works and I get the output: Hello from thread 0 Hello from thread 2 Hello from thread 1 Hello from thread 3 I have to think that this has to do with the project type or some parameter on the project. Does anyone know what it might be? Best regards Richard

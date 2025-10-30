@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5012349
+[parent_id]: 5012334
+[tags]: 
+pow() is a horrible way to calculate powers of 2. Use 1 instead. Then, pick a data type big enough to hold your requested size. Right now it's overflowing the size of int , and therefore trying to allocate a negative number of bytes. That doesn't work for obvious reasons. I suspect that malloc(1ULL would succeed on your system with no issues whatsoever. Next, you're allocating far more than the 2 31 bytes your question mentions, you're actually trying to allocate 2 i * sizeof (svm_node) , or about 2 i+4 . The failing allocation, with i=30 , is for roughly 16GB, which may very well be more than your free RAM. Finally, you're getting 32-bit values when printing pointers. Try printf("%p", x_space); instead. If that still gives you 32-bit values, try using a 64-bit compiler.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3687735
+[parent_id]: 32694
+[tags]: 
+Encountered same problem - RHEL 5.5. Change (any) source map, then run make. ypcat shows the changed info, ypmatch does not. Anything that needs to actually --use-- the new map fails. As per last post, restarting ypserv makes all OK. After days of testing, running strace, etc. I found that ypserv has a "file handle cache" controlled by the "file:" entry in /etc/ypserv.conf --- the default value is 30. Change this to 0 and everything works following the make. Shouldn't have to do this --- Per the manpage for ypserv.conf... "There was one big change between ypserv 1.1 and ypserv 1.2. Since version 1.2, the file handles are cached. This means you have to call makedbm always with the -c option if you create new maps. Make sure, you are using the new /var/yp/Makefile from ypserv 1.2 or later, or add the -c flag to makedbm in the Makefile. If you don't do that, ypserv will continue to use the old maps, and not the updated one." The makefile DOES use "makedbm -c", but still ypserv uses the old (cached) map. Answer: Don't cache the file handles, e.g. set "files: 0" in ypserv.conf

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4158437
+[parent_id]: 
+[tags]: 
+php memcache client performance
+
+I am benchmarking an app I made which uses repcached (memcached with replication) for storing objects and taking some load off the db. While benchmarking the index page I run ab -c 400 -n 5000 http://mysite When I use just one memcache server with list($server, $port) = explode(':', $settings->memcached_servers[0]); $this->link = new Memcache(); $this->link->connect($server, (int) $port); I get 1000 reqs/sec When I out more than one server to the pool with $this->link = new Memcache(); foreach($settings->memcached_servers as $server){ list($server, $port) = explode(':', $server); $this->link->addServer($server, (int) $port, 0, 10); } I only get 300 reqs/sec The difference is huge Any idea why? I really need to have 2 server for redundancy but the performance is also crucial It it normal to have such a huge difference? Basically, the index page makes justs 2 calls to the db getting just one row, so the rows are cached while running the test. But I am surprised to see memcached fall so much behind in the test.

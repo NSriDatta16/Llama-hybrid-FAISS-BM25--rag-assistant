@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 547725
+[parent_id]: 547693
+[tags]: 
+Leave your sql mostly as is and just fix your parameters: cmd.Parameters.Add("@BeginDate", SqlDbType.DateTime).Value = DateTime.Parse(txtBeginDate.Text).Date; cmd.Parameters.Add("@EndDAte", SqlDbType.DateTime).Value = // add one to make search inclusive DateTime.Parse(txtEndDate.Text).Date.AddDays(1); You also want to check to make sure your textboxes are valid datetimes first, but you should get the idea. The only caveat here is that due to a quirk with the BETWEEN operator it will match the first instant of the next day. So, to fix that we write the query like this: SELECT * FROM vwlogs WHERE Log_time >= @BeginDate AND Log_Time Pay special attention to the comparision operators around the date.

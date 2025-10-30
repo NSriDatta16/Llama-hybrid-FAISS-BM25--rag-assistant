@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2457881
+[parent_id]: 2434072
+[tags]: 
+The StAX API has support for this. Have a look at XMLInputFactory , it has a runtime property which dictates whether or not internal entities are expanded, or left in place. If set to false , then the StAX event stream will contain instances of EntityReference to represent the unexpanded entities. If you still want a DOM as the end result, you can chain it together like this: XMLInputFactory inputFactory = XMLInputFactory.newInstance(); inputFactory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false); Transformer transformer = TransformerFactory.newInstance().newTransformer(); String xml = "my xml"; StringReader xmlReader = new StringReader(xml); XMLEventReader eventReader = inputFactory.createXMLEventReader(xmlReader); StAXSource source = new StAXSource(eventReader); DOMResult result = new DOMResult(); transformer.transform(source, result); Node document = result.getNode(); In this case, the resulting DOM will contain nodes of org.w3c.dom.EntityReference mixed in with the text nodes. You can then process these as you see fit.

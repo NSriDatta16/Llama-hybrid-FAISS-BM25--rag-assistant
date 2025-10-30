@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4022439
+[parent_id]: 4022248
+[tags]: 
+I'm not an expert on Threads with Python but quickly reading the docs leads to a few conclusions. 1) Calling os.system() spawns a new subshell and is not encouraged. Instead the subprocess module should be used. http://docs.python.org/release/2.6.6/library/os.html?highlight=os.system#os.system 2) The threading module doesn't seem to give a whole lot of control to the threads, maybe try using the thread module, at least there is a thread.exit() function. Also from the threading docs here it says that dummy threads may be created, which are always alive and daemonic, furthermore "… the entire Python program exits when only daemon threads are left." So, I would imagine that the least you need to do is signal the currently running threads that they need to exit, before exiting the main thread, or joining them on ctrl-c to allow them to finish (although this would obviously be contradictory to ctrl-c), or perhaps just using the subprocess module to spawn the svn up would do the trick.

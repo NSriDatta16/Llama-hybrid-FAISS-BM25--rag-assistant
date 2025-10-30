@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 609840
+[parent_id]: 609094
+[tags]: 
+The problem is at least partially mitigated if you standardize before computing the slopes. df[,-1] = scale(df[,-1],center = T,scale = T) slopes = df %>% pivot_longer(cols = V1:V4) %>% group_by(ID, name) %>% nest() %>% mutate(modelout = map(data, ~lm(value ~ time, data = .x) %>% tidy %>% filter(term == "time") %>% select(slope = estimate))) %>% unnest() %>% summarise(slope = unique(slope)) %>% pivot_wider(names_from = name, values_from = slope) %>% column_to_rownames('ID') res_pca = prcomp(slopes) res_pca Standard deviations (1, .., p=4): [1] 0.434278053 0.133935718 0.097441635 0.001016885 Rotation (n x k) = (4 x 4): PC1 PC2 PC3 PC4 V1 0.84169164 0.05809774 0.0003982831 -0.53682369 V2 -0.09243915 0.86245718 0.4949728571 -0.05122969 V3 0.24846072 0.46867888 -0.7247261007 0.43974931 V4 -0.47040138 0.18202298 -0.4793472552 -0.71820358 More fundamentally, the question is, why is there so much variability in your variables between IDs? Is it meaningful, or should you be accounting for other sources of variance before estimating your slopes?

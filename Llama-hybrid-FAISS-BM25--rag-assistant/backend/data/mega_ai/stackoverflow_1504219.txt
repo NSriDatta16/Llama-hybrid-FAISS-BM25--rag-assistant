@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1504219
+[parent_id]: 1504195
+[tags]: 
+Because of Linq's goofy (read non-standard) way of handling outers, you have to use DefaultIfEmpty(). What you'll do is run your Linq-To-Entities query into two IEnumerables, then LEFT Join them using DefaultIfEmpty(). It may look something like: IQueryable enq = Enquiry.Select(); IQueryable app = Application.Select(); var x = from e in enq join a in app on e.enquiryid equals a.enquiryid into ae where e.Status != 4 from appEnq in ae.DefaultIfEmpty() select e.*; Just because you can't do it with Linq-To-Entities doesn't mean you can't do it with raw Linq. (Note: before anyone downvotes me ... yes, I know there are more elegant ways to do this. I'm just trying to make it understandable. It's the concept that's important, right?)

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 402121
+[parent_id]: 
+[tags]: 
+sklearn::PCA, Inverse transform(transform(X)) = X?
+
+I want to know why doing inverse_transform(transform(X)) $\ne$ X? In the below code, I do the following: I import the iris dataset, drop the target, select three samples. Fit the full data to a PCA with 2 components. Then do a transform of the sample followed by an inverse transform. The samples look like: sepal length (cm) sepal width (cm) petal length (cm) petal width (cm) 5.1000 3.5000 1.4000 0.2 4.9000 3.0000 1.4000 0.2 4.7000 3.2000 1.3000 0.2 Inverse transform looks like this: [[5.08303897 3.51741393 1.40321372 0.21353169] [4.7462619 3.15749994 1.46356177 0.24024592] [4.70411871 3.1956816 1.30821697 0.17518015]] They dont appear the same. Specifically look at row 2, column 1. This doesnt seem like a rounding error. What am I doing wrong? Thanks import pandas as pd import numpy as np from sklearn import datasets from sklearn.decomposition import PCA import seaborn as sns; sns.set() iris = datasets.load_iris() data = iris.data pd.options.display.float_format = '{:,.4f}'.format data1 = pd.DataFrame(data= np.c_[iris['data'], iris['target']], columns= iris['feature_names'] + ['target']) data1 = data1.iloc[:,0:4] print(data1.shape) samples = pd.DataFrame(data1.loc[[0,1,2]], columns = data1.keys()).reset_index(drop = True) print(samples) pca = PCA(n_components=2) pca.fit(data1) pca_data1 = pca.transform(data1) pca_samples = pca.transform(samples) print(pca.inverse_transform(pca_samples))

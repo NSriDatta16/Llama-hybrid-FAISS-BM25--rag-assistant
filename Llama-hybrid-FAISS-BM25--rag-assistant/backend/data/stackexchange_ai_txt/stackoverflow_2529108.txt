@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2529108
+[parent_id]: 2528866
+[tags]: 
+Create View Models to represent the different projections you require, and then use a select projection as follows. from c in Cars select new CarSummary { Registration = c.Registration, ... } This will create a query that only select the properties needed. relationships will be resolved if they are represented in the data context diagram (dbml) select new CarSummary { OwnerName = c.Owner.FirstName } Also you can nest objects inside the projection select new CarSummary { ... Owner = new OwnerSummary { OwnerName = c.Owner.FirstName, OwnerAge = c.Owner.Age } ... } If you are using the same projection in many places, it man be helpful to write a method as follows, so that the projection happens in one place. public IQueryable CreateCarSummary(IQueryable cars) { return from c in cars select new CarSummary { ... } } This can be used like this where required public IQueryable GetNewCars() { var cars = from c in Cars select c; return CreateCarSummary(cars); }

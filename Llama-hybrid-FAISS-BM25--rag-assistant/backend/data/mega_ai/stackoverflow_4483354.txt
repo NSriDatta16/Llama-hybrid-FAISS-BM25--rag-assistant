@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4483354
+[parent_id]: 4482703
+[tags]: 
+tv_sec has type time_t . tv_usec has type long , and needs to be signed because you will (on average 50% of the time) get negative results in tv_usec when subtracting timeval values to compute an interval of time, and you have to detect this and convert it to a borrow from the tv_sec field. The standard (POSIX) could have instead made the type unsigned and required you to detect wrapping in advance, but it didn't, probably because that would be harder to use and contradict existing practice. There is also no reason, range-wise, for tv_usec to be unsigned, since the maximum range it really needs to be able to represent is -999999 to 1999998 (or several times that if you want to accumulate several additions/subtractions before renormalizing).

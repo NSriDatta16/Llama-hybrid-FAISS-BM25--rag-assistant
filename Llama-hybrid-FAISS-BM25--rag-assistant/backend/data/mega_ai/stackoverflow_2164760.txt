@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2164760
+[parent_id]: 2162975
+[tags]: 
+popen2.py : class Popen4(Popen3): childerr = None def __init__(self, cmd, bufsize=-1): _cleanup() self.cmd = cmd p2cread, p2cwrite = os.pipe() c2pread, c2pwrite = os.pipe() self.pid = os.fork() if self.pid == 0: # Child os.dup2(p2cread, 0) os.dup2(c2pwrite, 1) os.dup2(c2pwrite, 2) self._run_child(cmd) os.close(p2cread) self.tochild = os.fdopen(p2cwrite, 'w', bufsize) os.close(c2pwrite) self.fromchild = os.fdopen(c2pread, 'r', bufsize) man 2 fork : The fork() function may fail if: [ENOMEM] Insufficient storage space is available. os.popen4 eventually calls open2.Popen4.__init__ , which must fork in order to create the child process that you try to read from/write to. This underlying call is failing, likely due to resource exhaustion. You may be using too much memory elsewhere, causing fork to attempt to use more than the RLIMIT_DATA or RLIMIT_RSS limit given to your user. As recommended by Python memory profiler - Stack Overflow , Heapy can help you determine whether this is the case.

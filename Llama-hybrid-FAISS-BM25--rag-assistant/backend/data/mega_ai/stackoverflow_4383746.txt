@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4383746
+[parent_id]: 
+[tags]: 
+How to set statusCode in NSURLResponse
+
+I override NSURLProtocol and need to return HTTP response with specific statusCode. NSHTTPURLResponse does not have statusCode setter, so I tried to override it with: @interface MyHTTPURLResponse : NSHTTPURLResponse {} @implementation MyHTTPURLResponse - (NSInteger)statusCode { return 200; //stub code } @end Overridden startLoading method of NSURLProtocol looks like this: -(void)startLoading { NSString *url = [[[self request] URL] absoluteString]; if([url isEqualToString:SPECIFIC_URL]){ MyURLResponse *response = [[MyURLResponse alloc] initWithURL:[NSURL URLWithString:@"http://fakeUrl"] MIMEType:@"text/plain" expectedContentLength:0 textEncodingName:nil]; [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed]; [[self client] URLProtocol:self didLoadData:[@"Fake response string" dataUsingEncoding:NSASCIIStringEncoding]]; [[self client] URLProtocolDidFinishLoading:self]; [response release]; } else{ [NSURLConnection connectionWithRequest:[self request] delegate:self]; } } But this approach does not work, the response created in NSURLProtocol is always with statusCode = 0 on web page. At the same time responses that are returned from network by NSURLConnection have normal expected statusCodes. Can anyone please help with ideas how to set statusCode explicitly for created NSURLResponse? Thanx.

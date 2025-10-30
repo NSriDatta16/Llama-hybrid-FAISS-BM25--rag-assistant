@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1986585
+[parent_id]: 1986064
+[tags]: 
+dpbradley's link in #2 sounds like your best bet. Tom keeps the transactionality with the caller, if you don't want that you could make it an autonomous transaction like so: create or replace function getNextInvoiceNumber() return number is l_invoicenum number; pragma autonomous_transaction; begin update docs_numbers set last_invoice = last_invoice + 1 returning last_invoice into l_invoicenum; commit; return l_invoicenum; exception when others then rollback; raise; end;

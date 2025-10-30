@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5642845
+[parent_id]: 
+[tags]: 
+Is there a "ContainsType" class?
+
+I recently generalized a type class away from a constraint MonadError GenError m to a more flexible constraint of MonadError e m, CanContainGenError e . This is useful for using the relevant monad transformer with a stack that already has an ErrorT SomeError m - I can just add GenError as an element of a new constructor in the SomeError data type. I found myself surprised to be writing a custom CanContainGenError class hard-coded to GenError . Isn't there a common ContainedType class or some such? (I almost called it "subtype", heh) Anything like the below CanContainType or ContainsType classes I just made up? class CanContainType cont orig where toCont :: orig -> cont fromCont :: cont -> Maybe orig class ContainsType orig sub where toContainer :: orig -> cont fromContainer :: cont -> orig Where an example instantiation is: -- edit fixed example instance to reflect what I want, sorry for the misleading code data IntOrFloatOrDouble= I Int | F Float | D Double instance CanContainType IntOrFloatOrDouble Int where toCont = I fromCont (I a) = Just a fromCont _ = Nothing Now that I've typed this out I'm realizing there probably isn't an established one because my requirements mandate MPTCs. Still, I'm interested in any thoughts.

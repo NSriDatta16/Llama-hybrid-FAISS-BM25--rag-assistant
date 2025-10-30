@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3877730
+[parent_id]: 3877640
+[tags]: 
+I strongly encourage you to use RegisterHotKey instead of GetAsyncKeyState. That way you won't need a loop nor a Timer, thus making your application more reliable and responsive. To simulate the keypresses to another application/window, you need to: A) Focus the specific window: BringWindowToTop(hwnd); SetForegroundWindow(hwnd); SetFocus(hwnd); B) Send the keydown + keyup events: keybd_event(keycode, 0, KEYEVENTF_KEYDOWN, 0); keybd_event(keycode, 0, KEYEVENTF_KEYUP, 0); This should suffice. However, keep in mind the user might be already pressing one of the keys you're simulating , thus the result might not be what you're expecting. To avoid that, you need to check if the keys are already being pressed (use GetAsyncKeyState here), then send a keyup before doing B . UPDATE: If you wish to send the keypresses to whatever application is currently on the foreground (being focused), you can skip A .

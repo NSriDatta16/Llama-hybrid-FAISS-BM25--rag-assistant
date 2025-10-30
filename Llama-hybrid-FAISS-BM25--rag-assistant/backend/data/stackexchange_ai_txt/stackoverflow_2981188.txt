@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2981188
+[parent_id]: 
+[tags]: 
+scala: Adding attributes (odd and even rows) to xml table
+
+In a Lift application, I’d like to add a special tag which takes the part of the next table and adds odd and even classes (for example) to each tag. Alternating, of course. While I have found a way to add another attribute to all tags, there are still a few problems left (see code below). First, it doesn’t work. cycle.next is called too often, so in the end, everything is an odd row. Other problems are that the code doesn’t exclude inner tables (so a nested would be transformed as well) and that it also affects the part of the table. Ideas to make this code work? (Of course, if there already is a lift-based solution – without jQuery – for this, I’ll gratefully take it.) // Helper class for looping class Loop(val strs: String*) { val stream_iter = Stream.continually(strs.toStream).flatten.iterator def next = stream_iter.next } val cycle = new Loop("even", "odd") val rr = new RewriteRule { override def transform(n: Node): Seq[Node] = n match { // match any Elem case elem : Elem => elem match { // If it’s a do some further processing case Elem(_, "tr", att @ _, _, _*) => elem % Attribute(None, "class", Text( // add the attribute and concatenate with others List(att.get("class").getOrElse("").toString, cycle.next).reduceLeft(_+" "+_).trim ), Null) toSeq case other => other } case other => other } } val rt = new RuleTransformer(rr) val code = Don’t transform this r1c1 r1c2 r2c1 r2c2 r3c1 r3c2 println(rt(code))

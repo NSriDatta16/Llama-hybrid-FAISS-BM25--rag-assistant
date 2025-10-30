@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2324727
+[parent_id]: 
+[tags]: 
+Re-ordering child nodes in django-MPTT
+
+I'm using Ben Firshman's fork of django-MPTT (hat tip to Daniel Roseman for the recommendation ). I've got stuck trying to re-order nodes which share a common parent. I've got a list of primary keys, like this: ids = [5, 9, 7, 3] All of these nodes have a parent, say with primary key 1. At present, these nodes are ordered [5, 3, 9, 7] , how can I re-order them to [5, 9, 7, 3] ? I've tried something like this: last_m = MyModel.get(pk = ids.pop(0)) last_m.move_to(last_m.parent, position='first-child') for id in ids: m = MyModel.get(pk = id) m.move_to(last_m, position='right') Which I'd expect to do what I want, per the docs on move_to , but it doesn't seem to change anything. Sometimes it seems to move the first item in ids to be the first child of its parent, sometimes it doesn't. Am I right in my reading of the docs for move_to that calling move_to on a node n with position=right and a target which is a sibling of n will move n to immediately after the target? It's possible I've screwed up my models table in trying to figure this out, so maybe the code above is actually right. It's also possible there's a much more elegant way of doing this (perhaps one that doesn't involve O(n) selects and O(n) updates). Have I misunderstood something? Bonus question: is there a way of forcing django-MPTT to rebuild lft and rght values for all instances of a given model?

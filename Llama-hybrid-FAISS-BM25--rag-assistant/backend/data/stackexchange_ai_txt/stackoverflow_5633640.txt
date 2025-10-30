@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5633640
+[parent_id]: 5604644
+[tags]: 
+humm... I don't think it's good idea (or even possible) develop software in .NET worrying about context switches, since neither Windows or .NET are real time. Probably you have another kind of problem in that code. I've understood that you simply run all your agents in parallel, and you want to wait till all of them have finished to go to the next stage. You can use several techniques to accomplish that, the easiest one would be using Monitor.Wait(Object monitor) and Monitor.PulseAll(Object monitor) . In the task library there are several things to do it as well. As @jishi has pointed out, you can use the Parallel flavours, or spawn a lot of Task s and then wait for all with the Task.WaitAll(Task[] tasks) method. Each time the above event is fired, the AgentManager class catches it, and adds +1 to a counter. How are you adding 1 to that counter and how are you reading it? You should use Interloked.Increment to ensure an atomic operation, and read it in a volatile operation with Thread.VolatileRead for example, or simply put it in a lock statement.

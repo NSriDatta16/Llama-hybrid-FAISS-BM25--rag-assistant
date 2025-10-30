@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 448197
+[parent_id]: 
+[tags]: 
+Unregistered event handlers cause memory leak
+
+I'm maintaining a web application that has a memory leak. Based on my investigation using Red Gate ANTS memory profiler I'm pretty sure that the memory leak is caused by event handlers in the business layer. There's a collection that registers an event handler on each item that's added so that the collection can re-sort when the item's date is changed. It appears that this event handler is the culprit. The business layer for this application is quite complicated, so keeping the collection and its items in memory drags a bunch of other objects with it. I've implemented IDisposable on the collection and removed the event handlers in the Dispose method: p.OnPunchDateChanged -= this.OnPunchDateChanged; However, implementing IDisposable doesn't help since I can't wrap all the references to the collection in using or try/catch blocks. This collection is used by portions of the application that I don't have control over. How can I clear these event handlers to resolve this memory leak?

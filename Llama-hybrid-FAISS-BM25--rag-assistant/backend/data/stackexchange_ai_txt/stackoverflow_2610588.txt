@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2610588
+[parent_id]: 
+[tags]: 
+Python: Get items at depth? (set library?)
+
+I have a nested list something like this: PLACES = ( ('CA', 'Canada', ( ('AB', 'Alberta'), ('BC', 'British Columbia' ( ('van', 'Vancouver'), ), ... )), ('US', 'United States', ( ('AL', 'Alabama'), ('AK', 'Alaska'), ... I need to retrieve some data out of it. If depth is 0 I need to retrieve all the countries (and their codes), if depth == 1 , I need to retrieve all the states/provinces, if depth == 2 I need to retrieve all the cities... and so forth. Is there some set library for doing stuff like this? Or can someone point me in the right direction? I started coding up a solution only to realize it wouldn't work for levels deeper than 1 because you have to go in and out of each list... Also notice that not all items have a 3rd part (i.e., we're pretending Alberta doesn't have any cities, so retrieving items at depth 2 would just return ('van','Vancouver') in this limited scenario). I didn't realize this before, but I also needed the parent value. So, I modified interjay's solution: def depth_gen(seq, depth, par=None): if depth==0: for x in seq: yield par, x[0], x[1] return for x in seq: if len(x)==3: par = x[0] for y in depth_gen(x[2], depth-1, par): yield y Which I'm using to generate some HTML: Province Alberta British Columbia Manitoba ... West Virginia Wisconsin Wyoming Country Canada United States And then I should be able to easily filter the list with jQuery based on which country is selected...

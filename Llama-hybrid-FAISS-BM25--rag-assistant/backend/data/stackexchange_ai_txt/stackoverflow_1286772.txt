@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1286772
+[parent_id]: 1286551
+[tags]: 
+Here are two more elegant solutions: Using N flag to add one zero at a time until we have six digits: RewriteCond %{QUERY_STRING} ^(([^&]*&)*)page_id=([0-9]{1,5})(&.*)?$ RewriteRule ^script\.cgi$ $0?page_id=0%3 [N] RewriteCond %{QUERY_STRING} ^([^&]*&)*page_id=([0-9]{6})(&.*)?$ RewriteRule ^script\.cgi$ http://archive.example.com/%2/? [R=301,L] Using an additional RewriteCond to prepend five zeros and then get just the last six digits: RewriteCond %{QUERY_STRING} ^(([^&]*&)*)page_id=([0-9]+)(&.*)?$ RewriteCond 00000%3 [0-9]{6}$ RewriteRule ^script\.cgi$ http://archive.example.com/%0/? [R=301,L] The complex pattern applied on QUERY_STRING is just to consider additional URL parameters. And I prefer the second solution as it is just one rule and more comprehensive.

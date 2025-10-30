@@ -1,0 +1,136 @@
+ARINC 661 is a standard which aims to normalize the definition of a Cockpit Display System (CDS), and the communication between the CDS and User Applications (UA) which manage aircraft avionics functions. The GUI definition is completely defined in binary Definition Files (DF).
+
+The CDS software is constituted of a kernel which is able to create the GUI hierarchy specified in the DF during initialization, thus not needing to be recompiled if the GUI definition changes.
+
+History and adoption in industry 
+The first version of the standard was adopted in 2001. Its first use was for Airbus A380 CDS development.
+The first supplement was adopted in 2003, and added new widgets.
+The second supplement was adopted in June 2005, and added supplementary widgets. Third supplement has been adopted in 2007. Supplement 4 was adopted in 2010.
+
+The standard is known today to be used for Airbus A380 and A400M CDS development, and also Boeing 787 CDS development. AgustaWestland company use ARINC 661 for the development of a new Touchscreen unit in the upgraded Merlin helicopter for the Royal Navy. In March 2011, Embraer announced that it selected SCADE Solutions for ARINC 661, a COTS (Commercial Off The Shelf) tool for ARINC 661 development, for its future developments.
+
+An ARINC 661 Part 2 is currently in development, allowing to specify look and feel for widgets. It should be released in 2020.
+
+Supplement history
+
+Technical overview 
+The standard normalizes :
+ the GUI definition of the CDS interface, in a binary file called DF (Definition File) defining the structure of the graphical interface tree. The GUI tree is instantiated at initialization time (called the Definition Phase in the standard) in the CDS, using the definition contained in the DF.
+ the communication at runtime between the User Applications (UA) and the CDS. This communication protocol is typically used for UAs to send widgets modifications to the CDS, and return user events (such as buttons selection) from CDS to UA.
+
+In order to be compliant with the standard, a CDS must have a kernel that can create the widgets tree during CDS initialization, using the Definition File, and communicate with UA in both ways using the runtime protocol.
+
+ARINC 661 does not imply the use of a particular Data bus structure to perform the low-level communication between CDS and UA. For example, an ARINC 429 or Ethernet protocol such as ARINC 664 can be used, but it is not mandatory.
+
+GUI Structure 
+ The Cockpit Display System (CDS) is the graphic Server which is responsible to show and manage the GUI
+ A User Application (UA) is one system application which communicates with the CDS. The CDS manage one or more Definition Files for each User Application. At run-time, messages are exchanged between UAs and the CDS.
+ A Definition File (DF) specifies the GUI definition associated with one User Application (note that a User Application may be associated by more than one DF). A Definition File contains the definition of one or more Layers
+ A Layer (also named  User Application Layer Definition or UALD) is a GUI container for widgets
+ A widget is the basic building block of the GUI
+
+GUI definition 
+Each DF binary file specifies the GUI definition for one User Application (UA) User interface. Several UA user interface trees can be combined to constitute the CDS display definition.
+
+A DF is composed of two parts : an optional symbol definition, and a widgets definition. The widget library is similar to Widgets used in computing. There are Containers, Lists, ScrollPanes, Buttons, Menus, Labels, EditBoxes, etc...
+
+Although the DF File is binary, the standard has also defined an associated XML definition, which is easier to manipulate in tools.
+
+Relationship with other UI languages 
+The concepts used by ARINC 661 are close to those used in User interface markup languages, except that the UI language is binary and not XML based.
+
+Main similarities from other User interface markup languages:
+ The interface definition is not hard-coded in the CDS. Instead, the CDS use a kernel which instantiate the widget tree at initialization, using a predefined widget library
+ The widget list and the structure of the widget tree are similar to what can be found in common Widget toolkits
+ The Look and feel is separated from the definition of the interface
+
+Main differences from other User interface markup languages :
+ The widget library defined in the standard does not really take advantage of its object nature, contrary to other User interface markup languages. For example, there is no notion of inheritance in the standard, although the same properties can be used more than once for several widgets.
+ Some Widget toolkits or User interface markup languages have the ability to lay out widgets automatically in a container (see for example the box model in XUL, or the layouts in Java Swing). Widgets position and size in their container must always be defined exactly in an ARINC 661 definition. However, the supplement 3 of the standard has added a limited sort of "relative" layout capability between widgets (see Layout manager).
+ There is no mechanism for defining the presentation and interactive behavior of elements equivalent to XBL used in XUL (or sXBL used in SVG). There are symbols that can be reused, but they are mainly shapes that cannot have behaviors (apart from defining their position, rotation, and color), or specific bindings.
+ There is no equivalent of CSS, as they are used in XUL or SVG for example. Instead, the Look and feel of the interface is hard-coded in the ARINC 661 kernel. However, supplement 5 introduced a way to specify the Look of widgets.
+ The standard does not have an equivalent of JavaScript, as used in SVG and XUL, so all specific behavior associated with the widgets must be performed by the UAs.
+ The standard has defined specific "Map" widgets which allows to present elements such as Flight plans in CDS.
+
+Example
+The following example presents the XML Definition File for a Layer containing a panel enclosing a label, which shows the text "Hello World!". Note that contrary to most widget toolkits, ARINC 661 widgets origins are relative to the lower left-hand corner of their parent container, and screen units are not in pixel but in 1/100 of millimeters.
+
+  <?xml version="1.0"?>
+  <!DOCTYPE a661_df SYSTEM "a661.dtd">
+  <a661_df library_version="0" supp_version="2">
+    <model>
+      <prop name="ApplicationId" value="1"/>
+    </model>
+    <a661_layer>
+      <model>
+        <prop name="LayerId" value="5"/>
+        <prop name="ContextNumber" value="23"/>
+        <prop name="Height" value="10000"/>
+        <prop name="Width" value="10000"/>
+      </model>
+      <a661_widget name="SamplePanel" type="A661_PANEL">
+        <model>
+          <prop name="WidgetIdent" value="1"/>
+          <prop name="Enable" value="A661_TRUE" />
+          <prop name="Visible" value="A661_TRUE" />
+          <prop name="PosX" value="0"/>
+          <prop name="PosY" value="0"/>
+          <prop name="SizeX" value="10000"/>
+          <prop name="SizeY" value="10000"/>
+          <prop name="StyleSet" value="STYLESET_DEFAULT" />
+        </model>
+        <a661_widget name="Hello World Label" type="A661_LABEL">
+           <model>
+             <prop name="WidgetIdent" value="2"/>
+             <prop name="Anonymous" value="A661_FALSE" />
+             <prop name="Visible" value="A661_TRUE" />
+             <prop name="PosX" value="5000" />
+             <prop name="PosY" value="5000" />
+             <prop name="SizeX" value="1500" />
+             <prop name="SizeY" value="1000" />
+             <prop name="RotationAngle" value="0.0" />
+             <prop name="StyleSet" value="0" />
+             <prop name="MaxStringLength" value="20" />
+             <prop name="MotionAllowed" value="A661_TRUE" />
+             <prop name="Font" value="T4" />
+             <prop name="ColorIndex" value="black" />
+             <prop name="Alignment" value="A661_CENTER" />
+             <prop name="LabelString" value="Hello World!" />
+           </model>
+        </a661_widget>
+      </a661_widget>
+    </a661_layer>
+  </a661_df>
+
+Development and tools support
+ARINC 661 GUI development includes tools for the specification of definition files and the kernel that use these files:
+ Thanks to ARINC 661 concepts, the specification tools have no dependency on the execution platform,
+ The kernel itself depends on the execution platform.
+
+COTS specification tools for DF specification currently include PRESAGIS VAPS XT 661 Toolkit, SCADE Solutions for ARINC 661 Compliant Systems, and DiSTI's GL Studio ARINC 661 Toolkit.
+
+Ansys (at the time Esterel Technologies) announced on October 13, 2010, the availability of SCADE Solutions for ARINC 661 in 2011.
+SCADE Solutions for ARINC 661 allow creating both ARINC 661-compliant CDS and UA. For CDS developers, the toolchain features a complete customizable ARINC 661 compliant model-based widgets library and the automated generation of a portable ARINC 661 server, compliant with the DO-178B/DO-178C safety objectives up to level A. For UA developers, the toolchain features the model-based design and generation of DFs and the automatic generation of communication code between SCADE Suite UA models and the ARINC 661 Server.
+
+The GL Studio ARINC 661 Toolkit is a plug-in to GL Studio HMI Toolkit that delivers a set of pre-existing customizable widgets, a DF Generator, CDS, Communication Libraries, and a User Application Generator.
+
+PRESAGIS  introduced the first COTS ARINC 661 development tool which allows creation of Widgets, Layers, DF Generation and embeddable real-time COTS CDS kernel with DO-178B/C certification artifacts. Because of the burden of Avionics software certification, the kernel must be embedded in a DO-178-compliant environment.
+
+Flexible Software Solutions introduced COTS developing, testing and analysis tools for ARINC 661 protocol at the beginning of 2012. The UA Accelerator software tool is used to develop ARINC 661 user applications while the UA Emulator software tool is used to test and debug UA and CDS ARINC 661 messaging. This technology and related products has since been acquired by PRESAGIS
+
+See also 
+Model View Controller Model
+User interface markup languages
+Cockpit display system
+Avionics software
+
+References
+
+External links 
+ Presagis Complete CDS and UA Solutions for ARINC 661 Development web page
+ Ansys SCADE Solutions for ARINC 661 Compliant Systems
+ Understanding ARINC 661
+ ARINC 661 Open Source Server project
+
+ARINC standards
+Graphical user interfaces

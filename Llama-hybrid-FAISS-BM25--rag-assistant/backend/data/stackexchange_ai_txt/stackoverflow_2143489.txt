@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2143489
+[parent_id]: 2143272
+[tags]: 
+You can use the views dragEnterEvent to get the indices that were selected initially: void DropTreeView::dragEnterEvent(QDragEnterEvent *event) { QTreeView::dragEnterEvent(event); const QItemSelectionModel * sm = selectionModel(); if (!sm) return; dragStartIndicies = sm->selectedIndexes(); } You'll need to use the mime-types for the drag and drop, but C++ Qt provides a nice way to do that using QDataStream : QMimeData *YourModel::mimeData( const QModelIndexList &indexes ) const { QByteArray encodedData; QDataStream stream( &encodedData, QIODevice::WriteOnly ); stream setData( YOUR_MIME_TYPE, encodedData ); return mData; } On the receiving end, you can get your data structure (i.e. QMap if that's what you want to use) back out of the QDataStream : QByteArray encodedData = yourMimeData->data( YOUR_MIME_TYPE ); QDataStream stream( &encodedData, QIODevice::ReadOnly ); QMap decodedMap; stream >> decodedMap;

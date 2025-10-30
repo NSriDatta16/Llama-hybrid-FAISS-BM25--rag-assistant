@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 50861
+[parent_id]: 50829
+[tags]: 
+You don't specify the operating system or environment, this answer assumes Linux, glibc, and C. You can set __malloc_hook, __free_hook, and __realloc_hook to point to functions which will be called from malloc(), realloc(), and free() respectively. There is a __malloc_hook manpage showing the prototypes. You can add track allocations in these hooks, then return to let glibc handle the memory allocation/deallocation. It sounds like you want to free any live allocations when the third-party function returns. There are ways to have gcc automatically insert calls at every function entrance and exit using -finstrument-functions, but I think that would be inelegant for what you are trying to do. Can you have your own code call a function in your memory-tracking library after calling one of these third-party functions? You could then check if there are any allocations which the third-party function did not already free.

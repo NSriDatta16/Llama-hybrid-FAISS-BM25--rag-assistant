@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2621581
+[parent_id]: 2621307
+[tags]: 
+Mysql's NDB Cluster WILL do this. But it's far from easy to set up and has a lot of gotchas. And also, its performance is generally fairly sucky and it keeps data in memory (yes, I know they sound contradictory). Essentially, updates need to acquire distributed locks throughout the cluster (or at least in the storage node group where those table(s) are held) It is not easy to manage, but you can do some level of hot-add. Unless you require very rapid failover and consistency, I'd recommend against it. I'd recommend ignoring multi-master, and using a HA MySQL instead (with e.g. InnoDB) which is easy to set up and works very well with typical sub 30-second failover times. This is a master-slave system where the slave cannot even do reads (but you can add read slaves with replication provided you don't need them to be completely up to date)

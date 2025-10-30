@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1694934
+[parent_id]: 1694825
+[tags]: 
+if I understood your question correctly you want to be able to programmatically browse a website and find positions of given words. In order to do this you can use WebClient class in order to load the html content of the page then Regex to match needed words. Below is an example which would load cnn.com and list all the links found on this website and their positions, you can modify the regualr expression to return only links which contain word sport WebClient client = new WebClient(); using (Stream data = client.OpenRead(@"http://www.cnn.com/")) { using (StreamReader reader = new StreamReader(data)) { string content = reader.ReadToEnd(); string pattern = @"((https?|ftp|gopher|telnet|file|notes|ms-help):((//)|(\\\\))+[\w\d:#@%/;$()~_?\+-=\\\.&]*)"; MatchCollection matches = Regex.Matches(content, pattern); foreach (Match match in matches) { GroupCollection groups = match.Groups; Console.WriteLine("'{0}' repeated at position {1}", groups[0].Value, groups[0].Index); } } }

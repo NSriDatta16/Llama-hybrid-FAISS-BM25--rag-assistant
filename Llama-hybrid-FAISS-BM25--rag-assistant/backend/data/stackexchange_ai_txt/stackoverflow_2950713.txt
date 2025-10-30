@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2950713
+[parent_id]: 2950661
+[tags]: 
+If you need a general XML parsing method, don't use regex. If you just need what you said (remove everything except for the subclass-code and city) and if you are sure that those two tags will appear with no "strange" things inside (xml entities, CDATA sections) and that those tags will not appear inside other CDATA fragments, etc, you can simply do: $/ = undef; # slurp mode open(READFILE, "FILENAME"); $t = ; close READFILE; $t =~ s#^.* (.*?) .* (.*?) .*$#$1 - $2#s; # in case the tags could appear in distinct order - uncomment the following # $t =~ s#^.* (.*?) .* (.*?) .*$#$2 - $1#s; print $t; Edit: A little more (ahem) powerful, following poster's requirements: while( $t =~ m# ([^ (.*?) .*? (.*?) #sg) { print "$1 : $2 | $3 \n"; } But please stop here and don't go further, this way leads to hell...

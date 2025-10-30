@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3186640
+[parent_id]: 3186284
+[tags]: 
+After the first time this line executes: stringArray = realloc(stringArray, arrayLength*sizeof(*stringArray)); then stringArray[arrayLength/2] will be a garbage value - you haven't set it to point to storage for the word. This part should use either use sizeof(**stringArray), or 1 as **stringArray is char, and the counter should only go up to arrayLength: for(counter; counter Instead allocate in one block: char* block = malloc(wordLength * arrayLength); for ( counter; counter At the moment, it's possible that there is some space after stringArray, into which you are storing the (wordLength-arrayLength) extra pointers when you calloc them, and realloc doesn't move stringArray. It's quite probable that 0xb49010 is one of the pointers you calloc'd, and you're overwritten the memory where malloc keeps its block size.. But since you're writing off the end of stringArray, you're into undefined behaviour anyway.

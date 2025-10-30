@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4822284
+[parent_id]: 
+[tags]: 
+More Efficient LINQ Query
+
+Can someone help me make this query loop into an efficient Linq query? I am loading this into a TreeView so each item must be attached. Includes are also very inefficient. Lazy loading the items will not work either. As it is, this query hits the database many more times than it should public IQueryable GetTopLevelData(Guid agentGuid, int year) { var clients = from client in ObjectContext.Clients join cbc in ObjectContext.Client_Bucket_Client on client.Client_GUID equals cbc.Client_GUID join acb in ObjectContext.Agent_Client_Bucket on cbc.Client_Bucket_GUID equals acb.Client_Bucket_GUID where acb.Agent_GUID == agentGuid select client; foreach (Client c in clients) { var transactions = ObjectContext.Transactions.Where(t => t.Client_GUID == c.Client_GUID && t.Year == year); foreach (Transaction t in transactions) { t.Forms.Attach(ObjectContext.Forms.Where(f => f.Transaction_GUID == t.Transaction_GUID && f.Year == year)); //.OrderByDescending(fo => fo.Create_Date)); } c.Transactions.Attach(transactions); } return clients; }

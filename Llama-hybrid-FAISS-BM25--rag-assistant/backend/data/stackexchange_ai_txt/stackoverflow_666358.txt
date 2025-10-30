@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 666358
+[parent_id]: 663275
+[tags]: 
+It makes no sense to do this on an auto-incrementing primary key column, as even if it was trivial to do, without mass updates in related tables you affect your data integrity. To do so you would likely need to drop the index and primary key constraint from the column (at which point your application may flake out), renumber all later records, renumber all related tables, then re-apply the primary key constraint and index. If you really must have some form of linear identifier which always starts at 0 (this may then indicate a problem with the software design) then you can have a secondary ID column in addition to the primary key, which you then update to shuffle higher values down a rung with a statement such as: UPDATE table SET secondaryID = secondaryID - 1 WHERE secondaryID > (SELECT secondaryID FROM table WHERE primaryID = [id to delete]); DELETE FROM table WHERE primaryID = [id to delete]; I strongly discourage such a practice - if your IDs are 'missing' values because of deleted records, the software should test for existence of these values rather than just wigging out.

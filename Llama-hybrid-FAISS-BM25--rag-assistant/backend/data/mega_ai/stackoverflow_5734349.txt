@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5734349
+[parent_id]: 5734066
+[tags]: 
+The TaskMgr is way too crude for this purpose. Especially if you have a lot of dynamic allocations and deallocations which will lead to a highly fragmented heap memory, in which case, it is hard to differentiate between leaks and natural growth of the heap due to fragmentation. You should use win32 API calls to inspect the total amount of memory allocated by your application. Some years ago, when I used to still have problems with memory leaks (don't have those anymore thanks to RAII), I used to put at the start of the main() a little piece of code that queried for the total amount of memory blocks allocated on the heap, and then query it again at the very end of the main() function, if the two values didn't match, I would report a "memory leak of X bytes" error at that point. If you want to do that, you can use either GlobalMemoryStatuxEx or a HeapWalk . The former is simpler to use and faster, but more crude, while the latter is more precise, but much more extensive.

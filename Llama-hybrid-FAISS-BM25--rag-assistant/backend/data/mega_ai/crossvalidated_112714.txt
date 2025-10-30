@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 112714
+[parent_id]: 112706
+[tags]: 
+When you calculate the weight matrix, you need to use the value of the moment conditions over the observations. Since the optimal weight matrix is the variance-co-variance matrix of your moments, you need to find that. Right now, you're just taking the inner product of the average value of your moments. Try the following: % Note that this g function does not take the average, there is no sum, % it is the value of the moment condition for each individual. g_cost_c = @(mu_hat,degree) (1/N)*(X-mu_hat).^degree; g_cost_v = @(mu_hat)g_cost_c(mu_hat,1); for i = 1:N_moments-1 g_cost_v = @(mu_hat)[g_cost_v(mu_hat) g_cost_c(mu_hat,2*i+1)]; end S_hat = (1/N_moments)*(v_cost*v_cost'); W_hat = inv(S_hat); Again the difference is in where you put the expectation. The optimal weight matrix is: $$W = E\left[ g(X_i,\theta)g(X_i,\theta)'\right]^{-1}$$ As opposed to: $$\left(E[ g(X_i,\theta)]'E[g(X_i,\theta)]\right)^{-1}$$ which is what the current code gives you.

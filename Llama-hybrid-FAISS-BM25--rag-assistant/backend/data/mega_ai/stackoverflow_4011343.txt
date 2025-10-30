@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4011343
+[parent_id]: 4007851
+[tags]: 
+When you are working with UTF-8 data it can be very fragile. Every step in the chain needs to specify utf8. (1) In the database, be sure the table has UTF8 encoding and collation. "show table status" will tell you this. Google for "mysql alter table utf8" for more info. (2) The JDBC connection needs to specify the UTF8 encoding. For Connector/J this will be something similar to: useUnicode=true&characterEncoding=UTF-8 (3) Every stream read/write, every string to byte conversion in the code needs to specify UTF-8 as the encoding. It's easy to miss one. If it's missed Java will use the system default which will vary server to server. (4) Not applicable here, but for user submitted data from a form, you need to set the request character encoding. (I do this in a servlet filter) request.setCharacterEncoding("UTF-8"); (5) Probably not applicable here, but if you output HTML/XML/text from your servlet, set the HTTP character encoding header. (This might apply if you are generating the Excel file as an XML file). response.setContentType("text/html; charset=UTF-8");

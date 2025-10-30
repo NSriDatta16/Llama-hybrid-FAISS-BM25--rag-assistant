@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 325198
+[parent_id]: 325190
+[tags]: 
+The recommended approach is to create a named memory mapping ( CreateFileMapping , probably with INVALID_HANDLE_VALUE as first parameter since you don't need an actual file) and put your shared data in the mapping. You'll also need a named mutex to synchronize access to this data. A lazy approach is to use #pragma data_seg (for MSVC; other compilers have similar tools) to put your data in a shared section. Please note that MSVC requires data to be explicitly initialized; otherwise, it will go to the regular data section without even a warning. The disadvantage of the second approach is that security is not applied here, so any user (even across sessions) will have access to the shared section. Another issue is that only instances of the same executable file (or DLL) will share the section; i.e., if you copy an .exe and run it from two different locations, the data will not be shared.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3485313
+[parent_id]: 3485233
+[tags]: 
+I think I found the answer. For those who are interested... Using Firebug Light I noticed that the drawing element that was created was . Seems totally obvious now, but goog.graphics.createGraphics creates a canvas tag by default for iPad. This explains why circle.getElement() returns null. We need SVG, which is supported by iPad. Closure can be tricked into providing SVG graphics with something like: var oldMobileSetting = goog.userAgent.MOBILE; goog.userAgent.MOBILE = false; var graphics = goog.graphics.createGraphics(400, 400); goog.userAgent.MOBILE = oldMobileSetting; Doing this, the demo works as expected. Alternatively, we could directly create SVG graphics if iPad environment is known by directly instantiating: var graphics = new goog.graphics.SvgGraphics(400, 400);

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 364827
+[parent_id]: 
+[tags]: 
+Why is regression with Gradient Tree Boosting sometimes impacted by normalization (or scaling)?
+
+I read that normalization is not required when using gradient tree boosting (see e.g. https://stackoverflow.com/q/43359169/1551810 and https://github.com/dmlc/xgboost/issues/357 ). And I think I understand that in principle there is no need for normalization when boosting regression trees. Nevertheless, using xgboost for regression trees, I see that scaling the target can have a significant impact on the (in-sample) error of the prediction result. What is the reason for this? Example for the Boston Housing dataset: import numpy as np import pandas as pd import xgboost as xgb from sklearn.metrics import mean_squared_error from sklearn.datasets import load_boston boston = load_boston() y = boston['target'] X = boston['data'] scales = pd.Index(np.logspace(-6, 6), name='scale') data = {'reg:linear': [], 'reg:gamma': []} for objective in ['reg:linear', 'reg:gamma']: for scale in scales: xgb_model = xgb.XGBRegressor(objective=objective).fit(X, y / scale) y_predicted = xgb_model.predict(X) * scale data[objective].append(mean_squared_error(y, y_predicted)) pd.DataFrame(data, index=scales).plot(loglog=True, grid=True).set(ylabel='MSE')

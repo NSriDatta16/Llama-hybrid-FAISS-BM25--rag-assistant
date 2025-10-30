@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2361465
+[parent_id]: 2359763
+[tags]: 
+The Album class seems a bit strange and especially this part: private EntitySet _tracks; [Association(Storage = "_tracks", ThisKey = "AlbumID", OtherKey = "AlbumID")] public EntitySet Tracks { get { return _tracks; } set { _tracks.Assign(value); } } The _tracks private member is never assigned a value and you call the Assign method on it in the setter which throws the exception. By the way the compiler should have warned you. You could try providing a default value or check for null in the setter before calling the Assign method: private EntitySet _tracks = new EntitySet (); Other than that your extension method to convert an IEnumerable to EntitySet seems nice. And finally when you assign the fake albums you need to set the tracks: private static IQueryable fakeAlbums = new List { new Album { AlbumID = 1, Title = "Jars of Clay", Tracks = fakeTracks.ToEntitySet() }, new Album { AlbumID = 2, Title = "Wind in the Wheat", Tracks = fakeTracks.ToEntitySet() } }.AsQueryable();

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5233227
+[parent_id]: 5232821
+[tags]: 
+Two ways: Put it in the HTTP response headers, not in the HTML head. The meta tags are only interpreted when the file is opened from local disk file system, not when the file is obtained by HTTP. A Filter is a perfect tool for the job. Plus, you forgot two more Cache-Control settings. Here's a complete set: HttpServletResponse hsr = (HttpServletResponse) response; hsr.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1. hsr.setHeader("Pragma", "no-cache"); // HTTP 1.0. hsr.setDateHeader("Expires", 0); // Proxies. chain.doFilter(request, response); Map this Filter on the desired URL pattern matching the HTML file. Add a timestamp to the query string so that the browser cache is fooled. var url = dojo.moduleUrl("dijit.form", " &" + new Date().getTime());

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3712850
+[parent_id]: 3712697
+[tags]: 
+If you have multiple processes running or multiple computers hitting the same database, then of course there is no way for you to reduce the number of queries running this. One thing you can try doing is using a threadlocal storage to hold a global "cache" of users. As an example: class UserStorage(threading.local): store = {} def getIsland(self, request): user_id = request.user.pk island = store.get(user_id) if island is None: island, created = Island.objects.get_or_create(user = user_id) store[user_id] = island island.update() return island However, you may notice that the Island object WILL NEVER BE UPDATED. Therefore, you must proceed with extreme caution. You may need to have a global timeout for this object, but then you are implementing your own cache solution, so why not use django's cache system with memcached or their threadlocal cache?

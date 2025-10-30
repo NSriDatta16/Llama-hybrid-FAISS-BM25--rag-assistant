@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3032887
+[parent_id]: 3032783
+[tags]: 
+From the documentation you can see that writing template tags involves writing a target function and a renderer. So I'm assuming your current code looks like this: def my_tag(parser, token): # ... some code return MyNode(...) class MyNode(template.Node): def render(self, context): # here is where you write your tags So essentially what you have to do is to hang a variable under the context so you can know if for that specific request you've already included the code to load all your needed scripts. class MyNode(template.Node): def render(self, context): if '_included_faceboxify_deps' in context: # render your dependency includes context['_included_faceboxify_deps'] = True # render your s that are specific for this call This should do the trick. It's not as elegant as including your dependencies in the top of the page, but it's enough not to include them for every time you need to call them.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1560230
+[parent_id]: 
+[tags]: 
+Running Apache DS embedded in my application
+
+I'm trying to run an embedded ApacheDS in my application. After reading http://directory.apache.org/apacheds/1.5/41-embedding-apacheds-into-an-application.html I build this: public void startDirectoryService() throws Exception { service = new DefaultDirectoryService(); service.getChangeLog().setEnabled( false ); Partition apachePartition = addPartition("apache", "dc=apache,dc=org"); addIndex(apachePartition, "objectClass", "ou", "uid"); service.startup(); // Inject the apache root entry if it does not already exist try { service.getAdminSession().lookup( apachePartition.getSuffixDn() ); } catch ( LdapNameNotFoundException lnnfe ) { LdapDN dnApache = new LdapDN( "dc=Apache,dc=Org" ); ServerEntry entryApache = service.newEntry( dnApache ); entryApache.add( "objectClass", "top", "domain", "extensibleObject" ); entryApache.add( "dc", "Apache" ); service.getAdminSession().add( entryApache ); } } But I can't connect to the server after running it. What is the default port? Or am I missing something? Here is the solution: service = new DefaultDirectoryService(); service.getChangeLog().setEnabled( false ); Partition apachePartition = addPartition("apache", "dc=apache,dc=org"); LdapServer ldapService = new LdapServer(); ldapService.setTransports(new TcpTransport(389)); ldapService.setDirectoryService(service); service.startup(); ldapService.start();

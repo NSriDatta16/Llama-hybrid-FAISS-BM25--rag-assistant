@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5275999
+[parent_id]: 5275876
+[tags]: 
+First, I strongly encourage you to move Model's logic into Models. Instead of creating the search logic into the Controller, create a #search method into your Quote mode. class Quote def self.search(query) ... end end and your controller becomes # receives a string, splits it in a array of words, create the 'conditions' # query, and send it to ActiveRecord def search @quotes = Quote.search(params[:query]) end Now, back to the original problem. Your existing search logic does a very bad mistake: it directly interpolates value opening your code to SQL injection. Assuming you use Rails 3 you can take advantage of the new #where syntax. class Quote def self.search(query) words = query.to_s.strip.split words.inject(scoped) do |combined_scope, word| combined_scope.where("quote LIKE ?", "%#{word}%") end end end It's a little bit of advanced topic. I you want to understand what the combined_scope + inject does, I recommend you to read the article The Skinny on Scopes .

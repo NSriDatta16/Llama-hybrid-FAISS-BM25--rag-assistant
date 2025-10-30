@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3989402
+[parent_id]: 
+[tags]: 
+SQL Server - Poor performance of PK delete
+
+I have a table in SQL Server 2008 R2 consisting of about 400 rows (pretty much nothing) - it has a clustered index on the primary key (which is an identity). The table is referenced via referential integrity (no cascade delete or update) by about 13 other tables. Inserts/Updates/Gets are almost instant - we're talking a split second (as should be expected). However, a delete using the PK takes as long as 3 minutes and I've never seen it faster than 1.5 minutes: DELETE FROM [TABLE] WHERE [TABLE].[PK_WITH_CLUSTERED_INDEX] = 1 The index was heavily fragmented - 90%. I rebuilt and reorganized that index (along with the rest on that table), but I can't get it below 50%. Additionally, I did a backup/restore of the database to my local PC and I have no issues with deleting - less than a second. The one thing I have not done is delete the clustered index entirely and re-add it. That, in and of itself is a problem, because SQL Server does not allow you to drop a PK index when it is referenced by other tables. Any ideas? Update I should have included this in my original post. The execution plan places 'blame' on the clustered index delete - 70%. Of the 13 tables that reference this table, the execution plan says that none exceed more than 3% of the overall query - almost all hit on index seeks.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2211473
+[parent_id]: 2211430
+[tags]: 
+Use GM_xmlhttpRequest for the request, and createContextualFragment for HTML parsing. See Best Addons for Greasemonkey for an example using createContextualFragment. For parsing of valid XML you can just use DOMParser.parseFromString . EDIT: Here's a very simple but complete example to show how everything fits together: // ==UserScript== // @name Parse HTML demo // @namespace // @include * // ==/UserScript== GM_xmlhttpRequest({ method: 'GET', url: 'http://www.google.com', onload: function(resp){ var range = document.createRange(); range.setStartAfter(document.body); var xhr_frag = range.createContextualFragment(resp.responseText); var xhr_doc = document.implementation.createDocument(null, 'html', null); xhr_doc.adoptNode(xhr_frag); xhr_doc.documentElement.appendChild(xhr_frag); var node = xhr_doc.evaluate("//span//b[@class='gb1']", xhr_doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue; GM_log("node.localName: " + node.localName); GM_log("node.textContent: " + node.textContent); } });

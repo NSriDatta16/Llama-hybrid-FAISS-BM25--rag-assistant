@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4579563
+[parent_id]: 4579324
+[tags]: 
+It's difficult to make the result exactly as you want it to be, as you'd need to know for each pixel how many fragments were there. If it's enough for you to make the particles look OK, then it should be enough to change the blending mode. They are accumulating to white because you probably are using additive alpha blending: result = source_color*source_alpha + destination_color Or plain additive blending: result = source_color + destination_color (where source is "the color of a given fragment" and destination is "what was already in the framebuffer in that place"). Both of those decay to white with a lot of "layers". But you can use "true" alpha blending: result = source_color * source_alpha + destination_color * (1-source_alpha) which will not decay to white. In OpenGL, this corresponds to: glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); That's not exactly what you wanted since the result will be order-dependent, but it should be 100% sufficient for a particle system. Hope that helps. (Also, don't forget to render the solid geometry before the particles and disable z-write then.)

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4532961
+[parent_id]: 
+[tags]: 
+Parallel.foreach in initializing conversation manager
+
+I'm using mvc2 and nhibernate 2.1.2 In my controller class I'm calling foreachParty method like this: OrganizationStructureService.ForEachParty (department, null, p => { p.AddParentWithoutRemovingExistentAccountability(domainDepartment, AccountabilityTypeDbId.SupervisionDepartmentOfDepartment); } }, x => (!(x.AccountabilityType.Id == (int)AccountabilityTypeDbId.SupervisionDepartmentOfDepartment))); static public void ForEachParty (Party party, PartyTypeDbId? partyType, Action action, Expression > expression = null) where T : Party { IList chilrden = new List (); IList acc = party.Children; if (party != null) action(party); if (partyType != null) acc = acc.Where(p => p.Child.PartyTypes.Any(c => c.Id == (int)partyType)).ToList(); if (expression != null) acc = acc.AsQueryable().Where(expression).ToList(); Parallel.ForEach(acc, p => { if (partyType == null) ForEachParty (p.Child, null, action); else ForEachParty (p.Child, partyType, action); }); } But just after executing the action on foreach.parallel , I don't know why the conversation is getting closed and I see current conversation is not initilized yet or its closed

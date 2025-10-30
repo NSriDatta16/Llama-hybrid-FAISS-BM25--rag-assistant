@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5306514
+[parent_id]: 5304828
+[tags]: 
+I suspect the two joins ( join revisionwindow rw ) and ( join authorwindow aw ) that do not have an ON condition but use the WHERE, cause this. How many records do these two tables have? MySQL probably does first a CROSS JOIN on these and only later checks the complex (WHERE) conditions. But please post the results of EXPLAIN . --EDIT-- Oops, I missed your last paragraph which explains that the two tables have 4 and 3 rows. Can you try this: (where the concat has been replaced and the where clauses have been moved as JOIN ON ...) select aw.same , rw.k , count(distint r1.id, r2.id) as num from deltamethoddeclaration dmd1 join revision r1 on r1.id = dmd1.FKrevID join methodinvocation mi on mi.FKcallerID = dmd1.FKMDID join deltamethoddeclaration dmd2 on mi.FKcalleeID = dmd2.FKMDID join revision r2 on r2.id = dmd2.FKrevID join revisionwindow rw on (dmd1.FKrevID - dmd2.FKrevID) r2.author else 1=1 end group by aw.same , rw.k ;

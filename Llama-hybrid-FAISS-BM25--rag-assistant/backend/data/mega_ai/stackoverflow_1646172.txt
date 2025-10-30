@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1646172
+[parent_id]: 
+[tags]: 
+GET ISNULL from COMPLEX FUNCTION
+
+I have a SQL Table UDF That gets a Standard Deviation from a 20 day moving average of values... The table its computing from is: Tickers([date] datetime, [close] numeric(7,2)) The Function computes a Table GetStDev([date] datetime, stddev numeric(7,2). The last row of the stddev column is always NULL (due to STDEV calc?)... I need to replace that NULL value in the last row with the value from the previous row ([date] -1)... but in do so doing, do I have calculate the whole query twice and select TOP 1 stddev from xxx, and even so I am not sure how to write such a long SQL statement... Here is my In Line Table UDF: ALTER FUNCTION GetStdDev ( @TKR VARCHAR(10) ) RETURNS TABLE AS RETURN ( SELECT x.[date], ISNULL(STDEV(y.[Close]),0) stdev FROM Tickers x, Tickers y WHERE x.[DATE] > (SELECT TOP 1 z.[DATE] FROM TICKERS z WHERE z.TICKER = @TKR ORDER BY z.DATE ASC)+20 AND (DATEDIFF(day, x.[date], GETDATE())

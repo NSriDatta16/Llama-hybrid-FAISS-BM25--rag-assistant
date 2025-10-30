@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3356697
+[parent_id]: 3356505
+[tags]: 
+Several of the other answers recommended returning charBuffer + 1 . As I noted in my previous comment: This is bad practice. What if the string is dynamically allocated? Perhaps eventually the storage will be freed (starting from the second character). The string should be copied to new storage first. Freeing a piece of storage from the middle will result in undefined behavior. Instead, try the strdup function which will return a duplicate of the given string. #include #include char *newStr(char* charBuffer) { if (charBuffer && (charBuffer[0] == 'A' || charBuffer[0] == 'Q')) return strdup(charBuffer + 1); else return strdup(charBuffer); } void main() { char a[7] = "Advait"; char b[5] = "John"; printf("%s\n",newStr(a)); // Prints "dvait" printf("%s\n",newStr(b)); // Prints "John" }

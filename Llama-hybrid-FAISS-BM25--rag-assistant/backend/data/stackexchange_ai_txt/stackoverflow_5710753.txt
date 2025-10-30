@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5710753
+[parent_id]: 5708356
+[tags]: 
+Yes, but it's not trivial. create global temporary table my_gtt ( ... ) on commit preserve rows; create or replace type my_gtt_rowtype as object ( [columns definition] ) / create or replace type my_gtt_tabtype as table of my_gtt_rowtype / create or replace function pipe_rows_from_gtt return my_gtt_tabtype pipelined is pragma autonomous_transaction; type rc_type is refcursor; my_rc rc_type; my_output_rec my_gtt_rectype := my_gtt_rectype ([nulls for each attribute]); begin delete from my_gtt; insert into my_gtt ... commit; open my_rc for select * from my_gtt; loop fetch my_rc into my_output_rec.attribute1, my_output_rec.attribute1, etc; exit when my_rc%notfound; pipe_row (my_output_rec); end loop; close my_rc; return; end; / I don't know it the autonomous transaction pragma is required - but I suspect it is, otherwise it'll throw errors about functions performing DML. We use code like this to have reporting engines which can't perform procedural logic build the global temporary tables they use (and reuse) in various subreports.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2792353
+[parent_id]: 2792295
+[tags]: 
+"find out what sets of columns are queried together frequently and create indexes for them" is the best approach. Also, order the columns in indexes based on 2 criteria: Columns that are more frequent in where clauses have priority Columns that are more selective have priority. E.g. if "where col1=val1" returns an average of 2 rows for a random value val1, but "where col2=val2" returns 2000 rows on average, col1 should have priority as far as being early in index Not sure about Postgres, but in Sybase, the like '%xxx%' expressions (e.g match value starts with wildcard) do NOT hit the index, EVER. So the index can't help with that query unless you select those 3 columns and thus make it a covering index.

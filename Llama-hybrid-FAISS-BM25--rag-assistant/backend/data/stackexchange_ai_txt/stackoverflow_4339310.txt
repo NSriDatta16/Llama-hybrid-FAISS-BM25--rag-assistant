@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4339310
+[parent_id]: 4339259
+[tags]: 
+Perl uses unsigned binary right shift. If Perl runs on a 32-bit architecture, you get the following: -10 == -0xa == 0xfffffff6 0xfffffff6 >> 2 == 0x3ffffffd == 1073741821 Unsigned binary right shift means that the highest (rigtmost) bits of the result become 0. JavaScript uses sign-extending binary right shift. JavaScript shifts always treat both the input and the output as 32 bit integers. So you get: -10 == -0xa == 0xfffffff6 -3 == -0x3 == 0xfffffffd 0xfffffff6 >> 2 == 0xfffffffd == -3 Sign-extending binary right shift means that the highest (rigtmost) bits of the result get copied from the highest bit of the original value. As Tim Henigan said in his answer, it's possible to get sign-extending binary right shift from Perl, by specifying use integer; . Example: { use integer; printf "%d 0x%x\n", (-10) >> 2, (-10) >> 2; #: -3 0xfffffffd } printf "%d 0x%x\n", (-10) >> 2, (-10) >> 2; #: 1073741821 0x3ffffffd

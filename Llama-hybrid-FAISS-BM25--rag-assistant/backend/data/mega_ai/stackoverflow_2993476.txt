@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2993476
+[parent_id]: 2991927
+[tags]: 
+It turns out my original attempt was mostly there. The following works: extern "C" void Af(void); void (*Af_fp)(void) = &Af; For those that want a self-contained preprocessor macro to encapsulate this: #if defined(_WIN32) # if defined(_WIN64) # define FORCE_UNDEFINED_SYMBOL(x) __pragma(comment (linker, "/export:" #x)) # else # define FORCE_UNDEFINED_SYMBOL(x) __pragma(comment (linker, "/export:_" #x)) # endif #else # define FORCE_UNDEFINED_SYMBOL(x) extern "C" void x(void); void (*__ ## x ## _fp)(void)=&x; #endif Which is used thusly: FORCE_UNDEFINED_SYMBOL(Af)

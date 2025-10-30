@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 893576
+[parent_id]: 893317
+[tags]: 
+According to this post , the reason you are seeing this is because the ints are inside a ref class which can be moved around the heap by the garbage collector at will, the address of the ints could change and you wouldn't be told. To overcome this, you need to tell the GC not to move the objects while you are using them. To do this you need to use pin_ptr pinnedFrameWidth = &frameWidth; then pass pinnedFrameWidth into GetImageSize. The pin_ptr will be automatically cast to int* when passed into the method. You need to be careful when using pin_ptr. Because the GC can't move the instance of Test class around during a collection, the managed heap can become fragmented and, eventually, performance can suffer. Ideally pin as few objects for the least amount of time possible. There is a brief discussion of pin pointers in this .Net Rocks show.

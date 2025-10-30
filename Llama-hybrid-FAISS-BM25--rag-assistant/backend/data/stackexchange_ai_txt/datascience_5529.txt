@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 5529
+[parent_id]: 
+[tags]: 
+Pandas time series optimization problem: add year
+
+I have a pandas DataFrame containing a time series column. The years are shifted in the past, so that I have to add a constant number of years to every element of that column. The best way I found is to iterate through all the records and use x.replace(year=x.year + years) # x = current element, years = years to add It is cythonized as below, but still very slow (proofing) cdef list _addYearsToTimestamps(list elts, int years): cdef cpdatetime x cdef int i for (i, x) in enumerate(elts): try: elts[i] = x.replace(year=x.year + years) except Exception as e: logError(None, "Cannot replace year of %s - leaving value as this: %s" % (str(x), repr(e))) return elts def fixYear(data): data.loc[:, 'timestamp'] = _addYearsToTimestamps(list(data.loc[:, 'timestamp']), REAL_YEAR-(list(data[-1:]['timestamp'])[0].year)) return data I'm pretty sure that there is a way to change the year without iterating, by using Pandas's Timestamp features. Unfortunately, I don't find how. Could someone elaborate?

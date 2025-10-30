@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3487896
+[parent_id]: 3487647
+[tags]: 
+Only you know how many copies of how much data you will use, so unfortunately the only good answer will be to build simulated data sets and measure the disk usage. In addition, similar to a file system, CouchDB requires additional storage for metadata. This cost depends on two factors: How often you update or create a document How often you compact The worst-case instantaneous disk usage will be the total amount of data times two , plus all the old document revisions (#1) existing at compaction time (#2). This is because compaction builds a new database file with only the current document revisions. Therefore the usage will be two copies of current data (from the old file plus the new file), plus all of the "wasted" old revisions awatiing deletion when compaction completes. After compaction, the old file is deleted so you will reclaim over half of this worst-case value. Running compaction all the time is no problem to reduce data use however it has implications with disk i/o.

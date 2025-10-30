@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1718037
+[parent_id]: 
+[tags]: 
+Reflecting parameter name: abuse of C# lambda expressions or syntax brilliance?
+
+I am looking at the MvcContrib Grid component and I'm fascinated, yet at the same time repulsed, by a syntactic trick used in the Grid syntax : .Attributes(style => "width:100%") The syntax above sets the style attribute of the generated HTML to width:100% . Now if you pay attention, 'style' is nowhere specified. It is deduced from the name of the parameter in the expression! I had to dig into this and found where the 'magic' happens: Hash(params Func [] hash) { foreach (var func in hash) { Add(func.Method.GetParameters()[0].Name, func(null)); } } So indeed, the code is using the formal, compile time, name of parameters to create the dictionary of attribute name-value pairs. The resulted syntax construct is very expressive indeed, but at the same time very dangerous. The general use of lambda expressions allows for replacement of the names used without side effect. I see an example in a book that says collection.ForEach(book => Fire.Burn(book)) I know I can write in my code collection.ForEach(log => Fire.Burn(log)) and it means the same thing . But with the MvcContrib Grid syntax here all of a sudden, I find code that actively looks and makes decisions based on the names I choose for my variables! So is this common practice with the C# 3.5/4.0 community and the lambda expressions lovers? Or is a rogue one trick maverick I shouldn't worry about?

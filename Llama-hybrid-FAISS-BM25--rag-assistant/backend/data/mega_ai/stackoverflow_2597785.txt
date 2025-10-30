@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2597785
+[parent_id]: 2597751
+[tags]: 
+I don't think it's a good idea to denormalize your data like that. I think a more elegant solution is to use django aggregation to track how many times the tag has been used http://docs.djangoproject.com/en/dev/topics/db/aggregation/ You could attach the used count to your tag object by calling something like this: my_tag = Tag.objects.annotate(used=Count('post'))[0] and then accessing it like this: my_tag.used assuming that you have a Post model class that has a ManyToMany field to your Tag class You can order the Tags by the named annotated field if needed: Tag.objects.annotate(used=Count('post')).order_by('-used')

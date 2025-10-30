@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1431739
+[parent_id]: 1431569
+[tags]: 
+In modern Linux systems (2.6), each thread has a separate identifier that has nearly the same treatment as the pid. It is shown in the process table (at least, in htop program) and it also has its separate /proc entry, i.e. /proc/ /stat . Check man 5 proc and pay particular attention to stat , statm , status etc. You should find the information you're interested in there. An only obstacle is to obtain this thread identifier. It is different with the process id ! I.e. getpid() calls in all threads return the same value. To get the actual thread identifier, you should use (within a C program): pid_t tid = syscall(SYS_gettid); By the way, java virtual machine (at least, its OpenJDK Linux implementation) does that internally and uses it for debugging purposes in its back-end, but doesn't expose it to the java interface.

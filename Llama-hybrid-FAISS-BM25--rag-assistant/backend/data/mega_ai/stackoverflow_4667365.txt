@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4667365
+[parent_id]: 4667083
+[tags]: 
+As others already said, you don't need to write the struct prefix in c++ as the compiler is able to determine the correct type by the name only. But I suggest to use reinterpret_cast in this situation, as the c style cast is the big-hammer cast which casts types and const specifiers in one go. struct socksddr_storage ss; const struct socksddr_storage ss2; struct sockaddr *sa; sa = reinterpret_cast (&ss); // Works like the C Cast sa = reinterpret_cast (&ss2); // Fails, because ss2 is a constant, // but sa is a pointer to a no const memory location. The C cast will allow // this assignment, but this can lead to runtime errors since the linker // can place ss2 into read-only memory.

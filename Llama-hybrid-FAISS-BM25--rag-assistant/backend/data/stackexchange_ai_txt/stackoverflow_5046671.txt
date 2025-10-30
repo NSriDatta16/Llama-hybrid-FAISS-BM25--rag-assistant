@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5046671
+[parent_id]: 5046159
+[tags]: 
+How about something like this: have 1.h define a dummy section in the obj with different options. This way, if MYOPTION is ever used inconsistently, the linker will issue a warning. 1.h: #ifdef MYOPTION #pragma section("MYOPTION_GUARD",write) #else #pragma section("MYOPTION_GUARD",read) #endif namespace { __declspec(allocate("MYOPTION_GUARD")) int MYOPTION_guard; } Compiling with MYOPTION defined in a.cpp but not in b.cpp yields this linker warning (using VC 2008): b.obj : warning LNK4078: multiple 'MYOPTION_GUARD' sections found with different attributes (40300040) A consistent definition yields no linker warnings at all.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4347725
+[parent_id]: 
+[tags]: 
+OpenGL ES 2.0 texturing
+
+I'm trying to render a simple textured quad in OpenGL ES 2.0 on an iPhone. The geometry is fine and I get the expected quad if I use a solid color in my shader: gl_FragColor = vec4 (1.0, 0.0, 0.0, 1.0); And I get the expected gradients if I render the texture coordinates directly: gl_FragColor = vec4 (texCoord.x, texCoord.y, 0.0, 1.0); The image data is loaded from a UIImage, scaled to fit within 1024x1024, and loaded into a texture like so: glGenTextures (1, &_texture); glBindTexture (GL_TEXTURE_2D, _texture); glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); width , height , and the contents of data are all correct, as examined in the debugger. When I change my fragment shader to use the texture: gl_FragColor = texture2D (tex, texCoord); ... and bind the texture and render like so: glActiveTexture (GL_TEXTURE0); glBindTexture (GL_TEXTURE_2D, _texture); // this is unnecessary, as it defaults to 0, but for completeness... GLuint texLoc = glGetUniformLocation(_program, "tex"); glUniform1i(texLoc, 0); glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); ... I get nothing. A black quad. glGetError() doesn't return an error and glIsTexture(_texture) returns true. What am I doing wrong here? I've been over and over every example I could find online, but everybody is doing it exactly as I am, and the debugger shows my parameters to the various GL functions are what I expect them to be.

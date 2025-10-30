@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1904105
+[parent_id]: 1902990
+[tags]: 
+It ended up being most straightforward to set up the dialog behavior inside the click function itself. Actually, it's not much different than my original example. $('button.delete').click(function(){ thisRow = $(this).parent().parent(); thisRow.css("background-color","red"); skuid = $(this).parent().parent('tr').attr('id').substr(5); $('#dialogbox').dialog({ autoOpen: false, modal: true, draggable: true, width: 600, buttons: { "Actually, I can just mark it inactive": function() { thisRow.css("background-color","inherit"); $(this).dialog("close"); }, "This SKU needs to be deleted": function() { $.post('/intranet/backstage/modify_sku_info.php', {"action":"delete", "skuid":skuid}, function(result){ thisRow.hide("slow").remove(); }); $(this).dialog("close"); } } }); $('#dialogbox').dialog('open'); return false; }); Since div#dialogbox doesn't get hidden until $('#dialogbox').dialog() is called, I just gave it an inline style of display:none . If I end up needing something that can be generalized, as hyun suggested, I'll revisit the issue.

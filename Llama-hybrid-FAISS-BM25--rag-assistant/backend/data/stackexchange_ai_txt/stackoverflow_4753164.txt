@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4753164
+[parent_id]: 4752619
+[tags]: 
+I don't have a source for this being a best practice, but in general if you're going to store a resource in some way, I find it's best to acquire that resource in the same way. The reason for this is that in C++0x, the copying/moving is done when the argument is given, then you just move it into storage, such as: struct store_string { store_string(std::string s) : // potentially free, copy if not s(std::move(s)) // free {} std::string s; }; Or in C++03, if your type can be cheaply default constructed: struct store_string { store_string(std::string ss) // make necessary copy { s.swap(ss); // free } std::string s; }; So for you, I would do: class Case2 { boost::scoped_ptr a_ //polymorphic data member owned by C public: Case2(boost::scoped_ptr & aa) { a.swap(aa); // take resource } }; This makes things simple for you, and lets the client know exactly how the resource is going to be managed.

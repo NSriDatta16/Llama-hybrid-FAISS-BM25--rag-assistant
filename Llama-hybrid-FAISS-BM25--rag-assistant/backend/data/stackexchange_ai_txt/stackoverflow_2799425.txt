@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2799425
+[parent_id]: 2798865
+[tags]: 
+If you use the right algorithm for organizing your data, you will be able to use a spatial index which can dramatically speed up your queries. The best practice for the geolocation domain is to use a geohash , quad-tree , R-tree or similar data structure (R-trees are the most generic, but it sounds like you're querying point data, so that may not matter). In each case, you can create a spatial index that uses a single, linear column where each value represents a bounding box of varying size and shape. This should let you answer most queries with a single range query in your database. Spatial indices can be implemented in SQL ( PostGIS , MS SQL , MySQL all have spatial datatypes and spatial indices which use one of these techniques) or NoSQL (popular for its horizontal scalability; AppEngine has geomodel , SimpleGeo uses Cassandra , Foursquare uses MongoDB ). Using an index can be complicated by constantly moving points, but I would suspect that writes, even slightly heavier writes that update indices, wouldn't be your bottleneck.

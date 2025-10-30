@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3764884
+[parent_id]: 3764716
+[tags]: 
+To make a lib that will link in regardless of runtime selection it is necessary to use two switches: /MT to build against the basic release runtime, /Zl to omit the default library names. Building against the dll runtimes will cause the compiler to decorate all the runtime symbols with __imp_ (so, for example, it will try and link against __imp__fread rather than _fread ). So you have to choose one of the static runtimes. The compiler does an implicit default library pragma, depending on the lib selected: #pragma comment(lib,"libcmtd.lib") is how it looks in code. The /Zl causes the compiler to omit all these directives - (implicit and explicit) from the resulting .obj (and hence .lib) file. So the result will should link cleanly without causing default library conflicts.

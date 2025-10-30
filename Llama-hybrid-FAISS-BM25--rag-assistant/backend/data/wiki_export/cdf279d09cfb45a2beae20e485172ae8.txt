@@ -1,0 +1,130 @@
+NAR 2 (Serbian Nastavni Računar 2, en. Educational Computer 2) is a theoretical model of a 32-bit word computer created by Faculty of Mathematics of University of Belgrade professor Nedeljko Parezanović as an enhancement to its predecessor, NAR 1.  It was used for Assembly language and Computer architecture courses. The word "nar" means Pomegranate in Serbian. Many NAR 2 simulators have been created — for instance, one was named "Šljiva" (en. plum) as that fruit grows in Serbia, while "nar" does not.
+
+Instruction structure
+The NAR 2 processor uses 32-bit machine words.  Each Machine instruction contains:
+ opcode in 8 most significant bits (bits 24 to 31)
+ 4 bits (20 to 23) specifying the Index register to use with indexed addressing modes
+ 4 bits (16 to 19) containing address mode flags:
+ bit 19: P (sr. Posredno, en. mediated) - indexed
+ bit 18: R (sr. Relativno) - relative to program counter
+ bit 17: I (sr. Indirektno) - multi-level memory indirect (note: the address is loaded from specified location and, should it also specify "I" flag the indirect address calculation continues)
+ bit 16: N (sr. Neposredno) - immediate
+ 16 bit signed parameter value
+
+Registers
+NAR 2 has four registers:
+
+ a Program counter called BN (sr. Brojač Naredbi, en. Counter of Instructions)
+ Single 32-bit accumulator that can be treated either as integer (fixed point) or real (floating point) number
+ Up to 16 Index registers are specifiable, X0 to X15. However, X0 was never used, possibly because it was reserved as program counter (BN)
+ There were no flags or flag registers
+
+Mnemonics
+Following opcodes were available (actual codes were not specified, only mnemonics):
+
+Memory/register access
+ MUA (sr. , en. Memory Into Accumulator) loads the value into accumulator
+ AUM (sr. , en. Accumulator Into Memory) stores the content of the accumulator
+ PIR (sr. , en. Load Index Register) Loads the value into the index register
+
+Integer arithmetic
+Note: all mnemonics in this group end with letter "F" indicating "Fiksni zarez" (en. Fixed point) arithmetic. However, this is only true for addition, subtraction and negation (sign change). Multiplication and division assume that the "point" is fixed to the right of least significant bit - that is that the numbers are integer.
+
+ SABF (sr. , en. Add, Fixed Point) - adds parameter to the accumulator
+ ODUF (sr. , en. Subtract, Fixed Point) - subtracts the parameter from the accumulator
+ MNOF (sr. , en. Multiply, Fixed Point) - Multiples the accumulator with the parameter
+ DELF (sr. , en. Divide, Fixed Point) - Divides the accumulator by the parameter
+ PZAF (sr. , en. Change the Sign of Accumuator, Fixed Point) - Changes (flips) the sign of the accumulator
+
+Floating point arithmetic
+ SAB (sr. , en. Add) - adds parameter to the accumulator
+ ODU (sr. , en. Subtract) - subtracts the parameter from the accumulator
+ MNO (sr. , en. Multiply) - Multiples the accumulator with the parameter
+ DEL (sr. , en. Divide) - Divides the accumulator by the parameter
+ PZA (sr. , en. Change the Sign of Accumuator) - Changes (flips) the sign of the accumulator
+
+Bitwise/logical
+ KON (sr. , en. Conjunction) - performs logical AND with the parameter and the accumulator and stores the result in the accumulator
+ DIS (sr. , en. Disjunction) - performs logical OR with the parameter and the accumulator and stores the result in the accumulator
+ NEG (sr. , en. Negation) - performs logical NOT on the content of the accumulator (ignores the parameter)
+
+Note: above operations are all bitwise. Their names imply that they are purely logical operations but they can be explained as if they operate on  vectors of bits and separately apply logical operations on each pair of bits.
+
+Logical shifts
+ POL (sr. , en. Shift Left) - shifts the bits of the accumulator to the left
+ POD (sr. , en. Shift Right) - shifts the bits of the accumulator to the right
+
+Flow control
+ NES (sr. , en. Negative Jump) performs a conditional jump to the address specified by the parameter if the current value of the accumulator is negative
+ BES (sr. , en. Unconditional Jump) performs an unconditional jump to the address specified by the parameter
+ NUS (sr. , en. Zero Jump) performs a conditional jump to the address specified by the parameter if the current value of the accumulator is zero
+ ZAR (sr. , en. Stop the Computer) stops any further processing; this is the only instruction that ignores the parameter.
+
+Standard assembly language syntax
+The NAR 2 assembly language syntax was designed to be straightforward and easy to parse.  Each program line may contain up to one instruction specified as follows:
+
+ Instruction mnemonic
+ Whitespace, if instruction specifies any index registers, addressing mode or a parameter and then comma-separated:
+ Name of index register, if used
+ Names of addressing mode flags (also comma separated)
+ Parameter value
+
+Sample code:
+
+   aum X1, p, 0
+   mua n, 1
+   aum 15
+   pir X1, p, n, 1
+   mua X1, p, n, 0
+   oduf n, 1
+   oduf X2, p, n, 0
+
+Addressing modes
+With four address mode selection bits (P, R, I and N - indexed, relative, indirect and immediate), NAR 2 instructions can specify 16 different addressing modes but not all make sense in all instructions. In the following table:
+
+ M[x] specifies the 32-bit value (content) of memory location x
+ BN specifies the program counter
+ p specifies the 16-bit signed parameter at location
+ Xi specifies the index register selected by data at location
+ f() is the "effective value" function used for indirect addressing (see details below):
+
+Note 1: "N" (immediate) flag has no effect on jump (flow control) instructions, as the processor can not jump into a specified value, but only to a memory address.
+
+Multi-level memory indirect
+NAR 2 supports multi-level memory indirect addressing mode. The location is first chosen by "looking" at P (indexed) and R (relative to program counter) flags. Then, if I (indirect) flag is detected, a 32-bit word is loaded from the memory location calculated so far and the calculation is restarted (including all addressing mode flags, index register selection and parameter value - only the "opcode" is omitted). Thus, the following program, if loaded at memory location 0 and executed:
+
+mua I, 0 ; Memory-Into-Accumulator, Indirect, from location 0
+
+... will freeze NAR 2 in an infinite address calculation loop:
+
+ "I, 0" specifies that the actual address is to be loaded from memory location 0
+ Memory location 0 is loaded. It reads "I, 0" again
+ "I, 0" specifies that the actual address is to be loaded from memory location 0
+ Memory location 0 is loaded. It reads "I, 0" again
+ "I, 0" specifies that the actual address is to be loaded from memory location 0
+ Memory location 0 is loaded. It reads "I, 0" again
+ ...
+
+Note that:
+
+mua R, I, 0 ; Memory-Into-Accumulator, Relative, Indirect, from location BN+0
+
+seems more generic (could freeze NAR 2 from any location), but this depends on when BN register value is incremented/changed.
+
+The question of treatment of "N" (immediate) flag in presence of I (indirect) flag is open as the situation is somewhat ambiguous—that is, whether or not to honour the flag value specified in the original instruction or the one in the indirectly specified (looked up) address leads to a conflict.  The table above presents the first case to show different addressing modes achievable this way.
+
+Reading values from Index Registers
+NAR 2 has instructions to initialize the value of particular index register ("PIR" mnemonic). However, it does not have special instructions to read values index registers. This is achieved by using indexed and immediate (P, N) addressing mode flags, such as:
+
+mua Xi, P, N, n ; Memory-Into-Accumulator, Indexed, Immediate, 0
+
+... which essentially puts Xi+n into accumulator. For n=0, this turns into a "load index register value into accumulator" instruction.
+
+See also
+ NAR 1
+ MMIX, another processor designed by a professor to help students learn.
+
+External links
+ Primeri seminarskih zadataka iz ORS - Examples of student assignments for "ORS" course (Basics of Computer Systems), in Serbian language. Task "V1: NAR" requires the student to write a simulator of NAR 2.
+
+Models of computation

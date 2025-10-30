@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 584885
+[parent_id]: 584871
+[tags]: 
+I suspect you want generics: private T CreateNewPattern () where T : HolePattern, new() { var newHolePattern = new T(); newHolePattern.PatternName = "Pattern #" + (HolePatterns.Count + 1).ToString(); this.AddPattern(newHolePattern); this.SetActivePattern(newHolePattern); return newHolePattern; } private SingleLineHolePattern CreateNewLinePattern() { return CreateNewPattern (); } private CircularHolePattern CreateNewCircularPattern() { return CreateNewPattern (); } The T is the generic-type-argument; the type we want to create. The where says "it must be HolePattern or a sub-type, and it must have a public parameterless constructor" - this lets us use new T() to create a new instance of it, and access all members of HolePattern against such instances (such as PatternName ). This also allows us to call the methods that accept a HolePattern as an argument.

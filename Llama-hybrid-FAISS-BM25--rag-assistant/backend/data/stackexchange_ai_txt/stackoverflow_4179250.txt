@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4179250
+[parent_id]: 4121487
+[tags]: 
+This works: class Fact The vote_count scope is a bit sqly but you can chain these finders however you like, you can also see the underlying sql with: Fact.by_user(1).vote_count(0).to_sql And further to your comment, you might do the same in pure Arel by first declaring the Relations: f = Arel::Table.new(:facts) v = Arel::Table.new(:votes) u = Arel::Table.new(:users) Then composing the query and rendering it to sql. sql = f.join(u).on(f[:user_id].eq(1)).where('0 == (select count(fact_id) from votes where votes.fact_id == facts.id)').to_sql You can act on columns with operators: f[:user_id].eq(1) Then using it: Fact.find_by_sql(sql) I'm sure theres a lot more that you could do to get a more elegant syntax (without the 'where 0 == ...' ). Also I'm pretty sure Rails3 scopes use Arel behind the scenes - http://m.onkey.org/active-record-query-interface

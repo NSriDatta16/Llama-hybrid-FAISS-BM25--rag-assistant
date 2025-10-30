@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 91122
+[parent_id]: 
+[tags]: 
+Create sequence for a Conv1D layer
+
+Im studying the following tutorial on the Keras website and I'm trying to understand how to create a sequence for a Conv1D layer. This is their method: TIME_STEPS = 288 def create_sequences(values, time_steps=TIME_STEPS): output = [] for i in range(len(values) - time_steps): output.append(values[i : (i + time_steps)]) return np.stack(output) Let's suppose we have TIME_STEPS = 3 for example, and a dataset which contains [0, 1, 2, 3, 4, 5] . If we run that method, we will get a sequence structured as well: 0 1 2 1 2 3 2 3 4 3 4 5 If we train our neural network on these sequence we'll get more training values and it is a great choice, right? But when we test it on the test set, should't we avoid to repeat the values? I made my own method: def create_sequences_test(values, time_steps=TIME_STEPS): output = [] for i in range(len(values) - time_steps): output = [values[i: i + time_steps] for i in range(0, len(values) - time_steps, TIME_STEPS)] return np.stack(output) Now, if use the same values I should get: 0 1 2 3 4 5 Should't be this one the correct format for the test set? So I would train the NN creating the sequence with first criteria and then I would create the test with the second one: X_train = create_sequences(dataset[0:500, time_steps=3) X_test = create_sequences_test(dataset[500:600, time_steps=3)

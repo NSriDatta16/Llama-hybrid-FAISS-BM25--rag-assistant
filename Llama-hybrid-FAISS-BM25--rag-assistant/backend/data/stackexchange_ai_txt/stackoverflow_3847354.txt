@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3847354
+[parent_id]: 3847270
+[tags]: 
+It's two separate classes. ts is contained in the basic R installation, and the function HoltWinters() demands a ts time series. timeSeries has a completely different structure. It's also specifically directed towards finances. The big difference with ts is that it allows for irregular timeseries. The class ts can only hold equispaced series. Internally, ts has a slot "tsp" which contains the start, end and frequency of the timeseries. > test slotNames(test) [1] ".Data" "tsp" ".S3Class" > slot(test,"tsp") [1] 1959.25 1961.50 4.00 It's this slot that HoltWinters() needs but lacks in timeSeries. There the information on the times is contained in two slots, a position slot and a format slot. Together they define the times as a timeDate object. > data = as.matrix(MSFT[, 4]) > charvec = rownames(MSFT) > Close = timeSeries(data, charvec, units = "Close") > slotNames(Close) [1] ".Data" "units" "positions" "format" "FinCenter" "recordIDs" "title" "documentation" > head(slot(Close,"positions")) [1] 970012800 970099200 970185600 970444800 970531200 970617600 > slot(Close,"format") [1] "%Y-%m-%d"

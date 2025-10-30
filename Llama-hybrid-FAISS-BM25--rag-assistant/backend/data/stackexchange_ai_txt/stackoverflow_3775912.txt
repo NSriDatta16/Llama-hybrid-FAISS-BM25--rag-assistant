@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3775912
+[parent_id]: 
+[tags]: 
+Fourier space filtering
+
+I have a real vector time series x of length T and a filter h of length t I would like to filter x with h to get y. Suppose t == T and FFT's of length T could fit into memory (neither of which are true). To get my filtered x in python, I would do: import numpy as np from scipy.signal import fft, ifft y = np.real( np.ifft( np.fft(x) * h ) ) ) Since the conditions don't hold, I tried the following hack: Select a padding size P Scale h via spline interpolation to be of size B + 2P > t (h_scaled) y = []; Loop: Take block of length B + 2P from x (called x_b) Perform y_b = ifft(fft( x_b ) * h_scaled) Drop padding P from either side of y_b and concatenate with y Select next x_b overlapping with last by P Is this a good strategy? How do I select the padding P in a good way? What is the proper way to do this? I don't know much signal processing. This is a good chance to learn. I am using cuFFT to speed things up so it would be great if the bulk of the operations are FFTs. The actual problem is 3D. Also, I am not concerned about artifacts from an acausal filter. Thanks, Paul.

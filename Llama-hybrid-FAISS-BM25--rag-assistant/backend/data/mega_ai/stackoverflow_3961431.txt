@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3961431
+[parent_id]: 
+[tags]: 
+Strange compile error regarding overload resolution
+
+This code fragment: namespace ns { struct last; struct first { typedef last next; }; template struct chain { chain next; }; template <> struct chain { }; } using namespace ns; template void f(const T& x) // #1 { f(x.next); } void f(const chain &) // #2 { } int main() { f(chain ()); } gives the following error on Comeau, and a very similiar error on GCC: "ComeauTest.c", line 27: error: class "ns::chain " has no member "next" f(x.next); ^ detected during: instantiation of "void f(const T &) [with T=ns::chain ]" at line 27 instantiation of "void f(const T &) [with T=ns::chain ]" at line 36 It does compile, however, if either #2 is defined ahead of #1 , or if last is declared outside of ns . Any explanation for this?

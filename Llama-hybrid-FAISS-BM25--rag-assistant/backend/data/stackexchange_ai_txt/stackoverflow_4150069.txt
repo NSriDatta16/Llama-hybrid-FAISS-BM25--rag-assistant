@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4150069
+[parent_id]: 
+[tags]: 
+PDF page-stream optimizer library?
+
+Has anyone written a library (or just a program) that optimizes the contents of PDF page streams? I am talking about things like "delete q ... Q blocks that have no overall effect", "merge adjacent BT ... ET blocks", "track the graphics state and delete operators that set something to the value it already has", maybe even "reorder drawing operations to minimize graphics state changes, when this can be done without changing the appearance of the page". I ain't picky as to implementation language, but open source is very much preferred, as I may need to hack it up for my particular needs. Here is a small fragment of an example of what I would like done. R's "grid" graphics + its PDF backend generate ridiculous numbers of pointless operations, like this: 1 J 1 j q Q q Q q Q q Q q Q q Q q Q q Q q Q q BT 0.000 0.000 0.000 rg /F2 1 Tf 12.00 0.00 -0.00 12.00 168.43 14.40 Tm [(T) 120 (ask)] TJ ET Q q BT 0.000 0.000 0.000 rg /F2 1 Tf 0.00 12.00 -12.00 0.00 19.42 205.26 Tm [(Quer) -15 (ies per min) 10 (ute)] TJ ET Q q Q q 23.02 489.60 26.53 0.00 re W n Q q Q q 23.02 489.60 26.53 0.00 re W n Q q Q q Q q [...] This could be crushed down to just 1 J 1 j BT /F2 1 Tf 12 0 0 12 168.43 14.40 Tm [(T) 120 (ask)] TJ 0 12 -12 0 19.42 205.26 Tm [(Quer) -15 (ies per min) 10 (ute)] TJ ET and possibly even further with more sophisticated use of the text operators, which I can't do in my head.

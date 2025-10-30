@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 460862
+[parent_id]: 460860
+[tags]: 
+Try something like this: Data $year = substr(Data$ fec,1,4) Data $M = substr(Data$ fec,5,6) Data $Q = 1 + (as.numeric(Data$ M)-1) %/% 3 You get the quarter and year: head(Data) fec x1 year M Q 1 201201 468491 2012 01 1 2 201202 449743 2012 02 1 3 201203 436815 2012 03 1 4 201204 444523 2012 04 2 5 201205 433937 2012 05 2 6 201206 389958 2012 06 2 Then add the weights: Data $weights = 0.25 if(nrow(Data)>17){ Data$ weights[18:nrow(Data)] = (1/(20-(18:20 -1)))[1:(20-nrow(Data))] } Then average: library(dplyr) Data %>% select(year,Q,x1,weights) %>% group_by(year,Q) %>% summarize(x1=sum(x1*weights)) # A tibble: 7 x 3 # Groups: year [2] year Q x1 1 2012 1 338762. 2 2012 2 317104. 3 2012 3 304248. 4 2012 4 319930 5 2013 1 400295. 6 2013 2 415670 7 2013 3 310173.

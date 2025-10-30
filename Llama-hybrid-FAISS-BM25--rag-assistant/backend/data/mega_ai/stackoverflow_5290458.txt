@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5290458
+[parent_id]: 5284413
+[tags]: 
+You only see Qt code in the stack trace because the errors are occurring in the event loop (i.e. QCoreApplication::exec). I see Win32 calls related to thread local storage in your stack traces. Are you creating the QNetworkAccessManager, QSqlDatabase, etc. instances within the context of each thread that uses them or in the main thread before the others are started? Qt does some work behind the scenes that requires these to be instantiated in the context of the thread that has ownership. If global data is in thread local storage and the thread trying to access the data does not have scope to it, then you'll have problems! Otherwise, using a debugger to find race conditions is extremely difficult. That's part what makes multi-threaded programming so hard to get right. I would advise researching how those Qt objects behave when used from multiple threads. Examine your architecture instead of trying to find an answer with the debugger.

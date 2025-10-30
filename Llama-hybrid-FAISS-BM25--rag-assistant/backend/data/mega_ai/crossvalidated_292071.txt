@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 292071
+[parent_id]: 292058
+[tags]: 
+I tend to not like loops either. I'm a big fan of Hadley's purrr package. Clean, elegant, readable code. Here's how to use to use it, built off of @Gregor's solution. library(dplyr) library(purrr) library(broom) set.seed(10) dataframe = data_frame( Y = runif(10), X = runif(10), Z1 = runif(10), Z2 = runif(10) ) z_options = c("Z1", "Z2") formula_string = paste("Y ~ X *", z_options) tibble(formula_string) %>% bind_cols( map_df(.x = formula_string, .f = ~ glance(lm(as.formula(.x), dataframe))) ) %>% select(1:4) # A tibble: 2 x 4 # formula_string r.squared adj.r.squared sigma # # 1 Y ~ X * Z1 0.2150010 -0.17749851 0.2024755 # 2 Y ~ X * Z2 0.3910735 0.08661019 0.1783283

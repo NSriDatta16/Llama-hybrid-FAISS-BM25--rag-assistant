@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 36023
+[parent_id]: 18447
+[tags]: 
+If you want to see how Spark does it, look at the org.apache.spark.mllib.linalg.distributed.RowMatrix class, starting with the computePrincipalComponentsAndExplainedVariance method . The part of it that is actually distributed is in the computeGramianMatrix method , which accumulates each input vector into a Gramian matrix using BLAS.spr(1.0, v, U.data) where v is an input vector, and U represents the upper triangular part of the matrix. This can be run concurrently on many executors and then the partially-aggregated matrices can be combined by adding the matrices together. Once all the vectors have been aggregated into the Gramian matrix, it converts the matrix to a covariance matrix, and then uses SVD to produce the PCA matrix/vector. However this final stage is not distributed.

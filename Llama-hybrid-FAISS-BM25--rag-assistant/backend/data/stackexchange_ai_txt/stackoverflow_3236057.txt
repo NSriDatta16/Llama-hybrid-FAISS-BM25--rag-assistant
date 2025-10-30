@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3236057
+[parent_id]: 3236007
+[tags]: 
+Query the AD like this: $dn = "DC=mydomain,DC=local"; $group_DN = "CN=Intra,OU=Common Security Groups,DC=mydomain,DC=local"; $filter = "(&(objectCategory=user)(memberOf=$group_DN))"; // ... $sr = ldap_search($ad, $dn, $filter); Have a look at the MSDN article about the LDAP search filter syntax for info on more complex filters. Be sure to pay attention to the Special Characters section down on that page. A correct solution must pass $group_DN through an escaping mechanism before using it in the filter string! Always try build filters as specific as possible. It is more efficient to let the LDAP server sort out records you don't want, instead of having more records transferred over the wire than you need and throw away half of them on the client.

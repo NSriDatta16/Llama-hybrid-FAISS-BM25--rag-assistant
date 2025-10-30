@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2031525
+[parent_id]: 2031412
+[tags]: 
+When faced with a problem like this, I took to leveraging the power of MySQL's full-text search capabilities. What you can do is jam all your "searchable" content into a special-purpose MyISAM table that is compiled out of others. Since maintaining dependent search-specific records is a pain, especially with Rails, it was easier to add triggers that handled the back-end replication rather than do it as an after_save or after_destroy type of call. While this isn't a gem or a plugin, and introducing triggers completely confuses the Rails schema dumper, forcing a switch to .sql format instead of .rb, it works surprisingly well. Mostly it just "works", so you don't have to worry too much about it, although altering your schema substantially may require rebuilding your triggers from time to time. The trigger concept is pretty straightforward, not unlike ActiveRecord callbacks: http://dev.mysql.com/doc/refman/5.0/en/create-trigger.html This is an improvement on the technique employed by the Mediawiki software to provide a full-text searchable index of the wiki content stored, usually, in InnoDB.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3096396
+[parent_id]: 3095225
+[tags]: 
+We have done this in a project I am working on at the moment. We actually have 2 sites. One is the actual website that uses normal forms authentication and .net authentication controls. The other site uses integrated windows authentication and is for internal users. The internal site authenticates the user against AD and then updates a user record in a shared database with a guid and a date and time. It then simply forwards the request to the actual website with the guid as a form variable. The main website then looks up the user record based on the guid and checks that the record was updated in the last minute. If it finds a matching record it creates a forms authentication token for the matched user account. The code we are using is below: FormsAuthenticationTicket oTicket = new FormsAuthenticationTicket( 1, Username, DateTime.Now, DateTime.Now.AddMinutes(iTimeout), false, OrganisationPin); HttpCookie hcAuthenticated = new HttpCookie( FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(oTicket)); Response.Cookies.Add(hcAuthenticated);

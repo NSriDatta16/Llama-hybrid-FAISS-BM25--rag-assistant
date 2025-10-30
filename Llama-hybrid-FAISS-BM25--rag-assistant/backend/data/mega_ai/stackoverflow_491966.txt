@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 491966
+[parent_id]: 490597
+[tags]: 
+The short version is that you cannot use variable-width patterns in lookbehinds using Python's re module. There is no way to change this: >>> import re >>> re.sub("(? >> re.sub("(? ", line 1, in re.sub("(? This means that you'll need to work around it, the simplest solution being very similar to what you're doing now: >>> re.sub("(fo+)bar(?=baz)", "\\1quux", "foobarbaz") 'fooquuxbaz' >>> >>> # If you need to turn this into a callable function: >>> def replace(start, replace, end, replacement, search): return re.sub("(" + re.escape(start) + ")" + re.escape(replace) + "(?=" + re.escape + ")", "\\1" + re.escape(replacement), search) This doesn't have the elegance of the lookbehind solution, but it's still a very clear, straightforward one-liner. And if you look at what an expert has to say on the matter (he's talking about JavaScript, which lacks lookbehinds entirely, but many of the principles are the same), you'll see that his simplest solution looks a lot like this one.

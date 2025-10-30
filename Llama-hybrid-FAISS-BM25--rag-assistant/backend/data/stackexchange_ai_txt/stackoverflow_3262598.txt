@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3262598
+[parent_id]: 3262575
+[tags]: 
+I think that this assignment puts the retain count for 'bla' up by two; True. I'd be interested to hear whether there is 'right' way to do this Your last piece of code is the right way, but the leading underscore is not recommended. The property and the ivar can share the same name. Just @interface Foo : Bar { SomeClass* bla; } @property (nonatomic, retain) SomeClass* bla; @end @implementation Foo @synthesize bla; -(id)init { ... bla = [[SomeClass alloc] init]; ... } -(void)dealloc { [bla release]; ... [super dealloc]; } is enough. Some people may use SomeClass* foo = [[SomeClass alloc] init]; self.bla = foo; [foo release]; or self.bla = [[[SomeClass alloc] init] autorelease]; in the -init method, but I strongly discourage it, as this calls unnecessarily many methods, and you cannot guarantee the behavior of the setter .

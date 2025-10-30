@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3065590
+[parent_id]: 3065467
+[tags]: 
+You can do it in one query with no custom defined functions if you leverage XML: WITH cte AS( /*your data*/ SELECT 1 id,'AA,AB,AC,AD' names UNION ALL SELECT 2,'BA,BB' UNION ALL SELECT 3,'CA,CB,CC,CD,CE' UNION ALL SELECT 4,'DA,DB,DC' ) , xmlData AS ( /*make into xml*/ SELECT id, cast(' '+replace(names,',',' ')+' ' as xml) AS theXML FROM cte ) SELECT id, x.value('.','varchar(100)') /*split up*/ FROM xmlData CROSS APPLY xmlData.theXML.nodes('//x') AS func(x)

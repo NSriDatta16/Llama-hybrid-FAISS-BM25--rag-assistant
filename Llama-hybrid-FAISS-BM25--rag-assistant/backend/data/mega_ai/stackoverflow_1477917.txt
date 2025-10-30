@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1477917
+[parent_id]: 1477690
+[tags]: 
+There is no performance nor operational advantage. Since SQL 2005 the LOB types are already stored for you by the engine in a separate allocation unit, a separate b-tree. If you study the Table and Index Organization of SQL Server you'll see that every partition has up to 3 allocation units: data, LOB and row-overflow: (source: s-msft.com ) A LOB field (varchar(max), nvarchar(max), varbinary(max), XML, CLR UDTs as well as the deprecated types text, ntext and image) will have in the data record itself, in the clustered index, only a very small footprint: a pointer into the LOB allocation unit, see Anatomy of a Record . By storing a LOB explicitly in a separate table you gain absolutely nothing . You just add unneeded complexity as former atomic updates have to distribute themselves now into two separate tables, complicating the application and the application transaction structure. If the LOB content is an entire file then perhaps you should consider upgrade to SQL 2008 and using FILESTREAM .

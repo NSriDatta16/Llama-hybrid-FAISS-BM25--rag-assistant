@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2714722
+[parent_id]: 2714638
+[tags]: 
+First of all, yes, you really should be using UTF-8. But that doesn't mean the data you have is already UTF-8 encoded. Secondly, it sounds like that character is HTML encoded in the database already . This is a problem, because it seems that whatever page is displaying this character also tries to HTML-encode the content as well. Here's an example of what I'm talking about. Data from user: ě Data HTML encoded (via htmlentities() ) prior to going into DB: &#283; Data stored in DB: &#283; Data retrieved from DB: &#283; Data HTML encoded before being printed to the page: &amp;#283; Data as seen in the browser: &#283; Do you see that? The character becomes double encoded , so that on the 2nd encoding step the ampersand character is converted into an entity itself. This is the problem with HTML-encoding data before storing it in the database. That should only be done prior to displaying the content, not prior to storage.

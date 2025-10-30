@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4011649
+[parent_id]: 4011449
+[tags]: 
+I'm all for using $_COOKIE over $_SESSION, because I believe it's more professional in regards to data privacy. But authorization is the one use case where it's inappropriate. Keep using $_SESSION . The session fixation problem is avoided with a few simple steps. Most importantly ensure that session_start() doesn't blindly accept session ids. Ensure that the session was created by the server by giving it a default token: if (empty($_SESSION["ok"])) { // would be empty for injected ids session_regenerate_id(); $_SESSION['ok'] = 1; } As second measure use a fingerprint. It's best to store the original request IP. But only verify e.g. the first 16 bits to work around proxy issues. Very commonly the HTTP_USER_AGENT is used as fingerprint. And you should additionally give each session a pre-defined expiry time.

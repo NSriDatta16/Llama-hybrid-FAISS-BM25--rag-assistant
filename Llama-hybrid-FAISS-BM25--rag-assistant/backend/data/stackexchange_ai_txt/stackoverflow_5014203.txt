@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5014203
+[parent_id]: 
+[tags]: 
+autohide only horizontal scroller in NSScrollView
+
+I have an NSTableView, created from IB, that I want to only autohide the horizontal scroller on. The main reason I want to do this is because it seems the NSTableView corverView only get's displayed if there is a vertical scroller. I can't find any method to do this with the base class. So I tried subclassing NSScrollView and observing the hidden key on the horizontal scroller (code below). This works; however, the view tries to reset the current visible options every time the user resizes the window. This makes my implementation somewhat expensive; and it seems inelegant. Any better ideas about how to do this? Thanks in advance! Current implementation: @interface PVScrollView : NSScrollView { BOOL autohidesHorizontalScroller; } @property(assign) BOOL autohidesHorizontalScroller; - (void) viewResized:(NSNotification*)notification; @end @implementation PVScrollView @synthesize autohidesHorizontalScroller; - (void) setAutohidesHorizontalScroller:(BOOL)val { autohidesHorizontalScroller = val; [self setAutohidesScrollers:NO]; [[self horizontalScroller] addObserver:self forKeyPath:@"hidden" options:0 context:nil]; } - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context { if (!([self documentVisibleRect].size.width

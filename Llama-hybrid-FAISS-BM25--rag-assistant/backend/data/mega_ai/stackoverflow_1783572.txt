@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1783572
+[parent_id]: 94556
+[tags]: 
+I suspect that you're missing an execution of cobertura plugin during the compile phase so that the code only gets instrumented by the reporting plugins, in the site lifecycle, after the tests were run. So the test runs aren't picked up because they run on non-instrumented code. Analyze your build logs more carefully - if I'm right, you'll notice that surefire tests are executed before cobertura:instrument. My configuration is similar to yours, but in addition to specifying the clean exectution in pluginManagement (like you), I specify the cobertura plugin explicitly in build plugins section: ... ... true org.codehaus.mojo cobertura-maven-plugin ${cobertura.plugin.version} My configuration sorta works, and all Cobertura stuff is in the global organization-wide pom, which all projects use as a parent. This way projects don't specify anything Cobertura-related in their pom.xml's, but they still generate coverage reports.

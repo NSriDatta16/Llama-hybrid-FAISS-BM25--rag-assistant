@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 48436
+[parent_id]: 46679
+[tags]: 
+To add additional features using BERT, one way is to use the existing WordPiece vocab and run pre-training for more steps on the additional data, and it should learn the compositionality. The WordPiece vocabulary can be basically used to create additional features that didn't already exist before. Another approach to include additional features would be to add more vocab while training. Following approaches are possible: Just replace the "[unusedX]" tokens with your vocabulary. Since these were not used they are effectively randomly initialized. Append new vocabulary words to the end of the vocab file, and update the vocab_size parameter in bert_config.json . Later, write a script which generates a new checkpoint that is identical to the pre-trained checkpoint, but with a bigger vocab where the new embeddings are randomly initialized (for initialized we used tf.truncated_normal_initializer(stddev=0.02)) . This will likely require mucking around with some tf.concat() and tf.assign() calls. Please note that I haven't tried any of these approaches myself.

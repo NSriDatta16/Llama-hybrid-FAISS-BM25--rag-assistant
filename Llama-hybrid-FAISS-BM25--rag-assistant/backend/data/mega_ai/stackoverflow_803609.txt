@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 803609
+[parent_id]: 
+[tags]: 
+OpenGL: ShadowMapping: Shadows only visible at y=0
+
+i have implemented shadowmapping with an FBO and GLSL. it is used on a heightfield. that is some objects (trees, plants, ...) cast shadows on the heightfield. the problem i have, is that the shadows are only visible on the ground of the heightfield. that is, where the heightfield's height = 0. as soon as there is some height involved, the shadows disappear. if i look at the shadowmap itself, everything looks fine... objects that are closer to the light are darker. here is my GLSL vertexshader: uniform mat4 lightView, lightProjection; const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.5, 0.5, 0.5, 1.0); //bias from [-1, 1] to [0, 1] void main() { gl_Position = ftransform(); mat4 shadowMatrix = biasMatrix * lightProjection * lightView; shadowTexCoord = shadowMatrix * gl_Vertex; } fragmentshader: uniform sampler2DShadow shadowmap; varying vec4 shadowTexCoord; void main() { vec4 shadow = shadow2DProj(shadowmap, shadowTexCoord, 0.0); float colorshadow = shadow.r } thanks a lot for any help on this!

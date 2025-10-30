@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5624657
+[parent_id]: 5623196
+[tags]: 
+You need to use projections and a transformer to do this. Here's some background info http://nhibernate.info/doc/nh/en/index.html#querycriteria-projection var criteria = Session.CreateCriteria () .Add(Restrictions.Between("Timestamp", DateTime.Now.AddDays(-1), DateTime.Now) .AddOrder(Order.Desc(Projections.Count("FirstName"))) .SetProjection(Projections.ProjectionList() .Add(Projections.GroupProperty("FirstName"), "FirstName") .Add(Projections.Count("FirstName"), "Occurances") .SetResultTransformer(Transformers.AliasToBean ()); criteria.List (); You'll need to create a class called FirstNameOccurance that has 2 properties called FirstName and Occurances.

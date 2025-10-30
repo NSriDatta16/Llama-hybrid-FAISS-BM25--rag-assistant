@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 205000
+[parent_id]: 204983
+[tags]: 
+The enum hack used to be necessary because many compilers didn't support in-place initialization of the value. Since this is no longer an issue, go for the other option. Modern compilers are also capable of optimizing this constant so that no storage space is required for it. The only reason for not using the static const variant is if you want to forbid taking the address of the value: you can't take an address of an enum value while you can take the address of a constant (and this would prompt the compiler to reserve space for the value after all, but only if its address is really taken). Additionally, the taking of the address will yield a link-time error unless the constant is explicitly defined as well. Notice that it can still be initialized at the site of declaration: struct foo { static int const bar = 42; // Declaration, initialization. }; int const foo::bar; // Definition.

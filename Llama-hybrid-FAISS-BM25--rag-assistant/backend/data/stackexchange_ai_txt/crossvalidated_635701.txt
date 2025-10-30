@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 635701
+[parent_id]: 460354
+[tags]: 
+The answer boils down to two points: BERT's training loss, which guides its gradient descent, is not computed for all its input tokens, but only for the sampled ones. The three tasks each have their own purpose: Masking a sampled token (instead giving a generic, meaningless token) and predicting what it should be makes the model able to infer a token from only its context. Replacing a sampled token by a random token and predicting what it should be makes the model robust against an erroneous token. Leaving a sampled token unchanged and predicting it (in other words, auto-encoding the input) makes the model robust against erroneous contexts. By point 1: if you didn't leave some sampled tokens unmasked, then even though most of the data flowing through BERT would be unmasked, the only embeddings that would be used in the loss would be anything that isn't the embedding of the token you want to predict (masked tokens start with the mask embedding, and random replacement tokens start with their own embeddings). That would impoverish the embeddings.

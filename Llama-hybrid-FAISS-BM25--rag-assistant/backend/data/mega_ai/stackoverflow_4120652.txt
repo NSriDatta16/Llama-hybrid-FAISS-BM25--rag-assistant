@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4120652
+[parent_id]: 4120346
+[tags]: 
+Do you mean something like this: select *, (select Price from Prices where PurchaseDate = [Start]) as [First Price], (select Price from Prices where PurchaseDate = [Finish]) as [Last Price] from ( select MIN(PurchaseDate) as [Start], MAX(PurchaseDate) as [Finish], MIN(Price) as [Min Price], MAX(Price) as [Max Price], AVG(Price) as [Average Price] from ( select (ROW_NUMBER() OVER (ORDER BY PurchaseDate)) / 20 as [Seq], * from Prices ) as X group by X.Seq ) as Y Note, I used the following to generate data: create table Prices ( PurchaseDate DATETIME primary key, Price FLOAT ) go declare @records int declare @date datetime declare @price float set @records = 1000 while @records > 0 begin set @date = GETDATE() - cast((RAND() * 10000) as int) set @price = RAND() * 10000 if not exists(select 1 from Prices where PurchaseDate = @date) begin insert Prices values (@date, @price) set @records = @records - 1 end end

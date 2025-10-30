@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2046929
+[parent_id]: 2046829
+[tags]: 
+I'll echo "you shouldn't be doing this". If you print out sizeof(myc) in the code above it's probably 4, as you'd expect... BUT try changing read and write to be virtual. When I did so, it prints out the size as 16. Those 12 bytes are internal guts with sensitive values—and saving them out and then reading them back in would be like expecting a pointer value to be still good if you wrote it and loaded it again. If you want to circumvent serialization and map C++ object memory directly to disk, there are ways to hack that. But rules are involved and it's not for the faint of heart. See POST++ (Persistent Object Storage for C++) as an example. I'll add that you did not check the fail() or eof() status. If you had you'd have known you were misusing the fstream API. Try it again with: void read(ifstream *in) { in->read((char *) this, sizeof(myc)); if (in->fail()) cout write((char *) this, sizeof(myc)); if (out->fail()) cout ...and see what happens.

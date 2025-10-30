@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 513637
+[parent_id]: 513600
+[tags]: 
+In your example, performance probalby isn't too different but there are other issues to consider: namely memory fragmentation. Even concatenate operation is creating a new string, even if its temporary (it takes time to GC it and it's more work). String.format() is just more readable and it involves less fragmentation. Also, if you're using a particular format a lot, don't forget you can use the Formatter() class directly (all String.format() does is instantiate a one use Formatter instance). Also, something else you should be aware of: be careful of using substring(). For example: String getSmallString() { String largeString = // load from file; say 2M in size return largeString.substring(100, 300); } That large string is still in memory because that's just how Java substrings work. A better version is: return new String(largeString.substring(100, 300)); or return String.format("%s", largeString.substring(100, 300)); The second form is probably more useful if you're doing other stuff at the same time.

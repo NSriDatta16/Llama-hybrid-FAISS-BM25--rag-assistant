@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1270286
+[parent_id]: 1267669
+[tags]: 
+If you can manage it (i.e. if you're invoking some command directly, without any shell scripting or advanced redirection shenanigans), the safest thing to do is to avoid passing data through the shell entirely. In perl 5.8+: my @output_lines = do { open my $fh, "-|", $command, @args or die "Failed spawning $command: $!"; ; }; If it's necessary to support 5.6: my @output_lines = do { my $pid = open my $fh, "-|"; die "Couldn't fork: $!" unless defined $pid; if (!$pid) { exec $command, @args or die "Eek, exec failed: $!"; } else { ; # This is the value of the C } }; See perldoc perlipc for more information on this kind of business, and see also IPC::Open2 and IPC::Open3 .

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1984362
+[parent_id]: 1043112
+[tags]: 
+Instead of using the OutputCache directive, you can do the same thing programmatically, as follows: if (yourArbitraryCondition) { OutputCacheParameters outputCacheSettings = new OutputCacheParameters(); outputCacheSettings.Duration = 60; InitOutputCache(outputCacheSettings); } Doing this from OnInit should work fine. And obviously, you can tweak the caching behavior by setting the various properties on the OutputCacheParameter, which has all the same knobs as the directive (in fact, that's what we generate when you use the directive). The key point is that you're only executing this logic conditionally, while the directive makes it unconditional. UPDATE: As an alternative, you can use the low level cache API that the code above is built on. e.g. HttpCachePolicy cache = Response.Cache; cache.SetCacheability(HttpCacheability.Public); cache.SetExpires(Context.Timestamp.AddSeconds(60)); cache.VaryByParams["categoryName"] = true; Basically, it's another way of doing the same thing, without using any API's marked as 'should not be called'. In the end, either way will work, so take your pick.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3816263
+[parent_id]: 3800581
+[tags]: 
+Each sample from your gyroscopes represents a small rotation: rot_x = angV_x * timestep rot_y = angV_y * timestep rot_z = angV_z * timestep If the resulting rotations are small, you can convert this directly into a quaternion by taking half the rotation angle: // for small rotations, quick & dirty quaternion is sufficient // (note: all angles *must* be in radians!) float k = timestep * 0.5; quaternion raw_delta_Q(1.0, angV_x*k, angV_y*k, angV_z*k); // unnormalized! // combine rotation for current timestep with orientation state estimated_orient_Q *= raw_delta_Q; // multiply by unnormalized delta estimated_orient_Q *= 1 / norm(estimated_orient_Q); // then renormalize it! If your rotations are larger than a few degrees, or if you need maximum accuracy, you will need to pay closer attention to how you get your quaternion. EDIT: Note that the above code assumes *= is defined to do quaternion multiplication by both quaternions and real scalars. Some form of these functions (as well as the obvious constructor) will be present in any reasonable quaternion library.

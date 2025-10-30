@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2001888
+[parent_id]: 2001548
+[tags]: 
+The answer is that this is possible, however, it is non-intuitive, at least for the Oracle XSL processor. I tried the following (non-working) invocations (names changed to protect the innocent): Document x = createDocumentForMe(); transformer.addParameter("param",x); and Document x = createDocumentForMe(); transformer.addParameter("param",new DOMSource(x)); (this second on the basis that maybe DOMSource would work because it was the java.xml.transform interface to the DOM). The invocation that worked for me in the end was to take the insight that XSL uses XPath, and the valid types for the variable are essentially strings or nodesets, and XPath returns nodesets. The following works for me: Document x = createDocumentForMe(); XPathExpression xpe = XPathFactory.newInstance().newXPath().compile("/"); transformer.addParameter("param",xpe.evaluate(x, XPathConstants.NODESET)); Which basically uses XPath to get a nodeset containing only the root document of the passed in DOM object. However, this seems like a bit of a hack, and may not work with other XSL processors, so YMMV...

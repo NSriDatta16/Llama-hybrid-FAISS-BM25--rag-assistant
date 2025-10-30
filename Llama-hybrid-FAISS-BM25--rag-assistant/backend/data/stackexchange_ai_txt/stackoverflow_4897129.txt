@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4897129
+[parent_id]: 4895862
+[tags]: 
+MySQL has an EXPLAIN statement, which tells you what execution path the engine will follow. You can use that to determine what changes to make: EXPLAIN SELECT foo,bar from glurch WHERE baz > 1 ORDER BY foo; See: http://dev.mysql.com/doc/refman/5.0/en/explain-output.html Pay special attention to the rows column, which shows how many table rows need to be examined to execute that part of the query, as well as the Extra column, which show more importantly, how the query gets executed. For example, if you see "Using temporary" in the Extra column, that usually means that the DB will need to write the query results out to a temporary table (possibly on disk), sort them, and then re-read them (or at least some of them). You can avoid temporary tables and other nasty performance killers by providing appropriate indexes. And not just enough indexes, but rather the correct indexes. Just because you've indexed a column doesn't mean that index can be used in your query.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 869001
+[parent_id]: 
+[tags]: 
+How to serve all existing static files directly with NGINX, but proxy the rest to a backend server.
+
+location / { proxy_set_header X-Real-IP $remote_addr; proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; if (-f $request_filename) { access_log off; expires 30d; break; } if (!-f $request_filename) { proxy_pass http://127.0.0.1:8080; # backend server listening break; } } Above will serve all existing files directly using Nginx (e.g. Nginx just displays PHP source code), otherwise forward a request to Apache. I need to exclude *.php files from the rule so that requests for *.php are also passed to Apache and processed. I want Nginx to handle all static files and Apache to process all dynamic stuff. EDIT: There is white list approach, but it is not very elegant, See all those extensions, I don't want this. location ~* ^.+.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|doc|xls|exe|pdf|ppt|txt|tar|mid|midi|wav|bmp|rtf|js)$ { access_log off; expires 30d; } location / { proxy_set_header X-Real-IP $remote_addr; proxy_set_header Host $host; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_pass http://127.0.0.1:8080; } EDIT 2: On newer versions of Nginx use try_files instead http://wiki.nginx.org/HttpCoreModule#try_files

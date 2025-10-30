@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4592037
+[parent_id]: 
+[tags]: 
+Mix and match class in C++/MFC (part 2)
+
+I was talking about re-factoring yesterday, and the approach I was going for was obviously wrong. I looked into suggested patterns, but the problem was still that the common functionality is really a thing of a supper class, which I couldn't derive from as the MFC puts on it's own requirements for different windows (CWnd/CDialogEx). Today I got an idea, that is, I could use a superclass template to pack the common logic which would solve the problem, theoretically... That is, I define templated CCommon class, and inherit it with required superclass in all window classes. Like class CMyWnd : private CCommon Unfortunately MFC makes things super ugly because of the macros... #pragma once template class CCommon : public T { //DECLARE_DYNAMIC(CCommon) public: CCommon(); virtual ~CCommon(); //protected: //DECLARE_MESSAGE_MAP() }; //IMPLEMENT_DYNAMIC(template CCommon , CWnd) template CCommon ::CCommon() { } template CCommon ::~CCommon() { } //BEGIN_MESSAGE_MAP(template CCommon , CWnd) //END_MESSAGE_MAP() Is there a way I could work around this problem? Things like IMPLEMENT_DYNAMIC(template CCommonWndLogic , T) or template IMPLEMENT_DYNAMIC(CCommonWndLogic , T) doesn't seem to compile at all. Same with message maps, which I would really like carry over to the base class.

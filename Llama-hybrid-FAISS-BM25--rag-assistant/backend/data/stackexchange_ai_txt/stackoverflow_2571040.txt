@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2571040
+[parent_id]: 2571002
+[tags]: 
+Your problem is (almost certainly) that you're mixing up what is a character and what is a byte. That's something that you can get away with in English (and mostly in German too) but in scripts like Cyrillic or the Japanese and Chinese ones, you've got to get it right. The first thing to check is whether you have any characters outside the range \u0000 – \u00ff in the xmlString variable. If so, you've got to use an OutputStreamWriter instance to do the mapping from characters to bytes. If not, the transformation has already been applied and you instead need to write the bytes trapped in that string to the file without mangling them further (again, an OutputStreamWriter is the easiest way to get that right, but using the ISO8859-1 encoding at that final stage as that doesn't remap bytes around). Outputting the transformed XML directly from the transformer is easier than capturing it first. After all, most XML is only human-readable in a technical sense…

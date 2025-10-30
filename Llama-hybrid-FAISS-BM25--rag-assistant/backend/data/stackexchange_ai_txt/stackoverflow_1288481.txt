@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1288481
+[parent_id]: 
+[tags]: 
+Mutli tenancy backstop check on Linq-to-sql entity load()
+
+I am writing an aspx application that will host 1000's of small customers in a communal SQL Server database. All entities will be created and loaded via Linq-To-Sql. Surrogate keys (identity columns) will be used throughout the schema for all table relationships and so starting with a root customer object I should be able to navigate to exclusive sets of data for a particular customer using regular Linq queries (SQL joins). However from a security standpoint the above is a bit fragile so I wish to add an extra layer of tenancy check as a security backstop. All entities in my entity model will have a non-indexed int TenantId field. I am looking for critical comments about this solution from a performance perspective. public partial class MyLinqEntity partial void OnLoaded() // linq-to-sql extensibility function { if ( this.TennantId != HttpContext.Current.Session["tenantId"] ) throw new ApplicationException("Logic error, LINQ query crossed tenantId data boundary"); } partial void OnCreated() // linq-to-sql extensibility function { this.TennantId = HttpContext.Current.Session["tenantId"] ); }

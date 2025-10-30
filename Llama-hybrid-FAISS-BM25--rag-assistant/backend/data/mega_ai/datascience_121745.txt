@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 121745
+[parent_id]: 
+[tags]: 
+Why my sentiment analysis model is overfitting?
+
+The task is to predict sentiment from 1 to 10 based on Russian reviews. The training data size is 20000 records, of which 1000 were preserved as a validation set. The preprocessing steps included punctuation removal, digit removal, Latin character removal, stopword removal, and lemmatization. Since the data was imbalanced, I decided to downsample it. After that, TF-IDF vectorization was applied. At the end, I got this training dataset: The next step was the validation set TF-IDF transformation: As a classifier model, I chose MultinomialNB (I read it is useful for text classification tasks and sparse data). The training data fit was pretty quick: # TODO: create a Multinomial Naive Bayes Classificator clf = MultinomialNB(force_alpha=True) clf.fit(X_res, y_res.values.ravel()) But the problem was in model evaluation part: # TODO: model evaluation print(clf.score(X_res, y_res.values.ravel())) print(clf.score(X_val, y_val.values.ravel())) y_pred = clf.predict(X_val) print(precision_recall_fscore_support(y_val, y_pred, average='macro')) Output: 0.9352409638554217 0.222 (0.17081898127154763, 0.1893033502842826, 0.16303596541199034, None) It is obvious that the model is overfitting, but what do I do? I tried to use SVC, KNeighborsClassifier, DecisionTreeClassifier, RandomForestClassifier, and GaussianNB, but everything remained the same. I tried to play around with the MultinomialNB hyperparameter alpha but force_alpha=True option is the best so far.

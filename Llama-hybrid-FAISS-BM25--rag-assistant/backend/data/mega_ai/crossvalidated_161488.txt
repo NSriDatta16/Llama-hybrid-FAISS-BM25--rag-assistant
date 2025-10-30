@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 161488
+[parent_id]: 161409
+[tags]: 
+knn is probably a good, simple approach, but tree-based models may work too, and would let you easily incorporate other data (e.g. number of rooms, etc.). Here's a simple example (in R, but all the code would be pretty easy to port to scikit-learn). First, we make a spatially correlated dataset : library(gstat) library(ggplot2) set.seed(42) N Then we can use both a knn and a random forest (with lat/lon as inputs) to predict values: library(caret) X The caret package in R makes it easy to compare regression models (scikit-learn has similar tools): dotplot(resamples(list( knn = model_knn, rf = model_rf )), metric='RMSE') For this specific dataset, the knn model (with k = 5) is a bit more accurate, but the random forest is close. If you have other variables you could include in your model, the random forest will probably have an easier time incorporating non-spatial variables. There are of course many other kinds of models aimed specifically at solving this sort of problem. No matter the model you choose, you should cross-validated it and compare it's out of sample predictions to other models.

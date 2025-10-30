@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1974016
+[parent_id]: 1973821
+[tags]: 
+I suspect that you are under the misapprehension that you can set a parameter or variable to a string and then use that string as an XPath query. You cannot. This: creates a parameter named xpath and sets it, by default, to a node-set. Since the context node is the root, the node-set will only contain anything if the top-level element of the input document is named sessions and it has at least one session child element. Here's what $xpath doesn't contain: an XPath expression. If, in your C# code, you set the parameter to a string containing an XPath expression, then instead of containing a node-set, it will contain a string. This: will emit that string, and this: will do nothing, since the node-set function expects its argument to be a result tree fragment, and $xpath contains a string. I'd bet that what you really want to do is something more like this: change the name of the parameter from xpath to something less misleading, like nodeset , and create the node-set in your C# code: xsArgs.AddParam("nodeset", "", doc.SelectNodes(xpath));

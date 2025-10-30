@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2309977
+[parent_id]: 2288286
+[tags]: 
+Use polymorphism to remove the type checks. if (result is ResultItem1) { ((HistoryItem1)history).Property2 = ((ResultItem1)result).Property2; } Becomes then something like result.addToHistory( history ); If for some reason, you don't want to scatter the logic in the item classes, have a look at the visitor pattern . In this case, you have something like: public class Visitor { History history; public visit ( ResultItem1 item ) { ... } public visit ( ResultItem2 item ) { ... } ... } public class ResultItem1 { public accept( Visitor v ) { v.visit( this ); } } The typecheck is removed by the double-dispatch in the visitor, which is slightly more elegant. I didn't understood exactly how the various kind of history relates to the various kind of items. So this is just a sketch of possibles direction to follow.

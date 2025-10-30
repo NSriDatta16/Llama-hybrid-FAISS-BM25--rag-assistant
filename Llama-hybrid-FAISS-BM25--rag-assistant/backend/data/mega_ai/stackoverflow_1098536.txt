@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1098536
+[parent_id]: 1098118
+[tags]: 
+An elegant solution could have an iterator which simply filters out whitespace-only text nodes: import re whitespaces = re.compile('\s*$') def omit_whitespaces(iter): for event, elem in iter: if whitespaces.match(elem.text): elem.text = '' if whitespaces.match(elem.tail): elem.tail = '' yield event, elem def strip_whitespaces(iter): for event, elem in iter: elem.text = elem.text.strip() elem.tail = elem.tail.strip() yield event, elem And then use it as follows (either strip or omit , depending on whether you want to preserve spaces in text nodes with non-whitespace characters too): for event, elem in omit_whitespaces(ElementTree.iterparse("/tmp/example.xml")): if elem.tag == "example": print ElementTree.tostring(elem) Note that in this case you have to use only 'end' event (otherwise parser can give you partial data). But... I don't really know ElementTree very well and I didn't tested this code though.

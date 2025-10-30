@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4469799
+[parent_id]: 
+[tags]: 
+NHibernate - AliasToBean and Associations
+
+I have an entity which looks like this: public class MyEntity { public virtual int Id { get; set; } public virtual string Name { get; set ; } public virtual Role UserRole { get; set; } } The property "Name" is not a mapped property but "Id" and "UserRole" is. I want to populate this class using a custom criteria like this: ICriteria c = Db.CreateCriteria ("m") .CreateAlias("Role", "r") .SetProjection(Projections.ProjectionList() .Add( Projections.SqlProjection(@"Name = case TypeId when 2 then (select Name from tblOne where Id = EntityId) when 4 then (select Name from tblTwo where Id = EntityId) when 3 then (select Name from tblThree where Id = EntityId) end", new string[] { "Name" }, new NHibernate.Type.IType[] { NHibernateUtil.String })) .Add(Projections.Property("m.Id"), "Id") .Add(Projections.Property("r.Id"), "UserRole.Id") .Add(Projections.Property("r.Desc"), "UserRole.Desc") .Add(Projections.Property("r.Permission"), "UserRole.Permission") ) .SetResultTransformer(Transformers.AliasToBean ()); However if I execute this it throws an exception "Could not find a setter for property '{UserRole.Id}' in class 'MyEntity'". So my question is doesn't aliastobean support associations, and if it does, what's the proper syntax?

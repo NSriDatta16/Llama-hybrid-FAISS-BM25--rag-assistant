@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 543919
+[parent_id]: 543854
+[tags]: 
+setTimeout returns a timer ID. So what I would do is after you receive a keyDown event, I would start a timer with a very short wait period, like so: var globalTimerId = -1; var keyDownCount = 0; function handleKeyDown(e) { if (globalTimerId != -1) { clearTimeout(globalTimerId); keyDownCount++; } /* 500 means 1/2 a second, adjust for your needs */ globalTimerId = setTimeout(handleKeyDownAfterWait, 500); keyDownCount = 1; } function handleKeyDownAfterWait() { globalTimerId = -1; /* keyDownCount will have the number of times handleKeyDown was called */ } So the idea is that each time a keyDown event is received, the timer is cleared (assuming it hasn't elapsed yet) and restarted. If the timer expires, the user has let go of the key and you can handle that in handleKeyDownAfterWait . There may be other more elegant solutions with jQuery or another JS library however. This is just something quick and dirty (and possibly buggy ;))

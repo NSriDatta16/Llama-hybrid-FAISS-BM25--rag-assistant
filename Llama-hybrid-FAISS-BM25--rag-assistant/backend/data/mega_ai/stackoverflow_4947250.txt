@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4947250
+[parent_id]: 
+[tags]: 
+scala.collection.immutable.WrappedString need an implicit CanBuildFrom to fulfill documented features?
+
+WrappedString Scaladoc 2.8.1: "This class serves as a wrapper augmenting Strings with all the operations found in indexed sequences. The difference between this class and StringOps is that calling transformer methods such as filter and map will yield an object of type WrappedString rather than a String" scala> import scala.collection.immutable.WrappedString import scala.collection.immutable.WrappedString scala> val s = new WrappedString("foo") s: scala.collection.immutable.WrappedString = WrappedString(f, o, o) scala> s.filter(x => true) res1: scala.collection.immutable.WrappedString = WrappedString(f, o, o) scala> s.map(x => x) res2: scala.collection.immutable.IndexedSeq[Char] = Vector(f, o, o) Alas, map returns a Vector and not a WrappedString. If I understand this correctly: Filter works since it simply uses the newBuilder method, but map needs an implicit CanBuildFrom for WrappedString just like BitSet has. Is this a bug in code or documentation or am I missing something? Also, the scaladoc simplified version doesn't make any sense to me: def map [B] (f: (Char) ⇒ B) : WrappedString[B] def map [B, That] (f: (Char) ⇒ B)(implicit bf: CanBuildFrom[WrappedString, B, That]) : That Shouldn't it be: def map [B] (f: (Char) ⇒ Char) : WrappedString def map [B, That] (f: (Char) ⇒ B)(implicit bf: CanBuildFrom[WrappedString, B, That]) : That ?

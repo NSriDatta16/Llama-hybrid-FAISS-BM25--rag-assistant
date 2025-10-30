@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4404977
+[parent_id]: 4404937
+[tags]: 
+This is not really standard C: size(file); Call stat() to get file information - organization type of a file, file size and permissions. What your code does is to eventually set the file pointer to the end of the file, as it tries to read through it. Consider stat() (or fstat() on a an open file) instead. rewind() resets the file pointer to the start of the file, fseek() will place it anywhere you need. tail -f repeatedly tries the file at the EOF point with a short sleep in between tries.... It does not "consider" EOF to be an error. It remembers the current file offset for the EOF, then fseeks() using SEEK_END, then calls ftell(), and compares the offsets. If there is a difference it then fseek()-s back to the last known endpoint and reads the data. This description is from old unix source. I'm sure it has been tweaked since then.

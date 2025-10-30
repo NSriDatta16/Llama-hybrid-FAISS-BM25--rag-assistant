@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4538771
+[parent_id]: 
+[tags]: 
+NH3 simple summaries
+
+Currently I'm playing with NH3 and it's great for really simple things. When it comes to less simple we're lost. I'm creating sample movie database. I want to display every Movie entity with count of genres that is associated with movie. The output list should look like this: MovieId | Title | Premiere | Genres Count 3 | bla bla | 1990-01-01 | 2 Using SQL it would look like this: select f.*, isnull(fg.counter, 0) as genres_count from dbo.movie f left join ( select id_movie, count(id_genre) as counter from dbo.movie_genres group by id_movie ) fg on f.id = fg.id_movie As you see this is really simple summary SQL. Now aggregation that counts genres for every movie using QueryOver: GenreSummary alias = null; var genresQuery = QueryOver.Of () .SelectList(lista => lista .SelectGroup(o => o.Film.Id).WithAlias(() => alias.MovieId) .SelectCount(o => o.Genre).WithAlias(() => alias.GenresCount)) .TransformUsing(Transformers.AliasToBean ()); Movie Query: var movieQuery = QueryOver.Of ().ToList(); So now how to join genresQuery with movieQuery to create summary entity list let's say MovieSummary (MovieSummary has additional column GenresCount)? Can it be done with QueryOver? Can it be done in NH3? -- Regards, Macko

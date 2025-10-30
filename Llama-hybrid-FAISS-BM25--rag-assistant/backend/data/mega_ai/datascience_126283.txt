@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 126283
+[parent_id]: 126187
+[tags]: 
+From the paper: "We also modify the self-attention sub-layer in the decoder stack to prevent positions from attending to subsequent positions. This masking, combined with fact that the output embeddings are offset by one position, ensures that the predictions for position i can depend only on the known outputs at positions less than i." which means that the causal mask is applied exclusively to the self-attention layer. This is evident from PyTorch's official Transformer implementation # From TransformerDecoderLayer's forward() pass: # ... # Self-Attention x = self.norm1(x + self._sa_block(x, tgt_mask, tgt_key_padding_mask, tgt_is_causal)) # Cross-attention (note: tgt mask is not passed) x = self.norm2(x + self._mha_block(x, memory, memory_mask, memory_key_padding_mask, memory_is_causal)) x = self.norm3(x + self._ff_block(x)) # memory: encoder's output # ... ...

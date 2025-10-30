@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2383438
+[parent_id]: 
+[tags]: 
+How do I return a char* array from a clr assembly?
+
+I have a simple managed C++ assembly which I am providing unmanaged wrappers for some static methods I have in a C# assembly. One of these methods returns a string which I have converted to a "const char*" type in the C++ assembly. The trouble I am having is that when I load this dll from an unmanaged source, I get bad data back in the pointer. What can I do about this? I have simplified my testcase down to this: managed assembly (Test.dll compiled with /clr; full code follows): extern "C" { __declspec(dllexport) const char* GetValue(const char* s) { return s; } } unmanaged console win32 app: #include "stdafx.h" #include #include #include typedef const char* (*GetValueFunc)(const char* s); int _tmain(int argc, _TCHAR* argv[]) { wprintf(L"Hello from unmanaged code\n"); HMODULE hDll = LoadLibrary(L"Test.dll"); if (!hDll) return GetLastError(); wprintf(L"library found and loaded\n"); GetValueFunc getValue = (GetValueFunc)GetProcAddress(hDll, "GetValue"); if(!getValue) return GetLastError(); wprintf(L"%s\n", getValue("asdf")); return 0; } I get the first two lines just fine, but the third line that comes out is garbage. It also doesn't matter if I make the dll have "#pragma unmanaged" at the top of the cpp file or not (same results).

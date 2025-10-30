@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 223596
+[parent_id]: 222661
+[tags]: 
+The short answer is use TEXT instead of VARCHAR(max). 8K is the maximum size of a database page, where all your data columns should fit in except BLOB and TEXT. Meaning, your available capacity is less than 8k because of your other columns. BLOB and TEXT is so Web 1.0. Bigger rows mean bigger database replication time, and bigger file I/O. I suggest you maintain a separate file server with an HTTP interface for that. And, for the previous column DataUrl VARCHAR(255) NOT NULL, When inserting a new row, first compute the MD5 checksum of the data. Second, upload the data to the file server with the checksum as the filename. Third, INSERT INTO ...(...,DataUrl) VALUES(..., " http://fileserver/get?id= " . md5_checksum_data) With this design, your database will stay calm even if the average data size becomes 1000x.

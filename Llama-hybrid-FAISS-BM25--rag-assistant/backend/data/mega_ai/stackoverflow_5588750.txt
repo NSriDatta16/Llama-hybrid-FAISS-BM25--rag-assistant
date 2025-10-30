@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5588750
+[parent_id]: 3471529
+[tags]: 
+You are missing something like this, ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url]; [request setDownloadCache:[ASIDownloadCache sharedCache]]; [request setCacheStoragePolicy:ASICachePermanentlyCacheStoragePolicy]; [request setCachePolicy:ASIOnlyLoadIfNotCachedCachePolicy]; [request setSecondsToCache:60*60*24*30]; // Cache for 30 days [request setDelegate:self]; // A delegate must be specified [request setDidFinishSelector:@selector(requestFinished:)]; // And an appropriate selector specified And you should also have - (void)requestFinished:(ASIHTTPRequest *)request { BOOL success = [request didUseCachedResponse]; NSLog(@"------------>>>>>>> Success is %@\n", (success ? @"YES" : @"NO")); NSData *responseData = [request responseData]; UIImage *image = [[UIImage alloc] initWithData:responseData]; ... } This should do the trick.

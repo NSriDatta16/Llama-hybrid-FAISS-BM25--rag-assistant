@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1313470
+[parent_id]: 
+[tags]: 
+How to ensure sqlite isn't caching specific select queries?
+
+I'm in the situation that I'm using sqlite with ActiveRecord and Rails (also, this is JRuby and so I'm actually using the jdbcsqlite adapter, in case that matters). Now, I'm trying to insert a row into the table attention_seekers, but only if there is no other existing similar row. Accordingly, unless AttentionSeeker.find(:first, :conditions => {:key_id => key.id, :locale_id => l.id}) item = AttentionSeeker.new(:key_id => key.id, :locale_id => l.id) item.save end This is the generated output in the log: CACHE (0.0ms) SELECT * FROM attention_seekers WHERE (attention_seekers.key_id = 318 AND attention_seekers.locale_id = 20) AttentionSeeker Create (1.0ms) INSERT INTO attention_seekers (key_id, locale_id) VALUES(318, 20) CACHE (0.0ms) SELECT * FROM attention_seekers WHERE (attention_seekers.key_id = 318 AND attention_seekers.locale_id = 20) AttentionSeeker Create (2.0ms) INSERT INTO attention_seekers (key_id, locale_id) VALUES(318, 20) As you can see, for some reason the find is being cached, even though I'm inserting elements which affect it. What am I doing wrong/how can I stop this behaviour?

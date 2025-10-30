@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2338712
+[parent_id]: 
+[tags]: 
+Session cookie not being sent when PHP session.auto_start set true
+
+I been trying to replicate a production setup on my development server but can't get the sessions to work properly. After many frustrating hours I've tracked the problem down to the fact that php.ini directive session.auto_start isn't starting the session. AFAIK, session.auto_start = 1 and a session_start() at the top of a script should be functionally identical. If I call an empty PHP script using curl to show only the headers I get the following with session.auto_start = 1 (checked in php info page that it is indeed set to true). me@myhost:~$ curl -I test.server.local HTTP/1.1 200 OK Date: Sat, 20 Feb 2010 05:18:05 GMT Server: Apache P3P: CP="NOI DSP COR NID PSA ADM OUR IND NAV COM" Content-Type: text/html No Session cookie. The only change I make is to disable session.auto_start, add a session_start(); into the script and restart apache. me@myhost:~$ curl -I test.server.local HTTP/1.1 200 OK Date: Sat, 20 Feb 2010 05:18:11 GMT Server: Apache Set-Cookie: PHPSESSID=c7bdfb8eca47c12d97ff3ad86081d470; path=/ Expires: Thu, 19 Nov 1981 08:52:00 GMT Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0 Pragma: no-cache P3P: CP="NOI DSP COR NID PSA ADM OUR IND NAV COM" Content-Type: text/html Now it works. Can anybody help me to understand why session.auto_start isn't sending a session cookie.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 807733
+[parent_id]: 807720
+[tags]: 
+I think, based on the question that the problem is that you want to treat Details as a generic list and enforce that it implements IRequestDetail. You also want it to be more specifically typed for the implementing classes. In this case, you need to make IRequest generic. Try this: public interface IRequest where T : IRequestDetail { IList Details { get; set; } // stuff } public class MyRequest : IRequest { public IList Details {get; set; } // stuff } This should work for you. EDIT 2017-03-17 In reply to @Robert's comment, see the expanded code below: public interface IRequestDetail { } public class MyRequestDetail : IRequestDetail { } public interface IRequest where T : IRequestDetail { IList Details { get; set; } // stuff } public class MyRequest : IRequest where T : IRequestDetail { public IList Details { get; set; } // stuff } public class Consumer { public void MyFunction (IRequest request) where T : IRequestDetail { } public void Foo() { var test = new MyRequest (); MyFunction(test); } }

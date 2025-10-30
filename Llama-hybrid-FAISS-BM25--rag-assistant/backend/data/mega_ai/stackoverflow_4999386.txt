@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4999386
+[parent_id]: 4954790
+[tags]: 
+To load shared/models, you do have to add it to config.autoload_paths. Then to load your spec from shared/spec, add this to spec_helper.rb: shared_model_specs = config.filename_pattern.split(",").collect do |pattern| Dir["shared/spec/models/#{pattern.strip}"] end.flatten config.files_to_run.concat shared_model_specs Just a side note for other guys interested, if your spec files are in the normal spec folder but under a customized sub folder, you can load it like this: config.include RSpec::Rails::ModelExampleGroup, :type => :model, :example_group => { :file_path => config.escaped_path(%w[spec shared models]) } PS: I would recommend putting the shared code or modules into a gem, then use them in the two projects. This way the gem contains its own tests and referencing it from multiple projects is much easier and organized.

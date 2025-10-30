@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3558663
+[parent_id]: 3558053
+[tags]: 
+First declare a table for storing duplicate details in declare @dupetable table(did int, dcount int) Then declare two variables, one for storing the total number of records with duplicates and one as a loop counter: declare @dupecount int, @loopcounter int Then populate the duplicates table with a list of records that have duplicates and the number of duplicates each one has: insert into @dupetable --Populate duplicate table (did, dcount) select id, COUNT(*) from #GOOD_RECORDS3 group by id --Replace ID with whatever the primary key is having COUNT(*) > 1 Next, get the total number of records with duplicates: select @dupecount = COUNT(*) from @dupetable Then initialize the loop counter: set @loopcounter = 0 The code should then loop through the table of duplicates, selecting the top record, removing all the duplicate entries for it and then deleting it from the temporary @dupetable: while @loopcounter It's not too elegant, but I believe it works.

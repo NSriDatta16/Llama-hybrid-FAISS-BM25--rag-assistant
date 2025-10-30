@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2865246
+[parent_id]: 2862497
+[tags]: 
+Possibly try reducing your random_page_cost (default: 4) compared to seq_page_cost: this will reduce the planner's preference for seq scans by making random-accesses driven by indices more attractive. Another thing to bear in mind is that MVCC means that updating a row is fairly expensive. In particular, updating every row in a table requires doubling the amount of storage for the table, until it can be vacuumed. So in your first query, you may want to qualify your update: UPDATE rcra_sites Set street = regexp_replace(street,'/','','i') where street ~ '/' (afaik postgresql doesn't automatically suppress the update if it looks like you're not actually updating anything. Istr there was a standard trigger function added in 8.4 (?) to allow you to do that, but it's perhaps better to address it in the client side)

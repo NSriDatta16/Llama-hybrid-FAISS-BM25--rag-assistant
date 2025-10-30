@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2393395
+[parent_id]: 2393299
+[tags]: 
+You can pass an argument history=whatever when you instantiate the Browser ; the default value is None which means the browser actually instantiates the History class (to allow back and reload ). The simplest approach (will give an attribute error exception if you ever do call back or reload): class NoHistory(object): def add(self, *a, **k): pass def clear(self): pass b = mechanize.Browser(history=NoHistory()) a cleaner approach would implement other methods in NoHistory to give clearer exceptions on erroneous use of the browser's back or reload , but this simple one should suffice otherwise. Note that this is an elegant (though not well documented;-) use of the dependency injection design pattern: in a (bleah) "monkeypatching" world, the client code would be expected to overwrite b._history after the browser is instantiated, but with dependency injection you just pass in the "history" object you want to use. I've often maintained that Dependency Injection may be the most important DP that wasn't in the "gang of 4" book!-).

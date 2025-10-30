@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4046487
+[parent_id]: 4046430
+[tags]: 
+I would set the field delimiter to colon, then aggregate in an associative array for the different keys in the array, and finally compute the averages: gawk -F: 'NF == 4 { sum[$1] += $4; N[$1]++ } END { for (key in sum) { avg = sum[key] / N[key]; printf "%s %f\n", key, avg; } }' filename | sort On your test data, this gives: 2010-10-28 12 4.348022 2010-10-28 13 3.514688 2010-10-28 14 7.681355 This should produce the correct answer even if the data is not in time order (say you concatenate two log files out of sequence). Note that gawk will sum '3.123 secs' values numerically. The final sort presents the averages in time sequence; there is no guarantee that the keys will be printed in time sequence.

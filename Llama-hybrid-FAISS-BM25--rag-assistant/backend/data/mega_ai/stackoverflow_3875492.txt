@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3875492
+[parent_id]: 3875404
+[tags]: 
+Most likely, the problem is that you are comparing a date to a string. This forces Oracle to do an implicit cast using the session's NLS_DATE_FORMAT. Since this is session-specific, it is fragile as different clients will end up doing the conversion differently. You are almost certainly better off rewriting the query in order to compare a date to other dates, i.e. SELECT a.MyField , a.MyOtherField, a.FromDate FROM MyTable a WHERE a.FromDate BETWEEN trunc( add_months( sysdate, -13 ), 'MM' ) AND trunc( last_day( sysdate ) )

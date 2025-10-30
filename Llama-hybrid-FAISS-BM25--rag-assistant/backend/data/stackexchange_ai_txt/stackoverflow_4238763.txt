@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4238763
+[parent_id]: 4238652
+[tags]: 
+By default, glibc/nptl caches thread stacks to reuse them. This incurs a small cost of synchronization to add/remove elements from the cache list and a nontrivial (but hopefully not huge) memory cost, but avoids the cost of calling mmap and munmap every time a thread is created or destroyed. I don't suspect there's any way to change this default behavior without extremely fragile hacks. Edit: Since you said that joinable threads are being released, here's my second guess at the reason: It's very difficult for the implementation to make a thread release its own stack, since it would have no stack to run on while performing the work to release its stack. It's possible to work around this limitation by writing asm that does not need a stack to perorm the munmap syscall immediately followed by self-termination, but I've never seen an implementation do it.

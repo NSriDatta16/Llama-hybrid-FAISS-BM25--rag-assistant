@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4779460
+[parent_id]: 4778669
+[tags]: 
+Is it doable, yes, but depending on the size of your data, I'm not so sure it's a good idea. When you query on partition key, Table Store can go directly to the exact partition and retrieve all your records. If you query on Rowkey alone, Table store has to check if the row exists in every partition of the table. so if you have 1000 key value pairs, searching by your key will read a single partition/row. If your search via your value alone, it will read all 1000 partitions! I face a similar problem, I solved it 2 ways: Have 2 different tables, one with partitionKey as your-key, the other with your-value as partitionKey. Storage is cheap, so duplicating data shouldn't cost much. (What I finally did) If you're effectively returning single entites based on a unique key, just stick them in blobs(partitioned and pivoted as in point 1), because you don't need to traverse a table, so don't.

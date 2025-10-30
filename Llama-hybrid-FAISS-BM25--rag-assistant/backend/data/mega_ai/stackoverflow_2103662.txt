@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2103662
+[parent_id]: 1284169
+[tags]: 
+The Iphone actually does a pretty good job of rendering web pages without any special formatting. However on my Android phone floated content seems to get cut off and so a custom view for that phone is required. To achieve this you need to create a different layout (e.g. mobile_application.html.erb) and in your application_controller add the following: layout :select_layout def select_layout session.inspect # force session load if session.has_key? "layout" return (session["layout"] == "mobile") ? "mobile_application" : "application" end return detect_browser end def detect_browser agent = request.headers["HTTP_USER_AGENT"].downcase MOBILE_BROWSERS.each do |m| return "mobile_application" if agent.match(m) end return "application" end where MOBILE_BROWSERS is a an array of user agent strings you want to match as a mobile device. I wrote a blog about this here: http://www.arctickiwi.com/blog/2-mobile-enable-your-ruby-on-rails-site-for-small-screens Cheers

@@ -1,0 +1,187 @@
+The CDC 6000 series is a discontinued family of mainframe computers manufactured by Control Data Corporation in the 1960s. It consisted of the CDC 6200, CDC 6300, CDC 6400, CDC 6500, CDC 6600 and CDC 6700 computers, which were all extremely rapid and efficient for their time. Each is a large, solid-state, general-purpose, digital computer that performs scientific and business data processing as well as multiprogramming, multiprocessing, Remote Job Entry, time-sharing, and data management tasks under the control of the operating system called SCOPE (Supervisory Control Of Program Execution).  By 1970 there also was a time-sharing oriented operating system named KRONOS.  They were part of the first generation of supercomputers. The 6600 was the flagship of Control Data's 6000 series.
+
+Overview
+The CDC 6000 series computers are composed of four main functional devices:
+ the central memory
+ one or two high-speed central processors
+ ten peripheral processors (Peripheral Processing Unit, or PPU) and
+ a display console.
+
+The 6000 series has a distributed architecture.
+
+The family's members differ primarily by the number and kind of central processor(s):
+
+ The CDC 6600 is a single CPU with 10 functional units that can operate in parallel, each working on an instruction at the same time.
+ The CDC 6400 is a single CPU with an identical instruction set, but with a single unified arithmetic function unit that can only do one instruction at a time.
+ The CDC 6500 is a dual-CPU system with two 6400 central processors
+ The CDC 6700 is also a dual-CPU system, with a 6600 and a 6400 central processor.
+Certain features and nomenclature had also been used in the earlier CDC 3000 series:
+Arithmetic was ones complement.
+ The name COMPASS was used by CDC for the assembly languages on both families.
+ The name SCOPE was used for its operating system implementations on the 3000 and 6000 series.
+
+The only currently (as of 2018) running CDC 6000 series machine, a 6500, has been restored by Living Computers: Museum + Labs It was built in 1967 and used by Purdue University until 1989 when it was decommissioned and then given to the Chippewa Falls Museum of Industry and Technology before being purchased by Paul Allen for LCM+L.
+
+History
+The first member of the CDC 6000 series was the supercomputer CDC 6600, designed by Seymour Cray and James E. Thornton in Chippewa Falls, Wisconsin. It was introduced in September 1964 and performs up to three million instructions per second, three times faster than the IBM Stretch, the speed champion for the previous couple of years. It remained the fastest machine for five years until the CDC 7600 was launched. The machine was Freon refrigerant cooled.
+
+Control Data manufactured about 100 machines of this type, selling for $6 to $10 million each.
+
+The next system to be introduced was the CDC 6400, delivered in April 1966.  The 6400 central processor is a slower, less expensive implementation with serial processing, rather than the 6600's parallel functional units.  All other aspects of the 6400 are identical to the 6600.  Then followed a machine with dual 6400-style central processors, the CDC 6500, designed principally by James E. Thornton, in October 1967.  And finally, the CDC 6700, with both a 6600-style CPU and a 6400-style CPU, was released in October 1969.
+
+Subsequent special edition options were custom-developed for the series, including:
+ Attaching a second system configured without a Central Processor (numbered 6416 and identified as "Augmented I/O Buffer and Control) to the first; the combined total effectively was 20 peripheral and control processors with 24 channels, and the purpose was to support additional peripherals and "significantly increase the multiprogramming and batch job processing of the 6000 series."   (A 30-PPU, 36 channel 6600 machine was operated by Control Data's Software Research Lab during 1971–1973 as the Minneapolis Cybernet host, but this version was never sold commercially.)  
+ Control Data also marketed a CDC 6400 with a smaller number of peripheral processors:
+ CDC 6415–7 with seven peripheral processors
+ CDC 6415–8 with eight peripheral processors
+ CDC 6415–9 with nine peripheral processors
+
+Hardware
+
+Central memory (CM)
+In all the CDC 6000 series computers, the central processor communicates with around seven simultaneously active programs (jobs), which reside in central memory. Instructions from these programs are read into the central processor registers and are executed by the central processor at scheduled intervals. The results are then returned to central memory.
+
+Information is stored in central memory in the form of words. The length of each word is 60 binary digits (bits). The highly efficient address and data control mechanisms involved permit a word to be moved into or out of central memory in as little as 100 nanoseconds.
+
+Extended Core Storage (ECS)
+An extended core storage unit (ECS) provides additional memory storage and enhances the powerful computing capabilities of the CDC 6000 series computers. The unit contains interleaved core banks, each one ECS word (488 bits) wide and an 488 bit buffer for each bank.
+While nominally slower than CM, ECS included a buffer (cache) that in some applications gave ECS better performance than CM. However, with a more common reference pattern the CM was still faster.
+
+Central processor
+
+The central processor is the high-speed arithmetic unit that functions as the workhorse of the computer. It performs the addition, subtraction, and logical operations and all of the multiplication, division, incrementing, indexing, and branching instructions for user programs.  Note that in the CDC 6000 architecture, the central processing unit performs no input/output (I/O) operations.  Input/Output is totally asynchronous, and performed by peripheral processors.
+
+A 6000 series CPU contains 24 operating registers, designated X0–X7, A0–A7, and B0–B7.  The eight X registers are each 60 bits long, and used for most data manipulation—both integer and floating point.  The eight B registers are 18 bits long, and generally used for indexing and address storage.  Register B0 is hard-wired to always return 0.  By software convention, register B1 is generally set to 1.  (This often allows the use of 15-bit instructions instead of 30-bit instructions.)  The eight 18-bit A registers are 'coupled' to their corresponding X registers:  setting an address into any of registers A1 through A5 causes a memory load of the contents of that address into the corresponding X registers.  Likewise, setting an address into registers A6 and A7 causes a memory store into that location in memory from X6 or X7.  Registers A0 and X0 are not coupled in this way, so can be used as scratch registers.  However A0 and X0 are used when addressing CDCs Extended Core Storage (ECS).
+
+Instructions are either 15 or 30 bits long, so there can be up to four instructions per 60-bit word.  A 60-bit word can contain any combination of 15-bit and 30-bit instructions that fit within the word, but a 30-bit instruction can not wrap to the next word. The op codes are six bits long.  The remainder of the instruction is either three three-bit register fields (two operands and one result), or two registers with an 18-bit immediate constant.  All instructions are 'register to register'.  For example, the following COMPASS (assembly language) code loads two values from memory, performs a 60-bit integer add, then stores the result:
+
+ SA1   X       SET REGISTER A1 TO ADDRESS OF X; LOADS X1 FROM THAT ADDRESS
+ SA2   Y       SET REGISTER A2 TO ADDRESS OF Y; LOADS X2 FROM THAT ADDRESS
+ IX6   X1+X2   LONG INTEGER ADD REGISTERS X1 AND X2, RESULT INTO X6
+ SA6   A1      SET REGISTER A6 TO (A1); STORES X6 TO X; THUS, X += Y
+
+The central processor used in the CDC 6400 series contains a unified arithmetic element which performs one machine instruction at a time.  Depending on instruction type, an instruction can take anywhere from five clock cycles for 18-bit integer arithmetic to as many as 68 clock cycles (60-bit population count).  The CDC 6500 is identical to the 6400, but includes two identical 6400 CPUs. Thus the CDC 6500 can nearly double the computational throughput of the machine, although the I/O throughput is still limited by the speed of external I/O devices served by the same 10 PPs/12 Channels.  Many CDC customers worked on compute-bound problems.
+
+The CDC 6600 computer, like the CDC 6400, has just one central processor. However, its central processor offers much greater efficiency. The processor is divided into 10 individual functional units, each of which was designed for a specific type of operation.  All 10 functional units can operate simultaneously, each working on their own operation. The function units provided are: branch, Boolean, shift, long integer add, floating-point add, floating-point divide, two floating-point multipliers, and two increment (18-bit integer add) units.  Functional unit latencies are between three clock cycles for increment add and 29 clock cycles for floating-point divide.
+
+The 6600 processor can issue a new instruction every clock cycle, assuming that various processor (functional unit, register) resources were available.  These resources are tracked by a scoreboard mechanism.  Also contributing to keeping the issue rate high is an instruction stack, which caches the contents of eight instruction words (32 short instructions or 16 long instructions, or a combination).  Small loops can reside entirely within the stack, eliminating memory latency from instruction fetches.
+
+Both the 6400 and 6600 CPUs have a cycle time of 100 ns (10MHz).  Due to the serial nature of the 6400 CPU, its exact speed is heavily dependent on instruction mix, but generally around 1 MIPS.  Floating-point additions are fairly fast at 11 clock cycles, however floating-point multiplication is very slow at 57 clock cycles.  Thus its floating point speed will depend heavily on the mix of operations and can be under 200 kFLOPS.  The 6600 is faster.  With good compiler instruction scheduling, the machine can approach its theoretical peak of 10 MIPS.  Floating-point additions take four clock cycles, and floating-point multiplications take 10 clocks (but there are two multiply functional units, so two operations can be processing at the same time.)  The 6600 can therefore have a peak floating point speed of 2-3 MFLOPS.
+
+The CDC 6700 computer combines features of the other three computers. Like the CDC 6500, it has two central processors. One is a CDC 6400/CDC 6500 central processor with the unified arithmetic section; the other is the more efficient CDC 6600 central processor. The combination makes the CDC 6700 the fastest and the most powerful of the CDC 6000 series.
+
+Peripheral processors
+The central processor shares access to central memory with up to ten peripheral processors (PPs). Each peripheral processor is an individual computer with its own 1 μs memory of 4K 12-bit words. (They are somewhat similar to CDC 160A minicomputers, sharing the 12-bit word length and portions of the instruction set.)
+
+While the PPs were designed as an interface to the 12 I/O channels, portions of the Chippewa Operating System (COS), and systems derived from it, e.g., SCOPE, MACE, KRONOS, NOS, and NOS/BE, run on the PPs. Only the PPs have access to the channels and can perform input/output: the transfer of information between central memory and peripheral devices such as disks and magnetic tape units. They relieve the central processor of all input/output tasks, so that it can perform calculations while the peripheral processors are engaged in input/output and operating system functions. This feature promotes rapid overall processing of user programs. Much of the operating system ran on the PPs, thus leaving the full power of the Central Processor available for user programs.
+
+Each peripheral processor can add, subtract, and perform logical operations. Special instructions perform data transfer between processor memory and, via the channels, peripheral devices at up to 1 μs per word. The peripheral processors are collectively implemented as a barrel processor. Each executes routines independently of the others.  They are a loose predecessor of bus mastering or direct memory access.
+
+Instructions use a 6-bit op code, thus leaving 6 bits for an operand.  It is also possible to combine the next word's 12 bits, to form an 18-bit address (the size needed to access the full 131,072 words of Central Memory).
+
+Data channels
+For input or output, each peripheral processor accesses a peripheral device over a communication link called a data channel. One peripheral device can be connected to each data channel; however, a channel can be modified with hardware to service more than one device.
+The data channels have no access to either central or peripheral
+memory, and rely on programs running in a peripheral processor to access memory or to chain operations.
+
+Each peripheral processor can communicate with any peripheral device if another peripheral processor is not using the data channel connected to that device. In other words, only one peripheral processor at a time can use a particular data channel to communicate to a peripheral device. However, a peripheral processor may write data to a channel that a different peripheral processor is reading.
+
+Display console
+
+In addition to communication between peripheral devices and peripheral processors, communication takes place between the computer operator and the operating system. This is made possible by the computer console, which had two CRT screens.
+
+This display console was a significant departure from conventional computer consoles of the time, which contained hundreds of blinking lights and switches for every state bit in the machine.  (See front panel for an example.)  By comparison, the 6000 series console is an elegant design: simple, fast and reliable.
+
+The console screens are calligraphic, not raster based.  Analog circuitry steers the electron beams to draw the individual characters on the screen.  One of the peripheral processors runs a dedicated program called "DSD" (Dynamic System Display), which drives the console.  Coding in DSD needs to be fast as it needs to continually redraw the screen quickly enough to avoid visible flicker.
+
+DSD displays information about the system and the jobs in process. The console also includes a keyboard through which the operator can enter requests to modify stored programs and display information about jobs in or awaiting execution.
+
+A full-screen editor, called O26 (after the IBM model 026 key punch, with the first character made alphabetic due to operating system restrictions), can be run on the operator console.  This text editor appeared in 1967—which made it one of the first full-screen editors.  (Unfortunately, it took CDC another 15 years to offer FSE, a full-screen editor for normal time-sharing users on CDCs Network Operating System.)
+
+There are also a variety of games that were written using the operator console.  These included BAT (a baseball game), KAL (a kaleidoscope), DOG (Snoopy flying his doghouse across the screens), ADC (Andy Capp strutting across the screens), EYE (changes the screens into giant eyeballs, then winks them), PAC (a Pac-Man-like game), a lunar lander simulator, and more.
+
+Minimum configuration
+The minimum hardware requirements of a CDC 6000 series computer system consists of the computer, including 32,768 words of central memory storage, any combination of disks, disk packs, or drums to provide 24 million characters of mass storage, a punched card reader, punched card punch, printer with controllers, and two 7-track magnetic tape units.
+
+Larger systems could be obtained by including optional equipment such as additional central memory, extended core storage (ECS), additional disk or drum units, card readers, punches, printers, and tape units. Graphic plotters and microfilm recorders were also available.
+
+Peripherals
+ CDC 405 Card Reader - Unit reads 80-column cards at 1200 cards a minute and 51-column cards at 1600 cards per minute. Each tray holds 4000 cards to reduce the rate of required loading.
+ CDC 6602/6612 Console Display
+ CDC 6603 Disk System
+ CDC 626 Magnetic Tape Transports
+ CDC 6671 Communications Multiplexer - supported up to 16 synchronous data connections up to 4800 bit/s each for Remote Job Entry
+ CDC 6676 Communications Multiplexer - supported up to 64 asynchronous data connections up to 300 bit/s each for timesharing access.
+ CDC 6682/6683 Satellite Coupler
+ CDC 6681 Data Channel Converter
+
+Versions
+
+The CDC 6600 was the flagship. The CDC 6400 was a slower, lower-performance CPU that cost significantly less.
+
+The CDC 6500 was a dual CPU 6400, with two CPUs but only one set of I/O PPs, designed for computation-bound problems. The CDC 6700 was also a dual CPU machine, which had one 6600 CPU and one 6400 CPU.  The CDC 6415 was an even cheaper and slower machine; it had a 6400 CPU but was available with only seven, eight, or nine PPUs instead of the normal ten.  The CDC 6416 was an upgrade that could be added to a 6000 series machine; it added an extra PPU bank, giving a total of 20 PPUs and 24 channels, designed for significantly improved I/O performance.
+
+The 6600
+
+The CDC 6600 was the flagship mainframe supercomputer of the 6000 series of computer systems manufactured by Control Data Corporation.
+Generally considered to be the first successful supercomputer, it outperformed its fastest predecessor, the IBM 7030 Stretch, by a factor of three. With performance of up to three megaFLOPS, the CDC 6600, of which about 100 were sold, was the world's fastest computer from 1964 to 1969, when it relinquished that status to its successor, the CDC 7600.
+
+The CDC 6600 anticipated the RISC design philosophy and, unusually, employed a ones'-complement representation of integers.  Its successors would continue the architectural tradition for more than 30 years until the late 1980s, and were the last chips designed with ones'-complement integers.
+
+The CDC 6600 was also the first widespread computer to include a load–store architecture, with the writing to its address registers triggering memory load or store of data from its data registers.
+
+The first CDC 6600s were delivered in 1965 to the Livermore and Los Alamos National Labs (managed by the University of California). Serial #4 went to the Courant Institute of Mathematical Sciences Courant Institute at NYU in Greenwich Village, New York CIty. The first delivery outside the US went to CERN laboratory near Geneva, Switzerland, where it was used to analyse the two to three million photographs of bubble-chamber tracks that CERN experiments were producing every year. In 1966 another CDC 6600 was delivered to the Lawrence Radiation Laboratory, part of the University of California at Berkeley, where it was used for the analysis of nuclear events photographed inside the Alvarez bubble chamber. The University of Texas at Austin had one delivered for its Computer Science and Mathematics Departments, and installed underground on its main campus, tucked into a hillside with one side exposed, for cooling efficiency.
+
+A CDC 6600 is on display at the Computer History Museum in Mountain View, California.
+
+The 6400
+The CDC 6400, a member of the CDC 6000 series, was a mainframe computer made by Control Data Corporation in the 1960s.  The central processing unit was architecturally compatible with the CDC 6600.  In contrast to the 6600, which had 10 parallel functional units which could work on multiple instructions at the same time, the 6400 had a unified arithmetic unit, which could only work on a single instruction at a time.  This resulted in a slower, lower-performance CPU, but one that cost significantly less.  Memory, peripheral processor-based input/output (I/O), and peripherals were otherwise identical to the 6600.
+
+In 1966, the Computing Center () of the RWTH Aachen University acquired a CDC 6400, the first Control Data supercomputer in Germany and the second one in Europe after the European Organization for Nuclear Research (CERN). It served the entire university also by 64 remote-line teletypes (TTY) until it was replaced by a CDC Cyber 175 computer in 1976.
+
+Dual CPU systems
+
+The 6500
+
+The CDC 6500, which features a dual CPU 6400, is the third supercomputer in the 6000 series manufactured by the Control Data Corporation and designed by supercomputer pioneer Seymour Cray. The first 6500 was announced in 1964 and was delivered in 1967.
+
+It includes twelve different independent computers. Ten are peripheral and control processors, each of which have a separate memory and can run programs separately from each other and the two 6400 central processors. Instead of being air-cooled, it has a liquid refrigeration system and each of the three bays of the computer has its own cooling unit.
+
+CDC 6500 systems were installed at:
+ Michigan State University -  bought in 1968, meant to replace its CDC 3600, and it was the only academic mainframe on campus.
+ CERN - upgraded from a 6400 to a 6500 in April 1969.
+ the technical lab at the Patrick Air Force Base in 1978.
+ the Laboratory of Computing Techniques and Automation in the Joint Institute for Nuclear Research (USSR) - originally bought CDC 6200 in 1972, later upgraded to 6500, retired in 1995
+ University of Colorado Boulder
+
+The 6700
+Composed of a 6600 and a 6400, the CDC 6700 was the most powerful of the 6000 series.
+
+See also
+ CDC Cyber - contained the successors to the 6000 series computers
+
+Notes
+
+References
+
+ CONTROL DATA 6400/6500/6600 Computer Systems Reference Manual, Publication No. 60100000 D, 1967
+ CONTROL DATA 6400/6500/6600/6700 Computer Systems, SCOPE 3.3 User's Guide, Publication No. 60252700 A, 1970
+ CONTROL DATA 6400/6500/6600/6700 Computer Systems, SCOPE Reference Manual, Publication No. 60305200, 1971
+ Computer history on CDC 6600
+ Gordon Bell on CDC computers
+
+External links
+ Neil R. Lincoln with 18 Control Data Corporation (CDC) engineers on computer architecture and design, Charles Babbage Institute, University of Minnesota.  Engineers include Robert Moe, Wayne Specker, Dennis Grinna, Tom Rowan, Maurice Hutson, Curt Alexander, Don Pagelkopf, Maris Bergmanis, Dolan Toth, Chuck Hawley, Larry Krueger, Mike Pavlov, Dave Resnick, Howard Krohn, Bill Bhend, Kent Steiner, Raymon Kort, and Neil R. Lincoln.  Discussion topics include CDC 1604, CDC 6600, CDC 7600, and Seymour Cray.
+CONTROL DATA 6400/6500/6600 COMPUTER SYSTEMS Reference Manual
+ 2016 GeekWire article Resurrected! Paul Allen's tech team brings 50-year-old supercomputer back from the dead
+ 2013 GeekWire article on the restoration of a CDC 6500 at the LCM.
+Request a login  to the working CDC 6500 at Living Computers: Museum + Labs, one of the computers online at Paul Allen's collection of timesharing and interactive computers.
+
+6000 series
+Supercomputers
+60-bit computers
+12-bit computers  
+Control Data Corporation mainframe computers
+Transistorized computers
+Control Data Corporation
+Computer-related introductions in 1964

@@ -1,0 +1,79 @@
+URI normalization is the process by which URIs are modified and standardized in a consistent manner. The goal of the normalization process is to transform a URI into a normalized URI so it is possible to determine if two syntactically different URIs may be equivalent.
+
+Search engines employ URI normalization in order to correctly rank pages that may be found with multiple URIs, and to reduce indexing of duplicate pages. Web crawlers perform URI normalization in order to avoid crawling the same resource more than once. Web browsers may perform normalization to determine if a link has been visited or to determine if a page has been cached. Web servers may also perform normalization for many reasons (i.e. to be able to more easily intercept security risks coming from client requests, to use only one absolute file name for each resource stored in their caches, named in log files, etc.).
+
+Normalization process
+There are several types of normalization that may be performed. Some of them are always semantics preserving and some may not be.
+
+Normalizations that preserve semantics
+The following normalizations are described in RFC 3986  to result in equivalent URIs:
+ Converting percent-encoded triplets to uppercase. The hexadecimal digits within a percent-encoding triplet of the URI (e.g., %3a versus %3A) are case-insensitive and therefore should be normalized to use uppercase letters for the digits A-F. Example:
+http://example.com/foo%2a → http://example.com/foo%2A
+ Converting the scheme and host to lowercase. The scheme and host components of the URI are case-insensitive and therefore should be normalized to lowercase. Example:
+HTTP://User@Example.COM/Foo → http://User@example.com/Foo
+ Decoding percent-encoded triplets of unreserved characters. Percent-encoded triplets of the URI in the ranges of ALPHA (%41–%5A and %61–%7A), DIGIT (%30–%39), hyphen (%2D), period (%2E), underscore (%5F), or tilde (%7E) do not require percent-encoding and should be decoded to their corresponding unreserved characters. Example:
+http://example.com/%7Efoo → http://example.com/~foo
+ Removing dot-segments. Dot-segments . and .. in the path component of the URI should be removed by applying the remove_dot_segments algorithm to the path described in RFC 3986. Example:
+http://example.com/foo/./bar/baz/../qux → http://example.com/foo/bar/qux
+ Converting an empty path to a "/" path. In presence of an authority component, an empty path component should be normalized to a path component of "/". Example:
+http://example.com → http://example.com/
+ Removing the default port. An empty or default port component of the URI (port 80 for the http scheme) with its ":" delimiter should be removed. Example:
+http://example.com:80/ → http://example.com/
+
+Normalizations that usually preserve semantics
+For http and https URIs, the following normalizations listed in RFC 3986 may result in equivalent URIs, but are not guaranteed to by the standards:
+ Adding a trailing "/" to a non-empty path. Directories (folders) are indicated with a trailing slash and should be included in URIs. Example:
+http://example.com/foo → http://example.com/foo/
+However, there is no way to know if a URI path component represents a directory or not. RFC 3986 notes that if the former URI redirects to the latter URI, then that is an indication that they are equivalent.
+
+Normalizations that change semantics
+Applying the following normalizations result in a semantically different URI although it may refer to the same resource:
+ Removing directory index. Default directory indexes are generally not needed in URIs. Examples:
+http://example.com/a/index.html → http://example.com/a/
+http://example.com/default.asp → http://example.com/
+ Removing the fragment. The fragment component of a URI is never seen by the server and can sometimes be removed. Example:
+http://example.com/bar.html#section1 → http://example.com/bar.html
+However, AJAX applications frequently use the value in the fragment.
+ Replacing IP with domain name. Check if the IP address maps to a domain name. Example:
+http://208.77.188.166/ → http://example.com/
+The reverse replacement is rarely safe due to virtual web servers.
+ Limiting protocols. Limiting different application layer protocols. For example, the “https” scheme could be replaced with “http”. Example:
+https://example.com/ → http://example.com/
+ Removing duplicate slashes Paths which include two adjacent slashes could be converted to one. Example:
+http://example.com/foo//bar.html → http://example.com/foo/bar.html
+ Removing or adding “www” as the first domain label. Some websites operate identically in two Internet domains: one whose least significant label is “www” and another whose name is the result of omitting the least significant label from the name of the first, the latter being known as a naked domain. For example, http://www.example.com/ and http://example.com/ may access the same website. Many websites redirect the user from the www to the non-www address or vice versa. A normalizer may determine if one of these URIs redirects to the other and normalize all URIs appropriately. Example:
+http://www.example.com/ → http://example.com/
+ Sorting the query parameters. Some web pages use more than one query parameter in the URI. A normalizer can sort the parameters into alphabetical order (with their values), and reassemble the URI. Example:
+http://example.com/display?lang=en&article=fred → http://example.com/display?article=fred&lang=en
+However, the order of parameters in a URI may be significant (this is not defined by the standard) and a web server may allow the same variable to appear multiple times.
+ Removing unused query variables. A page may only expect certain parameters to appear in the query; unused parameters can be removed. Example:
+http://example.com/display?id=123&fakefoo=fakebar → http://example.com/display?id=123
+Note that a parameter without a value is not necessarily an unused parameter.
+ Removing default query parameters. A default value in the query string may render identically whether it is there or not. Example:
+http://example.com/display?id=&sort=ascending → http://example.com/display
+ Removing the "?" when the query is empty. When the query is empty, there may be no need for the "?". Example:
+http://example.com/display? → http://example.com/display
+
+Normalization based on URI lists
+Some normalization rules may be developed for specific websites by examining URI lists obtained from previous crawls or web server logs. For example, if the URI
+http://example.com/story?id=xyz
+appears in a crawl log several times along with
+http://example.com/story_xyz
+we may assume that the two URIs are equivalent and can be normalized to one of the URI forms.
+
+Schonfeld et al. (2006) present a heuristic called DustBuster for detecting DUST (different URIs with similar text) rules that can be applied to URI lists. They showed that once the correct DUST rules were found and applied with a normalization algorithm, they were able to find up to 68% of the redundant URIs in a URI list.
+
+See also
+ URL (Uniform Resource Locator)
+ URI fragment
+ Web crawler
+
+References
+
+ RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax
+ 
+ 
+ 
+
+URL
+Internet search algorithms

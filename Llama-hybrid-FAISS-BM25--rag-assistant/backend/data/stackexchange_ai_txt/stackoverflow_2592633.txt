@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2592633
+[parent_id]: 2592122
+[tags]: 
+First, some comments on the code: You do not seem to be using strict . You should. You seem to think it is OK to trample all over the DBI namespace. It is not. You should use placeholders instead of interpolating into the SQL string. Now, for the actual task (untested code): my $averager = Math::Business::EMA->new; $averager->set_days(3); my $sth = $db->prepare(sprintf q{ SELECT close FROM %s WHERE day execute($DATE, $EMA); # what is $EMA? while ( my $row = $sth->fetchrow_arrayref ) { $averager->insert( $row->[0] ); my $avg = $averager->query; $avg = 'n/a' unless defined $avg; print "$avg\n"; }

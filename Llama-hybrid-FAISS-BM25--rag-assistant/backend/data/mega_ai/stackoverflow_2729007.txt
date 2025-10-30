@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2729007
+[parent_id]: 
+[tags]: 
+Does the COM server have to call SysFreeString() for an [out] parameter?
+
+We have the following interface: [object, uuid("uuidhere"), dual ] interface IInterface : IDispatch { [id(1), propget] HRESULT CoolProperty( [out, retval] BSTR* result ); } Now there's a minor problem. On one hand the parameter is "out" and so any value can be passed as input, the parameter will become valid only upon the successful return. On the other hand, there's this MSDN article which is linked to from many pages that basically says (the last paragraph) that if any function is passed a BSTR* it must free the string before assigning a new string. That's horrifying. If that article is right it means that all the callers must surely pass valid BSTRs (maybe null BSTRs), otherwise BSTR passed can be leaked. If the caller passed a random value and the callee tries to call SysFreeString() it runs into undefined behavior, so the convention is critical. Then what's the point in the [out] attribute? What will be the difference between the [in, out] and [out] in this situation? Is that article right? Do I need to free the passed BSTR [out] parameter before assigning a new one?

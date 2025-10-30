@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1108407
+[parent_id]: 857973
+[tags]: 
+I also tried to work with an SQL-IN-like thing - querying against an Entity Data Model . My approach is a string builder to compose a big OR-expression. That's terribly ugly, but I'm afraid it's the only way to go right now. Now well, that looks like this: Queue productIds = new Queue (Products.Select(p => p.Key)); if(productIds.Count > 0) { StringBuilder sb = new StringBuilder(); sb.AppendFormat("{0}.ProductId = Guid\'{1}\'", entities.Products.Name, productIds.Dequeue()); while(productIds.Count > 0) { sb.AppendFormat(" OR {0}.ProductId = Guid\'{1}\'", entities.Products.Name, productIds.Dequeue()); } } Working with GUIDs in this context : As you can see above, there is always the word "GUID" before the GUID ifself in the query string fragments. If you don't add this, ObjectQuery .Where throws the following exception: The argument types 'Edm.Guid' and 'Edm.String' are incompatible for this operation., near equals expression, line 6, column 14. Found this in MSDN Forums, might be helpful to have in mind.

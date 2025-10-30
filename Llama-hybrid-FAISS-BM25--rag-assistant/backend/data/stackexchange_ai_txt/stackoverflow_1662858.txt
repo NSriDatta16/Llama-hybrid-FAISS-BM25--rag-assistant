@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1662858
+[parent_id]: 1661367
+[tags]: 
+The number of packets required to transmit your data should have very little effect on the stream in practice. What you might be encountering is a buffering problem in your implementation. A socket should only be written to when it's in a "writeable" state, otherwise you risk overflowing the output buffer and causing the connection to be dropped by your networking stack. As a TCP/IP socket functions as a simple stream, where data goes in, and comes out in order, the effect of packet fragmentation should be mostly irrelevant except for extremely time-sensitive applications. Make sure you flush your output buffer when writing to the socket or you may have some data left waiting to transmit: @socket.write(my_data) @socket.flush

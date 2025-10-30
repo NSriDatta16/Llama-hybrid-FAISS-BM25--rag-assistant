@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 599956
+[parent_id]: 
+[tags]: 
+Fast renormalization of distributions
+
+Say I have a matrix probs $\in N\times4$ where each row is a categorical distribution. However I have also a mask $\in N\times4$ that is meant to remove actions that are not available. What I used to do is to than apply the following: $$ softmax(probs \cdot mask) $$ and to do this, I would have in the mask either $1$ or $-\infty$ so that action in the softmax would go to zero, just like what they did in the transformers paper However, I have a problem with this when a probability in the original distribution is zero, because say I have the following: $$ probs = [0, .3, .3, .3]\\ mask = [-\infty, 1, 1, 1]\\ softmax(probs\cdot mask) = [0.19803642, 0.26732123, 0.26732123, 0.26732123] $$ however, in case it's not strictly zero, it works: $$ probs = [10^{-10}, .3, .3, .3]\\ mask = [-\infty, 1, 1, 1]\\ softmax(probs\cdot mask) = [0. , 0.33333334, 0.33333334, 0.33333334] $$ So what I did is stop using softmax and normalizing with the L1 norm... however, now the gradient computation is much slower wrt the softmax, so my question is, is there a way to use the softmax version, without summing an $\epsilon$ to the probabilities at the beginning?

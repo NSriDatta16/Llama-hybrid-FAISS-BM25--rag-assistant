@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1320509
+[parent_id]: 761141
+[tags]: 
+Most of the scripts that work with IIS assume that you are running on the local machine. If you look in the script code it's most likely using WMI to work with IIS and the first thing it has to do is connect to WMI provider which always requires a machine name and a WMI provider path. The machine name for the local machine is often represented as "." where required. For Example: strComputer = "." Set objWMIService = GetObject("winmgmts:" _ & "{impersonationLevel=impersonate}!\\" _ & strComputer & "\root\cimv2") Set colProcesses = objWMIService.ExecQuery( _ "select * from win32_process Where Name = 'w3wp.exe'" ) For Each objProcess in colProcesses WScript.Echo objProcess.ProcessId If you change strComputer to point to the IIS server, you will get the PIDs for all of the w3wp processes running at the time of the query. Note: the above code is a fragment of a script not a complete program.

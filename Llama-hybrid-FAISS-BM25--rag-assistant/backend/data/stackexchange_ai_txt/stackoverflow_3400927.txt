@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3400927
+[parent_id]: 19893
+[tags]: 
+I had this problem just last week. I had to serialize a PDF file and send it, inside an XML file, to a server. If you're using .NET, you can convert a binary file directly to a base64 string and stick it inside an XML element. string base64 = Convert.ToBase64String(File.ReadAllBytes(fileName)); Or, there is a method built right into the XmlWriter object. In my particular case, I had to include Microsoft's datatype namespace: StringBuilder sb = new StringBuilder(); System.Xml.XmlWriter xw = XmlWriter.Create(sb); xw.WriteStartElement("doc"); xw.WriteStartElement("serialized_binary"); xw.WriteAttributeString("types", "dt", "urn:schemas-microsoft-com:datatypes", "bin.base64"); byte[] b = File.ReadAllBytes(fileName); xw.WriteBase64(b, 0, b.Length); xw.WriteEndElement(); xw.WriteEndElement(); string abc = sb.ToString(); The string abc looks something that looks like this: JVBERi0xLjMKJaqrrK0KNCAwIG9iago8PCAvVHlwZSAvSW5mbw...(plus lots more)

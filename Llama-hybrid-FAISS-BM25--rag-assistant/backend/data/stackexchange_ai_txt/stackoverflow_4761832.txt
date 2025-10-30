@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4761832
+[parent_id]: 4761073
+[tags]: 
+Rather than reading them into R at the beginning and then combining them you could have SQLite read them and combine them before sending them to R. That way the files are never individually loaded into R. # create two sample files DF1 This gives: > sqldf(c("select * from data1", "insert into data1 select * from data2", "select * from data1"), dbname = tempfile()) A B 1 1 2 2 2 3 3 10 12 4 11 13 This shorter version also works if row order is unimportant: sqldf("select * from data1 union select * from data2", dbname = tempfile()) See the sqldf home page http://sqldf.googlecode.com and ?sqldf for more info. Pay particular attention to the file format arguments since they are close but not identical to read.table . Here we have used the defaults so it was less of an issue.

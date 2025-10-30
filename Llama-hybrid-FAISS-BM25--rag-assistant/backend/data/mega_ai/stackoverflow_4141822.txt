@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4141822
+[parent_id]: 3899852
+[tags]: 
+Little change in Code to add coverage for List public static IEnumerable FindImages(FlowDocument document) { return document.Blocks.SelectMany(block => FindImages(block)); } public static IEnumerable FindImages(Block block) { if (block is Table) { return ((Table)block).RowGroups .SelectMany(x => x.Rows) .SelectMany(x => x.Cells) .SelectMany(x => x.Blocks) .SelectMany(innerBlock => FindImages(innerBlock)); } if (block is Paragraph) { return ((Paragraph)block).Inlines .OfType () .Where(x => x.Child is Image) .Select(x => x.Child as Image); } if (block is BlockUIContainer) { Image i = ((BlockUIContainer)block).Child as Image; return i == null ? new List () : new List (new[] { i }); } if (block is List) { return ((List)block).ListItems.SelectMany(listItem => listItem .Blocks .SelectMany(innerBlock => FindImages(innerBlock))); } throw new InvalidOperationException("Unknown block type: " + block.GetType()); }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3319549
+[parent_id]: 3318745
+[tags]: 
+Following the update in your question can you look at the two execution plans for your queries #4 and #5 and see whether it does a clustered index scan for one and a non clustered index seek for the other? I wonder if it is because it knows the statistics for the literal at compile time but not for the function call. As it has no idea that only a handful of records will be returned it errs on the side of caution to avoid doing a whole load of bookmark lookups. If that is the case then does the following help? SELECT * FROM bldb.dbo.blacklist WITH (FORCESEEK) WHERE matchcode LIKE LEFT(dbo.fn_matchcode('12345','Sesame Street','1','Eddie','Bert'),13) + '%'

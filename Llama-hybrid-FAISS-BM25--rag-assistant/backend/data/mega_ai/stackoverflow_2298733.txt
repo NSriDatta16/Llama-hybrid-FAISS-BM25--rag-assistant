@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2298733
+[parent_id]: 2206250
+[tags]: 
+To open the SSH tunnel only for the duration of your script, you probably would need to use PHP forks . In one process, open the SSH tunnel (-D - you need to do some work to make sure you're not colliding on ports here), and in the other process, use CURL with socks proxy config. When your transfer is done, signal the ssh fork to terminate so the connection gets torn down. Keep in mind that while the tunnel is open, other users on the same machine can also proxy on that port if they wanted to. With that in mind, it might be a better idea to use the -L 1234:remotehost:80 flag, and just get the URL http://localhost:1234/some/uri If things go wrong with this, you may find orphaned SSH tunnels on your server though, so I would call this somewhat fragile.

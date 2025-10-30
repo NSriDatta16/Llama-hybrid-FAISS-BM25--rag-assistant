@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 602841
+[parent_id]: 602593
+[tags]: 
+this answer is more or less correct. When you want something parametrized at compile time - you should prefer templates. When you want something parametrized at runtime, you should prefer virtual functions being overridden. However , using templates does not preclude you from doing both (making the template version more flexible): struct Brake { virtual void stopCar() = 0; }; struct BrakeChooser { BrakeChooser(Brake *brake) : brake(brake) {} void stopCar() { brake->stopCar(); } Brake *brake; }; template struct Car { Car(Brake brake = Brake()) : brake(brake) {} void slamTheBrakePedal() { brake.stopCar(); } Brake brake; }; // instantiation Car car(BrakeChooser(new AntiLockBrakes())); That being said, I would probably NOT use templates for this... But its really just personal taste.

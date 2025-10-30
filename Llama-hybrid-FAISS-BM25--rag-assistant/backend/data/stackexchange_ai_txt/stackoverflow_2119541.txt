@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2119541
+[parent_id]: 2117160
+[tags]: 
+That looks kind of complicated. I probably don't understand what it is you're trying to achieve, but what about something like this? #!/usr/bin/ruby1.8 class Symbol alias_method :old_to_s, :to_s def to_s(*args) if args == [:upcase] old_to_s.upcase else old_to_s(*args) end end end puts :foo # => foo puts :foo.to_s(:upcase) # => FOO and a partial spec: describe :Symbol do it "should return the symbol as a string when to_s is called" do :foo.to_s.should eql 'foo' end it "should delegate to the original Symbol.to_s method when to_s is called with unknown arguments" do # Yeah, wish I knew how to test that end it "should return the symbol name as uppercase when to_s(:upcase) is called" do :foo.to_s(:upcase).should eql "FOO" end end

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2962660
+[parent_id]: 
+[tags]: 
+Is there a good way to QuickCheck Happstack.State methods?
+
+I have a set of Happstack.State MACID methods that I want to test using QuickCheck, but I'm having trouble figuring out the most elegant way to accomplish that. The problems I'm running into are: The only way to evaluate an Ev monad computation is in the IO monad via query or update . There's no way to create a purely in-memory MACID store; this is by design . Therefore, running things in the IO monad means there are temporary files to clean up after each test. There's no way to initialize a new MACID store except with the initialValue for the state; it can't be generated via Arbitrary unless I expose an access method that replaces the state wholesale. Working around all of the above means writing methods that only use features of MonadReader or MonadState (and running the test inside Reader or State instead of Ev . This means forgoing the use of getRandom or getEventClockTime and the like inside the method definitions. The only options I can see are: Run the methods in a throw-away on-disk MACID store, cleaning up after each test and settling for starting from initialValue each time. Write the methods to have most of the code run in a MonadReader or MonadState (which is more easily testable), and rely on a small amount of non-QuickCheck-able glue around it that calls getRandom or getEventClockTime as necessary. Is there a better solution that I'm overlooking?

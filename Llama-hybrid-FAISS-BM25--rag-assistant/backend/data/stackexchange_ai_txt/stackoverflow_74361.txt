@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 74361
+[parent_id]: 73134
+[tags]: 
+I think the is no memory leak. STRUCT* pStruct = (STRUCT*)new BYTE [sizeof(STRUCT) + nPaddingSize]; This gets translated into a memory allocation call within the operating system upon which a pointer to that memory is returned. At the time memory is allocated, the size of sizeof(STRUCT) and the size of nPaddingSize would be known in order to fulfill any memory allocation requests against the underlying operating system. So the memory that is allocated is "recorded" in the operating system's global memory allocation tables. Memory tables are indexed by their pointers. So in the corresponding call to delete, all memory that was originally allocated is free. (memory fragmentation a popular subject in this realm as well). You see, the C/C++ compiler is not managing memory, the underlying operating system is. I agree there are cleaner methods but the OP did say this was legacy code. In short, I don't see a memory leak as the accepted answer believes there to be one.

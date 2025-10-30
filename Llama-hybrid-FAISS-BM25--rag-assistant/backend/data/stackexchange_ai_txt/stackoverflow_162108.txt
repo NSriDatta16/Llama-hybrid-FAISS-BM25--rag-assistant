@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 162108
+[parent_id]: 161852
+[tags]: 
+the problem with the stream.read is that it uses wchar_t as "character unit" with wfstream. If you use fstream it uses char as "character unit". This would work if you want to read wide characters: wchar_t *comData = new wchar_t[comSize]; stream.read(comData, comSize); Also 15 bytes of data can't be read with a wide stream, because the smallest unit is at least 2bytes (see below), so you can only read chunks of sizwof(wchar_t) * n. But if you are concerned about portability of the application wfstream/wchar_t is maybe not the best solution because there is no standard how wide wchar_t is (e.g. on windows wchar_t is 16bit on many unix/linux systems it is 32bit). The second problem with storing text as wide characters is endianess, i would suggest to use UTF-8 for text storage.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3171132
+[parent_id]: 3171102
+[tags]: 
+Try this: public BitmapSource GetCurrPicture() { var bitmapImage = new BitmapImage(); using (Stream stream = new MemoryStream((byte[])FrameList[currFrame-1])) { bitmapImage.BeginInit(); bitmapImage.CacheOption = BitmapCacheOption.OnLoad; bitmapImage.StreamSource = stream; bitmapImage.EndInit(); bitmapImage.Freeze(); return bitmapImage; } } This works by having WPF decode the image immediately with OnLoad , and then release the reference to the stream when it is done. This means the stream can be garbage collected when it leaves the function. Otherwise, BitmapImage could hold onto the stream until it is rendered. In the code posted in the question, the render would fail because: the decode is delayed; and the stream has been closed at the point where the decode tries to happen.

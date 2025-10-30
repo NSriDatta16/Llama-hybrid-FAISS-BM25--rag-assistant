@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1318328
+[parent_id]: 1318302
+[tags]: 
+Use php fseek () to seek to the end of the file (find using filesize ()), then iterate backwards one line. read the last line and store it temporarily. overwrite the last line with what you want to insert, then append the temporary line you stored previously. To iterate backwards one line, use fseek combined with fgetc () $offset = filesize($fhandle) - 1; fseek($fhandle, $offset--); //seek to the end of the line while(fgetc($fhandle) != '\n') { fseek($fhandle, $offset--); } and now your internal file pointer should be pointed to a line before the last line. off course you'll have to deal with corner cases when your file only has one line, but I'll let you figure out the details ;) now store the last line in a tmp variable $lastline = fgets($fhandle); fseek($fhandle, $offset); //go back to where the last line began insert your line, and append the last line at the end of the file fwrite($fhandle, $myLine); fwrite($fhandle, $lastline);

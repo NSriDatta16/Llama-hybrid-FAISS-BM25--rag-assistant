@@ -1,0 +1,36 @@
+srm (or Secure Remove) is a command line utility for Unix-like computer systems for secure file deletion. srm removes each specified file by overwriting, renaming, and truncating  it before unlinking.  This prevents other people from undeleting or  recovering any information about the file from the command line.
+
+Platform-specific behaviours and bugs
+
+Filesystems with hard links
+
+Attempting to secure delete a file with multiple hard links results in a warning from srm stating that the current access path has been unlinked, but the data itself was not overwritten or truncated. This is an undocumented feature of srm 1.2.8 on Mac OS X 10.9, and is erroneously documented in 1.2.11 as a behaviour activated by the OpenBSD rm-compatible option -P. However, in both the OS X and SourceForge srm implementations, the behaviour of unlinking but not overwriting multi-linked files is always active, as long as the platform reports hard links.
+
+srm 1.2.8 on Mac OS X 10.9 has a -n option, which means "overwrite file, but do not rename or unlink it." However, if the file has multiple links, the multiple-link file data protection feature activates first, removing the file, even though the -n option specifies "do not rename or unlink the file". The -n option has been removed from the code and manual of srm version 1.2.11, the latest SourceForge.net version. As a consequence, this option/feature conflict does not occur.
+
+OS X
+A number of file systems support file forks (called resource forks and named forks on OS X (particularly HFS+), and alternate data streams on NTFS), or extended attributes. However, OS X is the only platform on which srm securely deletes any of this additional data in files.
+On OS X, only the most common non-data fork, the resource fork, is handled in this way. This support was included in Apple’s  1.2.8 and SourceForge's  1.2.9.
+
+srm was removed from OS X/macOS in v10.11 El Capitan, as part of the removal of the "Secure Empty Trash" feature for security reasons.
+
+OpenBSD
+In srm 1.2.11, released on 25 November 2010, the OpenBSD rm-compatible option, -P, is documented have an overwriting pattern matching OpenBSD's rm. Additional functionality which protects multi-linked files is documented under the OpenBSD-compatible option, but is actually always active.
+
+Windows
+When securely deleting files recursively, srm 1.2.11 is unable to determine device boundaries on Windows. Therefore, the -x option, which restricts srm to one file system, is not supported.
+
+See also
+ rm (Unix): remove file in Unix.
+ Data remanence
+ shred (Unix)
+List of free and open-source software packages
+
+References
+
+External links 
+ Sourceforge Page
+
+Unix file system-related software
+Unix security-related software
+Data erasure software

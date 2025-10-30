@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 305064
+[parent_id]: 
+[tags]: 
+Building console apps without CRT & default headers?
+
+I'm trying to build a console application without using the CRT, or any other imports than kernel32.lib in any case. I get my code to compile, but can't wrap the linker around a few problems: unresolved external symbol @__security_check_cookie@4 unresolved external symbol "int __cdecl FreeLibrary(void *)" (?FreeLibrary@@YAHPAX@Z) unresolved external symbol "void * __cdecl LoadLibraryW(wchar_t *)" (?LoadLibraryW@@YAPAXPA_W@Z) unresolved external symbol "int (__cdecl*__cdecl GetProcAddress(void *,char *))(void)" (?GetProcAddress@@YAP6AHXZPAXPAD@Z) unresolved external symbol _wmainCRTStartup FreeLibrary, LoadLibraryW and GetProcAddress I've brought in to program explicitly, not using windows.h: #pragma comment(lib, "kernel32.lib") typedef int(*FARPROC)(); void* LoadLibraryW( wchar_t* lpLibFileName ); FARPROC GetProcAddress( void* hModule, char* lpProcName ); int FreeLibrary( void* hLibModule ); I suppose something is wrong with my prototypes. However, the bigger problem are __security_check_cookie and _wmainCRTStartup , which obviously have something to do with the CRT. So I'm wondering how I'd go about overriding the default int wmain(int argc, wchar_t* argv[]) for entrypoint, and how to get rid of whatever the security cookie is.

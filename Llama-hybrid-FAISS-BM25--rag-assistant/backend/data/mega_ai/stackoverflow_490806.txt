@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 490806
+[parent_id]: 
+[tags]: 
+HTTP Basic Authentication with HTTPService Objects in Adobe Flex/AIR
+
+I'm trying to request a HTTP resource that requires basic authorization headers from within an Adobe AIR application. I've tried manually adding the headers to the request, as well as using the setRemoteCredentials() method to set them, to no avail. Here's the code: However, a standard basic auth dialog box still pops up prompting the user for their username and password. I have a feeling I'm not doing this the right way, but all the info I could find (Flex docs, blogs, Google, etc.) either hasn't worked or was too vague to help. Any black magic, oh Flex gurus? Thanks. EDIT: Changing setRemoteCredentials() to setCredentials() yields the following ActionScript error: [MessagingError message='Authentication not supported on DirectHTTPChannel (no proxy).'] EDIT: Problem solved, after some attention from Adobe. See the posts below for a full explanation. This code will work for HTTP Authentication headers of arbitrary length. import mx.utils.Base64Encoder; private function authAndSend(service:HTTPService):void { var encoder:Base64Encoder = new Base64Encoder(); encoder.insertNewLines = false; // see below for why you need to do this encoder.encode("someusername:somepassword"); service.headers = {Authorization:"Basic " + encoder.toString()}; service.send(); }

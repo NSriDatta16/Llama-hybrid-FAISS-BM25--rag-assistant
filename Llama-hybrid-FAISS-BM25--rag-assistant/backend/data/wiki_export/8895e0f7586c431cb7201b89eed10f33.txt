@@ -1,0 +1,39 @@
+Core OpenGL, or CGL, is Apple Inc.'s Macintosh Quartz windowing system interface to the OS X implementation of the OpenGL specification. CGL is analogous to GLX, which is the X11 interface to OpenGL, as well as WGL, which is the Microsoft Windows interface to OpenGL.
+
+History
+All windowing system interfaces to OpenGL arose out of the migration of Silicon Graphics proprietary 3D graphics application programming interface (API) IrisGL to its current open standard form OpenGL. When the decision was made to make IrisGL an open standard, the primary required design change was to make this graphics standard API windowing system agnostic. All window system specific logic was therefore removed from IrisGL when moving to OpenGL. Window system logic includes any event mechanism for gathering input from devices such as keyboards and mice, as well as any window ordering or sizing logic used when drawing to a modern windowed user interface. Further, all internal management of window memory buffers, sometimes referred to as surfaces, was also removed from IrisGL to create OpenGL.
+
+With OpenGL windowing system agnostic, companies such as Apple must shoulder the burden of configuring and managing the surfaces used as a destination for OpenGL rendering.
+
+Features
+
+Windowing system interfaces
+On OS X, CGL is the foundation layer of windowing system interfaces to OpenGL. Both AGL (Apple Graphics Library) and the Cocoa (API) (or AppKit) have interfaces to OpenGL and are logical software layers and depend on CGL for their behavior. CGL and AGL interoperate freely. CGL and Cocoa may be used together, however Cocoa classes may implicitly make changes to CGL state. Function calls from AGL and Cocoa should not be mixed.
+
+Configuration of these surfaces is done through a pixel format selection process where different compatible layers of rendering information are combined to form a framebuffer. Examples of such layers are color buffers, transparency buffers (alpha), stencil buffers, and depth buffers. The CGL function CGLChoosePixelFormat is used to perform this buffer compatibility check. CGLChoosePixelFormat will, based on input parameters and their scoring policy, choose a pixel format that represents a compatible buffer configuration that is supported by the underlying renderer that will be used to process graphics commands. Renderers may be either hardware based, such that they correspond to graphics cards installed in the system or they may be software based, where the main CPU of the system handles all of the graphics command processing and final rasterization work.
+
+Handling Mac OS X heterogeneity
+On Mac OS X, CGL is also responsible for handling the heterogeneous nature of graphics device installations and configuration on Macintosh systems. Macintosh computers may have any number of displays and graphics cards installed in them. In these configurations, the user's desktop may be virtualized (extended) or mirrored across multiple displays which are connected to multiple graphics cards which may or may not be from the same graphics vendor.
+
+Controlling the rendering
+When users configure their Macintosh to use a virtualized desktop, and they drag windows from one display to another, CGL handles the management of OpenGL graphics state that must be shadowed between devices to provide command processing consistency between them. Dragging a window across a Macintosh desktop between two different displays that are supported by two different renderers is known as a "Virtual Screen Change".
+
+CGL also provides a mechanism to obtain information about the renderer that is currently in use. The primary data structure that maintains OpenGL state on Mac OS X is a CGLContextObj. These CGL contexts can be retrieved at any time using a call to CGLGetCurrentContext. The CGLContextObj may then be queried for specifics about the renderer that is associated with it.
+
+Software renderer
+Also included is Apple's in-house OpenGL software renderer. Originally, this was a simple integer package, in 10.3 a new floating point one was introduced which ultimately replaced it. The software renderer, though slow, is fast enough for basic applications and kept feature-complete  with OS X's OpenGL implementation for development purposes.
+
+See also
+GLX: the equivalent X11 interface to OpenGL
+WGL: the equivalent Microsoft Windows interface to OpenGL
+AGL
+OpenGL
+GLUT: A higher level interface that hides the differences between WGL, GLX, etc.
+
+External links
+ CGL reference guide on Apple website (html). - 
+ CGL reference guide on Apple website (PDF). - 
+
+Application programming interfaces
+Graphics standards
+OpenGL

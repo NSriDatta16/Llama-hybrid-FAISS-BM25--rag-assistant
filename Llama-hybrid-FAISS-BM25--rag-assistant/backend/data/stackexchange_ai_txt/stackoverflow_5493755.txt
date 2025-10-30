@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5493755
+[parent_id]: 5493500
+[tags]: 
+I'm not convinced that your transaction blocks ( (dosync alter ...) do what you think! user=> (def posts (ref nil)) #'user/posts user=> (dosync (ref-set posts [1 2 3 4 5])) [1 2 3 4 5] user=> @posts [1 2 3 4 5] user=> (dosync alter posts nil) nil user=> @posts [1 2 3 4 5] In reset-posts , you probably want (dosync (ref-set posts nil)) , and in fetch-posts , the syntax fix would be (dosync (ref-set posts (fetch :posts options))) . However, there's a race condition in fetch-posts , a check-then-act. Might not be that big of a deal; not sure who uses fetch-posts , but moving the or @posts bit inside the transaction would avoid a situation where 2 concurrent transactions both end up committing the alter. With regard to retries of fetch-posts , yeah, that could happen, though your cache solution avoids most of them. I'm not sure there's a way around it without locking, though. Usually with I/O stuff in transactions you'd farm it out to an agent, but the transaction's success depends on the return value from fetch , so it's not clear to me how that'd work.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4608367
+[parent_id]: 
+[tags]: 
+Thread pool use in .NET REST service implementation
+
+I am implementing my first REST service in .NET 4 and have encountered something unexpected. It seems that I do not understand the underlining workings of Microsoft's ServiceModel, but could not find the answer in the traditional way. To implement my web service I was following the steps in this tutorial: http://blogs.msdn.com/b/endpoint/archive/2010/01/06/introducing-wcf-webhttp-services-in-net-4.aspx The service works. What surprised me was that Application_BeginRequest and Application_EndRequest in Global.asax are called by different threads. Looking at stack trace it appears that these threads are based in some kind of thread pool. Without doing some refactorings this is a problem for us since we were always assuming that a single request would always run on the same thread, due to which we were keeping some variables stored in the thread local storage. The variables are initialized in Application_BeginRequest and released in Application_EndRequest. It appears that with ServiceModel this is not the right approach. My questions are: Can I make any assumptions about which threads are running my code when I am using ServiceModel? Is there any way to restrict the execution to a single thread? Would this be bad for any reason? What is the right way of storing a variable for the duration of request when using ServiceModel? Thank you.

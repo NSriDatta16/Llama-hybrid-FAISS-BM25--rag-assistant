@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2682271
+[parent_id]: 2680787
+[tags]: 
+The 'super' line calls the constructor of the parent entity. If you don't include it, the parent constructor will not be called, and your model will not be initialized properly. You should, in fact, be calling this first , before any of your own initialization. However, overriding the constructor on models is strongly discouraged. The constructor is not just used when you call it, but also by the system to construct instances that are being loaded from the datastore, and in the latter case, the arguments - and the expected behaviour - are different, and implementation dependent. Instead, you should probably define a factory method, like so: class MyModel(db.PolyModel): @classmethod def create(cls, foo, bar): # Do some stuff return cls(foo, bleh)

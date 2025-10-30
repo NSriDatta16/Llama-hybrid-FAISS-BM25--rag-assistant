@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2413587
+[parent_id]: 2413339
+[tags]: 
+There are two ByteString data types: one is in Data.ByteString.Lazy and one is in Data.ByteString . Given the L qualifying your ByteString, I presume you want the lazy variety, but getByteString is giving you a strict ByteString . Lazy ByteString s are internally represented by a list of strict ByteString s. Fortunately Data.ByteString.Lazy gives you a mechanism for turning a list of strict ByteString s into a lazy ByteString . If you define import qualified Data.ByteString as S strictToLazy :: S.ByteString -> L.ByteString strictToLazy = L.fromChunks . return you can change your code fragment to getSegmentParams :: Get (Int, L.ByteString) getSegmentParams = do seglen and all should be right with the world.

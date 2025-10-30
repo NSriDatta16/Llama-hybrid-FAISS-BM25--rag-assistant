@@ -1,0 +1,165 @@
+In cryptography, a ring signature is a type of digital signature that can be performed by any member of a set of users that each have keys.  Therefore, a message signed with a ring signature is endorsed by someone in a particular set of people.  One of the security properties of a ring signature is that it should be computationally infeasible to determine which of the set's members' keys was used to produce the signature.  Ring signatures are similar to group signatures but differ in two key ways: first, there is no way to revoke the anonymity of an individual signature; and second, any set of users can be used as a signing set without additional setup.
+
+Ring signatures were invented by Ron Rivest, Adi Shamir, and Yael Tauman Kalai, and introduced at ASIACRYPT in 2001.  The name, ring signature, comes from the ring-like structure of the signature algorithm.
+
+Definition
+
+Suppose that a set of entities each have public/private key pairs, (P1, S1), (P2, S2), ..., (Pn, Sn).  Party i can compute a ring signature σ on a message m, on input (m, Si, P1, ..., Pn).  Anyone can check the validity of a ring signature given σ, m, and the public keys involved, P1, ..., Pn.  If a ring signature is properly computed, it should pass the check.  On the other hand, it should be hard for anyone to create a valid ring signature on any message for any set without knowing any of the private keys for that set.
+
+Applications and modifications
+
+In the original paper, Rivest, Shamir, and Tauman described ring signatures as a way to leak a secret.  For instance, a ring signature could be used to provide an anonymous signature from "a high-ranking White House official", without revealing which official signed the message.  Ring signatures are right for this application because the anonymity of a ring signature cannot be revoked, and because the group for a ring signature can be improvised.
+
+Another application, also described in the original paper, is for deniable signatures.  Here the sender and the recipient of a message form a group for the ring signature, then the signature is valid to the recipient, but anyone else will be unsure whether the recipient or the sender was the actual signer.  Thus, such a signature is convincing, but cannot be transferred beyond its intended recipient.
+
+There were various works, introducing new features and based on different assumptions:
+
+Threshold ring signatures Unlike standard "t-out-of-n" threshold signature, where t of n users should collaborate to decrypt a message, this variant of a ring signature requires t users to cooperate in the signing protocol. Namely, t parties (i1, i2, ..., it) can compute a (t, n)-ring signature, σ, on a message, m, on input (m, Si1, Si2, ..., Sit, P1, ..., Pn).
+Linkable ring signatures The property of linkability allows one to determine whether any two signatures have been produced by the same member (under the same private key). The identity of the signer is nevertheless preserved. One of the possible applications can be an offline e-cash system.
+Traceable ring signature In addition to the previous scheme the public key of the signer is revealed (if they issue more than one signatures under the same private key). An e-voting system can be implemented using this protocol.
+
+Efficiency
+
+Most of the proposed algorithms have asymptotic output size ; i.e., the size of the resulting signature increases linearly with the size of input (number of public keys). That means that such schemes are impracticable for real use cases with sufficiently large  (for example, an e-voting with millions of participants). But for some application with relatively small median input size such estimate may be acceptable. CryptoNote implements  ring signature scheme by Fujisaki and Suzuki in p2p payments to achieve sender's untraceability.
+
+More efficient algorithms have appeared recently. There are schemes with the sublinear size of the signature, as well as with constant size.
+
+Implementation
+
+Original scheme
+
+The original paper describes an RSA based ring signature scheme, as well as one based on Rabin signatures. They define a keyed "combining function"  which takes a key , an initialization value , and a list of arbitrary values .  is defined as , where  is a trap-door function (i.e. an RSA public key in the case of RSA based ring signatures).
+
+The function  is called the ring equation, and is defined below. The equation is based on a symmetric encryption function :
+
+ 
+
+It outputs a single value  which is forced to be equal to . The equation 
+can be solved as long as at least one , and by extension , can be freely chosen. Under the assumptions of RSA, this implies knowledge of at least one of the inverses of the trap door functions  (i.e. a private key), since .
+
+Signature generation
+
+Generating a ring signature involves six steps. The plaintext is signified by , the ring's public keys by .
+
+ Calculate the key , using a cryptographic hash function. This step assumes a random oracle for , since  will be used as key for .
+ Pick a random glue value .
+ Pick random  for all ring members but yourself ( will be calculated using the signer's private key), and calculate corresponding .
+ Solve the ring equation for 
+ Calculate  using the signer's private key: 
+ The ring signature now is the -tuple
+
+Signature verification
+
+Signature verification involves three steps.
+
+ Apply the public key trap door on all : .
+ Calculate the symmetric key .
+ Verify that the ring equation holds .
+
+Python implementation 
+
+Here is a Python implementation of the original paper using RSA. Requires 3rd-party module PyCryptodome.
+
+import os
+import hashlib
+import random
+import Crypto.PublicKey.RSA
+
+import functools
+
+class Ring:
+    """RSA implementation."""
+
+    def __init__(self, k, L: int = 1024) -> None:
+        self.k = k
+        self.l = L
+        self.n = len(k)
+        self.q = 1 << (L - 1)
+
+    def sign_message(self, m: str, z: int):
+        self._permut(m)
+        s = [None] * self.n
+        u = random.randint(0, self.q)
+        c = v = self._E(u)
+
+        first_range = list(range(z + 1, self.n))
+        second_range = list(range(z))
+        whole_range = first_range + second_range
+
+        for i in whole_range:
+            s[i] = random.randint(0, self.q)
+            e = self._g(s[i], self.k[i].e, self.k[i].n)
+            v = self._E(v ^ e)
+            if (i + 1) % self.n == 0:
+                c = v
+
+        s[z] = self._g(v ^ u, self.k[z].d, self.k[z].n)
+        return [c] + s
+
+    def verify_message(self, m: str, X) -> bool:
+        self._permut(m)
+
+        def _f(i):
+            return self._g(X[i + 1], self.k[i].e, self.k[i].n)
+
+        y = map(_f, range(len(X) - 1))
+        y = list(y)
+
+        def _g(x, i):
+            return self._E(x ^ y[i])
+
+        r = functools.reduce(_g, range(self.n), X[0])
+        return r == X[0]
+
+    def _permut(self, m):
+        msg = m.encode("utf-8")
+        self.p = int(hashlib.sha1(msg).hexdigest(), 16)
+
+    def _E(self, x):
+        msg = f"{x}{self.p}".encode("utf-8")
+        return int(hashlib.sha1(msg).hexdigest(), 16)
+
+    def _g(self, x, e, n):
+        q, r = divmod(x, n)
+        if ((q + 1) * n) <= ((1 << self.l) - 1):
+            result = q * n + pow(r, e, n)
+        else:
+            result = x
+        return result
+
+To sign and verify 2 messages in a ring of 4 users:
+
+size = 4
+msg1, msg2 = "hello", "world!"
+
+def _rn(_):
+    return Crypto.PublicKey.RSA.generate(1024, os.urandom)
+
+key = map(_rn, range(size))
+key = list(key)
+
+r = Ring(key)
+
+for i in range(size):
+    signature_1 = r.sign_message(msg1, i)
+    signature_2 = r.sign_message(msg2, i)
+    assert r.verify_message(msg1, signature_1) and r.verify_message(msg2, signature_2) and not r.verify_message(msg1, signature_2)
+
+Cryptocurrencies  
+The CryptoNote technology uses ring signatures. It was first implemented by Bytecoin.
+
+ShadowCash 
+
+The cryptocurrency ShadowCash uses traceable ring signature to anonymize the sender of a transaction. However, these were originally implemented incorrectly, resulting in a partial de-anonymization of ShadowCash from their first implementation until February 2016 by Monero Research Labs researcher, Shen Noether. Luckily only 20% of all the one-time keys in the system were affected by this bug, sender anonymity was compromised but receiver anonymity remained intact. A patch was submitted in a timely fashion to resolve the bug.
+
+Monero 
+Monero uses ring signatures to obfuscate the true spend in a transaction. A ring signature makes use of a user's account keys and a number of public keys (also known as outputs) pulled from the blockchain using a triangular distribution method. Over the course of time, past outputs could be used multiple times to form possible signer participants. In a "ring" of possible signers, all ring members are equal and valid. There is no way an outside observer can tell which of the possible signers in a signature group belongs to the user's account. So, ring signatures ensure that transaction outputs are untraceable. Moreover, there are no fungibility issues with Monero given that every transaction output has plausible deniability (e.g. the network can not tell which outputs are spent or unspent).
+
+See also 
+
+ Witness-indistinguishable proofs
+
+References
+
+Public-key cryptography
+Digital signature schemes

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2627105
+[parent_id]: 2624650
+[tags]: 
+I tried your function (that returns $DataSet.Tables ) and it worked pretty well for me. This command returned rows from both tables: $t = Invoke-sqlcommand '.\sql2005' 'AdventureWorksDW' ` "SELECT * FROM DimOrganization; SELECT * FROM DimSalesReason" $t[0] #returns rows from first table $t[1] #returns rows from second table Anyway, what I would recommend: First I would discard output from Fill : $SqlAdapter.Fill($DataSet) > $null It is returned as well, but that's not probably desired. As in your case Invoke-SqlCommand doesn't work, I would try to return 1 dim array like this: function Invoke-SQLCommand { ... ,$DataSet.Tables } Consider that PowerShell treats DataTable specially and when trying to format it, it unravels Rows collection (credits to x0n). That's why just executing $t from my example displays all the rows returned from the command.

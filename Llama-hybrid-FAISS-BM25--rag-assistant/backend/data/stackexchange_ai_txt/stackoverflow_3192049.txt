@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3192049
+[parent_id]: 3191461
+[tags]: 
+When you create a stored procedure in the LINQ to SQL Data Context designer by dragging it from the Server Explorer, the designer will analyze the sproc to determine if it returns a result set. Unless it features heavy dynamic SQL, it's usually spot on. If it does, the method generated returns ISingleResult where T is either a class generated from an analysis of your sproc to fit the shape of the result set, or one you specify in the sproc properties page. Because ISingleResult derives from IEnumerable , most people do a simple foreach on the result to get their result set. But what most people forget is that ISingleResult also derives from IFunctionResult , which has a property called ReturnValue . This is the return value from the sproc. So all you have to do is something along the lines of: using(var dc = new MyDataContext()) { var results = dc.MyStoredProcedure(); var returnValue = (int)results.ReturnValue; // note that ReturnValue is of type object and must be cast. foreach(var row in results) { // process row } }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4939068
+[parent_id]: 4938887
+[tags]: 
+Since your loop bodies are all completely independent, there is certainly a way to accelerate this. Easiest would be already to take advantage of several cores before thinking of MPI. OpenMP should do quite fine on this. #pragma omp parallel for for(int i = 0; i This is supported by many compilers nowadays. You could also try to drag some common expressions out of the inner loop but decent compilers e.g gcc, icc or clang should do this quite well all by themselves: #pragma omp parallel for for(int i = 0; i BTW, indexing with int is usually not the right thing to do. size_t is the correct typedef for everything that has to do with indexing and sizes of objects.

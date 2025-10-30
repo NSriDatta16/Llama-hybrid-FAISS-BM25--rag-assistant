@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4018660
+[parent_id]: 4018431
+[tags]: 
+Here's one way you can do this: public class FooModule extends PrivateModule { @Retention(RUNTIME) @BindingAnnotation private @interface Internal {} @Override protected void configure() { bind(new TypeLiteral >(){}).annotatedWith(Internal.class) .to(new TypeLiteral >(){}); } @Provides @Exposed IFoo provideFoo(@Internal IFoo foo) { return new FooWrapper (foo); } } Another thing that might work well would be to add a general annotation like @Wrapped and then to declare FooWrapper 's constructor like this: @Inject public FooWrapper(@Wrapped IFoo foo) { ... } Then in your private module you could bind Foo annotated with @Wrapped and bind and expose FooWrapper normally, without needing to use an @Provides method. There may well be better ways of doing this I haven't thought of yet. Do also keep in mind that method interception is often a good way of decorating interface implementations with other behavior as well.

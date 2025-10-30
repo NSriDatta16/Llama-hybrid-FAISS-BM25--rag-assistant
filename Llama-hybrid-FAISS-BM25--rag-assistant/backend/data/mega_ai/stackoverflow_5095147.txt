@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5095147
+[parent_id]: 5085846
+[tags]: 
+After talking to @derickr on twitter, I used xdebug.auto_trace=1 in my PHP INI to trace the problem. The problem was in this line of code: $stack = $front->getPlugin('ActionStack'); This is found in the function above named getStack(). The auto_trace showed that the first time getStack() runs, it runs correctly. The reason that PHPUnit was causing the error to show up is that when it runs the Code Coverage report, the dispatcher runs multiple times thus entering getStack() again and triggering the aforementioned line of code. The code needed the following change to remove the error and properly locate the plug-in in memory: $stack = $front->getPlugin('Zend_Controller_Plugin_ActionStack'); The Code Coverage report now generates properly. Hopefully this will help explain the problem for others who find themselves with similar errors. -Ross

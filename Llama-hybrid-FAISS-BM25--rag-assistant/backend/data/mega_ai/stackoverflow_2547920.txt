@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2547920
+[parent_id]: 2547563
+[tags]: 
+One option (I say option) is to use pcap_next using libpcap and take it apart to see if it is a udp packet. You can do this with: /* jump pass the ethernet header */ ipdata = (struct ip*)(packet + sizeof(struct ether_header)); length -= sizeof(struct ether_header); (Borrowed from tcpdump) and then test the ip struct to see if it is a udp packet by doing: if ( ipdata->ip_p == IPPROTO_UDP ) And if this fails, keep looping (calling pcap_next) until you get your udp packet. Of course, extraction of the udp datagram is harder this way, but it does let you into the packet internals quite nicely. Refer to the tcpdump source to see how to strip info out and what comes out.

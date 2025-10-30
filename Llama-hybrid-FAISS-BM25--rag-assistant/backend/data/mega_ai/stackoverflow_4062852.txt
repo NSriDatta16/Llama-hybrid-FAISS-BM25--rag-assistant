@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4062852
+[parent_id]: 4022323
+[tags]: 
+Your rule: TJ3_BOOKING_START_TIME : DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT '-' DIGIT DIGIT ('-' DIGIT DIGIT ':' DIGIT DIGIT)? (('+'|'-')DIGIT DIGIT DIGIT DIGIT)? ; does not match this part of your input: " ... 2010-10-25-00:00-+0200 ... " // ^^ The -+ part is not accounted for in your rule. EDIT Try something like this: grammar Bookings; bookingsFile : Project Prj String String Time Hyphen Time OpenParen CloseParen EOF ; Project : 'project' ; Prj : 'prj' ; OpenParen : '{' ; CloseParen : '}' ; Hyphen : '-' ; String : '"' ~'"'* '"' ; Time : D D D D '-' D D '-' D D '-' D D ':' D D '-+' D D D D ; fragment D : '0'..'9' ; Space : (' ' | '\t' | '\r'? '\n'){$channel=HIDDEN;} ; Interpreting the source: project prj "Sample project" "1.0" 2010-10-25-00:00-+0200-2010-11-24-09:00-+0100 { } yields the parse-tree: HTH

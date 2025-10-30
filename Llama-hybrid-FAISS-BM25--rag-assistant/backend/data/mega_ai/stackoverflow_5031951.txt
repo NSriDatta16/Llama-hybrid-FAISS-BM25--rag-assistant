@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5031951
+[parent_id]: 
+[tags]: 
+Do I have to initialize the CPU registers in assembly code that is called from C?
+
+I'm reading Paul Carter's pcasm book. It uses NASM, a C driver app that calls my assembly code, and a companion library that makes it easy to do basic I/O in assembly. This is what my function that will be called from C looks like: segment .text global _asm_main _asm_main: enter 0,0 ; setup routine pusha mov bx, 0034h ; bx = 52 (stored in 16 bits) mov cl, bl ; cl = lower 8-bits of bx mov eax, ecx call print_int popa mov eax, 0 ; return back to C leave ret The print_int function prints the value store at eax as an integer. But this prints out garbage to stdout: 4200244 If I initialize the ecx register to 0 with mov ecx, 0000h before using it, I will get the expected output: 52 Is initialization always required, and if so, is there a quick way of initializing all the registers to 0 (or a user-defined initializer), from either C or NASM? I'm using XP32, MinGW 4.4.0, and NASM 2.09.04.

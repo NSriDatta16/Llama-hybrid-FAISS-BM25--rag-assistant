@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 909563
+[parent_id]: 
+[tags]: 
+Refactor code into using statement
+
+I have a dal layer with lots of methods, all of them call stored procedures, some return lists (so with a use of SqlDataReader ), others only a specific value. I have a helper method that creates the SqlCommand : protected SqlCommand CreateSprocCommand(string name, bool includeReturn, SqlDbType returnType) { SqlConnection con = new SqlConnection(this.ConnectionString); SqlCommand com = new SqlCommand(name, con); com.CommandType = System.Data.CommandType.StoredProcedure; if (includeReturn) com.Parameters.Add("ReturnValue", returnType).Direction = ParameterDirection.ReturnValue; return com; } Now my average (overly simplified) method body look like: SqlCommand cmd = CreateSprocCommand("SomeSprocName"); //an override of the above mentioned method try { cmd.Connection.Open(); using (var reader = cmd.ExecuteReader()) { //some code looping over the recors } //some more code to return whatever needs to be returned } finally { cmd.Connection.Dispose(); } Is there a way to refactor this, so that I won't lose my helper function (it does quite a bit of otherwise repetitive work), and yet be able to use using ?

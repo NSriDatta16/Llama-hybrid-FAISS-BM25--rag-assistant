@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3411124
+[parent_id]: 3410881
+[tags]: 
+If you're using mongodb, an elegant way to aggregate tag usage would be, to use a map/reduce operation. Mongodb supports map/reduce operations using JavaScript code. Map/reduce runs on the db server(s), i.e. your application does not have to retrieve and analyze every document (which wouldn't scale well for large collections). As an example, here are the map and reduce functions I use in my blog on the articles collection to aggregate the usage of tags (which is used to build the tag cloud in the sidebar). Documents in the articles collection have a key named 'tags' which holds an array of strings (the tags) The map function simply emits 1 on every used tag to count it: function () { if (this.tags) { this.tags.forEach(function (tag) { emit(tag, 1); }); } } The reduce function sums up the counts: function (key, values) { var total = 0; values.forEach(function (v) { total += v; }); return total; } As a result, the database returns a hash that has a key for every tag and its usage count as a value. E.g.: { 'rails' => 5, 'ruby' => 12, 'linux' => 3 }

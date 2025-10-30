@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1931346
+[parent_id]: 1931180
+[tags]: 
+In addition to the other posted recommendations, consider how often the cache is updated versus just being read. If the reading dominates and updating is rare, and it's not critical that the reading loop be able to see every update immediately, consider using a CopyOnWriteArraySet . It and its sibling CopyOnWriteArrayList allow concurrent reading and updating of the members; the reader sees a consistent snapshot unaffected by any mutation of the underlying collection -- analogous to the SERIALIZABLE isolation level in a relational database. The problem here, though, is that neither of these two structures give you your dictionary or associative array storage (a la Map ) out of the box. You'd have to define a composite structure to store the key and value together, and, given that CopyOnWriteArraySet uses Object#equals() for membership testing, you'd have to write an unconventional key-based equals() method for your structure.

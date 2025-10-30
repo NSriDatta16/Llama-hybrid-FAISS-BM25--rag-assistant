@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 118388
+[parent_id]: 118371
+[tags]: 
+If you use 'synchronized' on the setter here too, this code is threadsafe. However it may not be sufficiently granular; if you have 20 getters and setters and they're all synchronized, you may be creating a synchronization bottleneck. In this specific instance, with a single int variable, then eliminating the 'synchronized' and marking the int field 'volatile' will also ensure visibility (each thread will see the latest value of 'val' when calling the getter) but it may not be synchronized enough for your needs. For example, expecting int old = someThing.getVal(); if (old == 1) { someThing.setVal(2); } to set val to 2 if and only if it's already 1 is incorrect. For this you need an external lock, or some atomic compare-and-set method. I strongly suggest you read Java Concurrency In Practice by Brian Goetz et al , it has the best coverage of Java's concurrency constructs.

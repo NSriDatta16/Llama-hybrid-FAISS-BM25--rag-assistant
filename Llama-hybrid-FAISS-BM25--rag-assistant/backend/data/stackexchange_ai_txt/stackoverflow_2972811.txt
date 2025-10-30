@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2972811
+[parent_id]: 2963151
+[tags]: 
+The issue is historical. At first I thought it would be a good idea to force all VMs to be IDisposable. However, IDisposable has a different intent: Once the VM is Disposed, it is expected (by convention) that it will be garbage collected as soon as possible. After talking to friends, I realize that forcing all VMs to be IDisposable was a mistake. This is why I replaced IDisposable by ICleanup. The intent of ICleanup is to provide a way to clean VMs (for example flushing their state to persistent storage, closing streams etc...) but not necessarily in a way that they will be garbage collected as soon as possible. Nothing prevents you to make your VMs implement IDisposable. I just didn't want to keep this constraint in the ViewModelBase class, which is why this interface will be removed in V4. The benefit of having ICleanup is that you can clean all your VMs in one call of ViewModelLocator.Cleanup(). It is a hint to VM developers saying that VMs should think of providing a cleanup method for their VMs. Does that make sense? Cheers, Laurent

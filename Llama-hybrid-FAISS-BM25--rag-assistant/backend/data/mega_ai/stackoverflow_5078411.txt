@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5078411
+[parent_id]: 4912721
+[tags]: 
+HTML Purifier doesn't seem to have a native support for the IRC scheme. But: Have you tried something like this? Put this in /library/HTMLPurifier/URIScheme , or otherwise make sure that autoloading finds it: class HTMLPurifier_URIScheme_irc extends HTMLPurifier_URIScheme { public $default_port = 6667; public $browsable = false; public function validate(&$uri, $config, $context) { if (parent::validate($uri, $config, $context) === false) { return false; } if (!is_null($uri->path)) { // get channel name $uri->path = array_shift(explode('/', $uri->path)); } $uri->userinfo = null; $uri->query = null; $uri->fragment = null; return true; } } ...and change your configuration with... $purifier->config->set( 'URI.AllowedSchemes', array('irc' => true, /* ... other schemes here ... */) ); That may not work out of the box, but I'm thinking that should be the right direction...

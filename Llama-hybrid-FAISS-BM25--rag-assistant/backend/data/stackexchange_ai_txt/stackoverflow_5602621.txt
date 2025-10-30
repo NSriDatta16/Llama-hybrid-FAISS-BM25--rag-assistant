@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5602621
+[parent_id]: 
+[tags]: 
+How do I build a UNION query with ORDER BY and GROUP BY in Kohana's query builder?
+
+I'm trying to build a UNION query using Kohana's query builder . Everything works fine until I add a GROUP BY or ORDER BY clause. Here is the code I'm using (simplified): $query1 = DB::select('p.name') ->from(array('person', 'p')) ->where('p.organization', 'LIKE', 'foo%') ->limit(10); $names = DB::select('sh.name') ->union($query1, FALSE) ->from(array('stakeholder', 'sh')) ->where('sh.organization', 'LIKE', 'foo%') ->group_by('name') ->order_by('name') ->limit(10) ->execute() ->as_array(); Instead of adding the GROUP BY and ORDER BY at the end of the entire query, it's adding it immediately after the second query. This is the SQL this generates: SELECT sh.name FROM stakeholder AS sh WHERE sh.organization LIKE 'foo%' GROUP BY name ORDER BY name LIMIT 10 UNION SELECT p.name from person AS p WHERE p.organization LIKE 'foo%' LIMIT 10; What I want is: SELECT sh.name FROM stakeholder AS sh WHERE sh.organization LIKE 'foo%' UNION SELECT p.name from person AS p WHERE p.organization LIKE 'foo%' GROUP BY name ORDER BY name LIMIT 10;

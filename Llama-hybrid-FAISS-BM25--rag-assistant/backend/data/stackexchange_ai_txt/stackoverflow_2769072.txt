@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2769072
+[parent_id]: 2768493
+[tags]: 
+The following should work. Map an AppStatus entity on the App_Status table: @Entity public class AppStatus { @Id private Long id; private String statusDescription; // getters, setters, hashCode, equals... } And declare it with a one-to-one association in the Application entity: @Entity public class Application { @Id private Long id; private String appName; private String appCity; @OneToOne(fetch = FetchType.EAGER, optional = false) @JoinColumn(name = "statusid", nullable = false, insertable = false, updatable = false) private AppStatus appStatus; // getters, setters, hashCode, equals... } Pay a special attention to the following details: I defined the fetch mode to EAGER (note that EAGER is the default if you don't define it) so that the AppStatus will be eagerly fetched when loading an Application . I didn't define any cascading option so that no operation will be cascaded from Application to AppStatus . to retrieve all Application , use a FETCH JOIN FROM Application a JOIN FETCH a.appStatus

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1129014
+[parent_id]: 1129000
+[tags]: 
+This may or may not have anything to do with fragmentation. In general, the socket will pass you as many bytes at a time as it feels like. Your job is to know how many bytes are in your overall message, and to read them all. Just keep looping until you have all the bytes you need, or until there's an exception. The following code is untested right now. I thought I'd post it before writing the server side of it and testing both. private static string ReceiveMessage(Socket socket) { const int BUFFER_SIZE = 1024; var inputBuffer = new byte[BUFFER_SIZE]; var offset = 0; var bytesReceived = socket.Receive( inputBuffer, offset, BUFFER_SIZE - offset, SocketFlags.None); if (bytesReceived 0 && totalBytesReceived Note that the receipt of the message length is wrong. The socket layer could give it to me a byte at a time. I'm going to revisit that as part of a refactoring that will receive the count into a separate two-byte buffer, and change the loop into a single do/while.

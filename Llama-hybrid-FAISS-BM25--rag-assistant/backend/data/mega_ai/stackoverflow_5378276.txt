@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5378276
+[parent_id]: 5377412
+[tags]: 
+OncePerRequestFilter has a method called shouldNotFilter() that you can override to do this. I am doing something similar for some of my filters. Here is a sample web.xml fragment: hibernateFilter com.xyz.config.OpenSessionInViewFilter excludePaths /js:/log/ And the filter is: class OpenSessionInViewFilter extends org.springframework.orm.hibernate3.support.OpenSessionInViewFilter { @BeanProperty var excludePaths: String = null val excludePathList = new mutable.ArrayBuffer[String] override def initFilterBean { if (excludePaths != null) { excludePaths.split(':').foreach(excludePathList += _) } super.initFilterBean } override def shouldNotFilter(request: HttpServletRequest) = { val httpServletRequest = request.asInstanceOf[HttpServletRequest] val servletPathInfo = httpServletRequest.getServletPath + httpServletRequest.getPathInfo excludePathList.exists(p => servletPathInfo.startsWith(p)) || DataConfig.noDB } }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1377072
+[parent_id]: 1376872
+[tags]: 
+What you're doing in addCar with the locking is fine. Your problem is somewhere in the code that you haven't posted. Without access to that, I'm not really sure what your problem is. The following code that I've written works as, I think, intended. If I had to guess what the problem is though, I'd imagine you're not passing around the structure you want to update, but instead copying it over. Hope this helps. Code: #include #include #include #define CAR_PARK_SIZE 10 typedef struct { char *buffer[CAR_PARK_SIZE]; char *arrival_time[CAR_PARK_SIZE]; int keep_running; int size; int index; } CarStorage; typedef struct { CarStorage parks; CarStorage queue; int busy; } CarPark; pthread_mutex_t mutex; void *addCar( void *arg) { CarPark *_cp = arg; pthread_mutex_lock(&mutex); sleep(1); printf("Trying to increase size\n"); _cp->parks.size = _cp->parks.size+1; printf("new size: %d\n", _cp->parks.size); pthread_mutex_unlock(&mutex); } #define NUM_THREADS 5 int main() { pthread_t threads[NUM_THREADS]; int rc; long t; CarPark c; c.parks.size = 0; pthread_mutex_init(&mutex, NULL); for(t=0; t

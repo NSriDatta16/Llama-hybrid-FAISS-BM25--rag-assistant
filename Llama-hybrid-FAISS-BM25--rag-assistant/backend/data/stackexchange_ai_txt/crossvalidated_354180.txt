@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 354180
+[parent_id]: 317226
+[tags]: 
+Random forests (either for regression or for classification) create piecewise constant functions as their predictions. I'm pretty sure this is the ultimate source of your problem. Some speculation: Whatever optimizer you're using to find the next point to visit on the surrogate surface either can't easily find the maximum. This depends on what your surrogate surface optimizer is; anything with a gradient computation will struggle here. The random forest predictions are too coarse, and is only very poorly modeling the underlying function. This is where using a standard global optimization test problem can help. Try tracking the average residual error for a model that uses the random forest surrogate and a model that uses a Gaussian process surrogate. I think you'll find that the error is lower for the GP.

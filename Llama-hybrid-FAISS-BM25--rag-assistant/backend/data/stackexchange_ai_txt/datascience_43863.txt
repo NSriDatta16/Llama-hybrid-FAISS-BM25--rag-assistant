@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 43863
+[parent_id]: 
+[tags]: 
+Ploting eigenvectors
+
+I've generated two clouds of 3d points from multivariate_normal data = np.random.multivariate_normal([2,2,2],[[1,0,0],[0,5,0],[0,0,10]], size=500) data = np.vstack((data, np.random.multivariate_normal([-2,-2,-2], [[1,0,0],[0,5,0],[0,0,10]], size=500))) data = data - data.mean(axis=0) And try to do PCA like this covmat = np.cov(data.T) v, W = np.linalg.eig(covmat) And draw: def get_vec(eig_v, eig_vec): t = np.linspace(0, eig_v) return np.array([np.array(v * eig_vec) for v in t]) def ang(v1, v2): return np.rad2deg(np.arccos(np.dot(v1,v2)/np.linalg.norm(v1)/np.linalg.norm(v2))) l1 = get_vec(v[0], W[:,0]) l2 = get_vec(v[1], W[:,1]) l3 = get_vec(v[2], W[:,2]) x = data[:,0] y = data[:,1] z = data[:,2] fig = plt.figure() ax = fig.add_subplot(111, projection='3d') ax.plot(l1[:,0],l1[:,1],l1[:,2], c='r') ax.plot(l2[:,0],l2[:,1],l2[:,2], c='b') ax.plot(l3[:,0],l3[:,1],l3[:,2], c='y') ax.scatter(x,y,z,c='g') plt.show() This is what I get: It's clearly visible that axes are not orthogonal. I've checked it and they seem to be orthogonal with regard to numbers: print(ang(W[:,0], W[:,1])) print(ang(W[:,0], W[:,2])) print(ang(W[:,1], W[:,2])) 90.00000000000003 89.99999999999999 90.0 Could it be that such a tiny error makes that much visual difference?

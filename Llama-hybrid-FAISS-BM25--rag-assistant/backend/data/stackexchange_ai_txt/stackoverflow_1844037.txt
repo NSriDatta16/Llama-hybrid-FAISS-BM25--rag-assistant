@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1844037
+[parent_id]: 
+[tags]: 
+ActiveRecord nested SELECT -- can I do it without manual SQL?
+
+I have a table with (among other things) a name and a rank. I'd like to return the set of all unique names, but for each name returned, I'd like to pick the row with the highest rank. This is simple with two nested SELECT statements: SELECT * FROM (SELECT * FROM foo ORDER BY rank DESC) AS ordered GROUP BY name MySQL takes the first "hit" for each name, which (because of the earlier ORDER BY) will always be the highest-ranking one. Now, if I want to wire into this table with ActiveRecord, I'm at a bit of a loss. I could just throw the above into find_by_sql , but that just feels dirty. I tried something like result = foo.all result.delete_if do |item| isOutranked = false result.each do |row| if (row.name == item.name) and (row.rank > item.rank) then isOutranked = true end isOutranked end I think that works , but it still feels like there ought to be a better way. Solving it either via ActiveRecord trickery or a more elegant array manipulation would be welcome!

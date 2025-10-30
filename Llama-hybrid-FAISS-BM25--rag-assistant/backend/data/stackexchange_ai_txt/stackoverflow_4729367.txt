@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4729367
+[parent_id]: 4728586
+[tags]: 
+MongoDB doesn't do DB storage memory management itself but relies on OS virtual memory manager. So it's very dependent on OS. The VMM can load the whole DB in memory, even if it 99% of its size, or it can page it all out because other applications are demanding RAM. So it also depends on usage patterns. Any decent VMM will try to keep MRU data in memory whenever possible, so your Session collection will likely be always in memory no matter whether it's in separate database or not - it's split into pages (usually of 4k size). You can always check paging status with mongostat utility. It has page fault counter which represents number of accesses to pages that were not in memory and had to be loaded from file.

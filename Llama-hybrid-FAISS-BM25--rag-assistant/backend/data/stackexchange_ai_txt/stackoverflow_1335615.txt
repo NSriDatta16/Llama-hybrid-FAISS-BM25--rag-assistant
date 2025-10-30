@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1335615
+[parent_id]: 
+[tags]: 
+Python: ZODB file size growing - not updating?
+
+I am using ZODB to store some data that exists in memory for the sake of persistence. If the service with the data in memory every crashes, restarting will load the data from ZODB rather than querying 100s of thousands of rows in a MySQL db. It seems that every time I save, say 500K of data to my database file, my .fs file grows by 500K, rather than staying at 500K. As an example: storage = FileStorage.FileStorage(MY_PATH) db = DB(storage) connection = db.open() root = connection.root() if not root.has_key('data_db'): root['data_db'] = OOBTree() mydictionary = {'some dictionary with 500K of data'} root['data_db'] = mydictionary root._p_changed = 1 transaction.commit() transaction.abort() connection.close() db.close() storage.close() I want to continuously overwrite the data in root['data_db'] with the current value of mydictionary. When I print len(root['data_db']) it always prints the right number of items from mydictionary, but every time this code runs (with the same exact data) the file size increased by the data size, in this case 500K. Am I doing something wrong here?

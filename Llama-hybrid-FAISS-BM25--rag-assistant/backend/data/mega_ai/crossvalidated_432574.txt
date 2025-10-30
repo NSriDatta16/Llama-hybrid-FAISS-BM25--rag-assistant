@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 432574
+[parent_id]: 432568
+[tags]: 
+in this part of your code mutate(Gender = recode_factor(RIAGENDR, `1` = "Men", `2` = "Women"), Osteop = recode_factor(Osteop, `1` = 1, `2` = 0)) you set '2' to 0, but the levels remain in the same order. I suppose osteoporosis is the minority, hence '1' in the original data is osteoporosis. You can see in your dataframe levels(dat2$Osteop) # returns you # "1" "0" When you perform the logistic regression, you are seeing the coefficients with respect of being "0" (or 2 in the original dat1 case). You can see in your exploratory analysis, "0" always come after "1". Factors in R can be a bit nasty... I would suggest not changing labels, but simply doing dat2 = dat1 %>% filter(!is.na(vitD_group), !is.na(Calcium), !is.na(Osteop), Osteop!=9) %>% mutate(Gender = recode_factor(RIAGENDR, `1` = "Men", `2` = "Women") ) dat2 $Osteop = factor(dat2$ Osteop,levels=2:1) fit This should give you the correct orientation

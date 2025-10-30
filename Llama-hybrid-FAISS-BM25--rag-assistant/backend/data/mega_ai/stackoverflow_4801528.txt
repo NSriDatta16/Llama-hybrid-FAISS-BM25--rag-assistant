@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4801528
+[parent_id]: 4199850
+[tags]: 
+Let me take another crack at this. Dump column names and INSERT statements to a file. sqlite> .output test.data sqlite> pragma table_info(test); sqlite> .dump test sqlite> .quit $ cat test.data 0|test_id|int|0||1 1|test_name|varchar(35)|0||0 PRAGMA foreign_keys=OFF; BEGIN TRANSACTION; CREATE TABLE test (test_id int primary key, test_name varchar(35)); INSERT INTO "test" VALUES(1,'Wibble'); INSERT INTO "test" VALUES(2,'Wobble'); INSERT INTO "test" VALUES(3,'Pernicious'); COMMIT; Now run this awk script /\|/ { split($0, col_name, "|"); column_names[++n] = col_name[2]; } /INSERT INTO \"[A-Za-z].*\"/ { insert_part = match($0, /INSERT INTO \"[A-Za-z].*\"/); printf("%s ", substr($0, RSTART, RLENGTH)); printf("("); for (i = 1; i And we get $ awk -f dump_with_col_names.awk test.data INSERT INTO "test" (test_id, test_name) VALUES(1,'Wibble'); INSERT INTO "test" (test_id, test_name) VALUES(2,'Wobble'); INSERT INTO "test" (test_id, test_name) VALUES(3,'Pernicious');

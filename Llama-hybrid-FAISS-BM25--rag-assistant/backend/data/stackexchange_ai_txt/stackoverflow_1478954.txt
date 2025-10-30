@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1478954
+[parent_id]: 1478853
+[tags]: 
+This is just a shot in the dark w/o any table info (size, schema, indexes), but try moving the date filter below the join operators: SELECT agentName, SUM(s1.Amount) AS Gross1, SUM(s1.Amount * s1.Commission) AS Commission1, SUM(s2.Amount) AS Gross2, SUM(s2.Amount * s2.Commission) AS Commission2 FROM agent INNER JOIN ( SELECT sales1.agentID, Commission, Amount FROM sales1 WHERE saleId IN ( SELECT saleId FROM saleDate WHERE saleDate.myDate BETWEEN @minDate1 AND @maxDate1) ) s1 ON agent.agentId = s1.agentId INNER JOIN ( SELECT sales2.agentID, Commission, Amount FROM sales2 WHERE saleId IN ( SELECT saleId FROM saleDate WHERE saleDate.myDate BETWEEN @minDate1 AND @maxDate1) ) s2 ON agent.agentId = s2.agentId; -- INNER JOIN ( -- SELECT sales3.agentID -- FROM sales3 WHERE saleId IN ( -- SELECT saleId FROM saleDate -- WHERE saleDate.myDate BETWEEN @minDate1 AND @maxDate1) -- ) s3 ON agent.agentId = s3.agentId;

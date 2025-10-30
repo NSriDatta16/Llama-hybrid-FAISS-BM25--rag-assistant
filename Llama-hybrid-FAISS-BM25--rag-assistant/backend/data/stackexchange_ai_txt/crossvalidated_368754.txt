@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 368754
+[parent_id]: 
+[tags]: 
+Cross Validation Results Interpretation (XGBoost model)
+
+I have a regression model using XGBoost that I was getting great MAE and MAPE results on my test dataset. mape: 2.515660669106389 mae: 90591.77886478149 Thinking that it was too good to be true, I ran 10-fold cross validation on the train dataset, and got the following results and distribution in the results. Results are plotted by binning them into 10 bins. from sklearn.model_selection import KFold from sklearn.model_selection import cross_val_score xg = XGBRegressor(learning_rate=0.5, n_estimators=50, max_depth=4, random_state=4) kfold = KFold(n_splits=10, random_state=7) results = cross_val_score(xg, X_train, Y_train, cv=kfold, scoring='neg_mean_absolute_error') results_y = scaler_y.inverse_transform(np.abs(results.reshape(-1,1))) print(results_y) plt.hist(results_y, bins=20) plt.ylabel('MAE') plt.show() Results (MAE): [[1737985.90765678] [ 466277.11674066] [ 47184.70876369] [ 129014.99538841] [ 23133.30322564] [ 44112.92209214] [ 69724.235821 ] [ 119278.83633742] [ 39059.981985 ] [ 8856.48620648]] So my questions are: 1) Have I over-trained on my test dataset, for some reason? 2) Is the distribution of the cross validated results reasonable? If it is not reasonable, what should I be seeing? 3) If I have over-trained for some reason, what are the ways to mitigate this? What could be some of the reasons? Specifically with regards to XGBoost. Thank you.

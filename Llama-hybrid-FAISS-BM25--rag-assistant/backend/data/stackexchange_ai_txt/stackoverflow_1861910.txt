@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1861910
+[parent_id]: 1861475
+[tags]: 
+If you specify an array in a structure used as an out parameter, you need to tell the marshaler what length is the array going to be. With your code, the marshaler is probably allocating a zero-length array or just using null , which produces the crash. Unfortunately there seems to be no way to specify a variable-length out array as a member of a structure, because MarshalAs.SizeParamIndex only works for methods. You might get away with specifying a large, constant-size array using MarshalAs.SizeConst , but generally you'd have to parse the (presumably callee-allocated) return buffer like this: var count = Marshal.ReadInt32 (uList) ; var users = new List () ; var ptr = (long)uList + 4 ; for (int i = 0 ; i You'll have to pay extra attention to alignment&padding and 32/64 bit issues.

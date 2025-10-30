@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4695755
+[parent_id]: 4695627
+[tags]: 
+Updating a value is conceptually a write operation. When updating a value with concurrent access where a read is performed before a write is completed, you read out an old value. When two writes conflict the wrong value may be stored. Adding a new value could trigger a grow of the underlying storage. In this case new memory is allocated, all elements are copied into the new memory, the new element is added, the dictionary object is updated to refer to the new memory location for storage and the old memory is released and available for garbage collection. During this time, more writes could cause a big problem. Two writes at the same time could trigger two instances of this memory copying. If you follow through the logic, you'll see an element will get lost since only the last thread to update the reference will know about existing items and not the other items that were trying to be added. ICollection provides a member to synchronize access and the reference remains valid across grow/shrink operations.

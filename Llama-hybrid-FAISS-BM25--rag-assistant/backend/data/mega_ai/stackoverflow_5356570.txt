@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5356570
+[parent_id]: 5356250
+[tags]: 
+It's a well-known behaviour (though I can't find any source where it's clearly defined as valid). You need to apply result transformer criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY); or configure Hibernate to fetch your relationship with SELECT : @OneToMany(targetEntity=Address.class, fetch = FetchType.EAGER, mappedBy="customer" ) @Cascade (value={CascadeType.SAVE_UPDATE }) @Fetch(FetchMode.SELECT) private Set addresses = new HashSet (); Note that under some circumstances (especially if you expect the query to return many Customers , and each Customer has a few Address es) query with JOIN can be preferred for performance reasons.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4860313
+[parent_id]: 4839267
+[tags]: 
+(In addition to Mason's answer, which is correct). I fired up a PE Viewer/Editor, and can confirm there are no exports. So now the question is: why is there a TLS allocated in an application without threads, and what do I do about it? Removing it from the PE table works nicely, except for the application error at shutdown. System.pas contains 2 threadvars, InOutRes (for IO errors) and RaiseListPtr. I don't need those two to be threadvars in my application, but they seem kinda hardwired throughout system.pas. Looks like a hard nut to crack. As a workaround, I now prematurely terminate my own process using TerminateProcess( GetCurrentProcess, 0 ) to prevent any errors during proper shutdown (deep inside the more elegant ExitProcess from Delphi's _Halt0). In a postbuild step I remove the TLS from the PE and pack with kkrunchy. Down to 8192 bytes, and no problems. For now. Code-ethically, it feels like I should be put behind bars. :)

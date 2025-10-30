@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4301696
+[parent_id]: 4301433
+[tags]: 
+I don't know what your application's requirements are, but one solution that solves your problem (and a number of other problems) is to hide the actual file system layout behind an abstraction layer. Essentially, you write two threads. The first scrapes the file structures and creates a database representation of their contents. The second responds to browser requests, queries the database created by the first thread, and generates your JSON (i.e. a normal web request handler thread). By abstracting the underlying storage structure (the file system), you create a layer that can add concurrency, deal with IO errors, etc. When someone changes a file within the structure, it's not visible to web clients until the "scraper" thread detects the change and updates the database. However, because web requests are not tied to reading the underlying file structure and merely query a database, response time should be fast. HTH, nate.

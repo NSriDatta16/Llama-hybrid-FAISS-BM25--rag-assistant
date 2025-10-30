@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2983953
+[parent_id]: 2983216
+[tags]: 
+For C, a good code organization helps. I.e. don't throw calls to malloc() and free() all over your codebase. Centralize them into two functions, then you have one single point for all the checkings. The simplest one could be to count the successful calls and check at program exit that they are balanced. static unsigned long mymem_count_alloc = 0; static unsigned long mymem_count_free = 0; void *mymem_alloc (size_t size) { void *p; p = malloc(size); if (p) { mymem_count_alloc++; } else error logging/handling/signaling return (p); } void mymem_free (void *p) { if (p) { free(p); mymem_count_free++; } } void mymem_check (void) { if (mymem_count_alloc != mymem_count_free) error alert } You can continue this for the different data structures. Whereever you need to allocate memory for a string, use mystr_alloc and mystr_free. And so on. When a leak is detected this way, you can quickly narrow it down.

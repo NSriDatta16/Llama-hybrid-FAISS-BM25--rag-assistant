@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5546254
+[parent_id]: 5546167
+[tags]: 
+By a simple mutex do you mean a normal mutex that you use in multi-threaded programming? A normal mutex is only visible on one machine, and therefore would do nothing to prevent race conditions between jobs on remote machines. That makes it a non-starter. That said, you get better average performance by not using a distributed mutex. Therefore you can use master election to figure out who is responsible for a set of mutexes, and then have the chosen master serve short-lived mutexes. If the mutexes are never held for longer than the time period to decide that the master is down and elect a new master, this is safe. However that strategy will cause mutex acquisition to be blocked on the whole master election process. The master is expected to spend very little time down, but when it is down that has a major impact on latency. If you care about maximum latency more than average resource use and average latency, this may be unacceptable, and you'll need to use the distributed mutex every time.

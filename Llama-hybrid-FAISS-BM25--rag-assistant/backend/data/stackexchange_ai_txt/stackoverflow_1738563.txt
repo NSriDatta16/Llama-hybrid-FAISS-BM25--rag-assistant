@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1738563
+[parent_id]: 1738205
+[tags]: 
+Yes, the query optimizer will consider using a mix of FT and non-FT indexes. See this whitepaper SQL Server 2005 Full-Text Queries on Large Catalogs: Lessons Learned for more details. BTW your CreateDate non-clustered index is still subject to the other index usage good practices. In your case, if the number of records in the last 7 days is big enough, the query optimization may fall for the Index Tipping Point because CreateDate does not cover Title (assuming JobId is part of clustered index key, otherwise JobId also needs coverage). On the other hand, if the FT search criteria is very selective then the CreatedDate index may be omitted and the clustered index will be used to probe for the candidates found by the FT index and verify the CreatedDate condition.

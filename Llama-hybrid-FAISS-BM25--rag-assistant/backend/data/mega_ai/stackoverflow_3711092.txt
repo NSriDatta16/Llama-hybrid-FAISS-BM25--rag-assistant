@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3711092
+[parent_id]: 3710835
+[tags]: 
+Just like I answered here , take a loot at my working example of jQuery UI's autocomplete. Pay attention to the source part. Hope it helps: var cache = {}; $("#textbox").autocomplete({ source: function(request, response) { if (request.term in cache) { response($.map(cache[request.term].d, function(item) { return { value: item.value, id: item.id } })) return; } $.ajax({ url: "/Services/AutoCompleteService.asmx/GetEmployees", /* I use a web service */ data: "{ 'term': '" + request.term + "' }", dataType: "json", type: "POST", contentType: "application/json; charset=utf-8", dataFilter: function(data) { return data; }, success: function(data) { cache[request.term] = data; response($.map(data.d, function(item) { return { value: item.value, id: item.id } })) }, error: HandleAjaxError // custom method }); }, minLength: 3, select: function(event, ui) { if (ui.item) { formatAutoComplete(ui.item); // custom method } } }); If you're not doing so by now, get Firebug . It's an invaluable tool for web development. You can set a breakpoint on this JavaScript and see what happens.

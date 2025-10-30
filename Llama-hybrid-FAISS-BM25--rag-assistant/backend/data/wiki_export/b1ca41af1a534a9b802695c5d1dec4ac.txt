@@ -1,0 +1,199 @@
+In natural language processing, Latent Dirichlet Allocation (LDA) is a Bayesian network (and, therefore, a generative statistical model) that explains a set of observations through unobserved groups, and each group explains why some parts of the data are similar. The LDA is an example of a Bayesian topic model. In this, observations (e.g., words) are collected into documents, and each word's presence is attributable to one of the document's topics. Each document will contain a small number of topics.
+
+History 
+In the context of population genetics, LDA was proposed by J. K. Pritchard, M. Stephens and P. Donnelly in 2000.
+
+LDA was applied in machine learning by David Blei, Andrew Ng and Michael I. Jordan in 2003.
+
+Overview
+
+Evolutionary biology and bio-medicine 
+In evolutionary biology and bio-medicine, the model is used to detect the presence of structured genetic variation in a group of individuals. The model assumes that alleles carried by individuals under study have origin in various extant or past populations. The model and various inference algorithms allow scientists to estimate the allele frequencies in those source populations and the origin of alleles carried by individuals under study. The source populations can be interpreted ex-post in terms of various evolutionary scenarios. 
+In association studies, detecting the presence of genetic structure is considered a necessary preliminary step to avoid confounding.
+
+Clinical psychology, mental health, and social science 
+In clinical psychology research, LDA has been used to identify common themes of self-images experienced by young people in social situations. Other social scientists have used LDA to examine large sets of topical data from discussions on social media (e.g., tweets about prescription drugs).
+
+Musicology 
+In the context of computational musicology, LDA has been used to discover tonal structures in different corpora.
+
+Machine learning 
+One application of LDA in machine learning - specifically, topic discovery, a subproblem in natural language processing - is to discover topics in a collection of documents, and then automatically classify any individual document within the collection in terms of how "relevant" it is to each of the discovered topics. A topic is considered to be a set of terms (i.e., individual words or phrases) that, taken together, suggest a shared theme.
+
+For example, in a document collection related to pet animals, the terms dog, spaniel, beagle, golden retriever, puppy, bark, and woof would suggest a DOG_related theme, while the terms cat, siamese, Maine coon, tabby, manx, meow, purr, and kitten would suggest a CAT_related theme. There may be many more topics in the collection - e.g., related to diet, grooming, healthcare, behavior, etc. that we do not discuss for simplicity's sake. (Very common, so called stop words in a language  - e.g., "the", "an", "that", "are", "is", etc., - would not discriminate between topics and are usually filtered out by pre-processing before LDA is performed. Pre-processing also converts terms to their "root" lexical forms - e.g., "barks", "barking", and "barked" would be converted to "bark".)
+
+If the document collection is sufficiently large, LDA will discover such sets of terms (i.e., topics) based upon the co-occurrence of individual terms, though the task of assigning a meaningful label to an individual topic (i.e., that all the terms are DOG_related) is up to the user, and often requires specialized knowledge (e.g., for collection of technical documents). The LDA approach assumes that:
+ The semantic content of a document is composed by combining one or more terms from one or more topics.
+ Certain terms are ambiguous, belonging to more than one topic, with different probability. (For example, the term training can apply to both dogs and cats, but are more likely to refer to dogs, which are used as work animals or participate in obedience or skill competitions.) However, in a document, the accompanying presence of specific neighboring terms (which belong to only one topic) will disambiguate their usage.
+ Most documents will contain only a relatively small number of topics. In the collection, e.g., individual topics will occur with differing frequencies. That is, they have a probability distribution, so that a given document is more likely to contain some topics than others.
+ Within a topic, certain terms will be used much more frequently than others. In other words, the terms within a topic will also have their own probability distribution.
+
+When LDA machine learning is employed, both sets of probabilities are computed during the training phase, using Bayesian methods and an Expectation Maximization algorithm.
+
+LDA is a generalization of older approach of probabilistic latent semantic analysis (pLSA), The pLSA model is equivalent to LDA under a uniform Dirichlet prior distribution.
+pLSA relies on only the first two assumptions above and does not care about the remainder. 
+While both methods are similar in principle and require the user to specify the number of topics to be discovered before the start of training (as with K-means clustering) LDA has the following advantages over pLSA:
+ LDA yields better disambiguation of words and a more precise assignment of documents to topics.
+ Computing probabilities allows a "generative" process by which a collection of new “synthetic documents” can be generated that would closely reflect the statistical characteristics of the original collection.
+ Unlike LDA, pLSA is vulnerable to overfitting especially when the size of corpus increases.
+ The LDA algorithm is more readily amenable to scaling up for large data sets using the MapReduce approach on a computing cluster.
+
+Model 
+  With plate notation, which is often used to represent probabilistic graphical models (PGMs), the dependencies among the many variables can be captured concisely. The boxes are "plates" representing replicates, which are repeated entities. The outer plate represents documents, while the inner plate represents the repeated word positions in a given document; each position is associated with a choice of topic and word. The variable names are defined as follows:
+
+ M denotes the number of documents
+ N is number of words in a given document (document i has  words)
+ α is the parameter of the Dirichlet prior on the per-document topic distributions
+ β is the parameter of the Dirichlet prior on the per-topic word distribution
+  is the topic distribution for document i
+  is the word distribution for topic k
+  is the topic for the j-th word in document i
+  is the specific word.
+
+The fact that W is grayed out means that words  are the only observable variables, and the other variables are latent variables.
+As proposed in the original paper, a sparse Dirichlet prior can be used to model the topic-word distribution, following the intuition that the probability distribution over words in a topic is skewed, so that only a small set of words have high probability. The resulting model is the most widely applied variant of LDA today. The plate notation for this model is shown on the right, where  denotes the number of topics and  are -dimensional vectors storing the parameters of the Dirichlet-distributed topic-word distributions ( is the number of words in the vocabulary).
+
+It is helpful to think of the entities represented by  and  as matrices created by decomposing the original document-word matrix that represents the corpus of documents being modeled. In this view,  consists of rows defined by documents and columns defined by topics, while  consists of rows defined by topics and columns defined by words. Thus,   refers to a set of rows, or vectors, each of which is a distribution over words, and refers to a set of rows, each of which is a distribution over topics.
+
+Generative process 
+To actually infer the topics in a corpus, we imagine a generative process whereby the documents are created, so that we may infer, or reverse engineer, it. We imagine the generative process as follows. Documents are represented as random mixtures over latent topics, where each topic is characterized by a distribution over all the words. LDA assumes the following generative process for a corpus  consisting of  documents each of length :
+
+1. Choose , where  and
+ is a Dirichlet distribution with a symmetric parameter  which typically is sparse ()
+
+2. Choose , where  and  typically is sparse
+
+3. For each of the word positions , where , and 
+
+ (a) Choose a topic 
+
+ (b) Choose a word 
+
+(Note that multinomial distribution here refers to the multinomial with only one trial, which is also known as the categorical distribution.)
+
+The lengths  are treated as independent of all the other data generating variables ( and ). The subscript is often dropped, as in the plate diagrams shown here.
+
+Definition
+A formal description of LDA is as follows:
+
+We can then mathematically describe the random variables as follows:
+
+Inference 
+
+Learning the various distributions (the set of topics, their associated word probabilities, the topic of each word, and the particular topic mixture of each document) is a problem of statistical inference.
+
+Monte Carlo simulation 
+
+The original paper by Pritchard et al. used approximation of the posterior distribution by Monte Carlo simulation. 
+Alternative proposal of inference techniques include Gibbs sampling.
+
+Variational Bayes 
+
+The original ML paper used a variational Bayes approximation of the posterior distribution.
+
+Likelihood maximization 
+
+A direct optimization of the likelihood with a block relaxation algorithm proves to be a fast alternative to MCMC.
+
+Unknown number of populations/topics 
+
+In practice, the optimal number of populations or topics is not known beforehand. It can be estimated by approximation of the posterior distribution with reversible-jump Markov chain Monte Carlo.
+
+Alternative approaches 
+Alternative approaches include  expectation propagation.
+
+Recent research has been focused on speeding up the inference of latent Dirichlet allocation to support the capture of a massive number of topics in a large number of documents. The update equation of the collapsed Gibbs sampler mentioned in the earlier section has a natural sparsity within it that can be taken advantage of. Intuitively, since each document only contains a subset of topics , and a word also only appears in a subset of topics , the above update equation could be rewritten to take advantage of this sparsity.
+
+ 
+
+In this equation, we have three terms, out of which two are sparse, and the other is small. We call these terms  and  respectively. Now, if we normalize each term by summing over all the topics, we get:
+
+ 
+
+ 
+
+ 
+
+Here, we can see that  is a summation of the topics that appear in document , and  is also a sparse summation of the topics that a word  is assigned to across the whole corpus.  on the other hand, is dense but because of the small values of  & , the value is very small compared to the two other terms.
+
+Now, while sampling a topic, if we sample a random variable uniformly from , we can check which bucket our sample lands in. Since  is small, we are very unlikely to fall into this bucket; however, if we do fall into this bucket, sampling a topic takes  time (same as the original Collapsed Gibbs Sampler). However, if we fall into the other two buckets, we only need to check a subset of topics if we keep a record of the sparse topics. A topic can be sampled from the  bucket in  time, and a topic can be sampled from the  bucket in  time where  and  denotes the number of topics assigned to the current document and current word type respectively.
+
+Notice that after sampling each topic, updating these buckets is all basic  arithmetic operations.
+
+Aspects of computational details 
+Following is the derivation of the equations for collapsed Gibbs sampling, which means s and s will be integrated out. For simplicity, in this derivation the documents are all assumed to have the same length . The derivation is equally valid if the document lengths vary.
+
+According to the model, the total probability of the model is:
+
+where the bold-font variables denote the vector version of the variables. First,  and  need to be integrated out.
+
+All the s are independent to each other and the same to all the s. So we can treat each  and each  separately. We now focus only on the  part.
+
+We can further focus on only one  as the following:
+
+Actually, it is the hidden part of the model for the  document. Now we replace the probabilities in the above equation by the true distribution expression to write out the explicit equation.
+
+Let  be the number of word tokens in the  document with the same word symbol (the  word in the vocabulary) assigned to the  topic. So,  is three dimensional. If any of the three dimensions is not limited to a specific value, we use a parenthesized point  to
+denote. For example,  denotes the number of word tokens in the  document assigned to the  topic. Thus, the right most part of the above equation can be rewritten as:
+
+So the  integration formula can be changed to:
+
+The equation inside the integration has the same form as the Dirichlet distribution. According to the Dirichlet distribution,
+
+Thus,
+
+Now we turn our attention to the  part. Actually, the derivation of the  part is very similar to the  part. Here we only list the steps of the derivation:
+
+For clarity, here we write down the final equation with both  and  integrated out:
+
+The goal of Gibbs Sampling here is to approximate the distribution of . Since  is invariable for any of Z, Gibbs Sampling equations can be derived from  directly. The key point is to derive the following conditional probability:
+
+where  denotes the  hidden variable of the  word token in the  document. And further we assume that the word
+symbol of it is the  word in the vocabulary.  denotes all the s but . Note that Gibbs Sampling needs only to sample a value for , according to the above probability, we do not need the exact value of
+
+but the ratios among the probabilities that  can take value. So, the above equation can be simplified as:
+
+Finally, let  be the same meaning as  but with the  excluded. The above equation can be further simplified leveraging the property of gamma function. We first split the summation and then merge it back to obtain a -independent summation, which could be dropped:
+
+Note that the same formula is derived in the article on the Dirichlet-multinomial distribution, as part of a more general discussion of integrating Dirichlet distribution priors out of a Bayesian network.
+
+Related problems
+
+Related models 
+Topic modeling is a classic solution to the problem of information retrieval using linked data and semantic web technology. Related models and techniques are, among others, latent semantic indexing, independent component analysis, probabilistic latent semantic indexing, non-negative matrix factorization, and Gamma-Poisson distribution.
+
+The LDA model is highly modular and can therefore be easily extended. The main field of interest is modeling relations between topics. This is achieved by using another distribution on the simplex instead of the Dirichlet. The Correlated Topic Model follows this approach, inducing a correlation structure between topics by using the logistic normal distribution instead of the Dirichlet. Another extension is the hierarchical LDA (hLDA), where topics are joined together in a hierarchy by using the nested Chinese restaurant process, whose structure is learnt from data. LDA can also be extended to a corpus in which a document includes two types of information (e.g., words and names), as in the LDA-dual model.
+Nonparametric extensions of LDA include the hierarchical Dirichlet process mixture model, which allows the number of topics to be unbounded and learnt from data.
+
+As noted earlier, pLSA is similar to LDA. The LDA model is essentially the Bayesian version of pLSA model. The Bayesian formulation tends to perform better on small datasets because Bayesian methods can avoid overfitting the data. For very large datasets, the results of the two models tend to converge. One difference is that pLSA uses a variable  to represent a document in the training set. So in pLSA, when presented with a document the model has not seen before, we fix —the probability of words under topics—to be that learned from the training set and use the same EM algorithm to infer —the topic distribution under . Blei argues that this step is cheating because you are essentially refitting the model to the new data.
+
+Spatial models 
+In evolutionary biology, it is often natural to assume that the geographic locations of the individuals observed bring some information about their ancestry. This is the rational of various models for geo-referenced genetic data.
+
+Variations on LDA have been used to automatically put natural images into categories, such as "bedroom" or "forest", by treating an image as a document, and small patches of the image as words; one of the variations is called spatial latent Dirichlet allocation.
+
+See also 
+ Variational Bayesian methods
+ Pachinko allocation
+ tf-idf
+ Infer.NET
+
+References
+
+External links 
+
+ jLDADMM A Java package for topic modeling on normal or short texts. jLDADMM includes implementations of the LDA topic model and the one-topic-per-document Dirichlet Multinomial Mixture model. jLDADMM also provides an implementation for document clustering evaluation to compare topic models.
+ STTM A Java package for short text topic modeling (https://github.com/qiang2100/STTM). STTM includes these following algorithms: Dirichlet Multinomial Mixture (DMM) in conference KDD2014, Biterm Topic Model (BTM) in journal TKDE2016, Word Network Topic Model (WNTM) in journal KAIS2018, Pseudo-Document-Based Topic Model (PTM) in conference KDD2016, Self-Aggregation-Based Topic Model (SATM) in conference IJCAI2015, (ETM) in conference PAKDD2017, Generalized P´olya Urn (GPU) based Dirichlet Multinomial Mixturemodel (GPU-DMM) in conference SIGIR2016, Generalized P´olya Urn (GPU) based Poisson-based Dirichlet Multinomial Mixturemodel (GPU-PDMM) in journal TIS2017 and Latent Feature Model with DMM (LF-DMM) in journal TACL2015. STTM also includes six short text corpus for evaluation.  STTM presents three aspects about how to evaluate the performance of the algorithms (i.e., topic coherence, clustering, and classification).
+ Lecture that covers some of the notation in this article: LDA and Topic Modelling Video Lecture by David Blei or same lecture on YouTube
+ D. Mimno's LDA Bibliography An exhaustive list of LDA-related resources (incl. papers and some implementations)
+ Gensim, a Python+NumPy implementation of online LDA for inputs larger than the available RAM.
+ topicmodels and lda are two R packages for LDA analysis.
+ MALLET Open source Java-based package from the University of Massachusetts-Amherst for topic modeling with LDA, also has an independently developed GUI, the Topic Modeling Tool
+ LDA in Mahout implementation of LDA using MapReduce on the Hadoop platform
+ Latent Dirichlet Allocation (LDA) Tutorial for the Infer.NET Machine Computing Framework Microsoft Research C# Machine Learning Framework
+ LDA in Spark: Since version 1.3.0, Apache Spark also features an implementation of LDA
+ LDA, exampleLDA MATLAB implementation
+
+Statistical natural language processing
+Latent variable models
+Probabilistic models

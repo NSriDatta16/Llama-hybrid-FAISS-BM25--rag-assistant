@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 309991
+[parent_id]: 
+[tags]: 
+LinqToSql .Contains and nvarchar vs varchar parameters -> index conversion plan
+
+I have a just one table mapped in a datacontext. Here's the property and attribute on the column of interest: [Column(Storage="_CustomerNumber", DbType="VarChar(25)")] public string CustomerNumber { This column is, in fact, a varchar(25) and has an index. I've got some simple code: DataClasses1DataContext myDC = new DataClasses1DataContext(); myDC.Log = Console.Out; List myList = new List () { "111", "222", "333" }; myDC.Customers .Where(c => myList.Contains(c.CustomerNumber)) .ToList(); Which generates this SQL text: SELECT [t0].[CustomerNumber], [t0].[CustomerName] FROM [dbo].[Customers] AS [t0] WHERE [t0].[CustomerNumber] IN (@p0, @p1, @p2) -- @p0: Input NVarChar (Size = 3; Prec = 0; Scale = 0) [111] -- @p1: Input NVarChar (Size = 3; Prec = 0; Scale = 0) [222] -- @p2: Input NVarChar (Size = 3; Prec = 0; Scale = 0) [333] -- Context: SqlProvider(Sql2005) Model: AttributedMetaModel Build: 3.5.21022.8 Notice that the paramaters are nvarchar! When this query hits the database, it generates a horrible plan which involves converting the multi-million row index on CustomerNumber to nvarchar before seeking within it. I'm not allowed to change the table, but I can change the query and the dbml. What can I do to get the data out without getting this index conversion?

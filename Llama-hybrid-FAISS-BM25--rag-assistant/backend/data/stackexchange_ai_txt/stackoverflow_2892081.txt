@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2892081
+[parent_id]: 2891998
+[tags]: 
+You need to read the uploaded file out of the cgi.FieldStorage() and save it onto the server. Ususally a temp directory (/tmp on Linux) is used for this. You should remove these files after processing or on some schedule to clean up the drive. def main(): import cgi import cgitb; cgitb.enable() f1 = cgi.FieldStorage() if "dfile" in f1: fileitem = f1["dfile"] pathtoTmpFile = os.path.join("path/to/temp/directory", fileitem.filename) fout = file(pathtoTmpFile, 'wb') while 1: chunk = fileitem.file.read(100000) if not chunk: break fout.write (chunk) fout.close() execute(pathtoTmpFile) os.remove(pathtoTmpFile) else: header() form() This modified the execute to take the path to the newly saved file. cline = ClustalwCommandline("clustalw", infile=pathToFile) For the result file, you could also stream it back so the user gets a "Save as..." dialog. That might be a little more usable than displaying it in HTML.

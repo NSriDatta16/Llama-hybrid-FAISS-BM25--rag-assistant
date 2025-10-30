@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2191353
+[parent_id]: 2191263
+[tags]: 
+Have you read Kimberly Tripp's article? (Pretty much the canonical reference on the subject): 8 Steps to better Transaction Log throughput . You might be experiencing VLF fragmentation: Transaction Log VLFs - too many or too few? . Run this command to find out: DBCC LOGINFO; Have you followed this standard procedure to shrink the Log: 1) Backup your transaction log (even if you are in simple mode) to clear all activity. BACKUP LOG [MyDB] TO DISK = N'E:\db.bak' GO 2) Shrink the transaction log. USE [MyDB] GO DBCC SHRINKFILE ('MyDB_Log', TRUNCATEONLY) GO 3) Modify the size of the transaction log and configure your autogrowth: USE [MyDB] GO ALTER DATABASE [MyDB] MODIFY FILE ( NAME = N'MyDB_Log', SIZE = 1024000KB, FILEGROWTH = 1024000KB) GO

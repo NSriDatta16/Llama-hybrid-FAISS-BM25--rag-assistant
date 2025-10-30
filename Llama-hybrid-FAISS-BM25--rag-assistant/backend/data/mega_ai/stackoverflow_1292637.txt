@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1292637
+[parent_id]: 
+[tags]: 
+HttpWebRequest runs slowly first time within SQLCLR
+
+When making an HttpWebRequest within a CLR stored procedure (as per the code below), the first invocation after the Sql Server is (re-)started or after a given (but indeterminate) period of time waits for quite a length of time on the GetResponse() method call. Is there any way to resolve this that doesn't involve a "hack" such as having a Sql Server Agent job running every few minutes to try and ensure that the first "slow" call is made by the Agent and not "real" production code? function SqlString MakeWebRequest(string address, string parameters, int connectTO) { SqlString returnData; HttpWebRequest request = (HttpWebRequest)WebRequest.Create(String.Concat(address.ToString(), "?", parameters.ToString())); request.Timeout = (int)connectTO; request.Method = "GET"; using (WebResponse response = request.GetResponse()) { using (Stream responseStream = response.GetResponseStream()) { using (StreamReader reader = new StreamReader(responseStream)) { SqlString responseFromServer = reader.ReadToEnd(); returnData = responseFromServer; } } } response.Close(); return returnData; } (Error handling and other non-critical code has ben removed for brevity) See also this Sql Server forums thread .

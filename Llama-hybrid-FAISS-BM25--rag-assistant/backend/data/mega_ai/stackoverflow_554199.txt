@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 554199
+[parent_id]: 554138
+[tags]: 
+signal handling is (relatively) portable across unix machines (this includes mac and linux). The big differences are in the exception detail, which is passed as argument to the signal handling routine. Sorrty, but you will probably need a bunch of #ifdefs for that, if you want to print more reasonable error messages (such as where and due to which address the fault happened) ... ok, here is a code fragment for you to start with: #include /* reached when a segv occurrs */ void SEGVFunction( SIGARGS ) { ... } ... main(...) { signal(SIGSEGV, SEGVFunction); /* tell the OS, where to go in case... */ ... ... do your work ... } Your task is to: check what SIGARGS is (OS dependent, so use an ifdef) see how to extract fault-address and pc from the exception information in sigArgs print reasonable message exit in theory, you could even patch the pc in the signal handler (to after the faulting instruction), and proceed. However, typical signal handlers either exit() or to a longjmp() back into a save place in the main. regards

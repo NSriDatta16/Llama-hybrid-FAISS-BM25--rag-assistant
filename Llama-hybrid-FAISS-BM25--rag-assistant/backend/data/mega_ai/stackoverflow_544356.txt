@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 544356
+[parent_id]: 544296
+[tags]: 
+From a C/C++ perspective.... One obvious thing is that the size of an int will become 8 bytes instead of 4 bytes. If any of your code is dependent on that you may get unexpected results. Structure and variable alignments may shift. You may be able to overcome it with a #pragma pack, but I am not very fluent in alignments and packing. If you use any unions with ints in them, the behavior may change. If you are using any bitfield structures, based on ints the extra 32 bits may cause confusion. The sign bit won't be where you thought it was. If you code any hex constants and expect signs to go negative, you may have issues. Example 0x8000000 is a negative number as a log, or 32 bit integer. 0x80000000 as an integer on a 64 bit platform is a positive number. to directly set the sign bit you would have to use 0x80000000 00000000 (embedded space for readability only) Also I expect size__t to grow appropriately. If you are making any allocations based on MAX_INT, they will be much larger. To avoid these type of size anomalies, I generally stick with longs instead of ints.

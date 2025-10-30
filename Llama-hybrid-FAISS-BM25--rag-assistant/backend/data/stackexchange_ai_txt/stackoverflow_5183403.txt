@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5183403
+[parent_id]: 5182056
+[tags]: 
+It is an utterly bad idea to try wrapping write() and use POSIX functions. If you chose to work in standard C, then you could wrap write() because it is not a name reserved to the standard. However, once you start using POSIX functions - and execve() is a POSIX function - then you are running into conflicts; POSIX reserves the name write() . If you want to try, you may get away with it if you segregate the code carefully. You have your write() wrapper in one source file which does not include or use any functions not defined in the C standard for the headers you do include. You have your code that does the execve() in a second file that does include . And you link those parts together with appropriate function calls. If you are lucky, it will work as intended. If you aren't lucky, all hell will break loose. And note that your luck status might change on different machines depending on factors outside your control such as o/s updates (bug fixes) or upgrades. It is a very fragile design decision to wrap write() .

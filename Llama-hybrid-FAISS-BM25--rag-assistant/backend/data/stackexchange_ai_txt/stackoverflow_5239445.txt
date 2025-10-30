@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5239445
+[parent_id]: 5239327
+[tags]: 
+You're probably (not enough context) not allocating the strings properly. string List[10]; only allocates an array of 10 string , i.e. 10 char * , i.e. 10 character pointers. It doesn't allocate any storage for the strings themselves. So if your membername above is e.g. a global char * that you're copying data from the network to, all your slots in List will end up pointing to that very same memory location . To make it work, you'd need to allocate (and carefully free) all the slots in List . Something like: List[index] = strdup(membername); For better chances of catching errors early, initially set your List to all null pointers. for (int i=0; i and when a user "goes away", free and reset that slot to NULL: free(List[index]); List[index] = NULL; That way you'll get nice, nasty segfaults if you don't manage your slots carefully enough :-)

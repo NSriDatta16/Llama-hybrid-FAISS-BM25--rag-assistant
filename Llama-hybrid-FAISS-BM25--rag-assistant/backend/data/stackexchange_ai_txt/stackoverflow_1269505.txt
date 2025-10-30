@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1269505
+[parent_id]: 1118776
+[tags]: 
+I've been struggling with this type of problem on my own site. If you have a large corpus of existing data you can use as a baseline, score normalization seems pretty effective. First get the mean value and standard deviation for the user's created achievements: SELECT AVG(Points) AS user_average, STDDEV_POP(Points) AS user_stddev FROM Achievements WHERE Owner = X Use these values to calculate a context-free "z-score": $zscore = ($rating - $user_average) / $user_stddev; Get the mean and standard deviation for all achievments: SELECT AVG(Points) AS all_average, STDDEV_POP(Points) AS all_stddev FROM Achievements Use these values to create a normalized "t-score": $tscore = $all_average + ($all_stddev * $zscore); Then use the t-score as your internal representation of an achievement's value. YMMV. :)

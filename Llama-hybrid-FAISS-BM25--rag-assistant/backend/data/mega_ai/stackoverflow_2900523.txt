@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2900523
+[parent_id]: 2900357
+[tags]: 
+If you are already wrapping your buffer object in calls like AddToBuffer and GetFromBuffer, it would make more sense for you to put the locking within your wrapper functions. In addition, you are making an explicit call to unlock, which completely defeats the purpose of scoped_lock; scoped_lock uses Resource Acquisition is Initialization (RAII) to both acquire and release the lock. A better use would be to place the critical section within a block so that the mutex is released due to the lock going out of scope rather than due to an explicit call to the unlock function, as scopes are less fragile. For example: // Code that doesn't need locking { boost::mutex::scoped_lock lck(bufferMutex); // Lock is acquired here // Code that needs to be synchronized } // Lock is automatically released here without explicit call to unlock() // More code that doesn't need locking

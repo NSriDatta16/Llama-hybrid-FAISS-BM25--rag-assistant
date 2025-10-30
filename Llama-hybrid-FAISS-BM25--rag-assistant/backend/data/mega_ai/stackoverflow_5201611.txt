@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5201611
+[parent_id]: 5201556
+[tags]: 
+First and foremost you should never write your own session handler. You are reinventing the wheel and it will be less secure. If ComputeLoginHash() is producing a cookie value then you a big problem on your hands. An attacker can obtain the username/password hash from the database and then build a cookie value by passing it to a hash function. This would allow an attacker to login without the need to cracking a password. Effectively you are completely removing the protection provided by hashing passwords. A cookie value must always be a cryptographic nonce , this value must expire (less than a day is good.). For added security enable http-only cookies which helps thwart xss. Also set the sts-header to enforce https and in turn take care of OWASP A9. Also,don't forget about session riding . Also there is absolutely no point in checking the user-agent because this is an attacker controlled variable.

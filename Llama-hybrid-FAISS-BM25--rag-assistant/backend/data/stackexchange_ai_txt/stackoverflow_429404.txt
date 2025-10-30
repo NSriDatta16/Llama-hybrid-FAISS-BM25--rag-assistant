@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 429404
+[parent_id]: 427966
+[tags]: 
+You mentioned that you were trying to track down a random timeout problem. I've had the same, generally when I was doing a SELECT that returned a lot of rows. Two things: Cnn.CursorLocation=ADODB.adUseServer (The other option is adUseClient ) - I believe adUseServer gave me faster queries, which reduced the likelihood of timeouts. You do this before you open the connection, I believe. Cnn.CommandTimeout=0 Also before the open() , tells it that you want an infinite timeout. I think the default timeout is something like 30s, which was way too short for some queries. The CommandTimeout will be used for Recordset queries. If you use a Command object, it has it's own CommandTimeout member, which doesn't appear to inherit from the Connection (ie, I set it before I Execute a command). Sorry if the syntax isn't quite right, I'm cutting from some C++ code.

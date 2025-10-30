@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5717106
+[parent_id]: 5716651
+[tags]: 
+g++ -O0 -g -S test.cpp -o test.s0 g++ -O3 -g -S test.cpp -o test.s3 comparing test.s[03] shows that indeed valarray::sum isn't even called again. I' haven't looked at it for long, but the following snippets seem to be the defining fragments: .loc 3 16 0 ; test.s0 leal -72(%ebp), %eax movl %eax, (%esp) call __ZNKSt8valarrayIdE3sumEv fstpl -96(%ebp) leal -72(%ebp), %eax movl %eax, (%esp) call __ZNKSt8valarrayIdE4sizeEv movl $0, %edx pushl %edx pushl %eax fildq (%esp) leal 8(%esp), %esp fdivrl -96(%ebp) fstpl -24(%ebp) .loc 3 17 0 versus .loc 1 16 0 ; test.s3 faddl 16(%eax) fdivs LC3 fstpl -336(%ebp) LVL6: LBB449: LBB450: .loc 4 514 0

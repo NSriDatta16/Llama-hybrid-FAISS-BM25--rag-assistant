@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3929582
+[parent_id]: 
+[tags]: 
+In python, any elegant way to refer to class method within the classes declaration scope?
+
+The below code works both under Python 2.6 and 3.1, but the third lambda of SomeObject.columns is a bit silly, serving no real purpose but to prevent the reference to SomeObject.helper_function from being looked at before the class declaration finishes. It seems like a hack. If I remove the lambda, and replace it with just SomeObject.helper_function , I get NameError: name 'SomeObject' is not defined . Am I missing a better non-hacky way? class SomeObject: def __init__(self, values): self.values = values @staticmethod def helper_function(row): # do something fancy here return str(len(row)) columns = [ (lambda x: x['type'], 'Type'), (lambda x: 'http://localhost/view?id=%s' % x['id'], 'Link'), (lambda x: SomeObject.helper_function(x), 'Data'), ] def render_table_head(self): print('\t'.join([c[1] for c in self.columns])) def render_table_body(self): for row in self.values: print('\t'.join([col[0](row) for col in self.columns]))

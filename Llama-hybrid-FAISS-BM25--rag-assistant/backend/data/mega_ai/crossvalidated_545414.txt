@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 545414
+[parent_id]: 545387
+[tags]: 
+The equation you want to use is that the k-th point in your original series $x_k$ is reproduced as: \begin{equation} x_k = \frac{1}{N}\sum_{n=0}^{N-1}X_n e^{i\frac{2\pi}{N}kn} \end{equation} Where $X_n$ is the n-th Fourier coefficient. This can be implemented in Python as: from scipy.fft import fft import numpy as np x = [1,2,1,-1,0]*5 # compute fourier coefficients coef = fft(x) n = len(x) # implement the inverse transform equation z = [np.sum(coef * np.exp(2j * np.pi * k * np.arange(n)/n)) / n for k in range(n)] # disregard small imaginary component and round to integer form z = [np.int(np.real(z_i)) for z_i in z] Doing this we find that $z$ is equal to the original series $x$ . I think your error may be down to throwing out values from $X_n$ , even though there are repeated values you need all of them to reconstruct your original time series.

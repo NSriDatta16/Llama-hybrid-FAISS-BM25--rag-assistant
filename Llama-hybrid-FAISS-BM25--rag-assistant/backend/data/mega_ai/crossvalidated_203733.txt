@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 203733
+[parent_id]: 
+[tags]: 
+Project new data using independent components analysis
+
+I’m trying to project new data into a space I created with icafast. The R package ica does not come with it's own predict function. Here is my attempt to do so. This is in vein of what I can do with principle component analysis (PCA). ########## PCA ############# library(stats) data = replicate(10, rnorm(20)) new.data = replicate(10, rnorm(20)) pca = princomp(data) predict(pca, new.data) ####### trying ica ######### library(ica) ica.model = icafast(data, nc=10) ### Trying to write my own based on the paragraph below #### predict.ica = function(new.data, ica.model) { Q = ica.model$Q Y = tcrossprod(as.matrix(new.data), Q) Y %*% ica.model$R } # Should produce the same result as ica.model$S but none are equal any(ica.model$S == predict.ica(data, ica.model)) “Whitening Without loss of generality, we can write M=P% %R where P is a tall matrix and R is an orthogonal rotation matrix. Letting Q denote the pseudoinverse of P, we can whiten the data using Y=tcrossprod(X,Q). The goal is to find the orthongal rotation matrix R such that the source signal estimates S=Y% %R are as independent as possible. Note that W=crossprod(R,Q).“ Any ideas, what I’m doing wrong?

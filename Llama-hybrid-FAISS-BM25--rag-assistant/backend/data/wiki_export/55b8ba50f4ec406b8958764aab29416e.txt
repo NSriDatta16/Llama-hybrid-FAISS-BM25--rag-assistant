@@ -1,0 +1,87 @@
+A Wallace multiplier is a hardware implementation of a binary multiplier, a digital circuit that multiplies two integers. It uses a selection of full and half adders (the Wallace tree or Wallace reduction) to sum partial products in stages until two numbers are left. Wallace multipliers reduce as much as possible on each layer, whereas Dadda multipliers try to minimize the required number of gates by postponing the reduction to the upper layers. 
+
+Wallace multipliers were devised by the Australian computer scientist Chris Wallace in 1964.
+
+The Wallace tree has three steps:
+ Multiply each bit of one of the arguments, by each bit of the other.
+ Reduce the number of partial products to two by layers of full and half adders.
+ Group the wires in two numbers, and add them with a conventional adder.
+
+Compared to naively adding partial products with regular adders, the benefit of the Wallace tree is its faster speed. It has  reduction layers, but each layer has only  propagation delay. A naive addition of partial products would require  time.
+As making the partial products is  and the final addition is , the total multiplication is , not much slower than addition.  From a complexity theoretic perspective, the Wallace tree algorithm puts multiplication in the class NC1.
+The downside of the Wallace tree, compared to naive addition of partial products, is its much higher gate count.
+
+These computations only consider gate delays and don't deal with wire delays, which can also be very substantial.
+
+The Wallace tree can be also represented by a tree of 3/2 or 4/2 adders.
+
+It is sometimes combined with Booth encoding.
+
+Detailed explanation
+The Wallace tree is a variant of long multiplication. The first step is to multiply each digit (each bit) of one factor by each digit of the other. Each of this partial products has weight equal to the product of its factors. The final product is calculated by the weighted sum of all these partial products.
+
+The first step, as said above, is to multiply each bit of one number by each bit of the other, which is accomplished as a simple AND gate, resulting in  bits; the partial product of bits  by  has weight 
+
+In the second step, the resulting bits are reduced to two numbers; this is accomplished as follows:
+As long as there are three or more wires with the same weight add a following layer:-
+ Take any three wires with the same weights and input them into a full adder. The result will be an output wire of the same weight and an output wire with a higher weight for each three input wires.
+ If there are two wires of the same weight left, input them into a half adder.
+ If there is just one wire left, connect it to the next layer.
+
+In the third and final step, the two resulting numbers are fed to an adder, obtaining the final product.
+
+Example
+, multiplying  by :
+
+ First we multiply every bit by every bit:
+ weight 1 – 
+ weight 2 – , 
+ weight 4 – , , 
+ weight 8 – , , , 
+ weight 16 – , , 
+ weight 32 – , 
+ weight 64 – 
+ Reduction layer 1:
+ Pass the only weight-1 wire through, output: 1 weight-1 wire
+ Add a half adder for weight 2, outputs: 1 weight-2 wire, 1 weight-4 wire
+ Add a full adder for weight 4, outputs: 1 weight-4 wire, 1 weight-8 wire
+ Add a full adder for weight 8, and pass the remaining wire through, outputs: 2 weight-8 wires, 1 weight-16 wire
+ Add a full adder for weight 16, outputs: 1 weight-16 wire, 1 weight-32 wire
+ Add a half adder for weight 32, outputs: 1 weight-32 wire, 1 weight-64 wire
+ Pass the only weight-64 wire through, output: 1 weight-64 wire
+ Wires at the output of reduction layer 1:MESCOE
+ weight 1 – 1
+ weight 2 – 1
+ weight 4 – 2
+ weight 8 – 3
+ weight 16 – 2
+ weight 32 – 2
+ weight 64 – 2
+ Reduction layer 2:
+ Add a full adder for weight 8, and half adders for weights 4, 16, 32, 64
+ Outputs:
+ weight 1 – 1
+ weight 2 – 1
+ weight 4 – 1
+ weight 8 – 2
+ weight 16 – 2
+ weight 32 – 2
+ weight 64 – 2
+ weight 128 – 1
+ Group the wires into a pair of integers and an adder to add them.
+
+See also
+ Dadda tree
+
+References
+
+Further reading
+
+External links 
+ Generic VHDL Implementation of Wallace Tree Multiplier.
+
+Arithmetic logic circuits
+Computer arithmetic
+Multiplication
+1964 introductions
+1964 in science

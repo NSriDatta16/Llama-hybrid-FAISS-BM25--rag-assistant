@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 120952
+[parent_id]: 
+[tags]: 
+Stored Procedure; Insert Slowness
+
+I have an SP that takes 10 seconds to run about 10 times (about a second every time it is ran). The platform is asp .net, and the server is SQL Server 2005. I have indexed the table (not on the PK also), and that is not the issue. Some caveats: usp_SaveKeyword is not the issue. I commented out that entire SP and it made not difference. I set @SearchID to 1 and the time was significantly reduced, only taking about 15ms on average for the transaction. I commented out the entire stored procedure except the insert into tblSearches and strangely it took more time to execute. Any ideas of what could be going on? set ANSI_NULLS ON go ALTER PROCEDURE [dbo].[usp_NewSearch] @Keyword VARCHAR(50), @SessionID UNIQUEIDENTIFIER, @time SMALLDATETIME = NULL, @CityID INT = NULL AS BEGIN SET NOCOUNT ON; IF @time IS NULL SET @time = GETDATE(); DECLARE @KeywordID INT; EXEC @KeywordID = usp_SaveKeyword @Keyword; PRINT 'KeywordID : ' PRINT @KeywordID DECLARE @SearchID BIGINT; SELECT TOP 1 @SearchID = SearchID FROM tblSearches WHERE SessionID = @SessionID AND KeywordID = @KeywordID; IF @SearchID IS NULL BEGIN INSERT INTO tblSearches (KeywordID, [time], SessionID, CityID) VALUES (@KeywordID, @time, @SessionID, @CityID) SELECT Scope_Identity(); END ELSE BEGIN SELECT @SearchID END END

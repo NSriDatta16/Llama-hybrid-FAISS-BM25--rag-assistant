@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2345268
+[parent_id]: 2342409
+[tags]: 
+There isn't a simple way to do this. In theory, NHibernate doesn't have to produce SQL at all; it's just that your dialect happens to (for example, it could just have some text files as the data store). The interface doesn't expose that the SQL because it breaks the abstraction barrier. However, if you use the show_sql option, NHibernate will log the SQL, and you can use that. The only way I can think of is to set up a dummy database and run the NH queries against it. Build a custom log4net appender to capture the SQL and just store it in a variable. Now you can associate that with the query. So then you'd have something like RunQueryAndCaptureSql(session.CreateQuery("from Stuff s where s.Thing = 'dude'")); which blocks waiting for the appender to append the SQL and then returns that. Inelegant as hell and you'll have to make sure you deal with threading issues, but it should work. Frankly, I'd probably just hack the NH source instead.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 589346
+[parent_id]: 589173
+[tags]: 
+You are rendering the output bitmap correctly, it is just the input bitmap you are screwwing up :). BitmapImage requires access to the StreamSource property until it fires the DownloadCompleted event, but the 'using' block Dispose() s of the MemoryStream before it has a chance! You could simply unwrap the MemoryStream from the using block and let the GC handle it (if you do, I would recommend setting the BitmapImage.CacheOption to BitmapCacheOption.None, so it uses the stream directly, rather than a copy), but I would use the UriSource property and wait for the DownloadComplete event before rendering.

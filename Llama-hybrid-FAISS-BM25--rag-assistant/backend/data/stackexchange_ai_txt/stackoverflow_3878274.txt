@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3878274
+[parent_id]: 
+[tags]: 
+Azure Table Storage Performance from Massively Parallel Threaded Reading
+
+Short version: Can we read from dozens or hundreds of table partitions in a multi-threaded manner to increase performance by orders of magnitude? Long version: We're working on a system that is storing millions of rows in Azure table storage. We partition the data into small partitions, each one containing about 500 records, which represents a day worth of data for a unit. Since Azure doesn't have a "sum" feature, to pull a year worth of data, we either have to use some pre-caching, or sum the data ourselves in an Azure web or worker role. Assuming the following: - Reading a partition doesn't affect the performance of another - Reading a partition has a bottleneck based on network speed and server retrieval We can then take a guess that if we wanted to quickly sum a lot of data on the fly (1 year, 365 partitions), we could use a massively parallel algorithm and it would scale almost perfectly to the number of threads. For example, we could use the .NET parallel extensions with 50+ threads and get a HUGE performance boost. We're working on setting up some experiments, but I wanted to see if this has been done before. Since the .NET side is basically idle waiting on high-latency operations, this seems perfect for multi-threading.

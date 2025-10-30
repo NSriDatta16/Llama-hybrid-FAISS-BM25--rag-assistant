@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 544967
+[parent_id]: 
+[tags]: 
+Doubly robust learning with same features influencing treatment and outcome
+
+I'm looking at some of the examples in the econML package for double machine learning. Specifically, the example found here (code below). In the example W is the features which might influence both the choice of treatment and the outcome. X is the features which might influence how effective the treatment is, i.e. the end goal is to be able to estimate the treatment effect as a function of X . The issue is that all of my features might influence both treatment and outcome, i.e. W and X represent the same set of features. Can I simply set X = W in the below example, or will I need some other approach? from econml.dr import DRLearner from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier from sklearn.model_selection import GridSearchCV model_reg = lambda: GridSearchCV( estimator=RandomForestRegressor(), param_grid={ 'max_depth': [3, None], 'n_estimators': (10, 50, 100) }, cv=5, n_jobs=-1, scoring='neg_mean_squared_error' ) model_clf = lambda: GridSearchCV( estimator=RandomForestClassifier(min_samples_leaf=10), param_grid={ 'max_depth': [3, None], 'n_estimators': (10, 50, 100) }, cv=5, n_jobs=-1, scoring='neg_mean_squared_error' ) est = DRLearner(model_regression=model_reg(), model_propensity=model_clf(), model_final=model_reg(), cv=5) est.fit(y, T, X=X, W=W) point = est.effect(X, T0=T0, T1=T1)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 503547
+[parent_id]: 503404
+[tags]: 
+I would probably have made two classes, one responsible for reading and writing articles to disk (or databases or whereever), and one for the articles. It would then be easy for the storage-class, say ArticleStorage, to read from the disk and create an Article-instance, which could then be returned. Something like class ArticleStorage def self.save(article) # Make sure the folder is available, and the file is writable file.puts(article.to_s) end def self.load(title) # Open the file named title in the right directory # Read the file into a hash for example return Article.new(file[:author], file[:topic], file[:body], file[:created]) end end class Article def initialize(author, topic, body, created) # save variables end def to_s # Format and prepare the article for saving end end Then you could do something like a = Article.new("author", "my topic", "long text", Time.now) and save it with ArticleStorage.save(a) and load with a = ArticleStorage.load("my topic")

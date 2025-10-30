@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3293716
+[parent_id]: 3293618
+[tags]: 
+If you want to avoid the lambda expression, and think you may need to compare User objects by ID in other parts of your code, consider writing a comparer as follows. class UserEqualityComparer : IEqualityComparer { bool IEqualityComparer .Equals(User lhs, User rhs) { return lhs.ID == rhs.ID; } int IEqualityComparer .GetHashCode(User user) { return user.ID; // assumes all IDs are unique. } } Then your list query looks like the following. IEnumerable list = GetList(); IEqualityComparer userComparer = new UserEqualityComparer(); list.Contains(users[0], userComparer); list.Contains(users[1], userComparer); // etc... To answer your question related to speed of retrieval, Contains is the fastest way if you don't know how the User objects are ordered in your collection. If they were sorted by ID and stored in a List object, you could use the List .BinarySearch() method with an appropriate implementation of IComparer .

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1056701
+[parent_id]: 1056591
+[tags]: 
+You cannot change an object after it has been created, except by freeing it and creating a new one (which you can do in an init method, and is in fact quite often done for singletons or class clusters), but that is not really what you're after. Give an existing Shape object, with some properties, your only real option is to create a new object based on the shape properties. Something like: In Shape.m: - (id) initWithShape:(Shape*)aShape { self = [super init]; if (self != nil) { // copy general properties _x = aShape.x; _y = aShape.y; _color = [aShape.color copy]; } return self; } In Circle.m: - (id) initWithShape:(Shape*)aShape { self = [super initWithShale:aShape]; if (self != nil) { // base properties on the class of the shape if ( [aShape isKindOfClass:[Oval class]] ) { // average the short and long diameter to a radius _radius = ([(Oval*)aShape shortDiameter] + [(Oval*)aShape longDiameter])/4; } else { // or use generic Shape methods _radius = aShape.size / 2; } } return self; }

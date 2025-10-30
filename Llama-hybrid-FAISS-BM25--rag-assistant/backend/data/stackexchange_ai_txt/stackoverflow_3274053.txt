@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3274053
+[parent_id]: 3273953
+[tags]: 
+There are no nice LINQ methods in the standard .NET library to allow some elegant LINQ voodoo, but you can use Generate method from MoreLINQ project and write this: Enumerable .Generate(list, l => l.LinkedList) .TakeWhile(l => l != null).Select(l => l.UniqueKey); It uses Generate to create "infinite" list of all elements - it is not actually infinite, because it is generated lazily and we stop using it as soon as we find null value at the end (using TakeWhile ). Then we use Select to return a sequence of values (instead of linked list nodes). This is essentially a nice declarative way of expressing the while loop solution posted by Matthew (and it should have roughly similar performance). EDIT The Generate method looks like this: IEnumerable Generate(T current, Func generator) { while(true) { yield return current; current = generator(current); } }

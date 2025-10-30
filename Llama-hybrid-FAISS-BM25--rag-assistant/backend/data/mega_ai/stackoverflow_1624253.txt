@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1624253
+[parent_id]: 
+[tags]: 
+OS specific tests for Perl test scripts
+
+Is there a more elegant way to write the portion of the test script which is O/S dependant? Please refer to the code below the comment line. Background: Module Perl::Tags creates a tags file for VIM. On Win32 the directory separator is "\" but on other OS's it is "/". Vim's Perl-support module seems to read the tags file quite happily, so there seems to be no need to modify the module. #!/usr/bin/perl -w use strict; use warnings; use Data::Dumper; use Test::More tests => 6; use FindBin qw($Bin); BEGIN { use_ok( 'Perl::Tags' ); } my $naive_tagger = Perl::Tags::Naive->new( max_level=>1 ); ok (defined $naive_tagger, 'created Perl::Tags' ); isa_ok ($naive_tagger, 'Perl::Tags::Naive' ); isa_ok ($naive_tagger, 'Perl::Tags' ); my $result = $naive_tagger->process( files => [ "$Bin/Test.pm" ], refresh=> 1 ); ok ($result, 'processed successfully' ) or diag "RESULT $result"; # Other tests also fail because \Test.pm on Win32 vs /Test.pm on Linux/ OS X if ( $^O =~ /MSWin32/ ) { like ($naive_tagger, qr{Test\t\S+\\Test.pm\t/package Test;/} , 'package line'); } else { like ($naive_tagger, qr{Test\t\S+/Test.pm\t/package Test;/} , 'package line'); }

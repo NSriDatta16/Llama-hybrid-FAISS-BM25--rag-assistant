@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2724455
+[parent_id]: 
+[tags]: 
+IAuthenticationRequest.RedirectToProvider is not supposed to return, yet it does
+
+The method DotNetOpenAuth.OpenId.RelyingParty.IAuthenticationRequest.RedirectToProvider() is documented never to return: Redirects the user agent to the provider for authentication. Execution of the current page terminates after this call. However, it does return under the latest implementation (3.4.3). I'm using the following code: using (var relayingParty = new OpenIdRelyingParty()) { var response = relayingParty.GetResponse(); if (response == null) { // Stage 2: user submitting Identifier var openId = Request.Form["openId"]; relayingParty.CreateRequest(openId).RedirectToProvider(); throw new Exception("Never gets here"); } ... } (The line with "Never gets here" is reached). I need to return an ActionResult from this method ... Is this a known bug? Is there a aorkaround? Should I return EmptyResult? As far as I understand this is a bug - I submitted it in the project issue tracker.

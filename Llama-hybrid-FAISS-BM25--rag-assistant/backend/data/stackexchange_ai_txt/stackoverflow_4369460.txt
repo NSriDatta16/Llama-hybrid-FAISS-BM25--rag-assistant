@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4369460
+[parent_id]: 4369278
+[tags]: 
+Going forward vs backward doesn't usually make much difference. The file data is read into the file system cache after the first read, you get a memory-to-memory copy on ReadByte(). That copy isn't sensitive to the file pointer value as long as the data is in the cache. The caching algorithm does however work from the assumption that you'd normally read sequentially. It tries to read ahead, as long as the file sectors are still on the same track. They usually are, unless the disk is heavily fragmented. But yes, it is inefficient. You'll get hit with two pinvoke and API calls for each individual byte. There's a fair amount of overhead in that, those same two calls could also read, say, 65 kilobytes with the same amount of overhead. As usual, fix this only when you find it to be a perf bottleneck.

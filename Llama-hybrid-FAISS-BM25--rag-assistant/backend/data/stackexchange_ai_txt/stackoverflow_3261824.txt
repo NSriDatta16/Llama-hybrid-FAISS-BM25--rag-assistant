@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3261824
+[parent_id]: 
+[tags]: 
+Cannot create a WPF UserControl in a Clr 4.0 self hosting application because of a stackoverflow error
+
+I managed to host the CLR 2.0 in a Delphi win32 application that was able to create and host WPF controls inside a Delphi control, something similar to the ElementHost for WinForms applications. Now, I want to move my solution to the CLR 4.0 and everything works fine except when I try to create a UserControl that has an associated Xaml resource. In that case it causes a stackoverflow error which forces the process to exit! But if I create some WPF controls by code (without reading xaml) then everything works fine! I managed to step in the framework code until I entered the XamlReader.LoadBaml method, which crashed just after executing the following code: // We don't actually use the GeneratedInternalTypeHelper any more. // But for v3 compat, don't allow loading of internals in PT unless there is one. Type internalTypeHelper = null; if (streamInfo.Assembly != null) { try { internalTypeHelper = XamlTypeMapper.GetInternalTypeHelperTypeFromAssembly(parserContext); } // This can perform attribute reflection which will fail if the assembly has unresolvable // attributes. If that happens, just assume there is no helper. catch (Exception e) { if (MS.Internal.CriticalExceptions.IsCriticalException(e)) { throw; } } } Note that the loaded assemblies use the CLR4 too. Thanks for your help, Morgan

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4016767
+[parent_id]: 
+[tags]: 
+NHibernate - Retrieve parent / children with criteria applied only to children
+
+I have a parent entity with a list of child entities. When using NHibernate to retrieve a given parent with children from SQL, it works fine if there are no children OR if there are children with dates that match the where condition. If there are children that do not match the where clause, the parent is null. I want to have the parent initialized with an empty list of children. Any thoughts on how I can modify the code below to make this happen? Entities: public class Parent { public int ParentId; public IList Children { get; set; } public Parent() { Children = new List (); } } public class Child { public int ChildId; public DateTime ChildDate; public Parent Parent { get; set; } } Repository: IList foundParents = new List (); var criteria1 = DetachedCriteria.For () .Add(Restrictions.Eq("ParentId", parentId)) .CreateCriteria("Children", JoinType.LeftOuterJoin) .Add(Restrictions.Or( Restrictions.IsNull("ChildDate"), // no children at all Restrictions.And( Restrictions.Ge("ChildDate", startDate), Restrictions.Le("ChildDate", endDate) ) )); foundParents = Session .CreateMultiCriteria() .Add (criteria1) .SetResultTransformer(new DistinctRootEntityResultTransformer()) .List()[0] as List ; If I were writing SQL for this, I would put the date comparison in with the left join and not in the where clause. I can't figure out how to do this with NHibernate.

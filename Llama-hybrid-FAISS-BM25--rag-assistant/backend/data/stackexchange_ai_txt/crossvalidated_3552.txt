@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 3552
+[parent_id]: 
+[tags]: 
+Replicating R model in SAS
+
+I've got a model that I've developed in R, but also need to express in SAS. It's a double GLM, that is, I fit both the mean and (log-)variance as linear combinations of the predictors: $E(Y) = X_1'b_1$ $\log V(Y) = X_2'b_2$ where Y has a normal distribution, $X_1$ and $X_2$ are the vectors of independent variables, and $b_1$ and $b_2$ are the coefficients to be estimated. $X_1$ and $X_2$ can be the same, but need not be. I can fit this in R using gls() and the varComb and varIdent functions. I've also written a custom function that maximises the likelihood using optim/nlminb, and verified that it returns the same output as gls. I would now like to translate this into SAS. I know that I can use PROC MIXED: proc mixed; class x2; model y = x1; repeated /group = x2; run; However, this only gives me what I want if I have 1 variable in the /GROUP option. If I enter 2 or more variables, MIXED can only handle this by treating each individual combination of levels as a distinct group (that is, it takes the cartesian product). For example, if I have 2 variables in $X_2$, with 3 and 4 levels respectively, MIXED will fit 12 parameters for the variance. What I want is for the log-variance to be additive in the variables specified, ie 6 parameters. Is there a way of doing this in MIXED or any other proc? I could probably code something in NLP, but I'd really prefer not to.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 687917
+[parent_id]: 687197
+[tags]: 
+I think I figured it out - some code elsewhere in the app uses XML functions such as: xmlCtxtReadMemory() xmlClearParserCtxt(); xmlFreeParserCtxt(); xmlCleanupParser(); xmlFreeDoc(); These functions are likely executing in another thread at the same time I am executing the code fragment I posted. NSXMLParser obviously uses the same functions under the hood. I've added a synchronized block to the other code using the same lock object as the one I use for my NSXMLParser usage, and the crashes seem to have gone away. So I guess the lesson here is that these XML functions are totally not thread-safe - use with caution!

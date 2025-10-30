@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3082525
+[parent_id]: 1088466
+[tags]: 
+here is the solution define variable $NOISE_WORDS as xs:string* { (: \b is a word boundary. This catches beginning, end, and middle of string matches on whole words. :) ('\bthe\b', '\bof\b', '\ban\b', '\bor\b', '\bis\b', '\bon\b', '\bbut\b', '\ba\b') } define function remove-noise-words($string, $noise) { (: This is a recursive function. :) if(not(empty($noise))) then remove-noise-words( replace($string, $noise[1], '', 'i'), (: This passes along the noise words after the one just evaluated. :) $noise[position() > 1] ) else normalize-space($string) } let $source-string1 := "The Tragedy of King Lear" let $source-string2 := "The Tragedy OF King Lear These an" let $source-string3 := "The Tragedy of the an of King Lear These of" let $source-string4 := "The of an of" (: Need to handle empty result if all noise words, as in #4 above. :) let $final := remove-noise-words($source-string1, $NOISE_WORDS) return $final Visit [link text][1] [1]: http://filesharepoint.com for more details..!

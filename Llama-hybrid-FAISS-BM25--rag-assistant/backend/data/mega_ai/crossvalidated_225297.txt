@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 225297
+[parent_id]: 
+[tags]: 
+Covariance matrix of the initial state vector. KFAS package
+
+Any given ARIMA(p,d,q) model $y^*_t=\sum_{i=1}^pa_iy^*_{t-i}+e_t+\sum_{i=1}^qb_ie_{t-i}$,where $ y^*_t=\Delta_dy_t$ - the difference of d$^{th}$ order, can be re-written as a dynamic linear model in state space ( 1 , 2 ) in the following way: $$\begin{cases} y_t=ZX_t,\\ X_{t+1}=TX_t+Re_t. \end{cases} $$ Such representation is used for fitting model to the observed time series and forecasting future values. What I'm trying to understand is the way function SSMArima from KFAS estimates the covariance matrix of the nondiffuse part of the initial state vector P1. The particularly important to the answer is this piece of code: nd The main part is solve(a = diag(mnd^2) - matrix(kronecker(T[nd, nd], T[nd, nd]), mnd^2, mnd^2), b = c(R[nd, , drop = FALSE] %*% Q %*% t(R[nd, , drop = FALSE]))) In its simplest case when $d = 0, Q = 1$ the covariance matrix P1 is obtained after solving the equation: $$ (I_{r^2} - T\otimes T)x = vec(RR^T) $$ and putting the result into square matrix (devectorize it $devec(x)$). The closest thing I came to it (considering $\mathbb{E}X_tX_{t}^T = \mathbb{E}X_{t + 1}X_{t + 1}^T = \Sigma $) is solving $$ \Sigma = T\Sigma T^T + RR^T $$ But how are these two approaches equivalent and can we really think that $\mathbb{E}X_tX_{t}^T = \mathbb{E}X_{t + 1}X_{t + 1}^T$? There is nothing about it in the specification of the package.

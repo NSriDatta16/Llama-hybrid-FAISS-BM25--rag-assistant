@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1782389
+[parent_id]: 
+[tags]: 
+Nested join on same table (tree structure)
+
+My date is organized in tree structure. The following applies (Oracle SQL syntax): CREATE TABLE TREE ( NAME VARCHAR2(20), ID NUMBER(10, 0), PARENT NUMBER(10, 0) ) ; INSERT INTO "TREE" (NAME, ID) VALUES ('a', '1'); INSERT INTO "TREE" (NAME, ID, PARENT) VALUES ('a.1', '2', '1'); INSERT INTO "TREE" (NAME, ID, PARENT) VALUES ('a.2', '3', '1'); INSERT INTO "TREE" (NAME, ID, PARENT) VALUES ('a.2.1', '4', '3'); INSERT INTO "TREE" (NAME, ID, PARENT) VALUES ('a.2.2', '5', '3'); INSERT INTO "TREE" (NAME, ID) VALUES ('b', '6'); I would like to return full tree by id, so for query : select name, id > where id = 1 I would get | name | id | | a | 1 | | a.1 | 2 | | a.2 | 3 | | a.2.1 | 4 | | a.2.2 | 5 | for a sub tree I would get: select name, id > where id = 3 I would get | name | id | | a.2 | 3 | | a.2.1 | 4 | | a.2.2 | 5 | Where as, for flat entry b, it would get select name, id > where id = 6 I would get | name | id | | b | 6 | It seems that plain left out join queries fails to fulfill this purpose, or am I missing something? The following query does return the full structure, but when starting to filter with where statements it fails. select t1.id t1Id, t2.id t2Id, t1.name t1Name, t2.name t2Name from tree t1 left outer join tree t2 on t1.id = t2.parent

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 853212
+[parent_id]: 850965
+[tags]: 
+You won't find any easy way to do this across your whole application for all (or even most) helpers. Helpers are structured as modules meant to be included in view rendering classes. To leverage them, you'd have to keep a copy of an ActionView around (not a HUGE deal I suppose). You can always open up the classes and specify each helper you want, though: class Time def time_ago_in_words ActionView::Base.new.time_ago_in_words self end end >> t = Time.now => Tue May 12 10:54:07 -0400 2009 >> t.time_ago_in_words => "less than a minute" (wait a minute) >> t.time_ago_in_words => "1 minute" If you take that approach, I recommend caching the instance of ActionView::Base that you use. Or, if you don't want to go so heavyweight, you can create your own class to just include the helpers you want (you don't want to include the helpers directly in each Time, Date, String, etc, class, though, as that will clutter up the method namespace pretty fierce -- and conflict with the natural names you want).

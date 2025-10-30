@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 100113
+[parent_id]: 
+[tags]: 
+How to fix Sagemaker's "No finished training job found associated with this estimator" error?
+
+I ran a complete AWS SageMaker Autopilot experiment. I now want to generate batch forecasts using this model but I get the error: "No finished training job found associated with this estimator. Please make sure this estimator is only used for building workflow config". I'm using this tutorial as reference. Here's my SageMaker Studio notebook Python code. import sagemaker from sagemaker import get_execution_role import boto3 import os from time import gmtime, strftime, sleep session = sagemaker.Session() bucket = sagemaker.Session().default_bucket() prefix = "trial-01" region = sagemaker.Session().boto_region_name role = sagemaker.get_execution_role() # The location of the test dataset batch_input = 's3://{}/{}/test'.format(bucket, prefix) # The location to store the results of the batch transform job batch_output = 's3://{}/{}/batch-prediction'.format(bucket, prefix) container=sagemaker.image_uris.retrieve("xgboost", region, "1.2-1") test_model=sagemaker.estimator.Estimator( image_uri=container, role=role, instance_count=1, instance_type='ml.m4.xlarge', volume_size=5, output_path=batch_output, sagemaker_session=sagemaker.Session() ) transformer = test_model.transformer( instance_count=1, instance_type='ml.m4.xlarge', output_path=batch_output )

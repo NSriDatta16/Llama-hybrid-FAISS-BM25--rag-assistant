@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2180513
+[parent_id]: 2180419
+[tags]: 
+Well, there is the simple solution of doing something like: public Baz doSomethingAndBlock(Foo fooArg, Bar barArg) { final AtomicReference notifier = new AtomicReference(); doSomethingAsync(fooArg, barArg, new BazComputationSink() { public void onBazResult(Baz result) { synchronized (notifier) { notifier.set(result); notifier.notify(); } } }); synchronized (notifier) { while (notifier.get() == null) notifier.wait(); } return notifier.get(); } Of course, this assumes that your Baz result will never be null…

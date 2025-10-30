@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4057951
+[parent_id]: 4057938
+[tags]: 
+You don't show your source code, however I guess what you are doing is this: string xml = ... retrieve ...; XmlDocument doc = new XmlDocument(); doc.Load(xml); // error thrown here The Load method expects a file name not an XML itself. To load an actual XML, just use the LoadXml method: ... same code ... doc.LoadXml(xml); Similarly, using XDocument the Load(string) method expects a filename , not an actual XML. However, there's no LoadXml method, so the correct way of loading the XML from a string is like this: string xml = ... retrieve ...; XDocument doc; using (StringReader s = new StringReader(xml)) { doc = XDocument.Load(s); } As a matter of fact when developing anything, it's a very good idea to pay attention to the semantics (meaning) of parameters not just their types. When the type of a parameter is a string it doesn't mean one can feed in just anything that is a string. Also in respect to your updated question, it makes no sense to use XmlDocument and XDocument at the same time. Choose one or the another.

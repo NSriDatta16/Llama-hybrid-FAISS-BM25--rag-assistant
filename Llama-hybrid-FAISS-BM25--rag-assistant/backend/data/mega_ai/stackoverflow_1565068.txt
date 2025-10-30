@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1565068
+[parent_id]: 1565010
+[tags]: 
+Storage location and thread creation are two separate concepts. It doesn't matter which thread created an object in terms of who will finally 'own' it or when it will be released later. Unfortunately, there's no clear-cut answer to your question, but I'd start by thinking about whether this object is a singleton, or whether it's a cache item that can be purged, or whether it's a result object that you need to pass back to some other selector asynchronously. If it's a singleton, put it in a static var, and never release it (or, consider doing so in response to a low memory warning) If it's a cache, then have the cache own the item when it's inserted, so you don't have to worry about it. You might need an autorelease to do this, but be careful when using autorelease and threads since each thread may have its own autorelease pool which gets drained at different times. If it's an object that you need to pass back to another caller, you want to autorelease it as you return and let the caller pick up the ownership of the item.

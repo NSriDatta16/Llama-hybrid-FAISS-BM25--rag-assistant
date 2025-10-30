@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1631559
+[parent_id]: 
+[tags]: 
+Multicore make in parallel rather than "threaded" execution?
+
+I have a Makefile to execute a test suite that looks roughly like this: %.diff.png: %.test.png echo '$*: Comparing with good PNG.' %.test.png: %.pdf echo '$*: Converting PDF to PNG.' %.pdf: %.tex echo '$*: Generating PDF output.' with all the echo statements supplemented with the actual tests in the real Makefile. When I execute all of these tests with make test (the test target is not shown above), I obviously get linear output: ... umtest200b: Generating PDF output. umtest200b: Converting PDF to PNG. umtest200b: Comparing with good PNG. ... When I run these tests with multi-job make ( make -j2 test , say), the tests are executed in a "threaded" order: ... umtest202a: Generating PDF output. umtest202b: Generating PDF output. ... umtest202a: Converting PDF to PNG. umtest202b: Converting PDF to PNG. ... umtest202a: Comparing with good PNG. umtest202b: Comparing with good PNG. ... Perhaps you can see the problem; before discovering if the test fails it's already run through all of the PDF generations and PNG conversions for every single other test. Is there a way to organise the tests so that even when run with multiple jobs the tests are run to completion before moving on to the next test? Or is this a task for a better make ?

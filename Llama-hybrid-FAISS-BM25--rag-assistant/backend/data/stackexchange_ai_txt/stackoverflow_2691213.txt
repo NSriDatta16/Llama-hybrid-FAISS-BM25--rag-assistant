@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2691213
+[parent_id]: 
+[tags]: 
+C file read leaves garbage characters
+
+I'm trying to read the contents of a file into my program but I keep occasionally getting garbage characters at the end of the buffers. I haven't been using C a lot (rather I've been using C++) but I assume it has something to do with streams. I don't really know what to do though. I'm using MinGW. Here is the code (this gives me garbage at the end of the second read): #include #include char* filetobuf(char *file) { FILE *fptr; long length; char *buf; fptr = fopen(file, "r"); /* Open file for reading */ if (!fptr) /* Return NULL on failure */ return NULL; fseek(fptr, 0, SEEK_END); /* Seek to the end of the file */ length = ftell(fptr); /* Find out how many bytes into the file we are */ buf = (char*)malloc(length+1); /* Allocate a buffer for the entire length of the file and a null terminator */ fseek(fptr, 0, SEEK_SET); /* Go back to the beginning of the file */ fread(buf, length, 1, fptr); /* Read the contents of the file in to the buffer */ fclose(fptr); /* Close the file */ buf[length] = 0; /* Null terminator */ return buf; /* Return the buffer */ } int main() { char* vs; char* fs; vs = filetobuf("testshader.vs"); fs = filetobuf("testshader.fs"); printf("%s\n\n\n%s", vs, fs); free(vs); free(fs); return 0; } The filetobuf function is from this example http://www.opengl.org/wiki/Tutorial2:_VAOs,_VBOs,_Vertex_and_Fragment_Shaders_%28C_/_SDL%29 . It seems right to me though. So anyway, what's up with that?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2127781
+[parent_id]: 2125063
+[tags]: 
+Looking through the relevant code in FMDatabase , it seems the sqlite_bind_text() routines uses the SQLITE_STATIC parameter to bind the result NSString 's -UTF8String method (which returns an autoreleased pointer). This means SQLite assumes that the text storage will remain valid for as long as the text remains bound, while the -UTF8String return is only valid for the current autorelease context. If you're using the same FMResultSet over multiple threads or function calls, changing that parameter to SQLITE_TRANSIENT would be much safer. I'd suggest making that change in every sqlite3_bind_text() call and seeing if it still crashes. If that fixes it, you may want to report it back to the developer as a possible improvement.

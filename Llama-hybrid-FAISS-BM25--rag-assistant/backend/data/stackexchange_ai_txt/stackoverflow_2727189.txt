@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2727189
+[parent_id]: 2695731
+[tags]: 
+EDIT: this solution is for version 3.x, for 4.x version read the answer from @Paulo Neves The problem is that Paste plugin automatically resets plain text paste on every paste. So all we need to do - set it back. The following code should help. tinyMCE.init({ ... oninit : "setPlainText", plugins : "paste" .... }); The definition of setPlainText function setPlainText() { var ed = tinyMCE.get('elm1'); ed.pasteAsPlainText = true; //adding handlers crossbrowser if (tinymce.isOpera || /Firefox\/2/.test(navigator.userAgent)) { ed.onKeyDown.add(function (ed, e) { if (((tinymce.isMac ? e.metaKey : e.ctrlKey) && e.keyCode == 86) || (e.shiftKey && e.keyCode == 45)) ed.pasteAsPlainText = true; }); } else { ed.onPaste.addToTop(function (ed, e) { ed.pasteAsPlainText = true; }); } } So now it always will be plain.

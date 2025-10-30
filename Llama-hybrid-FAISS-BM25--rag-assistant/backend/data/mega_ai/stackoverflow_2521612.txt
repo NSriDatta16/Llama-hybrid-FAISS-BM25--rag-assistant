@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2521612
+[parent_id]: 2508478
+[tags]: 
+Seems that Tree.js won't let you set attributes for the cookie. So I just had to overwrite the _saveState() method for the Tree : var treeControl = new dijit.Tree({ model: treeModel, showRoot: false, openOnClick: false, cookieName: "OrganizationUnitTreeState", _saveState: function(){ // summary: // Create and save a cookie with the currently expanded nodes identifiers // Overre the default saveState function, so we can set the cookie path if(!this.persist){ return; } var ary = []; for(var id in this._openedItemIds){ ary.push(id); } dojo.cookie(this.cookieName, ary.join(","), {expires:365, path:"/"}); }, /* Many more methods */ }); It's the last line of code there that does the trick. The dojo.cookie() takes a list of key/value pairs, which will be transformed into cookie attributes, so if you want any other attributes set, this is how you'd do it.

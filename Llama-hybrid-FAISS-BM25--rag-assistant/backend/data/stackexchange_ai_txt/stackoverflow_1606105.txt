@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1606105
+[parent_id]: 
+[tags]: 
+How do I force the linker to include a function I need during debugging?
+
+I often make small methods to assist debugging, which aren't used in the actual program. Typically most of my classes has an AsString-method which I add to the watches. I know Delphi 2010 has visualizers, but I'm still on 2007. Consider this example: program Project1; {$APPTYPE CONSOLE} uses SysUtils; type TMyClass = class F : integer; function AsString : string; end; function TMyClass.AsString: string; begin Result := 'Test: '+IntToStr(F); end; function SomeTest(aMC : TMyClass) : boolean; begin //I want to be able to watch aMC.AsString while debugging this complex routine! Result := aMC.F > 100; end; var X : TMyClass; begin X := TMyClass.Create; try X.F := 100; if SomeTest(X) then writeln('OK') else writeln('Fail'); finally X.Free; end; readln; end. If I add X.AsString as a watch, I just get "Function to be called, TMyClass.AsString, was eliminated by linker". How do I force the linker to include it? My usual trick is to use the method somewhere in the program, but isn't there a more elegant way to do it? ANSWER: GJ provided the best way to do it. initialization exit; TMyClass(nil).AsString; end.

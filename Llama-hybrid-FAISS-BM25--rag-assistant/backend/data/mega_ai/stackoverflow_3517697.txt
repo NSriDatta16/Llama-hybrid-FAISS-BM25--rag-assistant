@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3517697
+[parent_id]: 3504751
+[tags]: 
+Turns out that the ClassCastException may be due to a bug in the Hibernate standard query cache. Solution is to add a scalar to the query: String sql = "select count(*) as result from table"; BigDecimal count = (BigDecimal) ht.execute(new HibernateCallback() { public Object doInHibernate(Session session) throws HibernateException { SQLQuery query = session.createSQLQuery(sql); // Add scalar to avoid bug in Hibernate query cache. query.addScalar("result", Hibernate.BIG_DECIMAL); return query.uniqueResult(); } }); References: ClassCastException with SQLQuery and setCacheable(true) Martin Schaaf's Blog: ClassCastException with SQLQuery and setCacheable(true) Caching a raw sql count with Hibernate and EhCache HHH-5163 Bug when applying a ResultTransformer on a cacheable projection based criteria ClassCastException when Hibernate tries to cache results using ResultTransformer

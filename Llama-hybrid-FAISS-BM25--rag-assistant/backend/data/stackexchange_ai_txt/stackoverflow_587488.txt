@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 587488
+[parent_id]: 
+[tags]: 
+Handling Hierarchy Data in Database
+
+I'm curious to know what the best way (best practice) to handle hierarchies are in regards to database design. Here is a small example of how I usually handle them. Node Table NodeId int PRIMARY KEY NodeParentId int NULL DisplaySeq int NOT NULL Title nvarchar(255) Ancestor Table NodeId int AncestorId int Hops int with Indexes on NodeId, AncestorId, Hops Tables look like this: Node Table NodeId NodeParentId DisplaySeq Title 1 NULL 1 'Root' 2 1 1 'Child 1' 3 1 2 'Child 2' 4 2 1 'Grandchild 1' 5 2 2 'Grandchild 2' Ancestor Table NodeId AncestorId Hops 1 NULL 0 1 1 0 2 1 1 2 2 0 3 1 1 3 3 0 4 1 2 4 2 1 4 4 0 5 1 2 5 2 1 5 5 0 With this design, I've found that with large hierarchies I can get an entire section of the hierarchy very quickly by joining on the Ancestor table for AncestorId = target NodeId, like: SELECT * FROM Node n INNER JOIN Ancestor a on a.NodeId=n.NodeId WHERE a.AncestorId = @TargetNodeId It's also easy to get direct children as well SELECT * FROM Node n INNER JOIN Ancestor a on a.NodeId=n.NodeId WHERE a.AncestorId = @TargetNodeId AND Hops = 1 I'm interested in knowing what other solutions you may have used for this type of thing. In my experience, hierarchies can get pretty hairy, and any way to optimize their retrieval is very important.

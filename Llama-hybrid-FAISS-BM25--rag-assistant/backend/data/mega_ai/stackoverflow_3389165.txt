@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3389165
+[parent_id]: 
+[tags]: 
+Is it bad practice to use DiscriminatorFormula for migration of Hibernate databases?
+
+I have an application using Hibernate for data persistence, with Spring on top (for good measure). Until recently, there was one persistent class in the application, A: @Entity public class A { @Id @Column(unique = true, nullable = false, updatable = false) @GeneratedValue(strategy = GenerationType.IDENTITY) private long id; public String name; } I have since added a subclass of A, called B: @Entity public class B extends A { public String description; } After adding B, I could now not load A's. The following exception was thrown: class org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException :: Object with id: 1 was not of the specified subclass: A (Discriminator: null); nested exception is org.hibernate.WrongClassException: Object with id: 1 was not of the specified subclass: A (Discriminator: null) I added the following annotation and property to B, and it seems to have solved the problem. Is this the right way to solve the issue? ... @DiscriminatorFormula("(CASE WHEN dtype IS NULL THEN 'A' ELSE dtype END)") public class A { private String dtype = this.getClass().getSimpleName(); ...

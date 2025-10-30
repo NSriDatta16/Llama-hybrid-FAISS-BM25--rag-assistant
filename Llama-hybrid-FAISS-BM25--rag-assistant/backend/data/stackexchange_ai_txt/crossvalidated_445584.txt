@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 445584
+[parent_id]: 445541
+[tags]: 
+Typically, you'd use something like corCAR1(form = ~ date | site) or corAR1(form = ~ months_since_start_of_timeseries | site) . This specifies time as an auto-correlation co-variate and groups by site. If your time series are perfectly regular and the data sorted by time, you could use corAR1(form = ~ 1 | site) . However, I suggest that you do not use a mixed model and include time as a fixed effect. Since this would not be a linear effect, you could use a GAM. #never use `as.data.frame(cbind(...))`, do this instead: dataset $site site) dataset $yearmon year - min(dataset $year)) * 12 + dataset$ month fit summary(fit) #Family: gaussian #Link function: identity # #Formula: #log(rabbit_captures) ~ site + s(yearmon, by = site) # #Parametric coefficients: # Estimate Std. Error t value Pr(>|t|) #(Intercept) 3.886624 0.013556 286.714 The time smoothers should take care of auto-correlation. You could also use an additional time smoother independent of site to model a general, site-independent trend.

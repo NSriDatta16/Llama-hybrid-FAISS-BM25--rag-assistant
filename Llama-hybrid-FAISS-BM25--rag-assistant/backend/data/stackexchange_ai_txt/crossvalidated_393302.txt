@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 393302
+[parent_id]: 
+[tags]: 
+A hierarchical Bayesian model in pymc3
+
+Suppose we have the following model: $X$ unobserved $Y$ such that $Y|X \sim \mathcal{N}(X,\sigma^2)$ , observed $Z$ such that $Z|X \sim \mathcal{B}(1,X)$ , observed and suppose, given observed data $(y_i,z_i)_{i}$ , we want to estimate $\sigma^2$ To do this in a Bayesian fashion, we can put some priors on $X$ and $\sigma^2$ and run a MCMC. Consider the following pymc3 implementation (uniform prior on $X$ and half normal on $\sigma^2$ ) with pm.Model() as my_model: x = pm.Uniform('x', lower=0, upper=1) my_sd = pm.HalfNormal('my_sd', sd=1) y = pm.Normal('y', mu=x, sd=my_sd,observed=observed_y) z = pm.Bernoulli('z',p=x,observed=observed_z) with my_model: step = pm.Metropolis() trace = pm.sample(100000, step=step) If I remove the line z = pm.Bernoulli('z',p=x,observed=observed_z) I get the same results. Is this expected? One could expect that providing more data that are dependent on $X$ would make the difference ...

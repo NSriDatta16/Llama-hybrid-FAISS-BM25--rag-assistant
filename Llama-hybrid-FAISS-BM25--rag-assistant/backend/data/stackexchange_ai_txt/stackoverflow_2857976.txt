@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2857976
+[parent_id]: 2855735
+[tags]: 
+As Ganesh points out, this is a technical limitation of the F# compiler (and .NET runtime), because the type abbreviation is simply replaced by the actual type during the compilation. As a result, if you write a function: let foo (a:MyType) : MyType = a + 1 The compiler will compile it as a .NET method with the following signature: int foo(int a); If the actual type of the abbreviation was hidden from the users of the library, then they wouldn't be able to recognize that the foo function is actually working with MyType (this information is probably stored in some F#-specific meta-data, but that is not accessible to other .NET languages...). Perhaps the best workaround for this limiation is to define the type as a single-case discriminated union: type MyType = MT of int let foo (MT a) = MT(a + 1) Working with this kind of type is quite convenient. It adds some overhead (there are new objects created when constructing a value of the type), but that shouldn't be a big issue in most of the situations.

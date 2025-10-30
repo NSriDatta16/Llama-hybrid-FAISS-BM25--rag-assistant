@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 318679
+[parent_id]: 20386
+[tags]: 
+Deadlocked threads will never release roots. Obviously you could argue that the deadlock presents a bigger problem. A deadlocked finalizer thread will prevent all remaining finalizers to run and thus prevent all finalizable objects from being reclaimed (as they are still being rooted by the freachable list). On a multi CPU machine you could create finalizable objects faster than the finalizer thread could run finalizers. As long as that is sustained you will "leak" memory. It is probably not very likely that this will happen in the wild, but it is easy to reproduce. The large object heap is not compacted, so you could leak memory through fragmentation. There are a number of objects which must be freed manually. E.g. remoting objects with no lease and assemblies (must unload AppDomain).

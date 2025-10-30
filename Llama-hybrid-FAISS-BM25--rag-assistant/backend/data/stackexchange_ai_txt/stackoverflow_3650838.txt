@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3650838
+[parent_id]: 3650805
+[tags]: 
+This would improve the performance if you run this query multiple times without rebuilding the temporary table. The first query would likely run around normal time, but subsequent queries would avoid the work of getting the data for the temporary table. However, the data in that table would become stale - updates from after it was built would not show up in later queries. This might be acceptable in the case of queries which do not have to be absolutely up to date - for example statistical reporting queries can usually get away with day-old data. As an alternative, many databases support materialized views (or indexed views), which are effectively temporary tables which are kept up to date automatically whenever you perform an update. You could also reproduce this effect manually using triggers on update or by performing your updates via stored procedures. This approach results in a very fragile database and is generally error prone, so I would recommend against it generally.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 876857
+[parent_id]: 876814
+[tags]: 
+LINQ-to-SQL will usually handle direct integer maps and exact string (name) maps (note: case sensitive). Meaning: write your enum somewhere, and in the designer set the property type as the fully-qualified enum name: Some.Namespace.MyEnum . It should usually work. For non-trivial mappings (for example where the column is a varchar with mixed-case values, or things like "In Progress" [note the space]), you will have to leave the storage property as int / varchar (etc) and map it manually. I usually do this by marking it as private and naming it FooStorage , and adding a mapping property in a partial class: partial class MyType { public MyEnum Foo { get {... mapping logic reading from FooStorage...} set {... mapping logic, updating FooStorage...} } } The only problem is that LINQ queries will only work against the storage property (not the bespoke property).

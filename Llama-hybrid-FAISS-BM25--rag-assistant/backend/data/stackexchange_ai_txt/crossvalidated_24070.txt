@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 24070
+[parent_id]: 
+[tags]: 
+How does one cross-validate a model of binomially distributed data?
+
+I'm ultimately looking to apply cross-validation to a much more complicated scenario, but for now consider the simple task of leave-one-out-cross-validating logistic regression. When you compare the left-out value against its respective model's predicted value, I presume you must convert the predicted value to the probability scale, but then do you also round the predicted value so that its either 0 or 1, or leave it unrounded? Any ideas on which is the better approach (and maybe why)? Example data and by-hand loocv of a logistic model: myData = data.frame( x = seq(-2,2,length.out = 10) ) myData$y = rbinom(nrow(myData),1,plogis(myData$x)) myData$preds = NA for(i in 1:nrow(myData)){ thisFit = glm( data = myData[(1:nrow(myData)!=i),] , formula = y~x , family = binomial ) myData$preds[i] = predict(thisFit,newdata=myData[(1:nrow(myData)==i),]) } myData$predsProb = plogis(myData$preds) #one approach: myData$squaredError1 = (myData$y - myData$predsProb)^2 SSE1 = sum(myData$squaredError1) #alternatively: myData$squaredError2 = (myData$y - round(myData$predsProb))^2 SSE2 = sum(myData$squaredError2) #which is a "better" estimate of future prediction error, SSE1 or SSE2? Why?

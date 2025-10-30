@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2349450
+[parent_id]: 2349394
+[tags]: 
+You essentially have to isolate all environment entries which are prefixed with HTTP_ or CONTENT_ , which correspond to your HTTP headers, e.g: # CONTENT_LENGTH -> Content-Length # HTTP_COOKIE -> Cookie # HTTP_USER_AGENT -> User-Agent @headers |= request.env.inject({}) { |h, (k, v)| if k =~ /^(HTTP|CONTENT)_/ then h[k.sub(/^HTTP_/, '').dasherize.gsub(/([^\-]+)/) { $1.capitalize }] = v end h } Alternatively, you can be more restrictive and only look for specific HTTP headers in order to avoid accidentally picking up environment variables that may look like headers but are not actually valid such as CONTENT_BLA or HTTP_DUMMY . @headers |= %w[ CONTENT_LENGTH CONTENT_TYPE HTTP_ACCEPT HTTP_REFERER HTTP_USER_AGENT ].inject({}) { |h, k| if v = request.env[k] then h[k.sub(/^HTTP_/, '').dasherize.gsub(/([^\-]+)/) { $1.capitalize }] = v end h } Take a look at actionpack/lib/action_controller/request.rb to see how they comb the environment to extract request headers.

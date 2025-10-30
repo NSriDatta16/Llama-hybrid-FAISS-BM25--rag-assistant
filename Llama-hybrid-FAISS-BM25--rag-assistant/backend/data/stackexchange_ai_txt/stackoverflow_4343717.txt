@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4343717
+[parent_id]: 
+[tags]: 
+How not to expose a public interface in Java
+
+In my project jOOQ , I model SQL queries with a complex data structure. All components of a query implement public interface QueryPart { int bind(java.sql.PreparedStatement stmt); int bind(java.sql.PreparedStatement stmt, int initialIndex); SQLDialect getDialect(); String toSQLDeclaration(); String toSQLDeclaration(boolean inlineParameters); String toSQLReference(); String toSQLReference(boolean inlineParameters); } This interface's methods are used internally by all packages of the library to construct and execute SQL. They should not be invoked directly from client code. For that purpose, I have added public interface QueryPartProvider { QueryPart getQueryPart(); } Which is the only publicly exposed interface. An example of an actual query part is: public interface Table extends QueryPartProvider {} class TableImpl implements QueryPart, Table {} As you can see, the QueryPart methods can only be accessed via Table.getQueryPart().toSQLDeclaration() , etc. My design helps discouraging direct access to QueryPart methods, but cannot completely hide it. My question is: Can anyone tell me a good design pattern to achieve this goal? Note: The simplest but not very nice solution would be to cast all objects to QueryPart, e.g. ((QueryPart) table).toSQLDeclaration()

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1060330
+[parent_id]: 1060279
+[tags]: 
+Why are there two nested iterations? For me it produces the same list of data with only one iteration: for single_date in (start_date + timedelta(n) for n in range(day_count)): print ... And no list gets stored, only one generator is iterated over. Also the "if" in the generator seems to be unnecessary. After all, a linear sequence should only require one iterator, not two. Update after discussion with John Machin: Maybe the most elegant solution is using a generator function to completely hide/abstract the iteration over the range of dates: from datetime import date, timedelta def daterange(start_date, end_date): for n in range(int((end_date - start_date).days)): yield start_date + timedelta(n) start_date = date(2013, 1, 1) end_date = date(2015, 6, 2) for single_date in daterange(start_date, end_date): print(single_date.strftime("%Y-%m-%d")) NB: For consistency with the built-in range() function this iteration stops before reaching the end_date . So for inclusive iteration use the next day, as you would with range() .

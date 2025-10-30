@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2710807
+[parent_id]: 2710765
+[tags]: 
+Wouldn't it be cleaner just to take an extra reference so the deallocator is never called? (Although that's still not very clean.) I can't say that there's no function in Boost which would do the job, but it doesn't sound like something they would want to include. EDIT: Having read the comments and a little documentation, it boils down to this: Reference leaking. At some point, execute this: new shared_ptr( my_global_shared_ptr ); Advantages: conceptually easy. Disadvantages: you are leaking something on the heap. Custom deallocator. Since shared_ptr requires little of the deallocator function, an anonymous identity function like that provided in the other answer would do fine. Advantages: leverages Boost and has absolutely no overhead. Disdvantages: requires a little documentation. Non-static global object. If there is a global shared_ptr for your object, that should be the only means of access to it. Replace the declaration of the global with a shared_ptr intialized by new my_class . I think this is best.

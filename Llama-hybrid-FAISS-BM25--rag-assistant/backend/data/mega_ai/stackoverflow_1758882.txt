@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1758882
+[parent_id]: 1757152
+[tags]: 
+PL is exactly right. There's really no patterns that Prism encourages that are incompatible with ADO.NET Data Services. There are just a few things you should know. Here's a small sample. It's a little tricky... the complete event will sometimes fire outside of the UI thread, so you have to handle it with the dispatcher (at least in SL2 you did): public class MyViewModel : BaseViewModel { public Customer CustomerResult { ... } NorthwindEntities svcContext = null; public MyViewModel() { svcContext = new NorthwindEntities(new Uri("Northwind.svc", UriKind.Relative)); DataServiceQuery query = svcContext.Customers.Expand("Orders"); // Begin the query execution. query.BeginExecute(WorkComplete, query); } private void WorkComplete(IAsyncResult result) { DataServiceQuery query = result.AsyncState as DataServiceQuery ; Customers returnedCustomer = query.EndExecute(result).FirstOrDefault(); //Execute with the dispatcher Dispatcher.CurrentDispatcher.BeginInvoke( () => { CustomerResult = returnedCustomer; }); } } Of course there is no exception handling in here, but you get the picture hopefully.

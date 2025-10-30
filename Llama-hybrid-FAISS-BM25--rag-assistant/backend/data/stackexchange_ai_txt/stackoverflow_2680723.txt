@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2680723
+[parent_id]: 2680517
+[tags]: 
+As Peter already gave a good answer I will only post how the query would look with proper design (all log data in one table) SELECT user, AVG(TIMEDIFF(start_time, end_time)) AS average_time FROM logs GROUP BY user You can apply further where conditions to the above to get stats for only a certain period (week, month, etc) or you can also group by another level. You can also get MAX and COUNT in the same query (as well as standard deviation and other aggregate function ) in an effective manner. Of course, take care of your indexes for best performance with larger data sets. EDIT: Just as I was giving peter +1 I noticed that he did not mention UNION ALL option So, you could (this is not optimal and does not contradict design issue warnings given by others) SELECT user, AVG(TIMEDIFF(start_time, end_time)) AS average_time FROM ( SELECT * FROM log_week_1 UNION ALL SELECT * FROM log_week_2 UNION ALL SELECT * FROM log_week_3 ... ) U GROUP BY user And also you can create a VIEW for this union.

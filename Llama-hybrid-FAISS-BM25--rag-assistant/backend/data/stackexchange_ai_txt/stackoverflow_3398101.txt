@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3398101
+[parent_id]: 
+[tags]: 
+Is it possible to add a function-based database-agnostic index via a Rails/ActiveRecord migration?
+
+I have an ActiveRecord model like this: create_table "books" do |t| t.string "title" end class Book 'lower(title) DESC' end As you can see I want to sort by the lowercase form of the title attribute, but this imposes a performance hit at the database level. This hit can be remedied in different ways with different databases. For example, in PostgreSQL or Oracle you create a function-based index: CREATE INDEX lowercase_book_title_index ON book (lower(title)); SQLite3 doesn't have function-based indexes so you have to specify a collation: CREATE INDEX lowercase_book_title_index ON book (title COLLATE NOCASE); I haven't looked into how you do it with MySQL but I'm sure there's a way (collations? virtual columns?). In any event I would like to do this in proper Rails fashion with a database-agnostic migration. I can of course create a simple index like this: add_index :books, :title But the index this generates is case-sensitive. I realize I could write a database-dependent migration, but it's not very elegant. It's also not practical--I often find myself using SQLite3 on my development workstations and PostgreSQL in production. The available options for add_index deal with index name, uniqueness, and length. Am I overlooking a way to accomplish what I'm trying to do here?

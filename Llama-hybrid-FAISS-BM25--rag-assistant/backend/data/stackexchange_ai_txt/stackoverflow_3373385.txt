@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3373385
+[parent_id]: 3372187
+[tags]: 
+Here's a query that may work. WITH OpLogCTE AS ( SELECT Users, Date, Operation, AVG(COUNT(*)) OVER (PARTITION BY Users, Date, Operation) AS OpCount FROM tblOperationLog GROUP BY Users, Date, Operation ) SELECT Users, Date, SUM(CASE Operation WHEN 'Insert' THEN OpCount ELSE 0 END) AS InsertCount, SUM(CASE Operation WHEN 'Update' THEN OpCount ELSE 0 END) AS UpdateCount, SUM(CASE Operation WHEN 'Delete' THEN OpCount ELSE 0 END) AS DeleteCount FROM OpLogCTE GROUP BY Users, Date ORDER BY Users, Date The top part is a Common Table Expression (CTE). It contains a query that gets the average values for each user, date and operation. The lower part takes the results of the CTE and groups the data so that you get a row for each user and date.

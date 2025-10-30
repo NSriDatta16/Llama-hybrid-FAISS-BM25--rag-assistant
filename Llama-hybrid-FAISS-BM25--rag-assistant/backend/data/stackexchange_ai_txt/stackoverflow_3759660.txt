@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3759660
+[parent_id]: 
+[tags]: 
+How to check Stored Procedures update result on C#
+
+Looking on some source code I've inherited, there's a snippet of code that calls a SQL stored procedure making an Update. The stored procedure returns -1 in case something goes wrong: IF @@Error <> 0 BEGIN ROLLBACK TRAN SELECT -1 RETURN END COMMIT TRAN SELECT 0 The C# code is something like this: System.Data.SqlClient.SqlDataReader myReader; try{ SqlDbConnection.Open(); SqlDbCommand.Connection = SqlDbConnection; SqlDbCommand.CommandType = System.Data.CommandType.StoredProcedure; SqlDbCommand.CommandText = "StoredProcedured_UpdateFoo"; SqlDbCommand.Parameters.Clear(); SqlDbCommand.Parameters.Add("@FooData", SqlDbType.DateTime); SqlDbCommand.Parameters["@FooData"].Value = System.DateTime.Now.ToString("yyyy-MM-dd"); myReader = SqlDbCommand.ExecuteReader(); if (myReader.Read()) { if (int.Parse(myReader.GetValue(0).ToString()) == -1) throw new ErrorDataTxRx("Error FOO "); } } finally { if (SqlDbConnection.State != ConnectionState.Closed){ SqlDbConnection.Close(); } if (myReader != null){ if (!myReader.IsClosed) myReader.Close(); } } I also see part of the same code, checking the same thing using System.Data.DataSet() with Fill method. Is there a more elegant way to check if the returned value is -1? Is it OK to use an ExecuteReader in this case?

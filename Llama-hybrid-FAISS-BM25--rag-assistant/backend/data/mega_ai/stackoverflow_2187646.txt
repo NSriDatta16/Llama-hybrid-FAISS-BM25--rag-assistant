@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2187646
+[parent_id]: 2186817
+[tags]: 
+I think your problem was that you weren't properly adding content to your PDF. This is done through the Document.Add() method and you finish up by calling Document.Close(). When you call Document.Close() however, your MemoryStream also closes so you won't be able to write it to your FileStream as you have. You can get around this by storing the content of your MemoryStream to a byte array. The following code snippet works for me: using (MemoryStream myMemoryStream = new MemoryStream()) { Document myDocument = new Document(); PdfWriter myPDFWriter = PdfWriter.GetInstance(myDocument, myMemoryStream); myDocument.Open(); // Add to content to your PDF here... myDocument.Add(new Paragraph("I hope this works for you.")); // We're done adding stuff to our PDF. myDocument.Close(); byte[] content = myMemoryStream.ToArray(); // Write out PDF from memory stream. using (FileStream fs = File.Create("aTestFile.pdf")) { fs.Write(content, 0, (int)content.Length); } }

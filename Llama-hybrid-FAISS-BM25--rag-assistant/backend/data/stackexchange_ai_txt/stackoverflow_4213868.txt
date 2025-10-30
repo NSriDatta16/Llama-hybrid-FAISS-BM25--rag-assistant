@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4213868
+[parent_id]: 
+[tags]: 
+SQL Server Agent - get my own job_id
+
+I'm running a SQL Server 2008 64 bit Developer Edition with Service Pack 1 installed. I have a SQL Server Agent Job. Within this job I want to get the job_id of my own job. On MSDN ( http://msdn.microsoft.com/en-us/library/ms175575(v=SQL.100).aspx ) you can find a description of using tokens in job steps. Wow, great, that's what I'm looking for!! Just use (JOBID). Since SQL Server 2005 SP1 you have to use macro like $(ESCAPE_NONE(JOBID)). No problem. But if you try the example: DECLARE @name NVARCHAR(128) select @name = name from msdb.dbo.sysjobs where job_id = $(ESCAPE_SQUOTE(JOBID)) PRINT @name you get: Incorrect syntax near 'ESCAPE_SQUOTE'. (Microsoft SQL Server, Error: 102) Ok, now from the scratch: PRINT N'$(ESCAPE_SQUOTE(JOBID))' results in 0xE33FE637C10B3C49A6E958BB3EF06959 but the job_id is 37E63FE3-0BC1-493C-A6E9-58BB3EF06959 The "N'" I think makes an implicit conversion to NVARCHAR of the (JOBID)... Ok, I think I have to care about the datatype of (JOBID). In the book "SQL Server 2008 Administration" on page 168/169 there's also an example of using (JOBID): declare @jobid binary(16) SELECT @jobid =Convert(Uniqueidentifier,$(ESCAPE_NONE(JOBID))) results in: Incorrect syntax near '('. (Microsoft SQL Server, Error: 102) I'm totally confused now. Could please someone help me with a good advice or solution. Every kind of help is appreciated. Best regards Helmut

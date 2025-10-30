@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2653654
+[parent_id]: 
+[tags]: 
+Invoking code both before and after WebControl.Render method
+
+I have a set of custom ASP.NET server controls, most of which derive from CompositeControl. I want to implement a uniform look for "required" fields across all control types by wrapping each control in a specific piece of HTML/CSS markup. For example: ...custom control markup... I'd love to abstract this behavior in such a way as to avoid having to do something ugly like this in every custom control, present and future: public class MyServerControl : TextBox, IRequirableField { public IRequirableField.IsRequired {get;set;} protected override void Render(HtmlTextWriter writer){ RequiredFieldHelper.RenderBeginTag(this, writer) //render custom control markup RequiredFieldHelper.RenderEndTag(this, writer) } } public static class RequiredFieldHelper{ public static void RenderBeginTag(IRequirableField field, HtmlTextWriter writer){ //check field.IsRequired, render based on its values } public static void RenderEndTag(IRequirableField field, HtmlTextWriter writer){ //check field.IsRequired , render based on its values } } If I was deriving all of my custom controls from the same base class, I could conceivably use Template Method to enforce the before/after behavior;but I have several base classes and I'd rather not end up with really a convoluted class hierarchy anyway. It feels like I should be able to design something more elegant (i.e. adheres to DRY and OCP) by leveraging the functional aspects of C#, but I'm drawing a blank.

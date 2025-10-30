@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1703262
+[parent_id]: 1703213
+[tags]: 
+If you are referring to the time the destructor on the objects gets called, then that's up the garbage collector, the programming can have very little influence over that, and it is explicity non-deterministic according to the language definition. If you are referring to calling IDisposable.Dispose(), then that depends on the behavior of the objects that implement the IDisposable interface. In general, the order doesn't matter for most Framework objects, except to the extent that it matters to the calling code. But if object A maintains a dependency on object B, and object B is disposed, then it could very well be important not to do certain things with object A. In most cases, Dispose() is not called directly, but rather it is called implicitly as part of a using or foreach statement, in which case the reverse-order pattern will naturally emerge, according to the statement embedding. using(Foo foo = new Foo()) using(FooDoodler fooDoodler = new FooDoodler(foo)) { // do stuff // ... // fooDoodler automatically gets disposed before foo at the end of the using statement. }

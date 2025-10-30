@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2078844
+[parent_id]: 
+[tags]: 
+Odd Memory Error -- Bad Alloc
+
+Working on a WinPCap project. Trying to do some basic pointer and memory operations and having lots of errors. I've included the two lines I'm trying to run along with the includes. The same lines in another VSC++ project work just fine. This is the error I am getting Unhandled exception at 0x75a79617 in pktdump_ex.exe: Microsoft C++ exception: std::bad_alloc at memory location 0x0012f8e4.. #include #include #include #include #include "DataTypes.h" #include #include "EthernetLayer.h" #include int* testPointer = new int[2]; delete[] testPointer; EDIT: Found out something useful. The following code snippet is what is crashing the winpcap library. EthernetStructPointers* testData; testData = (EthernetStructPointers*)pkt_data; EthernetStruct newData; memcpy(newData.DEST_ADDRESS, testData->DEST_ADDRESS, 6); These are the definitions of the structs. struct EthernetStructPointers { u_char DEST_ADDRESS[6]; u_char SOURCE_ADDRESS[6]; u_char TYPE[2]; }; struct EthernetStruct { u_char DEST_ADDRESS[6]; u_char SOURCE_ADDRESS[6]; u_char TYPE[2]; u_char* dataPointer; string DestAddress; string SourceAddress; string Type; int length; };

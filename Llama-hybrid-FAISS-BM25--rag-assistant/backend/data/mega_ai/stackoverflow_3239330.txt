@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3239330
+[parent_id]: 3238407
+[tags]: 
+Try writing the XML to disk first: File tempDir = new File(System.getProperty("java.io.tmpdir")); File xmlDocument = new File(tempDir, "theXml.xml"); InputStream in = remoteURI.toURL().openStream(); OutputStream out = new FileOutputStream(xmlDocument); int read; while ((read = in.read()) != -1){ out.write(read); } in.close(); out.close(); However, if you just need to pull some data from the XML using XPath, you don't have to write anything to disk: InputStream in = remoteURI.toURL().openStream(); StreamSource source = new StreamSource(in); DOMResult result = new DOMResult(); Transformer transformer = TransformerFactory.newInstance().newTransformer(); transformer.transform(source, result); Document document = (Document)result.getNode(); XPath xpath = XPathFactory.newInstance().newXPath(); xpath.evaluate("...", document);

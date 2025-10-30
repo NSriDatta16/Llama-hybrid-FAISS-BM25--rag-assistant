@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2750005
+[parent_id]: 
+[tags]: 
+Testing with Qt's QTestLib module
+
+I started writing some tests with Qt's unit testing system. How do you usually organize the tests? It is one test class per one module class, or do you test the whole module with a single test class? Qt docs suggest to follow the former strategy. I want to write tests for a module. The module provides only one class that is going to be used by the module user, but there is a lot of logic abstracted in other classes, which I would also like to test, besides testing the public class. The problem is that Qt's proposed way to run tests involved the QTEST_MAIN macro: QTEST_MAIN(TestClass) #include "test_class.moc" and eventually one test program is capable of testing just one test class. And it kinda sucks to create test projects for every single class in the module. Of course, one could take a look at the QTEST_MAIN macro, rewrite it, and run other test classes. But is there something, that works out of the box? So far I do it by hand: #include "one.h" #include "two.h" int main(int argc, char *argv[]) { QCoreApplication app(argc, argv); TestOne one; QTest::qExec(&one, argc, argv); TestOne two; QTest::qExec(&two, argc, argv); }

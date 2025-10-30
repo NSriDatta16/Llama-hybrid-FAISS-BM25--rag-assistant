@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3864076
+[parent_id]: 3863265
+[tags]: 
+Your process can use two megabytes of memory. When malloc fails, the used memory will be near that value. If your computer has less physical memory, a lot of memory pages of that process will have been paged out to the disk. While your exception handler frees back memory, the heap manager will touch all pages, bringing them back to physical memory. This will be slow. This is what you are observing with the Task Manager. The column names are deceptives: VM Size is really private memory, which will not change because freed memory is not given back to the system by the Heap Manager (answering why would be a question by itself). Mem Usage is the size of the working set of the process, that is the physical memory used by that process. It will increase as pages are mapped back to physical memory from the page file. You do not mention how the process terminates abnormally, but fragmentation may also occur in memory, which may explain that mallocs may continue to fail even after freeing your array.

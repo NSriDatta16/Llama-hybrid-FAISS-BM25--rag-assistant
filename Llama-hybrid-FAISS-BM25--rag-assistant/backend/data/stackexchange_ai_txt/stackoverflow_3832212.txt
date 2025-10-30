@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3832212
+[parent_id]: 
+[tags]: 
+Find the minimum flow in a day and the time it occurs
+
+using MSQL 2005 I have a continuous set of flow measurements (averaged for each 15 minute time slice) I am trying to write a query to find the minimum flow for each day and the time it occurs Finding the minimum flow is easy but getting the time is harder. Currently I do this: select d1.data_point_groupid , min(d1.timeID) [timeId] , min(d1.[value]) [value] from dma.dbo.calculated_average_group_flow d1 where night=1 and round(d1.value, 6)= ( select round(min(value), 6) from dma.dbo.calculated_average_group_flow d2 where night=1 and d2.[date]=d1.[date] and d2.data_point_groupid=d1.data_point_groupid ) group by d1.data_point_groupid, d1.date However this will occasionally not match due to rounding errors I have also tried using ranking but this is so slow I had to cancel the query select [data_Point_GroupID], [date], [timeId], [value] from ( select * , Rank() over (Partition BY data_Point_GroupID, [date] order by value ASC) as Rank from [calculated_average_group_flow] d2 ) d1 WHERE rank=1 The calculated_average_group_flow is another view that does the averaging calculations Is there a better way to do this?

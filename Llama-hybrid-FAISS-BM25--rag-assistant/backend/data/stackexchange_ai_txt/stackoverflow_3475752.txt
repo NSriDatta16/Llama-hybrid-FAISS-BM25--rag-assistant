@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3475752
+[parent_id]: 
+[tags]: 
+SQL Server: help with a simple stored procedure?
+
+I'm trying to create a simple stored procedure which I can use to write data to a log table. I'm a noob in stored procedures, so what I'm missing here? I get an error saying: Msg 201, Level 16, State 4, Procedure toLog, Line 0 Procedure or function 'toLog' expects parameter '@messageTime', which was not supplied. How to modify this code to get this work? USE GO IF EXISTS(SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'logTable') DROP TABLE dbo.logTable GO CREATE TABLE dbo.logTable ( messageTime DATETIME NULL, etlJobName NVARCHAR(40) NULL, whereTo VARCHAR(10) NOT NULL, messag VARCHAR(255) NULL ) /*************** procedure ************/ --DROP PROC dbo.toLog CREATE PROCEDURE dbo.toLog @messageTime DATETIME, @etlJobName NVARCHAR(60) = 'unknown', @whereTo NVARCHAR(20) = 'print', @messag NVARCHAR(255) = 'empty' AS BEGIN SET @messageTime = GETDATE() IF @whereTo = 'log' OR @whereTo = 'logandprint' INSERT INTO logTable(messageTime, etlJobName, whereTo, messag) VALUES (@messageTime, @etlJobName, @whereTo, @messag) IF @whereTo = 'print' OR @whereTo = 'logandprint' PRINT CONVERT(VARCHAR, GETDATE(), 113) + ', ' + @etlJobName + ', ' + @whereTo + ', ' + ', ' + @messag END GO --execution EXEC dbo.toLog @whereTo = 'log'

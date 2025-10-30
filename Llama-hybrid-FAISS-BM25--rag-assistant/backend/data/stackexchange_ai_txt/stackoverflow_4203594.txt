@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4203594
+[parent_id]: 4203560
+[tags]: 
+Use Seq.cast for this. For example: Seq.singleton "Hello World" |> Seq.cast |> printEm Admittedly, this gives up type safety: type Animal() = class end type Dog() = inherit Animal() type Beagle() = inherit Dog() let printEm (os: seq ) = for o in os do o.ToString() |> printfn "%s" Seq.singleton (Beagle()) |> Seq.cast |> printEm // ok Seq.singleton (Animal()) |> Seq.cast |> printEm // kaboom! but it is expedient. Alternatively, you can use flexible types : type Animal() = class end type Dog() = inherit Animal() type Beagle() = inherit Dog() let printEm (os: seq ) = // note #Dog for o in os do o.ToString() |> printfn "%s" Seq.singleton (Beagle()) |> printEm // ok Seq.singleton (Animal()) |> printEm // type error which is just shorthand for the generic "forall types 'a when 'a :> Dog ". And finally, you can always map the upcast, e.g. let printEm (os: seq ) = for o in os do o.ToString() |> printfn "%s" Seq.singleton "Hello" |> Seq.map box |> printEm // ok where box upcasts to obj .

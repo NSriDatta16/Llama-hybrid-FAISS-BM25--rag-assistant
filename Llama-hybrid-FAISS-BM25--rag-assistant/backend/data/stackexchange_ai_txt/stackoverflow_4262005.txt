@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4262005
+[parent_id]: 4259124
+[tags]: 
+I think your application structure is putting you in a hazardous situation. It sounds to me like the race condition is that some Thread "A" goes away before you remove the MOC from your storage dictionary. Thus you try to send it a message on Thread "A" and it dies. Instead think of it this way: Each thread has a thread local object, that you can store inside the thread local storage (see NSThread docs, look for threadDictionary) This object is created when your thread starts doing it's work, and sets up the MOC to be used by a given thread The object also registers for save notifications, and monitors them for the lifetime of the threads work At the end of the threads work this object is destroyed. This way you encapsulate the life-cycle of the managed object context and directly tie it to the notification mechanism that will reference it. By storing the monitor object in the thread local storage you also tie those two points of concern to the lifetime of the thread.

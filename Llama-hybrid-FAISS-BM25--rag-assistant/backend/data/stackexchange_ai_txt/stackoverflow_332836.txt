@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 332836
+[parent_id]: 330053
+[tags]: 
+Timestamp field certainly seemed to be the most elegant way of doing this. I HATE having to mess with individual field's properties - mainly so I can safely delete and re-add a table to my DBML file without having to worry about the consequences. http://msdn.microsoft.com/en-us/library/bb470449.aspx The SQL now generated for an UPDATE is : exec sp_executesql N'UPDATE [dbo].[SiteVisit] SET [TotalTimeOnSite] = @p2 WHERE ([SiteVisitId] = @p0) AND ([timestamp] = @p1) and in the same transaction: SELECT [t1].[timestamp] FROM [dbo].[SiteVisit] AS [t1] WHERE ((@@ROWCOUNT) > 0) AND ([t1].[SiteVisitId] = @p3)',N'@p0 int,@p1 timestamp,@p2 int,@p3 int',@p0=814109,@p1=0x0000000000269CB8,@p2=1199920,@p3=814109 It does an UPDATE, and then retrieves the new timestamp to send back to my client. I'm not sure i fully understand what @@ROWCOUNT > 0 means, but right now I dont really care :)

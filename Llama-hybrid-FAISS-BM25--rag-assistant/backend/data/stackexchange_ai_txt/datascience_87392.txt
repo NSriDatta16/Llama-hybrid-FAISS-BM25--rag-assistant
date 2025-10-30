@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 87392
+[parent_id]: 
+[tags]: 
+Why the validation accuracy is constant for all the pre-trained models while applying on medical datasets with .czi format?
+
+#import all the libraries import tensorflow as tf import numpy as np import matplotlib.pyplot as plt from sklearn.metrics import confusion_matrix,classification_report import os import sklearn.utils path='/content/drive/My Drive/Drug/spheroid_imageset/untreated/training_set' X=np.load(path+'/X.npy') Y=np.load(path+'/Y.npy') X=X.reshape(-1,224,224,1) X,Y = sklearn.utils.shuffle(X,Y) tf.keras.callbacks.EarlyStopping( # monitor="val_loss", # min_delta=0, patience=3, verbose=0, mode="auto", baseline=None, restore_best_weights=False, ) image_size=224 base_model = tf.keras.applications.MobileNet(weights=None,include_top=False,input_shape=(image_size,image_size,1)) base_model.trainable = False x = base_model.output x = tf.keras.layers.GlobalAveragePooling2D()(x) x = tf.keras.layers.Dropout(0.50)(x) x = tf.keras.layers.Dense(16,activation='relu')(x) x = tf.keras.layers.Dense(3,activation="softmax")(x) model = tf.keras.Model(inputs=base_model.input, outputs=x) model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['accuracy']) history=model.fit(X,Y,epochs=50,validation_split=0.25,callbacks=[callback])

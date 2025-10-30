@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 25402
+[parent_id]: 25392
+[tags]: 
+The behaviour you are seeing is not related to not properly resetting models but the stochastic nature of most of these algorithms. By setting a random seed the same random numbers will be generated every time. See: How to seed the random number generator for scikit-learn? However, while this will lead to a reproducible sample, this might still not be fair. If one model randomly gets a good seed and another one a bad one you will unfairly always favor the first one. What you could do is run the models multiple times with the same hyperparameters but with different seed and look for the average performance. This way you get a more fair comparison and the reproducibility. Pick the seeds up front, then you can loop over them. Something like this: seeds = (1, 2, 3, 4, 5) performances = [] for seed in seeds: performances.append(score(Model(param1=1, param2=2, random_state=seed)))

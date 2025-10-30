@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 322957
+[parent_id]: 322931
+[tags]: 
+There is nothing wrong with having a messages table with lots of data. No reason to split it if you don't really need it. If you are concerned about the performance of this table, first choose your storage engine wisely depending on your needs : my advice would be using InnoDB since it will be write-intensive. Then look into indexes in order to speed up your reads. What you could do if the table really gets too large and slow, is to create 2 tables : a messages_archive table, with MyISAM storage (only used for fast retrieving and searching of "archived" messages). a messages_inbox table, with InnoDB storage : this is the table where new messages are inserted frequently. Optional : a messages_drafts, keeping auto-saved messages. Reason : no need to slow up the inbox table with drafts messages. Btw, this is not a "standard solution" as you said, just an idea. :) EDIT : From your comment, I understand that what you are looking for is actually " Partitioning ". Different MySQL partition types allow you to physically segregate data by range, list, key or hash.

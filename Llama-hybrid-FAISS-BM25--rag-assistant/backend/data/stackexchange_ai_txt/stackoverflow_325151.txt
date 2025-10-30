@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 325151
+[parent_id]: 325126
+[tags]: 
+To answer parts of your question: How do clients go with caching images from the DB vs from the filesystem? For a database: Have a last_modified field in your database. Use the Last-Modified HTTP header so the client's browser can cache properly. Be sure to send the appropriate responses when the browser requests for an image "if newer" (can't recall what it's called; some HTTP request header). For a filesystem: Do the same thing, but with the file's modified time. If BLOBs stored in the DB are the way to go - is there anything I should know about where to store them? Since I imagine that a majority of my users won't be uploading a picture, should I create a user_pics table to (outer) join to the regular users table when needed? I would put the BLOB and related metadata in its own table, with some kind of relation between it and your user table. Doing this will make it easier to optimize the table storage method for your data, makes things tidier, and leaves room for expandability (e.g. a general "files" table).

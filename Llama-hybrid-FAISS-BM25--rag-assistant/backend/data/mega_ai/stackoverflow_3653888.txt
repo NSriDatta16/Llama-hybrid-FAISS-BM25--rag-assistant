@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3653888
+[parent_id]: 3653099
+[tags]: 
+The purpose of user-defined exceptions is that we can trap specific exceptions in the exception section of our PL/SQL program and handle them elegantly. For instance, if we put some flesh around your code snippet.... create or replace grant_priv ( p_priv in varchar2 , p_grantee in varchar2 ) is not_system_privilege EXCEPTION; PRAGMA EXCEPTION_INIT(not_system_privilege, -01919); begin execute immediate 'grant '||p_priv||' to '||p_grantee; exception when not_system_privilege then raise_application_error(-20000, p_priv||' is not a real privilege', true); when others then raise; end; We can put anything in the EXCEPTIONS section. Log the error in a table or file, raise alerts, whatever. It is good practice to propagate the exception upwards: only the toppermost layer of the callstack - the user-facing layer - shouldn't hurl exceptions.

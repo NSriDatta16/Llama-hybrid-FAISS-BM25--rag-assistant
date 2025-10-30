@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 932924
+[parent_id]: 
+[tags]: 
+Can anyone recommend a .Net open source alternative to Windows Workflow?
+
+What alternatives are there to Windows Workflow in the .Net stack? And if you have used these solutions, what made you select them over Windows Workflow and was it a good choice. Update: I went ahead and selected stateless created by Nicholas Blumhardt. This is a very simple approach to modeling states in a domain. Below is sample code provided at google: var phoneCall = new StateMachine (State.OffHook); phoneCall.Configure(State.OffHook) .Allow(Trigger.CallDialed, State.Ringing); phoneCall.Configure(State.Ringing) .Allow(Trigger.HungUp, State.OffHook) .Allow(Trigger.CallConnected, State.Connected); phoneCall.Configure(State.Connected) .OnEntry(t => StartCallTimer()) .OnExit(t => StopCallTimer()) .Allow(Trigger.LeftMessage, State.OffHook) .Allow(Trigger.HungUp, State.OffHook) .Allow(Trigger.PlacedOnHold, State.OnHold); phoneCall.Configure(State.OnHold) .SubstateOf(State.Connected) .Allow(Trigger.TakenOffHold, State.Connected) .Allow(Trigger.HungUp, State.OffHook) .Allow(Trigger.PhoneHurledAgainstWall, State.PhoneDestroyed); As you can see, the state machine uses generics to model the states and their respective triggers. In other words, you can use enums, integers, string, etc to fit your needs. Each state of the state machine can be configured with conditional triggers that will fire based on specific criteria.

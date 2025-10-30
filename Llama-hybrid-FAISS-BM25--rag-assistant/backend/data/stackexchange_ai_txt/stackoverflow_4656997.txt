@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4656997
+[parent_id]: 
+[tags]: 
+Remove one "folder" from URL with a 301 redirect, keep both URLs working
+
+My site URL: http://example.com/website/pages/home Wanted URL: http://example.com/pages/home I need this to be a 301 redirect so that search engines update my links. This is what I got so far: Options +FollowSymLinks Options -Indexes DirectoryIndex index.php index.html RewriteEngine on \# remove /website/ RedirectMatch ^(.+)(/website/)(.+)$ $1/$3 [L] \# remove index.php from URL RewriteCond $1 !^(index\.php^) RewriteCond %{REQUEST_FILENAME} !-f RewriteCond %{REQUEST_FILENAME} !-d RewriteRule ^(.*)$ index.php/$1 [L,QSA] \# deny access to wget user agent RewriteCond %{HTTP_USER_AGENT} wget [NC] RewriteRule (.*) /$1 [L] What happens with this rules: Inserted URL : http://example.com/website/pages/home Redirected URL : http://example.com/index.php/pages/home Expected results : http://example.com/pages/home Thanks in advance for your help. ** SOLVED* * Options +FollowSymLinks Options -Indexes DirectoryIndex index.php index.html RewriteEngine on # remove /website/ RedirectMatch ^(.+)(index.php/website/)(.+)$ $1$3 [R=301,L] # remove index.php from URL RewriteCond $1 !^(index\.php^) RewriteCond %{REQUEST_FILENAME} !-f RewriteCond %{REQUEST_FILENAME} !-d RewriteRule ^(.*)$ index.php/$1 [L,QSA] # deny access to wget user agent RewriteCond %{HTTP_USER_AGENT} wget [NC] RewriteRule (.*) /$1 [L]

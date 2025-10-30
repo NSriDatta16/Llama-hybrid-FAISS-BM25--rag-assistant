@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5068591
+[parent_id]: 
+[tags]: 
+rendering a ReportLab pdf built from SimpleDocTemplate
+
+I've a got a django app that currently generates pdfs using a canvas that the user can download. I create a StringIO buffer, do some stuff and then send call response.write. # Set up response response = HttpResponse(mimetype='application/pdf') response['Content-Disposition'] = 'attachment; filename=menu-%s.pdf' % str(menu_id) # buffer buff = StringIO() # Create the pdf object p = canvas.Canvas(buff) # Add some elements... then p.showPage() p.save() # Get the pdf from the buffer and return the response pdf = buff.getvalue() buff.close() response.write(pdf) I now want to build my pdf using platypus and SimpleDocTemplate and have written this # Set up response response = HttpResponse(mimetype='application/pdf') pdf_name = "menu-%s.pdf" % str(menu_id) response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name menu_pdf = SimpleDocTemplate(pdf_name, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18) # container for pdf elements elements = [] styles=getSampleStyleSheet() styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER)) # Add the content as before then... menu_pdf.build(elements) response.write(menu_pdf) return response But this doesn't work, it creates a bad pdf that cannot be opened. I presume the line response.write(menu_pdf) is incorrect. How do I render the pdf?

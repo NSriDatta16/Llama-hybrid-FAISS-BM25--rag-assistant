@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2072850
+[parent_id]: 326487
+[tags]: 
+Your compiler doesn't support OpenMP. Another option is to use a library approach, both Intel's Threading Building Blocks and Microsoft Concurrency Runtime are available (VS 2010). There is also a set of interfaces called the Parallel Pattern Library which are supported by both libraries and in these have a templated parallel_for library call. so instead of: #pragma omp parallel for for (i=0; i you would write: parallel_for(0,numPixels,1,ToGrayScale()); where ToGrayScale is a functor or pointer to function. (Note if your compiler supports lambda expressions which it likely doesn't you can inline the functor as a lambda expression). parallel_for(0,numPixels,1,[&](int i) { pGrayScaleBitmap[i] = (unsigned BYTE) (pRGBBitmap[i].red * 0.299 + pRGBBitmap[i].green * 0.587 + pRGBBitmap[i].blue * 0.114); }); -Rick

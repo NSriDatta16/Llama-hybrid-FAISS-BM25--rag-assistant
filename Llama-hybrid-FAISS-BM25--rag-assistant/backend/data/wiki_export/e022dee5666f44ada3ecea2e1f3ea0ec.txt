@@ -1,0 +1,42 @@
+sync is a standard system call in the Unix operating system, which commits all data from the kernel filesystem buffers to non-volatile storage, i.e., data which has been scheduled for writing via low-level I/O system calls. Higher-level I/O layers such as stdio may maintain separate buffers of their own.
+
+As a function in C, the sync() call is typically declared as void sync(void) in <unistd.h>. The system call is also available via a command line utility also called sync, and similarly named functions in other languages such as Perl and Node.js (in the fs module).
+
+The related system call fsync() commits just the buffered data relating to a specified file descriptor. fdatasync() is also available to write out just the changes made to the data in the file, and not necessarily the file's related metadata.
+
+Some Unix systems run a kind of flush or update daemon, which calls the sync function on a regular basis. On some systems, the cron daemon does this, and on Linux it was handled by the pdflush daemon which was replaced by a new implementation and finally removed from the Linux kernel in 2012. Buffers are also flushed when filesystems are unmounted or remounted read-only, for example prior to system shutdown.
+
+Some applications, such as LibreOffice, are also call sync function to save recovery information in an interval.
+
+Database use
+In order to provide proper durability, databases need to use some form of sync in order to make sure the information written has made it to non-volatile storage rather than just being stored in a memory-based write cache that would be lost if power failed. PostgreSQL for example may use a variety of different sync calls, including fsync() and fdatasync(), in order for commits to be durable. Unfortunately, for any single client writing a series of records, a rotating hard drive can only commit once per rotation, which makes for at best a few hundred such commits per second. Turning off the fsync requirement can therefore greatly improve commit performance, but at the expense of potentially introducing database corruption after a crash.
+
+Databases also employ transaction log files (typically much smaller than the main data files) that have information about recent changes, such that changes can be reliably redone in case of crash; then the main data files can be synced less often.
+
+Error reporting and checking 
+To avoid any data loss return values of fsync() should be checked because when performing I/O operations that are buffered by the library or the kernel, errors may not be reported at the time of using the write() system call or the fflush() call, since the data may not be written to non-volatile storage but only be written to the memory page cache. Errors from writes are instead often reported during system calls to fsync(), msync() or close(). Prior to 2018, Linux's fsync() behavior under certain circumstances failed to report error status, change behavior was proposed on 23 April 2018.
+
+Performance controversies
+Hard disks may default to using their own volatile write cache to buffer writes, which greatly improves performance while introducing a potential for lost writes. Tools such as hdparm -F will instruct the HDD controller to flush the on-drive write cache buffer. The performance impact of turning caching off is so large that even the normally conservative FreeBSD community rejected disabling write caching by default in FreeBSD 4.3.
+
+In SCSI and in SATA with Native Command Queuing (but not in plain ATA, even with TCQ) the host can specify whether it wants to be notified of completion when the data hits the disk's platters or when it hits the disk's buffer (on-board cache). Assuming a correct hardware implementation, this feature allows the disk's on-board cache to be used while guaranteeing correct semantics for system calls like fsync. This hardware feature is called Force Unit Access (FUA) and it allows consistency with less overhead than flushing the entire cache as done for ATA (or SATA non-NCQ) disks. Although Linux enabled NCQ around 2007, it did not enable SATA/NCQ FUA until 2012, citing lack of support in the early drives.
+
+Firefox 3.0, released in 2008, introduced fsync system calls that were found to degrade its performance; the call was introduced in order to guarantee the integrity of the embedded SQLite database.
+Linux Foundation chief technical officer Theodore Ts'o claims there is no need to "fear fsync", and that the real cause of Firefox 3 slowdown is the excessive use of fsync. He also concedes however (quoting Mike Shaver) that 
+On some rather common Linux configurations, especially using the ext3 filesystem in the "data=ordered" mode, calling fsync doesn't just flush out the data for the file it's called on, but rather on all the buffered data for that filesystem.
+
+See also
+ Page cache
+ inode
+
+References
+
+External links
+ sync(8) - Linux man page
+ http://austingroupbugs.net/view.php?id=672
+
+C POSIX library
+Data synchronization
+Standard Unix programs
+Unix file system-related software
+System calls

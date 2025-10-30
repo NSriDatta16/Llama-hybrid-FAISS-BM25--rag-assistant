@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4896094
+[parent_id]: 4895671
+[tags]: 
+You could define a view model where you won't have any circular references: public class DepartmentViewModel { public string DepartmentName { get; set; } } public class CompanyViewModel { public IEnumerable Departments { get; set; } } and then you would map between your model and view model (you could use AutoMapper for this) and finally return the view model to the view. For example: public ActionResult Index() { var companies = _repository.GetCompanies(); var companiesVM = Mapper.Map , IEnumerable >(companies); return Json(companiesVM, JsonRequestBehavior.AllowGet); } Now you no longer would have circular references and you will be able to successfully serialize the view model to JSON and you would only pass the information that is required to the view.

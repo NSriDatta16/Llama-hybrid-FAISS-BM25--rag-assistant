@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3123157
+[parent_id]: 2386975
+[tags]: 
+Summary : Existing .coverage data is kept around when running nosetests --with-coverage , so remove it first. Details : I too just encountered this via Hudson and nosetests. This error was coming from coverage/results.py:18 (coverage 3.3.1 - there were 3 places raising this error, but this was the relevant one). It's trying to open the .py file corresponding to the module that was actually traced. A small demo: $ echo print > hello.py $ echo import hello > main.py $ coverage run main.py $ rm hello.py $ coverage xml No source for code: '/tmp/aoeu/hello.py' Apparently I had a file stopwords.pyc that was executed/traced, but no stopwords.py. Yet nowhere in my code was I importing stopwords, and even removing the .pyc I still got the error. A simple strings .coverage then revealed that the reference to stopwords.py still existed. nosetests --with-coverage is using coverage's append or merge functionality, meaning the old .coverage data still lingers around. Indeed, removing .coverage addressed the issue.

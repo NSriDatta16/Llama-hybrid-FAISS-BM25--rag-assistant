@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 11000
+[parent_id]: 
+[tags]: 
+How does R handle missing values in lm?
+
+I'd like to regress a vector B against each of the columns in a matrix A. This is trivial if there are no missing data, but if matrix A contains missing values, then my regression against A is constrained to include only rows where all values are present (the default na.omit behavior). This produces incorrect results for columns with no missing data. I can regress the column matrix B against individual columns of the matrix A, but I have thousands of regressions to do, and this is prohibitively slow and inelegant. The na.exclude function seems to be designed for this case, but I can't make it work. What am I doing wrong here? Using R 2.13 on OSX, if it matters. A = matrix(1:20, nrow=10, ncol=2) B = matrix(1:10, nrow=10, ncol=1) dim(lm(A~B)$residuals) # [1] 10 2 (the expected 10 residual values) # Missing value in first column; now we have 9 residuals A[1,1] = NA dim(lm(A~B)$residuals) #[1] 9 2 (the expected 9 residuals, given na.omit() is the default) # Call lm with na.exclude; still have 9 residuals dim(lm(A~B, na.action=na.exclude)$residuals) #[1] 9 2 (was hoping to get a 10x2 matrix with a missing value here) A.ex = na.exclude(A) dim(lm(A.ex~B)$residuals) # Throws an error because dim(A.ex)==9,2 #Error in model.frame.default(formula = A.ex ~ B, drop.unused.levels = TRUE) : # variable lengths differ (found for 'B')

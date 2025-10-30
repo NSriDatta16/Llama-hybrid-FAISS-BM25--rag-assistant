@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1447296
+[parent_id]: 1447268
+[tags]: 
+This won't work. You're presuming functions are contigous in memory and that one address will map to one function. The optimizer has a lot of leeway here and can move code from functions around the image. If you have PDB files, you can use something like the dbghelp or DIA API's to figure this out. For instance, SymFromAddr . There may be some ambiguity here as a single address can map to multiple functions. I've seen code that tries to do this before with something like: #pragma optimize("", off) void Foo() { } void FooEnd() { } #pragma optimize("", on) And then FooEnd-Foo was used to compute the length of function Foo. This approach is incredibly error prone and still makes a lot of assumptions about exactly how the code is generated.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2892775
+[parent_id]: 2892705
+[tags]: 
+A different table for ratings is highly recommended to keep things dynamic. Don't worry about hundreds (or thousands or tens of thousands) of entries, that's all peanuts for databases. Suggestion: table products id name etc table products_ratings id productId rating date (if needed) ip (if needed, e.g. to prevent double rating) etc Retrieve all ratings for product 1234 : SELECT pr.rating FROM products_ratings pr INNER JOIN products p ON pr.productId = p.id AND p.id = 1234 Average rating for product 1234 : SELECT AVG(pr.rating) AS rating_average -- or ROUND(AVG(pr.rating)) FROM products_ratings pr INNER JOIN products p ON pr.productId = p.id AND p.id = 1234; And it's just as easy to get a list of products along with their average rating: SELECT p.id, p.name, p.etc, AVG(pr.rating) AS rating_average FROM products p INNER JOIN products_ratings pr ON pr.productId = p.id WHERE p.id > 10 AND p.id &lt; 20 -- or whatever GROUP BY p.id, p.name, p.etc;

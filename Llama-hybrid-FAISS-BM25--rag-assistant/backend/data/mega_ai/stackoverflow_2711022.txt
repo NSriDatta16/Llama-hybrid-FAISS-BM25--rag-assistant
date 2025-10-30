@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2711022
+[parent_id]: 2710844
+[tags]: 
+As a Boost developer myself, I can tell you that it's perfectly fine to question the statements in the documentation ;-) From reading those docs, and from reading the source code (see storage.hpp ) I can say that it's somewhat correct given some assumptions about the implementation of std::vector at the time that code was written. That code dates to 2000 initially, and perhaps as late as 2002. Which means at the time many STD implementations did not do a good job of optimizing destruction and construction of objects in containers. The claim about the non-resizing is easily refuted by using an initially large capacity vector. The claim about speed, I think, comes entirely from the fact that the unbounded_array has special code for eliding dtors & ctors when the stored objects have trivial implementations of them. Hence it can avoid calling them when it has to rearrange things, or when it's copying elements. Compared to really recent STD implementations it's not going to be faster, as new STD implementation tend to take advantage of things like move semantics to do even more optimizations.

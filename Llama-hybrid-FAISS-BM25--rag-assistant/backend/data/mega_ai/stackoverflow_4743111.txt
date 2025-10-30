@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4743111
+[parent_id]: 4734474
+[tags]: 
+1) What is the best-practice way of using boost::asio in a client application with regard to threads and keeping them alive? As the documentation suggests , a pool of threads invoking io_service::run is the most scalable and easiest to implement. 2) When writing to a socket from the main thread to the IO thread, is synchronization achieved using boost::asio::post, so that the call happens later in the io_service? You will need to use a strand to protect any handlers that can be invoked by multiple threads. See this answer as it may help you, as well as this example. 3) When data is received, how do people get the data back to the UI thread? In the past when I used completion ports, I made a special event that could post the data back to the main UI thread using a ::SendMessage. It wasn't elegant, but it worked. How about providing a callback in the form of a boost::function when you post an asynchronous event to the io_service ? Then the event's handler can invoke the callback and update the UI with the results.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4098938
+[parent_id]: 4098131
+[tags]: 
+You essentially have two options: Do exactly what you're currently doing, but call graph1.clear() and graph2.clear() before replotting the data. This is the slowest, but most simplest and most robust option. Instead of replotting, you can just update the data of the plot objects. You'll need to make some changes in your code, but this should be much, much faster than replotting things every time. However, the shape of the data that you're plotting can't change, and if the range of your data is changing, you'll need to manually reset the x and y axis limits. To give an example of the second option: import matplotlib.pyplot as plt import numpy as np x = np.linspace(0, 6*np.pi, 100) y = np.sin(x) # You probably won't need this if you're embedding things in a tkinter plot... plt.ion() fig = plt.figure() ax = fig.add_subplot(111) line1, = ax.plot(x, y, 'r-') # Returns a tuple of line objects, thus the comma for phase in np.linspace(0, 10*np.pi, 500): line1.set_ydata(np.sin(x + phase)) fig.canvas.draw() fig.canvas.flush_events()

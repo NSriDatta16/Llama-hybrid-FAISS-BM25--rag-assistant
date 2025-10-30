@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1547572
+[parent_id]: 1547365
+[tags]: 
+First note that sqlite is thread safe $ python Python 2.5.2 (r252:60911, Jul 31 2008, 17:28:52) [GCC 4.2.3 (Ubuntu 4.2.3-2ubuntu7)] on linux2 Type "help", "copyright", "credits" or "license" for more information. >>> import sqlite >>> sqlite.threadsafety 1 Then just make sure you open a new handle to the database in each thread. I do this using thread local storage to cache the database handle so there is only one per thread. Something like this... (from a py2.5 prog - hopefully it will work with 3.0!) import threading class YourClass: def __init__(self): #... self.local = threading.local() # Thread local storage for db handles self.db_file = "/path/to/db" #... def db_open(self): if not getattr(self.local, "db", None): self.local.db = sqlite3.connect(self.db_file) return self.local.db

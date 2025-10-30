@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 41364
+[parent_id]: 
+[tags]: 
+Test Loss plateau fast in Convolutional Neural Net
+
+I have a 10k dataset of 1 channel 100X100pixels images with 31 classes. I set up a CNN with 3 convolution layers each followed by a batchnorm and a 2d pooling. I tried out several combinations of learning step size and batch size, but my loss on the test set (crossentropy) always plateau at the same level. Here's my model: class myCNN(nn.Module): def __init__(self): super().__init__() # conv2d( 1-in channels, 2-out channels, 3-kernel size, padding=0, bias=True) self.conv1 = nn.Conv2d(1, 32, 5, padding=2) self.bn1 = nn.BatchNorm2d(32) self.conv2 = nn.Conv2d(32, 64, 5, padding=2) self.bn2 = nn.BatchNorm2d(64) self.conv3 = nn.Conv2d(64, 128, 5, padding=2) self.bn3 = nn.BatchNorm2d(128) self.fc = nn.Linear(128*5*5, 31) def forward(self, x_in): # x is [bs, 1, 100, 100] x = xin + F.relu(self.bn1(self.conv1(x_in))) x = F.max_pool2d(x, 2) # x is [bs, 32, 50, 50] x = F.relu(self.bn2(self.conv2(x))) x = F.max_pool2d(x, 5) # x is [bs, 32, 10, 10] x = F.relu(self.bn3(self.conv3(x))) x = F.max_pool2d(x, 2) # x is [bs, 64, 5, 5] x = x.view(-1, 128*5*5 ) # flatten x = F.relu(self.fc(x)) return x I'm just looking for general lines to take when this happens: more layers, less layers, transform.normalize on the data_loader, no padding, etc? Or maybe just increase the epochs ?

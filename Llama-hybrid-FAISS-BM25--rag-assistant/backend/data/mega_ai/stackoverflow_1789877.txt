@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1789877
+[parent_id]: 1789750
+[tags]: 
+When using pipes the shell seems to use sub-shells to do the work. As $diskfull is not known to these sub-shells the value is never changed. See: https://gist.github.com/CMCDragonkai/0a66ba5e37c5d1746d8bc814b37d6e1d I modified your script as follows. It works for me and should work on your system too. #!/bin/sh diskfull=0 ALERT=10 stats=`df -HP | grep -vE '^Filesystem|tmpfs|cdrom|none|udev' | awk '{ print $5 "_" $1 }'` for output in $stats do usep=$(echo $output | awk '{ print $1}' | cut -d'%' -f1 ) partition=$(echo $output | sed s/.*_// ) #echo $partition - $usep if [ $usep -le $ALERT ]; then diskfull=1 break fi done echo $diskfull

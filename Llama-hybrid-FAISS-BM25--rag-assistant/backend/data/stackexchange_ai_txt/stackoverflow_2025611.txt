@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2025611
+[parent_id]: 2025597
+[tags]: 
+Here's how I solved it, but it feels too much like a hack (for a hack). I used jQuery hosted from Google APIs to modify the DOM, taking advantage of Django's own 'show/hide' script. If you look at the html source of an admin page, the last script loaded is this: The comments in that file gave me the idea: Leverage ModelAdmin media definitions to load my own dom-altering script. from django.contrib import admin from django.contrib.admin.sites import AdminSite from myapp.models import * import settings media = settings.MEDIA_URL class MyParticularModelAdmin(admin.ModelAdmin): # ..... class Media: js = ('http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js', media+'js/addCollapseToAllStackedInlines.js') # ..... And then inside of the referenced javascript file: // addCollapseToAllStackedInlines.js $(document).ready(function() { $("div.inline-group").wrapInner(" "); }); The end results only works on StackedInline, NOT TabularInline.

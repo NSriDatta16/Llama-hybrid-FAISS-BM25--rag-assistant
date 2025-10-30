@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5486141
+[parent_id]: 5484146
+[tags]: 
+In your createWebViewActions() function you connect the signals to their respective slots. (One small remark, the connect for the titleChanged(QString) signal and adjustTitle() slot fails because they have different signatures) Among others you are connecting the signal loadProgress(int) to slot setProgress(int) . In this slot you call adjustTitle() where the instruction pb->show() is being executed. Notice that you are calling the createWebViewActions() function before the call to QProgressBar constructor (...) createWebViewActions(); slot connections ui.webView->load(QUrl("www.cnnnn.com")); ui.webView->show(); pb = new QProgressBar(statusBar()); setTextVisible(false); pb->hide(); statusBar()->addPermanentWidget(pb); (...) I think that maybe this slot (setProgress()) is being called before the QProgressBar is constructed which triggers the Unhandled exception you are getting. You could try and move the call to the QProgressBar constructor so that it is created before the slots connection.

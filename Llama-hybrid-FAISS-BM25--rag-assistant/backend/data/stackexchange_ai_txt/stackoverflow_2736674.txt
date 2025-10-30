@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2736674
+[parent_id]: 
+[tags]: 
+Unit testing with Mocks when SUT is leveraging Task Parallel Libaray
+
+I am trying to unit test / verify that a method is being called on a dependency, by the system under test (SUT). The depenedency is IFoo. The dependent class is IBar. IBar is implemented as Bar. Bar will call Start() on IFoo in a new (System.Threading.Tasks.)Task, when Start() is called on Bar instance. Unit Test (Moq): [Test] public void StartBar_ShouldCallStartOnAllFoo_WhenFoosExist() { //ARRANGE //Create a foo, and setup expectation var mockFoo0 = new Mock (); mockFoo0.Setup(foo => foo.Start()); var mockFoo1 = new Mock (); mockFoo1.Setup(foo => foo.Start()); //Add mockobjects to a collection var foos = new List { mockFoo0.Object, mockFoo1.Object }; IBar sutBar = new Bar(foos); //ACT sutBar.Start(); //Should call mockFoo.Start() //ASSERT mockFoo0.VerifyAll(); mockFoo1.VerifyAll(); } Implementation of IBar as Bar: class Bar : IBar { private IEnumerable Foos { get; set; } public Bar(IEnumerable foos) { Foos = foos; } public void Start() { foreach(var foo in Foos) { Task.Factory.StartNew( () => { foo.Start(); }); } } } Moq Exception: *Moq.MockVerificationException : The following setups were not matched: IFoo foo => foo.Start() (StartBar_ShouldCallStartOnAllFoo_WhenFoosExist() in FooBarTests.cs: line 19)*

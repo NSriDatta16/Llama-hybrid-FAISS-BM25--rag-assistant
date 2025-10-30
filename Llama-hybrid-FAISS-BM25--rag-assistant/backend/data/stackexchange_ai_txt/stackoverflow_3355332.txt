@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3355332
+[parent_id]: 3354965
+[tags]: 
+You can't do all that work in the MessageEncoder, because WCF has a strong one-message-in/one-message-out bias at that stage. Basically, you're likely going to have to put both your channel and your custom encoder to work together. What I'd likely do to keep it simple would be for the transport channel itself to pick up the file, open it and read one record at a time from it, then produce (through the encoder) one message at a time to satisfy one receive() call. As for how to deal with buffering, that's usually a drag, but what those sizes passed to the encoder are for is basically to allow you to set a hard limit on the maximum size of any buffers allocated (so that you don't even try to process messages too big). That's not really a problem, directly, if you use the streaming interfaces, however.

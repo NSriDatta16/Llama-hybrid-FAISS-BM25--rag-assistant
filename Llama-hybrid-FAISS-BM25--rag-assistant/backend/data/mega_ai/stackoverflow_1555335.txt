@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1555335
+[parent_id]: 1555320
+[tags]: 
+Use the SqlCommand.ExecuteScalar method, like this: command.CommandText = @"select max(PolicyID) from Policies"; int maxPolicyId = (int)command.ExecuteScalar(); Also, if you're doing this to insert a new Policy row with a unique ID, you must not do it like this, because it's entirely possible that a different Policies row will be inserted between the select and the insert. Instead, use an IDENTITY column or a UNIQUEIDENTIFIER column. EDIT : To use this in your code, do this: int maxId; using (SqlConnection dataConnection = new SqlConnection(@"Data Source=JAGMIT-PC\SQLEXPRESS;Initial Catalog=SumooHAgentDB;Integrated Security=True")) using (SqlCommand dataCommand = new SqlCommand("select max(PolicyID) from Policies", dataConnection)) { dataConnection.Open(); maxId = Convert.ToInt32(dataCommand.ExecuteScalar()); }

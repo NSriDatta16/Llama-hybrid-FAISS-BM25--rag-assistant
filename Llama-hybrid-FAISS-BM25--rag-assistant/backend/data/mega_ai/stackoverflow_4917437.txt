@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4917437
+[parent_id]: 4916067
+[tags]: 
+If you're not afraid to use GHC-specific extensions, here's the no-frills approach to monad transformers: {-# LANGUAGE GeneralizedNewtypeDeriving #-} import Control.Monad.Reader data ReaderData = ... newtype MyMonad a = MyMonad (ReaderT ReaderData Snap a) deriving (Monad, MonadReader ReaderData) runMyMonad :: MyMonad a -> ReaderData -> Snap a runMyMonad (MyMonad m) r = runReaderT m r liftSnap :: Snap a -> MyMonad a liftSnap act = MyMonad (lift act) You can now use ask and local to access the reader data. To run an action in the Snap monad, you need to "lift" it into your new monad. ... r You may prefer a shorter name, though. So, maybe just snap .

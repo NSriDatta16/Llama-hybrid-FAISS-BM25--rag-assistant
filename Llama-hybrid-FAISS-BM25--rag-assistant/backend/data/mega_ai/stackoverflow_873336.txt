@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 873336
+[parent_id]: 873263
+[tags]: 
+REBUILD locks the table for the whole operation period (which may be hours and days if the table is large). REORGANIZE doesn't lock the table. Well. actually, it places some temporary locks on the pages it works with right now, but they are removed as soon as the operation is complete (which is fractions of second for any given lock). As @Andomar noted, there is an option to REBUILD an index online, which creates the new index, and when the operation is complete, just replaces the old index with the new one. This of course means you should have enough space to keep both the old and the new copy of the index. REBUILD is also a DML operation which changes the system tables, affects statistics, enables disabled indexes etc. REORGANIZE is a pure cleanup operation which leaves all system state as is.

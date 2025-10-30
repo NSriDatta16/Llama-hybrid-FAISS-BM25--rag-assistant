@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2060545
+[parent_id]: 2060481
+[tags]: 
+The heart of the problem is probably that you're filling your heap with WeakReference-objects, the weak references are cleared when you're getting low on memory, but the reference objects themselves are not, so your hashmap is filling up with boat-load if WeakReference objects (not to mention the object array the hashmap uses, which will grow indefinitely), all pointing to null. The solution, as already pointed out, is a weak hashmap, which will clear out those objects if they're no longer in use (this is done during put). EDIT: As Kevin pointed out, you already have your reference-queue logic worked out (I didn't pay close enough attention), a solution using your code is to just clear it out of the map at the point where the key has been collected. This is exactly how weak hash map works (where the poll is simply triggered on insert).

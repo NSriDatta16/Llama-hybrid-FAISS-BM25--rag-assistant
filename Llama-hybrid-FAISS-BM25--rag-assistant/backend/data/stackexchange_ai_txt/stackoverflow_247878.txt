@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 247878
+[parent_id]: 144902
+[tags]: 
+Via Reflector the steps for DataRow["ColumnName"] are: Get the DataColumn from ColumnName. Uses the row's DataColumnCollection["ColumnName"]. Internally, DataColumnCollection stores its DataColumns in a Hastable. O(1) Get the DataRow's row index. The index is stored in an internal member. O(1) Get the DataColumn's value at the index using DataColumn[index]. DataColumn stores its data in a System.Data.Common.DataStorage (internal, abstract) member: return dataColumnInstance._storage.Get(recordIndex); A sample concrete implementation is System.Data.Common.StringStorage (internal, sealed). StringStorage (and the other concrete DataStorages I checked) store their values in an array. Get(recordIndex) simply grabs the object in the value array at the recordIndex. O(1) So overall you're O(1) but that doesn't mean the hashing and function calling during the operation is without cost. It just means it doesn't cost more as the number of DataRows or DataColumns increases. Interesting that DataStorage uses an array for values. Can't imagine that's easy to rebuild when you add or remove rows.

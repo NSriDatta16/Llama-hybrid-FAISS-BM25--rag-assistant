@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 38818
+[parent_id]: 20318
+[tags]: 
+I assume you are using the sklearn implementation of random forests. If you are not bound to use sklearn, you could try another implementation, like the one from h2o , that supports enum categorical variables. Alternatively, you could first determine if all of the 12000 levels are relevant: for each of the 12000 levels, you could compute something like information gain , which will tell you if that level provides any information relevant to predicting the class. You may then use a threshold on the information gain to discard all levels that provide no information, reducing the number of levels and, perhaps, allowing you to use one-hot encoding. Basically, if $H$ is the entropy (of the class label) for a set of examples, given a dataset $D$ , you could discard any level $v$ of an attribute $a$ for which the following is below a certain threshold (to be determined given how many levels you want to keep): $$ H(D) - \frac{|D_v|}{|D|} \cdot H(D_v) $$ where $D_v = \{x \in D|value(x, a) = v\}$

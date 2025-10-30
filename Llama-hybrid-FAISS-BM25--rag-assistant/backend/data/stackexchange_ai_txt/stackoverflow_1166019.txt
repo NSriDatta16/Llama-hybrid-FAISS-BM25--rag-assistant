@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1166019
+[parent_id]: 1165906
+[tags]: 
+With respect to (2), most Win32 functions which take string parameters already have their common form defined as a macro, e.g. from WinUser.h: WINUSERAPI int WINAPI MessageBoxA( __in_opt HWND hWnd, __in_opt LPCSTR lpText, __in_opt LPCSTR lpCaption, __in UINT uType); WINUSERAPI int WINAPI MessageBoxW( __in_opt HWND hWnd, __in_opt LPCWSTR lpText, __in_opt LPCWSTR lpCaption, __in UINT uType); #ifdef UNICODE #define MessageBox MessageBoxW #else #define MessageBox MessageBoxA #endif // !UNICODE You could certainly add a header to your project which redefines the API functions you want to simulate: #ifdef UNITTEST #undef MessageBox #define MessageBox UnitTestMessageBox #endif By redefining the name, you can avoid scattering lots of conditional compilation throughout your source code.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3555299
+[parent_id]: 3554727
+[tags]: 
+This is not that elegant in most SQL implementations. One way is to first get the list of the five most recent comments grouped by topic_id. Then get the comments.created_at by sub selecting with the IN clause. I'm very new to Arel but something like this could work recent_unique_comments = Comment.group(c[:topic_id]) \ .order('comments.created_at DESC') \ .limit(5) \ .project(comments[:topic_id] recent_topics = Topic.where(t[:topic_id].in(recent_unique_comments)) # Another experiment (there has to be another way...) recent_comments = Comment.join(Topic) \ .on(Comment[:topic_id].eq(Topic[:topic_id])) \ .where(t[:topic_id].in(recent_unique_comments)) \ .order('comments.topic_id, comments.created_at DESC') \ .group_by(&:topic_id).to_a.map{|hsh| hsh[1][0]}

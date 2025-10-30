@@ -1,0 +1,72 @@
+DCB (Digital Control Bus, Digital Connection Bus or Digital Communication Bus in some sources) was a proprietary data interchange interface by Roland Corporation, developed in 1981 and introduced in 1982 in their Roland Juno-60 and Roland Jupiter-8 products.  DCB functions were basically the same as MIDI, but unlike MIDI (which is capable of transmitting a wide array of information), DCB could provide note on/off, program change and VCF/VCA control only. DCB-to-MIDI adapters were produced for a number of early Roland products. The DCB interface was made in 2 variants, the earlier one used 20-pin sockets and cables, later switching to the 14-pin Amphenol DDK connector vaguely resembling a parallel port.
+
+Supporting equipment 
+
+DCB was quickly replaced by MIDI in the early 1980s which Roland helped co-develop with Sequential Circuits.  The only DCB-equipped instruments produced were the Roland Jupiter-8 and JUNO-60; Roland produced at least two DCB sequencers, the JSQ-60 and the MSQ-700.  The latter was capable of saving eight sequences, or a total of 3000 notes, and was capable of transmitting and receiving data via MIDI (though it could not convert signals between DCB and MIDI, nor could it use both protocols simultaneously).  Roland later released the MD-8, a rather large black box capable of converting MIDI signals to DCB and vice versa.   While this allows note on/off to be sent to a JUNO-60 by MIDI, the solution pales in comparison to the full MIDI implementation on the JUNO-60's successor, the Roland Juno-106.  A few other companies offer similar conversion boxes to connect DCB instruments to regular MIDI systems for the support of vintage synthesizers in modern sound production environments; one of the more fully-featured devices being the Kenton PRO-DCB Mk3 which has some bi-directional control limited to a few parameters.
+
+Implementation 
+
+Following information comes from the Roland JUNO-60 Service Notes, First Edition, page 17–19.
+
+Physical connection 
+
+DCB uses a special 14-wire connection. The first 7 consist of 3 wires in each direction plus a shared ground. The signals are standard TTL 0-5V, except the Rx Busy output, which is an open collector pulldown.
+
+1. Rx Busy
+2. Rx Data
+3. Rx Clock
+4. Ground
+5. Tx Busy
+6. Tx Data
+7. Tx Clock
+
+The remaining 7 wires may be used for special purposes.
+
+8. Unreg
+9. VCA Lower
+10. VCA Upper
+11. VCF Lower
+12. VCF upper
+13. VCO-2
+14. VCO-1
+
+These are not used in the JUNO-60.
+
+Pinout 
+View from rear panel. Amphenol DDK connector.
+
+ 7  6  5  4  3  2  1 
+ 14 13 12 11 10  9  8
+
+Serial data 
+
+The DCB is a standard asynchronous serial stream (using an 8251A IC in the JUNO-60), LSB first, 8 data bits, 2 stop bits, odd parity, and a Baud rate of 31.25 kHz.
+
+Message (Block) Structure) 
+
+DCB data is sent in short blocks messages consisting of an identifier, one or more data codes, and an end mark. Blocks may be sent intermittently (JP-8, OP-8) or continuously (JUNO-60), in which case end marks are not used.
+
+Identifier is 1 byte using a value F1 through FE, which acts as both a start marker and a message type. Data which follows must not use these data bytes. In practice only FD (patch code) and FE (key code) are used.
+
+Data codes are one or more sections or channels, each one byte. The number of bytes or channels depends on the transmitter's configuration, but doesn't change once communication has been started. All data values must be in the range 00-F0.
+
+The end mark is an FF character. It is omitted if the message has a predefined length or the next message starts immediately after the data.
+
+FD: Patch Code Block 
+This message identifies a patch, by a single byte. JUNO-60 ignores this. It is sent once after a patch change, with the first key code by OP-8 and JP-8. It does not have an end mark.
+
+FE: Key Code 
+This message identifies a key event. It contains one byte for each note channel the transmitter supports - so it is 8 bytes long for JP-8 and OP-8, or 6 bytes for JUNO-60. 
+Each channel byte defines a key number (bits 0–6) and whether the key is gated on (1) or off (bit 7).
+Keys are identified with 0–96 with zero meaning C0 (16.4 Hz), up to 96 C8 (4205 Hz).
+Channels are assigned in the order defined by the transmitter's key assign mode.
+For OP-8, this is Ch1 - Ch8.
+For JP-8 split mode, Upper 4 keys followed by Lower 4 keys.
+JP-8 dual mode, the data for the first 4 channels is duplicated to the second 4.
+
+If the JUNO-60 receives more channels than it physically has voices, the extra channels are "queued" and played later when possible. Whereas the JP-8 only accepts 8 channels.
+
+References 
+
+Electronic musical instruments
+Computer buses

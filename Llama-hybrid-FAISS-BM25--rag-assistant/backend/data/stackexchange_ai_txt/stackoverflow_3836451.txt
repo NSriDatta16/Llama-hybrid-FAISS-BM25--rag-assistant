@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3836451
+[parent_id]: 3833995
+[tags]: 
+First, tablespaces are a means of controlling the storage characteristics of segments, they won't help wrt avoiding impact from changes. I recommend you create separate child tables for each set of attributes, each with a 1:1 referential integrity constraint to a parent table. e.g. SUPPLIERS (supplier_id PK, common attributes...) SUPPLIER_BILLING_INFO (supplier_id PK, billing attributes...) + FK to SUPPLIERS SUPPLIER_TENDER_INFO (supplier_id PK, tender attributes...) + FK to SUPPLIERS SUPPLIER_SALES_INFO (supplier_id PK, sales attributes...) + FK to SUPPLIERS Obviously they'll need to live in one instance. Whether you put them in one schema or in separate schemas is up to you. Changes to one system should have no impact on other systems, as long as they don't all refer to all the tables (i.e. the Billing system should never access SUPPLIER_TENDER_INFO).

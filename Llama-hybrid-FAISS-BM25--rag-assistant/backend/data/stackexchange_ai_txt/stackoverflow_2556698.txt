@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2556698
+[parent_id]: 1762533
+[tags]: 
+Whatever you do, I would strongly suggest not embedding splint codes directly into the source, but instead wrap that functionality in a macro. For example, over on the Parrot project, I have these macros # define ARGIN(x) /*@in@*/ /*@notnull@*/ # define ARGIN_NULLOK(x) /*@in@*/ /*@null@*/ /* The pointer target must be completely defined before being passed */ /* to the function. */ # define ARGOUT(x) /*@out@*/ /*@notnull@*/ # define ARGOUT_NULLOK(x) /*@out@*/ /*@null@*/ /* The pointer target will be defined by the function */ And then macros are used so we can use: void copy_string( ARGOUT(char *target), ARGIN(const char *source ) ) ... If we want to change how ARGIN() arguments are handled, we change it one place. We can also support multiple notations for multiple tools or compilers.

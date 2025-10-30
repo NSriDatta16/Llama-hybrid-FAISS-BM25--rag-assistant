@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3541294
+[parent_id]: 3506840
+[tags]: 
+One way you can do this is to temporarily remove the event handlers before you modify the values in code, and then reattach them afterwards, although this doesn't seem too elegant. Alternatively you could create your own custom TrackBar class that inherits from TrackBar and override the OnValueChanged() method to do what you want. If you did this, an idea I can think of is to set a SuspendChangedEvents property before changing the value, and reset it afterwards, This would provide similar functionality to the 'remove/attach' handler technique but the logic is encapsulated within the TrackBar itself. public class MyTrackBar : TrackBar { public bool SuspendChangedEvent { get; set; } protected override void OnValueChanged(EventArgs e) { if (!SuspendChangedEvent) base.OnValueChanged(e); } } Then in your code you can do something like this. // Suspend trackbar change events myTrackBar1.SuspendChangedEvents = true; // Change the value myTrackBar1.Value = 50; // ValueChanged event will not fire. // Turn changed events back on myTrackBar1.SuspendChangedEvents = false;

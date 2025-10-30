@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5313975
+[parent_id]: 5313694
+[tags]: 
+There are some major design issues here. In general, there's no way to ask an object who its events' subscribers are. It's highly unusual that anyone would want this functionality, but if you really want it, you should get classes to somehow expose this, for example, by implementing an interface with a method such as: public IEnumerable GetSubscribers(string eventName); Anyway, to answer the question as asked, you can use reflection, but only if you know exactly how the subscribers are being maintained. For example, assuming that all events are implemented with the current implementation of C# field-like events, you can do something like ( strongly discouraged): object o = ... var unsubscribedEvents = from e in o.GetType().GetEvents() where Attribute.IsDefined(e, typeof(RequiredEventSubscriptionAttribute)) let field = o.GetType() .GetField(e.Name, BindingFlags.NonPublic | BindingFlags.Instance) .GetValue(o) where field == null select field; var isValid = !unsubscribedEvents.Any();

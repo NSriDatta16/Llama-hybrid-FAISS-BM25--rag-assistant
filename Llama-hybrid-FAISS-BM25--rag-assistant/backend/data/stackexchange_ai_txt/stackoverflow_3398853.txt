@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3398853
+[parent_id]: 3364921
+[tags]: 
+I'm not surprised there were tumbleweeds rolling around this question. There is nothing wrong with the approach I detailed in the question. It turns out the problem was that I was using a custom IInstanceProvider (I didn't even think to include that information). If I stop using the custom instance provider everything works fine. But that's no good as I still want to use it. So I found the only solution was to manually set the thread's current principal inside the instance provider. The trick was getting hold of the principal I had set in the IAuthorizationPolicy - I managed to find it in the end using a rather cumbersome call via the static OperationContext.Current . public object GetInstance(InstanceContext instanceContext, Message message) { var principal = OperationContext.Current.ServiceSecurityContext.AuthorizationContext.Properties["Principal"] as MyPrincipal; if (principal != null) Thread.CurrentPrincipal = principal; return ObjectFactory.GetInstance(_serviceType); } Of course, I'd be interested to know if there is a more elegant solution.

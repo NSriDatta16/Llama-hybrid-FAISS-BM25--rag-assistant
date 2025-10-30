@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4754500
+[parent_id]: 
+[tags]: 
+How to use Qt Delegates for custom painting?
+
+I'm trying to override the way QTreeWidgetItems are drawn when an item is dragged over them. I've overridden the drag Events to set the Qt.UserRole data to 1 for the QTreeWidgetItems that I want to paint. In the Item Delegate, I read the UserRole and draw accordingly. My custom painting is showing up exactly as expected (i.e. the bolded line); however, I have not been able to figure out how to suppress the drawing done by the standard painter for Dragging (i.e. the small rectangle) without suppressing all other painting (i.e. the text, etc.). Any ideas would be appreciated. Ex. def dragMoveEvent(self, event): pos = event.pos() item = self.myTreeWidget.itemAt(pos) # If hovered over an item during drag, set UserRole = 1 if item: index = self.myTreeWidget.indexFromItem(item) self.myTreeWidget.model().setData(index, 1, Qt.UserRole) # reset UserRole to 0 for all other indices for i in range(self.myTreeWidget.model().rowCount()): _index = self.myTreeWidget.model().index(i, 0) if not item or index != _index: self.myTreeWidget.model().setData(_index, 0, Qt.UserRole) class MyDelegate(QStyledItemDelegate): def paint( self, painter, option, index ): QStyledItemDelegate.paint(self, painter, option, index) painter.save() data = index.model().data( index, Qt.UserRole ).toInt() # if UserRole = 1 draw custom line if data[1] and data[0] == 1: line = QLine( option.rect.topLeft(), option.rect.topRight() ) painter.drawLine( line ) painter.restore()

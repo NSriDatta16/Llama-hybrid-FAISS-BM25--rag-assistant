@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 985118
+[parent_id]: 
+[tags]: 
+IXAmlTypeResolver.Resolve failing in Blend
+
+I'm attempting to do some type resolution inside of a WPF Markup Extension using the same namespace:StaticType.Property syntax that StaticExtension uses. The extension works fine at runtime and also in the Visual Studio designer, but it fails in Expression Blend. After some debugging I figured out that the failure occurs in a call to IXamlTypeResolver.Resolve(). // Parse Static=properties:Resources.HelloWorld like static resource int index = this.Static.IndexOf('.'); if (index == -1) throw new ArgumentException(Resources.InvalidStaticBindingSyntax + ": " + this.Static); // resolve properties:Resources string typeName = this.Static.Substring(0, index); IXamlTypeResolver service = _serviceProvider.GetService(typeof(IXamlTypeResolver)) as IXamlTypeResolver; Type memberType = service.Resolve(typeName); string propName = this.Static.Substring(index + 1); localized = memberType.GetProperty(propName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) .GetValue(memberType, null); The problem is the service.Resolve(typeName) which fails, but only in Blend. Took a look at the StaticExtension with Reflector and the code MS is using doesn't look much different. It looks like a security issue - but I've even tried to sign and GAC the assembly and it still fails exactly the same. Stumped.

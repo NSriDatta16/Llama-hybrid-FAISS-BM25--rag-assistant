@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5310864
+[parent_id]: 5307641
+[tags]: 
+A slightly more elegant solution would be to use MySQL to do most of the work for you, by setting the unique_code field type to VARCHAR(5) and placing a UNIQUE index on it. You could then use the query: $sql = "UPDATE coming_soon_emails SET `unique_code` = MD5(CONCAT(`email`, NOW())) WHERE `email` = {$email}"; and your PHP code would look like: while(!$mysqli->query($sql)) { // If the error that was thrown wasn't a duplicate key problem, // something else is wrong (ie can't connect to MySQL server). if($mysqli->errno != 1062) { // Error handling code break; } } Using this approach, moving to a longer unique code (eg 6 chars) is as easy as altering the unique_code field to be of length 6.

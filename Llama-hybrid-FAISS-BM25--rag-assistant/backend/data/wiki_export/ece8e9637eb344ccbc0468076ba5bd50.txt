@@ -1,0 +1,80 @@
+The banner program on Unix and Unix-like operating systems outputs a large ASCII art version of the text that is supplied to it as its program arguments.  One use of the command is to create highly visible separator pages for print jobs.
+
+Operation
+Each argument is truncated at 10 characters and printed on a "line" of its own.  To print multiple words on a single line, they must therefore be passed as a single argument, which is done from the shell by escaping or quoting the words as appropriate.
+
+A related and more flexible program is FIGlet, which can display text in different fonts and orientations.
+
+Implementation
+The way that the program is implemented internally is antiquated.  The character fonts used are hardwired into the program code itself, as statically initialized data structures.  Two data structures are used.  The first is a data table comprising a sequence of printing instructions that encode the bitmap for each character (in an encoding specific to the banner program).  The second is an index into that table that indicates, for each character code, where the printing instructions for that character begin and end.
+
+Both data structures were hand-written.  Spinellis observes that it is "difficult to come up with a more error-prone and unmaintainable data format".  He observes a stark contrast between the source code of the banner program and automatically generated source code for encoding computer fonts into program data (using the 6-by-10 font data in the source code of the mac68k port of NetBSD for comparison).  The automatically generated data are commented, documenting with ASCII art how the bit patterns were derived.  The automatically generated data were generated from a bitmap file, itself generated using a bitmap creation/editing program with a graphical user interface.  And the automatically generated data are organized in a straightforward and obvious manner — a fixed-length sequence of unencoded bytes for each glyph.
+
+Spinellis further observes that in modern computer systems it is seldom sensible to embed such data into the program executable image itself, the performance gains of doing so being negligible.  Doing so makes it difficult to adapt the program to different locales, or to maintain the program.  The more preferred approach in modern systems is to store such data in a separate data file, distinct from the program executable image file, or in a resource fork of the program, that the program reads at run-time.
+
+Versions
+A partial list of versions:
+ By AT&T, in UNIX System V.
+ By Cedar Solutions. Runs on modern Linux systems as of 2008.  Prints horizontally only with a fixed size.
+ By Mary Ann Horton at the University of California Berkeley, distributed as part of the bsdmainutils package, under the name .  Runs on modern Linux, GNU Hurd, and Mac OS X systems as of 2008.  Prints vertically with variable size font.
+
+Example output
+From the terminal-oriented banner program:
+
+ $ banner 'Hello!'
+ #     #                                   ###
+ #     #  ######  #       #        ####    ###
+ #     #  #       #       #       #    #   ###
+ #######  #####   #       #       #    #    #
+ #     #  #       #       #       #    #
+ #     #  #       #       #       #    #   ###
+ #     #  ######  ######  ######   ####    ###
+
+One letter from the printer-oriented banner program as usually found in BSD and derivatives:
+
+ $ banner -w80 "a"
+                          #####
+                        #########
+                     ###############        ###
+                    ################      ######
+                   ##################     ########
+                   #####         #####    #########
+                   ####           ####      ##  ###
+                   ###            ####           ##
+                   ###            ###            ##
+                   ###            ###           ###
+                    ####         ###           ####
+                      #############################
+                    ##############################
+                   ##############################
+                   ############################
+                   ###########################
+                   ###
+                   #
+                   #
+
+Display a continuous clock for approximately 1000 seconds:
+ $ repeat 1000 sh -c '( clear ; date +" %H.%M.%S" | xargs banner ; sleep 1)'
+
+   #     #####             #     #####          ####### #######
+  ##    #     #           ##    #     #         #       #
+ # #    #                # #          #         #       #
+   #    ######             #     #####          ######  ######
+   #    #     #   ###      #    #         ###         #       #
+   #    #     #   ###      #    #         ###   #     # #     #
+ #####   #####    ###    #####  #######   ###    #####   #####
+
+See also 
+ FIGlet – a Linux utility that provided the same functionality when the banner font is selected
+
+Notes
+
+References
+
+Further reading
+
+External links
+ 
+ 
+
+Unix text processing utilities

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 143665
+[parent_id]: 143320
+[tags]: 
+I would caution putting your cronjobs accessible to the public because they could be triggered outside their normal times and, depending on what they do, cause problems (I know that is not what you intend, but by putting them into an actual controller it becomes reachable from the browser). For example, I have one cron that sends e-mails. I would be spammed constantly if someone found the cron URL and just began hitting it. What I did was make a cron folder and in there created a heartbeat.php which bootstraps Zend Framework (minus MVC) for me. It checks a database which has a list of all the installed cron jobs and, if it is time for them to run, generates an instances of the cron job's class and runs it. The cron jobs are just child classes from an abstract cron class that has methods like install(), run(), deactivate(), etc. To fire off my job I just have a simple crontab entry that runs every 5 minutes that hits heartbeat.php. So far it's worked wonderful on two different sites.

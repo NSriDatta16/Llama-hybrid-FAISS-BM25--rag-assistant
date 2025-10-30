@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5290659
+[parent_id]: 5290545
+[tags]: 
+Several ways to do this: Use DateTime.Now. Subtracting produces a TimeSpan. Takes 8 bytes of storage, times up to 8000 years, resolution of 1 millisecond but accurate to 1/64 second on most machines. Use Environment.TickCount. Similar to time_t but relative from machine boot time. Takes 4 bytes of storage, times up to 24 days (49 with a cast), resolution and accuracy same as DateTime. Use Stopwatch. Stored on the heap, resolution is machine dependent but almost always well below a microsecond. Accuracy isn't usually good but repeats decently, assume +/- 5%. Best used to measure small intervals for comparison. Use timeGetTime. This requires pinvoke to use this multimedia timer. Similar to Environment.TickCount, you can get 1 msec accuracy by using timeBeginPeriod. This is not cheap since it has system-wide effects. Best avoided. Keep in mind that process execution is subject to the vagaries of overall operating system load, your program is sharing resources with the other 70-odd processes that are running. Either DateTime or TickCount has plenty of accuracy for that.

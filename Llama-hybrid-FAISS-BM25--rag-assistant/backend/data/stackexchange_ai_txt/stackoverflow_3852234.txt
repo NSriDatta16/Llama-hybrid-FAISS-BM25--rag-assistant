@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3852234
+[parent_id]: 3824022
+[tags]: 
+I got some hints from the nice folks at irc.freenode.org #macdev and found the following to be the solution to my problem: Creating a subclass of NSFormatter (or NSNumberFormatter in my case) and overriding getObjectValue:forString:errorDescription: as follows overrides the default behaviour of returning nil (which makes the binding use the registered default value) to instead return 0 when the text field is empty. - (BOOL)getObjectValue:(id *)anObject forString:(NSString *)string errorDescription:(NSString **)error { if ([string isEqualToString:@""]) { *anObject = [NSNumber numberWithInt:0]; return YES; } else { return [super getObjectValue:anObject forString:string errorDescription:error]; } } A NSValueTransformer subclass' reverse conversion method would have also worked for this.

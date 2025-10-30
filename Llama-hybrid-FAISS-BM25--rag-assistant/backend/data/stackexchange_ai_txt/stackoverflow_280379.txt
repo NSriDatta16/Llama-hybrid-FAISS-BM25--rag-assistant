@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 280379
+[parent_id]: 280313
+[tags]: 
+Being pragmatic, XDocument vs XmLDocument isn't all-or-nothing (unless you are on Silverlight) - so if XmlDoucument does something you need, and XDocument doesn't, then perhaps use XmlDocument (with ImportNode etc). That said, even with XDocument , you could presumably use XNode.ReadFrom to import each, then simply .Add it to the main collection. Of course, if the files are big, XmlReader/XmlWriter might be more efficient... but more complex. Fortunately, XmlWriter has a WriteNode method that accepts an XmlReader , so you can navigate to the first child in the XmlReader and then just blitz it to the output file. Something like: static void AppendChildren(this XmlWriter writer, string path) { using (XmlReader reader = XmlReader.Create(path)) { reader.MoveToContent(); int targetDepth = reader.Depth + 1; if(reader.Read()) { while (reader.Depth == targetDepth) { writer.WriteNode(reader, true); } } } }

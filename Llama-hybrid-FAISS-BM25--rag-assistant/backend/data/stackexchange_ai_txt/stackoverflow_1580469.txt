@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1580469
+[parent_id]: 1580079
+[tags]: 
+I agree with Peter, the above model seems a little quirky to me and I would recommend against implicit save to the datastore. Additionally, a pattern to use is something like: class UserStorage { $_user; function addUser(User user, commit = true) { if (commit) { // save to db } else { // populate your internal instance $_user = user; } } } So if you have multiple updates of a User object in the execution of your PHP application, you can use addUser(user,false) all the way until the very last call to addUser(user) This will alleviate the need for multiple inserts/updates to the DB. However, your problem of where in the application to decide to finally save to db remains, and is more about logical flow than object representation. It may be helpful to have a end() function in the script that persists all your objects to the db.

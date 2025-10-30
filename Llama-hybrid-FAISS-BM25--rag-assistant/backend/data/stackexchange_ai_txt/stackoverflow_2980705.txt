@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2980705
+[parent_id]: 2978120
+[tags]: 
+I can't see how to do it, although without a formal semantics of Lua (like the semantics of yield for example), it's really hard to come up with an ironclad argument why it can't be done. (I've been wanting a formal semantics for ages , but evidently Roberto and lhf have better things to do.) If I wanted pre-emptive multitasking for Lua, I wouldn't even try to do it in pure Lua. Instead I'd use an old trick I first saw 20 years ago in Standard ML of New Jersey: Interrupt sets a flag in the lua_State saying "current coroutine has been preempted". Alter the VM so that on every loop and every function call, it checks the flag and yields if necessary. This patch would be easy to write and easy to maintain. It doesn't solve the problem of the long-running C function that can't be pre-empted, but if you have to solve that problem, you are wandering into much harder territory, and you may as well do all your threading at the C level, not the Lua level.

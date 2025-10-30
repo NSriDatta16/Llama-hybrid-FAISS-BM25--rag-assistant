@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5568433
+[parent_id]: 5565355
+[tags]: 
+Inside a Haml filter you use String interpolation to include Ruby code in your markup. For example: require 'haml' @x = 42 Haml::Engine.new("%p= @x").render(self) #=> " 42 \n" Haml::Engine.new(":textile\n\t= @x").render(self) #=> " = @x \n" Haml::Engine.new(":textile\n\t\#{@x}").render(self) #=> " 42 \n" @content = "alpha\n\n#hi **mom**" Haml::Engine.new(":textile\n\t\#{@content}").render(self) #=> " alpha \n #hi mom \n" Edit : My previous answer was misleading with respect to newlines in the content, due to my flawed testing. As seen above, newlines in included content are handled fine directly. As such, your Haml template should simply look like this: - @articles.each do |article| %article.post %header=article.name :textile #{article.content} %footer Note that I've removed your %p tag surrounding your markup, as Textile introduces its own paragraph wrappers (even for single-line content).

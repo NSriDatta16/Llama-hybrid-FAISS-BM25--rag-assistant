@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 745828
+[parent_id]: 745125
+[tags]: 
+Just run dbcc sqlperf(logspace) before backups, but don't undersize the logs, allow for growth, and abnormally busy days or activity. Leaving autogrow configured for the logfile won't hurt if you have ample space, but you don't want it growing every day or you'll suffer from disk file fragmentation. There's no rule of thumb for sizing the logs, it depends entirely on the transaction volume. If you want to capture the output, build a table to hold the results: create table logspace (name varchar(64), size float, used float, status int) .. then run this: insert into #d exec('dbcc sqlperf(logspace)') You could add a timestamp to the file a couple of different ways if you want to track it over time. I would run it before the backups.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5313512
+[parent_id]: 5313433
+[tags]: 
+I'm guessing you're overflowing the stack. If both NUMBEROFBOXES and sizeof(box_t) are somewhat large, then sizeof(sim_t) is going to be very large, and then even a single instance of sim_t will overflow your stack. If you can't reduce sizeof(sim_t) in any way, then you'll need to allocate your object on either the heap (e.g. with new ) or in static storage (e.g. as a global variable). EDIT I still suspect a stack overflow, but it's still hard to say at this point. Run your program under GDB and run these commands and tell us what the results are: $ gdb myprogram (gdb) run ... Program received signal SIGSEGV, Segmentation fault. (gdb) bt ... (gdb) list ... (gdb) disas ... (gdb) info reg ... (gdb) info inferior ... The last command gives you the PID of the program. Then, from another terminal, run this command: # Replace PID here with the PID of the program being debugged above $ cat /proc/PID/maps The information from these commands should help determine whether or not the problem is being caused by a stack overflow.

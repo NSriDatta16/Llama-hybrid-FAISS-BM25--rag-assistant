@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1111209
+[parent_id]: 1111078
+[tags]: 
+Go look at Scott Meyers Effective STL item 17. Basically you can't directly reduce the storage size of a std::vector . resize() and reseve() will never reduce the actually memory footprint of a container. The "trick" is to create a new container of the right size, copy the data and swap that with the current container. If we would like to clear a container out this is simply: std::vector ().swap(v); If we have to copy the data over then we need to do the copy: std::vector (v).swap(v); What this does is creates a new vector with the data from the old one, doing the copy that would be required in any operation that has the effect you need. Then calling swap() will just swap the internal buffers between the objects. At the end of the line the temporary vector that was created is deleted, but it has the guts from the old vector and the old vector has the guts from the new copy that is the exact size we need.

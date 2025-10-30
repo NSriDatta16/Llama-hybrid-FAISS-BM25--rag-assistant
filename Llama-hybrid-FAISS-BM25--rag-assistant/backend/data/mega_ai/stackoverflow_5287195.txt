@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5287195
+[parent_id]: 5237696
+[tags]: 
+I think this is interesting. I wanted to do the similar thing with UIPicker, but haven't looked into much yet. UIDatePicker actually does this, you can drag time around noon and it will toggle AM/PM even though the finger has not lifted from the screen (it should not have called "didSelectRow" yet). UIDatePicker actually subclasses from UIControl, instead of UIView like UIPickerView. So, UIDatePicker is probably observing all UIControlEvents to do this. Observing -pickerView:titleForRow:forComponent probably works for now, but if behavior changes later (ie caching behavior, ie) is changed, this will break... One suggestion is to try KVO on center property, instead of frame. Edit1: By the way, how does your observeValueForKeyPath method look like? Edit2: Upon further research, it seems most of UIKit is not KVO compliant. See this answer - Key value Observing during UIView Animations So, it seems like only option is to keep poling for the view's value when it's visible. How about forloop and pole frame/center property whenever it's in view?

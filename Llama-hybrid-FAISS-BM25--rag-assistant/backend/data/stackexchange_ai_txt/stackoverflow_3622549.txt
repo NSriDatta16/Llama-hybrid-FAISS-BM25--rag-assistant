@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3622549
+[parent_id]: 
+[tags]: 
+Idiomatic way to write .NET interop function
+
+I'm looking for a more idiomatic way, if possible, to write the following clojure code: (import '(System.Net HttpWebRequest NetworkCredential) '(System.IO StreamReader)) (defn downloadWebPage "Downloads the webpage at the given url and returns its contents." [^String url ^String user ^String password] (def req (HttpWebRequest/Create url)) (.set_Credentials req (NetworkCredential. user password "")) (.set_UserAgent req ".NET") (def res (.GetResponse req)) (def responsestr (.GetResponseStream res)) (def rdr (StreamReader. responsestr)) (def content (.ReadToEnd rdr)) (.Close rdr) (.Close responsestr) (.Close res) content ) This is on ClojureCLR and works. (the fact that it's the CLR variant doesn't matter much) I'd like to get rid of the defs (replace by lets? can they refer to each other?) How about a better way to get to the stream - keeping in mind that .. chaining won't work because I need to Close the streams later on. EDIT: After the answer, I found a much easier way in .NET to download a web page using the WebClient class. I still used many of Michal's recommended approaches - just wanted to record what I now believe to be the best answer: (defn download-web-page "Downloads the webpage at the given url and returns its contents." [^String url ^String user ^String password] (with-open [client (doto (WebClient.) (.set_Credentials (NetworkCredential. user password "")))] (.DownloadString client url)))

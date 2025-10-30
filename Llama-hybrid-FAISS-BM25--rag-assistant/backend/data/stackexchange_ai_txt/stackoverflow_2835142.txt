@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2835142
+[parent_id]: 2832838
+[tags]: 
+You could add a ListProperty to your model which contains both touser and fromuser . Then you could execute a single query to retrieve the entities which you are interested in sorted by date. This eliminates a datastore query and the in-memory sort, but costs you an extra index and a little more storage space on your model. (pseudo) Example: class bla(db.Model): ... toandfromuser = db.ListProperty(...) Then you can do a query like this (since an entity will match if ANY element of the list toandfromuser matches the value you are looking for): SELECT * FROM bla WHERE toandfromuser = common.userstats("key") ORDER BY date ASC

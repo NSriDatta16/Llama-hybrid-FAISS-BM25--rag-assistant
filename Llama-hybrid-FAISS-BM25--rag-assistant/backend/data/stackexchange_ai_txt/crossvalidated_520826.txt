@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 520826
+[parent_id]: 520816
+[tags]: 
+I'm more confident this is just data leakage. Here, I generate an example where we label the training data using a model created from the test set. The model should have accuracy of 0.5 or close to, but when replicating the procedure the average test accuracy is much higher. #create the test set r = replicate(1000, { X = MASS::mvrnorm(n=100, mu=rep(0, 2), Sigma=diag(c(1,1))) eta = rep(0, nrow(X)) p = plogis(eta) y = rbinom(nrow(X), 1, p) x = X[,1] w = X[,2] model = glm(y~x+w) # Create train set Xtrain = MASS::mvrnorm(n=1000, mu=rep(0, 2), Sigma=diag(c(1,1))) ytrain = predict(model, newdata = list(x=Xtrain[,1], w=Xtrain[,2])) ytrain = as.integer(ytrain This is very likely because of data leakage. I would not do this under any circumstances.

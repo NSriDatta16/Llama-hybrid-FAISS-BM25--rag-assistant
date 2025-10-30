@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 35440
+[parent_id]: 35047
+[tags]: 
+I've never come across a tool that would do the job. Instead I've used individual files, numbered so that I know which order to run them: essentially, a manual version of Rails migrations, but without the rollback. Here's the sort of thing I'm talking about: 000-clean.sql # wipe out everything in the DB 001-schema.sql # create the initial DB objects 002-fk.sql # apply referential integrity (simple if kept separate) 003-reference-pop.sql # populate reference data 004-release-pop.sql # populate release data 005-add-new-table.sql # modification 006-rename-table.sql # another modification... I've never actually run into any problems doing this, but it's not very elegant. It's up to you to track which scripts need to run for a given update (a smarter numbering scheme could help). It also works fine with source control. Dealing with surrogate key values (from autonumber columns) can be a pain, since the production database will likely have different values than the development DB. So, I try never to reference a literal surrogate key value in any of my modification scripts if at all possible.

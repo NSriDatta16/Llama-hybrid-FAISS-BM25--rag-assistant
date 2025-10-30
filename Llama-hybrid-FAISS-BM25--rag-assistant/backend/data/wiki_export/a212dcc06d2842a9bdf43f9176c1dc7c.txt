@@ -1,0 +1,37 @@
+An ICMP tunnel establishes a covert connection between two remote computers (a client and proxy), using ICMP echo requests and reply packets. An example of this technique is tunneling complete TCP traffic over ping requests and replies.
+
+Technical details
+ICMP tunneling works by injecting arbitrary data into an echo packet sent to a remote computer.  The remote computer replies in the same manner, injecting an answer into another ICMP packet and sending it back.  The client performs all communication using ICMP echo request packets, while the proxy uses echo reply packets.
+
+In theory, it is possible to have the proxy use echo request packets (which makes implementation much easier), but these packets are not necessarily forwarded to the client, as the client could be behind a translated address (NAT).  This bidirectional data flow can be abstracted with an ordinary serial line.
+
+ICMP tunneling is possible because RFC 792, which defines the structure of ICMP packets, allows for an arbitrary data length for any type 0 (echo reply) or 8 (echo message) ICMP packets.
+
+Uses
+ICMP tunneling can be used to bypass firewalls rules through obfuscation of the actual traffic. Depending on the implementation of the ICMP tunneling software, this type of connection can also be categorized as an encrypted communication channel between two computers. Without proper deep packet inspection or log review, network administrators will not be able to detect this type of traffic through their network.
+
+Mitigation
+One way to prevent this type of tunneling is to block ICMP traffic, at the cost of losing some network functionality that people usually take for granted (e.g. it might take tens of seconds to determine that a peer is offline, rather than almost instantaneously). Another method for mitigating this type of attack is to only allow fixed sized ICMP packets through firewalls, which can impede or eliminate this type of behavior.
+
+ICMP-tunnels are sometimes used to circumvent firewalls that block traffic between the LAN and the outside world. For example, by commercial Wi-Fi services that require the user to pay for usage, or a library that requires the user to first log in at a web portal. If the network operator made the erroneous assumption that it is enough to only block normal transport protocols like TCP and UDP, but not core protocols such as ICMP, then it is sometimes possible to use an ICMP-tunnel to access the internet despite not having been authorized for network access. Encryption and per-user rules that disallow users exchanging ICMP packets (and all other types of packets, maybe by using IEEE 802.1X) with external peers before authorization solves this problem.
+
+See also
+ ICMPv6
+ Smurf attack
+
+References
+
+External links
+ , Internet Control Message Protocol
+ itun Simple IP over ICMP tunnel
+ Hans ICMP tunnel for Linux (server and client) and BSD MacOSX (client only)
+ ICMP-Shell a telnet-like protocol using only ICMP
+ PingTunnel Tunnel TCP over ICMP
+ ICMP Crafting by Stuart Thomas
+ Using the ICMP tunneling tool Ping Tunnel
+ Project Loki Article on ping tunneling in Phrack
+ ICMP tunnel with C# source code
+ icmptunnel IP over ICMP tunnel by Dhaval Kapil
+
+Tunneling protocols
+Internet privacy

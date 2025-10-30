@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1557045
+[parent_id]: 1546088
+[tags]: 
+Jep found the sollution. Apparently you cannot simply bind to a list of products. You will see the products initially, but they will not be updated when a property is changed. Instead you need to statically bind to a BindingSource . Just create an object datasource using the Visual Studio (in the data menu). Code like this is generated: private System.Windows.Forms.BindingSource beursProductDisplayBindingSource; this.beursProductDisplayBindingSource = new System.Windows.Forms.BindingSource(this.components); this.dataRepeater1.DataSource = this.beursProductDisplayBindingSource; Now you can dynamically bind like this: BindingSource productBinding = ((BindingSource)dataRepeater1.DataSource); _productDataAgent.BeursProducts.ForEach(product => productBinding.Add(product)); Now when implementing INotifyPropertyChanged in your data object like I did is works like expected. Just forgot one step which is not needed when using WPF.

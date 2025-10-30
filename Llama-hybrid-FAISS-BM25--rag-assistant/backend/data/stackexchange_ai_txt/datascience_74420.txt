@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 74420
+[parent_id]: 
+[tags]: 
+Is it a good idea to disable or strongly regularize in time series deep learning models?
+
+I'm training a recurrent network on a stock price time series. As you can imagine, the price increases with time. I think the importance of the bias decreases as the stock increases, especially since the test set has an ever higher price than the end of the training set. Is it a good idea to "discourage" the learning via bias by using heavy regularization, or disabling the bias entirely? Here's my architecture: class ForecastModel(Model): def __init__(self): super(ForecastModel, self).__init__() self.layer0 = Dense(128, activation='relu', dtype=tf.float32) self.layer1 = LSTM(256, return_sequences=True, dtype=tf.float32, bias_regularizer=l1(25e-2)) self.layer2 = GRU(512, return_sequences=True, dtype=tf.float32, bias_regularizer=l1(25e-2)) self.layer3 = SimpleRNN(1024, dtype=tf.float32, bias_regularizer=l1(25e-2)) self.layer4 = Dense(2096, activation='relu', dtype=tf.float32) self.flat = Flatten() self.concat = Concatenate() self.layer5 = Dense(1, dtype=tf.float32) def __call__(self, inputs, training=None, **kwargs): a = self.layer0(inputs) b = self.layer1(inputs) b = self.layer2(b) b = self.layer3(b) a = self.flat(a) a = self.layer4(a) x = self.concat([a, b]) x = self.layer5(x) return x

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2465035
+[parent_id]: 
+[tags]: 
+How to pass additional convert options to paperclip on Heroku?
+
+class User { :square => "100%", :large => "100%" }, :convert_options => { :square => "-auto-orient -geometry 70X70#", :large => "-auto-orient -geometry X300" }, :storage => :s3, :s3_credentials => "#{RAILS_ROOT}/config/s3.yml", :path => ":attachment/:id/:style.:extension", :bucket => 'mybucket' validates_attachment_size :photo, :less_than => 5.megabyte end Works great on local machine, but gives me an error on Heroku: There was an error processing the thumbnail for stream.20143 The thing is I want to auto-orient photos before resizing, so they resized properly. The only working variant now(thanks to jonnii) is resizing without auto-orient: ... as_attached_file :photo, :styles => { :square => "70X70#", :large => "X300" }, :storage => :s3, :s3_credentials => "#{RAILS_ROOT}/config/s3.yml", :path => ":attachment/:id/:style.:extension", :bucket => 'mybucket' ... How to pass additional convert options to paperclip on Heroku? UPD I discover, the trouble in "-auto-orient" option. It seems like this option is broken in version of ImageMagick used by Heroku. I created custom paperclip image processor inherited from paperclip's standard thumbnail: module Paperclip class Ao It works perfect on local machine, but fails on Heroku.

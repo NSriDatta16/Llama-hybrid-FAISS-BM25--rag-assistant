@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 535720
+[parent_id]: 
+[tags]: 
+Where is dropout placed in the original transformer?
+
+I wanted to know where dropout was placed in the original transformer. According to the original paper Attention Is All You Need they say: Residual Dropout We apply dropout [27] to the output of each sub-layer, before it is added to the sub-layer input and normalized. In addition, we apply dropout to the sums of the embeddings and the positional encodings in both the encoder and decoder stacks. For the base model, we use a rate of P_drop = 0.1. which makes me think they do the following: assert SubLayer is FullyConnected or MultiHeadedSeltAttention (not the output of LN+Add) x = SubLayer(x) x = torch.nn.dropout(x, p=0.1) x = nn.LayerNorm(x) + x x = nn.ReLU(x) Does this sound right? Basically I guess it's unclear what "sub-layer means". For we apply dropout to the sums of the embeddings and the positional encodings in both the encoder and decoder stacks I assume they mean that the input to the decoder and encoder both have a dropout right after the positional encoding, something like this for both decoder and encoder: def forward(self, token_embedding: Tensor): return self.dropout(token_embedding + self.pos_embedding[:token_embedding.size(0), :]) related: Where should I place dropout layers in a neural network?

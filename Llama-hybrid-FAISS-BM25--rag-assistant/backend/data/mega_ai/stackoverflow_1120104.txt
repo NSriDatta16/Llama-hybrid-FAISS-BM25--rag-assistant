@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1120104
+[parent_id]: 1108002
+[tags]: 
+Looking at the source for PHPrtf it looks like the author has forgotten to include regular line breaks. They've included DOS style line endings, "\r\n", which creates an RTF paragraph (\par), but nothing which creates an RTF linebreak (\line). You have 2 options, replace your (I presume nix) line endings in the output from get_file_contents() with \r\n's, to create paragraphs in the RTF, e.g.: str_replace("\n", "\r\n", $text); Or you can patch rtf/Container.php, specifically inserting the following at the top of "Container::writeText()": $text = str_replace("\n", "\n".'\line ', $text);

@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 66248
+[parent_id]: 66164
+[tags]: 
+It is not a good idea to keep the statefulness like your second figure, because this would prevent the parallelization of the computations. A stateful RNN (LSTM, GRU, etc) saves the last hidden state and uses it as the initial state for the next batch. If you do it like in your first figure, all sentences in a batch can be computed in parallel. However, for the second figure, you need to compute the last hidden state in sequence 1 to use it for sequence 2, meaning that you need to compute the LSTM for sequence 1 only, then for sequence 2, then sequence 3, and so on, effectively making your batch size 1 and wasting GPU memory.

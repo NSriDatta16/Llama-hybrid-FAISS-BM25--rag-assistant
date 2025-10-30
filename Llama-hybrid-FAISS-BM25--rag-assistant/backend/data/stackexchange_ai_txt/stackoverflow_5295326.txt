@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5295326
+[parent_id]: 5281481
+[tags]: 
+I agree that views is a powerful tool that you shouldn't count out, but if you're set against using it (i refuse to use it on 2 of my sites purely due to overhead), You could use taxonomy instead. The taxonomy module already has a views style list for each term, I used this to achieve something similar to what you're looking for: Set up a vocabulary whose terms match your node types and note the vid add a hook_node_insert into your module file: mymodulename_node_insert($node){ $terms=taxonomy_get_tree($my_vid); //where $my_vid == the vid of your vocabulary. foreach($terms as $term){ if(strtolower($node->type)==strtolower($term->name)){ $items=array((array)$term); $field['storage']['type']='field_sql_storage'; taxonomy_field_insert('node', $node, $field, null, null, $items); } } } After that you just need to add menu links pointing to your taxonomy page. Just as a note, I render all of my lists that I don't use views for with my own custom functions so I'm not sure what limitations this method might present.

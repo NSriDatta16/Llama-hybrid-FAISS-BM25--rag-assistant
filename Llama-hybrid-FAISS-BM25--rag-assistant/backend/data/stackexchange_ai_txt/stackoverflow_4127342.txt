@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4127342
+[parent_id]: 4125776
+[tags]: 
+Add a native DLL to your application that triggers required processing on DLL_THREAD_ATTACH in DllMain . This is the only way to reliably detect all thread creation in a process. EDIT: This is going to be problematic, because managed threads and native threads do not correspond 1-1. I think you might have to leverage the managed thread debugging support to do what you want. Painful but it should work. For example see ICorDebugThread . Represents a thread in a process. The lifetime of an ICorDebugThread instance is the same as the lifetime of the thread it represents. and ICorDebugProcess has some useful tools for you. You don't really want to write a debugger, but you do want this level of inspection for for your managed threads. The motherlode might be ICorDebugManagedCallback::CreateThread . Notifies the debugger that a thread has started executing managed code. There is a corresponding ExitThread callback.

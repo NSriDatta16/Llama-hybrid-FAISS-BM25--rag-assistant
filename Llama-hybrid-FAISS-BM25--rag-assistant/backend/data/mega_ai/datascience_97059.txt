@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 97059
+[parent_id]: 96499
+[tags]: 
+You'll be left with one-node trees. The loss reduction of a split is penalized by $\gamma$ , but the root itself does not get pruned. This is fairly easy to test: import xgboost as xgb import numpy as np from sklearn.datasets import load_boston X, y = load_boston(return_X_y=True) model = xgb.XGBRegressor(gamma=1e12) # outrageously large gamma model.fit(X, y) # model makes a single prediction for everything: print(np.unique(model.predict(X))) # out: [22.532211] print(y.mean()) # out: 22.532806324110677 # Check out the trees more directly: model.get_booster().trees_to_dataframe() # out: frame, one row per tree; just the root node, which is a leaf (The slight discrepancy between y.mean() and the single prediction is from the single-leaf trees being shrunk by the learning rate; we are converging to the average.)

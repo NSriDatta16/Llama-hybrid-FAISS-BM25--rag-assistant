@@ -1,0 +1,129 @@
+PLANC (Programming LAnguage for Nd Computers, pronounced as plank) is a high-level programming language.
+
+Compilers were developed by Norsk Data for several architectures, including the Motorola 68000, 88000, Intel x86, and the Norsk Data Nord-10 minicomputers and ND-500 superminicomputer.
+
+The language was designed to be cross-platform software. It was mainly used internally at Norsk Data for writing high level systems software such as the upper parts of operating systems and compilers.
+
+Basic structure 
+PLANC programs are structured into modules and routines.
+
+A very simple example of a PLANC program is as follows:
+
+ MODULE mod
+    INTEGER ARRAY : stack (0:100)
+    PROGRAM : mprog
+       INTEGER : i, j,k, m
+       INISTACK stack
+       1 =: i
+       2 =: j
+       i+j =: k =: m
+    ENDROUTINE
+ ENDMODULE
+
+A difference from popular programming languages is that the assignment operator evaluates from left to right: First it computes the value, and then stores it. Compile-time initialization of variables, in contrast, evaluates from right to left.
+
+The assignment operator returns the stored value, so it can be stored multiple times: 5 =: a =: b would store 5 into both the A and B variables. It shares this direction with Plankalkül, ALGOL 60, Mary (another little known language developed in Norway), and the popular language C.
+
+A related distinct syntactic feature is that a function can be defined to take as input the computed value of the expression on its left side. Also, a single additional argument does not require surrounding parentheses. The resulting infix notation blurs the syntactic difference between functions and operators. Such expressions seem conceptually as having a computed value flowing from left to the right.
+
+Data types
+As with all high level languages, PLANC uses variables as can be seen in the prior sample, here are the allowed data types within PLANC:
+
+ Simple types
+ INTEGER, REAL, BOOLEAN, LABEL, VOID, ENUMERATION, POINTER
+ Composite types
+ ARRAY, RECORD, SET, ROUTINE
+ User defined types: declared by TYPE T = .....;
+
+An enumeration was declared thus:
+
+ENUMERATION (Winter, Spring, Summer, Autumn) : Seasons := Summer
+
+This defines an enumeration of the seasons and sets the default value to Summer.
+
+LABEL is a little different from a normal data type. This is used to predefine a label within code and is used together with a GO statement; very much like GOTO in BASIC.
+
+Access modifiers can be applied to make them READ or WRITE only.
+
+For string data several predefined datatypes are used, they are:
+
+ BYTE – Contains one character
+ BYTES – Contains character strings
+ BITS – Contains BIT strings
+
+Array pointers were 3-word constructs that included both the base address, the lower bound, and the higher bound of the array; this made it possible to do reliable run-time checking of array boundaries, and made the kind of pointer arithmetic that makes C a more challenging language in which to write.
+
+Some statements 
+PLANC is a language in the Pascal family. However, it lacks the generic BEGIN END construct often found in Pascal, instead favoring forms like ROUTINE..ENDROUTINE or DO..ENDDO etc.
+
+One feature that sets it apart from some other languages is the construction of loops:
+
+DO .... loop statements... ENDDO
+
+Hopefully one or more of the loop statements would be WHILE condition that allowed breaking out of the loop.
+
+For example:
+
+ DO WHILE test
+ .....
+ ENDDO
+
+Is similar to a C while (test) { ... } loop.
+
+Another example:
+
+ DO
+ .....
+ WHILE test
+ ENDDO
+
+Is similar to a C do { .... } while (test). loop.
+
+Sometimes programmers wrote:
+
+ DO WHILE test1
+ .....
+ WHILE test2
+ ENDDO
+
+C would require writing something like while (test1) { .... if (! test2) break; }.
+
+For loops have the following structure:
+
+FOR var IN low:high DO .... loop statements.... ENDDO
+
+A step can also be specified by low:high:step. Alternatively, a type (enumeration or integer ranged type) can be specified to specify a loop over a range of values or a set to loop over all elements of the set or an array can be specified to loop over an array. A pointer:next can be specified, to walk through a list. For example, if defining:
+
+ TYPE node = RECORD
+   node POINTER : next
+   T            : some_data
+ ENDRECORD
+
+Can be written:
+
+FOR p IN first:next DO ..... ENDFOR
+
+to loop over the list.
+
+A for loop can have WHILE statements inside it. This provides two possible manners of exiting a for loop, either because the list of values are exhausted or because the test failed. Thus, blocks can written to catch each of those:
+
+ routine void,node pointer (node pointer : list)
+    for p in first:next do while p.val >< 20
+    exitfor return nil
+    endfor
+    return
+ endroutine
+
+This returns nil if the list was exhausted but was exited due to while, it just ended up after the loop and returned the pointer to the element found. Alternatively, that could have been placed in an exitwhile block which is identical except it would end up there if and only if the while test failed. If more than one while statement occurs in the loop, it could not tell those apart, they would all make a jump to the same exitwhile block.
+
+PLANC had a primitive exception mechanism: a routine could return an exception, which was a 16-bit integer value. This could then be caught by an ON ROUTINEERROR statement in the calling scope.
+
+See also
+Nord Programming Language (NPL)
+BLISS (programming language)
+
+References
+
+Procedural programming languages
+Programming languages created in the 20th century
+Norsk Data software

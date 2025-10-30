@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 176390
+[parent_id]: 176347
+[tags]: 
+The ASP.NET MVC framework is not very mock-friendly (or rather, requires too much setup to mock properly, and causes too much friction when testing, IMHO) due to it's use of abstract base classes instead of interfaces. We've had good luck writing abstractions for per-request and session-based storage. We keep those abstractions very light and then our controllers depend upon those abstractions for per-request or per-session storage. For example, here's how we manage the forms auth stuff. We have an ISecurityContext: public interface ISecurityContext { bool IsAuthenticated { get; } IIdentity CurrentIdentity { get; } IPrincipal CurrentUser { get; set; } } With a concrete implementation like: public class SecurityContext : ISecurityContext { private readonly HttpContext _context; public SecurityContext() { _context = HttpContext.Current; } public bool IsAuthenticated { get { return _context.Request.IsAuthenticated; } } public IIdentity CurrentIdentity { get { return _context.User.Identity; } } public IPrincipal CurrentUser { get { return _context.User; } set { _context.User = value; } } }

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3350912
+[parent_id]: 
+[tags]: 
+VB.NET 2010 and MySql - handling DB NULLs for lazy people
+
+I want to initialize a class with data coming from a MySql db. Some fields can be null: Dim dr As MySqlDataReader = ... Dim item As New Item(dr.GetInt16(0), dr.GetString(1), dr.GetString(2)) Suppose the last two fields could be NULL In the db, so that calling GetString on that field causes an exception. I could certainly write code to test for NULLs before I get each field: dim field1 as String if ( dr.IsDbNull(1) ) field1 = Nothing ' or even "" else field1 = dr.GetString(1) But if you have many fields this is an "ifs" nightmare. To this purpose I rewrote the IIf VB function to make it more typed, thus to avoid casts: Namespace Util Public Shared Function IIf(Of T)(ByVal condition As Boolean, ByVal iftrue As T, ByVal iffalse As T) As T If condition Then Return iftrue Else Return iffalse End Function So that I could write something like: Dim item As New Item( dr.GetInt16(0), Util.IIf(dr.IsDbNull(1), "", dr.GetString(1), Util.IIf(dr.IsDbNull(2), "", dr.GetString(2)) The typed IIf works well in other cases, but unfortunately it doesn't in this instance, because being it a normal function and not a language keyword , each inpout parameter is evaluated during the call, and when the field is NULL the exception is raised. Can you think of an elegant if-less solution?

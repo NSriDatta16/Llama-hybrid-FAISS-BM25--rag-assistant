@@ -1,0 +1,45 @@
+The Time Stamp Counter (TSC) is a 64-bit register present on all x86 processors since the Pentium. It counts the number of CPU cycles since its reset. The instruction RDTSC returns the TSC in EDX:EAX. In x86-64 mode, RDTSC also clears the upper 32 bits of RAX and RDX. Its opcode is 0F 31. Pentium competitors such as the Cyrix 6x86 did not always have a TSC and may consider RDTSC an illegal instruction. Cyrix included a Time Stamp Counter in their MII.
+
+Use
+The Time Stamp Counter was once an excellent high-resolution, low-overhead way for a program to get CPU timing information. With the advent of multi-core/hyper-threaded CPUs, systems with multiple CPUs, and hibernating operating systems, the TSC cannot be relied upon to provide accurate results — unless great care is taken to correct the possible flaws: rate of tick and whether all cores (processors) have identical values in their time-keeping registers. There is no promise that the timestamp counters of multiple CPUs on a single motherboard will be synchronized. Therefore, a program can get reliable results only by limiting itself to run on one specific CPU. Even then, the CPU speed may change because of power-saving measures taken by the OS or BIOS, or the system may be hibernated and later resumed, resetting the TSC. In those latter cases, to stay relevant, the program must re-calibrate the counter periodically.
+
+Relying on the TSC also reduces portability, as other processors may not have a similar feature. Recent Intel processors include a constant rate TSC (identified by the kern.timecounter.invariant_tsc sysctl on FreeBSD or by the "constant_tsc" flag in Linux's /proc/cpuinfo). With these processors, the TSC ticks at the processor's nominal frequency, regardless of the actual CPU clock frequency due to turbo or power saving states.  Hence TSC ticks are counting the passage of time, not the number of CPU clock cycles elapsed.
+
+On Windows platforms, Microsoft strongly discourages using the TSC for high-resolution timing for exactly these reasons, providing instead the Windows APIs QueryPerformanceCounter and QueryPerformanceFrequency (which itself uses RDTSCP if the system has an invariant TSC, i.e. the frequency of the TSC doesn't vary according to the current core's frequency). On Linux systems, a program can get similar function by reading the value of CLOCK_MONOTONIC_RAW clock using the clock_gettime function.
+
+Starting with the Pentium Pro, Intel processors have practiced out-of-order execution, where instructions are not necessarily performed in the order they appear in the program.  This can cause the processor to execute RDTSC earlier than a simple program expects, producing a misleading cycle count.  The programmer can solve this problem by inserting a serializing instruction, such as CPUID, to force every preceding instruction to complete before allowing the program to continue. The RDTSCP instruction is a variant of RDTSC that features partial serialization of the instruction stream, but should not be considered as serializing.
+
+Implementation in various processors
+
+Intel processor families increment the time-stamp counter differently:
+
+ For Pentium M processors (family [06H], models [09H, 0DH]); for Pentium 4 processors, Intel Xeon processors (family [0FH], models [00H, 01H, or 02H]); and for P6 family processors: the time-stamp counter increments with every internal processor clock cycle. The internal processor clock cycle is determined by the current core-clock to busclock ratio. Intel SpeedStep technology transitions may also impact the processor clock.
+ For Pentium 4 processors, Intel Xeon processors (family [0FH], models [03H and higher]); for Intel Core Solo and Intel Core Duo processors (family [06H], model [0EH]); for the Intel Xeon processor 5100 series and Intel Core 2 Duo processors (family [06H], model [0FH]); for Intel Core 2 and Intel Xeon processors (family [06H], display_model [17H]); for Intel Atom processors (family [06H], display_model [1CH]): the time-stamp counter increments at a constant rate. That rate may be set by the maximum core-clock to bus-clock ratio of the processor or may be set by the maximum resolved frequency at which the processor is booted. The maximum resolved frequency may differ from the maximum qualified frequency of the processor.
+
+The specific processor configuration determines the behavior. Constant TSC behavior ensures that the duration of each clock tick is uniform and makes it possible to use the TSC as a wall-clock timer even if the processor core changes frequency. This is the architectural behavior for all later Intel processors.
+
+AMD processors up to the K8 core always incremented the time-stamp counter every clock cycle. Thus, power management features were able to change the number of increments per second, and the values could get out of sync between different cores or processors in the same system. For Windows, AMD provides a utility to periodically synchronize the counters on multiple core CPUs.
+Since the family 10h (Barcelona/Phenom), AMD chips feature a constant TSC, which can be driven either by the HyperTransport speed or the highest P state. A CPUID bit (Fn8000_0007:EDX_8) advertises this; Intel-CPUs also report their invariant TSC on that bit.
+
+Operating system use
+An operating system may provide methods that both use and don't use the RDTSC instruction for time keeping, under administrator control. For example, on some versions of the Linux kernel, seccomp sandboxing mode disables RDTSC.  It can also be disabled using the PR_SET_TSC argument to the prctl() system call.
+
+Use in exploiting cache side-channel attacks 
+The time stamp counter can be used to time instructions accurately which can be exploited in the Meltdown and Spectre security vulnerabilities. However, if this is not available other counters or timers can be used, as is the case with the ARM processors vulnerable to this type of attack.
+
+Other architectures
+Other processors also have registers which count CPU clock cycles, but with different names. For instance, on the AVR32, it is called the Performance Clock Counter (PCCNT) register. SPARC V9 provides the TICK register. PowerPC provides the 64-bit TBR register.
+
+ARMv7 and ARMv8-A architectures provide a generic counter which counts at a constant frequency. ARMv7 provides the Cycle Counter Register (CCNT instruction) to read and write the counter, but the instruction is privileged.
+
+See also
+ High Precision Event Timer (HPET)
+
+References
+
+External links
+ cycle.h - C code to read the high-resolution timer on many CPUs and compilers.
+  - Very simple C code to read the timer on an x86 machine. This reads the 64-bit value into two 32-bit integers and combines them - using just one 64-bit integer is another option.
+ AMD engineer on TSC drift in AMD processors
+
+X86 architecture

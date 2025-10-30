@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 21975
+[parent_id]: 
+[tags]: 
+Keras retrieve value of node before activation function
+
+Imagine a fully-connected neural network with its last two layers of the following structure: [Dense] units = 612 activation = softplus [Dense] units = 1 activation = sigmoid The output value of the net is 1, but I'd like to know what the input x to the sigmoidal function was (must be some high number, since sigm(x) is 1 here). Folllowing indraforyou's answer I managed to retrieve the output and weights of Keras layers: outputs = [layer.output for layer in model.layers[-2:]] functors = [K.function( [model.input]+[K.learning_phase()], [out] ) for out in outputs] test_input = np.array(...) layer_outs = [func([test_input, 0.]) for func in functors] print layer_outs[-1][0] # -> array([[ 1.]]) dense_0_out = layer_outs[-2][0] # shape (612, 1) dense_1_weights = model.layers[-1].weights[0].get_value() # shape (1, 612) dense_1_bias = model.layers[-1].weights[1].get_value() x = np.dot(dense_0_out, dense_1_weights) + dense_1_bias print x # -> -11.7 How can x be a negative number? In that case the last layers output should be a number closer to 0.0 than 1.0. Are dense_0_out or dense_1_weights the wrong outputs or weights?

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 305849
+[parent_id]: 
+[tags]: 
+Alternative to forward declarations when you don't want to #include
+
+I usually, almost without thinking anymore, use forward declarations so that I won't have to include headers. Something along this example: //----------------------- // foo.h //----------------------- class foo { foo(); ~foo(); }; //----------------------- // bar.h //----------------------- class foo; // forward declaration class bar { bar(); ~bar(); foo* foo_pointer; }; Some developers like to use this method to avoid problems with inclusion circles. I rather use it to minimize the overhead in extensive inclusion hierarchies, an important part of physical design (for larger projects in particular). However, in some cases I really like to declare members as normal objects instead of pointers to benefit from the automatic construction/destruction mechanism. This leads to the problem that forward declarations can't be used anymore, since the compiler needs the class definition in such case, eg: //----------------------- // foo.h //----------------------- class foo { foo(); ~foo(); }; //----------------------- // bar.h //----------------------- class foo; // Not enough given the way we declare "foo_object".. #include "foo.h" // ..instead this is required class bar { bar(); ~bar(); foo foo_object; }; So, I would be happy if anyone knows an alternative language construct which can be used here so that I can declare "foo_object" as shown in the example, but without including its header. Regards /Robert

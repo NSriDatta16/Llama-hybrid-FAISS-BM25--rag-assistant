@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3392238
+[parent_id]: 3391806
+[tags]: 
+I don't think you can really do that via a classloader. Theoretically if some other class is attempting to load a class it assumes is called 'com.mycompany.foo.MyClass' then it's too late, someone already has a class with bytecode referencing 'com.mycompany.foo' and that class is already loaded. Repackaging is a lot easier at the static level, by using something like ASM to repackage all the code at build time. You of course have to modify both he classes package itself and all the classes that my refer to that package. If you use Maven, check out the shade plugin. If not I seem to recall a tool called JarJar. You can of course do that kind of byte code manipulation at runtime via a javaagent and a ClassTransformer. The code for the maven-shade-plugin is actually pretty small -- if you grabbed it and ripped out the maven parts you'd probably have something working in 2-3 days.

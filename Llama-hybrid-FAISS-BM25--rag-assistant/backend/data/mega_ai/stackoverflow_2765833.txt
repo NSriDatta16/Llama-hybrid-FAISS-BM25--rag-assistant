@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2765833
+[parent_id]: 2764688
+[tags]: 
+Perhaps slightly more elegant would be to use indirection in the _write system call. Instead of checking the status, use a function pointer to achieve the desired functionality based on whether the scheduler is running, interrupts enabled, etc. Then set the appropriate callback function when the program state changes. int (*writeCallback)(int, const void *, unsigned int); int _write(int fd, const void *buffer, unsigned int count) { return writeCallback(fd, buffer, count); } ... writeCallback = polling_write; ... writeCallback = rtos_write; ... Alternatively, you define a different debug function that bypasses the standard library stream system (i.e. printf) to use in places that you know will not have interrupt/RTOS facilities (e.g. exception handlers).

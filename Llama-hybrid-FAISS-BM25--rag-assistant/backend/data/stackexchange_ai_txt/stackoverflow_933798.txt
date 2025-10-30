@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 933798
+[parent_id]: 
+[tags]: 
+How do I access the ModelState from an ActionFilter?
+
+I'm building an ActionFilter to reuse some code for a simple spam block - basically what I do is that I have a Html Helper method that renders an input textbox and a hidden input, and in the ActionFilter I check whether the two values are the same or not. If not, I want to leverage the rest of my validation logic and add a ModelStateError to the ModelState , but how do I do that? How do I add a ModelStateError from whithin the ActionFilter ? UPDATE: Here's the code I'm trying with. When I test a controller action that has this attribute, ModelState.IsValid still returns true even though I don't pass any of the form values required: public override void OnActionExecuting(ActionExecutingContext filterContext) { var r = filterContext.HttpContext.Request; if (r.Form["sixtimesnine"] != r.Form["fourtytwo"] || string.IsNullOrEmpty(r.Form["sixtimesnine"]) || string.IsNullOrEmpty(r.Form["fourtytwo"])) { filterContext.Controller.ViewData.ModelState.AddModelError("Spam", this.ErrorMessage); } base.OnActionExecuting(filterContext); } This is the ActionMethod : [ValidateAntiSpam(ErrorMessage = "Spambotar får inte.")] public ActionResult Write(GuestbookPost postToCreate) { if (ModelState.IsValid) { _posts.Add(postToCreate); return RedirectToAction("Index"); } return View(); } I just noticed that if I set a breakpoint inside the OnActionExecuting method and hit "Debug tests", the breakpoint is never hit. Why?

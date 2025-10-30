@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 674579
+[parent_id]: 674431
+[tags]: 
+I agree with rossfabricant that the Process ID should be stored instead of a name. Process IDs are not reused until after a restart, so this should be safe. However, I'd recommend against using the TMP environment variable for storage, and instead look at Isolated Storage . This would be more .NET oriented in terms of storage. Also, it would lower the security required to run your application. Unfortunately, both temporary directories and isolated storage will persist after a logout, though, so you'll need logic to handle that case. (Your app can clean out the info on shutdown, however). If you have access to the code of process you are starting, it might be better to use something like named pipes or shared memory to detect whether the application is running. This also gives you a much cleaner way to shut down the process. Killing a process should be a last resort - in general, I wouldn't build an application where the design requires killing a process if it was at all avoidable.

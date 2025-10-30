@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3506233
+[parent_id]: 3501794
+[tags]: 
+Yes, it's possible. Sample code would be a bit on the long side, though... In essence, you need to: extract the ethernet header extract the IP header extract the UDP header [assuming the packet isn't fragmented, or using TCP] extract the DNS payload then handle the rest of the packet according to the very thorough description given in RFC 1035 . In practise that means: ignore requests - all the info you need is in responses ( QR == 1 ) check for RCODE == 0 and ANCOUNT > 0 look in the Question section to find the name that was queried look for answers in the Answer (duh!) section To further complicate matters you have to handle DNS labels (series of fields) and potentially handle compressed labels too! This sounds nasty, but none of it is actually that hard. I have C++ code that does all this and it's not that long, but I can't release it.

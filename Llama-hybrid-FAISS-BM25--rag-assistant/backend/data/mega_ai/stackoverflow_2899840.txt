@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2899840
+[parent_id]: 2899802
+[tags]: 
+i assume this will be during the BEFORE INSERT OR UPDATE trigger. you will want to query the existing table for overlaps in the dates - but this will give a mutating trigger error. You can get around this by using PRAGMA AUTONOMOUS_TRANSACTION to spawn a new thread. alternately - you could save each date range in a secondary table, and use that to query against on each insert... something like the following (uncompiled) CREATE OR REPLACE TRIGGER mytrigger BEFORE INSERT OR UPDATE ON mytable FOR EACH ROW DECLARE cnt number; BEGIN SELECT count(*) into cnt FROM reserved_date_range WHERE :new.begin_date BETWEEN begin_dt and end_dt if ( cnt > 0 ) then raise_application_error(-20000,'Overlapping date ranges'); else insert into reserved_date_range( begin_dt, end_dt ) values ( :new.begin_date, :new.end_date ); end if; End; /

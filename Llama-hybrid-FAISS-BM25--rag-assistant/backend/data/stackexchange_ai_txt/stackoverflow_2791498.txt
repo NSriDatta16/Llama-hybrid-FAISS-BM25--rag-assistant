@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2791498
+[parent_id]: 2782536
+[tags]: 
+I think it would actually be a better idea to use CI's Active Record to compile the queries. An example: function all_clients($select) { $this->db->select($select); return $this->_get_client_data(); } function single_client($select, $id = "") { // validate $id $this->db->select($select); $this->db->where("id", $id); $this->db->limit(1); return $this->_get_client_data(); } // Only called by a method above once the query parameters have been set. private function _get_client_data() { $q = $this->db->get("clients"); if($q->num_rows() > 0) { return $q->result_array(); } return FALSE; } CI's Active Record makes all the stuff you were wanting to much easier. You can imagine setting up your public functions to conditionally set a number of options before actually calling $this->db->get() . I guess you would call _get_client_data a catch-all (?) and running all your data retrieval through a single method makes stuff like error handling much easier to maintain. NOTE: Always remember to validate data like this. I know you do, but I'm just repeating it.

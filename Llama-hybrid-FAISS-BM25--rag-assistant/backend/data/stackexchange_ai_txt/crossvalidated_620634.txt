@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 620634
+[parent_id]: 619612
+[tags]: 
+What you propose actually won’t have the same behavior. $Softmax(QK^T) * LTMask$ will do the following operations: Compute inner products between all pairs of the input sequence. Compute softmax scores based off of (1). Zero out softmax scores for time steps larger than the time step index in (2). This will result in rows in the self-attention to not add up to 1, which is expected. Furthermore, this can cause major issues! Say for example, token 3 and token 8 has the highest inner product (when token 3 is the query vector), in fact it dominates 99%. Then when we mask it out using $LTMask$ , we are left with alphas that are $ , remaining unscaled. In the original formulation, this issue is removed, because softmax has a built-in guarantee in most implementations that -inf will be mapped to 0 for numerical stability. Alternatively, you might have meant to include the $LTMask$ inside the softmax; however, this also doesn’t work, because inner products can be positive or negative.

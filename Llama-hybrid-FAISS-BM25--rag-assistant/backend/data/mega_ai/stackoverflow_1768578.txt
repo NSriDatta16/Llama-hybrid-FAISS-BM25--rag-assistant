@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1768578
+[parent_id]: 
+[tags]: 
+(javascript) why do i need to use a wrap function for event handlers?
+
+I'm trying to understand why in the following code I need Dragger.prototype.wrap and why I can't just use the event handling methods directly: function Dragger(id) { this.isMouseDown = false; this.element = document.getElementById(id); this.element.onmousedown = this.wrap(this, "mouseDown"); } Dragger.prototype.wrap = function(obj, method) { return function(event) { obj[method](event); } } Dragger.prototype.mouseDown = function(event) { this.oldMoveHandler = document.body.onmousemove; document.onmousemove = this.wrap(this, "mouseMove"); this.oldUpHandler = document.body.onmousemove; document.onmouseup = this.wrap(this, "mouseUp"); this.oldX = event.clientX; this.oldY = event.clientY; this.isMouseDown = true; } Dragger.prototype.mouseMove = function(event) { if (!this.isMouseDown) { return; } this.element.style.left = (this.element.offsetLeft + (event.clientX - this.oldX)) + "px"; this.element.style.top = (this.element.offsetTop + (event.clientY - this.oldY)) + "px"; this.oldX = event.clientX; this.oldY = event.clientY; } Dragger.prototype.mouseUp = function(event) { this.isMouseDown = false; document.onmousemove = this.oldMoveHandler; document.onmouseup = this.oldUpHandler; } I'm told it's because this changes without it, but I don't understand why this changes, why the wrap function prevents it from changing, and what this would change to without the wrap function.

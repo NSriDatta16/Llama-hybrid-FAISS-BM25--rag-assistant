@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3751135
+[parent_id]: 3750590
+[tags]: 
+This uses GetCompressedFileSize, as ho1 suggested, as well as GetDiskFreeSpace, as PaulStack suggested, it does, however, use P/Invoke. I have tested it only for compressed files, and I suspect it does not work for fragmented files. public static long GetFileSizeOnDisk(string file) { FileInfo info = new FileInfo(file); uint dummy, sectorsPerCluster, bytesPerSector; int result = GetDiskFreeSpaceW(info.Directory.Root.FullName, out sectorsPerCluster, out bytesPerSector, out dummy, out dummy); if (result == 0) throw new Win32Exception(); uint clusterSize = sectorsPerCluster * bytesPerSector; uint hosize; uint losize = GetCompressedFileSizeW(file, out hosize); long size; size = (long)hosize

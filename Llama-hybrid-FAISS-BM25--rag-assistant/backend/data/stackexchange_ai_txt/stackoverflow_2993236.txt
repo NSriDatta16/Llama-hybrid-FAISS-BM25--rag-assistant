@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2993236
+[parent_id]: 
+[tags]: 
+Updating records with their subordinates via CTE or subquery
+
+Let's say I have a table with the following columns: Employees Table employeeID int employeeName varchar(50) managerID int totalOrganization int managerID is referential to employeeID. totalOrganization is currently 0 for all records. I'd like to update totalOrganization on each row to the total number of employees under them. So with the following records: employeeID employeeName managerID totalOrganization 1 John Cruz NULL 0 2 Mark Russell 1 0 3 Alice Johnson 1 0 4 Juan Valdez 3 0 The query should update the totalOrganizations to: employeeID employeeName managerID totalOrganization 1 John Cruz NULL 3 2 Mark Russell 1 0 3 Alice Johnson 1 1 4 Juan Valdez 3 0 I know I can get somewhat of an org. chart using the following CTE: WITH OrgChart (employeeID, employeeName,managerID,level) AS ( SELECT employeeID,employeeName,0 as managerID,0 AS Level FROM Employees WHERE managerID IS NULL UNION ALL SELECT Employees.employeeID,Employees.employeeName,Employees.managerID,Level + 1 FROM Employees INNER JOIN OrgChart ON Employees.managerID = OrgChart.employeeID ) SELECT employeeID,employeeName,managerID, level FROM OrgChart; Is there any way to update the Employees table using a stored procedure rather than building some routine outside of SQL to parse through the data?

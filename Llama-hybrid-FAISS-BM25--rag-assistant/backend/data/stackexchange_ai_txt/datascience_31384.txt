@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 31384
+[parent_id]: 
+[tags]: 
+neural network xor gate classification
+
+I've written a simple neural network that can predict XOR gate function. I think I've used the math correctly, but the loss doesn't go down and remains near 0.6. Can anyone help me find the reason why? import numpy as np import matplotlib as plt train_X = np.array([[0,0],[0,1],[1,0],[1,1]]).T train_Y = np.array([[0,1,1,0]]) test_X = np.array([[0,0],[0,1],[1,0],[1,1]]).T test_Y = np.array([[0,1,1,0]]) learning_rate = 0.1 S = 5 def sigmoid(z): return 1/(1+np.exp(-z)) def sigmoid_derivative(z): return sigmoid(z)*(1-sigmoid(z)) S0, S1, S2 = 2, 5, 1 m = 4 w1 = np.random.randn(S1, S0) * 0.01 b1 = np.zeros((S1, 1)) w2 = np.random.randn(S2, S1) * 0.01 b2 = np.zeros((S2, 1)) for i in range(1000000): Z1 = np.dot(w1, train_X) + b1 A1 = sigmoid(Z1) Z2 = np.dot(w2, A1) + b2 A2 = sigmoid(Z2) J = np.sum(-train_Y * np.log(A2) + (train_Y-1) * np.log(1-A2)) / m dZ2 = A2 - train_Y dW2 = np.dot(dZ2, A1.T) / m dB2 = np.sum(dZ2, axis = 1, keepdims = True) / m dZ1 = np.dot(w2.T, dZ2) * sigmoid_derivative(Z1) dW1 = np.dot(dZ1, train_X.T) / m dB1 = np.sum(dZ1, axis = 1, keepdims = True) / m w1 = w1 - dW1 * 0.03 w2 = w2 - dW2 * 0.03 b1 = b1 - dB1 * 0.03 b2 = b2 - dB2 * 0.03 print(J)

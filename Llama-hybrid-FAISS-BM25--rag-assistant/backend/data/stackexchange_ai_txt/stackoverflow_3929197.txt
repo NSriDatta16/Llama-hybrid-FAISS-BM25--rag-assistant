@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3929197
+[parent_id]: 3761638
+[tags]: 
+The most elegant solution seems to be the following. One has to use the CMake COMPONENT parameter of the install command to assign each install target to a component. For example in the question this would be something like this: install(TARGETS myprog DESTINATION ${BIN_DEST_DIR} COMPONENT myprog), and similarly for the shared libraries install(TARGETS my1 my2 DESTINATION ${LIB_DEST_DIR} COMPONENT my-libs). Now, to invoke the installation of myprog as well as mylib1 and mylib2 a custom target has to be created that uses the cmake_install.cmake locate in the build tree: add_custom_target(install-myprog COMMAND ${CMAKE_COMMAND} -DCOMPONENT=my-libs -P ${CMAKE_BINARY_DIR}/cmake_install.cmake COMMAND ${CMAKE_COMMAND} -DCOMPONENT=myprog -P ${CMAKE_BINARY_DIR}/cmake_install.cmake COMMENT "Installing myprog").

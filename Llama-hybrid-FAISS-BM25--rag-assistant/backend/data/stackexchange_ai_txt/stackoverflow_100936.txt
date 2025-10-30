@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 100936
+[parent_id]: 100904
+[tags]: 
+I have found one portable way to predict and/or limit the number of characters returned by sprintf and related functions, but it's inefficient and many consider it inelegant. What you do is create a temporary file with tmpfile(), fprintf() to that (which reliably returns the number of bytes written), then rewind and read all or part of the text into a buffer. Example: int my_snprintf(char *buf, size_t n, const char *fmt, ...) { va_list va; int nchars; FILE *tf = tmpfile(); va_start(va, n); nchars = vfprintf(tf, fmt, va); if (nchars >= (int) n) nchars = (int) n - 1; va_end(va); memset(buf, 0, 1 + (size_t) nchars); if (nchars > 0) { rewind(tf); fread(buf, 1, (size_t) nchars, tf); } fclose(tf); return nchars; }

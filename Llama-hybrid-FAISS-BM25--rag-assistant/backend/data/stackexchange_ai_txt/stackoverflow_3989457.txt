@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3989457
+[parent_id]: 3989319
+[tags]: 
+It's reasonably straightforward to do if you can guarantee how the results are going to be used. However, if the results might be used in an arbitrary order, you may need to buffer everything. Consider this: var results = MethodToBeImplemented(sequences); var iterator = results.GetEnumerator(); iterator.MoveNext(); var first = iterator.Current; iterator.MoveNext(); var second = iterator.Current; foreach (var x in second) { // Do something } foreach (var x in first) { // Do something } In order to get at the items in "second" you'll have to iterate over all of the subsequences, past the first items. If you then want it to be valid to iterate over the items in first you either need to remember the items or be prepared to re-evaluate the subsequences. Likewise you'll either need to buffer the subsequences as IEnumerable values or reread the whole lot each time. Basically it's a whole can of worms which is difficult to do elegantly in a way which will work pleasantly for all situations :( If you have a specific situation in mind with appropriate constraints, we may be able to help more.

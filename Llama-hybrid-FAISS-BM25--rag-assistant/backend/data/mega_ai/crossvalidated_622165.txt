@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 622165
+[parent_id]: 
+[tags]: 
+Random Walk and Moving Average for Stock Market Model
+
+I model a stock price with a completely random walk: In each step I multiply the price with normal distributed random number with an mean of 1. Then I compute a signal, which is True if the moving average of the last 10 prices is above the current price. When I now look on the mean of the prices where the signal is True and find that the average of these is above the mean of the prices that have a False signal. import numpy as np import scipy.signal def moving_average(x, w): return scipy.signal.convolve2d(x, np.ones(( 1, w)), 'same') / w change = np.random.normal(loc=1.0, scale=0.01, size=(10_000, 10_000)) # Create 10.000 time series with 10.000 elemts price = change.cumprod(axis=1) price = price[:, 1000:] # Skip the first 1000 prices avgPrice = moving_average(price, 10) buy = avgPrice > price sale = price > avgPrice print(np.mean(price[buy]), np.mean(price[sale])) (0.9809647426274503, 1.0068282858753526) I would have expected that both means are identical, because the changes are independent of each other. But they are not. Why? I also tried a different random walk with change = np.random.normal(loc=0, scale=0.01, size=(10_000, 10_000) price = np.cumsum(change, axis=1) with a similar result (-0.0015839832665335697, 0.025289114378696673)

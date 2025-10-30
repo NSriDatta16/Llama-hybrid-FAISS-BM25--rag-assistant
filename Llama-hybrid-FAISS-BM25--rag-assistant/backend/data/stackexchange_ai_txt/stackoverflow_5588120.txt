@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5588120
+[parent_id]: 5588041
+[tags]: 
+Your best option would be to prevent having the data unordered if possible. Like it has been mentioned, you'd be better of reading the data from disk (or network or whatever the source) directly into a selforganizing container (a tree, perhaps std::set will do). That way, you'll never have to sort through the lot, or have to worry about memory management. If you know the required capacity of the container, you might squeeze out additional performance by using std::vector(initialcapacity) or call vector::reserve up front. You'd then best be advised to use std::make_heap to heapify any existing elements, and then add element by element using push_heap (see also pop_heap ). This essentially is the same paradigm as the self-ordering set but duplicates are ok the storage is 'optimized' as a flat array (which is perfect for e.g. shared memory maps or memory mapped files ) (Oh, minor detail, note that sort_heap on the heap takes at most N log N comparisons, where N is the number of elements) Let me know if you think this is an interesting approach. I'd really need a bit more info on the use case

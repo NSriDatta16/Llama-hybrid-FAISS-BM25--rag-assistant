@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4088185
+[parent_id]: 4086868
+[tags]: 
+You can modify the class definitions to encourage correct usage by checking Collection validity at Collector construction time, and disallowing default construction of Collector or modification of the encapsulated Collection . Have the Collector constructor validate the Collector using a pure virtual method. This does not guarantee correctness - Collection implementors can still cheat by allowing in malformed subclasses - but does support it by expressing what you want more clearly. class X; class Y; class Collection { public: virtual void AddItemX(X*) = 0; virtual void AddItemY(Y*) = 0; //So on... virtual bool ensureValid() = 0; }; class Collector { public: Collector (const Collection coll&) : _coll(coll) { if (!coll.ensureValid()) { // throw an error } } private: Collector(); protected: const Collection _coll; };

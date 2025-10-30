@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2102422
+[parent_id]: 
+[tags]: 
+Blanking fields with Reflection
+
+I am writing a Junit test framework to test web services. There is a requirement for the input values to come from many different sources, eg an earlier web service call or literals within the class. To achieve this I have constructors that accept the different inputs in different ways; all simple so far. The problem is the webservices also need to be exercised with a full data load and a mandatory fields only payload. Rather then litter the (in some cases verrry long) tests with if statements deciding whether to set a value or not, I have written an annotation @Optional. Adding this annotation causes it to be nulled by the following code: /** * Find all of the fields annotated with optional and null them * @throws IllegalAccessException * @throws IllegalArgumentException */ private void blankOptionalFields() throws IllegalAccessException{ for(Field field: this.getClass().getDeclaredFields()){ Annotation optionalAnnotation = field.getAnnotation(Optional.class); if(!(field.isSynthetic()) && optionalAnnotation instanceof Optional){ field.setAccessible(true); try{ field.set(this, null); } catch(IllegalArgumentException e){ logger.debug("Tried to set a scalar field to null!", e); } } } } So two things: 1: Although this works it somehow feels fragile/dangerous, there must be a better approach? 2: If this is not a carzy approach, what is the best way to go about setting the scalar values to appropiate values?

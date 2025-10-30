@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1707263
+[parent_id]: 1651364
+[tags]: 
+I would strongly discourage storing the entire session in cookies. It has bad performance implications. Consider this: every request (to every resource) will contain an overhead of possibly stale data that you only need once or twice. Eventually this overhead will hit your users, your bandwidth and your site performance. Here's an example: GET / HTTP/1.1 Host: localhost OtherUsefulHeaders: foo Cookie: YourSessionState=... Initial request size is around 200 bytes. Let's say, you add around 100 bytes to your session. Now the size is 300 bytes and overhead is ~30%. You add another 100 bytes, and overhead is 50%. Which means it roughly requires 2x time to send the request and 2x bandwidth. You should rather look into cookie-based TempData implementation as it has much smaller footprint and actually makes sense.

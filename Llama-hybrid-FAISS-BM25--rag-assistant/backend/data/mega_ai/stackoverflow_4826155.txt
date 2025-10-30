@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4826155
+[parent_id]: 
+[tags]: 
+Which is the best way to handle exception in java MDB?
+
+I got this use case: Here the class diagram Here the sequence diagram This diagram represents an enterprise model. Java EE technology on Weblogic 10.3 with the leverage of spring framework for IoC and AOP, JPA for persistence with spring jpatemplate, spring integration for the interaction frame. As you can see there is no coupling between the Service and the Gateway since spring integration add all the magic sugar needed. Now I have to deal with the exception handling. All the chain has no checked exceptions: also the data access has no checked exception since jpatemplate wraps all the sql exception in runtime exceptions. So the only checked exception that I handle is on the MDB @Override @TransactionAttribute(TransactionAttributeType.REQUIRED) public void onMessage(Message message) { try { TextMessage textMessage = (TextMessage) message; String stringMessage = textMessage.getText(); OnlineEventMessage event = eventMessageParser.parse(stringMessage); legacyEventMessageService.handle(event); } catch (JMSException e) { logger.error("si e' verificato un errore JMS nel processamento dell'evento {}", message, e); } } I noticed that if I get a NPE for example on some component of the chain the message is rolled back on the JMS queue and the process is looped back. Which is the best way to handle exceptions in this scenario? Catch all the runtimeExceptions in the MDB? Kind regards Massimo

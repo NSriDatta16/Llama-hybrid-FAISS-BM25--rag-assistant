@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3093575
+[parent_id]: 3091974
+[tags]: 
+While I agree with the others that displaying 148.000 rows on one page is madness, I just wanted to point your attention to how you should output the data. Since you didn't specify any code, I'm assuming you're simply looping through your recordset to display the records, like so: Do While Not RS.EOF //Output RS.MoveNext Loop This is a really inefficient way of working with data in classic ASP, since each time you're reading a field (i.e. RS("Name")) you're making a request to the database, and the same goes for each MoveNext and each EOF test. Instead you should use GetRows, to get all your elements from the recordset into an array, and then you can go ahead and close the connection to your database. There's a good article on how to work with GetRows here Except from the article: MyArray = rsMyRecordSet.GetRows() //Close DB connection Ubound(MyArray,1) 'Returns the Number of Columns Ubound(MyArray,2) 'Returns the Number of Rows For lnLoopCounter = 0 To Ubound(MyArray,2) Response.Write MyArray(0, lnLoopCounter) _ & ", " _ & MyArray(1, lnLoopCounter) _ & " " & vbNewLine Next

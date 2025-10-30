@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1874569
+[parent_id]: 
+[tags]: 
+Rails Object in Database is Invalid
+
+I have a model named Tickets that being saved to the database even when invalid. This is stopping me from using validations to help prevent duplicate data being saved to the DB. In script/console >> Ticket.last.valid? => False >> Ticket.first.valid? => False If I try to see what errors are associated with this invalid object >> Ticket.last.errors.each{|attr,msg| puts "#{attr} - #{msg}\n" } => {} So does anyone know how it's possible to save an invalid object to the database, and how can I find what is making the object invalid? Ticket.rb (model) class Ticket [:body, :from_email] validates_presence_of :to_email validates_presence_of :from_email validates_presence_of :subject validates_presence_of :body def after_create if self.valid? whymail = Whymail.find(:first, :include => :user, :conditions => ['(email = ?)', self.to_email.upcase ] ) if !whymail.nil? self.whymail_id = whymail.id self.save MyMailer.deliver_forward(whymail.user.email, self.from_email, self.to_email, self.subject, self.body) end end end end One part of this question was answered, second was not. Can anyone see problems with this model that may allow it to save even though it is invalid??

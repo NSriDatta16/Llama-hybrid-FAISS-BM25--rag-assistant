@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1293705
+[parent_id]: 1293545
+[tags]: 
+If I may restate your symptoms, I assume you mean this fails like so: require "AAA::BBB" . "::" . "CCC"; # built from $class and $type; # => Can't locate AAA::BBB::CCC in @INC (@INC contains ... because it cannot find a file named AAA::BBB::CCC . However, this succeeds : require AAA::BBB::CCC; # note, this is _not_ quoted because perl searches for a subdirectory-nested module named, in part, AAA/BBB/CCC.pm . This is how require works. From the documentation for require EXPR : If EXPR is a bareword, the require assumes a ".pm" extension and replaces "::" with "/" in the filename for you, to make it easy to load standard modules. So, you must generally either convert your constructed module name to a pathname fragment (s!::!/!g appending ".pm"), or string eval your constructed module name, as others have suggested.

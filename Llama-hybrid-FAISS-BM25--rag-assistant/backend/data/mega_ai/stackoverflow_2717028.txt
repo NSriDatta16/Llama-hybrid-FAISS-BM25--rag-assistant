@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2717028
+[parent_id]: 2717012
+[tags]: 
+Erasing elements in std::vector invalidates iterators past the removed element, so you cannot use "foreign" functions that accept ranges. You need to do that in a different way. EDIT: In general, you can use the fact that erasing one element "shifts" all elements at further positions one back. Something like this: for (size_t scan = 2, end = 4; scan != end; ) { if (/* some predicate on ints[scan] */) { ints.erase (ints.begin () + scan); --end; } else ++scan; } Note that std::vector isn't suited for erasing elements in the middle. You should consider something else ( std::list ?) if you do that often. EDIT 2: As clarified by comments, first paragraph is not true. In such case std::remove_if should be more efficient than what I suggested in the first edit, so disregard this answer. (Keeping it for the comments.)

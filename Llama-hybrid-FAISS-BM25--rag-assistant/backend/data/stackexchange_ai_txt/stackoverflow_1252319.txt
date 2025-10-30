@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1252319
+[parent_id]: 1250432
+[tags]: 
+We use a class that stores a map of thread id to data to implement our thread local storage. This seems to work very well, then an instance of this class can be placed anywhere you require thread local storage. Normally clients use an instance of as a static private field. Here is a rough outline of the code template struct ThreadLocal { T & value() { LockGuard lock(m_cs); std::map ::iterator itr = m_threadMap.find(Thread::getThreadID()); if(itr != m_threadMap.end()) return itr->second; return m_threadMap.insert( std::map ::value_type(BWThread::getThreadID(), T())) .first->second; } CriticalSection m_cs; std::map m_threadMap; }; This is then used as class A { // ... void doStuff(); private: static ThreadLocal threadLocalFoo; }; ThreadLocal A::threadLocalFoo; void A::doStuff() { // ... threadLocalFoo.value().bar(); // ... } This is simple and works on any platform where you can get the thread id. Note the Critical Section is only used to return/create the reference, once you have the reference all calls are outside the critical section.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1354557
+[parent_id]: 1354308
+[tags]: 
+I just found out that it is possible to create objects with internal constructors and set the internal fields. Obviously, this is discouraged but it would work for short term mocking. Here's an example: private DataReceivedEventArgs CreateMockDataReceivedEventArgs(string TestData) { if (String.IsNullOrEmpty(TestData)) throw new ArgumentException("Data is null or empty.", "Data"); DataReceivedEventArgs MockEventArgs = (DataReceivedEventArgs)System.Runtime.Serialization.FormatterServices .GetUninitializedObject(typeof(DataReceivedEventArgs)); FieldInfo[] EventFields = typeof(DataReceivedEventArgs) .GetFields( BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly); if (EventFields.Count() > 0) { EventFields[0].SetValue(MockEventArgs, TestData); } else { throw new ApplicationException( "Failed to find _data field!"); } return MockEventArgs; } Use as such: DataReceivedEventArgs TestEventArgs = CreateMockDataReceivedEventArgs("Test"); ...this took a bit of research, I didn't think it was possible :-)

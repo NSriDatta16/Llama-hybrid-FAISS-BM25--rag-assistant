@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1434106
+[parent_id]: 1433821
+[tags]: 
+The most elegant solution is to ignore years altogether . There is no need to convert anything to a date type to perform the sorting. Instead, create a sorting key that assumes all months are 31 days (the max). When the month is in the future, add month * 31 days. When in the past, add that plus a year. Then add an offset for the day. For the current month, look at the day of the month, and do the same thing: if in the future, add it. If not, add it plus 12 "long" (31-day) months. This solution will work properly in leap years, and requires no conversion of the individual fields to dates. SELECT * FROM mytable ORDER BY CASE /* Month has passed this year, sort key considers it a "long year" further in the future) */ WHEN month - MONTH(NOW()) 0 THEN month * 31 + day /* Same month, so we have to compare based on the day of the month */ ELSE CASE WHEN day - DAY(NOW())

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2661195
+[parent_id]: 2661162
+[tags]: 
+You simply cannot reliably store 64 bits of data in a 32-bit integer. You either have to redesign the software to work with 32-bit integers as the maximum size available or provide a way of providing 64 bits of storage for the 64-bit integers. Neither is simple - to be polite about it. One possibility - not an easy one - is to create a structure: typedef struct { uint32_t msw; uint32_t lsw; } INT64_t; You can then store the data in the two 32-bit integers, and do arithmetic with components of the structure. Of course, in general, a 32-bit by 32-bit multiply produces a 64-bit answer; to do full multiplication without overflowing, you may be forced to store 4 16-bit unsigned numbers (because 16-bit numbers can be multiplied to give 32-bit results w/o overflowing). You will use functions to do the hard work - so the macro becomes a call to a function that accepts two (pointers to?) the INT64_t structure and returns one. It won't be as fast as before...but it has some chance of working if they used the macros everywhere that was necessary.

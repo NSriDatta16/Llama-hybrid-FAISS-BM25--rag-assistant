@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2331106
+[parent_id]: 
+[tags]: 
+sbcl runs forever on second call of function
+
+The function: Given a list lst return all permutations of the list's contents of exactly length k, which defaults to length of list if not provided. (defun permute (lst &optional (k (length lst))) (if (= k 1) (mapcar #'list lst) (loop for item in lst nconcing (mapcar (lambda (x) (cons item x)) (permute (remove-if (lambda (x) (eq x item)) lst) (1- k)))))) The problem: I'm using SLIME in emacs connected to sbcl, I haven't done too much customization yet. The function works fine on smaller inputs like lst = '(1 2 3 4 5 6 7 8) k = 3 which is what it will mostly be used for in practice. However when I Call it with a large input twice in a row the second call never returns and sbcl does not even show up on top. These are the results at the REPL: CL-USER> (time (nth (1- 1000000) (permute '(0 1 2 3 4 5 6 7 8 9)))) Evaluation took: 12.263 seconds of real time 12.166150 seconds of total run time (10.705372 user, 1.460778 system) [ Run times consist of 9.331 seconds GC time, and 2.836 seconds non-GC time. ] 99.21% CPU 27,105,349,193 processor cycles 930,080,016 bytes consed (2 7 8 3 9 1 5 4 6 0) CL-USER> (time (nth (1- 1000000) (permute '(0 1 2 3 4 5 6 7 8 9)))) And it never comes back from the second call. I can only guess that for some reason I'm doing something horrible to the garbage collector but I can't see what. Does anyone have any ideas?

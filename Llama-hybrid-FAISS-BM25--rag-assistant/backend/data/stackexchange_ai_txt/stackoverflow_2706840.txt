@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2706840
+[parent_id]: 2706834
+[tags]: 
+Why are you closing a connection after a few inserts? Your script should be: Open a connection Write however many records you need Close connection Transactions can complicate this. If you are doing non-transactional inserts, absolutely use one connection and write each record one at a time. If you are using transactions and writing a truly huge data set (ie millions of rows) then your database may need to be tuned so it has sufficient temporary storage to deal with that. Basically if a single insert is taking a second it suggests to me one or more of: You foreign keys aren't indexed so the referential integrity checks on the insert are woefully inefficient; or Excessive connection opening and closing. Now all that being said, having multiple "workers" doing inserts can lead to useful increases in overall throughput but at 1 second per insert, that isn't your problem. You need to find what your problem is. With truly huge batch inserts it may also be worth disabling check constraints, foreign keys and indices, doing all the inserts and then re-enabling them.

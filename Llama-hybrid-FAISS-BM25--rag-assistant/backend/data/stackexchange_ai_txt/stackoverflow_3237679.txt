@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3237679
+[parent_id]: 3237562
+[tags]: 
+You probably mean it with a slight modification (I got a syntax error otherwise): This gives: instance: (refcount=2, is_ref=1) , object ( Singleton )[ 1 ] a: (refcount=1, is_ref=0) , object ( Singleton )[ 1 ] instance: (refcount=2, is_ref=1) , object ( Singleton )[ 1 ] b: (refcount=1, is_ref=0) , object ( Singleton )[ 1 ] So it has the disadvantage a new zval will be created on each call. This is not particularly serious, so if you prefer it, go ahead. The reason a zval separation is forced is that inside getInstance , $instance is a reference (in the sense of =& , and it has reference count 2 (one for the symbol inside the method, another for the static storage). Since getInstance doesn't return by reference, the zval must be separated -- for the return, a new one is created with reference count 1 and the reference flag clear.

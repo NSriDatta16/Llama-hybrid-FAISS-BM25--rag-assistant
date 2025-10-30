@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2944686
+[parent_id]: 2659797
+[tags]: 
+I figured it out with the inspiration from newtover, digging into FMDB and re-reading the sqlite3 documentation (it is still very vague in my opinion). This code returns the value that I bumped in the admin tool when I make notable changes to the schema that require migration. -(int)queryUserVersion: (sqlite3*) db { // get current database version of schema static sqlite3_stmt *stmt_version; int databaseVersion; if(sqlite3_prepare_v2(db, "PRAGMA user_version;", -1, &stmt_version, NULL) == SQLITE_OK) { while(sqlite3_step(stmt_version) == SQLITE_ROW) { databaseVersion = sqlite3_column_int(stmt_version, 0); NSLog(@"%s: version %d", __FUNCTION__, databaseVersion); } NSLog(@"%s: the databaseVersion is: %d", __FUNCTION__, databaseVersion); } else { NSLog(@"%s: ERROR Preparing: , %s", __FUNCTION__, sqlite3_errmsg(db) ); } sqlite3_finalize(stmt_version); return databaseVersion; } I have a similar method for the schema version where the sql-statement is changed to "PRAGMA schema_version;"

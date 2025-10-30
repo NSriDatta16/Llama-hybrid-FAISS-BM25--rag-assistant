@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1696028
+[parent_id]: 
+[tags]: 
+Can Sun JVM handle gigantic heap sizes without problems, and how?
+
+I have heard several people claiming that you can not scale the JVM heap size up. I've heard claims of the practical limit being 4 gigabytes (I heard an IBM consultant say that), 10 gigabytes, 32 gigabytes, and so on... I simply can not believe any of those numbers and have been wondering about the issue now for a while. So, I have three part question I would hope someone with experience could answer: Given the following case how would you tune the heap and GC settings? Would there be noticeable hickups (pauses of JVM etc) that would be noticed by the end users? Should this really still work? I think it should. The case: 64 bit platform 64 cores 64 gigabytes of memory The application server is client facing (ie. Jboss/tomcat web application server) - complete pauses of JVM would probably be noticed by end users Sun JVM, probably 1.5 To prove I am not asking you guys to do my homework this is what I came up with: -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -XX:+UnlockDiagnosticVMOptions -XX:-EliminateZeroing -Xmn768m -Xmx55000m CMS should reduce the amount of pauses, although it comes with overhead. The other settings for CMS seem to default automatically to the number of CPUs so they seem sane to me. The rest that I added are extras that might do good or bad generally for performance, and they should probably be tested. Definitely.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3539919
+[parent_id]: 3539907
+[tags]: 
+I do not understand the use of a mutex if it can be recursively locked by a thread. A mutex is used to provide mutually exclusive access to a resource. In other words, only one thread (or "agent") should be able to access a resource at a time. Therefore, if a thread has taken a mutex, then it already has exclusive access to the resource, so there is no harm in allowing it to take the mutex again. A recursive mutex is still useful since it still provides the semantics of exclusive access. While Thread 1 can take a mutex it already has, Thread 2 is still prevented from taking the mutex and accessing the resource at the same time as Thread 1. Why would anyone want to recursively lock the mutex ? For convenience: if my thread accesses a resource in a few different classes, each of them can acquire and release the mutex independently and in a nested manner without having to worry about each other. This could be seen as laziness or poor design, but this is an advantage over non-recursive mutexes that cause deadlock when a thread tries to take a mutex it already owns.

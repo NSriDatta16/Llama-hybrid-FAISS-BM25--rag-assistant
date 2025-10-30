@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1497438
+[parent_id]: 1497183
+[tags]: 
+Note: I have taken the liberty to rename your Id's to DoubleID and DataID respectively. I find that eassier to work with. DECLARE @Doubles TABLE (DoubleID INT, Name VARCHAR(50)) DECLARE @Data TABLE (DataID INT, DoubleID INT) INSERT INTO @Doubles VALUES (1, 'Foo') INSERT INTO @Doubles VALUES (2, 'Foo') INSERT INTO @Doubles VALUES (3, 'Bar') INSERT INTO @Doubles VALUES (4, 'Bar') INSERT INTO @Data VALUES (1, 1) INSERT INTO @Data VALUES (1, 2) INSERT INTO @Data VALUES (1, 3) INSERT INTO @Data VALUES (1, 4) SELECT * FROM @Doubles SELECT * FROM @Data UPDATE @Data SET DoubleID = MinDoubleID FROM @Data dt INNER JOIN @Doubles db ON db.DoubleID = dt.DoubleID INNER JOIN ( SELECT db.Name, MinDoubleID = MIN(db.DoubleID) FROM @Doubles db GROUP BY db.Name ) dbmin ON dbmin.Name = db.Name /* Kudos to quassnoi */ ;WITH q AS ( SELECT Name, ROW_NUMBER() OVER (PARTITION BY Name ORDER BY Name) AS rn FROM @Doubles ) DELETE FROM q WHERE rn > 1 SELECT * FROM @Doubles SELECT * FROM @Data

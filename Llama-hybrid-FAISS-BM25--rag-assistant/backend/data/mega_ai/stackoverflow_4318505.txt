@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4318505
+[parent_id]: 4318378
+[tags]: 
+Your issue is that your data is not properly normalized. You are putting a 1 to n relationship into a single table. If you'd reorganize your tables like such: Table Students id name 1 John Smith Table Scores studentId score 1 75 1 83 1 96 You could do a query like: select st.name from Students st, Score sc where st.id = sc.studentId and sc.score in ("83", "75", "96") This also helps if you want to do other queries, like find out which students have a score of at least X, which would be otherwise impossible with your existing table layout. If you must stick with your existing layout, which I don't recommend, however you could split up the user input and then do a query like select from studentScore where score like '%75%' or score like '%83%' or score like '%96%' But i really would refrain from doing so.

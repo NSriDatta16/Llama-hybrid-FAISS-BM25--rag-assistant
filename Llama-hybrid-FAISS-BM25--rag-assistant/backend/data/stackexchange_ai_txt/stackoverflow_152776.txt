@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 152776
+[parent_id]: 152745
+[tags]: 
+Very likely this is a locality-of-reference issue. vector uses new to allocate its internal array, so each row will be at least a little apart in memory due to each block's header; it could be a long distance apart if memory is already fragmented when you allocate them. Different rows of the array are likely to at least incur a cache-line fault and could incur a page fault; if you're really unlucky two adjacent rows could be on memory lines that share a TLB slot and accessing one will evict the other. In contrast your other solutions guarantee that all the data is adjacent. It could help your performance if you align the structure so it crosses as few cache lines as possible. vector is designed for resizable arrays. If you don't need to resize the arrays, use a regular C++ array. STL operations can generally operate on C++ arrays. Do be sure to walk the array in the correct direction, i.e. across (consecutive memory addresses) rather than down. This will reduce cache faults.

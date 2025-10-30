@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4807951
+[parent_id]: 4807740
+[tags]: 
+Loading an entire large file into memory will slow you down as your OS will need to start swapping pages of virtual memory. In such cases, it is best to deal with only the section of the file that you need. In your case, you seem to be processing lines that have the same value in the first field together, so you could do something like: my @lines = (); my $current_key = ''; while ( ) { my ($key) = split /,/; # get first column if ($key ne $current_key) { # new key. Process all the lines from the previous key. if (@lines > 0) { process(@lines); } @lines = (); $current_key = $key; } push @lines, $_ } # don't forget the lines from the last key if (@lines > 0) { process(@lines); } This way, you are only storing in memory enough lines to make up one group. (I am assuming that the input data is sorted or organized by the key. If that's not the case, you could make multiple passes through the file: a first pass to see what keys you will need to process, and subsequent passes to collect the lines associated with each key.)

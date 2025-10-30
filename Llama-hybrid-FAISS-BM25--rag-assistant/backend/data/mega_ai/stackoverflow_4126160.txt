@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4126160
+[parent_id]: 4126130
+[tags]: 
+Yes this will work if you hold a Bar reference. However this is a very fragile solution because it does not work the other way around (holding a Foo& or Foo* which points to a Bar ). In order for this to work Foo s destructor must be virtual. Otherwise it will do non-virtual dispatch and only call the destructor on Foo . class Foo { public: void destroy(); virtual ~Foo() { destroy(); } }; class Bar : public Foo { public: virtual ~Bar() {} }; In the general case where inheritance is expected the types involved should be marked with a virtual destructor. Like most rules though this is not true 100% of the time. But rather than get into all of the cases here I encourage you to read question #2 in the following article (thanks for the link Steve) http://www.gotw.ca/publications/mill18.htm

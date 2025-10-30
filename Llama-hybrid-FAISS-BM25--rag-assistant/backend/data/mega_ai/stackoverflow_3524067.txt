@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3524067
+[parent_id]: 
+[tags]: 
+POST requests fail when is set
+
+Consider the following case: A web server is running a .NET app with . A client is POSTing data to it using a simple HttpWebRequest (no cookies). This seemingly simple case causes major failure. Since .NET can't determine if the requesting agent ( HttpWebRequest ) supports cookies, it responds to the POST request with a 302 Found redirect to the same location with: a cookie named AspxAutoDetectCookie in the response a query parameter named AspxAutoDetectCookie in the forwarded location The requesting agent is then supposed to request the new location, which HttpWebRequest does. When .NET sees AspxAutoDetectCookie in the query string, it knows this is a re-request, and it can determine if cookies are supported by seeing if a cookie named AspxAutoDetectCookie is in the request headers. The problem is that most requesting agents (web browsers, HttpWebRequest ) treat a 302 Found as if it is a 303 See Other and make the re-request a GET, regardless of the original HTTP method! Any data sent in the initial POST request is not forwarded. The correct response should be a 307 Temporary Redirect, which does not change the request method. (A POST request to location X redirects to a POST request to location Y.) Is there any way to change this behaviour in .NET so POST requests are not destroyed? Information on 3xx redirection

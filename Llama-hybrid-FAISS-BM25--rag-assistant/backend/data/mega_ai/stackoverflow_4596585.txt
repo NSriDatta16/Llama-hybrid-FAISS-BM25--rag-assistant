@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4596585
+[parent_id]: 4596484
+[tags]: 
+There's not enough information here to be sure what's wrong, but I have two ideas for things you can try. Your g++ invocation is compiling a C source file as if it were C++. This is not guaranteed to work. Try instead gcc -I/usr/local/include/python2.6 -fPIC -c example_wrap.c gcc -I/usr/local/include/python2.6 -fPIC -c example.cpp g++ -shared example_wrap.o example.o -o example.so (yes, srsly, only use g++ for the link) If that doesn't work, compile example_wrap.c like this: gcc -I/usr/local/include/python2.6 -fPIC -c -save-temps example_wrap.c That will fail the same way but will produce a file named example_wrap.i which is the result of preprocesing. It will be gigantic. Search that file for the function Swig_var_Math_get , and add to your question the complete text of that function (but nothing else).

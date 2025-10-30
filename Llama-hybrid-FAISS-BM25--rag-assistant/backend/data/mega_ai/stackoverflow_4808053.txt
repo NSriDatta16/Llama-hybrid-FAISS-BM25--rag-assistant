@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4808053
+[parent_id]: 4808008
+[tags]: 
+First, separate join an filter. (edit: fixed ON clause) SELECT x.symbol, x.dseqkey, AVG(y.VOLUME) moving_average FROM STOCK_HIST x JOIN STOCK_HIST y ON x.dseqkey BETWEEN y.dseqkey AND y.dseqkey+29 AND Y.Symbol=X.Symbol WHERE x.dseqkey>=29 GROUP BY x.symbol, x.dseqkey ORDER BY x.dseqkey DESC Also, what indexes do you have - I'd suggest an index on (dseqkey, symbol) INCLUDE (VOLUME) Edit 3: you can't have an INCLUDE in a clustered index, my bad. Your syntax is OK. Please try these permutations... the aim is find the best index for the JOIN and WHERE, followed with the ORDER BY. CREATE UNIQUE CLUSTERED INDEX [ix_STOCK_HIST] ON [dbo].[STOCK_HIST] (... ...[Symbol] ASC, [dseqkey] ASC, [Volume] ASC ) ...[dseqkey] ASC, [Symbol] ASC, [Volume] ASC ) ...[Symbol] ASC, [dseqkey] DESC, [Volume] ASC ) ...[dseqkey] DESC, [Symbol] ASC, [Volume] ASC )

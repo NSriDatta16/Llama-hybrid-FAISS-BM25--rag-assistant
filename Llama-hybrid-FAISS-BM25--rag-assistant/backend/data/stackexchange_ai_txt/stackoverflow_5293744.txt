@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5293744
+[parent_id]: 5293221
+[tags]: 
+I am using the following in my repository base class to allow retrieval of entities along with a user-specified list of dependencies/relations: protected DbSet Objects { get; private set; } protected YourDatabaseContext Context { get; private set; } public virtual T GetByID( int id, params string[] children ) { if( children == null || children.Length == 0 ) { return Objects.SingleOrDefault( e => e.ID == id ); } DbQuery query = children.Aggregate >( Objects, ( current, child ) => current.Include( child ) ); return query.SingleOrDefault( e => e.ID == id ); } The code uses EF4/CTP5 and therefore uses Db* classes, but is trivial to convert back to the normal EF4 classes (e.g. ObjectSet instead of DbSet). This would be used like so: var product = productsRepository.GetByID( 42, "Category", "Orders.OrderLines" ); which would fetch you a product with Category and Orders populated as well as all orders having their OrderLines eagerly loaded.

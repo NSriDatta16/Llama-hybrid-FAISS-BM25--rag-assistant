@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3560669
+[parent_id]: 
+[tags]: 
+viewWillAppear, viewDidAppear not being called, not firing
+
+(This is both question and answer since it took quite a bit of digging to find the real answer.) Symptom: viewWillAppear , viewDidAppear were not being called in my UIViewController. Cause: Embedding a UINavigationController or UITabBarController (my case) in a UIViewController somehow interrupts with the calling of these methods. Solution: Call them manually in the UIViewController that contains the aforementioned UINavigationController / UITabBarController . For example (assuming projectNavigationController is your UINavigationController ): -(void)viewWillAppear:(BOOL)animated { [super viewWillAppear:animated]; [projectNavigationController viewWillAppear:animated]; } -(void)viewWillDisappear:(BOOL)animated { [super viewWillDisappear:animated]; [projectNavigationController viewWillDisappear:animated]; } -(void)viewDidAppear:(BOOL)animated { [super viewDidAppear:animated]; [projectNavigationController viewDidAppear:animated]; } -(void)viewDidDisappear:(BOOL)animated { [super viewDidDisappear:animated]; [projectNavigationController viewDidDisappear:animated]; } In my case I had an inner UITabBarController and I called the methods accordingly and all was solved. (Attribution on the solution: http://davidebenini.it/2009/01/03/viewwillappear-not-being-called-inside-a-uinavigationcontroller/ )

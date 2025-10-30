@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 339957
+[parent_id]: 339910
+[tags]: 
+Generating GUID before insertion introduces index fragmentation. There is no need to declare the GUID prior insertion, I would recommend: Using NEWSEQUENTIALID default constraint to generate contiguous Guids. (this will eliminate index fragmentation - a well known issue with Guids as primary key). Use new OUTPUT clause (new in sql server 2005) which will enable you to get newly inserted GUID. Example below: DECLARE @outputTblCustomer1 TABLE (CustomerID uniqueidentifier) -- Customer1 INSERT INTO dbo.Customer1 (CustomerNumber, LastName) OUTPUT INSERTED.CustomerID INTO @outputTblCustomer1 VALUES (-1, N'LastName') SELECT CustomerID FROM @outputTblCustomer1 -- Customer3 INSERT INTO dbo.Customer3 (CustomerNumber, LastName) VALUES (-1, N'LastName') SELECT SCOPE_IDENTITY() AS CustomerID

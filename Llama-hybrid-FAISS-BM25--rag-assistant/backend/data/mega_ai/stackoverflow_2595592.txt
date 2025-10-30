@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2595592
+[parent_id]: 2590910
+[tags]: 
+Second attempt… It's quite easy to make a smart pointer class smart about arrays. As you suspected, you don't need a runtime flag or argument to the constructor if you know it's an array to begin with. The only problem is that new and new[] have identical return types, so they cannot pass this information to the smart pointer class. template struct smartptr { T *storage; smartptr( T *in_st ) : storage( in_st ) {} ~smartptr() { if ( is_array ) delete [] storage; // one of these else delete storage; // is dead code, optimized out } }; smartptr sp( new int ); smartptr sp2( new int[5] ); An alternative to the bool flag is to overload the meaning of T[] as Visitor mentions std::unique_ptr does in C++0x. template struct smartptr { T *storage; smartptr( T *in_st ) : storage( in_st ) {} ~smartptr() { delete storage; } }; template // partial specialization struct smartptr { T *storage; // "T[]" has nothing to do with storage or anything else smartptr( T *in_st ) : storage( in_st ) {} ~smartptr() { delete [] storage; } }; smartptr sp( new int ); smartptr sp2( new int[5] );

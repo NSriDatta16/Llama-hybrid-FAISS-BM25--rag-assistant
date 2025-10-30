@@ -1,0 +1,146 @@
+Concurrent Haskell extends Haskell 98 with explicit concurrency. Its two main underlying concepts are:
+
+ A primitive type MVar α implementing a bounded/single-place asynchronous channel, which is either empty or holds a value of type α.
+ The ability to spawn a concurrent thread via the forkIO primitive.
+
+Built atop this is a collection of useful concurrency and synchronisation abstractions such as unbounded channels, semaphores and sample variables.
+
+Haskell threads have very low overhead: creation, context-switching and scheduling are all internal to the Haskell runtime. These Haskell-level threads are mapped onto a configurable number of OS-level threads, usually one per processor core.
+
+Software Transactional Memory 
+
+The software transactional memory (STM) extension to GHC reuses the process forking primitives of Concurrent Haskell. STM however:
+
+ avoids MVars in favour of TVars.
+ introduces the retry and orElse primitives, allowing alternative atomic actions to be composed together.
+
+STM monad 
+
+The STM monad is an implementation of software transactional memory in Haskell. It is implemented in GHC, and allows for mutable variables to be modified in transactions.
+
+Traditional approach 
+Consider a banking application as an example, and a transaction in it—the transfer function, which takes money from one account, and puts it into another account. In the IO monad, this might look like:
+type Account = IORef Integer
+
+transfer :: Integer -> Account -> Account -> IO ()
+transfer amount from to = do
+    fromVal <- readIORef from  -- (A)
+    toVal   <- readIORef to
+    writeIORef from (fromVal - amount)
+    writeIORef to (toVal + amount)
+This causes problems in concurrent situations where multiple transfers might be taking place on the same account at the same time. If there were two transfers transferring money from account from, and both calls to transfer ran line (A) before either of them had written their new values, it is possible that money would be put into the other two accounts, with only one of the amounts being transferred being removed from account from, thus creating a race condition. This would leave the banking application in an inconsistent state.  
+
+A traditional solution to such a problem is locking. For instance, locks can be placed around modifications to an account to ensure that credits and debits occur atomically. In Haskell, locking is accomplished with MVars:
+type Account = MVar Integer
+
+credit :: Integer -> Account -> IO ()
+credit amount account = do
+    current <- takeMVar account
+    putMVar account (current + amount)
+
+debit :: Integer -> Account -> IO ()
+debit amount account = do
+    current <- takeMVar account
+    putMVar account (current - amount)
+Using such procedures will ensure that money will never be lost or gained due to improper interleaving of reads and writes to any individual account. However, if one tries to compose them together to create a procedure like transfer:
+transfer :: Integer -> Account -> Account -> IO ()
+transfer amount from to = do
+    debit amount from
+    credit amount to
+a race condition still exists: the first account may be debited, then execution of the thread may be suspended, leaving the accounts as a whole in an inconsistent state. Thus, additional locks must be added to ensure correctness of composite operations, and in the worst case, one might need to simply lock all accounts regardless of how many are used in a given operation.
+
+Atomic transactions 
+To avoid this, one can use the STM monad, which allows one to write atomic transactions. This means that all operations inside the transaction fully complete, without any other threads modifying the variables that our transaction is using, or it fails, and the state is rolled back to where it was before the transaction was begun. In short, atomic transactions either complete fully, or it is as if they were never run at all.
+The lock-based code above translates in a relatively straightforward way:
+type Account = TVar Integer
+
+credit :: Integer -> Account -> STM ()
+credit amount account = do
+    current <- readTVar account
+    writeTVar account (current + amount)
+
+debit :: Integer -> Account -> STM ()
+debit amount account = do
+    current <- readTVar account
+    writeTVar account (current - amount)
+
+transfer :: Integer -> Account -> Account -> STM ()
+transfer amount from to = do
+    debit amount from
+    credit amount to
+
+The return types of STM () may be taken to indicate that we are composing scripts for transactions. When the time comes to actually execute such a transaction, a function atomically :: STM a -> IO a is used. The above implementation will make sure that no other transactions interfere with the variables it is using (from and to) while it is executing, allowing the developer to be sure that race conditions like that above are not encountered. More improvements can be made to make sure that some other "business logic" is maintained in the system, i.e. that the transaction should not try to take money from an account until there is enough money in it:
+
+transfer :: Integer -> Account -> Account -> STM ()
+transfer amount from to = do
+    fromVal <- readTVar from
+    if (fromVal - amount) >= 0
+        then do
+               debit amount from
+               credit amount to
+        else retry
+
+Here the retry function has been used, which will roll back a transaction, and try it again. Retrying in STM is smart in that it won't try to run the transaction again until one of the variables it references during the transaction has been modified by some other transactional code. This makes the STM monad quite efficient.
+
+An example program using the transfer function might look like this:
+
+module Main where
+
+import Control.Concurrent (forkIO)
+import Control.Concurrent.STM
+import Control.Monad (forever)
+import System.Exit (exitSuccess)
+
+type Account = TVar Integer
+
+main = do
+    bob <- newAccount 10000
+    jill <- newAccount 4000
+    repeatIO 2000 $ forkIO $ atomically $ transfer 1 bob jill
+    forever $ do
+        bobBalance <- atomically $ readTVar bob
+        jillBalance <- atomically $ readTVar jill
+        putStrLn ("Bob's balance: " ++ show bobBalance ++ ", Jill's balance: " ++ show jillBalance)
+        if bobBalance == 8000
+            then exitSuccess
+            else putStrLn "Trying again."
+
+repeatIO :: Integer -> IO a -> IO a
+repeatIO 1 m = m
+repeatIO n m = m >> repeatIO (n - 1) m
+
+newAccount :: Integer -> IO Account
+newAccount amount = newTVarIO amount
+
+transfer :: Integer -> Account -> Account -> STM ()
+transfer amount from to = do
+    fromVal <- readTVar from
+    if (fromVal - amount) >= 0
+        then do
+               debit amount from
+               credit amount to
+        else retry
+
+credit :: Integer -> Account -> STM ()
+credit amount account = do
+    current <- readTVar account
+    writeTVar account (current + amount)
+
+debit :: Integer -> Account -> STM ()
+debit amount account = do
+    current <- readTVar account
+    writeTVar account (current - amount)
+
+which should print out "Bob's balance: 8000, Jill's balance: 6000". Here the atomically function has been used to run STM actions in the IO monad.
+
+References 
+
+Programming languages
+Functional languages
+Statically typed programming languages
+Haskell programming language family
+Free software programmed in Haskell
+Cross-platform free software
+Free compilers and interpreters
+Programming languages created in 1996
+1996 software

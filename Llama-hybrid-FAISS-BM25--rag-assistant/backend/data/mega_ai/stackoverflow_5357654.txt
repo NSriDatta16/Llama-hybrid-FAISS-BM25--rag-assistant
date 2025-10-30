@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5357654
+[parent_id]: 
+[tags]: 
+Node.JS Socket server and connection on same server slow down
+
+I may be doing something wrong here, but essentially I have a service layer that intercepts post requests to a certain url. It's important this is never down so I isolated it from the main server. I figured it'd be easiest to have the service layer take the http requests and send the resulting XML packet over any streams connected. Well, it's technically working, but the problem I'm having is that the server and client are both on the same machine and it seems as if stream.write is filling up the kernel buffer and slowing down the amount of time between when it hits the service layer to when it actually gets to the client. On the Server Side On connect I push the stream into an array of connections, I also set an interval to make sure that I have received a message within the past 12 seconds (heartbeat). On receive I iterate over the stream array, make sure it's writable and write the xml packet to it. On the Client Side Write "Heartbeat" every 8 seconds to ensure I don't get disconnected On incoming message I parse the XML into a JSON object and deal w/ it within the server. Nothing about this seems outrageous, but I may be missing something.

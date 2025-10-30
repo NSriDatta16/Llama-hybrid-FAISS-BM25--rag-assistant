@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4261034
+[parent_id]: 4260942
+[tags]: 
+If you want something elegant you could easily implement an ObservableInputStream which accepts a Listener that gets warned about availability of data but you will have to implement it with an inner thread that periodically checks for data and call the listener in case. Think about the fact that streams aren't supposed to be used as object that send small packets but a continuous stream of bytes, that's why this approach would work only if the data that is given to the input stream doesn't effectively arrives too often (otherwise it would keep calling the listener ad libitum). In addition you will have to care about consistency, if data arrive when something is already available and the listener is warned then something can take all the bytes (which you should place in a temporary buffer) but if there's more data that just arrived you should decide how to handle (give it together with buffer, place in buffer and call listener again, etc)

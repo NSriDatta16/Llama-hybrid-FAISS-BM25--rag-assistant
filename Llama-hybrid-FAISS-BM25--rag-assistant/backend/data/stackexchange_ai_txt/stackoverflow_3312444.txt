@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3312444
+[parent_id]: 3312335
+[tags]: 
+I have a solution that you may not consider terribly "clean" but which will work. The problem is that using either an enum or #define preprocessor directives will discard the symbolic name you're using for the constant (like ERR_OUT_OF_MEMORY will really just be some integer). In the C++ code, you could define a function which takes in a string name of the symbol and returns its value. You could use an std::map, then add pairs such as std::pair("ERR_OUT_OF_MEMORY", ERR_OUT_OF_MEMORY) Then you can call that function from the DLL using DllImportAttribute which allows unmanaged interop in .NET. Unfortunately this requires going through and string-ifying the constants, but the advantage is that if these constants change, it will be automatic. Another solution is to write a simple script that goes through preprocessor #defines and creates a gigantic .NET class with a bunch of static constants with the same name. This actually wouldn't be that hard considering the simplicity of the preprocessor (should only take a few lines of Perl)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2769235
+[parent_id]: 2769172
+[tags]: 
+I'm not sure there's a defined standard for implementing rand on any platform; however, picking this one from the GNU Scientific Library : — Generator: gsl_rng_rand This is the BSD rand generator. Its sequence is x n+1 = (a x n + c) mod m with a = 1103515245, c = 12345 and m = 2 31 . The seed specifies the initial value, x 1 . The period of this generator is 2 31 , and it uses 1 word of storage per generator. So to "know" x n requires you to know x n-1 . Unless there's some obvious pattern I'm missing, you can't jump to a value without computing all the values before it. (But that's not necessarily the case for every rand implementation.) If we start with x 1 ... x 2 = (a * x 1 + c) % m x 3 = (a * ((a * x 1 + c) % m) + c) % m x 4 = (a * ((a * ((a * x 1 + c) % m) + c) % m) + c) % m x 5 = (a * (a * ((a * ((a * x 1 + c) % m) + c) % m) + c) % m) + c) % m It gets out of hand pretty quickly. Is that function easily reducible? I don't think it is. (There's a statistics phrase for a series where x n depends on x n-1 -- can anyone remind me what that word is?)

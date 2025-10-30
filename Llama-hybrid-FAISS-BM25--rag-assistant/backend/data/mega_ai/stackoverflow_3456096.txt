@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3456096
+[parent_id]: 3455906
+[tags]: 
+It's worth pointing out that this is only INTERNAL storage. From the developer's point of view, the LONG can be the third, sixth or first column, or wherever. And you can still add columns to a table with a LONG. That said, you almost certainly shouldn't be creating a table with a LONG any more. They should be CLOBs (or BLOBs rather than a LONG RAW). create table test_long (id number, val long, create_date date); desc test_long Name Null? Type ------------------------------ -------- -------------- 1 ID NUMBER 2 VAL LONG 3 CREATE_DATE DATE My guess (and unless someone who worked for Oracle speaks up, it is speculation) is that it is because LONGs were/are most likely to 'not fit' with the row in a block. A row with a LONG would have a good chance of needing to be more than 1 block in size. The LONG is most likely to be split (because of its size). By pushing that to the end, it is much more likely that all the other columns would sit together on one block.

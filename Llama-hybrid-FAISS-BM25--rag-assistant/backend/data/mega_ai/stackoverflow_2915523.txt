@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2915523
+[parent_id]: 2915483
+[tags]: 
+The reason you're getting a warning is because the memory allocated within your function for buf is going to be popped off the stack once the function exits. If you return a pointer to that memory address, you have a pointer to undefined memory. It may work, it may not - it's not safe regardless. Typically the pattern in C/C++ is to allocate a block of memory and pass a pointer to that block into your function. e.g. void GetUID( char* buf ) { if(strlen(buf)!=0) return; StringCchPrintf(buf, 20*sizeof(char), TEXT("%s"), someFunction()); } If you want the function (GetUID) itself to handle caching the result, then you can use a static, a singleton (OOP), or consider thread local storage . (e.g. in Visual C++) __declspec(thread) TCHAR buf[20];

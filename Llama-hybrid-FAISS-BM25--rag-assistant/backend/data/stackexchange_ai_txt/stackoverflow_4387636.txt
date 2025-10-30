@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4387636
+[parent_id]: 
+[tags]: 
+C# Threading race condition
+
+I'm attempting to write a function which starts a thread for each "contact" and then queries (over the network) for results from that contact. I want my waiting function to wait at most 1.5 second for responses, and after that, simply terminate any remaining threads. The issue I'm having is that the function is returning before all the threads are done, even though according to the logic, this should not be possible. The while loop in the main function should be waiting until all threads have fully completed, yet I get the following output: FAIL: Storage test 1 exists 0 times in the DHT. : Storage test 2 exists 0 times in the DHT. Added storage test 1 to the entries. Added storage test 2 to the entries. (The FAIL lines comes from the main testing program seeing how many results were returned by Get().) According to what I can see, this shouldn't be possible. Does anyone know where the race condition might be occurring (or any other assumptions I've made that are not correct)? The function definition is as such: public IList Get(ID key) { ConcurrentBag entries = new ConcurrentBag (); List threads = new List (); foreach (Contact c in this.p_Contacts) { Thread t = new Thread(delegate() { try { FetchMessage fm = new FetchMessage(this, c, key); fm.Send(); int ticks = 0; // Wait until we receive data, or timeout. while (!fm.Received && ticks (entries.ToArray()); }

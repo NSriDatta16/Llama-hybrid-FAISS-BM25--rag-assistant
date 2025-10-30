@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1279929
+[parent_id]: 
+[tags]: 
+NHibernate NonUniqueObjectException when reattaching objects to the session (with Lock)
+
+Basic order of execution: A collection of PersistentObjects is queried then cached separately from the session. The collection is passed to a module that needs to reattach them to the session in order to lazily load some of the properties (using session.Lock(obj, LockMode.None) ). After the module has completed processing, another module attempts to SaveOrUpdate a UserSetting object with some usage statistics for the user who initialized the action. On session.Flush() NHibernate throws a NonUniqueObjectException . I've found that one way of working around this issue is to get new copies of the objects with: obj = session.Get(obj.GetType(), (obj as PersistentObject).Id); instead of reattaching with session.Lock . However, this is non-optimal as some of the record sets are potentially quite large, and re-getting each object individually could become a performance drag. The object which is non-unique is a referenced object that exists only on the PersistentObject class, and not the UserSetting class. So I cannot understand why a flush would cause this exception. I've tried evicting the cached objects after the module is done with them, but this does not help. Does anyone know of a better way to attach objects to the session that could avoid this problem?

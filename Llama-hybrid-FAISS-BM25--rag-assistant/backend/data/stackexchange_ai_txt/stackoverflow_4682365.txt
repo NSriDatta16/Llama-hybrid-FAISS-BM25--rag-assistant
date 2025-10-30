@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4682365
+[parent_id]: 4681900
+[tags]: 
+Answering my own question: Container.add(Component, int) and Container.setComponentZOrder(Component, int) are virtually identical. The former invokes removeNotify() while the latter does not (for performance reasons). Container-layering only works if JComponent.isOptimizedDrawingEnabled() returns false. One implementation that just-so-happens to return false is... you guessed it: JLayeredPane Using Container-layering is discouraged because it can have unexpected side-effects . Finally, it is worth noting that while Container declares add(Component, int) it doesn't actually paint layered components properly. JComponent and its subclasses do. Another interesting find: never invoke repaint() on a child of JLayeredPane. This will cause the component to paint itself on top regardless of its z-order. You should only invoke repaint() on the JLayeredPane itself.

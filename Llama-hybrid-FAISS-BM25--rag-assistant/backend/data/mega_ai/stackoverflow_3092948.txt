@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3092948
+[parent_id]: 3092928
+[tags]: 
+I tried and searched, and I think the best solution is a #define. Based on something I found : #define FLAGS(T) \ inline T operator |(const T s, const T e) { return (T)((unsigned)s | e); } \ inline T &operator |=(T &s, const T e) { return s = s | e; } \ inline T operator &(const T s, const T e) { return (T)((unsigned)s & e); } \ inline T &operator &=(T &s, const T e) { return s = s & e; } \ inline T operator ^(const T s, const T e) { return (T)((unsigned)s ^ e); } \ inline T &operator ^=(T &s, const T e) { return s = s ^ e; } \ inline T operator ~(const T s) { return (T)~(unsigned)s; } This can be used like: enum some_state { state_normal = 1 For Visual Studio one might need this to silence some warnings: #pragma warning(disable: 4505) // '*' : unreferenced local function has been removed In fact, the Windows SDK has the DEFINE_ENUM_FLAG_OPERATORS macro to do just that. A different approach is a wrapper class like DEF_ENUM_FLAGS_TYPE uses . Or use something like the LLVM_MARK_AS_BITMASK_ENUM macro . You might need a recent compiler though.

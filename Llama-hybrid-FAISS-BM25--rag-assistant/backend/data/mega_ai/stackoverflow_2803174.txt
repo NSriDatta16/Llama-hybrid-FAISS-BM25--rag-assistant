@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2803174
+[parent_id]: 1454736
+[tags]: 
+The culprit in this case was CreateCompatibleBitmap . Apparently Windows may enforce fairly strict systemwide limits on the memory available for device-dependent bitmaps (see, e.g, this mailing list discussion ), even if your system otherwise has plenty of memory and plenty of GDI resources. (These systemwide limits are apparently because Windows may allocate device-dependent bitmaps in the video card's memory.) The solution is simply to use device-independent bitmaps (DIBs) instead (although these may not offer quite as good of a performance). This KB article describes how to pick the optimal DIB format for a device. Other candidates for resource limits (from others' answers and my own research): GDI resources (from this answer) - easily checked with GDIView Virtual memory fragmentation (from this answer) Desktop heap - see here or here

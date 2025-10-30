@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1979298
+[parent_id]: 1979071
+[tags]: 
+This is what I usually do for config files - actually, this is more of the basic setup, usually it's wrapped in custom class that combines multiple config files into a single config object: config.php: return array( 'config1'=> 'config1value', 'config2'=> 'config2value', ); some_page.php: $config= include('config.php'); if ($config['config1']) ... The config is stored as a PHP array in a PHP file file, so it is parsed by the PHP engine and never returned to the browser. (You can protect the config files further by storing them outside the web root, setting a mod_rewrite rule to prevent serving config files/directories, etc.) Storing configuration info in an XML file adds the overhead of parsing an XML file to every request. Database storage of advanced configuration data is nice, but also costly (obviously, the database won't be storing your database connection info, so you'll still need a config solution for some basic info). Config data is usually very static (written rarely / read every request), so it's ripe caching via memcached or other cache schemes.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3480603
+[parent_id]: 3480376
+[tags]: 
+Why does this NOT work? update table set flag = '1' where id in (select id from (SELECT PK1, PK2, id, date,value, ROW_NUMBER() OVER (PARTITION BY id ORDER BY value DESC, date DESC) AS RN FROM table) t where RN = 1) EDIT: the below statement WILL work if you don't want to (or can't in some sql versions) use a cte The above will not work because, as martin says below, the id is still in the list. however, the below will work if someone prefereds not to use a cte.(Not nearly as elegant as Martin's solution though) update table set flag = '1' where convert(varchar,PK1)+convert(varchar,PK2) in (select convert(varchar,PK1)+convert(varchar,PK2) from (SELECT PK1, PK2, id, date,value, ROW_NUMBER() OVER (PARTITION BY id ORDER BY value DESC, date DESC) AS RN FROM table) t where RN = 1)

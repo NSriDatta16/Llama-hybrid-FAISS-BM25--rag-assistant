@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 637989
+[parent_id]: 
+[tags]: 
+Upcasting F# record created through reflection
+
+I've been messing about with F# and it's Reflection, trying to create a Record type object dynamically from within F#, I got most of it working (as you can see below) but one thing - the record I create through reflection has type "obj" instead the one it should ("Person") and I can't seem to be able to upcast it in any way. #light type Person = { Name:string; Age:int; } let example = {Name = "Fredrik"; Age = 23;} // example has type Person = {Name = "Fredrik"; Age = 23;} let creator = Reflection.FSharpValue.PrecomputeRecordConstructor(example.GetType(), System.Reflection.BindingFlags.Public) let reflected = creator [| ("thr" :> obj); (23 :> obj) |] // here reflected will have the type obj = {Name = "thr"; Age = 23;} // Function that changes the name of a Person record let changeName (x:Person) (name:string) = { x with Name = name } // Works with "example" which is has type "Person" changeName example "Johan" // But not with "reflected" since it has type "obj" changeName reflected "Jack" // Error "This expression has type obj but is here used with type Person. " // But casting reflected to Person doesn't work either (reflected :> Person) // Type constraint mismatch. The type obj is not compatible with // type Person. The type 'obj' is not compatible with the type 'Person'. // C:\Users\thr\Documents\Visual Studio 2008\Projects\ // Reflection\Reflection\Script.fsx 34 2 Reflection

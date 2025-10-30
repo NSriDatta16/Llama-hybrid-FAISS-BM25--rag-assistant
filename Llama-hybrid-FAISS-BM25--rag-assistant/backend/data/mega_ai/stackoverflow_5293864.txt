@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5293864
+[parent_id]: 5293482
+[tags]: 
+I'm not sure if there's a better approach, but here's one way to do it: Create an BOOL ivar that tracks whether a window is being moved or not. Then register for the NSWindowWillMoveNotification and NSWindowDidMoveNotication notifications: NSNotificationCenter *nc = [NSNotificationCenter defaultCenter]; [nc addObserver:self selector:@selector(windowWillMove:) name:NSWindowWillMoveNotification object:nil]; [nc addObserver:self selector:@selector(windowDidMove:) name:NSWindowDidMoveNotification object:nil]; Then handle the notifications and set the ivar appropriately: - (void)windowWillMove:(NSNotification*)notification { windowBeingDragged = YES; } - (void)windowDidMove:(NSNotification*)notification { windowBeingDragged = NO; } Now you can just check the value of the ivar ( windowBeingDragged in this case, to check if a window is being dragged).

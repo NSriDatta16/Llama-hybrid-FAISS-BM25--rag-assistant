@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1848669
+[parent_id]: 1848627
+[tags]: 
+You should be able to use a dictionary with a custom comparer that uses Type.IsAssignableFrom to compare the keys. Update: As Qwertie pointed out, this doesn't work because you can't implement a repeatable hash code calculation based on a type, its interfaces, and ancestor classes. His answer provides a possible solution by repeatedly doing hash table look ups for the type, interfaces, and ancestor classes until it finds a match. The only problem with that solution is that you don't have any way to specify which match to take when there are multiple matches. If you need that flexibility and control, I suggest you consider the chain-of-responsibility design pattern. Each transformer could be a link in the chain, and it's responsible for determining whether it can be applied to the object. If not, it passes the request to the next link. The order of transformers in the chain determines priority. You lose the speed of a hash table, but you were losing some of that speed anyway because of multiple look ups.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4029857
+[parent_id]: 
+[tags]: 
+C# Linq Weighted Average Based on Date
+
+I've found several posts detailing how to perform a weighted average based on a foreign key, but I have yet to find a solution that deals with my situation. Here it is: I have two tables, table A and a table B many-to-many table linking them; nothing complicated: TableA { A_ID, Other stuff } TableB { B_ID, Date Other stuff } LinkAtoB { A_ID, B_ID } Now here comes the math part. I'm more or less trying to weight result from TableA based on the number of recent associations in Table B. So if TableA has 4 associations in table with the following dates: {10/23/2010, //3 days ago 10/19/2010, //5 days ago 10/18/2010, //6 days ago 9/13/2010} //40ish days ago So here is how I'd like to rank them: I'd like to provide a recency threshold in days, I'll use 7 days as an example: So using the above data I would assign the following values: {10/23/2010, //7-3 = 4 10/19/2010, //7-5 = 2 10/18/2010, //7-6 = 1 9/13/2010} //40ish days ago So the value of the weighted average for that particular TableA entry is then 7 / 3 = 2.33333. Here is more or less what I have so far: var k = from a in TableA group a by a.Select(x=>x.LinkAtoB.TableB) .Where(x=>x.Date.CompareTo(DateTime.Now.AddDays(-7)) >= 0) into g select g.Sum(x => DateTime.Now.Subtract(x.Date).Days) / g.Sum(x => x.Length); I think I'm close but I know I have the group part wrong. I think the other stuff should work. How do I fix my code to accomplish what I want?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4155300
+[parent_id]: 4155251
+[tags]: 
+If your database and storage engine allow that, you should issue SELECT FOR UPDATE for both rows you are trying to insert between. This will conflict with any concurrent SELECT FOR UPDATE . The downside is that a lock of rows 10 and 12 (to insert 11 ) will also prevent selecting 8 and 10 (to insert 9 ). InnoDB in MySQL can also place a next-key lock on the index, that is lock of the index record and the gap between the next record. In this case, you would only need to issue a SELECT FOR UPDATE on the first row and thus insert concurrently a row before that. However, this requires forcing the index and providing a range condition on the index which may or may not be possible depending on your query.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3697713
+[parent_id]: 3683475
+[tags]: 
+Reposing from the mailing list: If you are trying to take an existing non-encrypted database, encrypt it, and then decrypt it back, our recommended approach is not to use rekey, but instead to use ATTACHed databases to copy data between a standard and an sqlcipher database. There is more information and a concrete example here: http://www.zetetic.net/blog/2009/12/29/how-to-encrypt-a-plaintext-sqlite-database-to-use-sqlcipher/ If instead, you are just trying to use sqlcipher to encrypt data in general (i.e. with no conversion from a pre-existing database), then you just need to use sqlite3_key. You basically just open the database, provide the key and then make sql calls. There are no separate encryption / decryption steps - all of that is handled on the fly by the sqlcipher code. In the code you posted previously, you'd never call rekey at all. Each time you open the database you call PRAGMA key, and then run a quick check to ensure that sqlite_master is readable.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2019297
+[parent_id]: 2019279
+[tags]: 
+I would suggest storing it as a salted md5 hash. INSERT INTO user (password) VALUES (md5('some_salt'||'the_password')); You could calculate the md5 hash in perl if you wish, it doesn't make much difference unless you are micro-optimizing. You could also use sha1 as an alternative, but I'm unsure if Postgres has a native implementation of this. I usually discourage the use of a dynamic random salt, as it is yet another field that must be stored in the database. Plus, if your tables were ever compromised, the salt becomes useless. I always go with a one-time randomly generated salt and store this in the application source, or a config file. Another benefit of using a md5 or sha1 hash for the password is you can define the password column as a fixed width CHAR(32) or CHAR(40) for md5 and sha1 respectively.

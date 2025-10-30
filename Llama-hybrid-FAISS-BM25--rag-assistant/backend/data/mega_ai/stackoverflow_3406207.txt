@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3406207
+[parent_id]: 
+[tags]: 
+Moving entities between contexts in .NET Entity Framework 3.5
+
+I've got a scenario in which I want to move a bunch of object graphs between contexts. Specifically, I'm trying to import the contents of one database into another. The there is a context [CurrentContext] connected to the primary DB, and another context [ImportContext] connected to another DB. I'd like to copy the entities from ImportContext into CurrentContext, either inserting new records or updating the existing records. Something like this. ImportContext.Organization.MergeOption = MergeOption.NoTracking; foreach(var org in ImportContext.Organizations.ToList()) { CurrentContext.Attach(org); // or CurrentContext.AddToOrganization(org); } When I try the Attach method, the entity isn't saved because the entitystate is Unchanged, and I can't figure out how to mark it as new. Also, it appears Attach doesn't work if the entity is new, because the EntityKey is tied to ImportContext. If I set the EntityKey to null, I lose the associations between the Organization and other entities. AddToOrganization has the same problem with losing the associations, or would fail if the Organization was once already in the CurrentContext. What's the appropriate approach to doing this type of importing? I'm currently using EF3.5 and can't update the project to EF4.

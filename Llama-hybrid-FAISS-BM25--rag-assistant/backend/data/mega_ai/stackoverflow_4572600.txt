@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4572600
+[parent_id]: 
+[tags]: 
+How to search inbox using zend mail
+
+The following is a function from zend_mail_protocol_imap. i read that to search emails, I would want to override it using zend_mail_storage_imap (which is what I'm using now to grab email from gmail). I copy and pasted the following function into zend_mail_storage_imap, but I'm having issues with the params. I can't find documentation on what to use for the array $params. I initially thought it was the search term before reading it more thoroughly. I'm out of ideas. Here's the function... /** * do a search request * * This method is currently marked as internal as the API might change and is not * safe if you don't take precautions. * * @internal * @return array message ids */ public function search(array $params) { $response = $this->requestAndResponse('SEARCH', $params); if (!$response) { return $response; } foreach ($response as $ids) { if ($ids[0] == 'SEARCH') { array_shift($ids); return $ids; } } return array(); } Initially I thought this would do the trick... $storage = new Zend_Mail_Storage_Imap($imap); $searchresults = $storage->search('search term'); Here's the error message: Catchable fatal error: Argument 1 passed to Zend_Mail_Storage_Imap::search() must be an array, string given, called in... But nope, I need to send the info in an array. Any ideas?

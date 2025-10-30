@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2077669
+[parent_id]: 
+[tags]: 
+How do you find a tight-fitting, axis-aligned, bounding box of a rotated ellipse in AS3?
+
+The AS3 getBounds function returns a rectangle that is not fitting tightly to a rotated ellipse. Instead it returns an axis-aligned rectangle based on the bounds of a rectangle whose width/height corresponds to the max/min diameter of the ellipse and follows its rotation. The answer to a similar question on Stack Overflow elegantly outlines the math part of my question: Stack Overflow Q/A about the math of ellipses and bounding boxes Based on this I took a stab at coding a solution in AS3. So far I have been able to produce a rectangle that fits perfectly along the x-axis, but as I rotate my ellipse it acts very weird along the y-axis. Rather than alternating between 2*r_min and 2*r_max while rotating, it alternates between 2*r_min and 0. My best guess is that I have done something wrong when solving the differentiated t for gradient -> infinity... Here is an example from my code: var r_max:uint = 45; var r_min:uint = 20; var rot:Number = ellipse.rotation * (Math.PI / 180); var t_nil:Number = Math.atan( -r_min * Math.tan(rot) / r_max); var t_inf:Number = Math.atan(r_min * Math.atan(rot) / r_max) + (Math.PI / 2); var x:Number = r_max * Math.cos(t_nil) * Math.cos(rot) - r_min * Math.sin(t_nil) * Math.sin(rot); var y:Number = r_min * Math.sin(t_inf) * Math.cos(rot) + r_max * Math.cos(t_inf) * Math.sin(rot);

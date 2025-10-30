@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 654514
+[parent_id]: 654425
+[tags]: 
+You can use DATEPART function to get chunks of data filtered by specific day, hour or minute (or several others). You should be able to group by these and get averages/aggregates you need. OK, here's the solution to get n aggregates (as far as there's data in each chunk of time): declare @points as int declare @start as float declare @period as float set @points = 20 select @start=cast(min(time) as float), @period=cast(max(time)-min(time) as float) from perftable select avg(value), round((cast(time as float)-@start)/(@period/@points),0,1) from perftable group by round((cast(time as float)-@start)/(@period/@points),0,1) @points variable is a number od aggregates you want to get. @start is time of the first record in report casted to float @period is difference between begin and end dates in report The rest is pretty much linear scaling of dates to range [0;@points], truncating results to integers and grouping by truncated results.

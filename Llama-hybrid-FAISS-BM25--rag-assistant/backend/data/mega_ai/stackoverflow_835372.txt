@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 835372
+[parent_id]: 833658
+[tags]: 
+IBAction is a preprocessor directive that tells Interface Builder "this is something you should know about." It actually evaluates to void . What that means is that the "actions" are just normal methods that you can call in the normal way: [target someMethod:self]; If you want to mimic the behavior you can get from an NSButton , you can add an outlet for the target and a property for the selector (as a string): @property (nonatomic, retain) IBOutlet id target; @property (nonatomic, retain) NSString* actionSelectorString; Which you could then call like this: SEL action = NSSelectorFromString(self.actionSelectorString); [self.target performSelector:action withObject:self]; If you want your class to wire up the selector via drag-and-drop in Interface Builder, the easiest way is to make your class a subclass of NSControl (drag a custom view in from the object library, Command-6 to show inspector, choose your class in the top popup). You can then "call" the action by: - (void) go { [self sendAction:self.action to:self.target]; }

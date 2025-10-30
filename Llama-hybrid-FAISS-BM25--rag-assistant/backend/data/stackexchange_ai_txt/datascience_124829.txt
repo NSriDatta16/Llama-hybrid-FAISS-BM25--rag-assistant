@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 124829
+[parent_id]: 124827
+[tags]: 
+Can I save the MAE from each chunk of data and then average them ? Yes. This is perfectly fine. Why? Think about the metric's definition. Caveat: We assume $k$ chunks of equal chunk size $cs$ . If that does not obtain, you could resort to weighted averaging. Each of the $MAE_1$ .. $MAE_k$ metrics is sum(map(abs, errors_within_chunk)) / cs . If we were on a giant-RAM machine, we could run with just a single "all" chunk of size $k \times cs$ . You are proposing this summary metric, which makes perfect sense: $$MAE_{summary} \equiv \frac{\sum_{i=1}^k MAE_i}{k}$$ $$= \frac{\sum_{i=1}^k \sum_{j=1}^{cs} \frac{| ~ errors_{i,j} ~ |}{cs} }{k}$$ $$= \frac{\sum_{i=1}^{k \times cs} | ~ errors_{i} ~ | }{k \times cs}$$ Notice that this does not generalize to all other error metrics. For example, don't try doing this with RMSE. Clearly median differs from mean. But you may find median adequate to your needs if you're using some alternate non-linear error metric. Alternatively, write each absolute error out to a .CSV file, and at the end have a post-processing step compute the aggregate metric.

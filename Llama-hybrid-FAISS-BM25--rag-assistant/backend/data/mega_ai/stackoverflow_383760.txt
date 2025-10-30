@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 383760
+[parent_id]: 
+[tags]: 
+Django objects.filter, how "expensive" would this be?
+
+I am trying to make a search view in Django. It is a search form with freetext input + some options to select, so that you can filter on years and so on. This is some of the code I have in the view so far, the part that does the filtering. And I would like some input on how expensive this would be on the database server. soknad_list = Soknad.objects.all() if var1: soknad_list = soknad_list.filter(pub_date__year=var1) if var2: soknad_list = soknad_list.filter(muncipality__name__exact=var2) if var3: soknad_list = soknad_list.filter(genre__name__exact=var3) # TEXT SEARCH stop_word_list = re.compile(STOP_WORDS, re.IGNORECASE) search_term = '%s' % request.GET['q'] cleaned_search_term = stop_word_list.sub('', search_term) cleaned_search_term = cleaned_search_term.strip() if len(cleaned_search_term) != 0: soknad_list = soknad_list.filter(Q(dream__icontains=cleaned_search_term) | Q(tags__icontains=cleaned_search_term) | Q(name__icontains=cleaned_search_term) | Q(school__name__icontains=cleaned_search_term)) So what I do is, first make a list of all objects, then I check which variables exists (I fetch these with GET on an earlier point) and then I filter the results if they exists. But this doesn't seem too elegant, it probably does a lot of queries to achieve the result, so is there a better way to this? It does exactly what I want, but I guess there is a better/smarter way to do this. Any ideas?

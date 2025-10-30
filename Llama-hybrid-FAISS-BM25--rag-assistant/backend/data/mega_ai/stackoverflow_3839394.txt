@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3839394
+[parent_id]: 3839172
+[tags]: 
+Not sure it works with EF, but you could try something like that : var query = from p in products group p by 0 into g select new { Min = g.Min(p => p.Price), Max = g.Max(p => p.Price), Avg = g.Average(p => p.Price) }; var result = query.First(); EDIT: just tried in LINQPad with Linq to SQL, it works... so it probably works in EF too The query above generates the following SQL: SELECT TOP (1) [t2].[value] AS [Min], [t2].[value2] AS [Max], [t2].[value3] AS [Avg] FROM ( SELECT MIN([t1].[Price]) AS [value], MAX([t1].[Price]) AS [value2], AVG([t1].[Price]) AS [value3] FROM ( SELECT @p0 AS [value], [t0].[Price] FROM [Product] AS [t0] ) AS [t1] GROUP BY [t1].[value] ) AS [t2] (the SELECT TOP(1) part is only there because of the call to First ) This is apparently not optimal, but I assume SQL Server is clever enough to optimize it to something simpler...

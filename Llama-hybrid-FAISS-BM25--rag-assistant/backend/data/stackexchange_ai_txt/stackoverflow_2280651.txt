@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2280651
+[parent_id]: 
+[tags]: 
+What is the javac/java file system concurrency contract?
+
+I'm running a multi-threaded build with two dependant com.sun.tools.javac.Main.compile() invocations running on separate threads with ~10ms pause between them. Every now (every 100 builds or so), the second javac complains about bad class formats in the outputs from the first javac. This is on linux, but it has to work on all os'es. What are the constraints I'm facing here? I'm working on a concurrent build system, so the reason I'm invoking the javacs is because they're in different modules. There is external synchronization that ensures the run-order (but I'm not actually inside a synchronized block when I invoke the compile() method), and I know for sure that they're being invoked one after the other, with approx 10-20ms pause on average. For all I can understand these two calls to compile() should really only be sharing the file system ? Edit 2: The thread invoking the second compile() call is in a wait() until the first one is finished, so there is order-synchronization. But I'm not inside a synchronized block when I invoke the actual call to compile. Compile is a static method, and I am assuming they don't have any internal safe-publication issues in that context...(?) Edit 3: Synchronizing the call to compile() does not help. Neither does calling just sync() to linux. But I haven't looked into flushing buffers at the java level if possible.

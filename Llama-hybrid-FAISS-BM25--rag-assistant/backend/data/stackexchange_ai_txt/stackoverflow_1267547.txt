@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1267547
+[parent_id]: 
+[tags]: 
+Storing information about the current thread in a custom threading implementation
+
+I'm trying my hand at working with threads at an assembly language level. I'd like to store information about the current thread, including things like the thread ID, etc. My current thought is placing a pointer to the thread information structure at an aligned address, such as (ESP & 0xFFE00000) for a 1MB stack. The immediate problem I see is it would require special handling if I ever wanted the stack to exceed 1MB, so I came up with another option: Store all thread data structures in a linked list (or array), and include the start/end stack range for the thread as part of the structure. I'd keep a pointer to the head of the list (or array) at a known address - such as a fixed offset from the image base. Here are the obvious advantages each faces: Method 1 (aligned address) Faster access to the information and no synchronization required But stacks have to all be the same size and aligned to that boundary Method 2 (common storage) Stacks don't have to be a fixed size and they don't have to be aligned to such a large boundary But I must synchronize access to the data But it won't have O(1) access time without a hash table (or a fixed cap on the number of threads with a binary search - sneaky), and a hash table is still slower than direct access Should I use one of these methods, or is there a better way to have access to this information in my threads?

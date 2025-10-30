@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1575586
+[parent_id]: 
+[tags]: 
+Does System.DirectoryServices.DirectoryEntry contain a constructor that actually uses "domain\username" with Ldap?
+
+Microsoft has a general purpose KB article ( Q316748 ) describing how to authenticate against Active Directory using the DirectoryEntry object. In their example they produce a username value by concatenating the domain name and username into the standard NetBIOS format("domain\username") and passing that as a parameter to the directory entry constructor: string domainAndUsername = domain + @"\" + username; DirectoryEntry entry = new DirectoryEntry(_path, domainAndUsername, pwd); It recently came to our attention that the domain part of the username was being completely ignored and in multiple environments I've confirmed this behavior. The username and password are in fact being used, as authentication fails when they're invalid, but any arbitrary value can be supplied for the domain name and authentication passes. At a glance I'd theorize this format works for WinNT based directory access but the domain part is ignored for LDAP. A check on google shows many LDAP examples passing a "domain\username" value to the DirectoryEntry object so I've either messed something up in my configuration or there's a lot of people confused by the KB article. Can anyone confirm this is the expected behavior or recommend a way to accept "domain\username" values and authenticate against Active Directory with them? Thanks,

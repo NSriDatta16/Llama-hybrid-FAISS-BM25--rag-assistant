@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2422836
+[parent_id]: 
+[tags]: 
+NSOperation and fwrite (Iphone)
+
+I am having problem with this code.Basically I want to execute the fwrite from a timer function asyncronusly. Here is the code block in my Timer function. (This will call by the timer every 0.2 seconds. -(void)timerFunction { WriteFileOperation * operation = [WriteFileOperation writeFileWithBuffer:pFile buffer:readblePixels length:nBytes*15]; [_queue addOperation:operation]; // Here it is waiting to complete the fwrite } The WrtiteFilerOperation is an NSoperation class which it has to write the passing buffer to a file. I added this code in WriteFileOperation's "start" method. - (void)start { if (![NSThread isMainThread]) { [self performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO]; return; } [self willChangeValueForKey:@"isExecuting"]; _isExecuting = YES; [self didChangeValueForKey:@"isExecuting"]; NSLog(@"write bytes %d",fwrite(_buffer, 1, _nBytes, _file)); free(_buffer); [self finish]; } The problem here is , my timerFunction blocked by NSOperation until it writes the buffer into file.(I mean blocked till start method finishes its execution) and the performance seems same as directly placing the fwrite in timerFunction. I want to just return to timerFunction with out waiting from the start method execution to be completed. What I am doing wrong here ? Thanks In Advance Raghu

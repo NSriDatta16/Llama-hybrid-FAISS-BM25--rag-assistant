@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 172160
+[parent_id]: 169594
+[tags]: 
+If you have N samples, then your Y matrix is of size N x 1 and your X matrix is of size N x D . To optimize the regularization parameter $ \lambda $, here is a way to do k-fold cross-validation in MATLAB : groups = crossvalind('Kfold', N, K); groups is a 1 x N vector, and it has values between 1 and K . So for each fold, you get training and test samples with: for k=1:K trains = find(groups~=k); tests = find(groups==k); end Since your case is regression, you train your system (for each fold) like this : beta = inv(X(trains,:)) * Y and you get your test set estimates like this : Y_test = X(tests,:) * beta For optimization you need a measure of accuracy, which might be RMSE for regression. So you need to try different values of lambda , by looking at the error (average of K folds), you can choose the lambda that results in the minimum average error. Hope it helps !

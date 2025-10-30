@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2227193
+[parent_id]: 2223957
+[tags]: 
+As you pointed out already, double/float operations are not associative/commutative/distribute as real numbers in math. Especially, multiplying/dividing huge number/very small number may lead noticeable precision errors when you change the order of computation. FPU state is should be thread-specific as the state is represented as a register and register status (=context) are specific to a thread. It is ambiguous to say that spawned threads inherit the master thread's state because state is not clear in this context. If you means register status, then it is not. My suggestion is why don't you simply set FPU control word per each thread? For example, before spawning OpenMP thread, i.e., before parallel-for, store the current FPU control word in a global variable by using _status87 . Then, put statements that reads the global variable and sets a new value in parallel-for iteration. Since it is read-only on the global variable, you don't worry about any data race. unsigned int saved_status = _status87(); #pragma omp parallel for (...) for (int i = 0; i

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2676209
+[parent_id]: 
+[tags]: 
+Moose: Loading object from file in the BUILD method
+
+I have to read a file in the BUILD method and I want to use the load method of the MooseX::Storage package. But this load method create a new object and so when I instatiate the object this isn’t the object read from file. In the code below I create an object $m1 with state 2 to write the file, I create $m2 with no parameter to read the file but $m2 doesn’t contain the right value. The package: package mia; use Moose; use MooseX::Storage; with Storage(format => 'JSON', io => 'File'); has 'nome' => ( is => 'rw', isa => 'Str', default =>'',); has 'stato' => ( is => 'rw', isa => 'Int', default =>1,); sub BUILD { my $self=shift; if ($self->stato==1){ $self=mia->load("mia.dat"); } if ($self->stato==2){ $self->stato(0); $self->nome("prova"); $self->store("mia.dat"); } } sub stampa(){ my $self=shift; print $self->nome." ".$self->stato; } the main program use mia; my $m; $m1=mia->new(stato=>2); $m2=mia->new(); print "\nm1 \n"; $m1->stampa(); print "\nm2 \n"; $m2->stampa();

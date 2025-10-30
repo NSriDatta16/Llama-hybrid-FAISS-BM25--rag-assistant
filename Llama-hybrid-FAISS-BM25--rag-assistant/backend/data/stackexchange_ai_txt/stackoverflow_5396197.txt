@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5396197
+[parent_id]: 5396132
+[tags]: 
+Instead of creating three different annotations, you could create one annotation which takes an enum parameter, like @MyTest(TestSize.SMALL) , @MyTest(TestSize.MEDIUM) , or @MyTest(TestSize.LARGE) . Something like this (not tested, no guarantees, may cause abdominal distension, yadda yadda): public @interface MyTest { TestSize value() default TestSize.MEDIUM; } Edit re: OP's comment "What if the annotation has a content itself, say "description"? And what if the content for each is different (say one has description, the other has estimatedTimeToRun)?" It's not fantastically elegant, but you could lump all of the annotation elements in as well, with reasonable defaults for the optional elements. public @interface MyTest { String description(); // required TestSize size() default TestSize.MEDIUM; // optional long estimatedTimeToRun default 1000; // optional } Then use it like: @MyTest(description="A big test!") or @MyTest(size=TestSize.SMALL, description="A teeny tiny test", estimatedTimeToRun = 10) or @MyTest(description="A ho-hum test")

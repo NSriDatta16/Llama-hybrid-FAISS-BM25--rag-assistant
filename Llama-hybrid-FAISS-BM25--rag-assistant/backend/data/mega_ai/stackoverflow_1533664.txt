@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1533664
+[parent_id]: 1132059
+[tags]: 
+I just wasted an afternoon to figure this out. SetResultTransformer(CriteriaUtil.DistinctRootEntity) operates on the last thing added. Here is what I did to get the first entity from the query. One catch though, I had to modify the NHibernate.DistinctRootEntityResultTransformer.TransformTuple() to be virtual. Not a big deal for us, because we have already branched NHibernate for some trivial additions like this. If you don't want to branch NH, it would be easy to roll your own IResultTransformer, making sure the items are unique. add this to your query: query.SetResultTransformer(new FirstTupleDistinctResultTransformer()); and this is the new class: public class FirstTupleDistinctResultTransformer : DistinctRootEntityResultTransformer { public override object TransformTuple(object[] tuple, string[] aliases) { return tuple[0]; } }

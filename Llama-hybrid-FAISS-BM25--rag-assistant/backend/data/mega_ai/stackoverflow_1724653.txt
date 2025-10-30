@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1724653
+[parent_id]: 
+[tags]: 
+How to improve performance of non-scalar aggregations on denormalized tables
+
+Suppose we have a denormalized table with about 80 columns, and grows at the rate of ~10 million rows (about 5GB) per month. We currently have 3 1/2 years of data (~400M rows, ~200GB). We create a clustered index to best suit retrieving data from the table on the following columns that serve as our primary key... [FileDate] ASC, [Region] ASC, [KeyValue1] ASC, [KeyValue2] ASC ... because when we query the table, we always have the entire primary key. So these queries always result in clustered index seeks and are therefore very fast, and fragmentation is kept to a minimum. However, we do have a situation where we want to get the most recent FileDate for every Region, typically for reports, i.e. SELECT [Region] , MAX([FileDate]) AS [FileDate] FROM HugeTable GROUP BY [Region] The "best" solution I can come up to this is to create a non-clustered index on Region. Although it means an additional insert on the table during loads, the hit isn't minimal (we load 4 times per day, so fewer than 100,000 additional index inserts per load). Since the table is also partitioned by FileDate, results to our query come back quickly enough (200ms or so), and that result set is cached until the next load. However I'm guessing that someone with more data warehousing experience might have a solution that's more optimal, as this, for some reason, doesn't "feel right".

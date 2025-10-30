@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5297859
+[parent_id]: 5297597
+[tags]: 
+Event Log size is based on storage size and not by number of entries so it would be little bit difficult to figure out if event log is full or not. For example, bool logFull = false; EventLog e = ... // get the needed event log var sizeKB = e.MaximumKilobytes; // event log size // Check current event log size var regEntry = Rgistry.LocalMachine.OpenSubKey("System\\CurrentControlSet\\Services\\EventLog\\" + e.Log); if (regEntry != null) { var filePath = regEntry.GetValue("File"); if (filePath != null) { var file = new FileInfo(filePath.ToString()); if (file.Exists) { var fileSize = (file.Length + 1023) / 1024; logFull = (fileSize >= sizeKB); // a 1K margin } } } So above code is using 1KB margin to decide if log file is full or not. As such, I would suggest that you always wrap your event entry writing code inside exception block to avoid rare scenario where current log may take you beyond event log size.

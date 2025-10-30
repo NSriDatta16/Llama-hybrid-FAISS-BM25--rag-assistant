@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 903401
+[parent_id]: 903375
+[tags]: 
+Assuming you compress on 8-bit symbols (i.e. bytes) and the algorithm is non-adaptive, the simplest way would be to store not the tree but the distribution of the values. For example by storing how often you found byte 0, how often byte 1, ..., how often byte 255. Then when reading back the file you can re-assemble the tree. This is the simplest solution, but requires the most storage space (e.g. to cover large files, you would need 4 bytes per value, i.e. 1kb). You could optimize this by not storing exactly how often each byte was found in the file, but instead normalizing the values to 0..255 (0 = found least, ...), in which case you would only need to save 256 bytes. Re-assembling of the tree based on these values would result in the same tree. (This is not going to work as pointed out by Edmund and in question 759707 - see there for further links and answers to your question) P.S.: And as Henk said, using seek() allows you to keep space at the beginning of the file to store the values in later.

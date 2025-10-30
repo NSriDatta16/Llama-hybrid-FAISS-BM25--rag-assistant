@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3929556
+[parent_id]: 3929539
+[tags]: 
+As I'm sure you know, this is just like People.find(id) , except that find raises an error. However, People.find_by_id(id) returns nil if no record is found, which I suspect takes care of all you need. You don't need to check that what you put into ActiveRecord is the correct data type and the like; it handles SQL injection risks, so to check ahead of time would not affect actual behavior. If we're just looking at the show action, though, there's an even more elegant way: rather than using find_by_id and checking for nil, use find , let an error bubble up, and let the controller catch it with rescue_from . (By default, in production, ActiveRecord::RecordNotFound will be caught and rescued by showing a generic 404, but you can customize this behavior if necessary.) class UsersController :not_found def show @user = User.find params[:id] end protected def not_found flash[:error] = "User not found" redirect_to users_path end end Code untested, for illustrative purposes only ;)

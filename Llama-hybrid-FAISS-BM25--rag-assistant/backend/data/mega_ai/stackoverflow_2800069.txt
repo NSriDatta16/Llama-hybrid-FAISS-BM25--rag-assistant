@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2800069
+[parent_id]: 
+[tags]: 
+Putting a thread to sleep until event X occurs
+
+I'm writing to many files in a threaded app and I'm creating one handler per file. I have HandlerFactory class that manages the distribution of these handlers. What I'd like to do is that thread A requests and gets foo.txt's file handle from the HandlerFactory class thread B requests foo.txt's file handler handler class recognizes that this file handle has been checked out handler class puts thread A to sleep thread B closes file handle using a wrapper method from HandlerFactory HandlerFactory notifies sleeping threads thread B wakes and successfully gets foo.txt's file handle This is what I have so far, def get_handler(self, file_path, type): self.lock.acquire() if file_path not in self.handlers: self.handlers[file_path] = open(file_path, type) elif not self.handlers[file_path].closed: time.sleep(1) self.lock.release() return self.handlers[file_path][type] I believe this covers the sleeping and handler retrieval successfully, but I am unsure how to wake up all threads, or even better wake up a specific thread.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 768838
+[parent_id]: 759288
+[tags]: 
+There's no way to "include" the files in the serialized fixture. If creating a test fixture, you just need to do it yourself; make sure that some test files actually exist in locations referenced by the FileField/ImageField values. The values of those fields are paths relative to MEDIA_ROOT: if you need to, you can set MEDIA_ROOT in your test setUp() method in a custom test_settings.py to ensure that your test files are found wherever you put them. EDIT : If you want to do it in your setUp() method, you can also monkeypatch default_storage directly: from django.core.files.storage import default_storage class MyTest(TestCase): def setUp(self): self._old_default_storage_location = default_storage.location default_storage.location = '/some/other/place' def tearDown(self): default_storage.location = self._old_default_storage_location That seems to work. default_storage is a documented public API , so this should be reliable.

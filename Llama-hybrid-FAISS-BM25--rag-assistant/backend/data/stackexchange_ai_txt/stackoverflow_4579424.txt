@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4579424
+[parent_id]: 4579288
+[tags]: 
+Yes - a NonClustered Index accesses the data in the table via the clustered key (when the table has a clustered key, and the Row ID when it does not), so it will include the clustered index fields automatically. This is also a reason why a change to the clustered index, forces a rebuild of all non-clustered indexes. The additional NC index with the 2 included fields could be valid if that index satisfies a large number of queries, but I'm not sure that is solving the right problem. Including 2 more fields within the Clustered Key is not ideal, now it is confirmed within the NC index, you can see every index on that table includes the clustered key within it bulking each index out. This is the main reason you want your clustered key to be as narrow as possible, if anything, you should examine your clustered key as ask why you are choosing a 5 field clustered key, and will that choice lead to fragmentation? You may be better off with an artificial value (Identity) for the clustered key, and use a unique NC index to enforce the uniqueness you have with the 5 field clustered key.

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 638536
+[parent_id]: 
+[tags]: 
+Is the FPCA just a PCA on coefficients?
+
+Is functional principal-components analysis (FPCA) on basis representations just a PCA on the component coefficients? The following seems to indicate that yes, it is: import numpy as np import skfda as fda from skfda.preprocessing.dim_reduction import FPCA from sklearn.decomposition import PCA # get Canadian weather data weather = fda.datasets.fetch_weather() weather_data_grid = fda.FDataGrid(data_matrix = weather.data.data_matrix[:, :, 0], grid_points = weather.data.grid_points, domain_range = weather.data.domain_range) # do an FPCA weather_basis = fda.representation.basis.FourierBasis(domain_range = (0.0, 365.0), n_basis = 25, period = 365) weather_data_basis = weather_data_grid.to_basis(weather_basis) weather_fpca = FPCA(n_components = 25) weather_fpca.fit(weather_data_basis) # do a regular PCA on the coefficients of the basis functions pca = PCA(n_components = 25) pca.fit(weather_data_basis.coefficients) # compare results np.allclose(weather_fpca.explained_variance_ratio_, pca.explained_variance_ratio_) # --> True np.allclose(weather_fpca.components_.coefficients, pca.components_) # --> True If so, then the basis representation FPCA can be summarized by the following simple procedure: compute coefficients of the data by projecting on a basis perform a regular PCA on these coefficients Is that all there is to it, or am I missing something? Thank you!

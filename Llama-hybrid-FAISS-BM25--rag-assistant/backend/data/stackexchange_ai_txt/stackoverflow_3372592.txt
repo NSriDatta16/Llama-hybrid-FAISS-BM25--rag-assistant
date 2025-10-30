@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3372592
+[parent_id]: 3372191
+[tags]: 
+You will need to Get xattr.yattr Get the second item of that Of the second item, get zattr As you can see, this involved two different operations. reduce can't do that (elegantly). A solution working for both would have to parse the string to detect where indexed access is needed. A simple but fragile (i.e. behaves undefined if fed BS) solution would look like: def extended_chain_getattr(names, obj): import re result = obj for name in names.split('.'): name_match = re.match(r'([a-zA-Z_][a-zA-Z0-9_]*)(\[\d\])?', name) assert name_match is not None result = getattr(result, name_match.group(1)) if len(name_match.groups()) == 2: index = int(name_match.group(2)) result = result[index] return result Off the top of my head, therefore untested.

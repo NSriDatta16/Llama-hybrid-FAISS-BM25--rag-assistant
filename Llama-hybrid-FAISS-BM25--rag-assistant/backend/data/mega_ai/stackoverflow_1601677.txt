@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1601677
+[parent_id]: 1600997
+[tags]: 
+val myXml = % Attribute(None, "name", Text("value"), Null) See scala.xml.Attribute for different constructors. Adding the same attribute to all children: scala> val xml = xml: scala.xml.Elem = scala> xml.child map (_ match { | case elem : Elem => elem % Attribute(None, "name", Text("value"), Null) | case x => x | }) res3: Sequence[scala.xml.Node] = ArrayBuffer( , , ) You can also use the stuff in scala.xml.transform to do so recursively to all XML: val rr = new RewriteRule { override def transform(n: Node): Seq[Node] = n match { case elem : Elem => elem % Attribute(None, "name", Text("value"), Null) toSeq case other => other } } val rt = new RuleTransformer(rr) scala> rt(xml) res5: scala.xml.Node = Or you can add attributes to arbitrary parts of the xml: scala> val xml = { % Attribute(None, "name", Text("value"), Null)} xml: scala.xml.Elem = EDIT Changing the name is easy to do on Scala 2.8, like this: val someTag = "tag" val myXml = { .copy(label = someTag)}

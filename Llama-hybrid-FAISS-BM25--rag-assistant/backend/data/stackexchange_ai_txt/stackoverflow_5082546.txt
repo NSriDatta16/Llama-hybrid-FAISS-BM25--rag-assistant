@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5082546
+[parent_id]: 
+[tags]: 
+Force Http 1.0 idHttpServer and TIME_WAIT
+
+Delphi 2010, Last Indy source code from Svn. Does anyone knows how can I force TIDHttpServer to send a http 1.0 response, instead of sending http 1.1? I want to get rid of persistent connections (keep-alive) and also i want the client to disconnect from my server and not my server disconnect from client (to avoid TIME_WAIT in my server). Some Data: Request made by a client (in this case, Internet Explorer): GET / HTTP/1.0 Accept: / Accept-Language: pt-BR User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.3; .NET4.0C; .NET4.0E) Host: localhost:114 Connection: Keep-Alive Response from my Indy Server: HTTP/1.1 200 OK Connection: close Content-Type: text/html; charset=ISO-8859-1 Content-Length: 2717 As you can see, the client explicity told the server to use http 1.0, but the indy server response was http 1.1. EDIT: I figured out that the best solution is to set in the OnCommandGet event: AResponseInfo.CloseConnection := False; AResponseInfo.Connection := 'close'; AResponseInfo.CloseConnection := False makes the server do not disconnect from the client and Connection := 'close' makes the client disconnect from the server avoiding servers TIME_WAIT.

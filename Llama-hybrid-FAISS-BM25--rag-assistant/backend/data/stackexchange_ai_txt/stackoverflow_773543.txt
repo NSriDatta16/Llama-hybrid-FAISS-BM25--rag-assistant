@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 773543
+[parent_id]: 773476
+[tags]: 
+They should likely be global (static) variables, or in a singleton of some sort. There is only one .NET runtime allowed per process (at least these days), so there is little sense in trying to be a whole lot more clever than that. Populate the globals in DLL load, then depopulate them during DLL unload. For a .NET/Mono embedding project I did, I created an object whose constructor booted up the runtime (i.e. bind/push start button) and whose destructor shut it down (stop/release). This way the main application could choose how to operate, i.e. put it on the stack in main(), or do a new() during DLL load, and delete in DLL unload. In that case, the pointers you mention would be instance variables of a new object you create, e.g. ClrEmbedManager. That's overkill if your library doesn't need to be reused in different kinds of applications with different behaviors.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4129003
+[parent_id]: 4128061
+[tags]: 
+You have to hope not! Lets say you have a function that takes a parameter struct A: void fn( struct A x ) ; and then a packed struct B that has struct A as a member: #pragma pack(1) struct B { struct A a ; } If you pass the member a of B to fn(), the function has no knowledge of the packing in this instance, and would fail. Other answerer's results notwithstanding, I performed the following test on VC++ 2010: struct A { int a; char b; int c ; } ; struct B { struct A d ; } ; #pragma pack(1) struct C { struct A d ; } ; #pragma pack(1) struct D { int a; char b; int c ; } ; #pragma pack(1) struct E { struct D ; } ; int main() { int a = sizeof(struct A) ; int b = sizeof(struct B) ; int c = sizeof(struct C) ; int d = sizeof(struct D) ; int e = sizeof(struct E) ; } Inspection of a, b, c, d and e in main() in the debugger yield: a = 12 b = 12 c = 12 d = 9 e = 9 The packing of struct C has no effect on the size of its struct A member.

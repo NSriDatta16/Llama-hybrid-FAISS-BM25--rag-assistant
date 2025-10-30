@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 38757
+[parent_id]: 30602
+[tags]: 
+You should not apply *255 . delta was supposed to be added to renorm_image , because you calculated this delta using cov , which was based on renorm_image . Then how would you restore renorm_image to your original image? *std + mean or *255 ? Obviously you should apply *std + mean . Therefore, delta = (delta*255.).astype('int8') pca_color_image = np.maximum(np.minimum(original_image + delta, 255), 0).astype('uint8') should be changed to: mean = np.mean(renorm_image, axis=0) std = np.std(renorm_image, axis=0) pca_augmentation_version_renorm_image = renorm_image + delta pca_color_image = pca_augmentation_version_renorm_image * std + mean pca_color_image = np.maximum(np.minimum(pca_color_image, 255), 0).astype('uint8')

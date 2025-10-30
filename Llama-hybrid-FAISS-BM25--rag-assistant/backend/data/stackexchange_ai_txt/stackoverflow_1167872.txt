@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1167872
+[parent_id]: 1158667
+[tags]: 
+As far as I can remember I have never used a try/catch/finally block in my .NET code. In general, catching exceptions in the middle tier is rarely needed. Exceptions are usually propagated to a top-level handler in the presentation tier (and possibly caught and rethrown at a tier boundary so they can be logged). So in the middle tier you will more often see try/finally (or the "using" statement) so that resources are cleaned up. And in try/catch in the top-level handler in the presentation tier. In the rare cases that I need to both catch an exception and do some cleanup, I would prefer to refactor so that the following: try { ... do something } catch { ... handle exception } finally { ... cleanup } becomes: try { DoSomethingAndCleanup(); } catch { ... handle exception } ... private void DoSomethingAndCleanup() { try { ... do something } finally { ... cleanup } } IMHO this is much cleaner.

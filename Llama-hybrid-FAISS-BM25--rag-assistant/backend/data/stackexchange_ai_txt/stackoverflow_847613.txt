@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 847613
+[parent_id]: 847536
+[tags]: 
+You don't strictly need map to be a primitive as you can define it in terms of foldr . Example (in Haskell): map f = foldr (\a b->f a:b) [] This is really mapcar not map , but full map is difficult to express in Haskell as apply is not available. More complete example (in Scheme): (define (mapcar f l) (foldr (lambda (x t) (cons (f x) t)) ‛() l)) (define (heads ls) (mapcar car ls)) (define (tails ls) (mapcar cdr ls)) (define (any-null? ls) (foldr or? ﹟f (mapcar null? ls))) (define (map f . ls) (if (any-null? ls) ‛() (cons (apply f (heads ls)) (apply map f (tails ls))))) And if you don't have car and cdr there are other ways to define them, e.g. if you have closures & variables in your language: (define (car a) (foldr (lambda (x y) x) ﹟f a)) (define (cdr a) (let ((prev ‛()) (tmp #f)) (foldr (lambda (h t) (set! tmp (cons h t)) (set! prev t) tmp) ‛() a) prev))

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3817738
+[parent_id]: 
+[tags]: 
+Use db:migrate:redo while properly handling exceptions from schema changes
+
+I have a migration that's breaking in the middle of a couple of schema changes. When it breaks an exception is thrown and rake db:migrate exits, leaving my database in a half-migrated state. How can I set it up so that the migration automatically reverts just the changes that have run so far? I'd like to do so globally when in development mode. Surely someone out there has a better way than embedding each successive AR::Migration::ClassMethod in a begin; rescue =>e opposite_action; end block. Perhaps a common example is in order: #2010010100000000_made_a_typo.rb class MadeATypo :genus end def self.down rename_column :birds, :photo_file_name, :url rename_column :birds, :species, :genius end end This migration will fail on the second line with "column genius not found", but not record the migration number in the schema_migrations table. I'd like it if it called rename_column :birds, :photo_file_name, :url #this is a revert of the first line before the exception was passed out of MadeATypo.up . Responses to comments: I understand that mysql might not have support for DDL transactions, I'm looking for a more application-level solution which (probably) uses AR::Migration itself. Surely someone has created a plugin which captures method calls to the main AR:M:ClassMethods and can rewind them in most cases if an exception occurs during a migration.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 816688
+[parent_id]: 816684
+[tags]: 
+I don't think that multi-threading will help you very much with the disk reads. Assuming the file is on one disk platter, you have only one set of read heads to access it with, so you are serialised right there. In this situation I think I would have one disk read process that read the file sequentially into buffers (this would hopefully maximise read performance, as the read heads would not need to move a bout too much, assuming a fairly unfragmented data file) and a number of processing threads that read the buffers, marking them as free when they completed the processing. However you choose to proceed, can I suggest that you make sure that your code is structured in such a way that the number of different types of threads is easily configurable, ideally from the executables command line. In situations like this you will want to experiment with different thread configurations to find the optimal numbers for your specific situation.

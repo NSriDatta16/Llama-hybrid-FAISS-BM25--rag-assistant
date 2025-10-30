@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1845970
+[parent_id]: 1816534
+[tags]: 
+As many others have said you should implement THEN optimize, and only optimize the parts that need it (which you check on with a profiler). I offer a (hopefully) elegant method of getting the list you need, which doesn't really care so much about performance: using System; using System.Collections.Generic; using System.Linq; namespace Test { class Program { static void Main(string[] a) { Random random = new Random(); List list1 = new List (); //source list List list2 = new List (); list2 = random.SequenceWhile((i) => { if (list2.Contains(i)) { return false; } list2.Add(i); return true; }, () => list2.Count == list1.Count, list1.Count).ToList(); } } public static class RandomExtensions { public static IEnumerable SequenceWhile( this Random random, Func shouldSkip, Func continuationCondition, int maxValue) { int current = random.Next(maxValue); while (continuationCondition()) { if (!shouldSkip(current)) { yield return current; } current = random.Next(maxValue); } } } }

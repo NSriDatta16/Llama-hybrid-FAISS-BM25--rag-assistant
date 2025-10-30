@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 834825
+[parent_id]: 833234
+[tags]: 
+It is most likely fragmentation. For simplicity, let's use an example. The memory consists of a single 12kb module. This memory is organised into 1kb blocks in the MMU. So, you have 12 x 1kb blocks. Your OS uses 100 bytes but this is basically the code that manages the page tables. So, you cannot swap it out. Then, your apps all use 100 bytes each. Now, with just your OS and your application running (200 bytes), you would already be using 200 bytes of memory (occupying 2kb blocks). Leaving exactly 10kb available for malloc() . Now, you started by malloc() a couple of buffers - A (900 byte), B (200 byte). Then, you free up A. Now, you have 9.8kb free (non-contiguous). So, you try to malloc() C (9kb). Suddenly, you fail. You have 8.9k contiguous at the tail end and 0.9k at the front end. You cannot re-map the first block to the end because B stretches over the first 1k and the second 1k blocks. You can still malloc() a single 8kb block. Granted, this example is a little contrived, but hope it helps.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4172946
+[parent_id]: 4172661
+[tags]: 
+First of all, for internal operations on images, often you need to use QImage instead of QPixmap, as the direct access functionality to QPixmap is restricted. Reason is that QPixmaps are stored on the rendering device, e.g. pixmap on the X server or GL texture. On the other hand, going from QPixmap to QImage and back is expensive as it often results in copying from the graphics card memory to main memory and back. As I see it you need an operation that changes only the alpha value of the pixels, leaving their original values intact, for blitting. One solution that is not elegant, but works, is the following: for (int y = 0; y Note: it is much faster to alter each pixel of the QImage, and then do painter.drawImage() than drawing each pixel with corresponding alpha by hand.

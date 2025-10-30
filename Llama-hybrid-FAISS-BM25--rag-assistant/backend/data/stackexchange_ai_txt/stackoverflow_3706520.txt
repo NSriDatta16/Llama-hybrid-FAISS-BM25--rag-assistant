@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3706520
+[parent_id]: 3706495
+[tags]: 
+You can use .NET reflector to find out. System.Collections.Hashtable has some hard limits in it: double num = ((float) capacity) / this.loadFactor; if (num > 2147483647.0) { throw new ArgumentException(Environment.GetResourceString("Arg_HTCapacityOverflow")); } Also keep in mind the value of int.MaxSize for capacity (I think capacity might be the same as the bucket count, depending on load factor). If you're hitting that size limit, though, you may want to look into better storage methods than an in-memory hash table CLR object... Edit: Memory for the hash table is allocated in this manner: int num2 = (num > 11.0) ? HashHelpers.GetPrime((int) num) : 11; this.buckets = new bucket[num2]; [StructLayout(LayoutKind.Sequential)] private struct bucket { public object key; public object val; public int hash_coll; } See Will's answer for what HashHelpers.GetPrime does.

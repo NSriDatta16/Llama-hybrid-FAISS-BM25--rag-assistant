@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4190023
+[parent_id]: 4189987
+[tags]: 
+realloc has to copy the contents from the old buffer to the new buffer if the resizing operation cannot be done in place. A malloc / free pair can be better than a realloc if you don't need to keep around the original memory. That's why realloc can temporarily require more memory than a malloc / free pair. You are also encouraging fragmentation by continuously interleaving realloc s. I.e., you are basically doing: malloc(A); malloc(B); while (...) { malloc(A_temp); free(A); A= A_temp; malloc(B_temp); free(B); B= B_temp; } Whereas the original code does: while (...) { malloc(A); malloc(B); free(A); free(B); } At the end of each of the second loop you have cleaned up all the memory you used; that's more likely to return the global memory heap to a clean state than by interleaving memory allocations without completely freeing all of them.

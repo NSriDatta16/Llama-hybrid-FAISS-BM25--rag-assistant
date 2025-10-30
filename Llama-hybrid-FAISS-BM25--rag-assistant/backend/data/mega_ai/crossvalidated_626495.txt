@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 626495
+[parent_id]: 562150
+[tags]: 
+The reason is not technical. You apply the transpose because you need to transpose the axes of the tensors. Your input $x$ has shape $B \times T \times D$ . Once you forward through the linear layer l you get the query embeddings which have the same shape. What you want to do is split this tensor along the last dimension, because this is where the embedding dimension is. That is why you have to do l(x).view(B, T, n_h, D//n_h) . After that you transpose axes 1 and 2 to get the desired shape. If you apply l(x).view(B, n_h, T, D//n_h) you split the tensor along the wrong dimension - the sequence length dimension. Components of the embeddings of different tokens will get mixed up. You get the correct shape, but the wrong numbers.

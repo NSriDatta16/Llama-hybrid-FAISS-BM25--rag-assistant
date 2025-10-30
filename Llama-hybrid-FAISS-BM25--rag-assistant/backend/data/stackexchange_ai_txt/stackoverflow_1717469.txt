@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1717469
+[parent_id]: 1712675
+[tags]: 
+So, just in case anyone's curious, here's how I finally solved this problem: I modified Damien Guard's T4 template to include the attribute [ScriptIgnore] above entities of type Association. This lets the JSON serializer know to not bother serializing these, thus preventing the circular reference problem I was getting. The generated code ends up looking like this: private EntitySet _LineItems; [ScriptIgnore] [Association(Name=@"Form_LineItem", Storage=@"_LineItems", ThisKey=@"Id", OtherKey=@"FormId")] public EntitySet LineItems { get { return _LineItems; } set { _LineItems.Assign(value); } } This fixes the serialization problem I was having without disabling the use of child tables through LINQ. The grid action on the controller ends up looking like this: [GridAction] public ActionResult _GetGrid() { return View(new GridModel { Data = formRepository.GetAll() }); }

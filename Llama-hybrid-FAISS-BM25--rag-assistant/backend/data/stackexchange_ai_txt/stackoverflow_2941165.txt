@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2941165
+[parent_id]: 
+[tags]: 
+Download Specific Images
+
+I'm trying to search and download specific images /front and back cover / of a website if found but whatever I do I always download only one of them. What should I change in my code to download both of them if found? use strict; use warnings; use LWP; use LWP::UserAgent; use URI::Escape; use HTTP::Status; getCover(...); sub getCover { ...... while ($title_found =~ /'(http:\/\/images.blu-ray.com\/movies\/covers\/\d+_.*?)'/gis) { $url = getSite($1); if ($title_found =~ /front/) { $filename = 'front.jpg'; } elsif ($title_found =~ /back/) { $filename = 'back.jpg'; } } my $dir = 'somepath'.$filename; open F, ">", $dir; binmode F; print F $url; close F; return 0; } sub getSite { $url = shift; print "URL: $url\n"; my $r; my $ua = new LWP::UserAgent(); $ua->agent("Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.3) Gecko/20030312"); my $req = new HTTP::Request GET => $url; $req->push_header("Accept-Language", "en"); $req = $ua->prepare_request($req); my $res = $ua->request($req); my $rc = $res->code; if(is_success($rc)){ $r = $res->as_string(); $r = $res->content(); } else { print "Failed\n"; } return $r; }

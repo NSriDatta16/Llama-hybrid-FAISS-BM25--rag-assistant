@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 643819
+[parent_id]: 643682
+[tags]: 
+You'll need to convert the UIImage hosted within your UIImageView into a binary BLOB for storage in SQLite. To do that, you can use the following: NSData *dataForImage = UIImagePNGRepresentation(cachedImage); sqlite3_bind_blob(yourSavingSQLStatement, 2, [dataForImage bytes], [dataForImage length], SQLITE_TRANSIENT); This will generate a PNG representation of your image, store it in an NSData instance, and then bind the bytes from the NSData as a BLOB for the second argument in your SQL query. Use UIImageJPEGRepresentation in the above to store in that format, if you like. You will need to have a BLOB column added to the appropriate table in your SQLite database. To retrieve this image, you can use the following: NSData *dataForCachedImage = [[NSData alloc] initWithBytes:sqlite3_column_blob(yourLoadingSQLStatement, 2) length: sqlite3_column_bytes(yourLoadingSQLStatement, 2)]; self.cachedImage = [UIImage imageWithData:dataForCachedImage]; [dataForCachedImage release];

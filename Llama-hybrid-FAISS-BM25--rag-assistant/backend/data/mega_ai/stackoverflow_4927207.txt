@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4927207
+[parent_id]: 
+[tags]: 
+Is there a simpler way to have an IObservable be asynchronously dependent upon another IObservable?
+
+I'm new to RX, and I have my desired scenario working well, but it seems to me there must be a simpler or more elegant way to achieve this. What I have is an IObservable and I want to subscribe to it in such a way that I end up with an IObservable , by triggering an asynchronous operation that generates a U for each T it sees. What I have so far (that works great, but seems cumbersome) uses an intermediate event stream and goes something like this: public class Converter { public event EventHandler UDone; public IConnectableObservable ToUs(IObservable ts) { var us = Observable.FromEvent (this, "UDone").Select(e => e.EventArgs.U).Replay(); ts.Subscribe(t => Observable.Start(() => OnUDone(new U(t)))); return us; } private void OnUDone(U u) { var uDone = UDone; if (uDone != null) { uDone(this, u); } } } ... var c = new Converter(); IConnectableObservable ts = ...; var us = c.ToUs(ts); us.Connect(); ... I'm sure I'm missing a much simpler way to do this...

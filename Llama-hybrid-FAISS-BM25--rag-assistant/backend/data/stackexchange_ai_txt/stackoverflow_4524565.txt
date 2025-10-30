@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4524565
+[parent_id]: 4524492
+[tags]: 
+Inside the definition of the load_page function there is no "return" statement, not directly at least hence by doing a var json = load_page(page); you'll end up with json = undefined. Ideally you should re-organize your code a little. There is more than one way of doing this but here is one: (function () { function mySuccess(json) { var parsed = $.parseJSON(json); console.log(json); console.log(parsed); document.title = parsed.pagename + " | The Other Half | freddum.com"; $("#content").html(parsed.content); $("#header-navigation-ul a:Contains(" + page + ")").addClass("nav-selected"); $("body").fadeIn(); } function myFailure(error) { $('#content').html('Sorry, there was an error: ' + error); $("body").fadeIn(); } function load_page(pagename, onSuccess, onFailure) { $.ajax({ url: "/backend/index.php/frontend/pull_page/", type: "POST", data: { page: pagename }, success: onSuccess, error: onFailure }); } load_page(page, mySuccess, myFailure); })();

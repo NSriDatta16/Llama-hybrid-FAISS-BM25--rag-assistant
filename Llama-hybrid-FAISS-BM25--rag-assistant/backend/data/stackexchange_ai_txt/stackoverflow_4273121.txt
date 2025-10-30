@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4273121
+[parent_id]: 4273039
+[tags]: 
+They way you are setting the java.class.path system property is asking for trouble - better not do that. More elegant approach would be to use the -classpath option to pass in the custom classpath. See How do I use JDK6 ToolProvider and JavaCompiler with the context classloader? for details. Also this question can be useful reference: Using javax.tools.ToolProvider from a custom classloader? As to building the actual classpath, you could cast the context classloader to URLClassLoader and get files from those URLs (as done in this answer ). Or you could use ServletContext . getRealPath(String) and build the entire classpath by hand : ServletConfig cfg = ...; //obtained in Servlet.init(ServletConfig) method ServletContex ctx = cfg.getServletContext(); String realWebInfPath = ctx.getRealPath("WEB-INF/lib"); //TODO use the realWebInfPath to create a File object and iterate over all JAR files Warning : both approaches ONLY work if web application is expanded (not WAR file). If it is not expanded, you are out of luck.

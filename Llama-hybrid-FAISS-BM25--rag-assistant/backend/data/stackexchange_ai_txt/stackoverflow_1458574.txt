@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1458574
+[parent_id]: 
+[tags]: 
+Django comment moderation, not public
+
+im trying moderation comment form the book of James Bennett, i think that all is fine, but the moderation comment is just for SPAM and the comments are public.. so , how ill put the comments always not public, i need that just the administrator can do public the comments. Thanks import datetime from Paso_a_Paso.akismet import Akismet from django.conf import settings from django.contrib.comments.models import Comment from django.contrib.comments.signals import comment_will_be_posted from django.contrib.sites.models import Site from django.utils.encoding import smart_str from django.contrib.comments.moderation import CommentModerator, moderator class NoticiaModerator(CommentModerator): auto_moderate_field= 'pub_date' moderate_after = 30 email_notification = True def moderate(self, comment, content_object, request): already_moderated = super(NoticiaModerator,self).moderate(comment, content_object, request) if already_moderated: return True akismet_api = Akismet(key=settings.AKISMET_API_KEY,blog_url="http:/%s/" %Site.objects.get_current().domain) if akismet_api.verify_key(): akismet_data = {'comment_type': 'comment', 'referrer': request.META['HTTP_USER_AGENT'], 'user_ip': comment.ip_address, 'user_agent': request.META['HTTP_USER_AGENT']} return akismet_api.comment_check(smart_str(comment.comment), akismet_data, build_data=True) return False moderator.register(Noticia, NoticiaModerator)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3327375
+[parent_id]: 3327297
+[tags]: 
+I learned this by looking in /usr/lib/pymodules/python2.6/MySQLdb/connections.py to see how it called connection.escape . A little sniffing around leads to MySQLdb.converters.conversions . Here is a snippet: {0: , 1: , ... : , : , : , : , : , : , : , : , : } You can use it like this: import MySQLdb import MySQLdb.converters import datetime now=datetime.datetime.now() connection=MySQLdb.connect( host=HOST,user=USER,passwd=PASS,db=MYDB) print(connection.escape((1,2,now),MySQLdb.converters.conversions)) # ('1', '2', "'2010-07-24 19:33:59'") PS. Regarding Bobby Tables: For normal use of MySQLdb, you don't have to manually escape arguments. Just use parametrized arguments when calling cursor.execute , and MySQLdb will automatically quote the arguments for you. For example: sql='insert into students (name,grade,date) values (%s, %s, %s)' args=("Robert'); DROP TABLE Students; --",60,now) # no manual quotation necessary cursor=connection.cursor() cursor.execute(sql,args)

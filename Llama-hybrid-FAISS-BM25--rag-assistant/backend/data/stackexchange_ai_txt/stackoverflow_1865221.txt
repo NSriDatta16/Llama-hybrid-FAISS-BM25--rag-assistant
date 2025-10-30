@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1865221
+[parent_id]: 1864840
+[tags]: 
+Given how your code is written (specifically, that you have a statement), this must be code within a function. While I'm not sure if this is strictly required in the spec, within a function, all auto (i.e. function level, not static) arrays are put on the stack. So regardless of whether you have a regular or VL array, the memory is allocated at runtime. The memory for non-auto arrays is not handled at runtime so do no support VLA. If you try to compile the following code: extern int size; char buff1[size]; void doit(int x) { static int buff2[x]; int buff3[x]; } On the compiler I tested this on (gcc 4.2.1), I got following errors: moo.c:2: error: variably modified ‘buff1’ at file scope moo.c: In function ‘doit’: moo.c:6: error: storage size of ‘buff2’ isn’t constant

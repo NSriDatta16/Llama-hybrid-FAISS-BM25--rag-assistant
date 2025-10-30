@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2847515
+[parent_id]: 2846879
+[tags]: 
+Taking a queue from sebpiq, I managed to figure it out: class OrganisationAdminForm(forms.ModelForm): def __init__(self, *args, **kwargs): from django.forms import MultipleChoiceField from ethico.accounts.models import Account self.base_fields["administrators"] = MultipleChoiceField( choices=tuple([(a.user_id, a.name) for a in Account.objects.all().order_by("name")]), widget=forms.widgets.SelectMultiple, required=False ) super(OrganisationAdminForm, self).__init__(*args, **kwargs) class Meta: model = Organisation class OrganisationAdmin(admin.ModelAdmin): form = OrganisationAdminForm admin.site.register(Organisation, OrganisationAdmin) The key was abandoning the queryset altogether. Once I went with a fixed choices= parameter, everything just worked. Thanks everyone!

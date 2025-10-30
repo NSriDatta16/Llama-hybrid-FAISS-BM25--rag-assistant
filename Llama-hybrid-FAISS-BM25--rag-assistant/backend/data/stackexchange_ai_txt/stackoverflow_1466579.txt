@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1466579
+[parent_id]: 
+[tags]: 
+WaitForRequest with Timeout crashes
+
+EDIT: I have now edited my code a bit to have a rough idea of "all" the code. Maybe this might be helpful to identify the problem ;) I have integrated the following simple code fragement which either cancels the timer if data is read from the TCP socket or otherwise it cancels the data read from the socket // file tcp.cpp void CheckTCPSocket() { TRequestStatus iStatus; TSockXfrLength len; int timeout = 1000; RTimer timer; TRequestStatus timerstatus; TPtr8 buff; iSocket.RecvOneOrMore( buff, 0, iStatus, len ); timer.CreateLocal(); timer.After(timerstatus, timeout); // Wait for two requests – if timer completes first, we have a // timeout. User::WaitForRequest(iStatus, timerstatus); if(timerstatus.Int() != KRequestPending) { iSocket.CancelRead(); } else { timer.Cancel(); } timer.Close(); } // file main.cpp void TestActiveObject::RunL() { TUint Data; MQueue.ReceiveBlocking(Data); CheckTCPSocket(); SetActive(); } This part is executed within active Object and since integrating the code piece above I always get the kernel panic: E32User-CBase 46: This panic is raised by an active scheduler, a CActiveScheduler. It is caused by a stray signal. I never had any problem with my code until now this piece of code is executed; code executes fine as data is read from the socket and then the timer is canceled and closed. I do not understand how the timer object has here any influence on the AO. Would be great if someone could point me to the right direction. Thanks

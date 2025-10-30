@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 102420
+[parent_id]: 102382
+[tags]: 
+How much control do you have over this machine? One answer would be to run ssh-agent as a daemon process. Other options are explained on this web page , basically testing to see if the agent is around and then running it if it's not. To reproduce one of the ideas here: SSH_ENV="$HOME/.ssh/environment" function start_agent { echo "Initialising new SSH agent..." /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}" echo succeeded chmod 600 "${SSH_ENV}" . "${SSH_ENV}" > /dev/null /usr/bin/ssh-add; } # Source SSH settings, if applicable if [ -f "${SSH_ENV}" ]; then . "${SSH_ENV}" > /dev/null #ps ${SSH_AGENT_PID} doesn’t work under cywgin ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || { start_agent; } else start_agent; fi

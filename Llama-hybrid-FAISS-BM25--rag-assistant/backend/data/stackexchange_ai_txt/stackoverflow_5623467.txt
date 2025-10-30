@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5623467
+[parent_id]: 5622390
+[tags]: 
+You need to override the rectInPixels method - (CGRect)rectInPixels { CGSize s = [self contentSize]; return CGRectMake(0, 0, s.width, s.height); } - (BOOL)containsTouchLocation:(UITouch *)touch { CGPoint p = [self convertTouchToNodeSpace:touch]; CGRect r = [self rectInPixels]; return CGRectContainsPoint(r, p); } - (BOOL)ccTouchBegan:(UITouch *)touch withEvent:(UIEvent *)event { NSSet *allTouches = [event allTouches]; for (UITouch *aTouch in allTouches) { if ( ![self containsTouchLocation:aTouch] ) return NO; } return YES; } This just tells the sprite to check that the touch lyes within your altered CGRect Edit to show CCSprite subclass --- - (void)onEnter { [[CCTouchDispatcher sharedDispatcher] addTargetedDelegate:self priority:0 swallowsTouches:YES]; [super onEnter]; } - (void)onExit { [[CCTouchDispatcher sharedDispatcher] removeDelegate:self]; [super onExit]; }

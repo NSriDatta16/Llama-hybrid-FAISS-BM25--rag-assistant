@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2445915
+[parent_id]: 
+[tags]: 
+Bulk inserts into sqlite db on the iphone
+
+I'm inserting a batch of 100 records, each containing a dictonary containing arbitrarily long HTML strings, and by god, it's slow. On the iphone, the runloop is blocking for several seconds during this transaction. Is my only recourse to use another thread? I'm already using several for acquiring data from HTTP servers, and the sqlite documentation explicitly discourages threading with the database, even though it's supposed to be thread-safe... Is there something I'm doing extremely wrong that if fixed, would drastically reduce the time it takes to complete the whole operation? NSString* statement; statement = @"BEGIN EXCLUSIVE TRANSACTION"; sqlite3_stmt *beginStatement; if (sqlite3_prepare_v2(database, [statement UTF8String], -1, &beginStatement, NULL) != SQLITE_OK) { printf("db error: %s\n", sqlite3_errmsg(database)); return; } if (sqlite3_step(beginStatement) != SQLITE_DONE) { sqlite3_finalize(beginStatement); printf("db error: %s\n", sqlite3_errmsg(database)); return; } NSTimeInterval timestampB = [[NSDate date] timeIntervalSince1970]; statement = @"INSERT OR REPLACE INTO item (hash, tag, owner, timestamp, dictionary) VALUES (?, ?, ?, ?, ?)"; sqlite3_stmt *compiledStatement; if(sqlite3_prepare_v2(database, [statement UTF8String], -1, &compiledStatement, NULL) == SQLITE_OK) { for(int i = 0; i

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3007389
+[parent_id]: 3006801
+[tags]: 
+Temporary tables are not a silver bullet. The fundamental problem with your queries lies with patterns like this: t.tag LIKE "%Dictatorship%" OR tt.tag LIKE "%Dictatorship%" OR ttt.tag LIKE "%Dictatorship%" Wildcarding the left side of a LIKE comparison guarantees that an index can not be used. Effectively, you're table scanning all three tables involved... You need to leverage Full Text Searching, either MySQL's native FTS or 3rd party stuff like Sphinx. All the FTS I've known include a scoring/rank value indicating the strength of the match - you can read the MySQL documentation for the algorithm details . But the score/rank is not the same as what you've got: SUM(DISTINCT LIKE...) , you could get the same using something like: SELECT t.id_tag, COUNT(*) AS num_matches FROM TABGS WHERE MATCH(tag) AGAINST ('Dictatorship') GROUP BY t.id_tag

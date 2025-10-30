@@ -1,0 +1,154 @@
+The lattice Boltzmann methods (LBM), originated from the lattice gas automata (LGA) method (Hardy-Pomeau-Pazzis and Frisch-Hasslacher-Pomeau models), is a class of computational fluid dynamics (CFD) methods for fluid simulation. Instead of solving the Navier–Stokes equations directly, a fluid density on a lattice is simulated with streaming and collision (relaxation) processes. The method is versatile as the model fluid can straightforwardly be made to mimic common fluid behaviour like vapour/liquid coexistence, and so fluid systems such as liquid droplets can be simulated. Also, fluids in complex environments such as porous media can be straightforwardly simulated, whereas with complex boundaries other CFD methods can be hard to work with.
+
+Algorithm
+Unlike CFD methods that solve the conservation equations of macroscopic properties (i.e., mass, momentum, and energy) numerically, LBM models the fluid consisting of fictive particles, and such particles perform consecutive propagation and collision processes over a discrete lattice. Due to its particulate nature and local dynamics, LBM has several advantages over other conventional CFD methods, especially in dealing with complex boundaries, incorporating microscopic interactions, and parallelization of the algorithm. A different interpretation of the lattice Boltzmann equation is that of a discrete-velocity Boltzmann equation. The numerical methods of solution of the system of partial differential equations then give rise to a discrete map, which can be interpreted as the propagation and collision of fictitious particles. 
+
+In an algorithm, there are collision and streaming steps. These evolve the density of the fluid , for  the position and  the time. As the fluid is on a lattice, the density has a number of components  equal to the number of lattice vectors connected to each lattice point. As an example, the lattice vectors for a simple lattice used in simulations in two dimensions is shown here. This lattice is usually denoted D2Q9, for two dimensions and nine vectors: four vectors along north, east, south and west, plus four vectors to the corners of a unit square, plus a vector with both components zero. Then, for example vector , i.e., it points due south and so has no  component but a  component of . So one of the nine components of the total density at the central lattice point, , is that part of the fluid at point  moving due south, at a speed in lattice units of one. 
+
+Then the steps that evolve the fluid in time are:
+
+ The collision step
+ 
+ which is the Bhatnagar Gross and Krook (BGK) model for relaxation to equilibrium via collisions between the molecules of a fluid.  is the equilibrium density along direction i at the current density there. The model assumes that the fluid locally relaxes to equilibrium over a characteristic timescale . This timescale determines the kinematic viscosity, the larger it is, the larger is the kinematic viscosity.
+ The streaming step
+ 
+ As  is, by definition, the fluid density at point  at time , that is moving at a velocity of  per time step, then at the next time step  it will have flowed to point .
+
+Advantages
+
+ The LBM was designed from scratch to run efficiently on massively parallel architectures, ranging from inexpensive embedded FPGAs and DSPs up to GPUs and heterogeneous clusters and supercomputers (even with a slow interconnection network). It enables complex physics and sophisticated algorithms. Efficiency leads to a qualitatively new level of understanding since it allows solving problems that previously could not be approached (or only with insufficient accuracy).
+ The method originates from a molecular description of a fluid and can directly incorporate physical terms stemming from a knowledge of the interaction between molecules. Hence it is an indispensable instrument in fundamental research, as it keeps the cycle between the elaboration of a theory and the formulation of a corresponding numerical model short.
+ Automated data pre-processing and lattice generation in a time that accounts for a small fraction of the total simulation.
+ Parallel data analysis, post-processing and evaluation.
+ Fully resolved multi-phase flow with small droplets and bubbles.
+ Fully resolved flow through complex geometries and porous media.
+ Complex, coupled flow with heat transfer and chemical reactions.
+
+Limitations
+Despite the increasing popularity of LBM in simulating complex fluid systems, this novel approach has some limitations. At present, high-Mach number flows in aerodynamics are still difficult for LBM, and a consistent thermo-hydrodynamic scheme is absent. However, as with Navier–Stokes based CFD, LBM methods have been successfully coupled with thermal-specific solutions to enable heat transfer (solids-based conduction, convection and radiation) simulation capability.  For multiphase/multicomponent models, the interface thickness is usually large and the density ratio across the interface is small when compared with real fluids.  Recently this problem has been resolved by Yuan and Schaefer who improved on models by Shan and Chen, Swift, and He, Chen, and Zhang.  They were able to reach density ratios of 1000:1 by simply changing the equation of state. It has been proposed to apply Galilean Transformation to overcome the limitation of modelling high-speed fluid flows.
+Nevertheless, the wide applications and fast advancements of this method during the past twenty years have proven its potential in computational physics, including microfluidics:  LBM demonstrates promising results in the area of high Knudsen number flows.
+
+Development from the LGA method
+LBM originated from the lattice gas automata (LGA) method, which can be considered as a simplified fictitious molecular dynamics model in which space, time, and particle velocities are all discrete. For example, in the 2-dimensional FHP Model each lattice node is connected to its neighbors by 6 lattice velocities on a triangular lattice; there can be either 0 or 1 particles at a lattice node moving with a given lattice velocity. After a time interval, each particle will move to the neighboring node in its direction; this process is called the propagation or streaming step. When more than one particle arrives at the same node from different directions, they collide and change their velocities according to a set of collision rules. Streaming steps and collision steps alternate.  Suitable collision rules should conserve the particle number (mass), momentum, and energy before and after the collision.  LGA suffer from several innate defects for use in hydrodynamic simulations: lack of Galilean invariance for fast flows, statistical noise and poor Reynolds number scaling with lattice size.  LGA are, however, well suited to simplify and extend the reach of reaction diffusion and molecular dynamics models.
+
+The main motivation for the transition from LGA to LBM was the desire to remove the statistical noise by replacing the Boolean particle number in a lattice direction with its ensemble average, the so-called density distribution function. Accompanying this replacement, the discrete collision rule is also replaced by a continuous function known as the collision operator. In the LBM development, an important simplification is to approximate the collision operator with the Bhatnagar-Gross-Krook (BGK) relaxation term. This lattice BGK (LBGK) model makes simulations more efficient and allows flexibility of the transport coefficients. On the other hand, it has been shown that the LBM scheme can also be considered as a special discretized form of the continuous Boltzmann equation. From Chapman-Enskog theory, one can recover the governing continuity and Navier–Stokes equations from the LBM algorithm.
+
+Lattices and the DnQm classification
+
+Lattice Boltzmann models can be operated on a number of different lattices, both cubic and triangular, and with or without rest particles in the discrete distribution function.
+
+A popular way of classifying the different methods by lattice is the DnQm scheme. Here "Dn" stands for "n dimensions", while "Qm" stands for "m speeds". For example, D3Q15 is a 3-dimensional lattice Boltzmann model on a cubic grid, with rest particles present. Each node has a crystal shape and can deliver particles to 15 nodes: each of the 6 neighboring nodes that share a surface, the 8 neighboring nodes sharing a corner, and itself. (The D3Q15 model does not contain particles moving to the 12 neighboring nodes that share an edge; adding those would create a "D3Q27" model.)
+
+Real quantities as space and time need to be converted to lattice units prior to simulation. Nondimensional quantities, like the Reynolds number, remain the same.
+
+Lattice units conversion
+In most Lattice Boltzmann simulations  is the basic unit for lattice spacing, so if the domain of length  has  lattice units along its entire length, the space unit is simply defined as . Speeds in lattice Boltzmann simulations are typically given in terms of the speed of sound. The discrete time unit can therefore be given as , where the denominator  is the physical speed of sound.
+
+For small-scale flows (such as those seen in porous media mechanics), operating with the true speed of sound can lead to unacceptably short time steps. It is therefore common to raise the lattice Mach number to something much larger than the real Mach number, and compensating for this by raising the viscosity as well in order to preserve the Reynolds number.
+
+Simulation of mixtures
+Simulating multiphase/multicomponent flows has always been a challenge to conventional CFD because of the moving and deformable interfaces. More fundamentally, the interfaces between different phases (liquid and vapor) or components (e.g., oil and water) originate from the specific interactions among fluid molecules. Therefore, it is difficult to implement such microscopic interactions into the macroscopic Navier–Stokes equation. However, in LBM, the particulate kinetics provides a relatively easy and consistent way to incorporate the underlying microscopic interactions by modifying the collision operator. Several LBM multiphase/multicomponent models have been developed. Here phase separations are generated automatically from the particle dynamics and no special treatment is needed to manipulate the interfaces as in traditional CFD methods. Successful applications of multiphase/multicomponent LBM models can be found in various complex fluid systems, including interface instability, bubble/droplet dynamics, wetting on solid surfaces, interfacial slip, and droplet electrohydrodynamic deformations.
+
+A lattice Boltzmann model for simulation of gas mixture combustion capable of accommodating significant density variations at low-Mach number regime has been recently proposed.
+
+To this respect, it is worth to notice that, since LBM deals with a larger set of fields (as compared to conventional CFD), the simulation of reactive gas mixtures presents some additional challenges in terms of memory demand as far as large detailed combustion mechanisms are concerned. Those issues may be addressed, though, by resorting to systematic model reduction techniques.
+
+Thermal lattice-Boltzmann method
+
+Currently (2009), a thermal lattice-Boltzmann method (TLBM) falls into one of three categories: the multi-speed approach, the passive scalar approach, and the thermal energy distribution.
+
+Derivation of Navier–Stokes equation from discrete LBE
+
+Starting with the discrete lattice Boltzmann equation (also referred to as LBGK equation due to the collision operator used).  We first do a 2nd-order Taylor series expansion about the left side of the LBE.  This is chosen over a simpler 1st-order Taylor expansion as the discrete LBE cannot be recovered.  When doing the 2nd-order Taylor series expansion, the zero derivative term and the first term on the right will cancel, leaving only the first and second derivative terms of the Taylor expansion and the collision operator:
+
+For simplicity, write  as .  The slightly simplified Taylor series expansion is then as follows, where ":" is the colon product between dyads:
+
+By expanding the particle distribution function into equilibrium and non-equilibrium components and using the Chapman-Enskog expansion, where  is the Knudsen number, the Taylor-expanded LBE can be decomposed into different magnitudes of order for the Knudsen number in order to obtain the proper continuum equations:
+
+The equilibrium and non-equilibrium distributions satisfy the following relations to their macroscopic variables (these will be used later, once the particle distributions are in the "correct form" in order to scale from the particle to macroscopic level):
+
+The Chapman-Enskog expansion is then:
+
+By substituting the expanded equilibrium and non-equilibrium into the Taylor expansion and separating into different orders of , the continuum equations are nearly derived.
+
+For order :
+
+For order :
+
+Then, the second equation can be simplified with some algebra and the first equation into the following:
+
+Applying the relations between the particle distribution functions and the macroscopic properties from above, the mass and momentum equations are achieved:
+
+The momentum flux tensor  has the following form then:
+
+where  is shorthand for the square of the sum of all the components of  (i. e. ), and the equilibrium particle distribution with second order to be comparable to the Navier–Stokes equation is:
+
+The equilibrium distribution is only valid for small velocities or small Mach numbers.  Inserting the equilibrium distribution back into the flux tensor leads to:
+
+Finally, the Navier–Stokes equation is recovered under the assumption that density variation is small:
+
+This derivation follows the work of Chen and Doolen.
+
+Mathematical equations for simulations
+The continuous Boltzmann equation is an evolution equation for a single particle probability distribution function  and the internal energy density distribution function  (He et al.) are each respectively:
+
+where  is related to  by
+
+ is an external force,  is a collision integral, and  (also labeled by  in literature) is the microscopic velocity.  The external force  is related to temperature external force  by the relation below.  A typical test for one's model is the Rayleigh–Bénard convection for .
+
+Macroscopic variables such as density , velocity , and temperature  can be calculated as the moments of the density distribution function:
+
+The lattice Boltzmann method discretizes this equation by limiting space to a lattice and the velocity space to a discrete set of microscopic velocities (i. e. ).  The microscopic velocities in D2Q9, D3Q15, and D3Q19 for example are given as:
+
+The single-phase discretized Boltzmann equation for mass density and internal energy density are:
+
+The collision operator is often approximated by a BGK collision operator under the condition it also satisfies the conservation laws:
+
+In the collision operator  is the discrete, .  In D2Q9 and D3Q19, it is shown below for an incompressible flow in continuous and discrete form where D, R, and T are the dimension, universal gas constant, and absolute temperature respectively.  The partial derivation for the continuous to discrete form is provided through a simple derivation to second order accuracy.
+
+Letting  yields the final result:
+
+As much work has already been done on a single-component flow, the following TLBM will be discussed.  The multicomponent/multiphase TLBM is also more intriguing and useful than simply one component.  To be in line with current research, define the set of all components of the system (i. e. walls of porous media, multiple fluids/gases, etc.)  with elements .
+
+The relaxation parameter,, is related to the kinematic viscosity,, by the following relationship:
+
+The moments of the  give the local conserved quantities. The density is given by
+
+and the weighted average velocity, , and the local momentum are given by
+
+In the above equation for the equilibrium velocity , the  term is the interaction force between a component and the other components.  It is still the subject of much discussion as it is typically a tuning parameter that determines how fluid-fluid, fluid-gas, etc. interact.  Frank et al. list current models for this force term.  The commonly used derivations are Gunstensen chromodynamic model, Swift's free energy-based approach for both liquid/vapor systems and binary fluids, He's intermolecular interaction-based model, the Inamuro approach, and the Lee and Lin approach.
+
+The following is the general description for  as given by several authors.
+
+ is the effective mass and  is Green's function representing the interparticle interaction with  as the neighboring site.  Satisfying  and where  represents repulsive forces.  For D2Q9 and D3Q19, this leads to
+
+The effective mass as proposed by Shan and Chen uses the following effective mass for a single-component, multiphase system.  The equation of state is also given under the condition of a single component and multiphase.
+
+So far, it appears that  and  are free constants to tune but once plugged into the system's equation of state(EOS), they must satisfy the thermodynamic relationships at the critical point such that  and .  For the EOS,  is 3.0 for D2Q9 and D3Q19 while it equals 10.0 for D3Q15.
+
+It was later shown by Yuan and Schaefer that the effective mass density needs to be changed to simulate multiphase flow more accurately.  They compared the Shan and Chen (SC), Carnahan-Starling (C–S), van der Waals (vdW), Redlich–Kwong (R–K), Redlich–Kwong Soave (RKS), and Peng–Robinson (P–R) EOS.  Their results revealed that the SC EOS was insufficient and that C–S, P–R, R–K, and RKS EOS are all more accurate in modeling multiphase flow of a single component.
+
+For the popular isothermal Lattice Boltzmann methods these are the only conserved quantities. Thermal models also conserve energy and therefore have an additional conserved quantity:
+
+Applications
+
+During the last years, the LBM has proven to be a powerful tool for solving problems at different length and time scales. 
+Some of the applications of LBM include:
+
+ Porous Media flows 
+ Biomedical Flows
+ Earth sciences (Soil filtration).
+ Energy Sciences (Fuel Cells).
+
+External links
+ LBM Method
+ Entropic Lattice Boltzmann Method (ELBM)
+ dsfd.org: Website of the annual DSFD conference series (1986 -- now) where advances in theory and application of the lattice Boltzmann method are discussed
+ Website of the annual ICMMES conference on lattice Boltzmann methods and their applications
+
+Further reading
+
+Notes
+
+Computational fluid dynamics
+Lattice models

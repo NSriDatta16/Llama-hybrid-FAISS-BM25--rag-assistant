@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5053432
+[parent_id]: 
+[tags]: 
+Possible deadlock in C++/boost/thread
+
+Suppose the following code is run on single-core processor: #include #include #include #include "boost/date_time/posix_time/posix_time.hpp" #include #include #include std::deque buffer; boost::mutex bufferMutex; boost::condition bufferHasSome; boost::condition bufferEmpty; void Reader() { boost::mutex mutex; boost::mutex::scoped_lock lock(mutex); //read as fast as possible: while(true) { while(buffer.size() = 0; i--) { bufferMutex.lock(); buffer.push_back(index); bufferMutex.unlock(); //2.1 bufferHasSome.notify_one(); //2.2 index++; boost::this_thread::sleep(boost::posix_time::milliseconds(rand() % 10)); } //definetely wait while written portion will be read: while(buffer.size() > 0) { bufferEmpty.wait(lock); } } } int main() { srand(time(NULL)); boost::thread readerThread(Reader); boost::thread writerThread(Writer); getchar(); return 0; } and processor stopped after 1.1 (where size = 0) within Reader thread and switched to Writer where index was added ( 2.1 ) into the buffer and bufferHasSome was notified (at 2.2 ) (but no one is waiting for it yet so it was just void operation); then processor switched back to Reader thread and started (at 1.2 ) to wait while somebody will write something to the buffer but only one who can write is waiting for somebody to read the buffer . This program freeze after averagely 150 iterations - I think it's because of this. What did I missed? How to fix it?

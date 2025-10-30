@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 110321
+[parent_id]: 110163
+[tags]: 
+Using these two together are probably causing your issues. Both are trying to define an ingredients_string method that do different things attr_accessor :ingredients_string def ingredients_string ingredients.join("\n") end Get rid of the attr_accessor , the before_save , set_ingredients method and define your own ingredients_string= method, something like this: def ingredients_string=(ingredients) ingredients.each { |x| x.destroy } ingredients_string ||= false if ingredients_string ingredients_string.split("\n").each do |x| ingredient = Ingredient.create(:ingredient_string => x) self.ingredients Note I just borrowed your implementation of set_ingredients . There's probably a more elegant way to break up that string and create/delete Ingredient model associations as needed, but it's late and I can't think of it right now. :)

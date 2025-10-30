@@ -1,0 +1,115 @@
+Optimal job scheduling is a class of optimization problems related to scheduling. The inputs to such problems are a list of jobs (also called processes or tasks) and a list of machines (also called processors or workers). The required output is a schedule – an assignment of jobs to machines. The schedule should optimize a certain objective function. In the literature, problems of optimal job scheduling are often called machine scheduling, processor scheduling, multiprocessor scheduling, or just scheduling.
+
+There are many different problems of optimal job scheduling, different in the nature of jobs, the nature of machines, the restrictions on the schedule, and the objective function. A convenient notation for optimal scheduling problems was introduced by Ronald Graham, Eugene Lawler, Jan Karel Lenstra and Alexander Rinnooy Kan. It consists of three fields: α, β and γ. Each field may be a comma separated list of words. The α field describes the machine environment, β the job characteristics and constraints, and γ the objective function. Since its introduction in the late 1970s the notation has been constantly extended, sometimes inconsistently.   As a result, today there are some problems that appear with distinct notations in several papers.
+
+Single-stage jobs vs. multi-stage jobs 
+In the simpler optimal job scheduling problems, each job j consists of a single execution phase, with a given processing time pj. In more complex variants, each job consists of several execution phases, which may be executed in sequence or in parallel.
+
+Machine environments 
+In single-stage job scheduling problems, there are four main categories of machine environments:
+
+ 1: Single-machine scheduling. There is a single machine.
+ P: Identical-machines scheduling. There are  parallel machines, and they are identical. Job  takes time  on any machine it is scheduled to.
+ Q: Uniform-machines scheduling. There are  parallel machines, and they have different given speeds. Job  on machine  takes time .
+ R: Unrelated-machines scheduling. There are  parallel machines, and they are unrelated – Job  on machine  takes time .
+
+These letters might be followed by the number of machines, which is then fixed. For example, P2 indicates that there are two parallel identical machines. Pm indicates that there are m parallel identical machines, where m is a fixed parameter. In contrast, P indicates that there are m parallel identical machines, but m is not fixed (it is part of the input).
+
+In multi-stage job scheduling problems, there are other options for the machine environments: 
+
+ O: Open-shop problem. Every job  consists of  operations  for .  The operations can be scheduled in any order. Operation  must be processed for  units on machine .
+ F: Flow-shop problem. Every job  consists of  operations  for , to be scheduled in the given order.  Operation  must be processed for  units on machine .
+ J: Job-shop problem. Every job  consists of  operations  for , to be scheduled in that order.  Operation  must be processed for  units on a dedicated machine  with  for .
+
+Job characteristics 
+
+All processing times are assumed to be integers. In some older research papers however they are assumed to be rationals.
+
+, or : the processing time is equal for all jobs.
+, or : the processing time is equal to 1 time-unit for all jobs.
+: for each job a release time is given before which it cannot be scheduled, default is 0.
+ :  an online problem. Jobs are revealed at their release times.  In this context the performance of an algorithm is measured by its competitive ratio.
+ : for each job a due date is given.   The idea is that every job should complete before its due date and there is some penalty for jobs that complete late.  This penalty is denoted in the objective value.  The presence of the job characteristic  is implicitly assumed and not denoted in the problem name, unless there are some restrictions as for example , assuming that all due dates are equal to some given date.
+ : for each job a strict deadline is given.  Every job must complete before its deadline.
+ pmtn: Jobs can be preempted and resumed possibly on another machine. Sometimes also denoted by 'prmp'.
+ : Each job comes with a number of machines on which it must be scheduled at the same time. The default is 1. This is an important parameter in the variant called parallel task scheduling.
+
+Precedence relations 
+
+Precedence relations might be given for the jobs, in form of a partial order, meaning that if i is a predecessor of i′ in that order, i′ can start only when i is completed.
+
+ prec: Given general precedence relation.  If  then starting time of  should be not earlier than completion time of .
+ chains: Given precedence relation in form of chains (indegrees and outdegrees are at most 1).
+ tree: Given general precedence relation in form of a tree, either intree or outtree.
+ intree: Given general precedence relation in form of an intree (outdegrees are at most 1).
+ outtree: Given general precedence relation in form of an outtree (indegrees are at most 1).
+ opposing forest: Given general precedence relation in form of a collection of intrees and outtrees.
+ sp-graph: Given precedence relation in form of a series parallel graph.
+ bounded height: Given precedence relation where the longest directed path is bounded by a constant.
+ level order: Given precedence relation where each vertex of a given level ℓ (i.e. the length of the longest directed path starting from this vertex is ℓ) is a predecessor of all the vertices of level .
+ interval order: Given precedence relation for which one can associate to each vertex an interval in the real line, and there is a precedence between  and  if and only if the half-open intervals  and  are such that  is smaller than or equal to .
+ quasi-interval order: Quasi-interval orders are a superclass of interval orders defined in Moukrim: "Optimal scheduling on parallel machines for a new order class", Operations Research Letters, 24(1):91–95, 1999.
+ over-interval order: Over-interval orders are a superclass of quasi-interval orders defined in Chardon and Moukrim: The Coffman–Graham algorithm optimally solves UET task systems with overinterval orders, SIAM Journal on Discrete Mathematics, 19(1):109–121, 2005.
+ Am-order: Am orders are a superclass of over-interval orders defined in Moukrim and Quilliot: "A relation between multiprocessor scheduling and linear programming." Order, 14(3):269–278, 1997.
+ DC-graph: A divide-and-conquer graph is a subclass of series-parallel graphs defined in Kubiak et al.: Optimality of HLF for scheduling divide-and-conquer UET task graphs on identical parallel processors. Discrete Optimization, 6:79–91, 2009.
+ 2-dim partial order: A 2-dimensional partial order is a k-dimensional partial order for k = 2.
+ k-dim partial order: A poset is a k-dimensional partial order iff it can be embedded into the k-dimensional Euclidean space in such a way that each node is represented by a k-dimensional point and there is a precedence between two nodes i and j iff for any dimension the coordinate of i is smaller than or equal to the one of j.
+
+In the presence of a precedence relation one might in addition assume time lags.  Let  denote the start time of a job and  its completion time.  Then the precedence relation  implies the constraint .  If no time lag  is specified then it is assumed to be zero.  Time lags can be positive or negative numbers.
+
+ ℓ: job independent time lags. In other words   for all job pairs i, j and a given number ℓ.
+ : job pair dependent arbitrary time lags.
+
+Transportation delays 
+
+ : Between the completion of operation  of job  on machine  and the start of operation  of job  on machine , there is a transportation delay of at least units.
+ : Between the completion of operation  of job  on machine  and the start of operation  of job  on machine , there is a transportation delay of at least  units.
+ : Machine dependent transportation delay. Between the completion of operation  of job  on machine  and the start of operation  of job  on machine , there is a transportation delay of at least  units.
+ : Machine pair dependent transportation delay. Between the completion of operation  of job  on machine  and the start of operation  of job  on machine , there is a transportation delay of at least  units.
+ : Job dependent transportation delay. Between the completion of operation  of job  on machine  and the start of operation  of job  on machine , there is a transportation delay of at least  units.
+
+Various constraints 
+
+ rcrc: Recirculation, also called Flexible job shop. The promise on  is lifted and for some pairs  we might have .
+ no-wait: The operation must start exactly when operation  completes.  Sometimes also denoted as 'nwt'.
+ no-idle: No machine is ever idle between two executions.
+ : Multiprocessor tasks on identical parallel machines. The execution of job  is done simultaneously on parallel machines.
+ : Multiprocessor tasks. Every job is given with a set of machines , and needs simultaneously all these machines for execution. Sometimes also denoted by 'MPT'.
+ : Multipurpose machines. Every job  needs to be scheduled on one machine out of a given set .  Sometimes also denoted by Mj.
+
+Objective functions 
+
+Usually the goal is to minimize some objective value. One difference is the notation  where the goal is to maximize the number of jobs that complete before their deadline. This is also called the throughput.  The objective value can be sum, possibly weighted by some given priority weights  per job.
+
+ -: The absence of an objective value is denoted by a single dash. This means that the problem consists simply in producing a feasible scheduling, satisfying all given constraints.
+ : the completion time of job .  is the maximum completion time; also known as the makespan. Sometimes we are interested in the mean completion time (the average of  over all j), which is sometimes denoted by mft (mean finish time).
+ : The flow time of a job is the difference between its completion time and its release time, i.e. .
+ : Lateness. Every job  is given a due date . The lateness of job  is defined as .  Sometimes  is used to denote feasibility for a problem with deadlines. Indeed using binary search, the complexity of the feasibility version is equivalent to the minimization of .
+ : Throughput. Every job is given a due date .  There is a unit profit for jobs that complete on time, i.e.  if  and   otherwise.  Sometimes the meaning of  is inverted in the literature, which is equivalent when considering the decision version of the problem, but which makes a huge difference for approximations.
+ : Tardiness. Every job  is given a due date . The tardiness of job  is defined as .
+ : Earliness. Every job  is given a due date . The earliness of job  is defined as .  This objective is important for just-in-time scheduling.
+There are also variants with multiple objectives, but they are much less studied.
+
+Examples 
+Here are some examples for problems defined using the above notation.
+
+  – assigning each of  given jobs to one of the two identical machines so to minimize the maximum total processing time over the machines. This is an optimization version of the partition problem
+ 1|prec| – assigning to a single machine, processes with general precedence constraint, minimizing maximum lateness.
+ R|pmtn| – assigning tasks to a variable number of unrelated parallel machines, allowing preemption, minimizing total completion time.
+ J3| – a 3-machine job shop problem with unit processing times, where the goal is to minimize the maximum completion time.
+  – assigning jobs to  parallel identical machines, where each job comes with a number of machines on which it must be scheduled at the same time, minimizing maximum completion time. See parallel task scheduling.
+
+Other variants 
+
+ All variants surveyed above are deterministic in that all data is known to the planner. There are also stochastic variants, in which the data is not known in advance, or can perturb randomly.
+ In a load balancing game, each job belongs to a strategic agent, who can decide where to schedule his job. The Nash equilibrium in this game may not be optimal. Aumann and Dombb assess the inefficiency of equilibrium in several load-balancing games.
+
+See also 
+Fractional job scheduling
+
+References
+
+External links 
+
+ Scheduling zoo (by Christoph Dürr, Sigrid Knust, Damien Prot, Óscar C. Vásquez): an online tool for searching an optimal scheduling problem using the notation.
+Complexity results for scheduling problems (by Peter Brucker, Sigrid Knust): a classification of optimal scheduling problems by what is known on their runtime complexity.

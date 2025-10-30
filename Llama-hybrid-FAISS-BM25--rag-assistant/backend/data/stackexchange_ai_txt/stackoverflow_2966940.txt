@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2966940
+[parent_id]: 2966592
+[tags]: 
+Here is an extension method which factors out the similar portions of each query: public static IEnumerable GetDataItems ( this IEnumerable dtos, Func dataSelector, Func numberSelector, Func createDataItem) where TData : class { var eligibleDtos = dtos.Where(dto => dataSelector(dto) != null); var totalNumber = eligibleDtos.Sum(numberSelector); return from dto in eligibleDtos group dto by dataSelector(dto) into dtoGroup let groupNumber = dtoGroup.Sum(numberSelector) orderby groupNumber descending select createDataItem(dtoGroup.Key, groupNumber, groupNumber / totalNumber); } You would use it like this: var itemsByName = dtos.GetDataItems( dto => dto.Name, dto => dto.Data, (name, groupTotal, groupPercentage) => new FooDataItem { Name = name, NumberTotal = groupTotal, NumberPercentage = groupPercentage }); var itemsByColor = dtos.GetDataItems( dto => dto.Color, dto => dto.Number, (color, groupTotal, groupPercentage) => new FooDataItem { Color = color, DataTotal = groupTotal, DataPercentage = groupPercentage });

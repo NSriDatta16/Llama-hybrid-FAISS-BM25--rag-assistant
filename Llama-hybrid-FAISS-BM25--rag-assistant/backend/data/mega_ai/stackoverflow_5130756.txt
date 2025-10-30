@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5130756
+[parent_id]: 5126085
+[tags]: 
+The most elegant solution for this I've seen is to do two things: recognize mobile users based on user-agent in the request and use a custom Rails mime type to respond with, allowing custom HTML templates for mobile users. Define a custom 'mobile' Rails MIME type in config/initializers/mime_types.rb that's just HTML: Mime::Type.register_alias "text/html", :mobile Add a helper/filter to respond to mobile users: def mobile_user_agent? @mobile_user_agent ||= ( request.env["HTTP_USER_AGENT"] && request.env["HTTP_USER_AGENT"][/(Mobile\/.+Safari)/] ) end then.. before_filter :handle_mobile def handle_mobile request.format = :mobile if mobile_user_agent? end Make custom mobile template: app/views/users/show.html.erb => app/views/users/show.mobile.erb Dispatch mobile or regular in controllers: respond_to do |format| format.html { } # Regular stuff format.mobile { } # other stuff end

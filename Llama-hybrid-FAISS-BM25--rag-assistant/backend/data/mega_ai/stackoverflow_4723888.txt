@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4723888
+[parent_id]: 4723730
+[tags]: 
+C++/CLI is your friend for this. You'll run into one problem though: it is not possible to store standard C++ objects inside C++/CLI ref or value classes (the ones for .NET). So you'll have to resort to the following class (that you can modify) that I use in production code: #pragma once #include template ref class Handle { boost::shared_ptr * t; !Handle() { if (t != nullptr) { delete t; t = nullptr; } } ~Handle() { this->!Handle(); } public: Handle() : t(new boost::shared_ptr ((T*)0)) {} Handle% operator=(T* p) { if (p != t->get()) t->reset(p); return *this; } static T* operator&(Handle% h) { return h.t->get(); } static boost::shared_ptr operator->(Handle% h) { return *h.t; } T& reference() { return *t->get(); } T const& const_reference() { return *t->get(); } }; Usage: Handle ^ handle; inside a C++/CLI class. You then implement stub methods, forwarding them to the handle member. Garbage collected objects will call destructors of the C++ class instance iff there is no more pointer to it: public ref class Foo { void bar() { handle->bar(); } internal: Handle ^ handle; };

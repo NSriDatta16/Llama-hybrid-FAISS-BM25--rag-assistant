@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 74867
+[parent_id]: 74855
+[tags]: 
+Well, there are several ways you can do that. A quite powerful solution is to define a pred layer class PredLayer(Layer): """ Layer object to calculate distance between query_embeddings and supposrt embeddings. """ def __init__(self, **kwargs): super(PredLayer, self).__init__(**kwargs) def euclidean_distance(self, inputs): """ Euclidean square distance. """ support, query = inputs output = K.mean(K.square(support - query), axis=-1) output = K.expand_dims(output, 1) return output def call(self, inputs): y_pred = self.euclidean_distance(inputs) return y_pred Hence you have to compose your Keras network such that your support and query embeddings will be the inputs to this layer. ... model_pred = Model(inputs = inputs, outputs = predlayer, name = 'vgg-16_feature_extractor_pred') return model, model_pred ```

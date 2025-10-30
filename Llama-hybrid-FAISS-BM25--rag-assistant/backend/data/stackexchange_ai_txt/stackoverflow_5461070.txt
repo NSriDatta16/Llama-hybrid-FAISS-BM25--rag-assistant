@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5461070
+[parent_id]: 5460684
+[tags]: 
+Untried, but probably the fastest mechanism is to first, take your search key and encode it like the file. For example, if you know the file is UTF-8, take your key and encode it from a String (which it UTF-16) in to a byte array that is UTF-8. This is important because by encoding down to the file representation, you're only encoding the key. Using standard Java Readers goes the other way -- converts the file to UTF-16. Now that you have a proper key, in bytes, use NIO to create a MappedByteBuffer for the file. This maps the file in to the virtual memory space. Finally, implement a Boyer-Moore algorithm for string search, using the bytes of the key against the bytes of the file via the mapped region, There may well be a faster way, but this solves a bulk of the problems with searching a text file in Java. It leverages the VM to avoid copying large chunks of the file, and it skips the conversion step of whatever encoding the file is in to UTF-16, which Java uses internally.

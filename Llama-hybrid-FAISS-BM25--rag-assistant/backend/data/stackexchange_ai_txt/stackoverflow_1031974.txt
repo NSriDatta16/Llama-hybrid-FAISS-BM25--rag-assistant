@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1031974
+[parent_id]: 1031896
+[tags]: 
+In C99, you may use compound literals to make this work inline: unsigned long outVal = *((unsigned long *)&((float){ inVal })); The literal (float){ inVal } will create a variable with automatic storage duration (ie stack-allocated) with a well-defined address. Type punning may also be done using unions instead of pointer casts. Using compound literals and the non-standard __typeof__ operator, you can even do some macro magic: #define wicked_cast(TYPE, VALUE) \ (((union { __typeof__(VALUE) src; TYPE dest; }){ .src = VALUE }).dest) unsigned long outVal = wicked_cast(unsigned long, (float)inVal); GCC prefers unions over pointer casts in regard to optimization. This might not work at all with the MS compiler as its C99 support is rumored to be non-existant.

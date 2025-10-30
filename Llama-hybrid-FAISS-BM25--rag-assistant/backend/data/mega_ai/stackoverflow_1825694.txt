@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1825694
+[parent_id]: 1825456
+[tags]: 
+With native Java API, the easiest way to read from an URL is using java.net.URL#openStream() . Here's a basic example: try (InputStream response = new URL("https://www.stackoverflow.com").openStream()) { String body = new String(input.readAllBytes(), StandardCharsets.UTF_8); System.out.println(body); } You could feed the InputStream to any DOM/SAX parser of your taste. The average parser can take (in)directly an InputStream as argument or even a URL. Jsoup is one of the better HTML parsers . In case you want a bit more control and/or want a more self-documenting API, then you can since Java 11 use the java.net.http.HttpClient . It only gets verbose quickly when you merely want the response body: HttpClient client = HttpClient.newBuilder().build(); HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("https://stackoverflow.com")).build(); HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString()); String body = response.body(); System.out.println(body); See also: How to use java.net.URLConnection to fire and handle HTTP requests

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 244043
+[parent_id]: 243782
+[tags]: 
+If you're concerned the number of rows that meet the condition may change in the few milliseconds since execution of the query and retrieval of results, you could/should execute the queries inside a transaction: BEGIN TRAN bogus SELECT COUNT( my_table.my_col ) AS row_count FROM my_table WHERE my_table.foo = 'bar' SELECT my_table.my_col FROM my_table WHERE my_table.foo = 'bar' ROLLBACK TRAN bogus This would return the correct values, always. Furthermore, if you're using SQL Server, you can use @@ROWCOUNT to get the number of rows affected by last statement, and redirect the output of real query to a temp table or table variable, so you can return everything altogether, and no need of a transaction: DECLARE @dummy INT SELECT my_table.my_col INTO #temp_table FROM my_table WHERE my_table.foo = 'bar' SET @dummy=@@ROWCOUNT SELECT @dummy, * FROM #temp_table

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3872605
+[parent_id]: 
+[tags]: 
+How can I ensure a determenistic result for this multithreading problem?
+
+Consider the following test snippet: // act AutoResetEvent workDoneEvent = new AutoResetEvent(false); ThreadPool.QueueUserWorkItem(delegate { ProcessAndSignal(processor, workDoneEvent); }, null); // let worker thread have a go workDoneEvent.WaitOne(); blockingFetcher.WaitForNextMessage = false; // assert Assert.That(processor.StopCause, Is.Null); } private static void ProcessAndSignal(MessageProcessor processor, AutoResetEvent workDoneEvent) { workDoneEvent.Set(); // this invocation will block until the WaitForNextMessageFlag is set processor.ProcessMessages(); } Ideal scenario: ProcessAndSignalMethod is queued on the thread pool but does not start to execute. The main thread blocks (autoResetEvent.WaitOne()) A worker thread starts to execute the "ProcessAndSignal" method The worker threads has enough time to signal the flag and start execution of the ProcessMessages method The main thread is spawned back into life and sets the property which will cause the ProcessAndSignal method to complete gracefully Can the following scenario occur? 1) ProcessAndSignal() will start to execute before the main thread sets the AutoResetEvent to WaitOne() which will cause a deadlock (the processor.ProcessMessages() will go into an infinitive loop)

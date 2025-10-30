@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4403377
+[parent_id]: 4403278
+[tags]: 
+When the CPU attempts to load your array and suffers a cache miss it fetches the block of memory containing your array but not necessarily STARTING with it. .NET makes no guarantees that your array will be cache aligned. To answer your question, the 44 bytes of padding is mostly other data from the associated page that happened to be in the same cache line. edit : http://msdn.microsoft.com/en-us/magazine/cc163791.aspx Seems to indicate that an array has 16 bytes of additional storage. 4 bytes are the sync block index, 4 bytes are used for the typehandle metadata, and the rest is the object itself. As a side comment, it's hard to exactly say that false-sharing is responsible for your delay here. It's likely given the timings but you should use a good profiler to examine the cache-miss rate. If it jumps high for your given case you can be pretty sure you're seeing false-sharing in play.

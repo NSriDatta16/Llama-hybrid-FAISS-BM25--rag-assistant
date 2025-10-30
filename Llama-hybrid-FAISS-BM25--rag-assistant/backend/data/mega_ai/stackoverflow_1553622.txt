@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1553622
+[parent_id]: 
+[tags]: 
+WPF Drag & drop from ListBox with SelectionMode Multiple
+
+I've almost got this working apart from one little annoying thing... Because the ListBox selection happens on mouse down, if you start the drag with the mouse down when selecting the last item to drag it works fine, but if you select all the items to drag first and then click on the selection to start dragging it, the one you click on gets unselected and left behind after the drag. Any thoughts on the best way to get around this? ... public partial class Window1 { private bool clickedOnSourceItem; public Window1() { InitializeComponent(); DataContext = new WindowViewModel(); } private void DropOnToDestination(object sender, DragEventArgs e) { var viewModel = (WindowViewModel) e.Data.GetData(typeof(WindowViewModel)); viewModel.CopySelectedItems(); } private void HandleLeftButtonDown(object sender, MouseButtonEventArgs e) { var sourceElement = (FrameworkElement)sender; var hitItem = sourceElement.InputHitTest(e.GetPosition(sourceElement)) as FrameworkElement; if(hitItem != null) { clickedOnSourceItem = true; } } private void HandleLeftButtonUp(object sender, MouseButtonEventArgs e) { clickedOnSourceItem = false; } private void HandleMouseMove(object sender, MouseEventArgs e) { if(clickedOnSourceItem) { var sourceItems = (FrameworkElement)sender; var viewModel = (WindowViewModel)DataContext; DragDrop.DoDragDrop(sourceItems, viewModel, DragDropEffects.Move); clickedOnSourceItem = false; } } }

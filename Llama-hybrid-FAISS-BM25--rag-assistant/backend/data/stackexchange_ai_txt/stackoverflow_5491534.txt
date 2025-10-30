@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5491534
+[parent_id]: 5490816
+[tags]: 
+If you do not want to loose any notifications a temporary storage might work, the following might work but is untested: public class PausibleObservableCollection : ObservableCollection { private readonly Queue _notificationQueue = new Queue (); private bool _isBindingPaused = false; public bool IsBindingPaused { get { return _isBindingPaused; } set { _isBindingPaused = value; if (value == false) { while (_notificationQueue.Count > 0) { OnCollectionChanged(_notificationQueue.Dequeue()); } } } } protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e) { if (!IsBindingPaused) base.OnCollectionChanged(e); else _notificationQueue.Enqueue(e); } } This should push every change that happens while the collection is paused into a queue, which then is emptied once the collection is set to resume.

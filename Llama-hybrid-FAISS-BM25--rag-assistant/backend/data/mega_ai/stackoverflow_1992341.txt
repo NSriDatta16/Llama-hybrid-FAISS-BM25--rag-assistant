@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1992341
+[parent_id]: 1992158
+[tags]: 
+If you have 1000 ingredients, 1000 queries will suffice to map each ingredient to a set of recipes in memory. If (say) an ingredient is typically part of about 100 recipes, each set will take a few KB, so the whole dictionary will take just a few MB -- absolutely no problem to hold the whole thing in memory (and still not a serious memory problem if the average number of recipes per ingredient grows by an order of magnitude). result = dict() for ing_id in all_ingredient_ids: cursor.execute('''select recipe_id from recipe_ingredient where ingredient_id = ?''', (ing_id,)) result[ing_id] = set(r[0] for r in cursor.fetchall()) return result After those 1000 queries, every one of the needed 500,000 computations of pairwise Tanimoto coefficients is then obviously done in-memory -- you can precompute the squares of the lengths of the various sets as a further speedup (and park them in another dict), and the key "A dotproduct B" component for each pair is of course the length of the sets' intersection.

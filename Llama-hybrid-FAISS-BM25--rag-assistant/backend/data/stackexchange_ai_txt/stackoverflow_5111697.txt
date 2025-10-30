@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5111697
+[parent_id]: 5111630
+[tags]: 
+If you're worried about race conditions, don't use a boolean dirty flag - instead, use a pair of timestamps. When you want to mark a record dirty, update the 'dirty' timestamp. When you start calculating the grade, make a note of what the 'dirty' timestamp was. When you finish calculating the grade, update the 'clean' timestamp to be equal to the value of the 'dirty' timestamp you read when you began, signifying that you've synchronized that grade with the new data as of that timestamp. Any record with a 'dirty' timestamp greater than its 'clean' timestamp is dirty. Any record where the two match is clean. Simple and effective. If another request adds new data that would affect a given grade while your taskqueue task is already in the middle of calculating the grade, the 'dirty' timestamp won't match the updated 'clean' timestamp, and thus the taskqueue will consider the record still dirty and process it again.

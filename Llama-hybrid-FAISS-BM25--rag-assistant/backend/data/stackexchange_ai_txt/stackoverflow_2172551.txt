@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2172551
+[parent_id]: 2171476
+[tags]: 
+Well, it really is ServicePipeTimeout that controls the timeout. What isn't clear is when this timeout timer starts ticking. The fact that your OnStart() doesn't get called would indicate that it starts when the SCM creates the process. The next mental leap that can be made is that the 30 second timeout still applies to the process start time, regardless of the registry value. The box is in really poor shape if the .NET cold start time is longer than 30 seconds. Cold start time is dominated by hard disk performance, roughly 85% of the time is spent locating and loading DLLs. Normally. It's sorta possible if the box never had its hard disk defragmented and you've recently installed .NET on it. That would cause the clusters of the .NET files to be scattered all over the disk, requiring many read head moves. This can dramatically reduce data throughput, as low as a kilobyte per second if every cluster is on a different track. Fixing this could be as simple as defragging the drive. Ask questions about that at superuser.com

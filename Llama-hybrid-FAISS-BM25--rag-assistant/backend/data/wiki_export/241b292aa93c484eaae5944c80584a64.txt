@@ -1,0 +1,241 @@
+Aircrack-ng is a network software suite consisting of a detector, packet sniffer, WEP and WPA/WPA2-PSK cracker and analysis tool for 802.11 wireless LANs. It works with any wireless network interface controller whose driver supports raw monitoring mode and can sniff 802.11a, 802.11b and 802.11g traffic. Packages are released for Linux and Windows.
+
+Aircrack-ng is a fork of the original Aircrack project. It can be found as a preinstalled tool in many security-focused Linux distributions such as Kali Linux or Parrot Security OS, which share common attributes as they are developed under the same project (Debian).
+
+Development 
+Aircrack was originally developed by French security researcher Christophe Devine, its main goal was to recover 802.11 wireless networks WEP keys using an implementation of the Fluhrer, Mantin and Shamir (FMS) attack alongside the ones shared by a hacker named KoreK.
+
+Aircrack was forked by Thomas D'Otreppe in February 2006 and released as Aircrack-ng (Aircrack Next Generation).
+
+Wi-Fi security history
+
+WEP 
+
+Wired Equivalent Privacy was the first security algorithm to be released, with the intention of providing data confidentiality comparable to that of a traditional wired network. It was introduced in 1997 as part of the IEEE 802.11 technical standard and based on the RC4 cipher and the CRC-32 checksum algorithm for integrity.
+
+Due to U.S. restrictions on the export of cryptographic algorithms, WEP was effectively limited to 64-bit encryption. Of this, 40 bits were allocated to the key and 24 bits to the initialization vector (IV), to form the RC4 key. After the restrictions were lifted, versions of WEP with a stronger encryption were released with 128 bits: 104 bits for the key size and 24 bits for the initialization vector, known as WEP2.
+
+The initialization vector works as a seed, which is prepended to the key. Via the key-scheduling algorithm (KSA), the seed is used to initialize the RC4 cipher's state. The output of RC4's pseudo random generation algorithm (PRGA) follows a XOR operation in combination with the plaintext, and produces the ciphertext.
+
+The IV is constrained to 24 bits, which means that its maximum values are 16,777,216 (224), regardless of the key size. Since the IV values will eventually be reused and collide (given enough packets and time), WEP is vulnerable to statistical attacks. William Arbaugh notes that a 50% chance of a collision exists after 4823 packets.
+
+In 2003, the Wi-Fi Alliance announced that WEP had been superseded by Wi-Fi Protected Access (WPA). In 2004, with the ratification of the full 802.11i standard (i.e. WPA2), the IEEE declared that both WEP and WEP2 have been deprecated.
+
+WPA 
+Wi-Fi Protected Access (WPA) was designed to be implemented through firmware updates rather than requiring dedicated hardware. While still using RC4 at its core, it introduced significant improvements over its predecessor. WPA included two modes: WPA-PSK (WPA Personal) and WPA Enterprise.
+
+WPA-PSK (Wi-Fi Protected Access Pre-Shared Key), also known as WPA Personal, used a variant of the Temporal Key Integrity Protocol (TKIP) encryption protocol. It improved security by implementing the following features:
+
+A 56-bit cryptographic message integrity code (MIC) called Michael, compared to the 32-bit CRC-32 used in WEP.
+ An initialization vector (IV) sequencing discipline designed to prevent replay attacks.
+ A key mixing function to defeat a class of attacks on WEP.
+ A rekeying method to prevent key reuse.
+
+TKIP allocated 48 bits to the IV compared to the 24 bits of WEP, so the maximum number is 281,474,976,710,656 (248).
+
+In WPA-PSK, each packet was individually encrypted using the IV information, the MAC address, and the pre-shared key as inputs. The RC4 cipher was used to encrypt the packet content with the derived encryption key.
+
+Additionally, WPA introduced WPA Enterprise, which provided enhanced security for enterprise-level networks. WPA Enterprise employed a more robust authentication mechanism known as Extensible Authentication Protocol (EAP). This mode required the use of an Authentication Server (AS) such as RADIUS (Remote Authentication Dial-In User Service) to validate user credentials and grant access to the network.
+
+In 2015, the Wi-Fi Alliance recommended in a technical note that network administrators should discourage the use of WPA and that vendors should remove support for it and rely instead on the newer WPA2 standard.
+
+WPA2 
+WPA2 (Wi-Fi Protected Access 2) was developed as an upgrade to the original WPA standard and ratified in 2004, and became mandatory for Wi-Fi certified products in 2006. Like WPA, WPA2 provides two modes: WPA2-PSK (WPA2 Personal) and WPA2 Enterprise.
+
+Unlike WPA, WPA2-PSK uses the more secure Advanced Encryption Standard (AES) in CCM mode (Counter-Mode-CBC-MAC Protocol), instead of TKIP. AES provides stronger authentication, encryption and is less vulnerable to attacks. A backward compatible version, called WPA/WPA2 (Personal) still made use of TKIP.
+
+WPA2-PSK replaces the message integrity code Michael with CCMP.
+
+Timeline of the attacks
+
+WEP 
+In 1995, before the WEP standard was available, computer scientist David Wagner of the Princeton University discussed a potential vulnerability in RC4.
+
+In March 2000, a presentation by Dan Simon, Bernard Aboba, and Tim Moore of Microsoft provided a summary of 802.11 vulnerabilities. They noted that denial of service deauthentication attacks are possible because the messages are unauthenticated and unencrypted (later implemented by the aireplay-ng tool). In addition, they wrote that because some implementations of WEP derive the key from a password, dictionary attacks are easier than pure brute force.
+
+In May 2001, William A. Arbaugh of the University of Maryland presented his inductive chosen-plaintext attack against WEP with the conclusion that the protocol is vulnerable to packet forgery.
+
+In July 2001, Borisov et al. published a comprehensive paper on the status of WEP and its various vulnerabilities.
+
+In August 2001, in the paper Weaknesses in the Key Scheduling Algorithm of RC4, authors Scott Fluhrer, Itsik Mantin, and Adi Shamir performed a cryptoanalysis of the KSA, citing Wagner among others. They stated that they had not conducted an attack against WEP, and therefore couldn't claim that WEP was vulnerable. However, other researchers implemented the attack and were able to demonstrate the protocol's insecurity. 
+
+In 2004, a hacker using the pseudonym KoreK posted a series of attacks on the NetStumbler.org forum, which were incorporated into the original aircrack 1.2 by Christophe Devine. That same month, aircrack began supporting replay attacks against WEP, which use ARP requests to generate more IVs and make key recovery easier.
+
+Later that year, KoreK released the Chopchop attack, an active packet injector for WEP. The name of the attack derives from its inherent working: a packet is intercepted, "chops" off a part of it and sends a modified version to the Access Point, who will drop it if not valid. By repeatedly trying multiple values, the message can gradually be decrypted. The Chopchop attack was later improved by independent researchers.
+
+In 2005, security researcher Andrea Bittau presented the paper The Fragmentation Attack in Practice. The homonymous attack exploits the fact that WEP splits the data into smaller fragments, which are reassembled by the receiver. Taking advantage of the fact that at least part of the plaintext of some packets may be known, and that the fragments may have the same IV, data can be injected at will, flooding the network to statistically increase the chances of recovering the key. 
+
+In April 2007 a team at the Darmstadt University of Technology in Germany presented a new attack, named "PTW" (from the researchers' names, Pyshkin, Tews, Weinmann). It decreased the number of initialization vectors or IVs needed to decrypt a WEP key and has been included in the aircrack-ng suite since the 0.9 release.
+{| class="wikitable"
+|+Evolution of the attacks/vulnerabilities
+!Date
+!Author/s
+!Attack name/type
+!Packets needed
+!Implemented in
+!Source
+|-
+|2001
+|A. Stubblefield et al.
+|FMS: Passive partial key exposure attack
+|1,000,000 (optimized from 5,000,000-6,000,000)
+| -
+|
+|-
+|2001
+|W. Arbaugh
+|Inductive chosen plaintext
+|
+| -
+|
+|-
+|2002
+|David Hulton
+|Practical Exploitation of RC4 Weaknesses in WEP Environments
+|500,000-2,000,000
+| -
+|
+|-
+|2003
+|Andrea Bittau
+|Expansion of FMS classes
+|
+| -
+|
+|-
+|2004
+|KoreK
+|FMS: Passive partial key exposure attack
+|700,000 (about 50% success probability)
+|aircrack 1.2
+|
+|-
+|2004
+|KoreK
+|Chopchop
+|
+|aircrack 2.2-beta1
+|
+|-
+|2006
+|A. Klein
+|Attacks on the RC4 stream cipher
+|
+| -
+|
+|-
+|2007
+|Tews, Weinmann, Pyshkin
+|PTW
+|35,000 to 40,000 (about 50% success probability) 
+|aircrack-ng 0.9
+|
+|-
+|2007
+|S. Vaudenay and M. Vuagnoux
+|VX: Passive key recovery
+|45'000
+| -
+|
+|}
+
+WPA 
+The first known attack on WPA was described by Martin Beck and Erik Tews in November 2008. They described an attack against TKIP in the paper Practical Attacks Against WEP and WPA. The proof of concept resulted in the creation of tkiptun-ng. In 2009, their attack was improved and demonstrated by a research group from Norway.
+
+Features 
+The aircrack-ng software suite includes:
+
+aircrack-ng 
+aircrack-ng supports cracking WEP (FMS, PTW, KoreK and dictionary attacks), WPA/WPA2 and WPA2 keys (using dictionary attacks). While it doesn't support direct attacks on WPA3 (introduced in 2018), it has been used successfully in combination with a downgrade attack.
+
+airbase-ng 
+airbase-ng incorporates techniques for attacking clients, instead of Access Points. Some of its features include an implementation of the Caffe Latte attack (developed by security researcher Vivek Ramachandran) and the Hirte attack (developed by Martin Beck). The WEP Hirte attack is a method of creating an Access Point with the same SSID of the network to be exploited (similar to an evil twin attack). If a client (that was previously connected to the victim's access point) is configured to automatically reconnect, it will try the rogue AP. At this point, ARP packets are sent in the process of obtaining a local IP address, and airbase-ng can collect IVs that can later be used by aircrack-ng to recover the key.
+
+aireplay-ng 
+
+aireplay-ng is an injector and frame replay tool. Deauthentication attacks are supported. Deauthentication refers to a feature of IEEE 802.11 which is described as "sanctioned technique to inform a rogue station that they have been disconnected from the network". Since this management frame doesn't need to be encrypted and can be generated knowing only the client's MAC address, aireplay-ng can force a client to disconnect and capture the handshake (or to perform a Denial of service attack). In addition, a client deauthentication and subsequent reconnection will reveal a hidden SSID.
+
+Other features include the ability to perform fake authentification, ARP request replay, fragmentation attack, the Caffe Latte and Chopchop attacks.
+
+airmon-ng 
+airmon-ng can place supported wireless cards in monitor-mode. Monitor mode refers to a provision in the IEEE 802.11 standard for auditing and design purposes, in which a wireless card can capture packets in air range. It is able to detect potential programs that could interfere with proper operation and kill them.
+
+airodump-ng 
+
+airodump-ng is a packet sniffer. It can store information in various formats, making it compatible with software other than the aircrack-ng suite. It supports channel-hopping.
+
+airserv-ng 
+airserv-ng is a wireless card server, which allows multiple wireless programs to use a card independently.
+
+airtun-ng 
+Virtual tunnel interface creator. Its main uses are monitoring the traffic as an intrusion detection system, and inject arbitrary traffic in a network.
+
+besside-ng 
+A tool to automatize WEP cracking and logging of WPA handshakes.
+
+easside-ng 
+easside-ng is an automated tool which attempts connection to a WEP Access Point without knowing the encryption key. It uses the fragmentation attack and a remote server (which can be hosted with the tool buddy-ng) in the attempt to recover an encrypted packet, exploiting the AP which will decrypt it for the attacker.
+
+tkiptun-ng 
+tkiptun-ng is a WPA/TKIP attack tool developed by Martin Beck.
+
+wesside-ng 
+wesside-ng is a proof of concept based on the tool wesside, originally written by Andrea Bittau to demonstrate his fragmentation attack. It is a tool designed to automate the process of recovering a WEP key.
+
+airdecap-ng 
+airdecap-ng decrypts WEP or WPA encrypted capture files with known key. It was formally known as airunwep and 802ether.
+
+airdecloak-ng 
+airdecloak-ng can remove WEP cloaked frames from pcap files. Cloaking refers to a technique for use by wireless intrusion prevention systems (which rely on WEP encryption) to inject packets encrypted with random keys into the air, in the attempt to make cracking more difficult.
+
+airolib-ng 
+airolib-ng can create a database of pre-computed hash tables by computing the Pairwise Master Keys (PMK) captured during the 4-way handshaking process. In WPA and WPA2, the PMK are derived from the password selected by the user, the SSID name, its length, the number of hashing iterations, and the key length. During the 4-way handshaking process, the PMK is used, among other parameters, to generate a Pairwise Transient Key (PTK), which is used to encrypt data between the client and Access Point.
+
+The hash tables can be reused, provided the SSID is the same. Pre-computed tables for the most common SSIDs are available online.
+
+besside-ng-crawler 
+Performs operations on a directory to search for pcap files and filter out relevant data.
+
+buddy-ng 
+buddy-ng is a tool used in conjunction with the tool easside-ng, running on a remote computer. It is the receiving end that allows a packet decrypted by the access point to be captured.
+
+ivstools 
+ivstools can extract initialization vectors from a capture file (.cap).
+
+kstats 
+kstats is a tool for displaying the Fluhrer, Mantin and Shamir attack algorithm votes for an IVS dump with a given WEP key.
+
+makeivs-ng 
+makeivs-ng is a testing tool used to generate an IVS file with a given WEP key.
+
+packetforge-ng 
+
+packetforge-ng can create and modify packets for injection. It supports packets such as arp requests, UDP, ICMP and custom packets. It was originally written by Martin Beck.
+
+wpaclean 
+wpaclean reduces the contents of the capture file (generated by airodump-ng) by keeping only what is related to the 4-way handshake and a beacon. The former refers to a cryptographic process that establishes encryption without publicly revealing the key. Meanwhile, the beacon frame is sent by the Access Point to announce its presence and other information to nearby clients.
+
+airventriloquist-ng 
+airventriloquist-ng is a tool that can perform injection on encrypted packets.
+
+Version history
+
+See also 
+
+ SpoonWEP/WPA
+ Kali Linux (Linux distribution for digital forensics and penetration testing)
+ BackTrack, its predecessor 
+ TCP sequence prediction attack
+
+Notes
+
+References
+
+External links 
+ 
+
+Network analyzers
+Free security software
+Cryptanalytic software
+Cryptographic attacks
+Password cracking software

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1220375
+[parent_id]: 1162377
+[tags]: 
+How would it be if you set caching for the whole site and then on the page(s) you don't want anonymous users to get cached content you add something along the lines of this in: protected override void OnInit(EventArgs e) { if (user.IsAnonymous()) { Response.Cache.SetCacheability(HttpCacheability.NoCache); Response.Cache.SetNoStore(); Response.Cache.SetExpires(DateTime.MinValue); } base.OnInit(e); } Which will produce this: HTTP/1.1 200 OK Cache-Control: no-cache, no-store Pragma: no-cache Content-Length: 15965 Content-Type: text/html; charset=utf-8 Expires: -1 Server: Microsoft-IIS/7.0 X-Powered-By: ASP.NET Date: Mon, 03 Aug 2009 01:07:26 GMT This should make the webpage not be cached but whatever caching is applied to the images, css, js etc. should remain. If the images aren't getting caching headers applied to them then it sounds like you'll have to write a custom http handler to intercept the request for those images and then apply the correct caching headers along with setting on a per page basis what pages you don't want cached.

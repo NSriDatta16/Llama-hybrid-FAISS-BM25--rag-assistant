@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4851325
+[parent_id]: 
+[tags]: 
+Rails 3, Paperclip and uploading image from remote url
+
+I wrote simple code which takes url of an image, and uploads resized version of it to Amazon S3 storage. Code looks like this: attr_accessor :profile_image_url has_attached_file :avatar, :default_url => "/system/avatars/:style_default.png", :styles => { :original => "128x128#", :thumb => "48x48#" }, :storage => :s3, :s3_credentials => "#{RAILS_ROOT}/config/s3.yml", :path => "/avatars/:id/:style.:extension" before_validation :download_profile_pic ... def download_profile_pic begin io = open(URI.parse(self.profile_image_url)) def io.original_filename; base_uri.path.split('/').last; end self.avatar = io.original_filename.blank? ? nil : io rescue Timeout::Error self.avatar = nil rescue OpenURI::Error => e self.avatar = nil end end It works, but the images are uploaded in a very low quality. What could be a problem?

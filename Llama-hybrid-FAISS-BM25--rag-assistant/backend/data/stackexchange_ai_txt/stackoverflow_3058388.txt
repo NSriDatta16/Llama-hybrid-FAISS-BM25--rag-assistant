@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3058388
+[parent_id]: 3058128
+[tags]: 
+Your loadFile method, quite independently of the fact that it delegates song-playing to many threads (which it waits for in strange ways, but, that's another issue), is still monopolizing the wx event loop until it returns. Where you currently have a time.sleep , try adding app.Yield(True) (of course you need to make app visible at that point in your code: simplest though inelegant is to add a global app at the start of main . Event-driven systems typically serve the event loop only when your various event handler methods return: if you have a long-running event handler, you need to explicitly yield control to the event loop once in a while. Various event systems offer different ways to do it: in wx , it's the Yield method which I just recommended you try. See the brief description un the docs .

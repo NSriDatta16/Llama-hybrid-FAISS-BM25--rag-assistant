@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3160851
+[parent_id]: 3160403
+[tags]: 
+Your crash happens only when your program exits immediately: it calls class A's destructor which finishes and calls Thread's destructor before the newly started thread had a chance to be scheduled. The thread then calls your virtual function, but class A no longer exists, so it attemps to call Thread's do_work(), which calls the pure virtual work(). Here's your program with extra outputs: run() started run() ended ~A() started ~A() ended ~Thread() started catch_up() started do_work() started pure virtual method called Standard-wise, I think this is undefined behavior because the object's lifetime has already ended (destructor call began) when a reference to it ( boost::ref(*this) ) was used to call do_work() from the thread. Solution: let your thread execute before you destruct your object: A a; a.run(); a.catch_up(); Or, as boost.thread documentation says, "the user of Boost.Thread must ensure that the referred-to object outlives the newly-created thread of execution."

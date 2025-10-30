@@ -1,0 +1,80 @@
+Cheney's algorithm, first described in a 1970 ACM paper by C.J. Cheney, is a stop and copy method of tracing garbage collection in computer software systems. In this scheme, the heap is divided into two equal halves, only one of which is in use at any one time. Garbage collection is performed by copying live objects from one semispace (the from-space) to the other (the to-space), which then becomes the new heap. The entire old heap is then discarded in one piece. It is an improvement on the previous stop-and-copy technique.
+
+Cheney's algorithm reclaims items as follows:
+ Object references on the stack. Object references on the stack are checked. One of the two following actions is taken for each object reference that points to an object in from-space:
+ If the object has not yet been moved to the to-space, this is done by creating an identical copy in the to-space, and then replacing the from-space version with a forwarding pointer to the to-space copy. Then update the object reference to refer to the new version in to-space.
+ If the object has already been moved to the to-space, simply update the reference from the forwarding pointer in from-space.
+ Objects in the to-space. The garbage collector examines all object references in the objects that have been migrated to the to-space, and performs one of the above two actions on the referenced objects.
+
+Once all to-space references have been examined and updated, garbage collection is complete.
+
+The algorithm needs no stack and only two pointers outside of the from-space and to-space: a pointer to the beginning of free space in the to-space, and a pointer to the next word in to-space that needs to be examined. The data between the two pointers represents work remaining for it to do (those objects are gray in the tri-color terminology, see later).
+
+The forwarding pointer (sometimes called a "broken heart") is used only during the garbage collection process; when a reference to an object already in to-space (thus having a forwarding pointer in from-space) is found, the reference can be updated quickly simply by updating its pointer to match the forwarding pointer.
+
+Because the strategy is to exhaust all live references, and then all references in referenced objects, this is known as a breadth-first list copying garbage collection scheme.
+
+Sample algorithm
+
+initialize() =
+    tospace   = N/2
+    fromspace = 0
+    allocPtr  = fromspace
+    scanPtr   = whatever -- only used during collection
+
+allocate(n) =
+    If allocPtr + n > fromspace + N/2
+        collect()
+    EndIf
+    If allocPtr + n > fromspace + N/2
+        fail “insufficient memory”
+    EndIf
+    o = allocPtr
+    allocPtr = allocPtr + n
+    return o
+
+collect() =
+    swap(fromspace, tospace)
+    allocPtr = fromspace
+    scanPtr = fromspace
+
+    -- scan every root you've got
+    ForEach root in the stack -- or elsewhere
+        root = copy(root)
+    EndForEach
+    
+    -- scan objects in the to-space (including objects added by this loop)
+    While scanPtr < allocPtr
+        ForEach reference r from o (pointed to by scanPtr)
+            r = copy(r)
+        EndForEach
+        scanPtr = scanPtr + o.size() -- points to the next object in the to-space, if any
+    EndWhile
+
+copy(o) =
+    If o has no forwarding address
+        o' = allocPtr
+        allocPtr = allocPtr + size(o)
+        copy the contents of o to o'
+        forwarding-address(o) = o'
+    EndIf
+    return forwarding-address(o)
+
+Semispace 
+
+Cheney based his work on the semispace garbage collector, which was published a year earlier by R.R. Fenichel and J.C. Yochelson.
+
+Equivalence to tri-color abstraction 
+
+Cheney's algorithm is an example of a tri-color marking garbage collector. The first member of the gray set is the stack itself. Objects referenced on the stack are copied into the to-space, which contains members of the black and gray sets.
+
+The algorithm moves any white objects (equivalent to objects in the from-space without forwarding pointers) to the gray set by copying them to the to-space. Objects that are between the scanning pointer and the free-space pointer on the to-space area are members of the gray set still to be scanned. Objects below the scanning pointer belong to the black set. Objects are moved to the black set by simply moving the scanning pointer over them.
+
+When the scanning pointer reaches the free-space pointer, the gray set is empty, and the algorithm ends.
+
+References
+
+External links 
+  - Android uses a variant of the semi-space garbage collector.
+
+Automatic memory management

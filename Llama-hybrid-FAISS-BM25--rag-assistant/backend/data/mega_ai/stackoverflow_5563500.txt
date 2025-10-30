@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5563500
+[parent_id]: 5563442
+[tags]: 
+I've thought about using a static counter to keep track of the number of request, but it would raise a problem of race condition. If you use a AtomicInteger for the counter, you will not have the problem of race conditions. An other way would be using the Java Executor Framework (comes with Java 1.5). There you are able to limit the number of running threads, and block new once until there is a new free thread. But I think the counter would work and be the easyest solution. Attention: put the counter relese in a finally block! //psydo code final AtomicInteger counter; ... while(true) { int v = counter.getValue() if (v > max) return FAILURE; if(counter.compareAndSet(v, v+1)) break; } try{ doStuff(); } finally{ counter.decrementAndGet(); }

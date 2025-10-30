@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 47149
+[parent_id]: 43199
+[tags]: 
+I found the problem. Tomcat was mangling the parameters before Tapestry or my page class even had a crack at it. Creating a servlet filter that enforced the desired character encoding fixed it. CharacterEncodingFilter.java package mycode; import java.io.IOException; import javax.servlet.*; /** * Allows you to enforce a particular character encoding on incoming requests. * @author Robert J. Walker */ public class CharacterEncodingFilter implements Filter { private static final String ENCODINGPARAM = "encoding"; private String encoding; public void init(FilterConfig config) throws ServletException { encoding = config.getInitParameter(ENCODINGPARAM); if (encoding != null) { encoding = encoding.trim(); } } public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException { request.setCharacterEncoding(encoding); chain.doFilter(request, response); } public void destroy() { // do nothing } } web.xml ... characterEncoding mycode.CharacterEncodingFilter encoding UTF-8 characterEncoding /app/* ...

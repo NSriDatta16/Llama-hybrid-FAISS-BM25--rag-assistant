@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2969777
+[parent_id]: 2969709
+[tags]: 
+There is no way for you to know. You could write a class that tightly interacts with String and that creates a constant string pointing to an external buffer (by making the corresponding constructor private and making the interacting class a nested class or a friend of String ). If all you worry about is doing dynamic memory management on a potentially small constant string, you can implement the Small String Optimization (also Small Object/Buffer Optimization). It works by having an embedded buffer in your string class, and copying each string up to some predefined size into that buffer, and each string that's larger to a dynamically allocated storage (the same technique is used by boost::function for storing small sized function objects). class String { union { char *dynamicptr; char buffer[16]; }; bool isDynamic; }; There are clever techniques for storing even the length of the embedded string into the buffer itself (storing its length as buffer[15] and similar trickeries).

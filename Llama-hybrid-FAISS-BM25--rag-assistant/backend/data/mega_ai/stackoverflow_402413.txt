@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 402413
+[parent_id]: 402377
+[tags]: 
+The built-in getopts command is still, AFAIK, limited to single-character options only. There is (or used to be) an external program getopt that would reorganize a set of options such that it was easier to parse. You could adapt that design to handle long options too. Example usage: aflag=no bflag=no flist="" set -- $(getopt abf: "$@") while [ $# -gt 0 ] do case "$1" in (-a) aflag=yes;; (-b) bflag=yes;; (-f) flist="$flist $2"; shift;; (--) shift; break;; (-*) echo "$0: error - unrecognized option $1" 1>&2; exit 1;; (*) break;; esac shift done # Process remaining non-option arguments ... You could use a similar scheme with a getoptlong command. Note that the fundamental weakness with the external getopt program is the difficulty of handling arguments with spaces in them, and in preserving those spaces accurately. This is why the built-in getopts is superior, albeit limited by the fact it only handles single-letter options.

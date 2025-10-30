@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3896432
+[parent_id]: 3895981
+[tags]: 
+LINQ-to-SQL can't translate arbitrary code methods, as they are IL (it expects "expression trees", which is what lambdas and LINQ query syntax a generate). If you only need this logic in your .NET code, switch to LINQ-to-Objects before calling, I.e. var qry = some complex LINQ query var data = from row in qry.AsEnumerable() select new { row.Id, Name = YourType.Name(row.Foo, row.Bar) }; The AsEnumerable() breaks the LINQ composition in two, allowing your managed code to run as normal. If you need to do something similar at the database , then write the code in TSQL as a UDF, then map the UDF into LINQ-to-SQL by dragging it onto the designer. You can then access it as a new method on the data-context, I.e. select db.Name(row.Foo, row.Bar)

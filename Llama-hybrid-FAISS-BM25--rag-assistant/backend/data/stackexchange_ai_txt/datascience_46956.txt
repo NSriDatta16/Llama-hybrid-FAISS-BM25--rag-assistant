@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 46956
+[parent_id]: 
+[tags]: 
+XGBoost becomes unstable when predicting more than ~300 classes
+
+I'm using the Python implementation of XGBoosts (version 0.80) XGBoostClassifier to predict one of a large number of classes. My feature data consists of a sparse boolean matrix of ~10M rows, ~5k columns, with a density of 0.003. (so about 15 values per row). My targets consist of 2000+ different classes in a long-tail skewed distribution (~300 classes occur more than 10k times). For now I'm grouping all of my uncommon classes ( However, whenever I use, say, 800 different targets (each occurs ~5k+ times), the model becomes unstable: training takes a lot longer, the training loss doesn't seem to converge (I haven't saved the output of this unfortunately) and the predictive quality becomes increasingly poor (predict_proba returning 0.99+ for the wrong classes). Should I just change some parameter I've overlooked? Am I running out of float precision for my loss? Is it due to sampling in the approx method? Does anyone have any ideas? My specific classifier: clf = XGBClassifier( n_jobs=8, max_depth=7, #arbitrary min_child_weight=5, #arbitrary subsample=0.5, #arbitrary colsample_bytree=0.9, #arbitrary tree_method='approx', objective='multi:softprob', eval_metric='mlogloss', silent=False )

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4785861
+[parent_id]: 4785379
+[tags]: 
+I'd go with Option 2. Users of your module shouldn't use runState directly; instead, you should provide an opaque Cassandra type with an instance of the Monad typeclass and some runCassandra :: Cassandra a -> IO a operation to "escape" Cassandra. The operations exported by your module should all run in the Cassandra monad (e.g. doSomethingInterestingInCassandra :: Int -> Bool -> Cassandra Char ), and their definition can access the wrapped CassandraState . If your users need some additional state for their application, they can always wrap a monad transformer around Cassandra , e.g. StateT MyState Cassandra .

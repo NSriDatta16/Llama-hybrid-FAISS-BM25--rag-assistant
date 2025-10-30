@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1757955
+[parent_id]: 1756690
+[tags]: 
+Using @Doug 's idea, the following is an example that handles all cases: hole position in even/odd mask size median position in even/odd number of elements Example: %%# mask size: N-by-N N = 3; assert(N>=3); %%# read image and add noise I = im2double( imread('eight.tif') ); I = imnoise(I, 'salt & pepper',0.05); %%# build mask with hole in center h = true(N,N); if mod(N,2) == 0 %# hole is a 2-by-2 square h([N/2 N/2+1],[N/2 N/2+1]) = false(2); else %# hole is one point h((N+1)/2,(N+1)/2) = false; end %%# compute median filter with hole num = sum(h(:)); if mod(num,2) == 0 %# even case: average from using the two elements in the middle I1 = ordfilt2(I, num/2, h, 'symmetric'); I2 = ordfilt2(I, num/2+1, h, 'symmetric'); J = imdivide( imadd(I1,I2), 2 ); else %# odd case: note this is never reached J = ordfilt2(I, (num+1)/2, h, 'symmetric'); end %%# plot and compare against normal median filter subplot(121), imshow(J) subplot(122), imshow( medfilt2(I,[N N],'symmetric') );

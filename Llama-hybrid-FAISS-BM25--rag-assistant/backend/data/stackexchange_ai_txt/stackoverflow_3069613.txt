@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3069613
+[parent_id]: 
+[tags]: 
+Why doesn't g++ pay attention to __attribute__((pure)) for virtual functions?
+
+According to the GCC documentation , __attribute__((pure)) tells the compiler that a function has no side-effects, and so it can be subject to common subexpression elimination. This attribute appears to work for non-virtual functions, but not for virtual functions. For example, consider the following code: extern void f( int ); class C { public: int a1(); int a2() __attribute__((pure)); virtual int b1(); virtual int b2() __attribute__((pure)); }; void test_a1( C *c ) { if( c->a1() ) { f( c->a1() ); } } void test_a2( C *c ) { if( c->a2() ) { f( c->a2() ); } } void test_b1( C *c ) { if( c->b1() ) { f( c->b1() ); } } void test_b2( C *c ) { if( c->b2() ) { f( c->b2() ); } } When compiled with optimization enabled (either -O2 or -Os), test_a2() only calls C::a2() once, but test_b2() calls b2() twice. Is there a reason for this? Is it because, even though the implementation in class C is pure, g++ can't assume that the implementation in every subclass will also be pure? If so, is there a way to tell g++ that this virtual function and every subclass's implementation will be pure?

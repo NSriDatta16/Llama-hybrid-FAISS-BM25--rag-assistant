@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2519452
+[parent_id]: 
+[tags]: 
+int vs size_t on 64bit
+
+Porting code from 32bit to 64bit. Lots of places with int len = strlen(pstr); These all generate warnings now because strlen() returns size_t which is 64bit and int is still 32bit. So I've been replacing them with size_t len = strlen(pstr); But I just realized that this is not safe, as size_t is unsigned and it can be treated as signed by the code (I actually ran into one case where it caused a problem, thank you, unit tests!). Blindly casting strlen return to (int) feels dirty. Or maybe it shouldn't? So the question is: is there an elegant solution for this? I probably have a thousand lines of code like that in the codebase; I can't manually check each one of them and the test coverage is currently somewhere between 0.01 and 0.001%.

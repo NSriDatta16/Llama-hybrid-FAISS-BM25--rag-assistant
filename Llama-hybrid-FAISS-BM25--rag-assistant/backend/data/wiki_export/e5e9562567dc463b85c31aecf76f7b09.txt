@@ -1,0 +1,47 @@
+The DYMO routing protocol is successor to the popular Ad hoc On-Demand Distance Vector (AODV) Routing protocol and shares many of its benefits. It is, however, slightly easier to implement and designed with future enhancements in mind.
+
+DYMO can work as both a pro-active and as a reactive routing protocol, i.e. routes can be discovered just when they are needed. In any way, to discover new routes the following two steps take place:
+
+ A special "Route Request" (RREQ) messages is broadcast through the MANET. Each RREQ keeps an ordered list of all nodes it passed through, so every host receiving an RREQ message can immediately record a route back to the origin of this message.
+ When an RREQ message arrives at its destination, a "Routing Reply" (RREP) message will immediately be passed back to the origin, indicating that a route to the destination was found. On its way back to the source, an RREP message can simply backtrace the way the RREQ message took and simultaneously allow all hosts it passes to record a complementary route back to where it came from.
+
+So as soon as the RREP message reaches its destination, a two-way route was successfully recorded by all intermediate hosts, and exchange of data packets can commence.
+
+Example
+ +-----------+       +-----------+
+ |   Carol   |-------|    Dave   |
+ +-----------+       +-----------+
+       |                   |
+       |                   |
+       |                   |
+ +-----------+       +-----------+
+ |   Alice   |       |    Bob    |
+ +-----------+       +-----------+
+
+ Step 1
+ Alice wants to exchange data with Bob
+ Alice does not know a route to Bob yet, so it broadcasts a new RREQ for a route to Bob containing only information about itself
+ Step 2
+ Carol receives Alice's RREQ, remembers the contained information about how to reach Alice (directly), then appends information about itself and re-broadcasts the packet.
+ Step 3
+ Dave receives Carol's RREQ, remembers the contained information about how to reach Carol (directly) and Alice (via Carol), then appends information about itself and re-broadcasts the packet.
+ At the same time, Alice also receives Carol's RREQ. Closer examination of the contained information reveals that even the very first information block - how to reach itself, Alice - is of no use. It thus discards the RREQ and does not re-broadcast it as Dave did
+ Step 4
+ Bob receives Dave's RREQ and remembers the contained information about how to reach Dave (directly), Carol (via Dave) and Alice (also via Dave). Realizing that he is the target of the RREQ he creates an RREP containing information about itself. He marks the RREP bound for Alice and - knowing that Dave can somehow reach Alice - sends it to Dave.
+ Again, at the same time, Carol also receives Dave's RREQ, but - following the same logic as Alice before - ignores it.
+ Step 5
+ Dave receives the RREP to Alice sent by Bob, remembers the information on how to reach Bob (directly), appends information about itself and - knowing that Alice can be reached via Carol, sends it to Carol.
+ Step 6
+ Carol receives the RREP to Alice sent by Dave, remembers the contained information on how to reach Dave (directly) and Bob (via Dave), then appends information about itself and - knowing that Alice can be reached directly, sends it to Alice.
+ Step 7
+Alice receives the RREP sent to her by Carol and remembers all information on how to reach Carol (directly), Dave (via Carol) and - most importantly - Bob (also via Carol). Now knowing how to reach Bob she can finally send her data packet for him to Carol.
+ Step 8
+ Carol receives the data packet for Bob from Alice. Because she knows Dave can reach Bob she forwards the packet to him.
+ Step 9
+ Dave receives the data packet for Bob. Because he knows Bob can be directly reached by him, he forwards the packet to him.
+
+External links
+ Draft IETF v26
+ 
+
+Ad hoc routing protocols

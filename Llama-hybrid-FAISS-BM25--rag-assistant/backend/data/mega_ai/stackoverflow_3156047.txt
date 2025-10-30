@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3156047
+[parent_id]: 3153539
+[tags]: 
+In the end I ended up using something like what Andomar suggested but without the subquery: ( select * from comments c where c.post_id = '200' and c.parent_id = 0 order by comment_id DESC limit 0, 4 ) union ( select * from comments c join comments p on c.parent_id = p.comment_id where c.post_id = '200' and c.parent_id != '0' ) order by comment_id DESC EDIT: As noted correctly by niaher this query returned a much larger result set than required. That makes this solution wrong. Fortunately I have found another way to do it, much more elegant and cleaner. Correct way to do it: SELECT c.* FROM ( SELECT comment_id FROM comments WHERE post_id = 200 AND parent_id = 0 ORDER BY comment_id ASC LIMIT 0,5 ) AS q JOIN comments AS c ON c.comment_id = q.comment_id OR c.parent_id = q.comment_id I've tested this query, and it runs MUCH faster than the previous one.

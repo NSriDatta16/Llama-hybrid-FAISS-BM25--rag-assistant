@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 100025
+[parent_id]: 54500
+[tags]: 
+Re jcoby's answer: bytea being a "normal" column also means the value being read completely into memory when you fetch it. Blobs, in contrast, you can stream into stdout. That helps in reducing the server memory footprint. Especially, when you store 4-6 MPix images. No problem with backing up blobs. pg_dump provides "-b" option to include the large objects into the backup. So, I prefer using pg_lo_*, you may guess. Re Kris Erickson's answer: I'd say the opposite :). When images are not the only data you store, don't store them on the file system unless you absolutely have to. It's such a benefit to be always sure about your data consistency, and to have the data "in one piece" (the DB). BTW, PostgreSQL is great in preserving consistency. However, true, reality is often too performance-demanding ;-), and it pushes you to serve the binary files from the file system. But even then I tend to use the DB as the "master" storage for binaries, with all the other relations consistently linked, while providing some file system-based caching mechanism for performance optimization.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4016778
+[parent_id]: 4006489
+[tags]: 
+I've just run a few tests, and listing your selection of CAs in the ca_certs parameters is exactly what you need. The system I've tried it on is Linux with Python 2.6. If you don't use ca_certs , it doesn't let you use cert_reqs=ssl.CERT_REQUIRED : Traceback (most recent call last): File "sockettest.py", line 18, in cert_reqs=ssl.CERT_REQUIRED, ssl_version=ssl.PROTOCOL_TLSv1) File "/usr/lib/python2.6/ssl.py", line 350, in wrap_socket suppress_ragged_eofs=suppress_ragged_eofs) File "/usr/lib/python2.6/ssl.py", line 113, in __init__ cert_reqs, ssl_version, ca_certs) ssl.SSLError: _ssl.c:317: No root certificates specified for verification of other-side certificates. I've also tried to use a client to send a certificate that's not from a CA in the ca_certs parameter, and I get ssl_error_unknown_ca_alert (as expected). Note that either way, there's no client-certificate CA list send (in the certificate_authorities list in the CertificateRequest TLS message), but that wouldn't be required. It's only useful to help the client choose the certificate.

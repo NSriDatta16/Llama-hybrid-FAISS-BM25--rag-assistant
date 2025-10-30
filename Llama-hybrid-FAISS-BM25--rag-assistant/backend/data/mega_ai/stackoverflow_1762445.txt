@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1762445
+[parent_id]: 1762399
+[tags]: 
+This is a widely known MySQL pitfall; I have hit this problem a few times myself. They probably had some problem with InnoDB, and restored their database from backups. Since InnoDB wasn't working, it fell back to the MyISAM storage engine which doesn't support integrity constraints (like foreign keys). Basically the problem is that, if the InnoDB engine fails to start for whatever reason (usually configuration problems) -- then MySQL silently falls back to the MyISAM engine. Even if your statement says: CREATE TABLE () ENGINE=InnoDB then, if InnoDB isn't active, MySQL will happily create a MyISAM table without even warning you. Bye-bye data integrity! :) You can run SHOW ENGINES to see which engines are active. See this MySQL bug report for more details.

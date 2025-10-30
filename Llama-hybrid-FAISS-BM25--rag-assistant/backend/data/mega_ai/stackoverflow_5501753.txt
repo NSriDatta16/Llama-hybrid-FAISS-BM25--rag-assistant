@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5501753
+[parent_id]: 
+[tags]: 
+Reason for Scala's Map.unzip returning (Iterable, Iterable)
+
+the other day I was wondering why scala.collection.Map defines its unzip method as def unzip [A1, A2] (implicit asPair: ((A, B)) ⇒ (A1, A2)): (Iterable[A1], Iterable[A2]) Since the method returns "only" a pair of Iterable instead of a pair of Seq it is not guaranteed that the key/value pairs in the original map occur at matching indices in the returned sequences since Iterable doesn't guarantee the order of traversal. So if I had a Map((1,A), (2,B)) , then after calling Map((1,A), (2,B)) unzip I might end up with ... = (List(1, 2),List(A, B)) just as well as with ... = (List(2, 1),List(B, A)) While I can imagine storage-related reasons behind this (think of HashMaps, for example) I wonder what you guys think about this behavior. It might appear to users of the Map.unzip method that the items were returned in the same pair order (and I bet this is probably almost always the case) yet since there's no guarantee this might in turn yield hard-to-find bugs in the library user's code. Maybe that behavior should be expressed more explicitly in the accompanying scaladoc? EDIT: Please note that I'm not referring to maps as ordered collections. I'm only interested in "matching" sequences after unzip, i.e. for val (keys, values) = someMap.unzip it holds for all i that (keys(i), values(i)) is an element of the original mapping.

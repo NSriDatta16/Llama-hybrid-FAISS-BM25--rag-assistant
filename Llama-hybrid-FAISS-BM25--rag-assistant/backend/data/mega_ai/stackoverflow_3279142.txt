@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3279142
+[parent_id]: 3278880
+[tags]: 
+If I recall correctly, I couldn't get the Fabric API to do what I wanted either. I decided to abandon the extra layer entirely and use Paramiko (the underlying SSH library used by Fabric) directly: import os import paramiko ssh = paramiko.SSHClient() ssh.load_system_host_keys() ssh.load_host_keys(os.path.expanduser('~/.ssh/known_hosts')) ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy()) ssh.connect('hostname.example.com', 22, 'username', 'password') ssh.save_host_keys(os.path.expanduser('~/.ssh/known_hosts')) stdin, stdout, stderr = ssh.exec_command('uname -s') print stdout.read() While there are a few more steps involved, doing it this way allows you to leverage the SSH layer directly, as opposed to using subprocess to spwan another Python instance, or figuring out the Fabric API. I have several projects, both web- and console- using Paramiko in this manner and I haven't had too much trouble. Paramiko is extensively documented .

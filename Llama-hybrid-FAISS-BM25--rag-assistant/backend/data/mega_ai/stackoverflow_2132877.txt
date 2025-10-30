@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2132877
+[parent_id]: 2132856
+[tags]: 
+You've already read all the data from the response when you call resXML = readerStream.ReadToEnd(); ... readerStream and readStream are both layered on top of receiveStream , so once you've read all the data through one, you can't read it again through the other. You should really have a using statement for the response - and ideally the various streams involved. Given that you can create an XmlReader from a stream, not just a StreamReader , why not just use something like this: XmlReaderSettings settings = new XmlReaderSettings(); settings.ConformanceLevel = ConformanceLevel.Fragment; settings.IgnoreWhitespace = true; settings.IgnoreComments = true; using (HttpWebResponse response = (HttpWebResponse)webreq.GetResponse()) { using (Stream stream = response.GetResponseStream()) { using(XmlReader reader = XmlReader.Create(stream, settings)) { // Do stuff here } } } Additionally, I'd generally recommend creating an XmlDocument or something similar rather than working with XmlReader - it doesn't scale as well for large documents, but it's easier to work with.

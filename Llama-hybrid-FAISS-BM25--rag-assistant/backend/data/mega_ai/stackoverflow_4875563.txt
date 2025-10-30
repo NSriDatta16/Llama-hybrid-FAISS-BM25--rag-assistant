@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4875563
+[parent_id]: 4868154
+[tags]: 
+For memory management I am a fan of the BiBOP* approach, which is normally efficient at managing fragmentation. The idea is to segregate data based on their size. This, way, within a "bag" you only have "pages" of small blocks with identical sizes: no need to store the size explicitly, it's known depending on the bag you're in no "real" fragmentation within a bag The bag keeps a simple free-list of the available pages. Each page keeps a free-list of available storage units in an overlay over those units. You need an index to map size to its corresponding bag. You also need a special treatment for "out-of-norm" requests (ie requests that ask for allocation greater than the page size). This storage is extremely space efficient, especially for small objects, because the overhead is not per-object, however there is one drawback: you can end-up with "almost empty" pages that still contain one or two occupied storage units. This can be alleviated if you have the ability to "move" existing objects. Which effectively allows to merge pages. (*) BiBOP: Big Bag Of Pages

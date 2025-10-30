@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 616838
+[parent_id]: 616837
+[tags]: 
+So, it turns out that all I needed to do was to remove the time() function within the kernel smoothing function and use my variable by itself (it's already a numeric representation of time, not a posix_ct type object) and it performs as expected. So my code should been: # THIS WORKS df_comb$x_ks1_2 = ksmooth(df_comb$time_ss, df_comb$x_raw, bandwidth = 0.5)$y # THIS DOES NOT df_comb$x_ks4 = ksmooth(time(df_comb$time_ss), df_comb$x_raw, bandwidth = 4)$y This is because the time() function converted by numeric time into a sequential time series treating each individual observation as an integer. I think this is why it wouldn't allow me to use an uneven number for my bandwidth or go below 1 for the bandwidth value. Well, if anyone needs a practice data set (I created it to represent accelerometer data with different behavior types "modes") in which to test out methods and better understand how they work...here you go!

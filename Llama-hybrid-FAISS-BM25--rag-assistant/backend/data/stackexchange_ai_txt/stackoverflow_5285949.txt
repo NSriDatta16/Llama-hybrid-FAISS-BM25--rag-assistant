@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5285949
+[parent_id]: 5250039
+[tags]: 
+The thing about large objects in the CLR's Garbage Collector is that they are managed in a different heap. The garbage collector uses a mechanism called "Compacting", which is basically fragmentation and re-linkage of objects in the regular heap. The thing is, since "compacting" large objects (copying and re-linking them) is an expensive procedure, the GC provides a different heap for them, which is never being compacted. Note also that memory allocation is contiguous. Meaning if you allocate Object #1 and then Object #2, Object #2 will always be placed after Object #1. This is probably what's causing you to get OutOfMemoryExceptions. I would suggest having a look at design patterns like Flyweight, Lazy Initialization and Object Pool. You could also force GC collection, if you're suspecting that some of those large objects are already dead and have not been collected due to flaws in your flow of control, causing them to reach higher generations just before being ready for collection.

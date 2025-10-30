@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3251349
+[parent_id]: 3244439
+[tags]: 
+"that needs to be very fast" There is a trade-off (sometimes) between fast and recoverable. In Oracle recoverability is achieved by the redo log file. Evey time you commit, the database 'log writer' does a synchronous call to write outstanding changes to the file. By synchronous, I mean it waits for the file system to confirm that the write has been successful before saying that the commit has been successful. If you are doing lots of logging (especially from lots of sessions at once) with each line in the log file being committed independently (ag autonomous transaction) then this could well be a bottleneck. If you don't need that level of recoverability (ie you can afford to lose the last few rows of your log data from your logs in the event of a major failure), look at the NOWAIT option of commit. If you can't afford to lose anything, then your best bet is REALLY fast storage (which may be a battery backed cache).

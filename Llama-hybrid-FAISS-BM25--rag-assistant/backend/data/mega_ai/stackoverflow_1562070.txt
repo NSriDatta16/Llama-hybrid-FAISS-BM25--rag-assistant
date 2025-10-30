@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1562070
+[parent_id]: 1561806
+[tags]: 
+you can use the AppDomain.AssemblyResolve event to add custom Assembly Resolvers. This allows you to point at other directories or even databases to get assemblies as needed. I have even used similar code to download assemblies from a database and store in IsolatedStorage. The file name as a hash of the full Assembly name. Then the database would only need to download on the first time you resolve and all future resolutions will be served by the file system. The best about about the AssemblyResolve event is you can use it Type.GetType() and the built in Serializers. static string lookupPath = @"c:\otherbin"; static void Main(string[] args) { AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve); } static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) { var assemblyname = new AssemblyName(args.Name).Name; var assemblyFileName = Path.Combine(lookupPath, assemblyname + ".dll"); var assembly = Assembly.LoadFrom(assemblyFileName); return assembly; }

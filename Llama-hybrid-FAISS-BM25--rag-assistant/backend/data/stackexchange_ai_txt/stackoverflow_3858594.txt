@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3858594
+[parent_id]: 
+[tags]: 
+WebRequest doesn't make cached items available in the same process
+
+We're seeing a strange behavior where things that get cached (in the IE/wininet cache) as a result of using the WebRequest API are not available from the cache until a new process is created. Consider the following code: using System; using System.IO; using System.Net; using System.Net.Cache; using System.Threading; namespace HttpCachingTest { class Program { static void Main(string[] args) { MakeRequest(); Thread.Sleep(1000); MakeRequest(); } private static void MakeRequest() { var request = (HttpWebRequest)WebRequest.Create("http://a0.twimg.com/a/1286210883/images/twitter_logo_header.png"); request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.Default); var response = (HttpWebResponse)request.GetResponse(); Console.WriteLine(String.Format("IsFromCache: {0}, ContentLength: {1}", response.IsFromCache, response.ContentLength)); using (var fileStream = File.OpenWrite("test.jpg")) { response.GetResponseStream().CopyTo(fileStream); } } } } The behavior we see is that for the second request, IsFromCache is false. However, if we run the app a second time, then IsFromCache is true. This implies that things are correctly being cached, but those things that were just cached are not available to the current process, which makes very little sense. Can anyone explain this behavior, and know how it can be fixed so that cached items can get hit right away?

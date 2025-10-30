@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5280781
+[parent_id]: 
+[tags]: 
+CanCan difference between :read and [:index, :show]?
+
+According to all documentation, the :read action is aliased to both :index and :show : alias_action :index, show, :to => :read However, consider the following scenario with nested resources: resources :posts resources :comments end If I define abilities like this: # ability.rb can :read, Post can :show, Comment # comments_controller.rb load_and_authorize_resource :organization, :find_by => :permalink load_and_authorize_resource :membership, :through => :organization things work as expected. However, if I change the :read action to [:index, :show]: # ability.rb can [:index, :show], Post can :show, Comment # comments_controller.rb load_and_authorize_resource :organization, :find_by => :permalink load_and_authorize_resource :membership, :through => :organization I am unauthorized to access /posts/:post_id/comments , /posts/:post_id/comments/:id , etc. I still, however, can access both :index and :show for the posts_controller . How is possible that these actions are "aliased", if they behave differently? In my fiddling, I also came across the following. Changing load_and_authorize_resource to the following allowed access: # ability.rb can [:index, :show], Post can :show, Comment # comments_controller.rb load__resource :organization, :find_by => :permalink load_and_authorize_resource :membership, :through => :organization Can someone explain what's going on here?

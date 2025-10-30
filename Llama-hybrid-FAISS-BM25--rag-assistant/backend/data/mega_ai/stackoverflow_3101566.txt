@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3101566
+[parent_id]: 3095985
+[tags]: 
+Compare these two tables of 10M records: create table test (a int8 not null, b int8 not null, primary key(a,b)); insert into test select generate_series(1,10000000), generate_series(1,10000000); select pg_size_pretty(pg_total_relation_size('test')); 723 MB create table test_bytea (a bytea not null); insert into test_bytea select decode(lpad(to_hex(a),16,'0')||lpad(to_hex(b),16,'0'),'hex') from test; alter table test_bytea add primary key (a); select pg_size_pretty(pg_total_relation_size('test_bytea')); 804 MB A bytea with index is 11% bigger than 2*int8 . This isn't much, but it means that 11% less rows will be in cache. And sequentional scans will be 11% slower etc. If your data does not change maybe you should consider a flat file storage of sorted values instead of database - this will be only 152MB per 10M records and searching will be O(log(n)).

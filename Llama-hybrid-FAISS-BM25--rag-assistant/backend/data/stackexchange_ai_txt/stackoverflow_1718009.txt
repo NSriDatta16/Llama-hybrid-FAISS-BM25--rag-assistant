@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1718009
+[parent_id]: 1717780
+[tags]: 
+The Hercules cameras are UVC compliant, so they should work with the DirectShow Interface IAMCameraControl . You can set the focus to a specific value, and use the flags to set that you do not want it to be automatic. You can use IAMCameraControl::Get to poll the current state, because not all cameras do support turning off the focus. IAMCameraControl *pCameraControl; HRESULT hr; hr = pFilter->QueryInterface(IID_IAMCameraControl, (void **)&pCameraControl); if (hr == S_OK) { long defaultFocusValue; hr = pCameraControl->GetRange(CameraControl_Focus, NULL, // min NULL, // max NULL, // minstep &defaultFocusValue, // default NULL); // capflags hr = pCameraControl->Set(CameraControl_Focus, // property defaultFocusValue, // value CameraControl_Flags_Manual); } Focus has a range which is defined by each camera separately, so you should query it as shown to find the default value and the min, max if you want. In this example the pFilter is a pointer to the input filter that you have from DirectShow. You can get it by enumerating the devices and finding the one you want.

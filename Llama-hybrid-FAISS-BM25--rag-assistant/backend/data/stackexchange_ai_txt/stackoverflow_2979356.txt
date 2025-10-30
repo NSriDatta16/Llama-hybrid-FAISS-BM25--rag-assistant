@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2979356
+[parent_id]: 
+[tags]: 
+Emacs Lisp - mapcar doesn't apply function to all elements?
+
+I have a function that takes a list and replaces some elements. I have constructed it as a closure so that the free variable cannot be modified outside of the function. (defun transform (elems) (lexical-let ( (elems elems) ) (lambda (seq) (let (e) (while (setq e (car elems)) (setf (nth e seq) e) (setq elems (cdr elems))) seq)))) I call this on a list of lists. (defun tester (seq-list) (let ( (elems '(1 3 5)) ) (mapcar (transform elems) seq-list))) (tester (list (reverse (number-sequence 1 10)) '("a" "b" "c" "d" "e" "f"))) => ((10 1 8 3 6 5 4 3 2 1) ("a" "b" "c" "d" "e" "f")) It does not seem to apply the function to the second element of the list provided to tester(). However, if I explicitly apply this function to the individual elements, it works... (defun tester (seq-list) (let ( (elems '(1 3 5)) ) (list (funcall (transform elems) (car seq-list)) (funcall (transform elems) (cadr seq-list))))) (tester (list (reverse (number-sequence 1 10)) '("a" "b" "c" "d" "e" "f"))) => ((10 1 8 3 6 5 4 3 2 1) ("a" 1 "c" 3 "e" 5)) If I write a simple function using the same concepts as above, mapcar seems to work... What could I be doing wrong? (defun transform (x) (lexical-let ( (x x) ) (lambda (y) (+ x y)))) (defun tester (seq) (let ( (x 1) ) (mapcar (transform x) seq))) (tester (list 1 3)) => (2 4) Thanks

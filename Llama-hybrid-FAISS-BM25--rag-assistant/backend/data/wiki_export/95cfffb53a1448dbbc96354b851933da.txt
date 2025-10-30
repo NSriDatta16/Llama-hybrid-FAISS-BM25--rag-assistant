@@ -1,0 +1,137 @@
+In computer science, synchronization is the task of coordinating multiple  of processes to join up or handshake at a certain point, in order to reach an agreement or commit to a certain sequence of action.
+
+Motivation
+The need for synchronization does not arise merely in multi-processor systems but for any kind of concurrent processes; even in single processor systems. Mentioned below are some of the main needs for synchronization:
+
+Forks and Joins: When a job arrives at a fork point, it is split into N sub-jobs which are then serviced by n tasks. After being serviced, each sub-job waits until all other sub-jobs are done processing. Then, they are joined again and leave the system. Thus, parallel programming requires synchronization as all the parallel processes wait for several other processes to occur.
+
+Producer-Consumer: In a producer-consumer relationship, the consumer process is dependent on the producer process until the necessary data has been produced.
+
+Exclusive use resources: When multiple processes are dependent on a resource and they need to access it at the same time, the operating system needs to ensure that only one processor accesses it at a given point in time. This reduces  concurrency.
+
+Requirements
+
+Thread synchronization is defined as a mechanism which ensures that two or more concurrent processes or threads do not simultaneously execute some particular program segment known as critical section. Processes' access to critical section is controlled by using synchronization techniques. When one thread starts executing the critical section (serialized segment of the program) the other thread should wait until the first thread finishes. If proper synchronization techniques are not applied, it may cause a race condition where the values of variables may be unpredictable and vary depending on the timings of context switches of the processes or threads.
+
+For example, suppose that there are three processes, namely 1, 2, and 3. All three of them are concurrently executing, and they need to share a common resource (critical section) as shown in Figure 1. Synchronization should be used here to avoid any conflicts for accessing this shared resource. Hence, when Process 1 and 2 both try to access that resource, it should be assigned to only one process at a time.  If it is assigned to Process 1, the other process (Process 2) needs to wait until Process 1 frees that resource (as shown in Figure 2).
+
+Another synchronization requirement which needs to be considered is the order in which particular processes or threads should be executed. For example, one cannot board a plane before buying a ticket.  Similarly, one cannot check e-mails before validating the appropriate credentials (for example, user name and password). In the same way, an ATM will not provide any service until it receives a correct PIN.
+
+Other than mutual exclusion, synchronization also deals with the following:
+ deadlock, which occurs when many processes are waiting for a shared resource (critical section) which is being held by some other process. In this case, the processes just keep waiting and execute no further;
+ starvation, which occurs when a process is waiting to enter the critical section, but other processes monopolize the critical section, and the first process is forced to wait indefinitely;
+ priority inversion, which occurs when a high-priority process is in the critical section, and it is interrupted by a medium-priority process. This violation of priority rules can happen under certain circumstances and may lead to serious consequences in real-time systems;
+ busy waiting, which occurs when a process frequently polls to determine if it has access to a critical section. This frequent polling robs processing time from other processes.
+
+Minimization
+One of the challenges for exascale algorithm design is to minimize or reduce synchronization. 
+Synchronization takes more time than computation, especially in distributed computing. Reducing synchronization drew attention from computer scientists for decades. Whereas it becomes an increasingly significant problem recently as the gap between the improvement of computing and latency increases. Experiments have shown that (global) communications due to synchronization on distributed computers takes a dominated share in a sparse iterative solver. This problem is receiving increasing attention after the emergence of a new benchmark metric, the High Performance Conjugate Gradient(HPCG), for ranking the top 500 supercomputers.
+
+Classic problems
+The following are some classic problems of synchronization:
+ The Producer–Consumer Problem (also called The Bounded Buffer Problem);
+ The Readers–Writers Problem;
+ The Dining Philosophers Problem.
+
+These problems are used to test nearly every newly proposed synchronization scheme or primitive.
+
+Hardware synchronization
+Many systems provide hardware support for critical section code.
+
+A single processor or uniprocessor system could disable interrupts by executing currently running code without preemption, which is very inefficient on multiprocessor systems.
+"The key ability we require to implement synchronization in a multiprocessor is a set of hardware primitives with the ability to atomically read and modify a memory location. Without such a capability, the cost of building basic synchronization primitives will be too high and will increase as the processor count increases. There are a number of alternative formulations of the basic hardware primitives, all of which provide the ability to atomically read and modify a location, together with some way to tell if the read and write were performed atomically. These hardware primitives are the basic building blocks that are used to build a wide variety of user-level synchronization operations, including things such as locks and barriers. In general, architects do not expect users to employ the basic hardware primitives, but instead expect that the primitives will be used by system programmers to build a synchronization library, a process that is often complex and tricky." Many modern hardware provides special atomic hardware instructions by either test-and-set the memory word or compare-and-swap contents of two memory words.
+
+Support in programming languages
+In Java, to prevent thread interference and memory consistency errors, blocks of code are wrapped into synchronized (lock_object) sections. This forces any thread to acquire the said lock object before it can execute the block. The lock is automatically released when the thread which acquired the lock, and is then executing the block, leaves the block or enters the waiting state within the block. Any variable updates, made by a thread in a synchronized block, become visible to other threads when they similarly acquire the lock and execute the block.
+
+Java synchronized blocks, in addition to enabling mutual exclusion and memory consistency,  enable signaling—i.e., sending events from threads which have acquired the lock and are executing the code block to those which are waiting for the lock within the block. This means that Java synchronized sections combine functionality of mutexes and events. Such primitive is known as synchronization monitor.
+
+Any object may be used as a lock/monitor in Java. The declaring object is a lock object when the whole method is marked with synchronized.
+
+The .NET Framework has synchronization primitives. "Synchronization is designed to be cooperative, demanding that every thread or process follow the synchronization mechanism before accessing protected resources (critical section) for consistent results." In .NET, locking, signaling, lightweight synchronization types, spinwait and interlocked operations are some of mechanisms related to synchronization.
+
+Implementation
+
+Spinlock
+
+Another effective way of implementing synchronization is by using spinlocks. Before accessing any shared resource or piece of code, every processor checks a flag. If the flag is reset, then the processor sets the flag and continues executing the thread. But, if the flag is set (locked), the threads would keep spinning in a loop and keep checking if the flag is set or not. But, spinlocks are effective only if the flag is reset for lower cycles otherwise it can lead to performance issues as it wastes many processor cycles waiting.
+
+Barriers
+
+Barriers are simple to implement and provide good responsiveness. They are based on the concept of implementing wait cycles to provide synchronization. Consider three threads running simultaneously, starting from barrier 1. After time t, thread1 reaches barrier 2 but it still has to wait for thread 2 and 3 to reach barrier2 as it does not have the correct data. Once all the threads reach barrier 2 they all start again. After time t, thread 1 reaches barrier3 but it will have to wait for threads 2 and 3 and the correct data again.
+
+Thus, in barrier synchronization of multiple threads there will always be a few threads that will end up waiting for other threads as in the above example thread 1 keeps waiting for thread 2 and 3. This results in severe degradation of the process performance.
+
+The barrier synchronization wait function for ith thread can be represented as:
+
+(Wbarrier)i = f ((Tbarrier)i, (Rthread)i)
+
+Where Wbarrier is the wait time for a thread, Tbarrier is the number of threads has arrived, and Rthread is the arrival rate of threads.
+
+Experiments show that 34% of the total execution time is spent in waiting for other slower threads.
+
+Semaphores
+
+Semaphores are signalling mechanisms which can allow one or more threads/processors to access a section. A Semaphore has a flag which has a certain fixed value associated with it and each time a thread wishes to access the section, it decrements the flag. Similarly, when the thread leaves the section, the flag is incremented. If the flag is zero, the thread cannot access the section and gets blocked if it chooses to wait.
+
+Some semaphores would allow only one thread or process in the code section. Such Semaphores are called binary semaphore and are very similar to Mutex. Here, if the value of semaphore is 1, the thread is allowed to access and if the value is 0, the access is denied.
+
+Mathematical foundations
+Synchronization was originally a process-based concept whereby a lock could be obtained on an object. Its primary usage was in databases. There are two types of (file) lock; read-only and read–write. Read-only locks may be obtained by many processes or threads. Readers–writer locks are exclusive, as they may only be used by a single process/thread at a time.
+
+Although locks were derived for file databases, data is also shared in memory between processes and threads. Sometimes more than one object (or file) is locked at a time. If they are not locked simultaneously they can overlap, causing a deadlock exception.
+
+Java and Ada only have exclusive locks because they are thread based and rely on the compare-and-swap processor instruction.
+
+An abstract mathematical foundation for synchronization primitives is given by the history monoid. There are also many higher-level theoretical devices, such as process calculi and Petri nets, which can be built on top of the history monoid.
+
+Examples
+Following are some synchronization examples with respect to different platforms.
+
+In Windows
+Windows provides:
+ interrupt masks, which protect access to global resources (critical section) on uniprocessor systems;
+ spinlocks, which prevent, in multiprocessor systems, spinlocking-thread from being preempted;
+ dynamic dispatchers, which act like mutexes, semaphores, events, and timers.
+
+In Linux
+Linux provides:
+ semaphores;
+ spinlock;
+ barriers;
+ mutex;
+ readers–writer locks, for the longer section of codes which are accessed very frequently but don't change very often;
+ read-copy-update (RCU).
+
+Enabling and disabling of kernel preemption replaced spinlocks on uniprocessor systems. Prior to kernel version 2.6, Linux disabled interrupt to implement short critical sections. Since version 2.6 and later, Linux is fully preemptive.
+
+In Solaris
+Solaris provides:
+ semaphores;
+ condition variables;
+ adaptive mutexes, binary semaphores that are implemented differently depending upon the conditions;
+ readers–writer locks:
+ turnstiles, queue of threads which are waiting on acquired lock.
+
+In Pthreads
+Pthreads is a platform-independent API that provides:
+ mutexes;
+ condition variables;
+ readers–writer locks;
+ spinlocks;
+ barriers.
+
+See also
+ Futures and promises, synchronization mechanisms in pure functional paradigms
+
+References
+
+External links
+ Anatomy of Linux synchronization methods at IBM developerWorks
+ The Little Book of Semaphores, by Allen B. Downey
+Need of Process Synchronization
+
+Concurrency (computer science)
+Computer-mediated communication
+Computer science
+Edsger W. Dijkstra

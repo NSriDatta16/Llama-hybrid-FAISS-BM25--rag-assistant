@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 194794
+[parent_id]: 194430
+[tags]: 
+As of JDK 1.6, Properties has a load() method that accepts a Reader. That means you can save all the property files as UTF-8 and read them all directly by passing an InputStreamReader to load(). I think that's the most elegant solution, but it requires your app to run on a Java 6 runtime. Historically, load() only accepted an InputStream, and the stream was decoded as ISO-8859-1. Not the system default encoding, always ISO-8859-1. That's important, because it makes a certain hack possible. Say your property file is stored as UTF-8. After you retrieve a property, you can re-encode it as ISO-8859-1 and decode it again as UTF-8, like this: String realProp = new String(prop.getBytes("ISO-8859-1"), "UTF-8"); It's ugly and fragile, but it does work. But I think the best solution, at least for the next few years, is the one you found: bulk-convert the files with native2ascii using a build tool like Ant.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1213677
+[parent_id]: 1207983
+[tags]: 
+No. Whenever you have a table with an artificial identity column, you also need to identify the natural primary key for the table and ensure that there is a unique constraint on that set of columns too so that you don't get two rows that are identical apart from the meaningless identity column by accident. Adding an identity column is not cost free. There is an overhead in adding an unnecessary identity column to a table - typically 4 bytes per row of storage for the identity value, plus a whole extra index (which will probably weigh in at 8-12 bytes per row plus overhead). It also takes slightly to work out the most cost-effective query plan because there is an extra index per table. Granted, if the table is small and the machine is big, this overhead is not critical - but for the biggest systems, it matters.

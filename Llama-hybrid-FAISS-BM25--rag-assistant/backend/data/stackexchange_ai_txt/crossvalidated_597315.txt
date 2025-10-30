@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 597315
+[parent_id]: 597202
+[tags]: 
+I don't know much about RDA and CCA, but this might help you into the right direction. The function seems to apply some transformation before performing PCA. This transformation seems to center the data in a way such that the average PC score per site is zero. ### rda uses Ybar, some centered and re-scaled values per column ### the object contains 'rda_veg[6] $pCCA$ Fit' this is a vector ### that resembles the center of the pca scores per site ### when you subtract it then you get the symmetry ### perform pca with this otu_transform = rda_veg[3] $Ybar-rda_veg[6]$ pCCA$Fit pc = prcomp(otu_transform, center = FALSE)$rotation ### plot pc1 and pc2 ### still not exactly the same but similar sites1 = otu_transform[,] %*% pc[,1] sites2 = otu_transform[,] %*% pc[,2] plot(sites1,sites2, col = fake_meta$site) The upper graph pc1 vs pc2 is made with your code but adding a choices parameter plot(rda_veg, choices = c(2,3), main="Site as factors")

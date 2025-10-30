@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 827539
+[parent_id]: 827473
+[tags]: 
+First up: if the operations on each machine are genuinely parallel, you cannot guarantee that there is a single canonical serialized ordering. If there is some coordination in the overall process, you'd be better off using some kind of sequencing in the protocol, so that you can just sort by it. Apart from that, you need to calculate clock skew between machines in order to adjust times. The way you do that is reasonably simple: ask the other machine for its current time, and measure the round-trip time for that request. Assume that the time reported by the remote machine was true at half the round-trip time ago (this assumes symmetric delays on average - not always true, but you can't really do better without digging deep into the network layout), and subtract it from the current machine's time. That's your clock skew. You may want to measure the skew several times and take an average, to even out intermittent lag on the connection.

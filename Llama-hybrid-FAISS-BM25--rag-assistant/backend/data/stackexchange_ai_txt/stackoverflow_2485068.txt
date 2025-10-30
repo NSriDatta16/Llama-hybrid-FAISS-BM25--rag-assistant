@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2485068
+[parent_id]: 2485028
+[tags]: 
+Firstly, Ctrl+D is an EOF indicator which you cannot trap, when a program is waiting for input, hitting Ctrl+D signifies end of file and to expect no more input. On the other hand, using Ctrl+C to terminate a program - that is SIGINT, which can be trapped by doing this: #include #include #include #include static void signal_handler(int); static void cleanup(void); void init_signals(void); void panic(const char *, ...); struct sigaction sigact; char *progname; int main(int argc, char **argv){ char *s; progname = *(argv); atexit(cleanup); init_signals(); // do the work exit(0); } void init_signals(void){ sigact.sa_handler = signal_handler; sigemptyset(&sigact.sa_mask); sigact.sa_flags = 0; sigaction(SIGINT, &sigact, (struct sigaction *)NULL); } static void signal_handler(int sig){ if (sig == SIGINT) panic("Caught signal for Ctrl+C\n"); } void panic(const char *fmt, ...){ char buf[50]; va_list argptr; va_start(argptr, fmt); vsprintf(buf, fmt, argptr); va_end(argptr); fprintf(stderr, buf); exit(-1); } void cleanup(void){ sigemptyset(&sigact.sa_mask); /* Do any cleaning up chores here */ }

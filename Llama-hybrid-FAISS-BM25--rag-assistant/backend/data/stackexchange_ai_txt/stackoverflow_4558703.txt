@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4558703
+[parent_id]: 
+[tags]: 
+Project Euler #14 attempt fails with StackOverflowException
+
+I recently started solving Project Euler problems in Scala, however when I got to problem 14, I got the StackOverflowError, so I rewrote my solution in F#, since (I am told) the F# compiler, unlike Scala's (which produces Java bytecode), translates recursive calls into loops. My question to you therefore is, how is it possible that the code below throws the StackOverflowException after reaching some number above 113000? I think that the recursion doesn't have to be a tail recursion in order to be translated/optimized, does it? I tried several rewrites of my code, but without success. I really don't want to have to write the code in imperative style using loops, and I don't think I could turn the len function to be tail-recursive, even if that was the problem preventing it from being optimized. module Problem14 = let lenMap = Dictionary () let next n = if n % 2 = 0 then n/2 else 3*n+1 let memoize(num:int, lng:int):int = lenMap.[num] 1 | _ when lenMap.ContainsKey(num) -> lenMap.[num] | _ -> memoize(num, 1+(len (next num))) let cand = seq{ for i in 999999 .. -1 .. 1 -> i} let tuples = cand |> Seq.map(fun n -> (n, len(n))) let Result = tuples |> Seq.maxBy(fun n -> snd n) |> fst NOTE: I am aware that the code below is very far from optimal and several lines could be a lot simpler, but I am not very proficient in F# and did not bother looking up ways to simplify it and make it more elegant (yet). Thank you.

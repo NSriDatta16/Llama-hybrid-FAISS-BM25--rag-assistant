@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 13255
+[parent_id]: 13170
+[tags]: 
+The problem is that you have code that first checks if it should create a new thread object, and another piece of code that determines wether to start the thread object. Due to race conditions and similar things, your code might end up trying to call .Start on an existing thread object. Considering you don't post the details behind the check variable, it's impossible to know what might trigger this behavior. You should reorganize your code so that .Start is guaranteed to only be called on new objects. In short, you should put the Start method into the same if-statement as the one that creates a new thread object. Personally, I would try to reorganize the entire code so that I didn't need to create another thread, but wrap the code inside the thread object inside a loop so that the thread just keeps on going.

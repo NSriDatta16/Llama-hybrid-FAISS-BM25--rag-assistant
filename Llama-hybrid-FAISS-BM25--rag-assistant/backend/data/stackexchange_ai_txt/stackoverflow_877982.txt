@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 877982
+[parent_id]: 877956
+[tags]: 
+Well, you'll need some way of identifying the request. If you want to be able to scale this out to multiple machines, you should look at storing the request ID and current status in a database (or some similarly accessible-from-anywhere storage). If you don't care about that situation and you're not worried about AppDomain recycling, you could just have a singleton dictionary from request ID to status - but consider making it automatically flush itself after some period if the client just goes away and doesn't check the status. (Of course it doesn't have to be a true singleton - it could be some shared resource provided with dependency injection, but the point is it needs to be shared somehow so you can get at it from the new request.) You could also potentially use a session-backed object - again with caveats about multi-server web sites and AppDomain recycling.

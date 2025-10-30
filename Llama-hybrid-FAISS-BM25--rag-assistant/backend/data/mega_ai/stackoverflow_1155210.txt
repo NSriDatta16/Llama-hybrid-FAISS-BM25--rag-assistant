@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1155210
+[parent_id]: 1155188
+[tags]: 
+One way would be to include a time-limited hash which is validated before you allow the download. A distributed link then only has a small window of time in which it can be used. For example $file="foo.mp3"; $salt="youpeskykids"; $expiry=time()+3600; $hash=md5($salt.$file.$expiry); $url="download.php?file=$file&e=$expiry&h=$hash"; Now, when you process such a request, you can recalculate the hash and check that the presented hash is equal: this ensures that whoever made the URL knows the salt, which one hopes is just your site. If the hash is valid, then you can trust the expiry time, and if it hasn't expired, allow the download. You could include other things in the hash too if you like, like IP address and user-agent, if you wanted to have more confidence that the user-agent which requested the download link is the one which actually does the download.

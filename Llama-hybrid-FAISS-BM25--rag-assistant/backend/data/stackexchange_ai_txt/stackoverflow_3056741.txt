@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3056741
+[parent_id]: 3056626
+[tags]: 
+It seems a waste of time to check with every single insert whether the table exist. If you need day by day tables (in my opinion they defy much of the logic usually found in databases, so I try to avoid them, I'd): Create the default table to insert 'my_logging_table'. Do all inserts / updates / deletes on that table. Run a daily cronjob to create the table of yesterday ('my_logging_table-2010-06-15'), and inserting all of yesterdays records in it, after which they're deleted from the main table. If that is to much of a rewrite for your application you could make an updatable view with the current tablename+day ('my_logging_table-2010-06-16'), which just inserts in the 'my_logging_table' Another approach would be a MERGE table (see http://dev.mysql.com/doc/refman/5.0/en/merge-storage-engine.html ), with a daily cronjob creating the 'today' table & updating the tablelist for the merge table with an alter table statement.

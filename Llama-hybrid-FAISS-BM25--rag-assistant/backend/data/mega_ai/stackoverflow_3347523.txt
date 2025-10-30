@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3347523
+[parent_id]: 
+[tags]: 
+Why put standard dialogs on a form?
+
+I have some legacy code in C#, .Net 2.0 where someone dragged OpenFileDialog and SaveFileDialaog from the toolbox onto the form. This results in the open and save dialogs being instantiated when their parent dialog is created and remaining until the parent dialog is closed. The open/save forms are really only used in one place each for a support file that is not always opened/saved during the life of the parent dialog; this seems inefficient to me. What I would do is: using (OpenFileDialog openDlg = new OpenFileDialog() ) { //initialize openDlg... if (openDlg.ShowDialog() != DialogResult.OK) { //handle OK result } } That way the OpenFileDialog will be disposed of when the using statement goes out of scope. Unless I am missing something the value of rapid disposal (and faster garbage collection) of a resource outweighs the small savings of not having to instantiate the Open/Save File dialogs when they are needed. Even if the open/save dialogs were used every time their parent dialog is used, I don’t see any great value to having them around all the time. My question is am I missing something? Is there some greater efficiency to keeping the open/save dialogs around all the time? I assume the answer will be the same for all the other standard dialogs: ColorDialog, FolderBrowserDialog and FontDialog.

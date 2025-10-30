@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3284555
+[parent_id]: 3284408
+[tags]: 
+Edit: I didn't realize it is an API function. You cannot declare the function returning a structure. The P/Invoke marshaller will deallocate the memory for the structure with CoTaskMemFree(). Doesn't work, it wasn't allocated with CoTaskMemAlloc(). The heap manager in XP and 2003 is forgiving, it just ignores the faulty release request. But not the one in Vista and 2008, it bombs the program because it obviously is using memory incorrectly. Important because these kind of memory shenanigans are security problems. Yes, by declaring the return type as IntPtr, you avoid the P/Invoke marshaller releasing the memory. Which is appropriate, the API function really does return a pointer, not a structure. Marshal.PtrToStructure is required to marshal the pointed-to structure to a managed struct. The security APIs are in general troublesome like this. The notion of a security API returning a pointer into internal kernel security structure does boggle the mind a bit...

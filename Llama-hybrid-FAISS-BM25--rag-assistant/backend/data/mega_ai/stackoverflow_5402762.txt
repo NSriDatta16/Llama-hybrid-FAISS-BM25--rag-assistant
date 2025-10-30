@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5402762
+[parent_id]: 5402567
+[tags]: 
+This is weird. If leaving out glBufferData works the same, then either no buffer is bound, or there is a glBufferData call earlier in the program. I was confused whether maybe OpenGL ES had some significantly different "special behaviour", but I've checked the specs, and from what I can see, it works exactly the same as in "normal" OpenGL. Drawing (via glDraw[Elements|Arrays]) will read from the pointer previously supplied by glVertexAttribPointer if no buffer is bound (client memory). It will read from the buffer if one is bound, treating the glVertexAttribPointer pointer argument as an offset into the buffer. Drawing from a buffer that has not been initialized is obviously not defined. What does glBufferData do? glBufferData does at least two things, and optionally a third. It allocates buffer storage and lays down the usage of the buffer. Optionally, if the pointer argument is non-null, it will fill the buffer with the pointed-to data. The similar glBufferSubData differs insofar as it only updates (possibly a subrange of) data, it does not allocate storage or anything else.

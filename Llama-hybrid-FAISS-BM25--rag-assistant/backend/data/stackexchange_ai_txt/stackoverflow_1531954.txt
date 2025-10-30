@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1531954
+[parent_id]: 1531914
+[tags]: 
+Your option of moving out the data you want to keep is very valid, but works only if the amount being kept is small compared to the data being removed. To perform the delete more efficiently you may wish to batch a delete operation that only deletes the top 1000 rows (do not use an order clause!) so that the size of each delete transaction is kept small and does not hold locks / use much temp etc. Shrinking the database after you remove all the data will fragment the index up btw, if you have to shrink a filegroup, move the data to another filegroup and remove the original if you can, any shrink will fragment you, causing you to reindex and use more space again (and you can rinse repeat it to no avail)

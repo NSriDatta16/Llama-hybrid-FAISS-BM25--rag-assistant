@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4750573
+[parent_id]: 4749979
+[tags]: 
+Keith's answer is the PowerShell way: just use @(...)+@(...). If you actually do want a typesafe List[IO.FileInfo], then you need to use AddRange, and cast the object array to a FileInfo array -- you also need to make sure you don't get any DirectoryInfo objects, or else you need to use IO.FileSystemInfo as your list type: So, avoid directories: $items = New-Object Collections.Generic.List[IO.FileInfo] $items.AddRange( ([IO.FileSystemInfo[]](ls '\\server\C$\Program Files (x86)\Data1\' -r | Where { -not $_.PSIsContainer } )) ) $items.AddRange( ([IO.FileSystemInfo[]](ls '\\server\C$\Web\DataStorage\' -r | Where { -not $_.PSIsContainer } )) ) Or use FileSystemInfo (the common base class of FileInfo and DirectoryInfo): $items = New-Object Collections.Generic.List[IO.FileSystemInfo] $items.AddRange( ([IO.FileSystemInfo[]](ls '\\server\C$\Program Files (x86)\Data1\' -r)) ) $items.AddRange( ([IO.FileSystemInfo[]](ls '\\server\C$\Web\DataStorage\' -r)) )

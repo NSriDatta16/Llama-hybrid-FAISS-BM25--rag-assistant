@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3099464
+[parent_id]: 
+[tags]: 
+How to create a delegate for a reflected method at run time
+
+I want to create a Delegate of a reflected method, but the Delegate.CreateDelegate requires the Type of delegate be specified. Is it possible to dynamically create a 'Delegate' that matches whatever function is reflected? Here is a simple example: class Functions { public Functions() { } public double GPZeroParam() { return 0.0; } public double GPOneParam(double paramOne) { return paramOne; } public double GPTwoParam(double paramOne, double paramTwo) { return paramOne+paramTwo; } } static void Main(string[] args) { Dictionary > reflectedDelegates = new Dictionary >(); Functions fn = new Functions(); Type typeFn = fn.GetType(); MethodInfo[] methods = typeFn.GetMethods(); foreach (MethodInfo method in methods) { if (method.Name.StartsWith("GP")) { ParameterInfo[] pi = method.GetParameters(); if (!reflectedDelegates.ContainsKey(pi.Length)) { reflectedDelegates.Add(pi.Length, new List ()); } // How can I define a delegate type for the reflected method at run time? Delegate dlg = Delegate.CreateDelegate(typeof(???), fn, method); reflectedDelegates[pi.Length].Add(dlg); } } } Update: The closest thing I found is this FastInvokeWrapper on code-project, but I'm still trying to wrap my head around it and I don't quite understand how GetMethodInvoker binds the reflected method to the FastInvokeHandler .

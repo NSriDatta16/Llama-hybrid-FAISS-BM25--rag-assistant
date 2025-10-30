@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3734133
+[parent_id]: 3733475
+[tags]: 
+Ok, i found a solution... it's not really elegant, but this database is not elegant either:) So in my BaseController, which handles all stuff like adding, saving, deleting and updating i did some special handling of saving this particular type: public virtual T Save (T entity) { try { if (entity.GetType().Equals(typeof(SpecialType))) { return SaveSpecialType (entity); } ITransaction transaction = session.BeginTransaction(); session.Save(entity); transaction.Commit(); return entity; } catch (Exception ex) { if (logError.IsErrorEnabled) logError.Error(ex.Message + " \n " + ex.InnerException, ex); throw; } } This SaveSpecialType method executes native sql query inserting that messy type into database

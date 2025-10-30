@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 530891
+[parent_id]: 
+[tags]: 
+k-means inertia
+
+I use Minkoski distance to measure distance, like so: $$D(\vec{x}, \vec{y})=\left(\sum_{i=1}^n|x_i-y_i|^p\right)^\frac{1}{p}$$ I'm trying to locally optimize centroids by averaging the points that were assigned to the centroids. After using k-means with (p,k) when p is the distance measuring governing parameter and k is the number of centroids, I got the following results: This didn't make much sense to me, since I expected that when I use more centroids (when k is becoming larger), the inertia would become smaller. But it seems like the opposite is happening. Can someone help me understand why is this happening? Pseudo code: inertia_means = [] inertia_medians = [] pks = [] for p in [1,2,3,4,5] for k in [4,8,16]: centroids_mean, partitions_mean = kmeans(X, k=k, distance_measure=p, np.mean) centroids_median, partitions_median = kmeans(X, k=k, distance_measure=p, np.median) inertia_means.append(np.mean(distance(X, partitions_mean, current_p) ** 2)) inertia_medians.append(np.mean(distance(X, partitions_median, p) ** 2)) pks.append(f'({p},{k})') plt.plot(pks, inertia_means, label='mean criteria') plt.plot(pks, inertia_medians, label='median criteria') plt.legend() plt.show() So basically I'm going over all my p's and k's and running kmeans for each iteration on a given dataset X. Then I'm calculating the squared means of the distances to know the inertia, and then appending the (p,k) so I could plot them later.

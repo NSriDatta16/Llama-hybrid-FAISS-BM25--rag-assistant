@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 37152
+[parent_id]: 
+[tags]: 
+Matrix multiplication issue (shapes not alligned)
+
+I am building an RNN using numpy only and have started on the forward propagation section. However i am having some issues aligning my matrices. The issue is on this line: h = np.dot(u, x) + np.dot(aprev, w) + bh More specifically, the problem is with this part: np.dot(u, x) I tried playing around with it by transposing different parts but I still receive the error: ValueError: shapes (8,8) and (4,8) not aligned: 8 (dim 1) != 4 (dim 0) How can i overcome this? The entirety of my code is pasted below, and note that at the beginning i transposed x, to make data entry and inserting data into its corresponding timestep easy. '.T' can be easy to miss sometimes. import numpy as np # Data Processing x = np.array([ # t/no. of inputs [1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12], # Samples [13, 14, 15, 16, 17, 18], [19, 20, 21, 22, 23, 24]]).T # Model Parameters numInputs = x.shape[1] timeSteps = x.shape[0] numNeurons = 8 u = np.random.random((numNeurons, numInputs)) v = np.random.random((numInputs, numNeurons)) w = np.random.random((numNeurons, numNeurons)) bh = np.zeros((numNeurons, 1)) bo = np.zeros((numInputs, 1)) aprev = 0 # Training def fprop(x, aprev, u, v, w, bh, bo): h = np.dot(u, x) + np.dot(aprev, w) + bh a = np.tanh(h) o = np.dot(a, v) + bo yhat = (np.exp(o))/(np.sum(np.exp(o))) aprev = a for t in x: fprop(t, aprev, u, v, w, bh, bo)

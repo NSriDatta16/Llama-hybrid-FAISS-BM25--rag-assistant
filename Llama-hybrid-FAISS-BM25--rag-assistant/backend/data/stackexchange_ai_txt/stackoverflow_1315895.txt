@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1315895
+[parent_id]: 1315839
+[tags]: 
+You could create an extension method on Stream that enumerates the bits, like this: public static class StreamExtensions { public static IEnumerable ReadBits(this Stream input) { if (input == null) throw new ArgumentNullException("input"); if (!input.CanRead) throw new ArgumentException("Cannot read from input", "input"); return ReadBitsCore(input); } private static IEnumerable ReadBitsCore(Stream input) { int readByte; while((readByte = input.ReadByte()) >= 0) { for(int i = 7; i >= 0; i--) yield return ((readByte >> i) & 1) == 1; } } } Using this extension method is easy: foreach(bool bit in stream.ReadBits()) { // do something with the bit } Attention : you should not call ReadBits multiple times on the same Stream, otherwise the subsequent calls will forget the current bit position and will just start reading the next byte.

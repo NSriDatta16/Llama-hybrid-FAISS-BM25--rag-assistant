@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3737272
+[parent_id]: 3737249
+[tags]: 
+This depends a lot on how the memory for the msg field is handled. You need to be careful to free any allocated memory which is transfered to managed code. That being said I think the most straight forward interop type is as follows Public Structure S1 Public msg as IntPtr Public msgLen as Integer End Structure To get the actual msg value as a String you'll need to use the following code. Public Function GetString(ByVal s1 as S1) As String return Marshal.PtrToStringAnsi(s1.msg, s1.msgLen) End Function To create an S1 instance based on a String do the following. Note: You will need to free the memory allocated here if the calling function does not take ownership. Public Function CreateS1(ByVal str As String) As S1 Dim local As New S1 local.msg = Marshal.StringToHGlobalAnsi(str) local.msgLen = str.Length return local End Function

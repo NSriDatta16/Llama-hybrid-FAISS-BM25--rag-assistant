@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3419813
+[parent_id]: 3407347
+[tags]: 
+I am taking a stab in the dark here but the problem could be the way the heap gets fragmented. You said that you are creating a destroying large numbers of objects. I will assume that the objects are all of different size. When one allocates memory on the heap, a cell the size needed is broken off from the heap. When the memory is freed, the cell is added to a freelist. When one does a new alloc, the allocator walks the heap until a cell that is big enough is found. When doing large numbers of allocations, the free list can get rather long and walking the list can take a non-trivial amount of time. Now an int is rather small. So when you do your new int, it may well eat up all the small heap cells on the free list and thus dramatically speed up larger allocations. The chances are, however that you are allocating and freeing similar sized objects. If you use your own freelists, you will safe yourself many heap walks and may dramatically improve performance. This is exactly what the STL allocators do to improve performance.

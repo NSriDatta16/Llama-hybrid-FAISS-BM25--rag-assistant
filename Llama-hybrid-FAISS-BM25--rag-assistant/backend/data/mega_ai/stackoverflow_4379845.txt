@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4379845
+[parent_id]: 
+[tags]: 
+Selecting from relations on squeryl
+
+I am testing(trying) squeryl's relations modeling feature class Foo(val id: Long, val foBar: Long) extends KeyedEntity[Long]{ //Many Foo's can have one Bar. lazy val fbar: ManyToOne[Bar] = myschema.barToFoo.right(this) } class Bar(val id: Long) extends KeyedEntity[Long]{ //One Bar can be assigned to many Foo's. lazy val bfoo: OneToMany[Foo] = myschema.barToFoo.left(this) } object myschema extends Schema{ val bars= table[Bar] val foo= table[Foo] val barToFoo = oneToManyRelation(Bar, Foo). via((b,f) => b.id === f.foBar) /** Find all Bars that are assigned to at least one foo.*/ def findBars() ={ from(bars)((b) => where(b.bfoo.size gt 0) select(b)) } } If I try to test that code with the following code: test("Test findBars"){ using(jdbcSession){ val mybars = telemetria.findBars for{i And I get the following error: java.util.NoSuchElementException: None.get The exception is being thrown from the body of findBars . I can't think about anything that could be causing such problem. Have anyone run into a similar situation? Since Daniel pointed out that it could be a compiling problem, I am appending the build.properties and a property from project.scala project.organization=org.simepar project.name=scalatra-sbt-prototype sbt.version=0.7.4 project.version=2.0.0.M2 def.scala.version=2.8.1 build.scala.versions=2.8.1 project.initialize=false ; val squeryl = "org.squeryl" % "squeryl_2.8.0" % "0.9.4-RC3"

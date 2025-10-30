@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3156361
+[parent_id]: 955139
+[tags]: 
+I case you're not using jQuery 1.4 (and thus don't have the delegate() method), there is another solution. what you have to do to stop the recurssion from occuring is call stopPropagate() on the mousedown events for all elements: $('drag-me').mousedown(function(ev){ ev.stopPropagation(); }); Also change your code like this (notice the stopPropagation() call at the bottom): jQuery("#myDiv").mousedown(function(ev) { target = jQuery(ev.target); if (target.hasClass("drag-me")) { target.draggable({ helper: "clone", start: function() { console.log("drag start"); }, stop: function() { jQuery(this).draggable("destroy"); } }).trigger("mousedown.draggable", [ev]); ev.stopPropagation() } }); This should fix up your unending recurssion. (at least it did for me in a similar situation)

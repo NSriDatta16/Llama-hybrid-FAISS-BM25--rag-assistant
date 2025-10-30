@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3148317
+[parent_id]: 2336825
+[tags]: 
+I'm not that familiar with objective-c but I'll give it a try. All I can see is that you are storing a pointer to the sprite object in the body's user data and then leaving it there. If you want the body's position to be transferred to the sprite you need to update it every frame. In C++ this would look something like this. // To be called each time physics should be updated. void physicsStep(float32 timeStep, int32 velocityIterations, int32 positionIterations) { // This is the usual update routine. world.Step(timeStep, velocityIterations, positionIterations); world.ClearForces(); // SpriteClass can be replaced with any class you favor. // Assume there is a known pointer to the b2Body. Otherwise you'll have to get that, // or iterate over all bodies in the world. SpriteClass *sprite = (SpriteClass*)body->GetUserData(); // Once you have the pointer you can transfer all the data. sprite.position = body->GetPosition(); sprite.angle = body->GetAngle(); // ... and so on } User data is just an arbitrary storage space in the b2Body and Box2D has no idea about what you decide to store there.

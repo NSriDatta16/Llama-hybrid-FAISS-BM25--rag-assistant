@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2977030
+[parent_id]: 2975904
+[tags]: 
+It looks to me like you're trying to do a group-by via type. If so, you should be emitting type first. From there, its pretty much the same as your code, but I took the liberty of cleaning it up a bit. Beware, the reduce function could get called multiple times on smaller groups. Therefore, if you used your code in a sharded environment, you may get extra trailing commas. See Reduce Function for more information. Map : m = function(){ emit(this.type, {names:this.name}); } Reduce : r = function(key, values){ var all = []; values.forEach(function(x){ all.push(x.names) }) return {"names": all.join(", ")}; } Usage : res = db.users.mapReduce(m,r); db[res.result].find() Alternate: Per OP request, here is a version that returns an array for names instead of a comma separated list string: m = function () { emit(this.type, {names:this.name}); } r = function (key, values) { var all = []; values.forEach(function (x) {all.push(x.names);}); return {type:key, names:all}; } f = function (w, r) { r.names = r.names[0]; return r } res = db.users.mapReduce(m,r, {finalize:f}); db[res.result].find() Cheers!

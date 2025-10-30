@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 118291
+[parent_id]: 
+[tags]: 
+How to use/vectorize SpaCy output?
+
+I'm performing preprocessing on a dataset that I'm planning on using as a feature set for an RF model. I don't have too much experience with NLP so just want to make sure I'm processing my text fields correctly. So far, I've: Tokenized my text column Filtered out stop words Vectorize lemma result I'm worried that only vectorizing the lemma result without considering the POS won't produce a meaningful result. Should I be leveraging POS in some way? Any guidance would be appreciated. Below is my function. import spacy import time def text_analysis(df,col): start_time = time.time() results = [] # Filter out stop words from text stop = spacy.lang.en.stop_words.STOP_WORDS df[col] = df[col].apply(lambda x: ' '.join([f for f in x.lower().split() if f not in (stop)])) # Write lemmetization output to temp pickle file (to prevent memory issues) for row in nlp.pipe(df[col].astype('unicode').values, n_process=4): if row.has_annotation("DEP"): lemma_tokens = [n.lemma_ for n in row] lemma_desc = ' '.join([f for f in lemma_tokens]) pos = [n.pos_ for n in row] else: lemma_desc = None pos = None # Vectorize lemma result results.append(nlp(lemma_desc).vector) print(f'{col} text processing time: {round(time.time()-start_time,2)} s') return results ```

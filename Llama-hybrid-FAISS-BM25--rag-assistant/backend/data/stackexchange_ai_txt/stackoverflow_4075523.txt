@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4075523
+[parent_id]: 4075408
+[tags]: 
+I think you cannot pass a velocity template parameter to the function with such syntax: You could try the approach below instead. Note that there is almost certainly a much better way to do get this job done, using tools that Velocity provides. The below is kind of and ugly hack to get you up and running. I highly suggest reworking this approach to better leverage Velocity's facilities: public String parseTopicUrl(javax.servlet.http.HttpServletRequest request) throws Exception { Object topic = request.getAttribute("topic"); if (topic == null) { System.out.println(">>>null topic"); return null; } Class topicClass = topic.getClass(); java.lang.reflect.Method method = topicClass.getMethod("getUrl", null); Object url = method.invoke(topic, null); if (url == null) { System.out.println(">>>'url' is null"); } else { System.out.println(">>>'url' class is " + url.getClass()); System.out.println(">>>'url' toString is " + url); } // TODO: cast 'url' to its real class and work with it return null; } Then use:

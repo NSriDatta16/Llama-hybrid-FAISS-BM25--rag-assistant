@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5678017
+[parent_id]: 5677347
+[tags]: 
+A goto statement is the easiest and potentially cleanest way to implement exception style processing. Using a macro makes it easier to read if you include the comparison logic inside the macro args. If you organize the routines to perform normal (i.e. non-error) work and only use the goto on exceptions, it is fairly clean for reading. For example: /* Exception macro */ #define TRY_EXIT(Cmd) { if (!(Cmd)) {goto EXIT;} } /* My memory allocator */ char * MyAlloc(int bytes) { char * pMem = NULL; /* Must have a size */ TRY_EXIT( bytes > 0 ); /* Allocation must succeed */ pMem = (char *)malloc(bytes); TRY_EXIT( pMem != NULL ); /* Initialize memory */ TRY_EXIT( initializeMem(pMem, bytes) != -1 ); /* Success */ return (pMem); EXIT: /* Exception: Cleanup and fail */ if (pMem != NULL) free(pMem); return (NULL); }

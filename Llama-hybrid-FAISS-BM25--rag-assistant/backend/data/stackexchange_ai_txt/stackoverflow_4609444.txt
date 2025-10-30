@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4609444
+[parent_id]: 4609412
+[tags]: 
+I don't think there is a built in feature for this ... but I know what you mean :-) I implemented "first run" myself using iso storage in the open source khan academy for windows phone app . All I do is look in iso storage for a very small file (I just write one byte to it) ... if it's not there, it's the first time, if it is there, the app has been run more than once. Feel free to check out the source and take my implementation if you'd like :-) private static bool hasSeenIntro; /// Will return false only the first time a user ever runs this. /// Everytime thereafter, a placeholder file will have been written to disk /// and will trigger a value of true. public static bool HasUserSeenIntro() { if (hasSeenIntro) return true; using (var store = IsolatedStorageFile.GetUserStoreForApplication()) { if (!store.FileExists(LandingBitFileName)) { // just write a placeholder file one byte long so we know they've landed before using (var stream = store.OpenFile(LandingBitFileName, FileMode.Create)) { stream.Write(new byte[] { 1 }, 0, 1); } return false; } hasSeenIntro = true; return true; } }

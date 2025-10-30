@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 327285
+[parent_id]: 327223
+[tags]: 
+A couple attempts: I figure you're doing something similar to this: from __future__ import with_statement import time from collections import deque, defaultdict # Just used to generate some triples of words def triplegen(words="/usr/share/dict/words"): d=deque() with open(words) as f: for i in range(3): d.append(f.readline().strip()) while d[-1] != '': yield tuple(d) d.popleft() d.append(f.readline().strip()) if __name__ == '__main__': class D(dict): def __missing__(self, key): self[key] = D() return self[key] h=D() for a, b, c in triplegen(): h[a][b][c] = 1 time.sleep(60) That gives me ~88MB. Changing the storage to h[a, b, c] = 1 takes ~25MB interning a, b, and c makes it take about 31MB. My case is a bit special because my words never repeat on the input. You might try some variations yourself and see if one of these helps you.

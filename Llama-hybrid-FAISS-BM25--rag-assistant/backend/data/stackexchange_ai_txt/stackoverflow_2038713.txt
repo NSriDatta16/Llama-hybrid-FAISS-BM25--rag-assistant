@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2038713
+[parent_id]: 2037556
+[tags]: 
+Using self types allows you to separate the Model-Algorithm implementations from the instantiations and mix them in: trait Model trait Result trait MCMC extends Model { def propose: Result } trait Importance extends Model { def forward: Result } class Normal(val model: Model) extends Model trait NormalMCMCImpl extends MCMC { self: Normal => def propose: Result = { //... impl val x = self.model // lookie here... I can use vals from Normal } } trait NormalImportanceImpl extends Importance { self: Normal => def forward: Result = { // ... impl ... } } class NormalMCMC(mean: Model) extends Normal(mean) with NormalMCMCImpl class NormalImportance(mean: Model) extends Normal(mean) with NormalImportanceImpl class NormalImportanceMCMC(mean: Model) extends Normal(mean) with NormalMCMCImpl with NormalImportanceImpl

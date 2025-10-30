@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 29285
+[parent_id]: 
+[tags]: 
+Homemade deep learning library: numerical issue with relu activation
+
+For the sake of learning the finer details of a deep learning neural network, I have coded my own library with everything (optimizer, layers, activations, cost function) homemade. It seems to work fine when benchmarking in on the MNIST dataset, and using only sigmoid activation functions. Unfortunately I seem to get issues when replacing these with relus . This is what my learning curve looks like for 50 epochs on a training dataset of ~500 examples: Everything is fine for the first ~8 epochs and then I get a complete collapse on the score of a dummy classifier (~0.1 accuracy). I checked the code of the relu and it seems fine. Here are my forward and backward passes: def fprop(self, inputs): return np.maximum( inputs, 0.) def bprop(self, inputs, outputs, grads_wrt_outputs): derivative = (outputs > 0).astype( float) return derivative * grads_wrt_outputs The culprit seems to be in the numerical stability of the relu. I tried different learning rates and many parameter initializers for the same result. Tanh and sigmoid work properly. Is this a known issue? Is it a consequence of non-continuous derivative of the relu function?

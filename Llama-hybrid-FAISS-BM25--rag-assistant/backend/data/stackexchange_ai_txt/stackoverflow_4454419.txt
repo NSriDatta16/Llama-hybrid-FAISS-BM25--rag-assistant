@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4454419
+[parent_id]: 4453782
+[tags]: 
+Unfortunately, using autocommit is database specific (as is transaction behavior). I think if you don't have a global, programmatic transaction strategy, autocommit is probably better than just hoping everyone properly closes/rolls back transactions. Speaking for MySQL, you can leave autocommit=true on by default, and it will automatically turn that off when you BEGIN a transaction. The only reason to set autocommit=false is if you want to force an error if someone tries to start a transaction without a BEGIN. For simplicity in a typical Java + MySQL application today, I would more or less ignore the auto-commit setting, use an open-session-in-view pattern and call it good. I would strongly discourage explicit RDBMS row locks and use optimistic locks instead. Hibernate offers built-in support for optimistic locks, but it's an easy pattern to adopt even for hand-rolled code and offers better performance.

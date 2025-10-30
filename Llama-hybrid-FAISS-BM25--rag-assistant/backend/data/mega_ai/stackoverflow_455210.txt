@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 455210
+[parent_id]: 
+[tags]: 
+Eclipse editor plugin: "ERROR" when opening file outside project
+
+I'm developing an editor plugin for eclipse. It works fine on files within eclipse projects, but when an external file is opened via the "File -> Open File" menu (which works file with, e.g. Java files), I get a page displaying nothing but a horizontal blue line and the word "ERROR". The Error Log of eclipse is empty, as is the log file in the .metadata directory. What could cause this? How can I diagnose the error when I have no error message that tells me where to look? There doesn't seem to be a way to get more detailed logging from eclipse. Edit: I've found that the source of the problem is close to what jamesh mentioned, but not a ClassCastException - there simply is no IDocument instance for the text viewer to display because StorageDocumentProvider.createDocument() returns null. The reason for this is that it only knows how to create documents for instances of org.eclipse.ui.IStorageEditorInput , but in this case it gets an instance of org.eclipse.ui.ide.FileStoreEditorInput , which does not implement that interface, but instead implements org.eclipse.ui.IURIEditorInput

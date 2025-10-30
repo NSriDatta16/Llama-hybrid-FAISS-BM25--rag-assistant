@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 469510
+[parent_id]: 
+[tags]: 
+Help understanding bayesian update for exponential distribution
+
+I'm following these slides . I have some lamps, which I expect to die at a time $t$ where $p(t) = \lambda e ^{-\lambda t}$ for some $\lambda$ . My prior for $\lambda$ is given by $p(\lambda) = \Gamma(\lambda, 2, 2)$ . I observe one lamp die at time 10. According to those slides, my posterior is $$k' = 2 + 1 = 3$$ $$ \theta' = 2 / (1 + 2 * 10) = 0.095$$ so $$p(\lambda) =\Gamma(\lambda, 3, 0.095)$$ When I plot this though, it doesn't look right: My posterior has shifted far to the left, even though my observation was to the right of the expectation of my prior. What's going on? Code: import matplotlib.pyplot as plt import numpy as np from scipy.special import gamma as gamma_function def gamma(x, k, theta): return np.power(x, k-1) * np.exp(-x/theta) / (gamma_function(k) * np.power(theta, k)) k = 2 theta = 2 data = [10] new_k = k + len(data) new_theta = theta / (1 + theta * sum(data)) x = np.linspace(0, 10, 100) plt.plot(x, gamma(x, 2, 2), label = 'prior') plt.plot(x, gamma(x, new_k, new_theta), 'r', label = 'posterior') plt.legend()

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2597035
+[parent_id]: 2596995
+[tags]: 
+returnnew() will destroy the variable upon return because you're returning a pointer to a local variable. If you want to return retval from there, allocate it dinamically, eg: a * returnnew() { a * retval = new a; return retval; } Or just: a * returnnew() { return new a; } Dynamic allocated memory has no scope, and thus won't be deallocated until you say so, by means of a delete/delete[]/free, or until the program exits (and few other cases not related to the question). Before anyone comments here, my "until you say so" also includes shared/smart/etc pointer behaviour. As for your second code & questions, if you are allocating the variable outside the thread, but ONLY using it from inside, you can just make the thread deallocate (delete) it when it's no longer needed. However, if you plan to access the variable from multiple points, and you can't guess when you're safe to destroy it, surely, use a smart or shared pointer.

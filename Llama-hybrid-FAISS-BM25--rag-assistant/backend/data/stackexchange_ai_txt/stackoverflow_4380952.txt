@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4380952
+[parent_id]: 
+[tags]: 
+Different thread share an object
+
+I have this following code fragment which is accessed by different threads. try { this.RefreshSettings(); DateTime lastChecked = DateTime.Now.AddMilliseconds(-1 * m_Settings.Interval); while (Run) { if ((DateTime.Now - lastChecked).TotalMilliseconds >= this.m_Settings.Interval) { lastChecked = DateTime.Now; if (this.ShouldNotify()) { object LockObj = new object(); lock (LockObj) { this.Notify(); } } } //Thread.Sleep(this.m_Settings.Interval); } } As you can see, I only want ShouldNotify() method to be called after every given interval of time (m_settings.Interval). However, my problem is if two or more threads have called NotifyIfNecesarry function, they are sharing the lastChecked variable. So, if one thread resets its value to dateTime.Now, it gets reset for the others too. How can I write that method so that each thread maintains its own lastChecked? Using Thread.Sleep is not an option because when the value of the bool Run is changed to false, I need the loop to exit instantaneously. If I have a thread.Sleep, and the thread is sleeping, the program won't exit until it checks the while condition, so there is a possible mak delay of m_settings.Interval.

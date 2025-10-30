@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 92716
+[parent_id]: 
+[tags]: 
+Pegasos prediction time
+
+I have been implementing the (kernelized) Pegasos algorithm, but am running into problems in terms of scalability. I will use notations as in the original manuscript . Here's a typical time measurement: percent m t1 t2 0.05% 32 701 961 0.1% 64 676 1890 0.2% 128 648 2777 0.41% 256 725 3851 0.83% 512 861 5267 1.67% 1024 1293 7635 3.34% 2048 1928 11404 6.68% 4096 3256 18210 13.36% 8192 6312 31750 26.72% 16384 11420 56923 53.44% 32768 18838 96755 Where $m$ is the number of data points in the training set, t1 the training time (includes cross validation over many folds) and t2 the testing time (just 1 prediction over a larger, but fixed part of the data). As you can see, the train time scales reasonably well, but the prediction time scales very badly. I think this is due to the fact that the Pegasos algorithm requires one to compute the (kernel) product of every test-point with a large number of training inputs, that increases as the total training set ($m$) increases. Are there known ways to cope with this problem? I thought the L1-norm would take care of this problem due to sparsification of the model (#support vectors), but I don't think it does. I was thinking of simply dropping terms with low 'counts' ($\alpha$ value in Fig. 3 in the original manuscript), but that seems terribly unelegant ...

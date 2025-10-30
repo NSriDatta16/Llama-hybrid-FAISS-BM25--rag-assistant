@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 104927
+[parent_id]: 104872
+[tags]: 
+You can use fsockopen() to redirect to the new web site while preserving your POST variables. There is a good tutorial on how to accomplish this here . In case that web site gets eaten by the Internet monster, I've copied and pasted the function but I suggest checking out the original web site for the context. function sendToHost($host,$method,$path,$data,$useragent=0) { // Supply a default method of GET if the one passed was empty if (empty($method)) { $method = 'GET'; } $method = strtoupper($method); $fp = fsockopen($host, 80); if ($method == 'GET') { $path .= '?' . $data; } fputs($fp, "$method $path HTTP/1.1\r\n"); fputs($fp, "Host: $host\r\n"); fputs($fp,"Content-type: application/x-www-form- urlencoded\r\n"); fputs($fp, "Content-length: " . strlen($data) . "\r\n"); if ($useragent) { fputs($fp, "User-Agent: MSIE\r\n"); } fputs($fp, "Connection: close\r\n\r\n"); if ($method == 'POST') { fputs($fp, $data); } while (!feof($fp)) { $buf .= fgets($fp,128); } fclose($fp); return $buf; }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 73254
+[parent_id]: 73024
+[tags]: 
+OnLogin on xmpp is probably an event declared like this : public event LoginEventHandler OnLogin; where LoginEventHandler is as delegate type probably declared as : public delegate void LoginEventHandler(Object o); That means that in order to subscribe to the event, you need to provide a method (or an anonymous method / lambda expression ) which match the LoginEventHandler delegate signature. In your example, you pass an anonymous method using the delegate keyword: xmpp.OnLogin += delegate(object o) { xmpp.Send(new Message(new Jid(JID_RECEIVER), MessageType.chat, "Hello, how are you?")); }; The anonymous method matches the delegate signature expected by the OnLogin event (void return type + one object argument). You could also remove the object o parameter leveraging the contravariance , since it is not used inside the anonymous method body. xmpp.OnLogin += delegate { xmpp.Send(new Message(new Jid(JID_RECEIVER), MessageType.chat, "Hello, how are you?")); };

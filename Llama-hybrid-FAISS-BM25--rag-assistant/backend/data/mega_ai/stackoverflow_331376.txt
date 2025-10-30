@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 331376
+[parent_id]: 
+[tags]: 
+Iterating over a member array with IteratorAggregate
+
+I have a class and I want to be able to iterate over a certain array member. I did a quick search and found IteratorAggregate : class foo implements IteratorAggregate { protected $_array = array('foo'=>'bar', 'baz'=>'quux'); public function getIterator() { return new ArrayIterator($this->_array); } } which works great, but doesn't that create a new ArrayIterator instance every time foreach is used on it? So I thought I should store the iterator instance in a member: protected $_iterator; public function getIterator() { if (!$this->_iterator instanceof ArrayIterator) { $this->_iterator = new ArrayIterator($this->_array); } return $this->_iterator; } The problem is that the iterator uses a copy of $this->_array during the first call of getIterator() , so changes to the member aren't reflected on subsequent foreach constructs. I was thinking I should subclass ArrayIterator , add a setArray($array) method and call it before returning it in getIterator() , but I don't know the member name of the array it uses internally and whether or not it's overwriteable by a subclass. The question is: is this a premature and/or unnecessary optimization? If no, what's the best way to achieve this?

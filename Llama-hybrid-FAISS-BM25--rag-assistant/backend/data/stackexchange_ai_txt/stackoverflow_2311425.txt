@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2311425
+[parent_id]: 2310483
+[tags]: 
+Others have mentioned the architecture differences (little - big endian). I read the problem that since the memory for the variables is shared, then by writing to one, the others change and, depending on their type, the value could be meaningless. eg. union{ float f; int i; } x; Writing to x.i would be meaningless if you then read from x.f - unless that is what you intended in order to look at the sign, exponent or mantissa components of the float. I think there is also an issue of alignment: If some variables must be word aligned then you might not get the expected result. eg. union{ char c[4]; int i; } x; If, hypothetically, on some machine a char had to be word aligned then c[0] and c[1] would share storage with i but not c[2] and c[3].

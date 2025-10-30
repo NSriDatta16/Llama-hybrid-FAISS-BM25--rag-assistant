@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 584685
+[parent_id]: 
+[tags]: 
+Why do large LMs use the transpose of the word embeddings matrix in the classification head?
+
+All literature, guides and tutorials describing the construction of language models have used two separate matrices for the input and output projections: To project one-hot token IDs into hidden states, a matrix $U$ of size $\mathrm{VocabSize} \times \mathrm{HiddenDim}$ is used. To project the hidden states back into vocab space prior to softmax, a matrix $V$ of size $\mathrm{HiddenDim} \times \mathrm{VocabSize}$ is used. However, the source code for transformers in the Huggingface library shows a completely different process that uses only one matrix: The classification head takes hidden states $h$ at the top of the Transformer stack and then performs $\operatorname{softmax}( \operatorname{MLP}(h) \cdot U^T+b )$ to recover the vocab probability distribution. Why exactly does this work? Can the MLP and transpose of $U$ be considered some form of pseudo inverse process? And why have I not seen this in literature for modern Transformer architectures? Is this something that dates back to the first RNN-LMs and as such need not be described? And if so, why does every tutorial I've seen (both for encoder-decoder RNNs and Transformers) not describe this and instead opt for using two separate matrices? Could it be that this is harder to optimize due to weight sharing? I would appreciate some insight on this and references to literature since I am unable to find anything myself.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2135120
+[parent_id]: 2135068
+[tags]: 
+you set the size of the non-client area by handling the WM_NCCALCSIZE message. But don't do this unless you plan to do all of the non-client drawing as well by handling WM_NCPAINT Edit: here are two code fragments, one that handles WM_NCCALCSIZE and provides a simple n pixel border, and another than adds some extra pixels after DefWindowProc has done the default handling. case WM_NCCALCSIZE: { lRet = 0; const int cxBorder = 2; const int cyBorder = 2; InflateRect((LPRECT)lParam, -cxBorder, -cyBorder); } case WM_NCCALCSIZE: { LPNCCALCSIZE_PARAMS pncc = (LPNCCALCSIZE_PARAMS)lParam; //pncc->rgrc[0] is the new rectangle //pncc->rgrc[1] is the old rectangle //pncc->rgrc[2] is the client rectangle lRet = DefWindowProc (hwnd, WM_NCCALCSIZE, wParam, lParam); pncc->rgrc[0].top += ExtraCaptionHeight; } You can learn a lot by passing WM_NCCALCSIZE to DefWindowProc and looking at the values of the NCCALCSIZEPARAM before and after.

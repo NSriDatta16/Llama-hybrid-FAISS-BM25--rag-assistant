@@ -1,0 +1,226 @@
+In computability theory, the Ackermann function, named after Wilhelm Ackermann, is one of the simplest and earliest-discovered examples of a total computable function that is not primitive recursive. All primitive recursive functions are total and computable, but the Ackermann function illustrates that not all total computable functions are primitive recursive.
+
+After Ackermann's publication of his function (which had three non-negative integer arguments), many authors modified it to suit various purposes, so that today "the Ackermann function" may refer to any of numerous variants of the original function. One common version is the two-argument Ackermann–Péter function developed by Rózsa Péter and Raphael Robinson. Its value grows very rapidly; for example,  results in , an integer of 19,729 decimal digits.
+
+History
+In the late 1920s, the mathematicians Gabriel Sudan and Wilhelm Ackermann, students of David Hilbert, were studying the foundations of computation. Both Sudan and Ackermann are credited with discovering total computable functions (termed simply "recursive" in some references) that are not primitive recursive. Sudan published the lesser-known Sudan function, then shortly afterwards and independently, in 1928, Ackermann published his function  (the Greek letter phi). Ackermann's three-argument function, , is defined such that for , it reproduces the basic operations of addition, multiplication, and exponentiation as
+
+and for p > 2 it extends these basic operations in a way that can be compared to the hyperoperations:
+
+(Aside from its historic role as a total-computable-but-not-primitive-recursive function, Ackermann's original function is seen to extend the basic arithmetic operations beyond exponentiation, although not as seamlessly as do variants of Ackermann's function that are specifically designed for that purpose—such as Goodstein's hyperoperation sequence.)
+
+In On the Infinite, David Hilbert hypothesized that the Ackermann function was not primitive recursive, but it was Ackermann, Hilbert's personal secretary and former student, who actually proved the hypothesis in his paper On Hilbert's Construction of the Real Numbers.
+
+Rózsa Péter and Raphael Robinson later developed a two-variable version of the Ackermann function that became preferred by almost all authors.
+
+The generalized hyperoperation sequence, e.g. , is a version of Ackermann function as well.
+
+In 1963 R.C. Buck based an intuitive two-variable  variant  on the hyperoperation sequence:
+
+Compared to most other versions Buck's function has no unessential offsets:
+
+Many other versions of Ackermann function have been investigated.
+
+Definition
+
+Definition: as m-ary function 
+Ackermann's original three-argument function  is defined recursively as follows for nonnegative integers  and :
+
+Of the various two-argument versions, the one developed by Péter and Robinson (called "the" Ackermann function by most authors) is defined for nonnegative integers  and  as follows:
+
+The Ackermann function has also been expressed in relation to the hyperoperation sequence:
+
+or, written in Knuth's up-arrow notation (extended to integer indices ):
+
+or, equivalently, in terms of Buck's function F:
+
+Definition: as iterated 1-ary function 
+Define  as the n-th iterate of :
+
+Iteration is the process of composing a function with itself a certain number of times. Function composition is an associative operation, so .
+
+Conceiving the Ackermann function as a sequence of unary functions, one can set .
+
+The function then becomes a sequence  of unary functions, defined from iteration:
+
+Computation
+The recursive definition of the Ackermann function can naturally be transposed to a term rewriting system (TRS).
+
+TRS, based on 2-ary function
+The definition of the 2-ary Ackermann function leads to the obvious reduction rules 
+
+Example
+
+Compute 
+
+The reduction sequence is 
+
+To compute  one can use a stack, which initially contains the elements .
+
+Then repeatedly the two top elements are replaced according to the rules
+
+Schematically, starting from :
+
+ WHILE stackLength <> 1
+ {
+    POP 2 elements;
+    PUSH 1 or 2 or 3 elements, applying the rules r1, r2, r3
+ }
+
+The pseudocode is published in .
+
+For example, on input ,
+
+Remarks
+The leftmost-innermost strategy is implemented in 225 computer languages on Rosetta Code.
+For all  the computation of  takes no more than  steps.
+ pointed out that in the computation of  the maximum length of the stack is , as long as .
+Their own algorithm, inherently iterative, computes  within  time and within  space.
+
+TRS, based on iterated 1-ary function
+The definition of the iterated 1-ary Ackermann functions leads to different reduction rules
+
+As function composition is associative, instead of rule r6 one can define
+
+Like in the previous section the computation of  can be implemented with a stack.
+
+Initially the stack contains the three elements .
+
+Then repeatedly the three top elements are replaced according to the rules
+
+Schematically, starting from :
+ WHILE stackLength <> 1
+ {
+    POP 3 elements;
+    PUSH 1 or 3 or 5 elements, applying the rules r4, r5, r6;
+ }
+
+Example
+
+On input  the successive stack configurations are
+
+The corresponding equalities are
+
+When reduction rule r7 is used instead of rule r6, the replacements in the stack will follow
+
+The successive stack configurations will then be
+
+The corresponding equalities are 
+
+Remarks
+On any given input the TRSs presented so far converge in the same number of steps. They also use the same reduction rules (in this comparison the rules r1, r2, r3 are considered "the same as" the rules r4, r5, r6/r7 respectively). For example, the reduction of  converges in 14 steps: 6 × r1, 3 × r2, 5 × r3. The reduction of  converges in the same 14 steps: 6 × r4, 3 × r5, 5 × r6/r7. The TRSs differ in the order in which the reduction rules are applied.
+When  is computed following the rules {r4, r5, r6}, the maximum length of the stack stays below . When reduction rule r7 is used instead of rule r6, the maximum length of the stack is only . The length of the stack reflects the recursion depth. As the reduction according to the rules {r4, r5, r7} involves a smaller maximum depth of recursion, this computation is more efficient in that respect.
+
+TRS, based on hyperoperators
+As  — or  — showed explicitly, the Ackermann function can be expressed in terms of the hyperoperation sequence:
+
+or, after removal of the constant 2 from the parameter list, in terms of Buck's function
+  
+
+Buck's function , a variant of Ackermann function by itself, can be computed with the following reduction rules:
+
+Instead of rule b6 one can define the rule 
+
+To compute the Ackermann function it suffices to add three reduction rules
+
+These rules take care of the base case A(0,n), the alignment (n+3) and the fudge (-3).
+
+Example
+
+Compute 
+
+The matching equalities are
+when the TRS with the reduction rule  is applied:
+
+when the TRS with the reduction rule  is applied:
+
+Remarks
+The computation of  according to the rules {b1 - b5, b6, r8 - r10} is deeply recursive. The maximum depth of nested s is . The culprit is the order in which iteration is executed: . The first  disappears only after the whole sequence is unfolded.
+The computation according to the rules {b1 - b5, b7, r8 - r10} is more efficient in that respect. The iteration  simulates the repeated loop over a block of code. The nesting is limited to , one recursion level per iterated function.  showed this correspondence.
+These considerations concern the recursion depth only. Either way of iterating leads to the same number of reduction steps, involving the same rules (when the rules b6 and b7 are considered "the same"). The reduction of  for instance converges in 35 steps: 12 × b1, 4 × b2, 1 × b3, 4 × b5, 12 × b6/b7, 1 × r9, 1 × r10. The modus iterandi only affects the order in which the reduction rules are applied.
+A real gain of execution time can only be achieved by not recalculating subresults over and over again. Memoization is an optimization technique where the results of function calls are cached and returned when the same inputs occur again. See for instance .  published a cunning algorithm which computes  within  time and within  space.
+
+Huge numbers
+To demonstrate how the computation of  results in many steps and in a large number:
+
+Table of values 
+Computing the Ackermann function can be restated in terms of an infinite table. First, place the natural numbers along the top row. To determine a number in the table, take the number immediately to the left. Then use that number to look up the required number in the column given by that number and one row up. If there is no number to its left, simply look at the column headed "1" in the previous row. Here is a small upper-left portion of the table:
+
+The numbers here which are only expressed with recursive exponentiation or Knuth arrows are very large and would take up too much space to notate in plain decimal digits.
+
+Despite the large values occurring in this early section of the table, some even larger numbers have been defined, such as Graham's number, which cannot be written with any small number of Knuth arrows. This number is constructed with a technique similar to applying the Ackermann function to itself recursively.
+
+This is a repeat of the above table, but with the values replaced by the relevant expression from the function definition to show the pattern clearly:
+
+Properties
+
+General remarks 
+It may not be immediately obvious that the evaluation of  always terminates. However, the recursion is bounded because in each recursive application either  decreases, or  remains the same and  decreases. Each time that  reaches zero,  decreases, so  eventually reaches zero as well. (Expressed more technically, in each case the pair  decreases in the lexicographic order on pairs, which is a well-ordering, just like the ordering of single non-negative integers; this means one cannot go down in the ordering infinitely many times in succession.) However, when  decreases there is no upper bound on how much  can increase — and it will often increase greatly.
+For small values of m like 1, 2, or 3, the Ackermann function grows relatively slowly with respect to n (at most exponentially). For , however, it grows much more quickly; even  is about 2.00353, and the decimal expansion of  is very large by any typical measure, about 2.12004.
+An interesting aspect is that the only arithmetic operation it ever uses is addition of 1. Its fast growing power is based solely on nested recursion. This also implies that its running time is at least proportional to its output, and so is also extremely huge. In actuality, for most cases the running time is far larger than the output; see above.
+A single-argument version  that increases both  and  at the same time dwarfs every primitive recursive function, including very fast-growing functions such as the exponential function, the factorial function, multi- and superfactorial functions, and even functions defined using Knuth's up-arrow notation (except when the indexed up-arrow is used). It can be seen that  is roughly comparable to  in the fast-growing hierarchy. This extreme growth can be exploited to show that  which is obviously computable on a machine with infinite memory such as a Turing machine and so is a computable function, grows faster than any primitive recursive function and is therefore not primitive recursive.
+
+Not primitive recursive 
+
+The Ackermann function grows faster than any primitive recursive function and therefore is not itself primitive recursive. The sketch of the proof is this: a primitive recursive function defined using up to k recursions must grow slower than , the (k+1)-th function in the fast-growing hierarchy, but the Ackermann function grows at least as fast as .
+
+Specifically, one shows that to every primitive recursive function  there exists a non-negative integer  such that for all non-negative integers ,
+
+Once this is established, it follows that  itself is not primitive recursive, since otherwise putting  would lead to the contradiction 
+
+The proof proceeds as follows: define the class  of all functions that grow slower than the Ackermann function
+
+and show that  contains all primitive recursive functions. The latter is achieved by showing that  contains the constant functions, the successor function, the projection functions and that it is closed under the operations of function composition and primitive recursion.
+
+Inverse 
+Since the function  considered above grows very rapidly, its inverse function, f, grows very slowly. This inverse Ackermann function f−1 is usually denoted by α. In fact, α(n) is less than 5 for any practical input size n, since  is on the order of .
+
+This inverse appears in the time complexity of some algorithms, such as the disjoint-set data structure and Chazelle's algorithm for minimum spanning trees. Sometimes Ackermann's original function or other variations are used in these settings, but they all grow at similarly high rates. In particular, some modified functions simplify the expression by eliminating the −3 and similar terms.
+
+A two-parameter variation of the inverse Ackermann function can be defined as follows, where  is the floor function:
+
+This function arises in more precise analyses of the algorithms mentioned above, and gives a more refined time bound. In the disjoint-set data structure, m represents the number of operations while n represents the number of elements; in the minimum spanning tree algorithm, m represents the number of edges while n represents the number of vertices. Several slightly different definitions of  exist; for example,  is sometimes replaced by n, and the floor function is sometimes replaced by a ceiling.
+
+Other studies might define an inverse function of one where m is set to a constant, such that the inverse applies to a particular row. 
+
+The inverse of the Ackermann function is primitive recursive.
+
+Use as benchmark
+The Ackermann function, due to its definition in terms of extremely deep recursion, can be used as a benchmark of a compiler's ability to optimize recursion. The first published use of Ackermann's function in this way was in 1970 by Dragoș Vaida and, almost simultaneously, in 1971, by Yngve Sundblad.
+
+Sundblad's seminal paper was taken up by Brian Wichmann (co-author of the Whetstone benchmark) in a trilogy of papers written between 1975 and 1982.
+
+See also
+
+ Computability theory
+ Double recursion
+ Fast-growing hierarchy
+ Goodstein function
+ Primitive recursive function
+ Recursion (computer science)
+
+Notes
+
+References
+
+Bibliography
+
+External links
+ 
+ 
+ 
+ An animated Ackermann function calculator
+ Ackerman function implemented using a for loop
+ 
+ Ackermann functions. Includes a table of some values.
+  describes several variations on the definition of A.
+ 
+ 
+ The Ackermann function written in different programming languages, (on Rosetta Code)
+ ) Some study and programming.
+
+Arithmetic
+Large integers
+Special functions
+Theory of computation
+Computability theory

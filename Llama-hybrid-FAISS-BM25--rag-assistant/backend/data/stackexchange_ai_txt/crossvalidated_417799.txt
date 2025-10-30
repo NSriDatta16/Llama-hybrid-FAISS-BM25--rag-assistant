@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 417799
+[parent_id]: 333179
+[tags]: 
+Mathematically, your conclusion is correct that the diagonals of your result equal the Hotelling's $T^2$ values for each sample. However, it took me a while to figure that out. So I'm posting my own answer in case it helps anyone else who is trying to calculate Hotelling's $T^2$ values using Python. According to the page you linked from wiki.eigenvector.com, " Hotelling's $T^2$ values represent a measure of the variation of each sample within the model ". The formula given on that page (copied below) is for calculating the $T^2$ value for one sample: $$ T_i^2 = t_i\lambda^{-1}t_i^T = x_iP_k\lambda^{-1}P_k^Tx_i^T $$ To get $T^2$ values for all 13 samples in your data, you can use this formula on each sample. Here's how it looks in Python, starting with your data: data=preprocessing.scale(data) output=pca_sklearn.fit_transform(data) loadings_p = pca_sklearn.components_.T eigenvalues = pca_sklearn.explained_variance_ hotelling_t2s = np.array([xi.dot(loadings_p) .dot(np.diag(eigenvalues ** -1)) .dot(loadings_p.T) .dot(xi.T) for xi in data])

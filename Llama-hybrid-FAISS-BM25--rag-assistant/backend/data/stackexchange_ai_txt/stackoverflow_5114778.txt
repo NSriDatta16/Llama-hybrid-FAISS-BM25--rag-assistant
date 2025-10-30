@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5114778
+[parent_id]: 
+[tags]: 
+Passing new data to an asynchronous, threaded function that may still be using the old data
+
+I am having some problem related to C/C++: Suppose I have some class class Demo { int constant; public: void setConstant(int value) { constant=value; } void submitTask() { // need to make a call to C-based runtime system to submit a // task which will be executed "asynchronously" submitTask((void *)&constant); } }; // runtime system will call this method when task will be executed void func(void *arg) { int constant= *((int *)arg); // Read this constant value but don't modify here.... } Now in my application, I do something like this: int main() { ... Demo objDemo; for(...) { objDemo.setConstant( ); objDemo.submitTask(); } ... } Now, hopefully you see the problem as tasks should read the value set immediately before a asynchronous call . As task calls are asynchronous so a task can read wrong value and sometimes results in unexpected behavior. I don't want to enforce synchronous task execution just because of this constraint. The number of tasks created are not known in advance. I just need to pass this simple integer constant in an elegant way that will work with asynchronous. Obviously I cannot change the runtime behavior (mean that signature of this method void func(void *arg) is fixed). Thanks in advance.

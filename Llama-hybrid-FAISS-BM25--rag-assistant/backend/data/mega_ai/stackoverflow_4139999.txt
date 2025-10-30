@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4139999
+[parent_id]: 
+[tags]: 
+Can't write to SC1DRL register on 68HC12 board--what am I missing?
+
+I am trying to write to use the multiple serial interface on the 68HC12 but am can't get it to talk. I think I've isolated the problem to not being able to write to the SC1DRL register (SCI Data Register Low). The following is from my SCI ISR: else if (HWRegPtr->SCI.sc1sr1.bit.tdre) { /* Transmit the next byte in TX_Buffer. */ if (TX_Buffer.in != TX_Buffer.out || TX_Buffer.full) { HWRegPtr->SCI.sc1drl.byte = TX_Buffer.buffer[TX_Buffer.out]; TX_Buffer.out++; if (TX_Buffer.out >= SCI_Buffer_Size) { TX_Buffer.out = 0; } TX_Buffer.full = 0; } /* Disable the transmit interrupt if the buffer is empty. */ if (TX_Buffer.in == TX_Buffer.out && !TX_Buffer.full) { Disable_SCI_TX(); } } TX_Buffer.buffer has the right thing at index TX_Buffer.out when its contents are being written to HWRegPtr->SCI.sc1drl.byte, but my debugger doesn't show a change, and no data is being transmitted over the serial interface. Anybody know what I'm missing? edit: HWRegPtr is defined as: extern HARDWARE_REGISTER *HWRegPtr; HARDWARE_REGISTER is a giant struct with all the registers in it, and is volatile.

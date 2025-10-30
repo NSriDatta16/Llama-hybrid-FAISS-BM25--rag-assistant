@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4019922
+[parent_id]: 4019327
+[tags]: 
+A very limited and ugly solution would be: //LibraryDep1.h #pragma once #include class LibraryDep1 { public: LibraryDep1(void) {}; virtual ~LibraryDep1(void) {}; template int TestFunction(T value) { std::cout //LibraryInclude.h #pragma once class LibraryDep1; //forward declare class LibraryInclude { private: LibraryDep1* mLibDep1; public: LibraryInclude(void); virtual ~LibraryInclude(void); template int TestFunction(T value); }; //LibraryInclude.cpp #include "LibraryInclude.h" #include "LibraryDep1.h" #include LibraryInclude::LibraryInclude(void) { mLibDep1 = new LibraryDep1(); } LibraryInclude::~LibraryInclude(void) { } // only to save some typing when only forwaring calls #define LI_TESTFUNCTION( TYPE ) \ template<> \ int LibraryInclude::TestFunction ( TYPE value ) {\ return mLibDep1->TestFunction(value); \ } // the allowed specializations, everything else causes link errors LI_TESTFUNCTION( int ); LI_TESTFUNCTION( std::string ); Tested this with VC++ 2k8 & g++ 4.3.4 statically linking against LibraryInclude.o

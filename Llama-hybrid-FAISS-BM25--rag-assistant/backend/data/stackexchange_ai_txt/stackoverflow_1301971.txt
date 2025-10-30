@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1301971
+[parent_id]: 1301866
+[tags]: 
+If you always need a wildcard on the year, like your query there, I'm not sure mysql will be able to use an index on a date/datetime field If these are only dates, you can create a time_dimension table though, and prepopulate that with a calendar for the next handful of years. I've a stored procedure to do that if you should need one. create table time_dimension ( dbdate date primary key, year int NOT NULL, month int NOT NULL , day int NOT NULL, KEY(year), KEY(month); KEY(day); ); You'd join your big data table to this relativly small table and filter on its field. e.g. SELECT * FROM data_table d inner join time_dimension t on d.date_field=t.dbdate where t.day=28 and t.month=11 LIMIT 10 This leverages filtering on the little time_dimension, and the joins on date_field = dbdate will normally use indexes.

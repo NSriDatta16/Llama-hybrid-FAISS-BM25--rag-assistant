@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5185986
+[parent_id]: 5185205
+[tags]: 
+ObjectContext accepts entity connection string in its constructor. Entity connection string consists of three parts: Metadata location (location of mapping XMLs produced by EDMX file) Data storage provider Data store connection string (that is what you want to provide) You have several ways to achieve what you want. Generally what you need is combine two parts of connection string: string format = "metadata=res://*/Model.csdl|res://*/Model.ssdl|res://*/Model.msl;provider=System.Data.SqlClient;provider connection string=\"{0}\""; string connectionString = "server=severaddress;database=database1;UserID=test;Password=test1234;" var context = ModelContext(String.Format(format, connectionString)); The format describes location of metadata from Model.edmx included as resources in assembly and Sql provider. Second part is your connection string. Be aware that this will only work if all your databases have same schema and use same provider.

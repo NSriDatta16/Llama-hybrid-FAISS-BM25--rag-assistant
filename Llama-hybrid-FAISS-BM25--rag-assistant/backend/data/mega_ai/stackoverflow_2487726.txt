@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2487726
+[parent_id]: 
+[tags]: 
+How are declared private ivars different from synthesized ivars?
+
+I know that the modern Objective-C runtime can synthesize ivars. I thought that synthesized ivars behaved exactly like declared ivars that are marked @private , but they don't. As a result, come code compiles only under the modern runtime that I expected would work on either. For example, a superclass: @interface A : NSObject { #if !__OBJC2__ @private NSString *_c; #endif } @property (nonatomic, copy) NSString *d; @end @implementation A @synthesize d=_c; - (void)dealloc { [_c release]; [super dealloc]; } @end and a subclass: @interface B : A { #if !__OBJC2__ @private NSString *_c; #endif } @property (nonatomic, copy) NSString *e; @end @implementation B @synthesize e=_c; - (void)dealloc { [_c release]; [super dealloc]; } @end A subclass can't have a declared ivar with the same name as one of its superclass's declared ivars, even if the superclass's ivar is private. This seems to me like a violation of the meaning of @private , since the subclass is affected by the superclass's choice of something private. What I'm more concerned about, however, is how should I think about synthesized ivars. I thought they acted like declared private ivars, but without the fragile base class problem. Maybe that's right, and I just don't understand the fragile base class problem. Why does the above code compile only in the modern runtime? Does the fragile base class problem exist when all superclass instance variables are private?

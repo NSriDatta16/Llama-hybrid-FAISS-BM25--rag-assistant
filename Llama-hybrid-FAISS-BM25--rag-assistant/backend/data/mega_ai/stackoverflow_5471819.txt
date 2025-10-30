@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5471819
+[parent_id]: 
+[tags]: 
+why does hibernate hql distinct cause an sql distinct on left join?
+
+I've got this test HQL: select distinct o from Order o left join fetch o.lineItems and it does generate an SQL distinct without an obvious reason: select distinct order0_.id as id61_0_, orderline1_.order_id as order1_62_1_... The SQL resultset is always the same (with and without an SQL distinct): order id | order name | orderline id | orderline name ---------+------------+--------------+--------------- 1 | foo | 1 | foo item 1 | foo | 2 | bar item 1 | foo | 3 | test item 2 | empty | NULL | NULL 3 | bar | 4 | qwerty item 3 | bar | 5 | asdfgh item Why does hibernate generate the SQL distinct? The SQL distinct doesn't make any sense and makes the query slower than needed. This is contrary to the FAQ which mentions that hql distinct in this case is just a shortcut for the result transformer: session.createQuery("select distinct o from Order o left join fetch o.lineItems").list(); It looks like you are using the SQL DISTINCT keyword here. Of course, this is not SQL, this is HQL. This distinct is just a shortcut for the result transformer, in this case. Yes, in other cases an HQL distinct will translate straight into a SQL DISTINCT. Not in this case: you can not filter out duplicates at the SQL level, the very nature of a product/join forbids this - you want the duplicates or you don't get all the data you need. thanks

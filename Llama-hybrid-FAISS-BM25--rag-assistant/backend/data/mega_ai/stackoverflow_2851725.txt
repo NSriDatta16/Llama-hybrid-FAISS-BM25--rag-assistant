@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2851725
+[parent_id]: 2851578
+[tags]: 
+1/ Use a SPLIT function (many variations can be Googled) on your original substring, which will dump the individual substrings into a temp table of some sort, with one row per substring snippet. 2/ EDIT: You need to use CROSS APPLY to join to a table valued function: SELECT * FROM Example E CROSS APPLY Split(E.text, ' ') AS S WHERE CONTAINS(E.text, 'FORMSOF(INFLECTIONAL, jump)') AND S.String LIKE '%jump%'; *NOTE: You need to forage for your own user-defined Split function. I used this one and applied the first commenter's edit to allow for the space character as a delimiter. So, E is your Example table. You're still FT searching on the text field for the word 'jump'. And now you're "joining" to a table comprised of the individual substring values of your text field. Finally, you're matching that against the word 'jump' by using LIKE or Instr .

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5716041
+[parent_id]: 5715812
+[tags]: 
+You are calling ReportProgress too often. Call it more frequently than about a thousand times per second and the UI thread gets so swamped by the invoke requests that it doesn't get around to its regular duties anymore. It stops painting and paying attention to user input. The updates still happen, you just can't see them anymore. This of course happens because you have ReportProgress inside the inner loop, calling it for each individual row in the dataset. It is wasted effort, the human eye cannot possibly keep up with that rate of updates, anything beyond 20 updates per second looks like a blur. A Q&D fix would be to call ReportProgress for every 100th row. Paying attention to elapsed time and count off 45 msec is the fix that works on any machine. The problem with the progress bar sounds like a calculation problem, one that's not obvious from the snippet. The reason the progress bar works but not the text update is that PB was designed to avoid this painting problem, it forces a repaint when its Value property changes instead of waiting for Windows to deliver the Paint notification.

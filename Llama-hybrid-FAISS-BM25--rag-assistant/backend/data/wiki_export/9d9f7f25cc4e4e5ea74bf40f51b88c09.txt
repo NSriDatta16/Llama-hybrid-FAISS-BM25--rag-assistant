@@ -1,0 +1,84 @@
+Operational Control Language (OCL) is the control language of the IBM System/3, System/32, System/34 and System/36 minicomputer family. It is supported on IBM i's System/36 Environment for backwards compatibility purposes. It is similar to the older control languages JCL (System/370), and unrelated to the later Control Language (System/38 and IBM AS/400), and REXX (AS/400).
+
+Overview
+OCL statements are used to directly load user or system programs into memory, assign system resources to them, and transfer system control to them in a process called execution. The fact that a program is stored on a computer's disk drive does not in itself cause the computer to process or execute the program.
+
+OCL statements can be entered manually from the keyboard, but are generally stored as a procedure member. A procedure member is a freely editable member within a library, it is a source file. On the S/32, S/34, and S/36, procedures are not compiled, they are interpreted.
+
+Example
+OCL statements usually begin with two slashes and at least one space character.  Here's an example of a procedure stored on a System/36 as member PROC1:
+** Procedure PROC1                  Optional documentation
+** 
+** Written by Joe User 2006-05-29
+**
+** 
+// * 'PROC1 procedure is running'
+// * ' '
+// IFF ACTIVE-'PROC2,PROC3' GOTO OKAY
+**                                  IFF means 'if false'
+**                                  ACTIVE-'name1,name2' means true
+**                                  if at least one of the listed programs is currently running
+**                                  GOTO xxx means skip to the statement
+**                                  that has a TAG xxx and resume processing
+// PAUSE 'Cannot continue because other Payroll is running'
+**                                  Halts execution with a message
+// CANCEL                           Stops execution of this procedure
+// TAG OKAY
+// IFF DATAF1-PFILE1 IFF DATAF1-PFILE2 GOTO NODELT
+// * 'Caution, Pay Data Exists'     Displays information on terminal
+// * ' '
+// * 'Press 1 to continue and DELETE existing files'
+// IFF '1'=?1R? CANCEL              A parameter is indicated by question marks surrounding a number
+**                                  Using 1R between question marks indicates
+**                                  that the parameter is required
+**                                  and processing waits for user input.  
+**                                  CANCEL means immediately go to end of job.
+// LOAD $DELET                      $DELET is used to delete files
+// RUN
+**                                  This program requires and processes, consumes,
+**                                  succeeding statements as data up until an END statement 
+// IF DATAF1-PFILE1 SCRATCH UNIT-F1,LABEL-PFILE1
+**                                  Conditionally deletes an existing disk file
+// IF DATAF1-PFILE2 SCRATCH UNIT-F1,LABEL-PFILE2
+// END
+**
+// TAG NODELT
+// LOAD PR101                       PR101 could be an RPG or COBOL program
+// FILE NAME-PAYMAST,DISP-SHR       PAYMAST is the payroll master file
+// FILE NAME-PFILE1,DISP-NEW,RECORDS-100,EXTEND-100
+**                                  A new file PFILE1 is created and allocated
+**                                  100 records are assigned to PFILE1
+**                                  when all are used, the system tries to extend it by another 100
+**                                  each time it fills.
+// RUN
+**                                  END statement is only necessary
+**                                  for those programs enabled
+**                                  to process any following statements as data
+**                                  Such data does not need to be formatted like OCL
+// SWITCH 1XX0XXXX                  Causes flags U1 through U8 to be SETON (1), OFF (0), or left as previously set (X)
+**
+// LOCAL OFFSET-1,DATA-'PROC1'      Places PROC1 in the Local Data Area (LDA)
+// LOCAL OFFSET-101,DATA-'?USER?'   Substitutes the operator's User ID                        
+**                                  LDA is accessed via a data structure, UDS within an RPG program
+**                                  LDA and User switches (flags) remain available to succeeding programs
+**                                  until set otherwise
+**                                  Called sub-procedure members and loaded program's source code needs to be examined
+**                                  as to whether or not the LDA and User switches are actually read or altered
+// LOAD PR102
+// FILE NAME-PAYMAST,DISP-SHR       DISP-SHR means the file is shared, versus exclusive access
+**                                  Other programs can use PAYMAST at the same time
+// FILE NAME-PFILE,LABEL-PFILE1     NAME/LABEL is used when the RPG file name reference
+**                                  and the actual disk file label are different
+// RUN
+// RETURN                           Return to the calling procedure, otherwise end-of-job
+This procedure member incorporates a variety of OCL statements, also procedure control expressions (PCE), resources, that is mostly files are allocated, and several job steps, that is programs are executed.  
+
+Comments are represented by an asterisk in column 1, and otherwise free-format. Or can be placed after the logical end of a statement, if there is no indicator for statement continuation onto the next line, like a trailing comma.
+
+External links 
+IBM maintains manuals freely online and downloadable, including OCL 36. 
+ "System/36 Environment Programming" (1995) v6r1
+ "System/36 Environment Reference" (1995) v6r1
+
+Scripting languages
+IBM operating systems

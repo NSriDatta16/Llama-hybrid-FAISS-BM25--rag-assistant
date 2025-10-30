@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 627602
+[parent_id]: 626802
+[tags]: 
+Ignoring whether this test is a good thing or not.... Very dirty hack is to check that Transaction.Current is not null. This is not a 100% test since someone could be using something other than TransactionScope to achieve this but it should guard against the obvious 'didn't bother to have a transaction' parts. Another option is to deliberately try to create a new TransactionScope with incompatible isolation level to whatever would/should be in use and TransactionScopeOption.Required . If this succeeds rather than throwing an ArgumentException there wasn't a transaction. This requires you to know that a particular IsolationLevel is unused (something like Chaos is a potential choice) Neither of these two options is particularly pleasant, the latter is very fragile and subject to the semantics of TransactionScope remaining constant. I would test the former rather than the latter since it is somewhat more robust (and clear to read/debug).

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5461381
+[parent_id]: 5460070
+[tags]: 
+Lync contacts are organised into groups, so you need to start at the Groups level. Once you've got a group, you can then enumerate through it's Contacts foreach(var group in _client.ContactManager.Groups) { foreach (var contact in group) { MessageBox.Show(contact.Uri); } } This article is good for background, and more advanced features Edit : Specifically, for the distribution groups expansion question, I think the sample here is flawed. Instead of calling BeginExpand and waiting on the WaitHandle, provide a callback method to handle the Expand callback. So, instead of: asyncOpResult = DGGroup.BeginExpand(null, null); asyncOpResult.AsyncWaitHandle.WaitOne(); DGGroup.EndExpand(asyncOpResult); try this: ... asyncOpResult = DGGroup.BeginExpand(ExpandCallback, DGGroup); ... public void ExpandCallback(IAsyncResult ar) { DistributionGroup DGGroup = (DistributionGroup)ar.AsyncState; DGGroup.EndExpand(ar); etc... } This works perfectly for me.

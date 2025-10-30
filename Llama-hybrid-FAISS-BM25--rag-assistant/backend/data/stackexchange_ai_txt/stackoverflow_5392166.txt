@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5392166
+[parent_id]: 
+[tags]: 
+How do you raise an event from a Strict Mock in Rhino Mocks?
+
+I want to test that the following code sets the Raised property when the MyEvent event is raised: public interface IEventRaiser { event EventHandler MyEvent; void DoSomething(); } public class EventSubscriber { public EventSubscriber(IEventRaiser raiser) { this.raiser = raiser; this.raiser.MyEvent += EventRaised; } private readonly IEventRaiser raiser; private void EventRaised(object sender, Args args) { raiser.DoSomething(); Raised = true; } public bool Raised {get; private set;} } I am using the following NUnit test code, but the event never seems to be raised. The EventRaised method is never running: [TestFixture] public class EventSubscriberTests { private MockRepository mocks; private IEventRaiser raiser; private EventSubscriber target; [SetUp] public void SetUp() { mocks = new MockRepository(); raiser = mocks.StrictMock (); raiser.Expect(r => r.MyEvent += null).IgnoreArguments(); mocks.ReplayAll(); target = new EventSubscriber(raiser); } [TearDown] public void TearDown() { mocks.VerifyAll(); } [Test] public void VerifyEventIsSubscribedTo() { raiser.BackToRecord(); raiser.Expect(r => r.DoSomething()); raiser.Replay(); raiser.Raise(r => r.MyEvent += null, raiser, new Args {Property = true} ); Assert.IsTrue(target.Raised); } } If I don't add the extra expectation in before raising the event, this works fine. However, I can't seem to make it work with it. What am I doing wrong?

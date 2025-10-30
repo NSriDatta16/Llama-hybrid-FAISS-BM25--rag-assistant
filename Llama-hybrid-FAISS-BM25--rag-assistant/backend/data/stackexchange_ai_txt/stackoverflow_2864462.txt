@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2864462
+[parent_id]: 2864066
+[tags]: 
+Well it fails if you've already set it to background mode. Could you, dependent on whether you would like it to be background processing, not just Set the priority to background begin and see if it fails? If you'd expect/want it not to be then you could test by calling background end. If thats not good to you you'd probably be best off just using Thread Local Storage to store whether it is in background mode or not. Edit by Magnus Hoff: This is how I ended up implementing it: bool has_low_io_priority() { if (SetThreadPriority(GetCurrentThread(), THREAD_MODE_BACKGROUND_BEGIN)) { // Seems we were able to enter background mode. That means we were // not in background mode from before. SetThreadPriority(GetCurrentThread(), THREAD_MODE_BACKGROUND_END); return false; } else { DWORD err = GetLastError(); if (err == ERROR_THREAD_MODE_ALREADY_BACKGROUND) return true; else return false; // Works well :)

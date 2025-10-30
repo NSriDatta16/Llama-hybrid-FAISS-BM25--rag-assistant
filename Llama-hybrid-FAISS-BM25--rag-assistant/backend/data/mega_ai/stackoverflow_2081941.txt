@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2081941
+[parent_id]: 
+[tags]: 
+How to detect SSD in Mac OS X?
+
+Is there a reliable, quick, deterministic way (i.e. not a benchmark) to check whether the system drive Mac OS X is on is a Solid State Drive? Is there any other indicator how well disk handles parallel access? I'm trying to adjust number of threads that my program is going to use for disk-bound operations. I'm not interested in raw speed or seek time, only which type of access – serial or parallel – is faster for the drive. I don't expect users of my program to use iSCSI or RAID. SSD is my focus, anything else is nice-to-have. Device Characteristics of IOAHCIBlockStorageDevice contains this information. How can I read it programmatically? So far I've figured out it goes like this: (following is pseudocode) match = IOBSDNameMatching(kIOMasterPortDefault,0,"disk0s2"); IOServiceGetMatchingServices(kIOMasterPortDefault, match, &iterator); while(entry = IOIteratorNext(iterator)) { do { entry = IORegistryEntryGetParentEntry(nextMedia, kIOServicePlane, &entry); dict = IORegistryEntryCreateCFProperty(nextMedia, CFSTR(kIOPropertyDeviceCharacteristicsKey), kCFAllocatorDefault, 0); [dict objectForKey:CFSTR(kIOPropertyMediumTypeKey)]; } while(!dict && entry); } Edit: Here's complete source code . I've verified it works with Intel SSD and OCZ Vertex.

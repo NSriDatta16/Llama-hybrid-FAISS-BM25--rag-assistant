@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 58463
+[parent_id]: 58449
+[tags]: 
+If you want to determine how well the model can predict unseen data you can use cross validation. In Matlab, you can use glmfit to fit the logistic regression model and glmval to test it. Here is a sample of Matlab code that illustrates how to do it, where X is the feature matrix and Labels is the class label for each case, num_shuffles is the number of repetitions of the cross-validation while num_folds is the number of folds: for j = 1:num_shuffles indices = crossvalind('Kfold',Labels,num_folds); for i = 1:num_folds test = (indices == i); train = ~test; [b,dev,stats] = glmfit(X(train,:),Labels(train),'binomial','logit'); % Logistic regression Fit(j,i) = glmval(b,X(test,:),'logit')'; end end Fit is then the fitted logistic regression estimate for each test fold. Thresholding this will yield an estimate of the predicted class for each test case. Performance measures are then calculated by comparing the predicted class label against the actual class label. Averaging the performance measures across all folds and repetitions gives an estimate of the model performance on unseen data.

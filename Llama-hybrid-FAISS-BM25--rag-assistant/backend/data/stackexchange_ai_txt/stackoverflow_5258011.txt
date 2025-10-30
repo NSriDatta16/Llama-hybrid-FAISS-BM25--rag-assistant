@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5258011
+[parent_id]: 5257973
+[tags]: 
+It depends on the storage engine. For MyISAM the total row count is stored for each table so SELECT COUNT(*) FROM yourtable is an operation O(1). It just needs to read this value. For InnoDB the total row count is not stored so a full scan is required. This is an O(n) operation. From the manual : InnoDB does not keep an internal count of rows in a table. (In practice, this would be somewhat complicated due to multi-versioning.) To process a SELECT COUNT(*) FROM t statement, InnoDB must scan an index of the table, which takes some time if the index is not entirely in the buffer pool. If your table does not change often, using the MySQL query cache is a good solution. To get a fast count, you have to use a counter table you create yourself and let your application update it according to the inserts and deletes it does. SHOW TABLE STATUS also can be used if an approximate row count is sufficient. See Section 13.2.13.1, " InnoDB Performance Tuning Tips ".

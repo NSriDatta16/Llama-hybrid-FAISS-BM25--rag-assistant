@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3973189
+[parent_id]: 3972916
+[tags]: 
+Instead of stripping attributes out of your model, why not load in only what you need? It's often to your advantage to use the data directly instead of involving the models when doing simple numerical comparisons. The storage requirements for a simple hash are dramatically lower than a full ActiveRecord instance. In this case, select_all is your friend: class Movie This will produce a simple hash that looks something like this: Movie.data_for(2, 5, 6, 89, 2467) # => { 2 => { :id = > '2', :score => '4' }, ... } You can clean up the structure if you like to convert strings to integers as required, and this will further decrease your storage requirements. You can store a lot of data with plain numbers and simple hashes. Stashing this hash in Memcache is, at this point, a simple exercise of using Rails.cache

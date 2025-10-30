@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5660458
+[parent_id]: 5660070
+[tags]: 
+Sending structures over the network is tricky. The following problems you might have Byte endiannes issues with integers. Padding introduced by your compiler. String parsing (i.e. detecting string boundaries). If performance is not your goal, I'd suggest to create encoders and decoders for each struct to be send and received (ASN.1, XML or custom). If performance is really required you can still use structures and solve (1), by fixing an endianness (i.e. network byte order) and ensure your integers are stored as such in those structures, and (2) by fixing a compiler and using the pragmas or attributes to enforce a "packed" structure. Gcc for example uses attribute (( packed )) as such: struct mystruct { uint32_t a; uint16_t b; unsigned char text[24]; } __attribute__((__packed__)); (3) is not easy to solve. Using null terminated strings at a network protocol and depending on them being present would make your code vulnerable to several attacks. If strings need to be involved I'd use an proper encoding method such as the ones suggested above.

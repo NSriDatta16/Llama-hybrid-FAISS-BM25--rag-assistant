@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 27836
+[parent_id]: 27826
+[tags]: 
+You could collect your time points into half-open intervals like $\dots, [20, 25), [25, 30), [30, 35), \dots$ and correlate the average observations for r_person and l_person . An example with a few more data points: import numpy as np import pandas as pd df = pd.DataFrame([[0, 23, 3.0, np.nan], [1, 24, 2.9, np.nan], [2, 25, np.nan, 3.2], [3, 27, 3.0, np.nan], [4, 27, np.nan, 3.3], [5, 28, 3.1, np.nan], [6, 29, np.nan, 3.2], [7, 32, 3.0, np.nan]], columns=['index', 'tx', 'r_person', 'l_person']) bin_min = df['tx'].min() // 5 * 5 bin_max = (df['tx'].max() // 5 + 1) * 5 bins = range(bin_min, bin_max + 1, 5) df['tx_bins'] = pd.cut(df['tx'], bins) df_binned = df[['tx_bins', 'r_person', 'l_person']].groupby('tx_bins').mean() This yields >>> df_binned r_person l_person tx_bins (20, 25] 2.95 3.20 (25, 30] 3.05 3.25 (30, 35] 3.00 NaN

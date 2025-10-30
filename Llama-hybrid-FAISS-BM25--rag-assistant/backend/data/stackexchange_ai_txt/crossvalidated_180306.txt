@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 180306
+[parent_id]: 
+[tags]: 
+RandomForest returns wrong number of trees
+
+I am trying to predict churn of customer using Random Forest. I am following this article . However I am stuck with part 8 (ln[8] and Out[8]) - I want to use only 10 estimators (to have only 10 trees) so predictors are all multiples of 0.1. Below, I simplified my code to just clean the data, predict the model and see the estimators, but they are not multiples of 0.1 . Why? churn_df = pd.read_csv('C:/path') col_names = churn_df.columns.tolist() #Separate target data churn_res = churn_df['CLI_ACT'] y = np.where(churn_res == True,1,0) #Drop useless columns now to_drop = [' ', 'CLI_ID_S', 'LST_MONTH_PAY', 'CLI_ACT'] churn_clean = churn_df.drop(to_drop,axis=1) #Convert training data to numpy matrix as floats X = churn_clean.as_matrix().astype(np.float) #Standardize the data from sklearn.preprocessing import StandardScaler scaler = StandardScaler() X = scaler.fit_transform(X) from sklearn.cross_validation import train_test_split X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3,random_state=0) prob = RF(n_estimators=10).fit(X_train,y_train).predict_proba(X_test) print np.unique(prob) The output array has 38 elements(=Trees) with various probabilities (0, 0.3333, 0.937...) instead of array of 10 elements(=Trees) from 0.0 to 1.0 by 0.1.

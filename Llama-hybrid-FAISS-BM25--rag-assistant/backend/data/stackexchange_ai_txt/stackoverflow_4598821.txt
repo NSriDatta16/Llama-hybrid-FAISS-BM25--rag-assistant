@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4598821
+[parent_id]: 4598449
+[tags]: 
+Seems like you need a cursor to step through each line and check for the change of user in the record, and get the difference of that time, and store it somewhere(temp table maybe), and aggregate it later. I believe it can be done in TSQL, logic would be something like: DECLARE delta CURSOR FOR SELECT user, createdon from table order by createdon --or logid OPEN delta fetch next from delta into @username, @time while @@fetch_status = 0 begin FETCH PRIOR FROM delta into @username_prior, @time_prior IF @username_prior @username BEGIN @timedelta = @time - @time_prior @total = @total + @timedelta insert into #average (@username, @total) END fetch next from delta into @username, @time END CLOSE delta DEALLOCATE delta SELECT user, AVG(time) from #average group by user I'm sure you can figure out how to declare all the parameters.

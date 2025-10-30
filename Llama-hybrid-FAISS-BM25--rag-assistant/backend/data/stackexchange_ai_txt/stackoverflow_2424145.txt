@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2424145
+[parent_id]: 2423584
+[tags]: 
+You could use a MemoryStream but that actually wastes memory because two separate copies of the bitmap data are kept in RAM: When you load the MemoryStream you make one copy, and when the bitmap is decoded another copy is made. Another problem with using MemoryStream in this way is that you bypass the cache. The best way to do this is to read directly from the file using BitmapCacheOptions.OnLoad: path = @"c:\somePath\somePic.jpg" var source = new BitmapImage(); source.BeginInit(); source.UriSource = new Uri(path, UriKind.RelativeOrAbsolute); source.CacheOption = BitmapCacheOption.OnLoad; source.EndInit(); // Required for full initialization to complete at this time var img = new System.Windows.Controls.Image { Source = source }; This solution is efficient and simple too. Note: If you actually do want to bypass the cache, for example because the image may be changing on disk, you should also set CreateOption = BitmapCreateOption.IgnoreImageCache . But even in that case this solution outperforms the MemoryStream solution because it doesn't keep two copies of the image data in RAM.

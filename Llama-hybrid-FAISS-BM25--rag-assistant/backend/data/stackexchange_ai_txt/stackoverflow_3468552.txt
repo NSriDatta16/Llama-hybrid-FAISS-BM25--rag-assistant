@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3468552
+[parent_id]: 3404099
+[tags]: 
+I solved my problem. This happens in the custom ActionMapper: To find out if an action exists, I firstly construct a string of the class name (including the namespace) of the desired action. Then I call Class.forName("namespaceroot.foo.bar.myaction"); If the action does not exist, an ClassNotFoundException exception is thrown, which I can check for in a try { ... } catch { ... } block. Within the catch block I can change the namespace of the mapping to the fallback namespace. This has some implications to the ActionProxy : The namespace has to be changed there, too, in getMappingFromActionName . Otherwise the ActionProxy contains the namespace of the request, which is fine usually. The DefaultActionProxy does not have a setter for namespace, so I subclassed it and create it using a custom AxtionProxyFactory . Phew. This is not elegant imho, but as long as I don't come up with a better idea it'll stay that way. I'd love to hear a better solution!

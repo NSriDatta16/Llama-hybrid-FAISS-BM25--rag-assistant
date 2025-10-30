@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5024377
+[parent_id]: 
+[tags]: 
+Hibernate: A long read-only transaction will now require a small DB update in the middle
+
+I have written quite a complicated engine of sorts which navigates up and down a large series of objects read in from the database. So I have code that looks something like this: public void go(long id) { try { beginTransaction(); Foo foo = someDao.find(id); anotherObject.doSomething(foo); commitTransaction(); } catch (Exception e) { rollbackTransaction(); } } The code in doSomething(...) will call methods to get child objects of Foo and pass those child objects off to other classes and so on. Prior to my problem, this use to just be a long read-only transaction. Now however, somewhere in the middle of all of this, there needs to be an update to the database. It is important that this update is committed straight away. As Hibernate doesn't support nested transactions, how would I deal with a situation like this to allow me to continue to pass my object around and still call getter methods to access children whilst having that database update get committed? I thought of removing the long running transaction and having small transactions all over the place. Unfortunately, my code at the moment passes Foo and other child objects everywhere assuming it is still bound to the session. If this is my only solution, would that mean I would end up with ugly merge calls everywhere just to re-attach to the session so the getter methods work again? I'm sure there must be a more elegant solution.

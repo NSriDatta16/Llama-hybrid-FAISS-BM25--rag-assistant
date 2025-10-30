@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 58265
+[parent_id]: 
+[tags]: 
+In R, coefficients of MA function are wrong?
+
+I'm currently sifting through my copy of Analysis of Financial Time Series 2nd Edition by Ruey Tsay, and one of the sections involves fitting a MA model to certain data (data set is here ). Here's the fit with exact maximum likelihood according to the text, with certain insignificant parameters removed: rt = 0.013 + a(t) + 0.181a(t−1) − 0.121a(t−3) + 0.122a(t−9) σ(a) = 0.0724 However, when I try to fit it with R... > mew = read.table("m-ew.dat") > arima(mew,order = c(0,0,9),fixed = c(NA,0,NA,rep(0,5),NA,NA),method = "ML") Call: arima(x = mew, order = c(0, 0, 9), fixed = c(NA, 0, NA, rep(0, 5), NA, NA), method = "ML") Coefficients: ma1 ma2 ma3 ma4 ma5 ma6 ma7 ma8 ma9 intercept 0.180 0 -0.1318 0 0 0 0 0 0.1373 0.0132 s.e. 0.031 0 0.0362 0 0 0 0 0 0.0327 0.0029 sigma^2 estimated as 0.005282: log likelihood = 1039.1, aic = -2068.21 As you can see, the ma1 coefficients are the same, but ma3 and ma9 are different, even with method = "ML", i.e. maximum likelihood. Why is this? Also, from a practical standpoint, while ma2 and ma4-ma8 may be 0 (their 95% confidence intervals overlap with 0), removing them from the model raises the AIC, lowers the p-value with regards to the Ljung-Box test on the residuals, and also lowers the log-likelihood value. Is it even worth removing these parameters if such things happen?

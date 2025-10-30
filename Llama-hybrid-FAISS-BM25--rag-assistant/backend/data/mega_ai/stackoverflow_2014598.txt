@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2014598
+[parent_id]: 2012852
+[tags]: 
+sleep + time + times can kinda do this. my $base = time; my $ratio = 0.5; my $used = 0; sub relax { my $now = time; my ($total) = times; return if $now - $base 0 && sleep($over)); $used = $total; } (Untested...) Sprinkle enough relax calls throughout your code and this should average out to near or under 50% CPU time. BSD::Resource can do this less invasively, and you might as well grab Time::HiRes for higher precision. my $base = clock_gettime(CLOCK_MONOTONIC); my (undef, $hard) = getrlimit(RLIMIT_CPU); my $interval = 10; if ($hard != RLIM_INFINITY && $hard 0 && sleep($over)); }; setrlimit(RLIMIT_CPU, $interval, RLIM_INFINITY); (Also untested...) On a system which supports it, this should ask the OS to signal you every $interval seconds of CPU time, at which point you reset the counter and sleep. This should not require any changes to the rest of your code.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1194156
+[parent_id]: 1194129
+[tags]: 
+If possible, use your app server's support for this, if possible (some have it, some don't). For example, we use JBoss's support for an "HA Singleton" which is a service that only runs on the cluster master node. It's not perfect (you have to handle the case where occasionally it brain farts), but it's good enough. Failing that, you may be able to engineer something using JGroups, which provides with cluster node auto-discovery and negotiation, but it's non-trivial. As a last resort, you can use database locking to manage cluster singletons, but that's seriously fragile. Not recommended. As an alternative to a cluster singleton, you could use a distributed cache instead. I recommend JBossCache (which doesn't need JBoss app server to run) or EhCache (which now provides a distribution mechanism). You'll have to reengineer your cache to work in a distributed way (it won't magically just work), but it's probably going to be a better solution than a cluster singleton.

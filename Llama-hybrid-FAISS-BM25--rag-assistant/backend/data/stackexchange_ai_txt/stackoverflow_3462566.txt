@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3462566
+[parent_id]: 
+[tags]: 
+python: elegant way to deal with lock on a variable?
+
+I have code that looks like something like this: def startSearching(self): self.searchingLock.acquire() searching = self.searching if self.searching: self.searchingLock.release() self.logger.error("Already searching!") return False self.searching = True self.searchingLock.release() #some more init code, then start the thread which #constantly checks self.searching to determine when to stop it's kind of ugly, though. lots of acquires and releases. this looks prettier: def startSearching(self): with self.searchingLock: if self.searching: self.logger.error("Already searching!") return False self.searching = True #some more init code, then start the thread which #constantly checks self.searching to determine when to stop but this keeps the lock longer than strictly necessary, espcially if self.logger.error takes a while (like if it writes to disk, which it does). is there any middle ground between holding the lock as little as possible but having prettier code?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4062381
+[parent_id]: 4062351
+[tags]: 
+Use require_once while including files with classes definition (I guess this will be somewhere in getItems() ) or organize your files and define magic function __autoload() that will load it for you when used. After looking into provided source, I doubt that this works for more than one row... Here you create instance of Item before even checking if there are any items, and after first loop $instance is destroyed: require('classes/item.php'); $instance = new Item(); foreach ($pdo->query($sql) as $row) { $instance->name = $row['name']; $instance->id = $row['id']; $instance->type = $row['type']; $instance->parent_id = $row['parent_id']; $items[] = $instance; unset($instance); } This should look like: require_once('classes/item.php'); foreach ($pdo->query($sql) as $row) { $instance = new Item(); $instance->name = $row['name']; $instance->id = $row['id']; $instance->type = $row['type']; $instance->parent_id = $row['parent_id']; $items[] = $instance; unset($instance); } So for every item new instance is created.

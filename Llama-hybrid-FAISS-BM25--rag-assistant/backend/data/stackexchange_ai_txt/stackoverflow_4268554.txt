@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4268554
+[parent_id]: 4265660
+[tags]: 
+Even with quite a few fields in your record, "creating a new one" just means copying pointers. And "letting the old one be garbage collected" just means releasing a few bytes for each pointer in a way that GHC's generational garbage collector is very fast at handling. It all boils down to a handful of machine instructions. So even for a graphics application, that very well may not kill your performance at all. If you are sure that it really does impact on performance, organize the fields into a tree. You can create a fixed-shape tree by using nested data types, or even just use Data.IntMap . That will get you an average of log n / 2 pointer copies. You can do even better if you know that certain fields are accessed much more often. It would be a very rare application whose state is so complex and whose performance requirements are so heavy that the only option is STRef fields. But it's nice to know that the option is there.

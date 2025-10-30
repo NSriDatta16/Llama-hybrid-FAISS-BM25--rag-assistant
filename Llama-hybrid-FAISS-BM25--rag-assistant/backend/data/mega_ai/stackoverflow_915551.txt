@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 915551
+[parent_id]: 915445
+[tags]: 
+Interesting -- you are trying to create a vector or list of incomplete type. From a quick look at the standard, I can't find anything saying whether this is or is not supposed to be allowed for container types included in the C++ Standard Library. Either ruling would seem to be reasonable: Why it might not be allowed: You can't declare an object of type X inside the definition of X . E.g. the following code fails to compile because it would create an infinitely-deep data structure: struct X { X x; }; Why it might be allowed: Most containers are resizeable, necessitating a level of indirection (pointers) to the actual data elements in practice. It's legal to declare a pointer-to- X inside the definition of X . As the last paragraph suggests, the usual way to get around this problem is to use pointers or references to X . E.g. the following two snippets compile just fine: struct Y { Y* y; }; struct Z { std::list zl; std::vector zv; }; Does anyone (OK, I mean litb :-P) know what the requirements actually are for standard container types?

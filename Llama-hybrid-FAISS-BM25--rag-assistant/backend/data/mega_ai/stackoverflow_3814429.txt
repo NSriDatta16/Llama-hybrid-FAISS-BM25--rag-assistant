@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3814429
+[parent_id]: 3811629
+[tags]: 
+Probably the cygwin svn client is using a cygwin ssh binary to make the connection. TortoiseSVN and the other commandline client you have are using some other ssh client, for which some form of passwordless authentication has been configured (probably a public key file, maybe with a passphrase and the "pageant" ssh agent implementation). The best way to get this working is to configure similar passwordless authentication for your cygwin ssh client, by editing ~/.ssh/config and/or running cygwin's own ssh-agent to cache your passphrase. To see if your ssh configuration is working, try running ssh -v your.svn.server svnserve -t . If that outputs a line beginning with "( success", then svn should work fine. Otherwise, you should be able to diagnose the problem from the progress messages printed. Alternatively, you could try to get cygwin's svn to use the same ssh client used by your native commandline client, by setting the SVN_SSH environment variable. See the fine manual for details.

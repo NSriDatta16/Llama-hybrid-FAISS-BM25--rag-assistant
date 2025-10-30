@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1554544
+[parent_id]: 1549145
+[tags]: 
+This version of my previous answer works in both D2007 and D2010. In Delphi 2007 the CharUpCaseTable is 256 bytes In Delphi 2010 it is 128 KB (65535*2). The reason is Char size. In the older version of Delphi my original code only supported the current locale character set at initialization. My InsensPosEx is about 4 times faster than your code. Certainly it is possible to go even faster, but we would lose simplicity. type TCharUpCaseTable = array [Char] of Char; var CharUpCaseTable: TCharUpCaseTable; procedure InitCharUpCaseTable(var Table: TCharUpCaseTable); var n: cardinal; begin for n := 0 to Length(Table) - 1 do Table[Char(n)] := Char(n); CharUpperBuff(@Table, Length(Table)); end; function InsensPosEx(const SubStr, S: string; Offset: Integer = 1): Integer; var n: Integer; SubStrLength: Integer; SLength: Integer; label Fail; begin Result := 0; if S = '' then Exit; if Offset SLength then Exit; Result := Offset; while SubStrLength CharUpCaseTable[s[Result+n-1]] then goto Fail; Exit; Fail: Inc(Result); end; Result := 0; end; //... initialization InitCharUpCaseTable({var}CharUpCaseTable);

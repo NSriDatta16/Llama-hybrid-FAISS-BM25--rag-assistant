@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2450849
+[parent_id]: 2450808
+[tags]: 
+First of all, you need to run the query repeatedly under each isolation level and average the result, discarding the one with the maximum time. This will eliminate the buffer warm up impact: you want all runs to be on a warm cache, not have one query warm the cache and pay the penalty in comparison. Next, you need to make sure you measure under realistic concurrency scenario. IF you will have updates/inserts/deletes occur under real life, then you must add them to your test, since they will impact tremendously the reads under various isolation level. The last thing you want is to conclude 'serializable reads are fastest, lets use them everywhere' and then watch the system melt down in production because everything is serialized. Other than that, the only isolation level that is legitimately faster is dirty reads, since it doesn't acquire locks. Read committed snapshot (which you did not measure) also doesn't acquire locks, but it does impact performance overall due to row versioning overhead.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 526968
+[parent_id]: 520714
+[tags]: 
+Yes, the hunk is used for large static allocations such as textures and geometry, and the zone is for smaller (and possibly volatile) allocations. Having two (or more!) zones like this is a common pattern in games. There are two reasons for this; 1) Most games will preallocate the memory they require to run and then perform their own allocations from that space. Not only can this be faster than using the OS allocator but it stops the OS from paging your textures/geometry/whatever out to disk. Using your own allocator also makes it easier to create code to track memory patterns and leaks. 2) Keeping your small and/or dynamic allocations in a separate zone avoids fragmenting the zone that's used for larger allocations. Fragmentation is where previous small allocations have left "holes" that result in the amount of contiguous free space becoming smaller than total free space and is the bane of games who are pushing memory limits :)

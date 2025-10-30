@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1455034
+[parent_id]: 
+[tags]: 
+C#: marshalling a struct that contains arrays
+
+I am doing some C# interop work. I have the following struct: #pragma pack(push,1) typedef struct { unsigned __int64 Handle; LinkType_t Type; LinkState_t State; unsigned __int64 Settings; signed __int8 Name[MAX_LINK_NAME]; unsigned __int8 DeviceInfo[MAX_LINK_DEVINFO]; unsigned __int8 Reserved[40]; } LinkInfo_t; This is my attempt to convert it into a C# struct: [StructLayout(LayoutKind.Sequential, Pack = 1)] public struct LinkInfo_t { [MarshalAs(UnmanagedType.U8)] public UInt64 Handle; [MarshalAs(UnmanagedType.I4)] public LinkType_t Type; [MarshalAs(UnmanagedType.I4)] public LinkState_t State; [MarshalAs(UnmanagedType.U8)] public UInt64 Settings; [MarshalAs(UnmanagedType.LPStr, SizeConst = MAX_LINK_NAME)] public string Name; [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_LINK_DEVINFO, ArraySubType = UnmanagedType.U1)] public byte[] DeviceInfo; [MarshalAs(UnmanagedType.ByValArray, SizeConst = 40, ArraySubType = UnmanagedType.U1)] public byte[] Reserved; } However, whenever I initialize the struct the Name , DeviceInfo , and Reserved fields are all set to null. How do I fix this?

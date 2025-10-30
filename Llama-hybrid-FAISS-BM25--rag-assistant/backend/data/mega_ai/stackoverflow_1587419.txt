@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1587419
+[parent_id]: 
+[tags]: 
+How should I gracefully handle faulty AppDomains?
+
+Is this code snippet poorly designed? Originally, there was only one AppDomain.Unload , in the finally block. This had the unfortuanate side effect that other threads could keep running in the AppDomain while UnhandledException was running, which among other things uses user input and is hence very slow on a computing scale (average real runtime might be >1min), potentially throwing other exceptions and generally causing more problems. I'm stuck on thinking of a 'better' way of doing this, so, I submit this to SO. Lend me your minds. Note: I just realised there's synchronisation issues here too. Yes, I know what they are, lets stay focused. mainApp = AppDomain.CreateDomain(ChildAppDomain, null, AppDomain.CurrentDomain.SetupInformation); try { mainApp.ExecuteAssembly(Assembly.GetEntryAssembly().Location); finished = true; } catch (Exception ex) { AppDomain.Unload(mainApp); mainApp = null; UnhandledException(this, new UnhandledExceptionEventArgs(ex, false)); } finally { if (mainApp != null) { AppDomain.Unload(mainApp); mainApp = null; } } // ... void UnhandledException(object sender, UnhandledExceptionEventArgs e) { if (mainApp != null) { AppDomain.Unload(mainApp); mainApp = null; } // [snip] }

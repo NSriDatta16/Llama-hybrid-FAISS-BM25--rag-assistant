@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2968754
+[parent_id]: 2968731
+[tags]: 
+The short and correct answer is : do not use anything that relies on UserAgent sniffing. To reliable be able to adjust code paths you should test for the specific 'thing' that the codepath is adjusted for, primarily features. This is called Feature Detection . So if feature X is supported we do this, if not we do that. Deducing if a feature is supported based on which UserAgent is present will rapidly fail, especially when new browsers come to the marked. Take the following example, which can actually be found in several major libraries (!) if (isIE8) { // use new feature provided by IE8 } else if (isIE7) { // use not so new feature provided by IE7 (and IE8) } else { // use fallback for all others (which also works in IE7 and IE8) } What do you think happens when IE9 comes along? The correct pattern in this case would be if ("addEventListener" in foo) { // use DOM level 2 addEventListener to attach events foo.addEventListener(... } else if ("attachEvent" in foo) { // use IE's proprietary attachEvent method foo.attachEvent(... } else { // fall back to DOM 0 foo["on" + eventName] = .... }

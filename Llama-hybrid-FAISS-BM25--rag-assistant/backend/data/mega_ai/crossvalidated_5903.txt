@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 5903
+[parent_id]: 
+[tags]: 
+Confidence intervals for regression parameters: Bayesian vs. classical
+
+Given two arrays x and y, both of length n, I fit a model y = a + b*x and want to calculate a 95% confidence interval for the slope. This is (b - delta, b + delta) where b is found in the usual way and delta = qt(0.975,df=n-2)*se.slope and se.slope is the standard error in the slope. One way to get the standard error of the slope from R is summary(lm(y~x))$coef[2,2] . Now suppose I write the likelihood of the slope given x and y, multiply this by a "flat" prior and use a MCMC technique to draw a sample m from the posterior distribution. Define lims = quantile(m,c(0.025,0.975)) My question: is (lims[[2]]-lims[[1]])/2 approximately equal to delta as defined above? Addendum Below is a simple JAGS model where these two seem to be different. model { for (i in 1:N) { y[i] ~ dnorm(mu[i], tau) mu[i] I run the following in R: N And get: Classical confidence region: +/- 4.6939 Bayesian confidence region: +/- 5.1605 Rerunning this multiple times, the Bayesian confidence region is consistently wider than the classical one. So is this due to the priors I've chosen?

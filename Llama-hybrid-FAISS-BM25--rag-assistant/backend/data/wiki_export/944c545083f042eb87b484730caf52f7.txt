@@ -1,0 +1,114 @@
+Interprocedural optimization (IPO) is a collection of compiler techniques used in computer programming to improve performance in programs containing many frequently used functions of small or medium length. IPO differs from other compiler optimizations by analyzing the entire program as opposed to a single function or block of code.
+
+IPO seeks to reduce or eliminate duplicate calculations and inefficient use of memory and to simplify iterative sequences such as loops. If a call to another routine occurs within a loop, IPO analysis may determine that it is best to inline that routine. Additionally, IPO may re-order the routines for better memory layout and locality.
+
+IPO may also include typical compiler optimizations applied on a whole-program level, for example dead code elimination (DCE), which removes code that is never executed. IPO also tries to ensure better use of constants. Modern compilers offer IPO as an option at compile-time. The actual IPO process may occur at any step between the human-readable source code and producing a finished executable binary program.
+
+For languages that compile on a file-by-file basis, effective IPO across translation units (module files) requires knowledge of the "entry points" of the program so that a whole program optimization (WPO) can be run. In many cases, this is implemented as a link-time optimization (LTO) pass, because the whole program is visible to the linker.
+
+Analysis
+The objective of any optimization for speed is to have the program run as swiftly as possible; the problem is that it is not possible for a compiler to correctly analyze a program and determine what it will do, much less what the programmer intended for it to do. By contrast, human programmers start at the other end with a purpose, and attempt to produce a program that will achieve it, preferably without expending a lot of thought in the process.
+
+For various reasons, including readability, programs are frequently broken up into a number of procedures that handle a few general cases. However, the generality of each procedure may result in wasted effort in specific usages. Interprocedural optimization represents an attempt at reducing this waste.
+
+Suppose there is a procedure that evaluates F(x), and that F is a pure function, and the code requests the result of F(6) and then later, F(6) again. This second evaluation is almost certainly unnecessary: the result could have instead been saved and referred to later. This simple optimization is foiled the moment that the implementation of F(x) becomes impure; that is, its execution involves reference to parameters other than the explicit argument 6 that have been changed between the invocations, or side effects such as printing some message to a log, counting the number of evaluations, accumulating the CPU time consumed, preparing internal tables so that subsequent invocations for related parameters will be facilitated, and so forth. Losing these side effects via non-evaluation a second time may be acceptable, or they may not.
+
+More generally, aside from optimization, the second reason to use procedures is to avoid duplication of code that would produce the same results, or almost the same results, each time the procedure is performed. A general approach to optimization would therefore be to reverse this: some or all invocations of a certain procedure are replaced by the respective code, with the parameters appropriately substituted. The compiler will then try to optimize the result.
+
+WPO and LTO 
+
+Whole program optimization (WPO) is the compiler optimization of a program using information about all the modules in the program. Normally, optimizations are performed on a per module, "compiland", basis; but this approach, while easier to write and test and less demanding of resources during the compilation itself, does not allow certainty about the safety of a number of optimizations such as aggressive inlining and thus cannot perform them even if they would actually turn out to be efficiency gains that do not change the semantics of the emitted object code. 
+
+Link-time optimization (LTO) is a type of program optimization performed by a compiler to a program at link time. Link time optimization is relevant in programming languages that compile programs on a file-by-file basis, and then link those files together (such as C and Fortran), rather than all at once (such as Java's just-in-time compilation (JIT)).
+
+Once all files have been compiled separately into object files, traditionally, a compiler links (merges) the object files into a single file, the executable. However, in LTO as implemented by the GNU Compiler Collection (GCC) and LLVM, the compiler is able to dump its intermediate representation (IR), i.e. GIMPLE bytecode or LLVM bitcode, respectively, so that all the different compilation units that will go to make up a single executable can be optimized as a single module when the link finally happens. This expands the scope of interprocedural optimizations to encompass the whole program (or, rather, everything that is visible at link time). With link-time optimization, the compiler can apply various forms of interprocedural optimization to the whole program, allowing for deeper analysis, more optimization, and ultimately better program performance.
+
+In practice, LTO does not always optimize the entire program—library functions, especially dynamically linked shared objects, are intentionally kept out to avoid excessive duplication and to allow for updating. Static linking does naturally lend to the concept of LTO, but it only works with library archives that contain IR objects as opposed to machine-code only object files. Due to performance concerns, not even the entire unit is always directly used—a program could be partitioned in a divide-and-conquer style LTO such as GCC's WHOPR. And of course, when the program being built is itself a library, the optimization would keep every externally-available (exported) symbol, without trying too hard at removing them as a part of DCE.
+
+A much more limited form of WPO is still possible without LTO, as exemplified by GCC's  switch. This mode makes GCC assume that the module being compiled contains the entry point of the entire program, so that every other function in it is not externally used and can be safely optimized away. Since it only applies to a single module, it cannot truly encompass the whole program. It can be combined with LTO in the one-big-module sense, which is useful when the linker is not communicating back to GCC about what entry points or symbols are being used externally.
+
+Example
+Program example;
+   integer b;              {A variable "global" to the procedure Silly.}
+   Procedure Silly(a,x)
+      if x < 0 then a:=x + b else a:=-6;
+   End Silly;              {Reference to b, not a parameter, makes Silly "impure" in general.}
+   integer a,x;            {These variables are visible to Silly only if parameters.}
+   x:=7; b:=5;
+   Silly(a,x); write(x);
+   Silly(x,a); write(x);
+   Silly(b,b); write(b);
+End example;
+If the parameters to Silly are passed by value, the actions of the procedure have no effect on the original variables, and since Silly does nothing to its environment (read from a file, write to a file, modify global variables such as b, etc.) its code plus all invocations may be optimized away entirely, leaving the value of a undefined (which doesn't matter) so that just the  statements remain, simply printing constant values.
+
+If instead the parameters are passed by reference, then action on them within Silly does indeed affect the originals. This is usually done by passing the machine address of the parameters to the procedure so that the procedure's adjustments are to the original storage area. Thus in the case of pass by reference, procedure Silly does have an effect. Suppose that its invocations are expanded in place, with parameters identified by address: the code amounts to
+x:=7; b:=5;
+if x < 0 then a:=x + b else a:=-6; write(x);   {a is changed.}
+if a < 0 then x:=a + b else x:=-6; write(x);   {Because the parameters are swapped.}
+if b < 0 then b:=b + b else b:=-6; write(b);   {Two versions of variable b in Silly, plus the global usage.}
+The compiler could then in this rather small example follow the constants along the logic (such as it is) and find that the predicates of the if-statements are constant and so...
+x:=7; b:=5;
+a:=-6; write(7);            {b is not referenced, so this usage remains "pure".}
+x:=-1; write(-1);           {b is referenced...}
+b:=-6; write(-6);           {b is modified via its parameter manifestation.}
+And since the assignments to a, b and x deliver nothing to the outside world - they do not appear in output statements, nor as input to subsequent calculations (whose results in turn do lead to output, else they also are needless) - there is no point in this code either, and so the result is
+write(7);
+write(-1);
+write(-6);
+A variant method for passing parameters that appear to be "by reference" is copy-in, copy-out whereby the procedure works on a local copy of the parameters whose values are copied back to the originals on exit from the procedure. If the procedure has access to the same parameter but in different ways as in invocations such as Silly(a,a) or Silly(a,b), discrepancies can arise. So, if the parameters were passed by copy-in, copy-out in left-to-right order then Silly(b,b) would expand into
+p1:=b; p2:=b;                               {Copy in. Local variables p1 and p2 are equal.}
+if p2 < 0 then p1:=p2 + b else p1:=-6;      {Thus p1 may no longer equal p2.}
+b:=p1; b:=p2;                               {Copy out. In left-to-right order, the value from p1 is overwritten.}
+And in this case, copying the value of p1 (which has been changed) to b is pointless, because it is immediately overwritten by the value of p2, which value has not been modified within the procedure from its original value of b, and so the third statement becomes
+write(5);          {Not -6}
+Such differences in behavior are likely to cause puzzlement, exacerbated by questions as to the order in which the parameters are copied: will it be left to right on exit as well as entry? These details are probably not carefully explained in the compiler manual, and if they are, they will likely be passed over as being not relevant to the immediate task and long forgotten by the time a problem arises. If (as is likely) temporary values are provided via a stack storage scheme, then it is likely that the copy-back process will be in the reverse order to the copy-in, which in this example would mean that p1 would be the last value returned to b instead.
+
+The process of expanding a procedure in-line should not be regarded as a variant of textual replacement (as in macro expansions) because syntax errors may arise as when parameters are modified and the particular invocation uses constants as parameters. Because it is important to be sure that any constants supplied as parameters will not have their value changed (constants can be held in memory just as variables are) lest subsequent usages of that constant (made via reference to its memory location) go awry, a common technique is for the compiler to generate code copying the constant's value into a temporary variable whose address is passed to the procedure, and if its value is modified, no matter; it is never copied back to the location of the constant.
+
+Put another way, a carefully written test program can report on whether parameters are passed by value or reference, and if used, what sort of copy-in and copy-out scheme. However, variation is endless: simple parameters might be passed by copy whereas large aggregates such as arrays might be passed by reference; simple constants such as zero might be generated by special machine codes (such as Clear, or LoadZ) while more complex constants might be stored in memory tagged as read-only with any attempt at modifying it resulting in immediate program termination, etc.
+
+In general
+This example is extremely simple, although complications are already apparent. More likely it will be a case of many procedures, having a variety of deducible or programmer-declared properties that may enable the compiler's optimizations to find some advantage. Any parameter to a procedure might be read only, be written to, be both read and written to, or be ignored altogether giving rise to opportunities such as constants not needing protection via temporary variables, but what happens in any given invocation may well depend on a complex web of considerations. Other procedures, especially function-like procedures will have certain behaviours that in specific invocations may enable some work to be avoided: for instance, the Gamma function, if invoked with an integer parameter, could be converted to a calculation involving integer factorials.
+
+Some computer languages enable (or even require) assertions as to the usage of parameters, and might further offer the opportunity to declare that variables have their values restricted to some set (for instance, 6 < x ≤ 28) thus providing further grist for the optimisation process to grind through, and also providing worthwhile checks on the coherence of the source code to detect blunders. But this is never enough - only some variables can be given simple constraints, while others would require complex specifications: how might it be specified that variable P is to be a prime number, and if so, is or is not the value 1 included? Complications are immediate: what are the valid ranges for a day-of-month D given that M is a month number? And are all violations worthy of immediate termination? Even if all that could be handled, what benefit might follow? And at what cost? Full specifications would amount to a re-statement of the program's function in another form and quite aside from the time the compiler would consume in processing them, they would thus be subject to bugs. Instead, only simple specifications are allowed with run-time range checking provided.
+
+In cases where a program reads no input (as in the example), one could imagine the compiler's analysis being carried forward so that the result will be no more than a series of print statements, or possibly some loops expediently generating such values. Would it then recognise a program to generate prime numbers, and convert to the best-known method for doing so, or, present instead a reference to a library? Unlikely! In general, arbitrarily complex considerations arise (the Entscheidungsproblem) to preclude this, and there is no option but to run the code with limited improvements only.
+
+History
+For procedural languages like ALGOL, interprocedural analysis and optimization appear to have entered commercial practice in the
+early 1970s.  IBM's PL/I Optimizing Compiler performed interprocedural analysis to understand the side effects of both procedure calls and exceptions (cast, in PL/I terms as "on conditions") and in papers by Fran Allen. Work on compilation of the APL programming language was necessarily interprocedural.
+
+The techniques of interprocedural analysis and optimization were the subject of academic research in the 1980s and 1990s. They re-emerged
+into the commercial compiler world in the early 1990s with compilers from both Convex Computer Corporation (the "Application Compiler" for the Convex C4) and from Ardent (the compiler for the Ardent Titan). These compilers demonstrated that the technologies could be made sufficiently fast to be acceptable in a commercial compiler; subsequently interprocedural techniques have appeared in a number of commercial and non-commercial systems.
+
+Flags and implementation
+
+Unix-like 
+The GNU Compiler Collection has function inlining at all optimization levels. At  this only applies to those only called once (), at  this constraint is relaxed (). By default this is a single-file-only behavior, but with link-time optimization  it becomes whole program. Clang's command-line interface is similar to that of GCC, with the exception that there is no  option.
+
+Object files produced by LTO contain a compiler-specific intermediate representation (IR) that is interpreted at link-time. To make sure this plays well with static libraries, newer GNU linkers have a "linker plugin" interface that allows the compiler to convert the object files into a machine code form when needed. This plugin also helps drive the LTO process in general. Alternatively, a "fat LTO" object can be produced to contain both machine code and the IR, but this takes more space.
+
+Since both GCC and LLVM (clang) are able produce an IR from a variety of programming languages, link-time IPO can happen even across language boundaries. This is most commonly demonstrated with C and C++, but LLVM makes it possible for Rust and all other LLVM-based compilers too.
+
+Non-LTO options 
+GCC and Clang perform IPO by default at optimization level 2. However, the degree of optimization is limited when LTO is disabled, as IPO can only happen within an object file and non-static functions can never be eliminated. The latter problem has a non-LTO solution: the  switch can be used to assume that only  is non-static, i.e. visible from the outside.
+
+Another non-LTO technique is "function sections" ( in GCC and Clang). By placing each function into its own section in the object file, the linker can perform dead code removal without an IR by removing unreferenced sections (using the linker option ). A similar option is available for variables, but it causes much worse code to be produced.
+
+Other 
+The Intel C/C++ compilers allow whole-program IPO. The flag to enable interprocedural optimizations for a single file is , the flag to enable interprocedural optimization across all files in the program is .
+
+The MSVC compiler, integrated into Visual Studio, also supports interprocedural optimization on the whole program.
+
+A compiler-independent interface for enabling whole-program interprocedural optimizations is via the  property in CMake.
+
+See also
+ Profile-guided optimization (PGO)
+ Single compilation unit
+
+References
+
+External links
+ How to trick C/C++ compilers into generating terrible code?
+
+Compiler optimizations

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1512342
+[parent_id]: 
+[tags]: 
+Better way to download a binary file
+
+I have a site where a user can download a file. Some files are extremely large (the largest being 323 MB). When I test it to try and download this file I get an out-of-memory exception. The only way I know to download the file is below. The reason I'm using the code below is that the URL is encoded and I can't let the user link directly to the file. Is there another way to download this file without having to read the whole thing into a byte array? FileStream fs = new FileStream(context.Server.MapPath(url), FileMode.Open, FileAccess.Read); BinaryReader br = new BinaryReader(fs); long numBytes = new FileInfo(context.Server.MapPath(url)).Length; byte[] bytes = br.ReadBytes((int) numBytes); string filename = Path.GetFileName(url); context.Response.Buffer = true; context.Response.Charset = ""; context.Response.Cache.SetCacheability(HttpCacheability.NoCache); context.Response.ContentType = "application/x-rar-compressed"; context.Response.AddHeader("content-disposition", "attachment;filename=" + filename); context.Response.BinaryWrite(bytes); context.Response.Flush(); context.Response.End();

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 100866
+[parent_id]: 100661
+[tags]: 
+Do a recursive "for(i in this)" search through your project, and if the object (i) is a function, call "test.toString().split("\n").length". This counts the number of newlines in the function. If it is not a function, but an object, call this function in that object. Also count the number of functions you find, and then divide the total number of newlines by the total number of functions, and then you have the average. Edit function calculateMethodSize(obj){ var fcount = 0; var fsize = 0; for(i in obj){ if(obj[i] instanceof Function){ fcount++; fsize += obj[i].toString().split(";\n").length; }else if(obj[i] instanceof Object){ var ret = calculateMethodSize(obj[i]); fcount += ret.fcount; fsize += ret.fsize; } } return {fsize:fsize, fcount:fcount}; } var data = calculateMethodSize(this); var average = data.fsize / data.fcount; Be careful running this code though. If you run it with this, as I have done, then you might get a stack overflow (I did).

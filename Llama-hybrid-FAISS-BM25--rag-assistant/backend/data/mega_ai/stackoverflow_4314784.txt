@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4314784
+[parent_id]: 4305243
+[tags]: 
+In case anyone else is interested, here's how I removed the logging using Robert's monkey-patch suggestion. The standard approach to insert appstats is like this: def webapp_add_wsgi_middleware(app): from google.appengine.ext.appstats import recording app = recording.appstats_wsgi_middleware(app) return app This is what I did instead: def webapp_add_wsgi_middleware(app): from google.appengine.ext.appstats import recording def save(self): try: self._save() except Exception: pass recording.Recorder.save = save app = recording.appstats_wsgi_middleware(app) return app This retains the original save() function's "ignore all exceptions" behaviour, but removes all of the logging around it.

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 463799
+[parent_id]: 
+[tags]: 
+Variational autoencoder with L2-regularisation?
+
+I have built a variational autoencoder (VAE) with Keras in Tenforflow 2.0, based on the following model from Seo et al. (link to paper here ). The VAE is used for image reconstruction. Note that the two layers with dimensions 1x1x16 output mu and log_var , used for the calculation of the Kullback-Leibler divergence (KL-div). In my architecture, the sampling of a value from the latent space is implemented with a Lambda layer: lat_var = Lambda(sampling, output_shape=(1, 1,16), name='latent')([z_mean, z_log_var]) with sampling implemented the following way: def sampling(args): z_mean, z_log_var = args epsilon = K.random_normal(shape =(1,1,16)) return z_mean + K.exp(0.5 * z_log_var) * epsilon I was wondering if it makes sense to impose l2 regularization on the layers underlined in red, since the KL-div already imposes a constraint and acts as a regularization term. Mathematical background: The objective function for the VAE is the mean of the reconstruction loss (in red) and the KL-div (in blue), as shown in the formula from Seo et al. During optimization, minimization of the objective function leads to both minimizing the rec loss and the KL-div. So the KL-div puts a constraint and acts as a regularization term. If we add L2-regularization to the objective function, this would add an additional constraint, penalizing higher weights (see Andrew Ng on L2-regularization) in the marked layers.

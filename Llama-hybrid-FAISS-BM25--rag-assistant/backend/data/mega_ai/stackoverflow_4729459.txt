@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4729459
+[parent_id]: 4729098
+[tags]: 
+The middle part of your query is collapsing the table to a single row, so the outer part has nothing upon which to group. It's hard to say exactly what you need without seeing the schema for ticket_count, but at a guess I'd try this: SELECT AVG(CAST(TicketsOpened AS REAL)) -- The cast to REAL ensures that { 1, 2 } averages to 1.5 rather than 1 FROM ( SELECT CAST(created_at AS DATE) AS Day -- The cast to DATE truncates any time element; if you're storing date alone, you can omit this COUNT(*) AS TicketsOpened FROM ticket_count GROUP BY CAST(created_at AS DATE) ) AS X Hope that helps!

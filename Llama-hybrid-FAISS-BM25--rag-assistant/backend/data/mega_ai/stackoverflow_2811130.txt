@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2811130
+[parent_id]: 
+[tags]: 
+Is there any reason against directly calling AddRef() inside QueryInterface() implementation?
+
+When implementing IUnknown::QueryInterface() in C++ there're several caveats with pointers manipulation. For example, when the class implements several interfaces (multiple inheritance) explicit upcasts are necessary : class CMyClass : public IInterface1, public IInterface2 { }; //inside CMyClass::QueryInterface(): if( iid == __uuidof( IUnknown ) ) { *ppv = static_cast ( this ); // upcast in order to properly adjust the pointer //call Addref(), return S_OK } The reason for upcast is quite clear in multiple inheritance scenarios. However every here and there I also see the following: static_cast ( *ppv )->AddRef(); instead of simply invoking AddRef() from inside QueryInterface() implementation. Is there any reason I should do the cast of the value previously copied into ppv instead of just calling AddRef() on the current object?

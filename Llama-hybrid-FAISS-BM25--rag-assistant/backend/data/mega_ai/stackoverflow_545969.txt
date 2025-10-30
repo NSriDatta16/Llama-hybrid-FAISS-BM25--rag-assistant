@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 545969
+[parent_id]: 545421
+[tags]: 
+Here's some elegance. It's longer than I like, but it's very explorable. public Dictionary MergeArrays( IEnumerable idCollection, params IEnumerable [] valueCollections ) { Dictionary ids = idCollection .ToDictionaryByIndex(); // Dictionary > values = valueCollections.Select(x => x.ToList()) .ToList() .Pivot() .ToDictionaryByIndex(); // Dictionary result = ids.ToDictionary( z => z.Value, z => values[z.Key].ToArray() ); return result; } And here's the helper methods that I used. public static List > Pivot (this List > source) { return source .SelectMany((it) => it.Select((t, i) => new { t, i }) ) .GroupBy(z => z.i) .Select(g => g.Select(z => z.t).ToList()) .ToList(); } public static Dictionary ToDictionaryByIndex (this IEnumerable source) { return source .Select((t, i) => new { t, i }) .ToDictionary(z => z.i, z => z.t); } Disclaimer: if you call Pivot with a non-rectangular structure, I don't know/care what will happen.

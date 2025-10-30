@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3375756
+[parent_id]: 3375655
+[tags]: 
+You could try creating a function and then using a check constraint: CREATE FUNCTION ChkFn() RETURNS INT AS BEGIN DECLARE @retval INT DECLARE @distinct INT DECLARE @top INT SET @retval = 0 SELECT fk1 AS ForeignKey, SUM(isPrimary) AS PrimarySum INTO #TempTable FROM myTable GROUP BY fk1 SELECT @distinct = COUNT(DISTINCT(PrimarySum)) FROM #TempTable SELECT @top = top PrimarySum FROM #TempTable IF(@distinct=1 AND @top=1) BEGIN @retval = 1 END RETURN @retval END; GO ALTER TABLE myTable ADD CONSTRAINT chkFkPk CHECK (dbo.ChekFn() = 1 ); GO Try it and let me know if it worked. Not very elegant though..

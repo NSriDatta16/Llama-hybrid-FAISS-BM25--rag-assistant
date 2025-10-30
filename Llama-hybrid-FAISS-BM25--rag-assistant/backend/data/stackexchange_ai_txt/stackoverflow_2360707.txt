@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2360707
+[parent_id]: 2360649
+[tags]: 
+One thought was to re-write it in C++, project by project. But if you combine C# with unmanaged C++, will the threads in the C++ projects also be frozen by garbage collections? Not if the C++ code is running on different threads. the C++ heap and the managed heap are different things. On the other hand, if your C++ code is doing a lot of new/delete, you will still begin to see allocation stalls in the C++ code as the heap gets to be fragmented. And these stalls are likely to be much worse than what you see in C# code because there is no GC. When the heap needs to be cleaned up, it just happens inside the call to new or delete. If you really have a tight performance requirement, then you need to plan on not doing any memory allocation from the general heap inside your time critical code. In practice that means this will be more like C code than C++ code, or using special memory pools and placement new.

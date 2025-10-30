@@ -1,0 +1,113 @@
+In computational complexity theory, PostBQP is a complexity class consisting of all of the computational problems solvable in polynomial time on a quantum Turing machine with postselection and bounded error (in the sense that the algorithm is correct at least 2/3 of the time on all inputs).
+
+Postselection is not considered to be a feature that a realistic computer (even a quantum one) would possess, but nevertheless postselecting machines are interesting from a theoretical perspective.
+
+Removing either one of the two main features (quantumness, postselection) from PostBQP gives the following two complexity classes, both of which are subsets of PostBQP:
+ BQP is the same as PostBQP except without postselection
+ BPPpath is the same as PostBQP except that instead of quantum, the algorithm is a classical randomized algorithm (with postselection)
+
+The addition of postselection seems to make quantum Turing machines much more powerful: Scott Aaronson proved PostBQP is equal to PP, a class which is believed to be relatively powerful, whereas BQP is not known even to contain the seemingly smaller class NP. Using similar techniques, Aaronson also proved that small changes to the laws of quantum computing would have significant effects. As specific examples, under either of the two following changes, the "new" version of BQP would equal PP:
+ if we broadened the definition of 'quantum gate' to include not just unitary operations but linear operations, or
+ if the probability of measuring a basis state  was proportional to  instead of  for any even integer p > 2.
+
+Basic properties
+In order to describe some of the properties of PostBQP we fix a formal way of describing quantum postselection. Define a quantum algorithm to be a family of quantum circuits (specifically, a uniform circuit family). We designate one qubit as the postselection qubit P and another as the output qubit Q. Then PostBQP is defined by postselecting upon the event that the postselection qubit is . Explicitly, a language L is in PostBQP if there is a quantum algorithm A so that after running A on input x and measuring the two qubits P and Q,
+ P = 1 with nonzero probability
+ if the input x is in L then 
+ if the input x is not in L then .
+
+One can show that allowing a single postselection step at the end of the algorithm (as described above) or allowing intermediate postselection steps during the algorithm are equivalent.
+
+Here are three basic properties of PostBQP (which also hold for BQP via similar proofs):
+
+ PostBQP is closed under complement. Given a language L in PostBQP and a corresponding deciding circuit family, create a new circuit family by flipping the output qubit after measurement, then the new circuit family proves the complement of L is in PostBQP.
+ You can do probability amplification in PostBQP. The definition of PostBQP is not changed if we replace the 2/3 value in its definition by any other constant strictly between 1/2 and 1. As an example, given a PostBQP algorithm A with success probability 2/3, we can construct another algorithm which runs three independent copies of A, outputs a postselection bit equal to the conjunction of the three "inner" ones, and outputs an output bit equal to the majority of the three "inner" ones; the new algorithm will be correct with conditional probability , greater than the original 2/3.
+ PostBQP is closed under intersection. Suppose we have PostBQP circuit families for two languages  and , with respective postselection qubits and output qubits . We may assume by probability amplification that both circuit families have success probability at least 5/6. Then we create a composite algorithm where the circuits for  and  are run independently, and we set P to the conjunction of  and , and Q to the conjunction of  and . It is not hard to see by a union bound that this composite algorithm correctly decides membership in  with (conditional) probability at least 2/3.
+
+More generally, combinations of these ideas show that PostBQP is closed under union and BQP truth-table reductions.
+
+= 
+
+Scott Aaronson showed that the complexity classes  (postselected bounded error quantum polynomial time) and PP (probabilistic polynomial time) are equal. The result was significant because this quantum computation reformulation of  gave new insight and simpler proofs of properties of .
+
+The usual definition of a  circuit family is one with two outbit qubits P (postselection) and Q (output) with a single measurement of P and Q at the end such that the probability of measuring  has nonzero probability, the conditional probability Pr[Q = 1|P = 1] ≥ 2/3 if the input x is in the language, and Pr[Q = 0|P = 1] ≥ 2/3 if the input x is not in the language. For technical reasons we tweak the definition of  as follows: we require that  for some constant c depending on the circuit family. Note this choice does not affect the basic properties of , and also it can be shown that any computation consisting of typical gates (e.g. Hadamard, Toffoli) has this property whenever .
+
+Proving  ⊆  
+
+Suppose we are given a  family of circuits to decide a language L. We assume without loss of generality (e.g. see the inessential properties of quantum computers) that all gates have transition matrices that are represented with real numbers, at the expense of adding one more qubit.
+
+Let  denote the final quantum state of the circuit before the postselecting measurement is made. The overall goal of the proof is to construct a  algorithm to decide L. More specifically it suffices to have L correctly compare the squared amplitude of  in the states with  to the squared amplitude of  in the states with  to determine which is bigger. The key insight is that the comparison of these amplitudes can be transformed into comparing the acceptance probability of a  machine with 1/2.
+
+Matrix view of PostBQP algorithms 
+Let n denote the input size,  denote the total number of qubits in the circuit (inputs, ancillary, output and postselection qubits), and  denote the total number of gates.
+Represent the ith gate by its transition matrix Ai (a real unitary  matrix) and let the initial state be  (padded with zeroes). Then . Define S1 (resp. S0) to be the set of basis states corresponding to  (resp. ) and define the probabilities
+
+ 
+
+ 
+
+The definition of  ensures that either  or  according to whether x is in L or not.
+
+Our  machine will compare  and . In order to do this, we expand the definition of matrix multiplication:
+ 
+
+where the sum is taken over all lists of G basis vectors . Now  and  can be expressed as a sum of pairwise products of these terms. Intuitively, we want to design a machine whose acceptance probability is something like , since then  would imply that the acceptance probability is , while  would imply that the acceptance probability is .
+
+Technicality: we may assume entries of the transition matrices  are rationals with denominator  for some polynomial f(n).
+The definition of  tells us that  if x is in L, and that otherwise . Let us replace all entries of A by the nearest fraction with denominator  for a large polynomial  that we presently describe. What will be used later is that the new  values satisfy  if x is in L, and  if x is not in L. Using the earlier technical assumption and by analyzing how the 1-norm of the computational state changes, this is seen to be satisfied if  thus clearly there is a large enough f that is polynomial in n.
+
+Constructing the PP machine
+Now we provide the detailed implementation of our  machine. Let  denote the sequence  and define the shorthand notation
+ ,
+then 
+ 
+We define our  machine to
+ pick a basis state  uniformly at random
+ if  then STOP and accept with probability 1/2, reject with probability 1/2
+ pick two sequences  of G basis states uniformly at random
+ compute  (which is a fraction with denominator  such that )
+ if  then accept with probability  and reject with probability  (which takes at most  coin flips)
+ otherwise (then ) accept with probability  and reject with probability  (which again takes at most  coin flips)
+Then it is straightforward to compute that this machine accepts with probability
+
+so this is a  machine for the language L, as needed.
+
+Proving  ⊆   
+Suppose we have a  machine with time complexity  on input x of length . Thus the machine flips a coin at most T times during the computation. We can thus view the machine as a deterministic function f (implemented, e.g. by a classical circuit) which takes two inputs (x, r) where r, a binary string of length T, represents the results of the random coin flips that are performed by the computation, and the output of f is 1 (accept) or 0 (reject). The definition of  tells us that 
+ 
+Thus, we want a  algorithm that can determine whether the above statement is true.
+
+Define s to be the number of random strings which lead to acceptance,
+ 
+and so  is the number of rejected strings.
+It is straightforward to argue that without loss of generality, ; for details, see a similar without loss of generality assumption in the proof that  is closed under complementation.
+
+Aaronson's algorithm 
+Aaronson's algorithm for solving this problem is as follows. For simplicity, we will write all quantum states as unnormalized. First, we prepare the state . Second, we apply Hadamard gates to the second register (each of the first T qubits), measure the second register and postselect on it being the all-zero string. It is easy to verify that this leaves the last register (the last qubit) in the residual state
+ 
+Where H denotes the Hadamard gate, we compute the state
+ .
+Where  are positive real numbers to be chosen later with , we compute the state  and measure the second qubit, postselecting on its value being equal to 1, which leaves the first qubit in a residual state depending on  which we denote
+ .
+
+Visualizing the possible states of a qubit as a circle, we see that if , (i.e. if ) then  lies in the open quadrant  while if , (i.e. if ) then  lies in the open quadrant . In fact for any fixed x (and its corresponding s), as we vary the ratio  in , note that the image of  is precisely the corresponding open quadrant. In the rest of the proof, we make precise the idea that we can distinguish between these two quadrants.
+
+Analysis
+Let , which is the center of , and let  be orthogonal to . Any qubit in , when measured in the basis , gives the value  less than 1/2 of the time. On the other hand, if  and we had picked  then measuring  in the basis  would give the value  all of the time. Since we don't know s we also don't know the precise value of r*, but we can try several (polynomially many) different values for  in hopes of getting one that is "near" r*.
+
+Specifically, note  and let us successively set  to every value of the form  for . Then elementary calculations show that for one of these values of i, the probability that the measurement of  in the basis  yields  is at least 
+
+Overall, the  algorithm is as follows. Let k be any constant strictly between 1/2 and .
+We do the following experiment for each : construct and measure  in the basis  a total of  times where C is a constant. If the proportion of  measurements is greater than k, then reject. If we don't reject for any i, accept. Chernoff bounds then show that for a sufficiently large universal constant C, we correctly classify x with probability at least 2/3.
+
+Note that this algorithm satisfies the technical assumption that the overall postselection probability is not too small: each individual measurement of  has postselection probability  and so the overall probability is .
+
+Implications 
+
+ See Quantum computation reformulation of PP
+
+References 
+
+Articles containing proofs
+Quantum complexity theory
+Probabilistic complexity classes

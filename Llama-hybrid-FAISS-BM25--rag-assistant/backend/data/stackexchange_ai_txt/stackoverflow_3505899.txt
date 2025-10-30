@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3505899
+[parent_id]: 3505850
+[tags]: 
+yes. Leverage the fact that COUNT ignores NULL select count(distinct CASE WHEN jtprocess = 'Verify-EnvPrint' THEN jtbarcode ELSE NULL END) as CountEVP , count(distinct CASE WHEN jtprocess = 'EnvPrint' THEN jtbarcode ELSE NULL END) as CountEP from jobtracker with(nolock) where jtprocess IN ('Verify-EnvPrint', 'EnvPrint') and jtbarcode in(Select lookupcode from data with(nolock) where clientid = 123 and batchid = 12345 and jobid = 1 and subjobid = 1 and entrytype<>'c' and entrytype<>'m') GROUP BY jtBatchid This works because you have very similar WHERE clauses. It also means you only touch the table once too so should be far quicker over many result sets if they are similar

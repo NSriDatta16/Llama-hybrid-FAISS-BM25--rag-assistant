@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2683694
+[parent_id]: 2683562
+[tags]: 
+I agree with your analysis that you should keep both membership and profile information in the same table. Since you are correct that you are restricted by the number of parameters that CreateUser takes, you will need to design your field so that non-membership profile attributes are nullable. This does not mean that you will have required fields that are null in the database, however. Instead, you can you the below snippet: string username = .../ retrieve username here Membership.CreateUser(username , password, email); ProfileBase newProfile = Profile.Create(username); //since the user has just been created, all properties will be blank //set all entered properties newProfile.SetPropertyValue("MyProp1", myProp1Value); ... newProfile.SetPropertyValue("MyPropN", myPropNValue); newProfile.Save(); In this way, you leverage ASP.NET's membership providers to create the user and save profile data, but to your end user it is a single atomic operation.

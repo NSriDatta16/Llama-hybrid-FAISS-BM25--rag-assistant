@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5225546
+[parent_id]: 
+[tags]: 
+How to decode BERT when BERT is binary string
+
+I have BERT passed in to Erlang via a query string. I'm reading it via gen_tcp with the http_bin option so it arrives like this >. Which is only almost right because I want to decode it with binary_to_term/2. But binary_to_term/2 wants a binary binary, not a string binary (it wants > not >). I can parse it to the right form like this. parse(Source) -> Bins = binary:split(Source, >, [global]), parse(Bins, []). parse([H | T], Acc) -> parse(T, [list_to_integer(binary_to_list(H)) | Acc]); parse([], Acc) -> list_to_binary(lists:reverse(Acc)). But this seems convoluted and is slower than I hoped (~5k/sec with each being 200 bytes). Also came up with something based on io_lib:fread/2 but it wasn't much better and still looks awkward. Is there a BIF or NIF somewhere that might do this? If not, is there a better way to do the above to speed it up?

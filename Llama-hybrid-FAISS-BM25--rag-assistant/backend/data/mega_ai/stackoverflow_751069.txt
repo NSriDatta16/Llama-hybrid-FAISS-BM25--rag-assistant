@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 751069
+[parent_id]: 
+[tags]: 
+Implementing variable constraints in C++
+
+I've been looking for an example that shows how to implement constraints in C++ (or a boost library that lets me do this easily), but without much luck. The best I could come up with off the top of my head is: #include #include template class constrained { public: constrained(boost::function constraint, T defaultValue, T value = defaultValue) { ASSERT(constraint(defaultValue)); ASSERT(constraint(value)); this->value = value; this->defaultValue = defaultValue; this->constraint = constraint; } void operator=(const T &assignedValue) { if(constraint(assignedValue)) value = assignedValue; } private: T value; T defaultValue; boost::function constraint; }; int main(int argc, char* argv[]) { constrained foo(boost::lambda::_1 > 0 && boost::lambda::_1 Of course there's probably some more functionality you'd want from a constraint class. This is just an idea for a starting point. Anyway, the problem I see is that I have to overload all operators that T defines in order to make it really behave like a T, and there is no way for me to find out what those are. Now, I don't actually need constraints for that many different types, so I could just leave out the template and hard code them. Still, I'm wondering if there's a general (or at least more succint/elegant) solution or if there's anything seriously wrong with my approach.

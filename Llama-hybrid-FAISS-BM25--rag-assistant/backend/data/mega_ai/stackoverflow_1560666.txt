@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1560666
+[parent_id]: 1560402
+[tags]: 
+Just after asking this question I tried out some completely whacky code and it seems to work fine. I am not sure though if there is a gotcha in it. import scala.actors._ object Idling object Processor extends Actor { start import Actor._ def act() = { loop { // here lie dragons >>>>> if (mailboxSize == 0) this ! Idling // { // do the normal work reply(answer) } case Idling=> { // do the idle work in chunks } case msg => println("Rcvd unknown message:" + msg) } } } } Explanation Any code inside the argument of loop but before the call to react seems to get called when the Actor is about to wait for a message. I am sending a Idling message to self here. In the handler for this message I ensure that the mailbox-size is 0, before doing the processing.

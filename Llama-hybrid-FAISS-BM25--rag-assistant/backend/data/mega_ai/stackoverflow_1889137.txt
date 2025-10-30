@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1889137
+[parent_id]: 
+[tags]: 
+Inherit from a template parameter and upcasting back in c++
+
+I have tried to use this code in VS2008 (and may have included too much context in the sample...): class Base { public: void Prepare() { Init(); CreateSelectStatement(); // then open a recordset } void GetNext() { /* retrieve next record */ } private: virtual void Init() = 0; virtual string CreateSelectStatement() const = 0; }; class A : public Base { public: int foo() { return 1; } private: virtual void Init() { /* init logic */ } virtual string CreateSelectStatement() { /* return well formed query */ } }; template class SomeValueReader : protected T { public: void Prepare() { T::Prepare(); } void GetNext() { T::GetNext(); } T& Current() { return *this; } // reader(); reader.Prepare(); reader.GetNext(); A a = reader.Current(); int fooresult = a.foo(); // reader.foo() >> ok, not allowed Assert::IsEqual ( 1, fooresult ); }; This works as expected, i.e. having access to "A" member functions and fooresult returning 1. However, an exception is thrown when objects are deleted at the end of the unittest function: System.AccessViolationException: Attempted to read or write protected memory. This is often an indication that other memory is corrupt If I change the return type of Current() function to : T* Current() { T* current = dynamic_cast (this); return current; } then everything is ok and the unit test ends with no access violation. Does someone can tell me what was wrong with the first Current() implementation? Thanks, bouchaet.

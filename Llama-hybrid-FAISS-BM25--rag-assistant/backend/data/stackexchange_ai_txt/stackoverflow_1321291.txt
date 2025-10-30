@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1321291
+[parent_id]: 1319891
+[tags]: 
+Here are 2 more ways to do moving average in Scala 2.8.0(one strict and one lazy). Both assume there are at least p Doubles in vs . // strict moving average def sma(vs: List[Double], p: Int): List[Double] = ((vs.take(p).sum / p :: List.fill(p - 1)(0.0), vs) /: vs.drop(p)) {(a, v) => ((a._1.head - a._2.head / p + v / p) :: a._1, a._2.tail) }._1.reverse // lazy moving average def lma(vs: Stream[Double], p: Int): Stream[Double] = { def _lma(a: => Double, vs1: Stream[Double], vs2: Stream[Double]): Stream[Double] = { val _a = a // caches value of a _a #:: _lma(_a - vs2.head / p + vs1.head / p, vs1.tail, vs2.tail) } Stream.fill(p - 1)(0.0) #::: _lma(vs.take(p).sum / p, vs.drop(p), vs) } scala> sma(List(2.0, 4.0, 7.0, 6.0, 3.0, 8.0, 12.0, 9.0, 4.0, 1.0), 4) res29: List[Double] = List(0.0, 0.0, 0.0, 4.75, 5.0, 6.0, 7.25, 8.0, 8.25, 6.5) scala> lma(Stream(2.0, 4.0, 7.0, 6.0, 3.0, 8.0, 12.0, 9.0, 4.0, 1.0), 4).take(10).force res30: scala.collection.immutable.Stream[Double] = Stream(0.0, 0.0, 0.0, 4.75, 5.0, 6.0, 7.25, 8.0, 8.25, 6.5)

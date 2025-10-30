@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5419125
+[parent_id]: 
+[tags]: 
+Reading a zip file using java api from clojure
+
+I'm trying to rewrite following snippet in clojure, but it all comes out ugly, maybe someone will suggest a more elegant solution? import java.io.FileInputStream; import java.io.FileNotFoundException; import java.io.IOException; import java.util.zip.ZipEntry; import java.util.zip.ZipInputStream; public class ZipFileRdrExp { public static void main(String[] args) { try { FileInputStream fis = new FileInputStream("C:\\MyZip.zip"); ZipInputStream zis = new ZipInputStream(fis); ZipEntry ze; while((ze=zis.getNextEntry())!=null){ System.out.println(ze.getName()); zis.closeEntry(); } zis.close(); } catch (FileNotFoundException e) { e.printStackTrace(); } catch (IOException e) { e.printStackTrace(); } } } Here is my ugly try with duplicate call to getNextEntry: (ns app.core (:import (java.io FileInputStream FileNotFoundException IOException File) (java.util.zip ZipInputStream ZipEntry))) (defn- read-zip [zip-file] (let [fis (FileInputStream. zip-file) zis (ZipInputStream. fis)] (loop [ze (.getNextEntry zis)] (when ze (println (.getName ze)) (.closeEntry zis) (recur (.getNextEntry zis)))) (.close zis)))

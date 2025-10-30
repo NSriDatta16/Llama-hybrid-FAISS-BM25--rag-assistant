@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3868309
+[parent_id]: 3868287
+[tags]: 
+Provided you keep the vector the same size, you can guarantee this by calling reserve() with the maximum number of elements after declaring it or (as you have done) declaring it with an initial number of elements each constructed to have the default element value. If you remove or add elements, the underlying storage can get reallocated at any time. Since you are using raw pointers here, you could use NULL as an "empty element" flag to keep the storage invariant. Since you are setting it up with 99 initially, they will all be NULL after that (the default value for any pointer as a vector element) and reserve is redundant unless you plan to extend the list. An option that would allow you to not worry about the vector storage would be to store the elements as boost::shared_ptr . Then any removal of the vector element will only actually delete the referenced Object instance if nobody else is using it. boost::shared_ptr myObject; std::vector > objects(99); myObject = &objects[4]; objects.clear(); // myObject still valid since Object instance referenced thru shared_ptr

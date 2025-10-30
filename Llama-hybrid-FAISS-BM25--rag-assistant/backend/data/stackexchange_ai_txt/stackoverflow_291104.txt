@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 291104
+[parent_id]: 290966
+[tags]: 
+Memcached doesn't support data mirroring at present, it only provides the ability to split your entries across multiples servers to try to prevent one from getting swamped. This works by either hashing your key with the address of the server, or by using the consistent hashing algorithm (libketama). In general though, Memcached should not be viewed as a persistent storage layer, and in almost all cases, the data in the cache should be the same as in the database. If you are making a change to a user's session data and want to cache it, update it in Memcached, then update it in the database immediately afterward. If you want to be really careful, you could implement a simple journalling system to make sure this data stays consistent in the case of a system failure. Memcached is definitely being used for caching sessions though, the creator says as much in a Jinux Journal article. It is really only meant for optimizing read operations, at the end of the day, any data you care about should be stored in the database.

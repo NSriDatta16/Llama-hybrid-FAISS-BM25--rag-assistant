@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3402920
+[parent_id]: 3402834
+[tags]: 
+Does this whole process occur each time I do a select against the View? Yes. A non-materialized view (PostgreSQL doesn't support materialized views) is just a prepared SQL statement - you'd get the same performance by replacing a view reference with a subquery containing the SELECT that the view is based on. This is why values based on the supporting tables appear every time you run a query on the view, I'm unclear on if column manipulations are made visible in PostgreSQL without refreshing the view - IE: If you create a view based on SELECT * FROM table_x, and then add or delete a column from table_x - most databases will require you to refresh the view to see that change via the view. Building views on top of views should be discouraged - they're brittle; you won't know until running a view dependent on another if there's a problem. And there's no performance gain - rather the opposite. Code reuse does not perform well in a SET based environment...

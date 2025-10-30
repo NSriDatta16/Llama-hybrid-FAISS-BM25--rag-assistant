@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 335394
+[parent_id]: 335342
+[tags]: 
+I doubt that O(log n) for lookups would be a problem. You say you have 10GB of images. Assuming an average image size of say 50KB, that's 200,000 images. Doing an indexed lookup in a table for 200K rows is not a problem. It would be small compared to the time needed to actually read the image from disk and transfer it through your app and to the client. It's still worth considering the usual pros and cons of storing images in a database versus storing paths in the database to files on the filesystem. For example: Images in the database obey transaction isolation, automatically delete when the row is deleted, etc. Database with 10GB of images is of course larger than a database storing only pathnames to image files. Backup speed and other factors are relevant. You need to set MIME headers on the response when you serve an image from a database, through an application. The images on a filesystem are more easily cached by the web server (e.g. Apache mod_mmap), or could be served by leaner web server like lighttpd. This is actually a pretty big benefit.

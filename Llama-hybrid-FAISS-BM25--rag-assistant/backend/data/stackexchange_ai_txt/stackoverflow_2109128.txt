@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2109128
+[parent_id]: 279154
+[tags]: 
+As some of the comments point out, there are problems with serializing and re-parsing a document. In addition to memory usage, performance considerations, and normalization, there's also loss of the prolog (DTD or schema), potential loss of comments (which aren't required to be captured), and loss of what may be significant whitespace. Serialization should be avoided. If the real goal is to make a copy of an existing DOM Document object, then it should be handled programmatically, in memory. Thanksfully there is a relatively easy way to do this using features available in Java 5 or using external XSLT libraries like Xalan, which is to a a pass-through transformation. Below is shown the Java 5 solution: TransformerFactory tfactory = TransformerFactory.newInstance(); Transformer tx = tfactory.newTransformer(); DOMSource source = new DOMSource(doc); DOMResult result = new DOMResult(); tx.transform(source,result); return (Document)result.getNode(); That's basically it. You'll need to handle exceptions and may wish to configure the transformer, but I leave that as an exercise for the reader.

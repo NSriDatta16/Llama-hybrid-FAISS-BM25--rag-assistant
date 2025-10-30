@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 323270
+[parent_id]: 323255
+[tags]: 
+Unless your train and test data follow the exact same distribution, the eigenvectors of your train data are different from test. Let's assume that train and test distributions are very similar and we can use the same principle components. If X_train and X_test are two pxn and pxm. (n and m are number of samples). import numpy as np X_train = X_train - np.mean(X_train,axis=1)[:,np.newaxis] X_test = X_test - np.mean(X_test, axis=1)[:,np.newaxis] Sigma_train = np.dot(X_train,X_train.T)/n V,U = np.linalg.eigh(Sigma_train) Using the assumption mentioned above, you can calculate the projections of your data: Y_test = np.dot(U.T,X_test) The variance of each row is the test variance along the principle components. Y_var = np.sum(Y_test**2,axis=1)/m However, PCA is unsupervised, so in practice we don't have to use train eigenvectors for test data. Note: There's a concept called robust PCA for when test and/or train contain gross outliers. But I don't think you'd be interested in that, especially since those methods don't find the maximum variance.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2912981
+[parent_id]: 2912710
+[tags]: 
+The heart of the problem is that these methods... document.getElementById(...) document.getElementsByTagName(...) ... return elements , as indicated by their names. However, comments and text nodes are not elements. They are nodes, but not elements. So you need to do some traditional old fashioned DOM scripting, using childNodes like Vincent Robert suggested. Since - as you indicate in your comment to him - that .childNodes only goes one 'layer' deep, you need to define a recursive function to find the comment nodes: (I'm naming mine document.getCommentNodes() ) document.getCommentNodes = function() { function traverseDom(curr_element) { // this is the recursive function var comments = new Array(); // base case: node is a comment node if (curr_element.nodeName == "#comment" || curr_element.nodeType == 8) { // You need this OR because some browsers won't support either nodType or nodeName... I think... comments[comments.length] = curr_element; } // recursive case: node is not a comment node else if(curr_element.childNodes.length>0) { for (var i = 0; i

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 579915
+[parent_id]: 579838
+[tags]: 
+boost::thread copies the passed thread function to internal storage, so if you start your thread like this, the thread will operate on a different copy of mouse : int main() { Mouse mouse("abc.txt"); boost::thread thr(mouse); // thr gets a copy of mouse ... // thread changes it's own copy of mouse ... } You can use boost::ref to pass a reference to an existing object instead: Mouse mouse("abc.txt"); boost::thread thr(boost::ref(mouse)); // thr gets a reference of mouse In this case thr will modify the global mouse object, but you have to make sure that mouse doesn't go out of scope or gets destroyed otherwise before thr is finished.

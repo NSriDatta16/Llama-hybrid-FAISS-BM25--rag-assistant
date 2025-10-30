@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3735834
+[parent_id]: 3728675
+[tags]: 
+I'm going with my original idea for now, unless someone has a better approach not involving ft_min_word_len . (If I could use this on a per-database level, I might consider it -- but otherwise it is too far-reaching.) I have a function like this: $query = str_replace(array(',', '.'), '', $query); $terms = explode(' ', $query); $short = ''; foreach($terms as $term){ if(strlen($term) == 3){ $short .= '"'.$term.'", '; } } if(!empty($short)){ $short = trim($short, ', '); } return $short; And then I use the returned string to search the title column: WHERE title IN ($short) , to supplement a full-text search. I arbitrarily assign a score of 3.5, so that the returned records can be sorted along with the other full-text search hits (I chose a relatively high score, since it is an exact match for the title of the record). This doesn't feel very elegant to me, but it resolves the problem.

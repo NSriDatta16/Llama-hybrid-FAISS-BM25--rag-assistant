@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1798903
+[parent_id]: 1798538
+[tags]: 
+The "intermittent high-load errors" are caused by race conditions where one thread tramples on the static buffer before another thread has finished using it, right? So switch to using an output buffer per thread, using whatever thread-local storage mechanism your platform provides (Windows, I'm thinking). There's no synchronisation contention, no interference between threads, and based on what you've said about the current implementation rotating buffers, almost certainly the calling code doesn't need to change at all. It can't be relying on the same buffer being used every time, if the current implementation uses multiple buffers. I probably wouldn't design the API this way from scratch, but it implements your current API without changing it in a significant way, or affecting performance.

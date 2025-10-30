@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 885420
+[parent_id]: 885406
+[tags]: 
+Passing a reader around makes me cringe, unless it's a non-public helper method to deal with copying one row. Definitely not to a constructor though. Passing a reader connects your constructor (you didn't put MyObject in a class but you call new MyObject() ) to your data storage and I presume your object isn't written to be such? If it were me: private static void GetObjects() { List objects = new List (); string sql = "Select ..."; using (SqlConnection connection = GetConnection()) { SqlCommand command = new SqlCommand(sql, connection); connection.Open(); using(SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);) { while (reader.Read()) objects.Add(_ReadRow(reader)); } } } private static MyObject _ReadRow(SqlDataReader reader) { MyObject o = new MyObject(); o.field0 = reader.GetString(0); o.field1 = reader.GetString(1); o.field2 = reader.GetString(2); // Do other manipulation to object before returning return o; } class MyObject{}

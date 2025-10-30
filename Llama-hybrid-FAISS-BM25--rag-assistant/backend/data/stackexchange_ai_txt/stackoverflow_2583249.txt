@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2583249
+[parent_id]: 2583228
+[tags]: 
+On SQL Server 2008, you would have a new DATE data type, which you could use to achieve this: SELECT (list of fields) FROM dbo.YourTable WHERE dateValue BETWEEN CAST(GETDATE() AS DATE) AND DATEADD(DAY, 1, CAST(GETDATE() AS DATE)) The CAST(GETDATE() AS DATE) casts the current date and time to a date-only value, e.g. return '2010-04-06' for April 6, 2010. Adding one day to that basically selects all datetime values of today. In SQL Server 2005, there's no easy way to do this - the most elegant solution I found here is using numeric manipulation of the DATETIME to achieve the same result: SELECT (list of fields) FROM dbo.YourTable WHERE dateValue BETWEEN CAST(FLOOR(CAST(GETDATE() AS FLOAT)) AS DATETIME) AND DATEADD(DAY, 1, CAST(FLOOR(CAST(GETDATE() AS FLOAT)) AS DATETIME))

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3980957
+[parent_id]: 3972043
+[tags]: 
+I don't think this is that simple (remember I am f# naive) consider the follwoing scenario where 1) we are using generics on multiple types 2) we don't have the type information for an object so it comes in to a function as type obj, like in some of the .NET datacontract / serialization libraries I reworked my proposal to use reflection: type SomeType = { item : 'A } type AnotherType = { someList : 'A list } let test() = let getIt() : obj = let results : SomeType > = { item = { someList = [1;2;3] }} upcast results let doSomething (results : obj) = let resultsType = results.GetType() if resultsType.GetGenericTypeDefinition() = typedefof > then let method = resultsType.GetMethod("get_item") if method <> null then let arr = method.Invoke(results, [||]) if arr.GetType().GetGenericTypeDefinition() = typedefof > then printfn "match" getIt() |> doSomething Seems like there should be more natural way of doing this...

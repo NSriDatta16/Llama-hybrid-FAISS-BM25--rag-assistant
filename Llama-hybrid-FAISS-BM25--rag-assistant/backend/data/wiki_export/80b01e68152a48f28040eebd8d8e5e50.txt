@@ -1,0 +1,119 @@
+EtherCAT (Ethernet for Control Automation Technology) is an Ethernet-based fieldbus system developed by Beckhoff Automation. The protocol is standardized in IEC 61158 and is suitable for both hard and soft real-time computing requirements in automation technology.
+
+The goal during development of EtherCAT was to apply Ethernet for automation applications requiring short data update times (also called cycle times; ≤ 100 μs) with low communication jitter (for precise synchronization purposes; ≤ 1 μs) and reduced hardware costs. Typical application fields for EtherCAT are machine controls (e.g. semiconductor tools, metal forming, packaging, injection molding, assembly systems, printing machines, robotics). Remote controlled hump yard facilities used in the railroad industry.
+
+Alternative technologies for networking in the industrial environment are EtherNet/IP, Profinet and Profibus.
+
+Features
+
+Principles 
+
+With EtherCAT, the standard Ethernet packet or frame (according to IEEE 802.3) is no longer received, interpreted, and copied as process data at every node. The EtherCAT slave devices read the data addressed to them while the telegram passes through the device,  processing data "on the fly". In other words, real-time data and messages are prioritized over more general, less time-sensitive or heavy load data.
+
+Similarly, input data are inserted while the telegram passes through. A frame is not completely received before being processed; instead processing starts as soon as possible. Sending is also conducted with a minimum delay of small bit times. Typically the entire network can be addressed with just one frame.
+
+ISO/OSI Reference Model
+
+Protocol 
+The EtherCAT protocol is optimized for process data and is transported directly within the standard IEEE 802.3 Ethernet frame using Ethertype 0x88a4. It may consist of several sub-telegrams, each serving a particular memory area of the logical process images that can be up to 4 gigabytes in size. The data sequence is independent of the physical order of the nodes in the network; addressing can be in any order. Broadcast, multicast and communication between slaves is possible, but must be initiated by the master device. If IP routing is required, the EtherCAT protocol can be inserted into UDP/IP datagrams. This also enables any control with Ethernet protocol stack to address EtherCAT systems.
+
+Performance 
+Short cycle times can be achieved since the host microprocessors in the slave devices are not involved in the processing of the Ethernet packets to transfer the process images. All process data communication is handled in the slave controller hardware. Combined with the functional principle this makes EtherCAT a high performance distributed I/O system: Process data exchange with 1000 distributed digital I/O takes about 30 μs, which is typical for a transfer of 125 byte over 100Mbit/s Ethernet. Data for and from 100 servo axis can be updated with up to 10 kHz. Typical network update rates are 1–30 kHz, but EtherCAT can be used with slower cycle times, too, if the DMA load is too high.
+
+The bandwidth utilization is maximized, as each node and each data do not require a separate frame. Thus, extremely short cycle times of ≤ 100 μs are achievable. By using the full-duplex features of 100BASE-TX, effective data rates of more than 100 Mbit/s (> 90% user data rate of 2x100 Mbit/s) can be achieved.
+
+The EtherCAT technology principle is scalable and not bound to 100 Mbit/s. EtherCAT G and 10G are new extensions of standard EtherCAT using 1gbps and 10gbps respectively for significantly increased bandwidth to meet the needs of IIoT and Industry 4.0
+
+Topology 
+Using full-duplex Ethernet physical layers, the EtherCAT slave controllers close an open port automatically and return the Ethernet frame if no downstream device is detected. Slave devices may have one, two, or more ports. Due to these features EtherCAT enables a multitude of network topologies, including line, tree, ring, star, or any combination thereof. The protocol also enables a multitude of communication features such as cable redundancy, Hot Connect of segments, change of devices during operation, or even master redundancy with Hot Standby.
+
+Thus the combination of the topology variations and different network architectures, e.g. sub-ordinated or neighboring control systems with consistent synchronization, enables numerous possibilities. Additional switches are not required. The physics of Ethernet allow a cable length of up to 100 m (300 ft) between two nodes, so the E-bus (LVDS) is only intended for use as the physical layer for modular devices. For each cable path, the signal variant can be chosen individually. For higher distances, or the complete galvanic isolation between two slaves, fiber optic cables are used. With single-mode fiber, distances up to 20 km between two nodes can be bridged. Since a total of 65,535 nodes per network segment can be connected, the network extension is nearly unlimited.
+
+Synchronization 
+For synchronization a distributed clock mechanism is applied, which leads to very low jitter, significantly less than 1 μs, even if the communication cycle jitters, which is equivalent to the IEEE 1588 Precision Time Protocol standard (PTP). Therefore, EtherCAT does not require special hardware in the master device and can be implemented in software on any standard Ethernet MAC, even without dedicated communication coprocessor.
+
+The typical process of establishing a distributed clock is initiated by the master by sending a broadcast to all slaves to a certain address. Upon reception of this message, all slaves will latch the value of their internal clock twice, once when the message is received and once when it returns (remember EtherCAT has a ring topology). The master can then read all latched values and calculate the delay for each slave. This process can be repeated as many times as required to reduce jitter and average out values. Total delays are calculated for each slave depending on their position in the slave-ring and will be uploaded to an offset register. Finally the master issues a broadcast readwrite on the system clock, which will make the first slave the reference clock and forcing all other slaves to set their internal clock appropriately with the now known offset.
+
+To keep the clocks synchronised after initialization, the master or slave must regularly send out the broadcast again to counter any effects of speed difference between the internal clocks of each slave. Each slave should adjust the speed of their internal clock or implement an internal correction mechanism whenever they have to adjust.
+
+The system clock is specified as a 64 bit counter with a base unit of 1ns starting at January 1, 2000, 0:00.
+
+Diagnosis 
+The fast, precise detection of disturbances is one of many diagnostic features of EtherCAT.
+
+Bit errors during transmission are detected reliably by the analysis of the CRC check sum: the 32 bit CRC polynomial has a minimum Hamming distance of 4. Besides the error detection and localization protocol, the transmission physics and topology of the EtherCAT system allow individual quality monitoring of every single transmission path. The automated analysis of the according error counters enables the exact localization of critical network segments.
+
+More info to follow in the chapter titled "Monitoring".
+
+Device Profiles 
+The device profiles describe the application parameters and functional behavior of the devices, including device-specific state machines. The following software interfaces are provided for existing device profiles. Thus, the migration to EtherCAT by adjusting the firmware and the hardware is simplified significantly.
+
+CAN application protocol over EtherCAT (CoE) 
+CANopen devices and application profiles are available for an extensive selection of device categories and applications: I/O modules, drives (e.g., drive profile CiA 402 standardized as IEC 61800-7-201/301), encoders (CiA 406), proportional valves, hydraulic controllers (CiA 408), or application profiles. In this case, EtherCAT replaces CAN.
+
+Servodrive-Profile over EtherCAT (SoE) 
+SERCOS interface is a real-time communication interface, ideal for motion control applications. The SERCOS profile for servo drives and communication technology are standardized in IEC 61800-7. This standard also contains the mapping of the SERCOS servo drive profile to EtherCAT (IEC 61800-7-304).
+
+Related protocols
+
+Ethernet over EtherCAT (EoE) 
+Any Ethernet device can be connected within the EtherCAT segment via switch ports. The Ethernet frames are tunneled via the EtherCAT protocol, as is normal for internet protocols (e.g., TCP/IP, VPN, PPPoE (DSL), etc.). The EtherCAT network is fully transparent for the Ethernet devices, and the real-time features of EtherCAT are not disturbed.
+
+Safety over EtherCAT (FSoE) 
+In parallel to the development of EtherCAT, a fieldbus-independent safety protocol has been developed. For EtherCAT, it is available as "Safety over EtherCAT" (FSoE = Fail Safe over EtherCAT). With FSoE, functional safety with EtherCAT can be realized. The protocol as well as the implementation are certified by TÜV and meet the requirements of the Safety Integrity Level 3 according to IEC 61508. Since 2010, Safety over EtherCAT is internationally standardized to IEC 61784-3-12.
+EtherCAT provides a single-channel communication system for transferring safe and non-safe information. The transport medium is regarded as a black channel, and thus is not included in safety considerations.
+
+File over EtherCAT (FoE) 
+This simple protocol is similar to TFTP (Trivial File Transfer Protocol); it enables file access in a device and a uniform firmware upload to devices across an EtherCAT network. The protocol has been deliberately specified in a lean manner, so that it can be supported by boot loader programs. A TCP/IP stack isn’t required.
+
+Monitoring 
+Since EtherCAT uses standard Ethernet frames according to IEEE 802.3, any standard Ethernet tool can be used to monitor the EtherCAT communication. Additionally, there is free-of-charge parser software for Wireshark (formerly Ethereal, an open source monitoring tool) and the Microsoft network monitor, with which recorded EtherCAT data traffic can be comfortably prepared and displayed.
+
+Gateways 
+By using gateways, existing networks such as CANopen, DeviceNet, or Profibus, can be integrated into the EtherCAT environment seamlessly. Furthermore, gateways provide a trip-free migration path from a traditional fieldbus to EtherCAT, reducing further investment costs.
+
+Thanks to the performance of EtherCAT, communication with external fieldbus masters is as fast as with traditional cards connected via PCI or other backbone buses. Since decentralized fieldbus interfaces lead to shorter extensions, they can be operated with even higher baud rates than would have been possible with the traditional architecture.
+
+Implementation 
+EtherCAT Technology Group (ETG) encourages and expects companies that develop EtherCAT products to join ETG, so that they can get an EtherCAT Vendor-ID, get access to the full documentation, to the developers forum and to the slave stack code, that Beckhoff provides free of charge to ETG members.
+
+Master 
+Masters can be implemented as a software solution on any Ethernet MAC. Different manufacturers provide code for different operating systems, including several open-source projects. Due to the relocated mapping on the slave hardware, demands are reduced for CPU performance of the master. The master already contains the data as a readily sorted process image.
+
+In order to operate a network, the EtherCAT master requires the cyclic process data structure as well as boot-up commands for each slave device. These commands can be exported to an EtherCAT Network Information (ENI) file with the help of an EtherCAT configuration tool, which uses the EtherCAT Slave Information (ESI) files from the connected devices.
+
+Slave 
+
+Contrary to the operation of standard Ethernet, the slaves process the EtherCAT frames on the fly. This requires the use of hardware-integrated EtherCAT Slave Controllers (ESC) in the slaves. ESCs are also available as ASICs or based on FPGAs. Since the beginning of 2012, standard microprocessors with EtherCAT slave interfaces are also available.
+
+For simple devices, no additional microcontroller is required. In more complex devices, however, the communication performance of EtherCAT is nearly independent of the performance of the used controller. Thus the requirements for the microcontroller are determined by the local application, e.g. the drive control.
+
+There is a choice of development boards, both from the EtherCAT Slave Controller suppliers and from third party vendors. There are also open-source projects for EtherCAT slave device development boards, such as SOES and ArduCAT.
+
+Control and regulation 
+For the control and regulation of physical processes, high data integrity, data security, and synchronicity is required. EtherCAT has been designed especially for these kinds of applications and meets all demands for fast controls.
+
+Measurement systems 
+Modern measurement systems are characterized by multi-channeling, synchronicity, and accuracy. Due to the advanced protocol features of EtherCAT, efficient synchronous data throughput is assured. The network features based on Ethernet enable a measurement network with distributed measurement modules.
+
+Organization 
+The EtherCAT Technology Group (ETG) was established in 2003, and is the industrial Ethernet user organization with the most members in the world today. A wide range of industrial controls vendors, OEMs, machine builders, and technology organizations from around the world constitute the ETG member roster.
+The ETG offers its members implementation support and training, organizes interoperability tests (often called "Plug Fests"), and promotes the development and distribution of the technology, supported by its members and the teams working in offices in Germany, China, Japan, Korea, and North America.
+ETG end users span numerous industries, with machine builders and suppliers of powerful control technology joining forces to support and promote EtherCAT technology. The variety of industries guarantees optimal preparation of EtherCAT for the widest range of applications. System partners give qualified feedback for the simple integration of hardware and software modules in all required equipment classes.
+The EtherCAT Conformance Test Tool (CTT), developed with the assistance of ETG member companies, ensures the interoperability and protocol conformity of EtherCAT devices.
+
+Standardization 
+The EtherCAT Technology Group (ETG) is an official liaison partner of the IEC (International Electrotechnical Commission) working groups for digital communication. The EtherCAT specification was published as IEC/PAS 62407 in 2005, which was removed end of 2007 since EtherCAT had been integrated into the international fieldbus standards IEC 61158 and IEC 61784-2 as well as into the drive profile standard IEC 61800-7. These IEC standards have been approved unanimously in September and October 2007 and were published as IS (International Standards) later that year. In IEC 61800-7, EtherCAT is a standardized communication technology for the SERCOS and CANopen drive profiles (also known as CiA 402). EtherCAT is also part of ISO 15745-4, the standard for XML device description. Furthermore, SEMI has added EtherCAT to its standards portfolio (E54.20) and approved the technology for usage in semiconductor and flat panel display manufacturing equipment. In April 2010, Edition 2 of IEC 61784-3 was accepted, which contains the Safety over EtherCAT Protocol. In September 2008, the EtherCAT Installation Profile was submitted to IEC 61784-5.
+
+Further reading
+
+Notes and references
+
+External links 
+ EtherCAT Technology Group
+ Open EtherCAT Society,  open source Master and Slave EtherCAT stacks for the embedded market
+ Open Source EtherCAT Master for Linux/Real Time Kernel
+ Rapid prototyping EtherCAT slave with ArduCAT (an Arduino compatible board)
+ Ethercat for multi BLDC motor communication
+
+Industrial Ethernet

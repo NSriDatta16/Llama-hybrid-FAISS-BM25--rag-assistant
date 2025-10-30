@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5443065
+[parent_id]: 
+[tags]: 
+Best Practice to combine NHibernate.Search and ISession.Query Options
+
+I have a table look like: CREATE TABLE [dbo].[Order]( [OrderID] [int] IDENTITY(1,1) NOT NULL, [UserID] [int] NOT NULL, [ProductID] [int] NOT NULL, [OrderDate] [datetime] NOT NULL, [UnitPrice] [money] NOT NULL, [Quantity] [float] NOT NULL, [Comment] [nvarchar](200) NULL, ) ON [PRIMARY] I used NHibernate to build search of order history, meanwhile I also leverage NHibernate.Search to search against Comment field (due to full text search reason). I could build Linq query to search against UserID, ProductID, OrderDate fields and so on: IQueryable orders = orderRecordRepository.GetList(); orders = orders.Where(o => o.User.Id == 1 && o.Product.Id == 100 && o.OrderDate Now I come with question that if I need to include Comment field search, I need to create another full text session like: IFullTextSession fullTextSession = Search.CreateFullTextSession(this.session); return fullTextSession.CreateFullTextQuery (fulltextQuery).List (); The behavior of first query seems to be isolated from second one. if I need to search order with UserID, ProductID, OrderDate + some texts inside Comments, I have to perform 2 separated searches to obtain 2 different lists and then find overlapped result to get final list. It seems to be very inefficient. I am just wondering what is your practice in this situation.

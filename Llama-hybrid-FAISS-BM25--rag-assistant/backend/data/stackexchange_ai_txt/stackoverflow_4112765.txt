@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4112765
+[parent_id]: 
+[tags]: 
+C# Autonomous Update
+
+in my new project (windows-C#-vs2008)I want the executable to be able to autonomously update itself- perhaps from a network server Here What I do is download any updated dlls to "isolated storage" (each as separate dlls) then modify the CurrentDomain_AssemblyResolve() method AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve); such that it first checks for the presence of library in its isolated storage before loading it from executable . But what if I want to change something in the main exe. [I tried creating a loader project(console ap) from which, it calls my main program(changed output as dll) ,however this time the assembly resolve event is not getting trigger because the reference dlls are geting generated under bin folder of new loader project during compilation ] Any help would be highly appreciated.. public static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) { try { string assemName = new AssemblyName(args.Name).Name; object i_StoreRootDir = i_StorageFile.GetType().GetField ("m_RootDir", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(i_StorageFile); string i_StorePath = CombinePaths(i_StoreRootDir.ToString(), I_STOREDIR, assemName, DLL_EXT); if (File.Exists(i_StorePath)) { return Assembly.LoadFrom(i_StorePath); } else { //load it from resource. return null; } } catch (Exception) { throw; }

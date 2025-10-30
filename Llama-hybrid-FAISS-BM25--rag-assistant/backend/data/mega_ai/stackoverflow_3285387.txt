@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3285387
+[parent_id]: 
+[tags]: 
+Remove items with checkboxes in Django forms
+
+I'm writing a form with Django. The form is a model form for a certain model, Experiment . Each Experiment has several TimeSlot models associated with it, defined with a ForeignKey('Experiment') . I'd like to have a form with the option to remove one or more TimeSlot instances from the EditExperimentForm by checking boxes. Currently, I define all of the Checkboxes in the model by a loop in the init function in EditExperimentForm: def __init__(self, *args, **kwargs): super(EditExperimentForm,self).__init__(*args,**kwargs) experiment = self.instance for timeslot in experiment.timeslot_set.all(): self.fields['timeslot-'+str(timeslot.id)] = BooleanField(label="Remove Timeslot at "+str(timeslot.start),required=False) And then I process them upon submission with a regular expression: timeslot_re = re.compile(r'^timeslot-([\d]+)$') for key in form.data.keys(): match = timeslot_re.match(key) if match: timeslot = TimeSlot.objects.get(id=match.expand(r'\1')) timeslot.delete() This is far from an elegant solution (for one thing, it makes anything but the most generic template a straight up nightmare to work with. Can anyone think of an easier way to do this?

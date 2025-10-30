@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2967095
+[parent_id]: 2967062
+[tags]: 
+Well it depends on your application and the problem you are trying to solve. But in general, it isn't a good idea to swallow unknown exceptions. At the very least, I would log something. Edit : as Noah Roberts pointed out, about the only the only time this might be a reasonable idea would be in a destructor. It is important to suppress exceptions in destructors, otherwise you could have multiple exceptions active. This could happen, for example, if an exception is thrown, and as a result of the stack unwinding some destructor is called. If that destructor throws an exception, you'll have 2 exceptions active. C++ will then call std::terminate(), which by default will end your program. You can install a handler for this condition, but there probably isn't much you can do other than log what is happening. Still, even in a destructor, you should probably log something inside the catch (...) . However, depending on which destructor it is, you may not have your logging facility available. But in most cases you could still use std::cerr .

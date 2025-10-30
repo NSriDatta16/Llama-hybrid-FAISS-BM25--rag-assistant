@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3136315
+[parent_id]: 3134708
+[tags]: 
+I owe you the "elegant" part... :-) This is a possible HQL. Note that inverted your condition: instead of looking for "A that have all the elements of their MyList property with a Date less than a given value" , I look for "A that don't have any elements of their MyList property with a Date bigger than or equal to a given value". from A a where a not in (select a1 from A a1, B b where b.Date >= :date and b in elements(a1.MyList)) Usage: var results = session.CreateQuery("hql from above") .SetParameter("date", DateTime.Today) .List(); Note that, if you declare a bidirectional relationship between A and B (by adding an A property), the query is much simpler: from A a where a not in (select b.A from B b where b.Date >= :date) Update: here's how to do it with Criteria: session.CreateCriteria ().Add( Subqueries.PropertyNotIn("id", DetachedCriteria.For () .CreateCriteria("MyList") .SetProjection(Projections.Property("id")) .Add(Restrictions.Ge("Date", DateTime.Today))))

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1782168
+[parent_id]: 1782077
+[tags]: 
+1) Callback will be called by the runtime after PrintOut is executed. 2) Yes, it is not predictable. BeginInvoke makes code to execute on thread from pool, so real performance depends on many parameters, such as thread usage in other places of your program. 3) Delegates are objects. So, reference to them can be casted to object and backward. In case of IAsyncResult returned by BeginInvoke , AsyncState stores delegate, to make proper result extraction possbile. 4) A fragment from a program opening turnstile and making indication (both are time consuming) after user authentication: if(user.Id.HasValue) { Action openDoor = turnstile.Open; Action indicate = led.SetColor; // starting async operations openDoor.BeginInvoke(openDoor.EndInvoke, null); indicate.BeginInvoke(LedColor.Green, indicate.EndInvoke, null); // main thread activity. MakeRecordToLog(); }

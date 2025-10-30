@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1148146
+[parent_id]: 1148122
+[tags]: 
+Store a separate index (another file) of [Guid -> file number + offset in file]. Use a binary search for retrieval, and move to file n+1 whenever file n reaches a certain size. Each row in the index file is only 24 bytes (fixed size: guid + file number + offset, split files at 4GB), and sorting it is fast (insertion sort at a low rate.) Edit: You have very simple requirements that are straightforward to optimize. This carefully constructed system should outperform the database, especially if you are careful about block reads of the data and asynchronous IO. The database queries will always have the overhead of parsing. Edit 2: If you need it safe as well (always a good idea), take a look here for a description of how the concept of file system transactions can help you bullet-proof things.

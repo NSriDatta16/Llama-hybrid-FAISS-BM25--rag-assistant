@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3445479
+[parent_id]: 
+[tags]: 
+Using Response.Filter with Response.TransmitFile
+
+I'm using Response.Filter in order to implement stream compression in accordance with HTTP Request Header Accept-Encoding Here's the important stuff: if (AcceptEncoding.Contains("deflate") || AcceptEncoding == "*") { HttpApp.Response.Filter = new DeflateStream(PreviousOutputStream, CompressionMode.Compress); HttpApp.Response.AppendHeader("Content-Encoding", "deflate"); } By and large this works as intended. However, I'm in a situation where I'm using an ActionResult on an MVC Controller to serve up files to the user agent: Response.Clear(); Response.Headers["Content-Type"] = contentType; Response.Headers["Content-Length"] = contentLength; if (Request.QueryString["dl"] == "1") { Response.Headers["Content-Disposition"] = "attachment; filename=" + fileInfo.Name; } Response.Flush(); Response.TransmitFile(fileInfo.FullName); To be more exact, the action method returns new EmptyResult() after the Response.TransmitFile() call. This works exactly as intended without the Response.Filter modification. In this situation, the response entity reaches the user agent garbled and unintelligible. FireFox's Poster addon shows empty entities or jumbled entities coming back.

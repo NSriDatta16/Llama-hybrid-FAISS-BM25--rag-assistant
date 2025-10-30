@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1923387
+[parent_id]: 1922748
+[tags]: 
+You definitely want to use the bounds of it's superview to constrain it's movement. Do not call setNeedsDisplay that often. Call it once at the end of the method. You are potentially redrawing needlessly. I'd use something like the following to accomplish this. // define these variables where ever you'd like static float maxX = 0.; static float maxY = 0.; static float minX = 0.; static float minY = 0.; - (void)setupView { CGRect b = [self bounds]; // calculate constraints maxX = b.origin.x + b.size.width/* - [box bounds].size.width */; minX = b.origin.x; maxY = b.origin.y + b.size.height/* - [box bounds].size.height */; minY = b.origin.y; } - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { UITouch *touch = [touches anyObject]; startLocation = [touch locationInView:self]; // apply constraints touchLocation.x = MIN(maxX, startLocation.x); touchLocation.x = MAX(minX, startLocation.x); touchLocation.y = MIN(maxY, startLocation.y); touchLocation.y = MAX(minY, startLocation.y); [self setNeedsDisplay]; }

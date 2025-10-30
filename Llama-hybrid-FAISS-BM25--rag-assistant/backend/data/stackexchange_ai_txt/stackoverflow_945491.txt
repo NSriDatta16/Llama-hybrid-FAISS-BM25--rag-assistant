@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 945491
+[parent_id]: 
+[tags]: 
+Modelling Collections with associated statistics, and NHibernate
+
+I am currently attempting to refactor an application that has a lot of places where it displays lists or tables of data, with totals or averages at the end, and percentage changes or cumulative totals with each record. Typically the collection is modelled as a list of objects and the other data is calculated in the aspx code behind (yuck). I would like to move this logic into my model in order to make it testable and reusable. The best I can come up with at the moment is to create a collection class that all these objects are added to. This collection can then expose properties that represent various statistics. Like this: public class DailySales { public DateTime Date { get; set; } public decimal Value { get; set; } } public class SalesCollection { public List Sales { get; private set; } public decimal TotalSales { get { return Sales.Sum(x => x.Value); } } } This works well for totals. But now I need to calculate a %change for each day. I can add this to the daily sales, and then update it from the collection class which also seems to work quite well. Except it makes persisting it with Nhibernate rather difficult as there is no way to fire events from the Sales list that the SalesCollection can hook into and calculate the other statistics. I guess what I am lookin for is a clean way of modelling this kind of data, that can be persisted to Nhibernate easily.

@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 30726
+[parent_id]: 30716
+[tags]: 
+Keras metrics.binary_crossentropy computes the cross entropy averaged across all inputs (pseudocode): original_dim = 3 x = [1,1,0] x_decoded = [0.2393,0.7484,-1.1399] average_BCE = binary_crossentropy(x, x_decoded) print(average_BCE) >>>0.1186 For this part of autoencoder loss we need the sum, not the average over all squared differences between input and output pixels, which is equivalent to average_crossentropy_of_pixels * num_pixels (original_dim) print(original_dim * average_BCE) >>>0.3559 Another way of writing this part would (which I think is more illustrative of what's happening, but probably less performant in Keras land): xent_loss = K.sum(K.square(x - sigmoid(x_decoded))) print(xent_loss) >>>0.3559 Regarding the second part, since the first operation you are really doing is subtraction, it implied the tensors for input and output are the same size. This can be found if you check the implementation code - which is better than the docs in this case - go to line 3056: https://github.com/keras-team/keras/blob/master/keras/backend/tensorflow_backend.py

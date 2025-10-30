@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5072906
+[parent_id]: 5068591
+[tags]: 
+Your error is actually a pretty simple one. It's just a matter of trying to write the wrong thing. In your code, menu_pdf is not a PDF, but a SimpleDocTemplate , and the PDF has been stored in pdf_name , although here I suspect pdf_name is a path name rather than a file object. To fix it, change your code to use a memory file like you did in your original code: # Set up response response = HttpResponse(mimetype='application/pdf') pdf_name = "menu-%s.pdf" % str(menu_id) response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name buff = StringIO() menu_pdf = SimpleDocTemplate(buff, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18) # container for pdf elements elements = [] styles=getSampleStyleSheet() styles.add(ParagraphStyle(name='centered', alignment=TA_CENTER)) # Add the content as before then... menu_pdf.build(elements) response.write(buff.getvalue()) buff.close() return response I'm not sure if using file objects rather than paths with Platypus is mentioned in the documentation, but if you dig into the code you'll see that it is possible.

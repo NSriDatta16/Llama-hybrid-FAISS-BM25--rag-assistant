@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3197878
+[parent_id]: 
+[tags]: 
+Magento: Custom MySQL query with locks not working
+
+I'm trying to write a function to SELECT the least-recently fetched value from a table in my database. I do this by SELECTing a row and then immediately changing the last_used field. Because this involves a SELECT and UPDATE, I'm trying to do this with locks. The locks are to ensure that concurrent executions of this query won't operate on the same row. The query runs perfectly fine in phpMyAdmin, but fails in Magento. I get the following error: SQLSTATE[HY000]: General error Error occurs here: #0 /var/www/virtual/magentodev.com/htdocs/lib/Varien/Db/Adapter/Pdo/Mysql.php(249): PDOStatement->fetch(2) Here is my model's code, including the SQL query: $write = Mage::getSingleton('core/resource')->getConnection('core_write'); $sql = "LOCK TABLES mytable AS mytable_write WRITE, mytable AS mytable_read READ; SELECT @val := unique_field_to_grab FROM mytable AS mytable_read ORDER BY last_used ASC LIMIT 1; UPDATE mytable AS mytable_write SET last_used = unix_timestamp() WHERE unique_field_to_grab = @val LIMIT 1; UNLOCK TABLES; SELECT @val AS val;"; $result = $write->raw_fetchrow($sql, 'val'); I've also tried using raw_query and query instead of raw_fetchrow with no luck. Any thoughts on why this doesn't work? Or is there a better way to accomplish this? EDIT : I'm starting to think this may be related to the PDO driver, which Magento is definitely using. I think phpMyAdmin is using mysqli, but I can't confirm that.

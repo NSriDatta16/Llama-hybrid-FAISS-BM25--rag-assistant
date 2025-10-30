@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4220531
+[parent_id]: 4220511
+[tags]: 
+It's not very common to use static constructors for controllers in ASP.NET MVC. I don't know what exactly are you trying to achieve but global.asax Application_Start seems like a better place to perform application initializations. Also what do you mean by a single storage accessible by the controller? Can't you use the HttpContext.Cache or the HttpContext.Application object which are used for storing application wide things (in contrast to session)? They also have the advantage to be thread safe so that you don't need to synchronize the access to those storages. As far as the static controller constructor is concerned it should be called before the default constructor and only once per application and that's guaranteed by the CLR. For this it needs to have exactly the following signature (private, no return type, same name as the containing type): public class HomeController: Controller { // This is the exact signature of a static constructor static HomeController() { } }

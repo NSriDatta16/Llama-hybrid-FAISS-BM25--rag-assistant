@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 479002
+[parent_id]: 478724
+[tags]: 
+I've found a way to handle onDragLeave via event delegation. Simply add an event to monitor "dragover" on the entire document. When the event source becomes your element in question, set a flag, and once the event source is no longer that element, fire the "dragleave" event. Note: Will need to be modified so that "e.source==obj" is actually "obj.childOf(e.source)" ... since the source element may be a descendant of the object in question. Requires the event handling framework to figure out what "source" is based on browser. Unfortunately it looks like Safari's lack of "ondrop" cannot be fixed... it simply never gets fired. How to achieve "dragleave" in FF (well, all browsers): var setOnDragLeave = function(obj, fn){ var on=false; var dragover = function(e){ if (on){ if (e.source!=obj){ on = false; e.eventname = "dragleave"; fn.call(obj, e); } return; }else{ if (e.source==obj) on = true; return; } } addEvent(document.documentElement, "dragover", dragover); } setOnDragLeave(obj, function(e){ logEvent(e); }); I sincerely hope someone else on this planet can use this...

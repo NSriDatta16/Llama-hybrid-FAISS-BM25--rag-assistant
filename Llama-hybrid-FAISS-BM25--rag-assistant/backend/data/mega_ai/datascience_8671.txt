@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 8671
+[parent_id]: 
+[tags]: 
+$\chi^{2}$ kernel SVM performance issue
+
+I am using $\chi^{2}$ kernel for non-linear SVM (using libSVM) for classifying MNIST digits. I am getting very bad performance (worse than random guessing). The $\chi^{2}$ kernel code (in MATLAB) is as follows: function D = chi2_kernel(X,Y) %Computes the chi2 kernel for two Matrices X and Y D = zeros(size(X,1),size(Y,1)); for i = 1:size(Y,1) d = bsxfun(@minus,X, Y(i,:)); s = bsxfun(@plus,X,Y(i,:)); D(:,i) = sum(d.^2 ./ (s/2),2); end D = exp(-0.0001.*(1-D)); end Using this I computed the kernel matrix as follows : % Gram matrix for chi2 kernel dist = chi2_kernel(X_train2,X_train2); dist1 = chi2_kernel(X_test,X_train2); % Gram matrix for training set to training set KTrT = [(1:numTrain/50)', dist]; % Gram matrix for training to test set KTT = [(1:numTest)', dist1]; model = svmtrain(Y_train2, KTrT,'-t 4'); predClass = svmpredict(Y_test, KTT,model); Does anyone have suggestions for how to better optimize this code, or an explanation for why I'm observing such poor performance?

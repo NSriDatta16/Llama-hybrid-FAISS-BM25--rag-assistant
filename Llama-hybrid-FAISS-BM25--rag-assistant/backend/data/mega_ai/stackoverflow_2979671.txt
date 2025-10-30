@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2979671
+[parent_id]: 2979546
+[tags]: 
+Hopefully never. But it is the kind of code you have to write when you want the UI thread to block on synchronization objects. A UI thread is not permitted to block, Windows prevents you from calling WaitForMultipleObjects(). The reason is that it is very likely to cause deadlock. The reason for that is COM. COM is everywhere in Windows, the most common examples are the clipboard, drag+drop and the shell dialogs. COM marshals interface method calls made from a worker thread for COM objects that live on the STA (Single Threaded Apartment) by using the message loop. If the STA thread isn't pumping messages then the call won't complete. And calls that can't complete are ingredient number one for deadlock. Add a UI thread that waits for the worker thread to complete and deadlock is assured. You avoid this kind of code by having a worker thread use PostMessage() to signal the UI thread that something important happened.

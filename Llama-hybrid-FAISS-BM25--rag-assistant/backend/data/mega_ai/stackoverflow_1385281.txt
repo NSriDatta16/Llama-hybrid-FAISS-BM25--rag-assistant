@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1385281
+[parent_id]: 
+[tags]: 
+How do I remove a self referencing n:n relation in Doctrine?
+
+I'd like to represent e friend relationship between two users in Doctrine. I am able to create the relationship, but I don't know what's the best way to delete it. I have the following schema: User: columns: name: string(255) relations: Friends: class: User local: user1 foreign: user2 refClass: FriendReference equal: true FriendReference: columns: user1: type: integer primary: true user2: type: integer primary: true Here's how I create the relationsship: $user1 = new User(); $user2 = new User(); $user1->Friends[] = $user2; This works perfectly. mysql> select * from friend_reference; +-------+-------+ | user1 | user2 | +-------+-------+ | 4 | 5 | +-------+-------+ 1 row in set (0.01 sec) Now what's the best way to remove the relationship if I have the two primary keys 4 and 5 of the relationship to delete? I could Fetch the object with the ID 4 and Iterate through $user->Friends and then use unlink to delete this relationship. Write the following query $query = Doctrine_Query::create() ->delete('FriendReference') ->where('(user1=4 AND user2=5) OR (user2=4 AND user1=5)') ->execute(); I think both options neither elegant nor performant.

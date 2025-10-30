@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4910717
+[parent_id]: 4910687
+[tags]: 
+As the error states, you cannot use a local variable until the compiler can prove that it has been assigned a value. In your case, if your if condition is false, the model variable is never assigned. You can solve the problem by assigning it an initial valued first: T model = default(T); Note that if T is a struct type, model == null can never be true. You should change your code to using (var storageFile = IsolatedStorageFile.GetUserStoreForApplication()) using (var stream = new IsolatedStorageFileStream(fileName, FileMode.Open, storageFile)) { if (stream.Length > 0) { var serializer = new DataContractSerializer(typeof(T)); return (T)serializer.ReadObject(stream); } else { return new T(); } }

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4512656
+[parent_id]: 
+[tags]: 
+elasticsearch / lucene highlight
+
+I'm using ElasticSearch to index documents. My mapping is: "mongodocid": { "boost": 1.0, "store": "yes", "type": "string" }, "fulltext": { "boost": 1.0, "index": "analyzed", "store": "yes", "type": "string", "term_vector": "with_positions_offsets" } To highlight the complete fulltext I am setting number_of_framgments to 0. If I do the following Lucene-like string query: { "highlight": { "pre_tags": " ", "fields": { "fulltext": { "number_of_fragments": 0 } }, "post_tags": " " }, "query": { "query_string": { "query": "fulltext:test" } }, "size": 100 } For some documents in the result set the length of the highlighted fulltext is smaller than the fulltext itself. Since I am setting number_of_fragments to 0 and pre_tags / post_tags are added this should not happen. Now comes the strange behaviour: If I only search for one of the failing elements by doing this: { "highlight": { "pre_tags": " ", "fields": { "fulltext": { "number_of_fragments": 0 } }, "post_tags": " " }, "query": { "query_string": { "query": "fulltext:test AND mongodocid:4d0a861c2ebef6032c00b1ec" } }, "size": 100 } then all works fine. Any ideas?

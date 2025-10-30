@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 480509
+[parent_id]: 480405
+[tags]: 
+Interesting problem! I can't help but wonder if you can't simplify your scheduler operation so this sort of operation would be necessary. Given that you know VHDL, I won't go into detail, but my suggestion would be the following: Use a 3 bit encoder to turn the currently scheduled task into a number: 01000000 --> 6 Then use a barrel shifter to rotate the mask by that number + 1 (to skip the current task): 00001010 --> 00010100 Then use a priority encoder to find the first available "next" task: 00010100 --> 00000100 --> 2 Then reverse the barrel shift by addition: (2+7) % 8 = 1 Which when re-encoded will give the next scheduled task: 00000010 Should be very fast and straightforward, although the barrel shifter is 'expensive' in terms of realestate, but I don't see an easy way to get around that at the moment. Edit: Doug's solution is significantly more elegant... -Adam

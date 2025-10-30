@@ -1,0 +1,121 @@
+In computer science, the longest increasing subsequence problem aims to find a subsequence of a given sequence in which the subsequence's elements are sorted in an ascending order and in which the subsequence is as long as possible. This subsequence is not necessarily contiguous or unique. The longest increasing subsequences are studied in the context of various disciplines related to mathematics, including algorithmics, random matrix theory, representation theory, and physics. The longest increasing subsequence problem is solvable in time  where  denotes the length of the input sequence.
+
+Example
+In the first 16 terms of the binary Van der Corput sequence
+0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15
+one of the longest increasing subsequences is
+0, 2, 6, 9, 11, 15.
+This subsequence has length six; the input sequence has no seven-member increasing subsequences. The longest increasing subsequence in this example is not the only solution: for instance,
+0, 4, 6, 9, 11, 15
+0, 2, 6, 9, 13, 15
+0, 4, 6, 9, 13, 15
+are other increasing subsequences of equal length in the same input sequence.
+
+Relations to other algorithmic problems
+The longest increasing subsequence problem is closely related to the longest common subsequence problem, which has a quadratic time dynamic programming solution: the longest increasing subsequence of a sequence  is the longest common subsequence of  and  where  is the result of sorting  However, for the special case in which the input is a permutation of the integers  this approach can be made much more efficient, leading to time bounds of the form 
+
+The largest clique in a permutation graph corresponds to the longest decreasing subsequence of the permutation that defines the graph (assuming the original non-permuted sequence is sorted from lowest value to highest). Similarly, the maximum independent set in a permutation graph corresponds to the longest non-decreasing subsequence. Therefore, longest increasing subsequence algorithms can be used to solve the clique problem efficiently in permutation graphs.
+
+In the Robinson–Schensted correspondence between permutations and Young tableaux, the length of the first row of the tableau corresponding to a permutation equals the length of the longest increasing subsequence of the permutation, and the length of the first column equals the length of the longest decreasing subsequence.
+
+Efficient algorithms
+The algorithm outlined below solves the longest increasing subsequence problem efficiently with arrays and binary searching. 
+It processes the sequence elements in order, maintaining the longest increasing subsequence found so far. Denote the sequence values as  etc. Then, after processing  the algorithm will have stored an integer  and values in two arrays:
+  — stores the length of the longest increasing subsequence found so far.
+  — stores the index  of the smallest value  such that there is an increasing subsequence of length  ending at  in the range  Explicitly, suppose that  denotes the set of all indices  such that  and there exists an increasing subsequence of length  ending at  Then  is the index in  for which  is minimized; meaning that  and  (or equivalently,  and for every  ); if multiple indices satisfy this condition then  is the largest one. 
+ To clarify, "there exists an increasing subsequence of length  ending at " means that there exist  indices  ending at  such that 
+ Note that  because  represents the length of the increasing subsequence, and  represents the index of its termination.
+ The length of  is  more than the length of  but it is possible that not all elements in this array are used by the algorithm (in fact, if the longest increasing sequence has length  then only  are used by the algorithm). If however  is used/defined then  (and moreover, at iteration   will also hold).  is undefined since sequences of length  have no ending index ( can be any value).
+  — stores the index of the predecessor of  in the longest increasing subsequence ending at 
+ The length of  is equal to that of  
+ If  then  while  is undefined since  has no predecessor ( can be any value).
+Because the algorithm below uses zero-based numbering, for clarity  is padded with  which goes unused so that  corresponds to a subsequence of length  A real implementation can skip  and adjust the indices accordingly.
+
+Note that, at any point in the algorithm, the sequence
+
+is increasing.  For, if there is an increasing subsequence of length  ending at  then there is also a subsequence of length  ending at a smaller value: namely the one ending at  Thus, we may do binary searches in this sequence in logarithmic time.
+
+The algorithm, then, proceeds as follows:
+
+ 
+ P = array of length N
+ M = array of length N + 1
+ M[0] = -1 // undefined so can be set to any value
+ 
+ L = 0
+ for i in range 0 to N-1:
+     // Binary search for the smallest positive l ≤ L
+     // such that X[M[l]] > X[i]
+     lo = 1
+     hi = L + 1
+     while lo < hi:
+         mid = lo + floor((hi-lo)/2) // lo <= mid < hi
+         if X[M[mid]] >= X[i]
+             hi = mid
+         else: // if X[M[mid]] < X[i]
+             lo = mid + 1
+ 
+     // After searching, lo == hi is 1 greater than the
+     // length of the longest prefix of X[i]
+     newL = lo
+ 
+     // The predecessor of X[i] is the last index of 
+     // the subsequence of length newL-1
+     P[i] = M[newL-1]
+     M[newL] = i
+     
+     if newL > L:
+         // If we found a subsequence longer than any we've
+         // found yet, update L
+         L = newL
+ 
+ // Reconstruct the longest increasing subsequence
+ // It consists of the values of X at the L indices:
+ // ...,  P[P[M[L]]], P[M[L]], M[L]
+ S = array of length L
+ k = M[L]
+ for j in range L-1 to 0:
+     S[j] = X[k]
+     k = P[k]
+ 
+ return S
+
+Because the algorithm performs a single binary search per sequence element, its total time can be expressed using Big O notation as   discusses a variant of this algorithm, which he credits to Donald Knuth; in the variant that he studies, the algorithm tests whether each value  can be used to extend the current longest increasing sequence, in constant time, prior to doing the binary search. With this modification, the algorithm uses at most  comparisons in the worst case, which is optimal for a comparison-based algorithm up to the constant factor in the  term.
+
+Example run
+
+Length bounds
+According to the Erdős–Szekeres theorem, any sequence of  distinct integers has an increasing or a decreasing subsequence of length   For inputs in which each permutation of the input is equally likely, the expected length of the longest increasing subsequence is approximately  
+
+In the limit as  approaches infinity, the Baik-Deift-Johansson theorem says, that the length of the longest increasing subsequence of a randomly permuted sequence of  items has a distribution approaching the Tracy–Widom distribution, the distribution of the largest eigenvalue of a random matrix in the Gaussian unitary ensemble.
+
+Online algorithms
+The longest increasing subsequence has also been studied in the setting of online algorithms, in which the elements of a sequence of independent random variables with continuous distribution  – or alternatively the elements of a random permutation – are presented one at a time to an algorithm that must decide whether to include or exclude each element, without knowledge of the later elements. In this variant of the problem, which allows for interesting applications in several contexts, it is possible to devise an optimal selection procedure that, given a random sample of size  as input, will generate an increasing sequence with maximal expected length of size approximately 
+<ref
+name="ss81"></ref>
+The length of the increasing subsequence selected by this optimal procedure has variance approximately equal to  and its limiting distribution is asymptotically normal after the usual centering and scaling.
+The same asymptotic results hold with more precise bounds for the corresponding problem in the setting of a Poisson arrival process.
+A further refinement in the Poisson process setting is given through the proof of a central limit theorem for the optimal selection process
+which holds, with a suitable normalization, in a more complete sense than one would expect. The proof yields not only the "correct" functional limit theorem
+but also the (singular) covariance matrix of the three-dimensional process summarizing all interacting processes.
+
+See also
+
+  − a Russian mathematician who studied applications of group theory to longest increasing subsequences
+ 
+ 
+  − an efficient technique for finding the length of the longest increasing subsequence
+  − an algebraic system defined by transformations that preserve the length of the longest increasing subsequence
+
+References
+
+External links
+ Algorithmist's Longest Increasing Subsequence
+ Simplified Longest Increasing Subsequence
+ Finding count of longest increased subsequences
+ Poldo's diet
+
+Problems on strings
+Combinatorics
+Formal languages
+Dynamic programming

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2688940
+[parent_id]: 2597876
+[tags]: 
+You are absolutely right. Idempotent operations by themselves can provide only one conflict resolution pattern - "Last write wins". It is a possible solution if your writes cannot be reordered in time. If they can, you should provide additional information to make conflict resolution automatic. And your idea is not new. In the general case it is called vector clocks . We use version based conflict resolution in one of our systems which collect the change history of objects in our system. Clients send the full object state and version information to a history module (asynchronously). The history module then can reorder the object states in the correct manner and save only the delta in persistent storage. The only restriction is that the client should use some sort of concurrency control when making changes to the object ( optimistic locking is very good method if you track object state version).

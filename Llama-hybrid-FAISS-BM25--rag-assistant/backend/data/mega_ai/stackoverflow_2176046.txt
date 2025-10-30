@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2176046
+[parent_id]: 2175298
+[tags]: 
+Use threads to: abstract away all the I/O waits. assign work to all cores. also, remove all sleep-wait states from main thread. Defer all I/O to a thread, so that wait states are confined within it. Keep the actual computations in the foreground thread, and use synchronization mechanisms that make the I/O slave thread to wait for your main thread when communicating. If your CPU is multi-core, and your problem is paralellizable, create as many threads as you have cores, research "set affinity" functions to assign them between the cores and still keep a separate thread for all I/O. Also pay attention not to wait in your main thread - usleep(1) doesn't send you into background for 1 microsecond, but for "no less than..." and that may mean anything between 1ms and 100ms but hardly ever less than that, and never anything close to a microsecond.

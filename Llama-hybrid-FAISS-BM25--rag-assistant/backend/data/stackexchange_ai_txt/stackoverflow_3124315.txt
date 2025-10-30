@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3124315
+[parent_id]: 3123479
+[tags]: 
+One approach to keeping a struct and all its strings together in a single allocated memory block is something like this: struct foo { ptrdiff_t s1, s2, s3, s4; size_t bufsize; char buf[1]; } bar; Allocate sizeof(struct foo)+total_string_size bytes and store the offsets to each string in the s1 , s2 , etc. members and bar.buf+bar.s1 is then a pointer to the first string, bar.buf+bar.s2 a pointer to the second string, etc. You can use pointers rather than offsets if you know you won't need to realloc the struct. Whether it makes sense to do something like this at all is debatable. One benefit is that it may help fight memory fragmentation or malloc/free overhead when you have a huge number of tiny data objects (especially in threaded environments). It also reduces error handling cleanup complexity if you have a single malloc failure to check for. There may be cache benefits to ensuring data locality. And it's possible (if you use offsets rather than pointers) to store the object on disk without any serialization (keeping in mind that your files are then machine/compiler-specific).

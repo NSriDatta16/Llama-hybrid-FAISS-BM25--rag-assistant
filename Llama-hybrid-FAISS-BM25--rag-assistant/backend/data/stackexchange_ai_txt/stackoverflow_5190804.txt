@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5190804
+[parent_id]: 3939766
+[tags]: 
+I know this is months old, but I just had the exact same issue with an extension, and it was killing me as I struggled to fix it as quickly as possible. I tried messing with the encoding, replacing all the linebreaks, etc. until just running window.location.reload() in the Chrome console. This time, instead of returning a reference to the beginning of the HTML file, the debugger pointed to a line in an external JavaScript file. Weird! The bottom line was that in an old version of the extension, I had a text value stored without using JSON.stringify . So when attempting to JSON.parse that value, everything failed. Here's what it looks like in the console: > localStorage.good = JSON.stringify("good"); localStorage.bad = "bad"; console.log(JSON.parse(localStorage.good)); console.log(JSON.parse(localStorage.bad)); > good > SyntaxError: Unexpected token ILLEGAL If that occurs while a page is loading, the page won't appear to render past the declaration. In reality, it does, but it gets hung up. Eeevil.

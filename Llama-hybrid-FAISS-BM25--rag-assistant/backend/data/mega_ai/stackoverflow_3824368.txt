@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3824368
+[parent_id]: 3821971
+[tags]: 
+It works for me, but when it comes to debugging web scrapers, etc, you should watch the HTTP transaction. That's really easy to add since WWW::Mechanize is an LWP::UserAgent subclass: use WWW::Mechanize; my $browser = WWW::Mechanize->new(); # See LWP::Debug $browser->add_handler("request_send", sub { shift->dump; return }); $browser->add_handler("response_done", sub { shift->dump; return }); Now you can see what you send and what PayPal sends back. Often you can also use various HTTP sniffing tools, but those only work for things that you send in plaintext, so you're out of luck here. In this case, however, PayPal is on to you. They know you are using a script. Part of the output I get is: Request API Credentials API credentials consist of three elements: An API username An API password Either an API signature or an API SSL client-side certificate If you’re using a shopping cart or solution provider, ask whether you need an API signature or a certificate. If you want to interact with PayPal through a program, you need to sign up for developer access .

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3231867
+[parent_id]: 3231607
+[tags]: 
+I think the comment on the last line sums it up: buffer: ; Disk buffer begins (8k after this, stack starts) The memory layout looks like this: +-------------------+ The comment about paragraphs is slightly obtuse; I find it easier to think in bytes, where 16 bytes makes one paragraph. The reason for these magic numbers: Start at segment 07C0, where the BIOS loads the code Skip past 512 bytes, to account for the code itself (512 bytes = 32 paragraphs) Skip past 8KB, to set aside space for the disk buffer (8,192 bytes = 512 paragraphs) Put SS at the start of a 4KB block. 512+8192 = 8,704 bytes = 544 paragraphs Put SP at the end of that block. Put it at the end because the stack needs to grow upwards in memory. Note that the number 4096 = 4KB appears as normal in the code, because the SP register needs a value in bytes. All the other values are in paragraphs because they relate to SS, which is a segment register.

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 621445
+[parent_id]: 541788
+[tags]: 
+I think your recall equation is incorrect and you would need to scale up the FN count. You are stratifying your sample by the classifier label, and need to reweight when computing the metric. As a toy example, imagine that your classifier had 100% precision and 50% recall, and the true population looked like this: 10k (TP) 0 (FP) 10k (FN) 99.98M (TN) If you sample all 10k events where the classifier gave a positive label (i.e. sampling the entire first row above), you would have TP = 10k, FP = 0. If you sample 100k examples where the classifier gave a negative label, on average you would obtain roughly 100k * (10k/99.98M) = 10.002 FN. Using your equation, your recall would be 10k/(10k + 10.002) = 99.9%, which is clearly not correct. In the population, the positive:negative label ratio is 1:9,999, and you sampled at a ratio of 1:10. This means that you'll need to upweight the FNs by a factor of 999.9. Doing this would give you a recall of 10k/(10k + 10.002 * 999.9) = 50%.

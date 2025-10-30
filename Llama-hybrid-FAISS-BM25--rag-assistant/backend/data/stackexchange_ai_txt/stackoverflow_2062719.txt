@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2062719
+[parent_id]: 2062657
+[tags]: 
+You have in this blog post an example of Git repo used for staging: IDE => local Git repository => remote bare Git repository => Git repository with the live web application It involves a post-update hook on the bare repo side, in order to trigger the update of the repo on the live web server side. The final step is to define the “post-update” hook script on the bare repository, which is called when the bare repository receives data. To enable the “post-update” hook, we have to either make hooks/post-update executable or rename hooks/post-update.sample to hooks/post-update , depending on the Git version. In this script, we simply change to the folder of the live application, and start the pull operation: #!/bin/sh cd $HOME/example.org unset GIT_DIR git pull bare master exec git-update-server-info The reason there is a bare remote repo is because it is “discouraged” to do a push into a repo with a working directory.

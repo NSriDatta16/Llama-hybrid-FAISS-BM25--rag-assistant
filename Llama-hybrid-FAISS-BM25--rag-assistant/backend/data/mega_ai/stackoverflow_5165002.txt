@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5165002
+[parent_id]: 
+[tags]: 
+Generating a subquery with Arel to get an average of averages
+
+Lets say I have a few of tables orders = Arel::Table.new :orders stores = Arel::Table.new :stores managers = Arel::Table.new :managers And a manager has many stores and a store has many orders. One day I want to query for the average total across orders where a manager works. Oh, I want to group that by the store. So to be clear, I want to get the average order total for a manager, for each of the stores they work at. And let's assume we've looked up our manager: manager = Manager.find(some_id) totals = orders.where(orders[:store_id].in(manager.store_ids)).group(orders.store_id).project(orders[:total].average) puts totals.to_sql "SELECT AVG(`orders`.`total`) AS avg_id FROM `orders` WHERE `orders`.`store_id` IN (1, 2, 3) GROUP BY `orders`.`store_id`" Yup, that works great. But how can I get a query for the average of those averages? What's the Arel to get this query? "SELECT AVG(avg_id) FROM (SELECT AVG(`orders`.`total`) AS avg_id FROM `orders` WHERE `orders`.`store_id` IN (1, 2, 3) GROUP BY `orders`.`store_id`) as avg_id_alias;" Anybody know?

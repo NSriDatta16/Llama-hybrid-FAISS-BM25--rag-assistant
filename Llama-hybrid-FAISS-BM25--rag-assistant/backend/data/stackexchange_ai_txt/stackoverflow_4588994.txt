@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4588994
+[parent_id]: 4588725
+[tags]: 
+const void * bools[] = { "ItemA", mine->a, "ItemB", mine->b, 0, 0 }; There are several problems with this snippet: mine isn't declared as a pointer type (at least not in the code you posted), so you shouldn't be using the -> component selection operator; If you change that to use the . selection operator, you'd be attempting to store the boolean value in a or b as a pointer, which isn't what you want; But that doesn't matter, since you cannot take the address of a bit-field (§ 6.5.3.2, paragraph 1). If you're trying to associate a boolean value with another object, you'd be better off declaring a type like struct checkedObject {void *objPtr; int check}; and initialize an array as struct checkedObject[] = {{"ItemA", 1}, {"ItemB", 0}, {NULL, 0}}; Bit-fields have their uses, but this isn't one of them. You're really not saving any space in this case, since at least one complete addressable unit of storage (byte, word, whatever) needs to be allocated to hold the two bitfields.

@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 434503
+[parent_id]: 
+[tags]: 
+Inconsistency in Logit p-values
+
+So I've been doing a pretty basic logistic regression, where 1=default and 0=no default. I have a couple explanatory variables, some of which behave strangely. The model is: log1 |z|) (Intercept) 62.421450219 13.454315081 4.640 0.00000349 *** dsti 2.797621531 0.721706775 3.876 0.000106 *** NEW_customer1 0.217681547 0.191455352 1.137 0.255545 masterscale_pd -0.979473616 0.071318565 -13.734 After looking at the p-values, my alarm went off; the variable NEW_customer was one of the most important ones in previous analyses. It even separates the default ratios really well: df %>% group_by(NEW_customer) %>% summarise(def = sum(target==1)/n()) # A tibble: 2 x 2 NEW_customer def 1 0 0.01 2 1 0.09 Meaning, 9% of new customers defaulted, whereas only 1.1% of old customers went bad. So I tried lasso regression with the help of cv.glmnet function, where the variable NEW_customer was the 2nd most important. After some googling, I came across question . Trying different test yielded different values: anova(log1, test = 'LRT') Df Deviance Resid. Df Resid. Dev Pr(>Chi) NULL 18091 2705.4 dsti_residence 1 30.396 18090 2675.0 0.0000000352303 *** NEW_customer 1 105.430 18089 2569.6 These p-values look much more reasonable. My dataset has ~15 000 observations, so I don't think the issue lies there. So what is the underlying problem that causes the Wald test to fail? I can not really wrap my head around it. Thanks for help!

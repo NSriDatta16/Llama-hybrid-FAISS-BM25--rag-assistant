@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3978756
+[parent_id]: 3978697
+[tags]: 
+As the compiler says, floating-point values cannot have a default value. The only thing I can think of is to store the floating-point value in a scaled integer. For instance, if you only need three decimals of yourFloat , you can store yourInt = 1000 * yourFloat instead. The default value would then be yourInt := 1000000 , corresponding to yourFloat := 1000.000 . Of course, you can do this a bit more elegantly, like private FMyFloat: real; function GetValue: integer; procedure SetValue(Value: integer); published property MyInteger: integer read GetValue write SetValue default 1000000; implementation function TMyClass.GetValue: integer; begin result := round(1000 * FMyFloat); end; procedure TMyClass.SetValue(Value: integer); begin FMyFloat := Value / 1000; end; This way you will still only see the floating-point field FMyFloat from inside the class itself. But the property will be a scaled integer, and thus perfectly storable.

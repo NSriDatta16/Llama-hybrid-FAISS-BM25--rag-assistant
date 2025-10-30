@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1758309
+[parent_id]: 1755313
+[tags]: 
+This could be a bug in ASP.NET MVC. Internally they have a type called OutputCachedPage that derives from Page . When OnResultExecuting is called on OutputCacheAttribute they create an instance of this type and call ProcessRequest(HttpContext.Current) , which eventually calls SetIntrinsics(HttpContext context, bool allowAsync) that sets the ContentType like this: HttpCapabilitiesBase browser = this._request.Browser; this._response.ContentType = browser.PreferredRenderingMime; Here's a fix: public sealed class CacheAttribute : OutputCacheAttribute { public override void OnResultExecuting(ResultExecutingContext filterContext) { string contentType = null; bool notChildAction = !filterContext.IsChildAction; if (notChildAction) contentType = filterContext.HttpContext.Response.ContentType; base.OnResultExecuting(filterContext); if (notChildAction) filterContext.HttpContext.Response.ContentType = contentType; } }

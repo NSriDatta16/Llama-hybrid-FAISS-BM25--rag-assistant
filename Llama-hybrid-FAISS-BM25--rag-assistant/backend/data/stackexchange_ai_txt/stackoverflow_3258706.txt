@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3258706
+[parent_id]: 3257279
+[tags]: 
+First, note how the index is set up. Each term's index looks like: [term][docid][docid]... where the [docid]'s are IDs of documents which contain that term. So to answer your questions: If e.g. MATH and STATS contained the same term, they would be listed twice here. And so the search would have to look at two documents, when it should in theory only need to look at one. But this is a very minimal penalty. I assume you have to store at least an ID for each document, so you will see a minor storage increase. It will be (length of id) * (number of documents per row). Again, this is trivial. A more important problem is the fact that queries can't be normed appropriately. For example, a search finds row #1 that matches in MATH and STATS, and row #2 that matches only in MATH. You will need to manually rank row #1 higher, because Lucene won't know that the two documents are actually the same row. In short: unless you have some absolutely massive index, I wouldn't worry much about storage/performance. But I would worry about how you're going to score that query.

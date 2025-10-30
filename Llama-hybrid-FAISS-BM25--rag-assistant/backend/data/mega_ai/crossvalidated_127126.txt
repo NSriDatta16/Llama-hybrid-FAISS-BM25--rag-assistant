@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 127126
+[parent_id]: 127123
+[tags]: 
+You are feeding your entire data frame to HoltWinters() , which of course doesn't know it is supposed to work on the sales_revenue column. This column is already in a quarterly time series format: > xf.ts[,"sales_revenue"] Qtr1 Qtr2 Qtr3 Qtr4 2009 3008 3244 8000 8719 2010 3008 3244 78 7379 2011 3735 7339 17240 20465 2012 13134 15039 So all you need to do is call HoltWinters() on that specific column: > fit alpha=NULL, beta=NULL, gamma=NULL, seasonal="additive") > forecast(fit,6) Point Forecast Lo 80 Hi 80 Lo 95 Hi 95 2012 Q3 18201.14 12932.948 23469.34 10144.13507 26258.15 2012 Q4 19616.20 11844.062 27388.33 7729.74272 31502.65 2013 Q1 15182.67 5192.538 25172.80 -95.91704 30461.25 2013 Q2 17211.54 5104.659 29318.41 -1304.33363 35727.40 2013 Q3 20373.68 6122.456 34624.90 -1421.68502 42169.04 2013 Q4 21788.73 5463.186 38114.28 -3179.03633 46756.50

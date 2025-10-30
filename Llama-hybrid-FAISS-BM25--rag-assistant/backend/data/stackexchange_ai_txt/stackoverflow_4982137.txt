@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4982137
+[parent_id]: 495618
+[tags]: 
+Any non-PowerShell path manipulation functions (such as those in System.IO.Path) will not be reliable from PowerShell because PowerShell's provider model allows PowerShell's current path to differ from what Windows thinks the process' working directory is. Also, as you may have already discovered, PowerShell's Resolve-Path and Convert-Path cmdlets are useful for converting relative paths (those containing '..'s) to drive-qualified absolute paths but they fail if the path referenced does not exist. The following very simple cmdlet should work for non-existant paths. It will convert 'fred\frog\..\frag' to 'd:\fred\frag' even if a 'fred' or 'frag' file or folder cannot be found (and the current PowerShell drive is 'd:'). function Get-AbsolutePath { [CmdletBinding()] param ( [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)] [string[]] $Path ) process { $Path | ForEach-Object { $PSCmdlet.SessionState.Path.GetUnresolvedProviderPathFromPSPath($_) } } }

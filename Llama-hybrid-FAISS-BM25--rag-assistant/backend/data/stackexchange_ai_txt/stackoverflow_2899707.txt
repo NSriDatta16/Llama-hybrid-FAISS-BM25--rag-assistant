@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2899707
+[parent_id]: 
+[tags]: 
+copying from a std::istreambuf_iterator<> to a std::vector<>
+
+I have a Visual Studio 2008 C++ application where I would like to treat a stream as a set of iterators. For example, if I were to receive an array of WIN32_FIND_DATA structures over the stream, I would like to be able to do something like this: IStreamBuf sb( stream ); std::vector buffer; std::copy( std::istreambuf_iterator ( &sb ), std::istreambuf_iterator (), std::back_inserter( buffer ) ); To accomplish this, I've defined a class derived from std::basic_streambuf<> : template class IStreamBuf : public std::basic_streambuf { public: IStreamBuf( IStream* stream ) : stream_( stream ) { }; protected: virtual traits_type::int_type underflow() { DWORD bytes_read = 0; HRESULT hr = stream_->Read( &buffer_, sizeof( T ), &bytes_read ); if( FAILED( hr ) ) return traits_type::eof(); traits_type::char_type* begin = reinterpret_cast ( &buffer_ ); setg( begin, begin, begin + bytes_read ); return traits_type::to_int_type( *gptr() ); }; private: // buffer to hold current item of type T T buffer_; // stream used to receive data IStream* stream_; }; // class IStreamBuf What I can't figure out is how to gracefully go from an array of byte s to an array of WIN32_FIND_DATA s. Because std::basic_streambuf<> requires a std::char_traits<> template parameter, I'm under the impression that it can only use built-in types like char or byte , not a structure like WIN32_FIND_DATA . Correct? Any suggestions on how to make this work? Thanks, PaulH

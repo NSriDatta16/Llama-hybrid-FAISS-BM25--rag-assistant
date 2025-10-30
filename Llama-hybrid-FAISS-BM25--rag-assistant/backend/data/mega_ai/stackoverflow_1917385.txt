@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1917385
+[parent_id]: 
+[tags]: 
+Control decimal division precision in MySQLdb
+
+MySQLdb does some weirdness where it seems to always return a Decimal object with 2 more significant figures than the numerator of a division operation. If the denominator is relatively large, this means that sometimes the result gets truncated to zero: >>> import MySQLdb >>> db = MySQLdb.connect(.....) >>> c = db.cursor(); >>> c.execute("select 1000/ 20990933630") 1L >>> c.fetchall() ((Decimal("0.0000"),),) >>> c.execute("select 1000.0000000000000000000000/ 20990933630") 1L >>> c.fetchall() ((Decimal("4.763961516084313397E-8"),),) >>> c.execute("select (1000 + 0.000000000000000000000) / 20990933630") 1L >>> c.fetchall() ((Decimal("4.76396151608431340E-8"),),) Can I force float division? Is there a more elegant way of doing this than adding 0.0000000000 to everything?

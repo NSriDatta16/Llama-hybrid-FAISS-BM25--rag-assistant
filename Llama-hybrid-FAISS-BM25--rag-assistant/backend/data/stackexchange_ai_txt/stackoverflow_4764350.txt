@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4764350
+[parent_id]: 4749325
+[tags]: 
+I don't think you can avoid writing specicfic parsing routine for every message in pure C++ (without using pragma). If all your messages are simple, POD, C-like structures, I think the easiest solution would be to write a code generator: put your structs in a header without other C++ stuff and write a simple parser (a perl/python/bash script using a couple of regular expressions should be enough) -or look for one- that is able to find the variable names in any message; then use it to automatically generate some code for any message to read it, like this: YourStreamType & operator>>( YourStreamType &stream, MsgData &msg ) { stream >> msg.num >> msg.x >> msg.y >> msg.z >> msg.elevation; return stream; } specialize YourStreamType 's operator>> for any basic type your messages contain and you should be done: MsgData msg; your_stream >> msg;

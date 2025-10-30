@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5144318
+[parent_id]: 5143480
+[tags]: 
+In most cases, you'll get better performance by using batch-size in entities and collections instead of creating a mega-query. Best case scenario, it's a query by id per root entity type. Let's say you have a root entity Customer , which has a collection of Orders , which have a collection of OrderItems , which reference Products , and all batch-size properties are set to 1000 . Say you retrieve a list of 10 customers, which have in average 10 orders with 10 products each: var results = session.Query ().Where(...).Take(10).ToList(); The first query will fetch just the customers. When you start iterating the first customer.Orders collection, one query will be used to load all of them ( for all the customers ) When you start iterating the first order.OrderItems collection, one query will be used to load all of them ( for all the orders and all the customers ) When you read a property from the first product, one query will be used to load all of them So, you have just 4 queries , with no joins at all, retrieving everything by PK. It's easy and efficient.

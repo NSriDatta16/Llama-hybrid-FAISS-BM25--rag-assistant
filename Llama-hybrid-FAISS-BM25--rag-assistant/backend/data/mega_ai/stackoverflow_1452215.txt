@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1452215
+[parent_id]: 
+[tags]: 
+Elegant way for handling this string issue. (Unicode-PAnsiString issue)
+
+Consider the following scenario: type PStructureForSomeCDLL = ^TStructureForSomeCDLL; TStructureForSomeCDLL = record pName: PAnsiChar; end function FillStructureForDLL: PStructureForSomeDLL; begin New(Result); // Result.pName := PAnsiChar(SomeObject.SomeString); // Old D7 code working all right Result.pName := Utf8ToAnsi(UTF8Encode(SomeObject.SomeString)); // New problematic unicode version end; ...code to pass FillStructureForDLL to DLL... The problem in unicode version is that the string conversion involved now returns a new string on stack and that's reclaimed at the end of the FillStructureForDLL call, leaving the DLL with corrupted data. In old D7 code, there were no intermediate conversion funcs and thus no problem. My current solution is a converter function like below, which is IMO too much of an hack. Is there a more elegant way of achieving the same result? var gKeepStrings: array of AnsiString; { Convert the given Unicode value S to ANSI and increase the ref. count of it so that returned pointer stays valid } function ConvertToPAnsiChar(const S: string): PAnsiChar; var temp: AnsiString; begin SetLength(gKeepStrings, Length(gKeepStrings) + 1); temp := Utf8ToAnsi(UTF8Encode(S)); gKeepStrings[High(gKeepStrings)] := temp; // keeps the resulting pointer valid // by incresing the ref. count of temp. Result := PAnsiChar(temp); end;

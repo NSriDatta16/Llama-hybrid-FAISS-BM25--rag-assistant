@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3704083
+[parent_id]: 3352424
+[tags]: 
+The connection pool used by HttpURLConnection when it is keeping connections alive is broken such that it tries to use connections that have been closed by the server. By default Android sets KeepAlive on all connections. System.setProperty("http.keepAlive", "false"); is a workaround that disables KeepAlive for all connections so then you avoid the bug in the connection pool. conn.setRequestProperty("Connection","Keep-Alive"); turns KeepAlive on for this particular connection, essentially reversing what System.setProperty("http.keepAlive", "false"); does. Also I always explicitly call connect() as it makes it clear where you are ending your connection setup. I'm not sure if calling this method is optional or not. System.setProperty("http.keepAlive", "false"); HttpURLConnection conn = (HttpURLConnection) mURL.openConnection(); conn.setUseCaches(false); conn.setRequestProperty("User-Agent", useragent); conn.setConnectTimeout(30000); conn.setDoOutput(true); conn.setDoInput(true); consumer.sign(conn); conn.connect(); InputSource is = new InputSource(conn.getInputStream());

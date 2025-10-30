@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2555381
+[parent_id]: 2555291
+[tags]: 
+Basically, HttpContext has a static property getter named Current. In that property getter is code that determines the correct HttpContext object to return.** After that, you're using instance methods. Your snippet is equivalent to: //Use a static property getter to get the correct HttpContext instance HttpContext ctx = HttpContext.Current; // Now use that instance ctx.Session["foo"] = "bar"; Part of how it does it isn't really magic - the ASP.Net runtime sets HttpContext.Current for each request to a new instance of HttpContext. That setter stores the instance in thread static storage***. The getter then pulls the instance out of that storage for the current thread. The key thing to note is that a static property or method isn't just global fields - it can use things like the current thread to alter what it does or what it returns. **Actually, HttpContext.Current delegates to ContextBase, which delegates to CallContext, which ends up using methods on Thread, but the concept is the same. ***Actually, the runtime does a bit more to handle thread switching during a request.

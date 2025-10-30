@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1021285
+[parent_id]: 1018208
+[tags]: 
+Well, since I couldn't find a way to disable this specific warning, I resorted to using gcc's #pragma system_header. Basically, I wrapped the problematic header like this: #if defined __GNUC__ #pragma GCC system_header #elif defined __SUNPRO_CC #pragma disable_warn #elif defined _MSC_VER #pragma warning(push, 1) #endif #include "foo.h" #if defined __SUNPRO_CC #pragma enable_warn #elif defined _MSC_VER #pragma warning(pop) #endif where foo.h was the problematic header. Now I just include this fooWrapper.h and the problem goes away. Note that this should work for some other compilers too (MSC and SUNPRO), but I didn't test it.

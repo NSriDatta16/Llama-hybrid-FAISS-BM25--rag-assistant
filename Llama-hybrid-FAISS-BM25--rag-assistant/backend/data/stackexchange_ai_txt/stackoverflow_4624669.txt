@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4624669
+[parent_id]: 4602662
+[tags]: 
+This problem was dragging on so I ended up going for a solution I'm not overlly happy with but I just needed to get it working. My solution was on save to re-fetch the entities from the DB and use ApplyCurrentValues to update them to match the updated POCO objects. Based on my example in the question this is the solution I used static void Main(string[] args) { Service svc = GetService(); svc.Status = GetStatus("Stopped"); using (var ctx = new TestEFContext()) { var svc2 = ctx.Services.Where(s=>s.ServiceID == svc.ServiceID).FirstOrDefault(); svc2.Status = ctx.Statuses.Where(n => n.StatusID == svc.Status.StatusID).FirstOrDefault(); ctx.ApplyCurrentValues("Services", svc); ctx.SaveChanges(); } } I really would rather get it working the way it was coded in the question as I think that is a much neater solution so if anyone can improve on this please do

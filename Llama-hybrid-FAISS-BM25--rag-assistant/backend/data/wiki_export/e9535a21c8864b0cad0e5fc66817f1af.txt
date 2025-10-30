@@ -1,0 +1,112 @@
+A rolling hash (also known as recursive hashing or rolling checksum) is a hash function where the input is hashed in a window that moves through the input.
+
+A few hash functions allow a rolling hash to be computed very quickly—the new hash value is rapidly calculated given only the old hash value, the old value removed from the window, and the new value added to the window—similar to the way a moving average function can be computed much more quickly than other low-pass filters; and similar to the way a Zobrist hash can be rapidly updated from the old hash value.
+
+One of the main applications is the Rabin–Karp string search algorithm, which uses the rolling hash described below. Another popular application is the rsync program, which uses a checksum based on Mark Adler's adler-32 as its rolling hash. Low Bandwidth Network Filesystem (LBFS) uses a Rabin fingerprint as its rolling hash. FastCDC (Fast Content-Defined Chunking) uses a compute-efficient Gear fingerprint as its rolling hash.
+
+At best, rolling hash values are pairwise independent or strongly universal. They cannot be 3-wise independent, for example.
+
+Polynomial rolling hash 
+
+The Rabin–Karp string search algorithm is often explained using a rolling hash function that only uses multiplications and additions:
+,
+where  is a constant, and  are the input characters (but this function is not a Rabin fingerprint, see below).
+
+In order to avoid manipulating huge  values, all math is done modulo . The choice of  and  is critical to get good hashing; in particular, the modulus  is typically a prime number.  See linear congruential generator for more discussion.
+
+Removing and adding characters simply involves adding or subtracting the first or last term. Shifting all characters by one position to the left requires multiplying the entire sum  by . Shifting all characters by one position to the right requires dividing the entire sum  by . Note that in modulo arithmetic,  can be chosen to have a multiplicative inverse  by which  can be multiplied to get the result of the division without actually performing a division.
+
+Rabin fingerprint 
+
+The Rabin fingerprint is another hash, which also interprets the input as a polynomial, but over the Galois field GF(2). Instead of seeing the input as a polynomial of bytes, it is seen as a polynomial of bits, and all arithmetic is done in GF(2) (similarly to CRC32). The hash is the result of the division of that polynomial by an irreducible polynomial over GF(2). It is possible to update a Rabin fingerprint using only the entering and the leaving byte, making it effectively a rolling hash.
+
+Because it shares the same author as the Rabin–Karp string search algorithm, which is often explained with another, simpler rolling hash, and because this simpler rolling hash is also a polynomial, both rolling hashes are often mistaken for each other. The backup software restic uses a Rabin fingerprint for splitting files, with blob size varying between  and .
+
+Cyclic polynomial 
+
+Hashing by cyclic polynomial—sometimes called Buzhash—is also simple, but it has the benefit of avoiding multiplications, using barrel shifts instead. It is a form of tabulation hashing: it presumes that there is some hash function  from characters to integers in the interval . This hash function might be simply an array or a hash table mapping characters to random integers. Let the function  be a cyclic binary rotation (or circular shift): it rotates the bits by 1 to the left, pushing the latest bit in the first position. E.g., . Let  be the bitwise exclusive or. The hash values are defined as
+
+where the multiplications by powers of two can be implemented by binary shifts. The result is a number in .
+
+Computing the hash values in a rolling fashion is done as follows. Let  be the previous hash value. Rotate  once: .  If  is the character to be removed, rotate it  times:  . Then simply set
+
+where  is the new character.
+
+Hashing by cyclic polynomials is strongly universal or pairwise independent: simply keep the first  bits. That is, take the result  and dismiss any  consecutive bits. In practice, this can be achieved by an integer division .
+
+Content-based slicing using a rolling hash 
+ 
+One of the interesting use cases of the rolling hash function is that it can create dynamic, content-based chunks of a stream or file. This is especially useful when it is required to send only the changed chunks of a large file over a network: a simple byte addition at the front of the file would normally cause all fixed size windows to become updated, while in reality, only the first "chunk" has been modified.
+
+A simple approach to making dynamic chunks is to calculate a rolling hash, and if the hash value matches an arbitrary pattern (e.g. all zeroes) in the lower N bits (with a probability of , given the hash has a uniform probability distribution) then it’s chosen to be a chunk boundary.  Each chunk will thus have an average size of  bytes. This approach ensures that unmodified data (more than a window size away from the changes) will have the same boundaries.
+
+Once the boundaries are known, the chunks need to be compared by cryptographic hash value to detect changes. The backup software Borg uses the Buzhash algorithm with a customizable chunk size range for splitting file streams.
+
+Such content-defined chunking is often used for data deduplication.
+
+Content-based slicing using moving sum 
+
+Several programs, including gzip (with the --rsyncable option) and rsyncrypto, do content-based slicing based on this specific (unweighted) moving sum:
+
+where
+  is the sum of 8196 consecutive bytes ending with byte  (requires 21 bits of storage),
+  is byte  of the file,
+  is a "hash value" consisting of the bottom 12 bits of .
+
+Shifting the window by one byte simply involves adding the new character to the sum and subtracting the oldest character (no longer in the window) from the sum.
+
+For every  where , these programs cut the file between  and .
+This approach will ensure that any change in the file will only affect its current and possibly the next chunk, but no other chunk.
+
+Gear fingerprint and content-based chunking algorithm FastCDC 
+Chunking is a technique to divide a data stream into a set of blocks, also called chunks. Content-defined chunking (CDC) is a chunking technique in which the division of the data stream is not based on fixed chunk size, as in fixed-size chunking, but on its content.
+
+The Content-Defined Chunking algorithm needs to compute the hash value of a data stream byte by byte and split the data stream into chunks when the hash value meets a predefined value. However, comparing a string byte-by-byte will introduce the heavy computation overhead. FastCDC  proposes a new and efficient Content-Defined Chunking approach. It uses a fast rolling Gear hash algorithm, skipping the minimum length, normalizing the chunk-size distribution, and last but not the least, rolling two bytes each time to speed up the CDC algorithm, which can achieve about 10X higher throughput than Rabin-based CDC approach.
+
+The basic version pseudocode is provided as follows:
+
+ algorithm FastCDC
+     input: data buffer src, 
+            data length n, 
+     output: cut point i
+     
+     // buffer size is less than minimum chunk size
+     if n ≤ MinSize then
+         return n
+     if n ≥ MaxSize then
+         n ← MaxSize
+     
+     MinSize ← 2KB     // split minimum chunk size is 2 KB
+     MaxSize ← 64KB    // split maximum chunk size is 64 KB
+     Mask ← 0x0000d93003530000LL
+     fp ← 0
+     i ← 0
+     
+     // Skip the first MinSize bytes, and kickstart the hash
+     while i < MinSize do
+         fp ← (fp << 1 ) + Gear[src[i]]
+         i ← i + 1
+      
+     while i < n do
+         fp ← (fp << 1 ) + Gear[src[i]]
+         if !(fp & Mask) then
+             return i
+         i ← i + 1
+    
+     return i
+
+Where Gear array is a pre-calculated hashing array. Here FastCDC uses Gear hashing algorithm which can calculate the rolling hashing results quickly and keep the uniform distribution of the hashing results as Rabin. Compared with the traditional Rabin hashing algorithm, it achieves a much faster speed. 
+Experiments suggest that it can generate nearly the same chunk size distribution in the much shorter time (about 1/10 of rabin-based chunking ) when segmenting the data stream.
+
+Computational complexity 
+
+All rolling hash functions can be computed in time linear in the number of characters and updated in constant time when characters are shifted by one position.  In particular, computing the Rabin-Karp rolling hash of a string of length  requires  modular arithmetic operations, and hashing by cyclic polynomials requires  bitwise exclusive ors and circular shifts.
+
+See also
+
+Footnotes
+
+External links 
+MIT 6.006: Introduction to Algorithms 2011- Recitation 9 - Rolling Hash
+
+Hash functions

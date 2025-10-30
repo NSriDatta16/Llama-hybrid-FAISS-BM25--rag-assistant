@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5201179
+[parent_id]: 5190056
+[tags]: 
+The reason surf won't work right away is that the data are quite noisy, as you'll see if you call plot3(data(:,1),data(:,2),data(:,3),'.') Thus, you first need to smoothen the data (which is, I guess, what the gnuplot function does as well). Below is one approach to smoothen the data %# set bin edges (maybe you want to do 5:10:205) xEdge = 10:10:200; yEdge = xEdge; %# bin the data xId = sum(bsxfun(@ge,data(:,1),xEdge(2:end-1)),2)+1; yId = sum(bsxfun(@ge,data(:,2),yEdge(2:end-1)),2)+1; %# average z within every bin smoothData = accumarray([xId,yId],data(:,3),[length(xCenter),length(yCenter)],@mean); %# remove bins with no data smoothData(smoothData==0) = NaN; %# bin centers xCenter = (xEdge(1:end-1)+xEdge(2:end))/2; yCenter = xCenter; %# plot meshc(xCenter,yCenter,smoothData)

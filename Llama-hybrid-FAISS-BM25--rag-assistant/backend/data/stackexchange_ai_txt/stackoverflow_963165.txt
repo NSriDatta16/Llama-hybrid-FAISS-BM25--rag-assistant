@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 963165
+[parent_id]: 962335
+[tags]: 
+There's a better way to handle dealing with the frames that won't take up nearly as much memory. Dynamically creating the frames can be a very elegant solution. Here's how I've done it in the past. On the form, add a property and a setter that handles the placement of it on the form: TMyForm = class(TForm) private FCurrentFrame : TFrame; procedure SetCurrentFrame(Value : TFrame); public property CurrentFrame : TFrame read FCurrentFrame write SetCurrentFrame; end; procedure TMyForm.SetCurrentFrame(Value : TFrame) begin if Value <> FCurrentFrame then begin if assigned(FCurrentFrame) then FreeAndNil(FCurrentFrame); FCurrentFrame := Value; if assigned(FCurrentFrame) then begin FCurrentFrame.Parent := Self; // Or, say a TPanel or other container! FCurrentFrame.Align := alClient; end; end; end; Then, to use it, you simply set the property to a created instance of the frame, for example in the OnCreate event: MyFrame1.CurrentFrame := TSomeFrame.Create(nil); If you want to get rid of the frame, simply assign nil to the CurrentFrame property: MYFrame1.CurrentFrame := nil; It works extremely well.

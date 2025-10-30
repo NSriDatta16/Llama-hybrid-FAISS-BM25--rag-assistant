@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 125570
+[parent_id]: 
+[tags]: 
+Marginalising over standard deviation of normal to get the posterior on mean
+
+I am trying to understand the concepts of Bayesian data analysis by examples. I have managed to "do" something, and I would like some advise on where I have gone wrong. My data is that I have 50 students who take a test and score in the range [0, 1.0], I refer to this as $y$. I would like to calculate the posterior distribution of their mean score $P(\mu|y)$ assuming that the scores are normally distributed with mean $\mu$ and standard deviation $\tau$. Looking at other examples, I was able to do the following in Pymc: import pymc as pm import numpy as np import matplotlib.pyplot as plt # Generate fake data data_scores = np.random.normal(0.5, 0.1, size=50) mu = pm.Uniform("mu", lower=0, upper=1) tau = pm.Uniform("tau", lower=0, upper=500) scores = pm.Normal("score", mu=mu, tau=tau, observed=True, value=data_scores) model = pm.Model([scores, mu, tau]) mcmc = pm.MCMC(model) mcmc.sample(40000, 10000, 1) mu_samples = mcmc.trace('mu')[:] plt.hist(mu_samples, bins=30) plt.show() Which produces a nice histogram. However, I am confused because I feel like I have calculated $P(\mu, \tau| y)$ and hence now need to marginalise of $\tau$ before considering the distribution of $\mu$. Eventually I want to use this compare how to classes did on a test, but I am at a very basic level of understanding right now so any comments are appreciated.

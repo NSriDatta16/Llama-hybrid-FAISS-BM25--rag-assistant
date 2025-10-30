@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3508094
+[parent_id]: 3507900
+[tags]: 
+If the first listing is MyAppCache.h, then you're sticking @implementation in a header file, which isn't likely to do the right thing (the linker will probably complain). If the first listing is MyAppCache.m, then you need to move the @interface into MyAppCache.h. Also note that your code suffers from double-initing: [[MyAppCache alloc] init] is effectively [[[MyAppCache sharedCache] retain] init] . I don't know what NSCache does when inited twice, but it probably isn't good. I really wouldn't bother implementing copyWithZone: (I'm pretty sure objects aren't copyable by default), and you can just override allocWithZone: to raise an exception. (And +sharedCache isn't thread-safe, which may or may not be an issue.)

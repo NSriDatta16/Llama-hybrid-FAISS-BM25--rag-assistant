@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1650713
+[parent_id]: 
+[tags]: 
+Get last function's call arguments from traceback?
+
+Can I get the parameters of the last function called in traceback? How? I want to make a catcher for standard errors to make readable code, yet provide detailed information to user. In the following example I want GET_PARAMS to return me a tuple of parameters supplied to os.chown. Examining the inspect module advised by Alex Martelli, I couldn't find that. def catch_errors(fn): def decorator(*args, **kwargs): try: return fn(*args, **kwargs) except (IOError, OSError): msg = sys.exc_info()[2].tb_frame.f_locals['error_message'] quit(msg.format(SEQUENCE_OF_PARAMETERS_OF_THE_LAST_FUNCTION_CALLED)\ + '\nError #{0[0]}: {0[1]}'.format(sys.exc_info()[1].args), 1) return decorator @catch_errors def do_your_job(): error_message = 'Can\'t change folder ownership \'{0}\' (uid:{1}, gid:{2})' os.chown('/root', 1000, 1000) # note that params aren't named vars. if __name == '__main__' and os.getenv('USERNAME') != 'root': do_your_job() (Thanks to Jim Robert for the decorator)

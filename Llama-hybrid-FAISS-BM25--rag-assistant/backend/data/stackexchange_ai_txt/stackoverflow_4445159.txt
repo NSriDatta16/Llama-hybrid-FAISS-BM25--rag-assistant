@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4445159
+[parent_id]: 
+[tags]: 
+ASP.Net EF not updating relationships
+
+I've got a table which contains a bunch of assets that are organized into multiple hierarchies such that the table has a many-to-many relationship with itself (each asset can have multiple children AND multiple parents). I'm using the following code to reassign a child asset's parents. I realize the code seems redundant; before I was simply using the child object to make the change in relationship, but to be thorough, I decided to try changing the relationship from both the child and the parent object. int NewParentID = Int32.Parse(e.CommandArgument.ToString()); Asset NewParent = DataContext.Assets.Where(asset => asset.AssetID == NewParentID).First(); Asset Child = DataContext.Assets.Where(asset => asset.AssetID == AssetID).First(); IEnumerable OldParents = Child.ParentAssets.Where(asset => asset.AssetType == Child.OrganizationalParentAssetType); foreach (Asset a in OldParents) { a.ChildAssets.Remove(Child); Child.ParentAssets.Remove(a); } Child.ParentAssets.Add(NewParent); NewParent.ChildAssets.Add(Child); DataContext.SaveChanges(); Can anyone think of a reason why DataContext.SaveChanges() would not persist the relationship changes being made in this code? Changing simple property values works just fine (e.g. Child.AssetName = "Whatever", is persisted to the database, no problems). Any help is much appreciated! Regards, Trevor

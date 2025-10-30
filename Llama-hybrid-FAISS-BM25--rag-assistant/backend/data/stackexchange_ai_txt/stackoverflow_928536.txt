@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 928536
+[parent_id]: 924513
+[tags]: 
+I was thinking along the same lines as Zach , but thought I would look at the problem with a more elaborate example, proc sql; CREATE TABLE contacts ( line1 CHAR(30), line2 CHAR(30), pcode CHAR(4) ); * Different versions of the same address - L23 Bass Plaza 2199; INSERT INTO contacts values('LEVEL 23 bass', 'plaza' '2199'); INSERT INTO contacts values('level 23 bass ', ' PLAZA' '2199'); INSERT INTO contacts values('Level 23', 'bass plaza' '2199'); INSERT INTO contacts values('level 23', 'BASS plaza' '2199'); *full address in line 1; INSERT INTO contacts values('Level 23 bass plaza', '' '2199'); INSERT INTO contacts values(' Level 23 BASS plaza ', '' '2199'); ;quit; Now we can output i. One from each category? Ie three addresses ? OR ii. Or just one address ? if so which version should we prefer ? Implementing case 1 can be as simple as : proc sql; SELECT DISTINCT UPCASE(trim(line1)), UPCASE(trim(line2)), pcode FROM contacts ;quit; Implementing case 2 can be as simple as: proc sql; SELECT DISTINCT UPCASE( trim(line1) || ' ' || trim(line2) ) , pcode FROM contacts ;quit;

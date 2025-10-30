@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4437083
+[parent_id]: 
+[tags]: 
+MySQL indexing for multiple count(*) queries
+
+I'm lost regarding indexing. I have a moderately complex web app that I'm building for a client and it has several count(*) queries that are all running very slow (0.3 seconds) Here's a quick example SELECT COUNT( * ) AS `count` FROM `vehicles` WHERE `VehicleLocation_province` = 'Alberta' AND `default_image_URI` IS NOT NULL AND `default_image_URI` != '' Here's the explain.. 1 SIMPLE vehicles ref VehicleLocation_province,VehicleLocation_province_... VehicleLocation_province 2 const 14128 Using where I can't even get this query to use a proper index, never mind some of the more complex queries such as SELECT * , ( 6371 * ACOS( COS( RADIANS( 53.543564 ) ) * COS( RADIANS( lat ) ) * COS( RADIANS( lng ) - RADIANS( - 113.490456 ) ) + SIN( RADIANS( 53.543564 ) ) * SIN( RADIANS( lat ) ) ) ) AS `distance` FROM `vehicles` WHERE `Make` = 'Pontiac' AND `BodyStyle` = 'Sedan' AND `VehiclePrice` >= '1' AND `VehiclePrice` Explain 1 SIMPLE vehicles ref Make,BodyStyle,VehicleLocation_province_2 Make 99 const 5821 Using where; Using filesort I know I need to avoid temp tables and filesorts where possible... but how is this practically accomplished when several of these count(*) queries must be executed on each request with varying where parameters grouping and ordering?

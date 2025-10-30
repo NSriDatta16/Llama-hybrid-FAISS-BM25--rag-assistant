@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2734036
+[parent_id]: 2731462
+[tags]: 
+I wouldn't use WebSessionContext in this case, precisely because NServiceBus can operate independently of HttpContexts. If you want to use a single session context implementation for both web and NServiceBus message handling, I'd implement NHibernate.Context.ICurrentSessionContext with an hybrid storage, i.e. if HttpContext.Current != null, use the HttpContext as session storage. Otherwise use a thread local storage. This is similar to what Castle ActiveRecord does with its HybridWebThreadScopeInfo .

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2142308
+[parent_id]: 2141763
+[tags]: 
+Peter's looks more elegant, but here is what I came up with given the following assumptions about the tables and data: create table obshead ( cycledays number, numdaysincycle number, groupid number ); create table hiergrps ( groupid number, parent number, groupname varchar2(40) ); insert into obshead select 100 cycledays, 30 numdaysincycle, 100 groupid from dual; insert into hiergrps select 100 groupid, 50 parent, 'Gyncecology' groupname from dual; insert into hiergrps select 50 groupid, 10 parent, 'Tx' groupname from dual; insert into hiergrps select 10 groupid, 0 parent, 'Basic' groupname from dual; select cycledays, numdaysincycle, groups from (select groupid, parent, sys_connect_by_path(groupname, ':') groups from hiergrps hg start with parent = 0 connect by prior hg.groupid = hg.parent ) hg, obshead obs where obs.groupid = hg.groupid; Which returns for me: 100 30 :Basic:Tx:Gyncecology Edit : Updated select to incorporate Vadim's parentid = 0

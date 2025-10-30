@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4761512
+[parent_id]: 4761454
+[tags]: 
+Do you have unused LOBs? If you have something like this: CREATE TABLE bigobjects ( id BIGINT NOT NULL PRIMARY KEY, filename VARCHAR(255) NOT NULL, filecontents OID NOT NULL ); followed by: \lo_import '/tmp/bigfile' 11357 INSERT INTO bigobjects VALUES (1, 'bigfile', 11357); TRUNCATE TABLE bigobjects; You'll still have the LOB (id 11357) in the database. You can check the pg_catalog.pg_largeobject system catalog table for all the large objects in your database (recommend SELECT DISTINCT loid FROM pg_catalog.pg_largeobject unless you want to see all your LOB data as octal.) If you clean out all your unused LOBs and do a VACUUM FULL, you should see a hefty reduction in storage. I just tried this on a personal dev database I've been using and saw a reduction in size from 200MB down to 10MB (as reported by pg_database_size(current_database()).)

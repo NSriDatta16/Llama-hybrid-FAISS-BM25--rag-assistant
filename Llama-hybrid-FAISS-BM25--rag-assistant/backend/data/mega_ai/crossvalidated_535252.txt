@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 535252
+[parent_id]: 422890
+[tags]: 
+Answer is: we don't want softmax in attention to be affected by padded parts of sequences. Sequences have different lengths: if sequence is too long, we trim it down if sequence is too shot, we pad remaining part with either tokens or values like 0 But these values in embeddings, further down the road, will affect attention's output, because of softmax: For example, if we have vector = [2, 0.5, 0.8, 1, 0, 0, 0, 0] (last 4 values are padded part), softmax output will be [0.41, 0.09, 0.12, 0.15, 0.06, 0.06, 0.06, 0.06], yet, we know that last four elements have no real value and shouldn't influence output. Thus, we create mask and apply it before softmax, setting padded values to -inf or something like -1e9. For example, previous vector after replacement will look like this: [2, 0.5, 0.8, 1, -1e9, -1e9, -1e9, -1e9] and here's softmax output: [0.53, 0.12, 0.16, 0.19, 0, 0, 0, 0]

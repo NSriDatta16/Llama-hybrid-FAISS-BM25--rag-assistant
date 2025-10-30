@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1371771
+[parent_id]: 1371701
+[tags]: 
+You have multiple problems. Here, you allocate space for 5 chars but copy 6 in (the nul-terminator at the end of the string needs a space, too): frag->seq = malloc (5 * sizeof (char)); strcpy (frag->seq, "55555"); At the same point, you never set frag->next in the second frag you allocate. You need to set it to NULL , so that the while loop in the free_frag routine doesn't run off into the weeds. The third problem is here: /* to do : free fragment */ free (fragment); You free fragment , but it's not a whole block recieved from malloc - it's just one of the single block of 10 fragments you allocated in one go. The later free(frags) frees that block properly, so you just need to remove that buggy line.

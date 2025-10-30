@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1206004
+[parent_id]: 1205970
+[tags]: 
+You don't want to use a cursor, you want to do this as a set, like so: update p set packageNo = r.packageNo from packages p inner join (select orderNo, orderLineNo, ROW_NUMBER() OVER(PARTITION BY orderNo ORDER BY orderLineNo) as packageNo from packages) r on p.orderNo = r.orderNo and p.orderLineNo = r.orderLineNo This will leverage SQL Server's ROW_NUMBER function to get you the correct count by each line. Using UPDATE...FROM , we can create an inner join from which to update. This is vastly more efficient than the cursor. See, cursors add an iterative ability to a procedural and set based language (SQL). The two don't play well together. That update statement is being called in order for each row (and opening/committing a transaction, to boot). If you do it all in one statement, SQL can parallelize this to make it much faster. The standard rule is this: Use cursors as sparingly as possible. There are some fringe cases where they're necessary, but if you aren't doing massive amounts of SQL administration a day, it's doubtful you'll ever come across those cases.

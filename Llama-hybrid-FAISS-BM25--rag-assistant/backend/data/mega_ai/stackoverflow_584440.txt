@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 584440
+[parent_id]: 
+[tags]: 
+Why are there self-duplicating curly brackets in persisted WPF RichTextBox?
+
+Our tester threw curly brackets at our persisting WPF RichTextBoxes. On save and reopen, there are magically more curly brackets. I've condensed the issue / code down. Draw a fish Two rich text boxes. On button click, the bottom one gets set to the result of the first one after persist and restore. namespace WpfApplication1 { /// /// Interaction logic for Window1.xaml /// public partial class Window1 : Window { public Window1() { InitializeComponent(); rtb1.Document = new FlowDocument(new Paragraph(new Run("{"))); } public static FlowDocument CreateFlowDocumentFromByteArray(byte[] byteArray) { return (FlowDocument)XamlReader.Load(new MemoryStream(byteArray)); } public static byte[] CreateByteArrayFromFlowDocument(FlowDocument flowDocument) { MemoryStream mStream = new MemoryStream(); XmlWriterSettings settings = new XmlWriterSettings(); settings.Indent = false; settings.OmitXmlDeclaration = true; XamlDesignerSerializationManager dsm = new XamlDesignerSerializationManager(XmlWriter.Create(mStream, settings)); dsm.XamlWriterMode = XamlWriterMode.Value; XamlWriter.Save(flowDocument, dsm); mStream.Close(); return mStream.ToArray(); } private void Button_Click(object sender, RoutedEventArgs e) { rtb2.Document = CreateFlowDocumentFromByteArray(CreateByteArrayFromFlowDocument(rtb1.Document)); } } } Why is this happening? How do we stop it?

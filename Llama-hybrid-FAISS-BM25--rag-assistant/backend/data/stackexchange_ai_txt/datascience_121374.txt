@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 121374
+[parent_id]: 
+[tags]: 
+Why does my accuracy score drop after hyperparameter tuning in XGBoost?
+
+I am trying to tune the model I've built, but every time I change hyperparameters my accuracy score drops significantly. I'm using RandomizedSearchCV and best_params_ to determine which parameters I need to change. In this specific case best_params_ recommends a learning rate of .29, while dropping the accuracy score from 0.6238 to 0.6192. The code I use to tune parameters is below: xgb = XGBClassifier(booster='gbtree', objective='multi:softmax', random_state=42, eval_metric="auc", num_class=num_of_classes, tree_method='gpu_hist', importance_type='gain') xgb.fit(X_train,y_train) params={ "colsample_bytree":[1], "gamma":[0], "learning_rate":[0.3,0.29], "max_delta_step":[0], "max_depth":[6], "min_child_weight":[1], "n_jobs":[12], "subsample":[1] } clf=RandomizedSearchCV(xgb,param_distributions=params,n_iter=1000,scoring='accuracy',cv=10,verbose=3) clf.fit(X,Y) And this is the code for measuring accuracy: val = clf.predict(X_test) lb = preprocessing.LabelBinarizer() lb.fit(y_test) y_test_lb = lb.transform(y_test) val_lb = lb.transform(val) accuracy_score(y_test_lb, val_lb)

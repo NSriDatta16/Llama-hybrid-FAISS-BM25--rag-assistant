@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1002115
+[parent_id]: 1002038
+[tags]: 
+With only one session you shouldn't get this error. The following script however will spawn a secondary session that will update a row independantly of the first session, allowing us to trigger an ORA-8177. I'm not sure if this is what you want. Consider: SQL> alter session set isolation_level=serializable; Session altered SQL> create table test (a number); Table created SQL> insert into test values (1); 1 row inserted SQL> commit; Commit complete SQL> declare 2 pragma autonomous_transaction; 3 begin 4 update test set a = 2; 5 commit; 6 end; 7 / PL/SQL procedure successfully completed SQL> update test set a = 3; update test set a = 3 ORA-08177: can't serialize access for this transaction

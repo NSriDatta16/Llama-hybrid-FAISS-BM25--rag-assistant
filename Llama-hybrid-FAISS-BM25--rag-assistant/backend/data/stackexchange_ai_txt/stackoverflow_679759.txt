@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 679759
+[parent_id]: 
+[tags]: 
+Should C++ template be used in this case?
+
+I have a class that my client uses to Get() a packet. The packet contains a std::vector whose type is not known until the packet is generated internally in my Interface class (in this example, it depends on the Packet::type variable). I was wondering if template could be used for this since the Packet class is just a generic class whose type can be pretty much anything. The problem with it, as far as I can think of, is that the client has no clue what type of packet it is until he gets the packet and look at the Packet::type member. So, this wouldnt work because he wouldnt be able to declare a variable that Get() would return (?) Could template be used elegantly in this case? One alternative I could think of is to define a base class, and create a child class for each type. Then, the Get() method could return a pointer to the base class. Then client can simply look at the Packet::type (packet->type) and cast it to be the appropriate child class. But that's a bit messy? Is there a more elegant solution? The code below demonstrates the scenario roughly: enum { T_FLOAT, T_COMPLEX } TYPE_ENUM; // T can either be of type float or std::complex template class Packet { public: TYPE_ENUM type; std::vector data; }; class Interface { public: // Method that client calls to obtain the packet Packet<> Get() { return queue.pop(); // return current packet in queue } private: Queue queue; };

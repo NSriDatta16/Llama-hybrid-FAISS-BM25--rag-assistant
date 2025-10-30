@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 358679
+[parent_id]: 
+[tags]: 
+ROC curve goes "Flat" (Python)
+
+I am trying to predict a binary variable using three methods (Logistic regression, KNN, and Random Forest) and tried making an ROC curve. It seems, however, that my ROC curve goes "flat" around 0.5 which seems quite odd. Here is my code: rf = RandomForestClassifier(n_estimators=100, max_features=1, n_jobs=-1) rf.fit(x_train,y_train) lg = LogisticRegression() lg.fit(x_train,y_train) knn = KNeighborsClassifier(n_neighbors=20) knn.fit(x_train,y_train) rfprobs = rf.predict_proba(x_test[traincols])[:,1] lgprobs = lg.predict_proba(x_test[traincols])[:,1] knnprobs = knn.predict_proba(x_test[traincols])[:,1] for pred_prob,name in zip([rfprobs, lgprobs, knnprobs],["RF","LG","KNN"]): fpr,tpr,thresholds = roc_curve(y_test, pred_prob) auc_score = roc_auc_score(y_test, pred_prob, average='macro', sample_weight=None) plt.plot(fpr, tpr, label = name+', AUC: '+str(round(auc_score,4)) ) plt.xlim([0.0,1.0]) plt.ylim([0.0,1.1]) plt.title("ROC Curve") plt.xlabel("FPR") plt.ylabel("TPR") plt.legend() Which yields the following ROC curve: I can't figure out why this is the case. I always thought these curves should gradually go to (1,1). Thanks in advance!

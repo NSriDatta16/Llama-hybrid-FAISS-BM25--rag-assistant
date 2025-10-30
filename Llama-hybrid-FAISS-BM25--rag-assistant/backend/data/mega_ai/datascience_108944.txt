@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 108944
+[parent_id]: 
+[tags]: 
+WGAN with simplest data
+
+I want to train WGAN (pyTorch) to generate this simple data. Here below my generator and critic architechtures: discriminator = nn.Sequential( nn.Linear(2, 8), nn.Linear(8, 1) ) discriminator = nn.Sequential( nn.Linear(2, 8), nn.Linear(8, 1) ) Here training loop: epochs = 10 opt_d = torch.optim.RMSprop(discriminator.parameters(), lr=0.00005) opt_g = torch.optim.RMSprop(generator.parameters(), lr=0.00005) discriminator.train() generator.train() for epoch in np.arange(epochs): print(f'Epoch: {epoch}, ', end='') for real_data, real_target in dl: for i in range(10): # critic train opt_d.zero_grad() real_pred = discriminator(real_data) fake_pred = discriminator(generator(torch.rand(batch_size, 2))) loss_dis = -torch.mean(real_pred + fake_pred) loss_dis.backward() opt_d.step() for p in discriminator.parameters(): p.data.clamp(-0.01, 0.01) # generator train opt_g.zero_grad() fake_pred = discriminator(generator(torch.rand(batch_size, 2))) loss_gen = -torch.mean(fake_pred) loss_gen.backward() opt_g.step() Here is result: Increasing number of layers doesn't help. Where is the error?

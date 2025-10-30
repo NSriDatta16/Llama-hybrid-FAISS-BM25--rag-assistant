@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4585032
+[parent_id]: 4584697
+[tags]: 
+@Ismail is right - unless you are doing retrieval-before-insert, you really don't need defaultdict. I will assume you are doing something like: from collections import defaultdict a = defaultdict(lambda: defaultdict(int)) for x,y in ( ('c','C'), ('a','AA'), ('a','A'), ('a','AA'), ('b','B'), ('a','AA') # etc ): a[x][y] += 1 Here is an iterator that does what you want: def sortedRecursiveDictIter(d, key=None, prekey=None): if isinstance(d,dict): if prekey is None: prekey = tuple() keylist = d.keys() keylist.sort(key=key) for k in keylist: for nk,ni in sortedRecursiveDictIter(d[k], key, prekey+tuple([k])): yield nk,ni else: yield prekey,d for k,i in sortedRecursiveDictIter(a): print k,i returns ('a', 'A') 3 ('a', 'AA') 4 ('b', 'B') 2 ('c', 'C') 1

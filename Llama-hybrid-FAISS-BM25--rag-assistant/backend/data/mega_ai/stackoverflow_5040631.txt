@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5040631
+[parent_id]: 
+[tags]: 
+PHP fgetcsv encounters Fatal error: Maximum execution time exceeded on Firefox
+
+First of all I guess that "fatal error: maximum execution time exceeded" in PHP is a server side error and shouldn't depend on browser version, right? But seems it does!?! I have this code to read csv data coming from a text area in a form. $handle = tmpfile(); fwrite($handle, $csvclip); fseek($handle, 0); while (!feof($handle)) { $r = fgetcsv($handle, 1000, $delimiter, '"'); And data is this, nothing special, 4 columns and 3 rows. a b 1 2 c d 3 4 e f 5 6 Code works on all browsers (IE, Chrome, e.t.c), I can see my parsed data except Firefox!!!!! I tested on different PCs but same. All browsers are ok but Firefox gives "Fatal error: Maximum execution time exceeded" for line having "fgetcsv" I'm using PHP Version 5.2.10 and 2 different firefox versions 3.5.16 and 3.6.6 Anyone have seen this problem before? Edit: Code is tested on two different linux servers CentOS 5.3 and 5.5, using two different PC having all browsers. Edit 2: SOLVED Ok I found the problem. $delimiter value comes from a having 3 values "," ";" and "\t" which browsers display "\t" as spaces in and I didn't pay attention to it. Seems firefox is doing something to \t so PHP doesn't understand that it's tab. But other browsers sends \t as expected. If I hardcode "\t" like fgetcsv($handle, 1000, "\t", '"') works fine also with firefox. First time Firefox caused me that much trouble and not IE :)

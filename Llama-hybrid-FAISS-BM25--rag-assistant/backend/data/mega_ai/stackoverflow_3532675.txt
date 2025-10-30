@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3532675
+[parent_id]: 3532228
+[tags]: 
+How about using sp_executesql with dynamic sql. Something like: DECLARE @XML XML = ' '; declare @orgs table(ID int); declare @nodes nvarchar(4000), @value nvarchar(4000), @query nvarchar(4000) select @value = '''@value'',''int''' select @nodes = '//*[@id="organization"]//item[@selected="true"]' select @query = 'Select OrgNameIdNodes.ID.value( ' + @value + ') ' + 'from @xml.nodes(''' + @nodes + ''') as OrgNameIdNodes(ID)' insert into @Orgs(ID) EXEC sp_executesql @query, N'@xml xml', @xml = @xml Select * from @orgs

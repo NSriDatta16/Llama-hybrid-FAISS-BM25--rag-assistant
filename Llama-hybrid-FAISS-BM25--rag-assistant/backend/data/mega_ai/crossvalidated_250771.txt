@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 250771
+[parent_id]: 
+[tags]: 
+Transfer learning with Inception-resnet-v2 neural network
+
+I am using the following code to fit the Inception-resnet v2 pretrained model to perform transfer learning on my own dataset of images, with 8 classes. I would like to know how I can remove the top layer and add a MaxPooling and dense softmax layer to do transfer learning on new images? similar to the Inception V3 code I use below. import tensorflow as tf slim = tf.contrib.slim from PIL import Image from inception_resnet_v2 import * import numpy as np checkpoint_file = 'inception_resnet_v2_2016_08_30.ckpt' input_tensor = tf.placeholder(tf.float32, shape=(None,299,299,3), name='input_image') scaled_input_tensor = tf.scalar_mul((1.0/255), input_tensor) scaled_input_tensor = tf.sub(scaled_input_tensor, 0.5) scaled_input_tensor = tf.mul(scaled_input_tensor, 2.0) # has to be scaled. #im = 2*(im/255.0)-1.0 #Load the model sess = tf.Session() arg_scope = inception_resnet_v2_arg_scope() with slim.arg_scope(arg_scope): logits, end_points = inception_resnet_v2(scaled_input_tensor, is_training=True,num_classes=8,reuse=True,scope='InceptionResnetV2') Inception V3 example: output = InceptionV3_notop.get_layer(index = -1).output # Shape: (8, 8, 2048) output = AveragePooling2D((8, 8), strides=(1, 1), name='avg_pool')(output) output = Flatten(name='flatten')(output) output = Dense(8, activation='softmax', name='predictions')(output)

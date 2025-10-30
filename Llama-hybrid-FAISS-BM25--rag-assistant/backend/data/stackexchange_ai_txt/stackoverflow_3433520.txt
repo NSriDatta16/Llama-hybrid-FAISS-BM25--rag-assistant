@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3433520
+[parent_id]: 
+[tags]: 
+What can I do to avoid TCP Zero Window/ TCP Window Full on the receiver side?
+
+I have a small application which sends files over the network to an agent located on a Windows OS. When this application runs on Windows, everything works fine, the communication is OK and the files are all copied successfully. But, when this application runs on Linux (RedHat 5.3, the receiver is still Windows) - I see in Wireshark network trace messages of TCP Zero Window and TCP Window Full to appear on each 1-2 seconds. The agent then closes the connection after some minutes. The Windows - Linux code is almost the same, and pretty simple. The only non-trivial operation is setsockopt with SO_SNDBUF and value of 0xFFFF. Removing this code didn't help. Can someone please help me with this issue? EDIT: adding the sending code - it looks that it handles properly partial writes: int totalSent=0; while(totalSent != dataLen) { int bytesSent = ::send(_socket,(char *)(data+totalSent), dataLen-totalSent, 0); if (bytesSent ==0) { return totalSent; } else if(bytesSent == SOCKET_ERROR){ #ifdef __WIN32 int errcode = WSAGetLastError(); if( errcode==WSAEWOULDBLOCK ){ #else if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) { #endif } else{ if( !totalSent ) { totalSent = SOCKET_ERROR; } break; } } else{ totalSent+=bytesSent; } } } Thanks in advance.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5291799
+[parent_id]: 5291436
+[tags]: 
+You don't need a do in your loop; it's implied. Also, while there's nothing wrong with an unconditional loop-recur, you may as well use (while true ...). future is a fine tool for this; don't let it bother you that you never get a value back. That should really bother you if you use an agent rather than a future, though - agents without values are madness. However, who said you need to future-cancel ? Just make one of the steps in your future be to check whether it's still needed. Then no other parts of your code need to keep track of futures and decide when to cancel them. So something like (future (loop [] (Thread/sleep 100) (when (dosync (alter some-value some-function)) (recur)) ; quit if alter returns nil )) would be a viable approach.

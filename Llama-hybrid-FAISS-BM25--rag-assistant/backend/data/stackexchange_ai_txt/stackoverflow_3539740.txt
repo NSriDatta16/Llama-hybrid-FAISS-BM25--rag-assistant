@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3539740
+[parent_id]: 3539086
+[tags]: 
+I approve the answers from Alexander and Michael: _do_stuff_to_file() is changing the value of $_ . As in the context of map $_ is just a name for the storage of the mapped element, the array is changed. Alexander and Michael propose to change _do_stuff_to_file() so they do not affect the $_ value. This is good practice to local-ize special variables such as $_ to avoid perturbing the outside scope. Here is an alternative solution that avoid touching that function: "break" the link inside the map block by local-izing before calling the function: map { my $x=$_; local $_; push @junk, _some_func('blah', $x); } @array; or more following the common style: @junk = map { my $x=$_; local $_; _some_func('blah', $x) } @array;

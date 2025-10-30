@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 515438
+[parent_id]: 515425
+[tags]: 
+sklearn 's vanilla LinearRegression uses LAPACK , and so (if I understand correctly) does not use gradient descent, but a closed-form solution. However, their penalized versions, as well as logistic regression (penalized or not) do use either gradient descent or coordinate descent. The initialization of coefficients might depend on the solver, but the two places I see sklearn explicitly initializing coefficients, it sets them to zero: if not self.warm_start or not hasattr(self, "coef_"): coef_ = np.zeros((n_targets, n_features), dtype=X.dtype, order='F') source for the above, in ElasticNet.fit , and similar source in enet_path , the coordinate descent elastic-net path function. Their logistic regression models use external solvers like liblinear , saga , etc., and I'm not sure how those are initialized. the LIBLINEAR paper only mentions initialization as "Given initial $w\in R^n$ ." Setting your own initial guess can be accomplished when the sklearn estimator has a warm_start option, as you might guess from the above code snippet: just manually set the attribute coef_ to your initial guess.

@@ -1,0 +1,80 @@
+Hollerith constants, named in honor of Herman Hollerith, were used in early FORTRAN programs to allow manipulation of character data.
+
+Early FORTRAN had no CHARACTER data type, only numeric types.  In order to perform character manipulation, characters needed to be placed into numeric variables using Hollerith constants.  For example, the constant 3HABC specified a three-character string "ABC", identified by the initial integer representing the string length 3 and the specified Hollerith character H, followed by the string data ABC.  These constants were typeless, so that there were no type conversion issues.  If the constant specified fewer characters than was possible to hold in a data item, the characters were then stored in the item left-justified and blank-filled.
+
+Mechanics
+By the FORTRAN 66 Standard, Hollerith syntax was allowed in the following uses:
+
+ As constants in DATA statements
+ As constant actual arguments in subroutine CALL statements
+ As edit descriptors in FORMAT statements
+
+Portability was problematic with Hollerith constants.  First, word sizes varied on different computer systems, so the number of characters that could be placed in each data item likewise varied.  Implementations varied from as few as two to as many as ten characters per word.  Second, it was difficult to manipulate individual characters within a word in a portable fashion.  This led to a great deal of shifting and masking code using non-standard, vendor-specific, features.  The fact that character sets varied between machines also complicated the issue.
+
+Some authors were of the opinion that for best portability, only a single character should be used per data item.  However considering the small memory sizes of machines of the day, this technique was considered extremely wasteful.
+
+Technological obsolescence
+One of the major features of FORTRAN 77 was the CHARACTER string data type.  Use of this data type dramatically simplified character manipulation in Fortran programs rendering almost all uses of the Hollerith constant technique obsolete.
+
+Hollerith constants were removed from the FORTRAN 77 Standard, though still described in an appendix for those wishing to continue support.  Hollerith edit descriptors were allowed through Fortran 90, and were removed from the Fortran 95 Standard.
+
+Examples
+The following is a FORTRAN 66 hello world program using Hollerith constants.  It assumes that at least four characters per word are supported by the implementation:
+
+      PROGRAM HELLO1
+C
+      INTEGER IHWSTR(3)
+      DATA IHWSTR/4HHELL,4HO WO,3HRLD/
+C
+      WRITE (6,100) IHWSTR
+      STOP
+  100 FORMAT (3A4)
+      END
+
+Besides DATA statements, Hollerith constants were also allowed as actual arguments in subroutine calls.  However, there was no way that the callee could know how many characters were passed in.  The programmer had to pass the information explicitly.  The hello world program could be written as follows on a machine where four characters are stored in a word:
+
+       PROGRAM HELLO2
+       CALL WRTOUT (11HHELLO WORLD, 11)
+       STOP
+       END
+ C
+       SUBROUTINE WRTOUT (IARRAY, NCHRS)
+ C
+       INTEGER IARRAY(1)
+       INTEGER NCHRS
+ C
+       INTEGER ICPW
+       DATA ICPW/4/
+       INTEGER I, NWRDS
+ C
+       NWRDS = (NCHRS + ICPW - 1) /ICPW
+       WRITE (6,100) (IARRAY(I), I=1,NWRDS)
+       RETURN
+   100 FORMAT (100A4)
+       END
+
+Although technically not a Hollerith constant, the same Hollerith syntax was allowed as an edit descriptor in FORMAT statements.  The hello world program could also be written as:
+
+      PROGRAM HELLO3
+      WRITE (6,100)
+      STOP
+  100 FORMAT (11HHELLO WORLD)
+      END
+
+One of the most surprising features was the behaviour of Hollerith edit descriptors when used for input.  The following program would change at run time HELLO WORLD to whatever would happen to be the next eleven characters in the input stream and print that input:
+
+      PROGRAM WHAT1
+      READ (5,100)
+      WRITE (6,100)
+      STOP
+  100 FORMAT (11HHELLO WORLD)
+      END
+
+Notes
+
+References
+
+4.2.6 Hollerith Type. A Hollerith datum is a string of characters.  This string may consist of any characters capable of representation in the processor.  The blank character is a valid and significant character in a Hollerith datum.
+
+Fortran
+String data structures

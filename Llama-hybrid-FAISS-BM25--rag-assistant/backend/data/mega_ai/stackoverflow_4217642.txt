@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4217642
+[parent_id]: 4210700
+[tags]: 
+Expanding on @PeyloW's answer (which is 100% correct and should not have been down-voted)... There are special circumstances which result in discouraging use of accessors in -init and -dealloc . (Primarily key-value observing, but also overridden accessors that may have consequences/side effects that are not appropriate for a partially initialized or partially deallocated object) Therefore, your -init method should probably be something like: //@property (nonatomic, retain) MyObject * myObject; - (id) init { self = [super init]; if (self) { myObject = [[MyObject alloc] init]; } return self; } - (void) dealloc { [myObject release]; [super dealloc]; } And then everywhere else you would use [self setMyObject:] and [self myObject] (or self.myObject , if that's how you roll)

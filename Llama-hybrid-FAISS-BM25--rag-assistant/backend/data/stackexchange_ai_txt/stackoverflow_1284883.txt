@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1284883
+[parent_id]: 1281931
+[tags]: 
+What "both resultsets"? You should only get a single result set from a single SELECT statement, PIVOT or not. And the SELECT in the subquery is not a second SELECT statement, it's a table expression (different thing), it should only return it's data to the larger calling SELECT statement. Here is the BOL pivot example: -- Pivot table with one row and five columns SELECT 'AverageCost' AS Cost_Sorted_By_Production_Days, [0], [1], [2], [3], [4] FROM (SELECT DaysToManufacture, StandardCost FROM Production.Product) AS SourceTable PIVOT ( AVG(StandardCost) FOR DaysToManufacture IN ([0], [1], [2], [3], [4]) ) AS PivotTable When I execute this agains the AdventureWorks database, I only get one result set, as expected. If you are getting more then one resultset then either 1) this query is part of a larger stoered procedure that is executing another query and returning that other result set also (so change the stored procedure), OR 2) you are confusing something else (like PRINT statements) with being a result set, OR 3) there is something seriously wrong with your SQL Server or access tools.

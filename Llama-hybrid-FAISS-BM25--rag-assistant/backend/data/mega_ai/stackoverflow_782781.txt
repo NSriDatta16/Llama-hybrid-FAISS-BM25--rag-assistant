@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 782781
+[parent_id]: 
+[tags]: 
+Infinity, ActiveRecord and MySQL: storage and comparison
+
+I have user input strings specifying the cost of an event (eg: "$4 for non-members"). I am trying to parse out the upper (and lower) bound of the cost (in the example, upper == lower == 4.00 ). Suppose that a given string cannot be parsed (maybe it's blank). In this case, I want to be able to store in the database that the maximum cost of the event is infinity (and minimum 0). How do I do this using Mysql and ActiveRecord? What I've tried: > e = Event.find(1234) > e.cost_max = 1.0/0.0 > e.save ActiveRecord::StatementInvalid: Mysql::Error: Unknown column 'Infinity' in 'field list': UPDATE `events` SET `cost_max` = Infinity WHERE `id` = 1234 I've also tried marking cost_max with NULL, instead. This works in principle. However, I am using Ultrasphinx filters to retrieve events whose cost range has a non-empty intersection with a searched range. As Ultrasphinx filters accept only hash conditions (am I wrong?), my options are limited to this: search_params[:filter].merge!(:cost_max => 0.0..99) Meaning, no "OR cost_max is NULL" allowed. Any idea?

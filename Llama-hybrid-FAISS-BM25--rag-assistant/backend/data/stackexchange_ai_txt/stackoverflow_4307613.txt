@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4307613
+[parent_id]: 4307482
+[tags]: 
+Just set some kind of globally accessible flag, when you run run_child_code() . There are a number of ways to do this, but I'd probably stick this into a package, and use a package scoped lexical to handle storage. You could use a plain variable flag, too. It's a bit simpler. I like the package solution because it will easily work across multiple modules. END { &some_cleanup_code unless ImaKid->get; } my $pid = $fork; if( defined($pid) && $pid == 0 ) { ImaKid->set; &run_child_code; } BEGIN { package ImaKid; my $child_flag; sub set { $child_flag = 1; } sub get { return $child_flag; } } Consider wrapping your fork management code into the same package to create a single consistent API for all your fork related needs.

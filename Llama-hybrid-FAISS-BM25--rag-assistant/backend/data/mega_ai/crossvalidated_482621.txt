@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 482621
+[parent_id]: 482079
+[tags]: 
+rstan provides you with all the tools you need to solve this problem with Bayesian inference. In addition to the usual regression model of response $y$ in terms of predictors $x$ , you should include a model of $x$ in the Stan code. This model should include the left-censoring. The Stan user manual chapter on censoring explains two different ways to do this in the Stan language. The first way is easier to incorporate into a regression model. The model for $x$ would look something like this (omitting the definition of N_obs and such): data { real x_obs[N_obs]; } parameters { real x_cens[N_cens]; real x[N]; } model { x_obs ~ normal(mu, sigma); x_cens ~ normal(mu, sigma); x = append_array(x_obs, x_cens); } The key idea is that the censored data is represented by parameters whose upper limit is the detection limit. The censored data will be sampled alongside the other parameters in the model, so the posteriors you get will automatically integrate out the censored data.

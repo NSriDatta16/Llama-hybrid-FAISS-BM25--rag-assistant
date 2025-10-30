@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1629831
+[parent_id]: 1594970
+[tags]: 
+When you retrieve the data in the first place, turn off object tracking on the context that does the retrieval. This will prevent the object state from being tracked on the original context. Then, when it's time to save the values, attach to the new context, refresh to set the original values on the object from the database, and then submit changes. The following worked for me when I tested it. MyClass obj = null; using (DataContext context = new DataContext()) { context.ObjectTrackingEnabled = false; obj = (from p in context.MyClasses where p.ID == someId select p).FirstOrDefault(); } obj.Name += "test"; using (DataContext context2 = new ()) { context2.MyClasses.Attach(obj); context2.Refresh(System.Data.Linq.RefreshMode.KeepCurrentValues, obj); context2.SubmitChanges(); }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1947095
+[parent_id]: 1946916
+[tags]: 
+Aaaaand with a sprinkle of black magic: select a.eventName, b.eventName, AVG(DATEDIFF(MINUTE, a.[Time], b.[Time])) as Average from (select *, row_number() over (order by [time]) rn from events) a join (select *, row_number() over (order by [time]) rn from events) b on (a.rn=b.rn-1) group by a.eventName, b.eventName This will give you rows like: stage3 stage1 2 stage1 stage2 2 stage2 stage3 5 The first column is the starting event, the second column is the ending event. If there is Event 3 right after Event 1, that will be listed as well. Otherwise you should provide some criteria as to which stage follows which stage, so the times are calculated only between those. Added: This should work OK on both Transact-SQL (MSSQL, Sybase) and PL/SQL (Oracle, PostgreSQL). However I haven't tested it and there could still be syntax errors. This will NOT work on any edition of MySQL.

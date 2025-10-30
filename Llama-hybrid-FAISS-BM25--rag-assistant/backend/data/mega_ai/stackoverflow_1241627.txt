@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1241627
+[parent_id]: 1236498
+[tags]: 
+Or if you don't want to mess with the preferred localization array, pass the kIODisplayOnlyPreferredName flag to IODisplayCreateInfoDictionary() Here is a less CoreFoundation, more Cocoa and somewhat reduced code that will do the same thing: #import #import NSString* _Nullable ScreenNameForDisplay(CGDirectDisplayID displayID) { NSString *screenName = nil; #pragma clang diagnostic push #pragma clang diagnostic ignored "-Wdeprecated-declarations" NSDictionary *deviceInfo = CFBridgingRelease(IODisplayCreateInfoDictionary(CGDisplayIOServicePort(displayID), kIODisplayOnlyPreferredName)); #pragma clang diagnostic pop NSDictionary *localizedNames = deviceInfo[@(kDisplayProductName)]; if (localizedNames.count > 0) { return localizedNames[localizedNames.allKeys[0]]; } return nil; } int main(int argc, char *argv[]) { @autoreleasepool { NSLog(@"Main Display: %@", ScreenNameForDisplay(CGMainDisplayID())); } } Note: the CoreGraphics framework must be linked ( -framework CoreGraphics )

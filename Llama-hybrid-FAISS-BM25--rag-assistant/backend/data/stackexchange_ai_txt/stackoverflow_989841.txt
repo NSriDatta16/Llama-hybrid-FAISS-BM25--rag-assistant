@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 989841
+[parent_id]: 989821
+[tags]: 
+I can't speak to any specific DB2 implementation logic, but the "wrap around" behavior you describe is standard for numbers that implement signing via two's complement . As for what would actually happen, that's completely up in the air as to how the database would handle it. The issue arises at the point in time of actually CREATING the id that's too large for the field, as it's unlikely that the engine internally uses a data type of more than 64 bits. At that point, it's anybody's guess...the internal language used to develop the engine could throw up, the number could silently wrap around and just cause a primary key violation (assuming that a conflicting ID existed), the world could come to an end due to your overflow, etc. But pragmatically, Alex is correct. The theoretical limit on the number of rows involved here (assuming it's a one-id-per row and not any sort of cheater identity insert shenanigans) would basically render the situation moot, as by the time that you could conceivably enter that many rows at even a stupendous insertion rate we'll all dead anyway, so it doesn't matter :)

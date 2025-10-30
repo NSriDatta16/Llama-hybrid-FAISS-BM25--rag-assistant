@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4500629
+[parent_id]: 
+[tags]: 
+Use Arel for a nested set & join query and convert to ActiveRecord::Relation
+
+I have a model for organisations (nested set). I have a model for people. A person can have another person as deputy. An organisation is owned by a person. An organisation is only visible to the owning person or their deputy. I would like to retrieve all organisations visible by a given person, ie. all organisations owned by that person or owned by people, for which the given person is a deputy: o = Arel::Table.new(:organisations) p = Arel::Table.new(:people) pd = p.where(p[:id].eq(3).or(p[:deputy_id].eq(3))).project(:id) op = o.join(p).where(o[:person_id].in(pd)).project("distinct organisations.*) There is probably a better way to formulate the last join, but I would like to split the query for people and their deputies from the query of organisations visible to people and their deputies. The last join returns a Arel::SelectManager (for which there seems no useful documentation anywhere). Is there a way to convert the SelectManager back into an ActiveRecord::Relation to benefit from the whole concept of "closure under composition"? How do I self join the above query on organisations again to obtain all descendants of the organisations visible to a person or their deputy? I know the SQL but always fail with the SelectManager to do the self join on organisations.

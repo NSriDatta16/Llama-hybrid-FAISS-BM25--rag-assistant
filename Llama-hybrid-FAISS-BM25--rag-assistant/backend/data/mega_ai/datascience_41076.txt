@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 41076
+[parent_id]: 
+[tags]: 
+Using Keras masking layer with 2D convolutions (Conv2D)
+
+I'm trying to design a neural network including time dependent input with different lengths and I'm currently using a Masking layer. This network worked well with TensorFlow version 1.9.0 but after updating to version 1.11.0, I get the following error: Layer conv2d_1 does not support masking, but was passed an input_mask: Tensor("cnn1/Reshape_2:0", shape=(?, 81, 81), dtype=bool) Any idea on how to solve this problem? I'm using the following code: from keras.models import Sequential from keras.layers import Conv2D, MaxPooling2D, \ TimeDistributed, Dense, Masking, Activation, BatchNormalization model= Sequential() # first layer model.add(TimeDistributed(Masking(0., input_shape=(81,81,3)), input_shape=(None,81,81,3), name='mask')) # CNN layers model.add(TimeDistributed(Conv2D(filters=10, kernel_size=5, strides=1, padding='same'), name='cnn1')) model.add(Activation('relu', name='relu1')) model.add(BatchNormalization()) model.add(TimeDistributed(MaxPooling2D(pool_size=(2, 2)))) # output layer model.add(TimeDistributed(Dense(3, name='output'))) model.add(Activation('softmax')) # compilation model.compile(loss='categorical_crossentropy')

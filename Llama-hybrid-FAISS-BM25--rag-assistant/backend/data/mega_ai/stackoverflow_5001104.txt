@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5001104
+[parent_id]: 5000816
+[tags]: 
+Your XML is very poorly organized..... the trouble is the multiple entries of and entities directly inside and not within their own "container" node. This makes is extremely hard to get this parsed properly..... If you want to grab only the names, you could use this: DECLARE @input XML = ' aaa bbb AA 1234 BB 1234 AAA Ltd BBB Ltd ccc ddd CCC 1234 DDD 1234 EEE 1234 CCC Ltd DDD Ltd ' SELECT Person.value('(FirstName)[1]', 'varchar(50)') 'First Name', Person.value('(LastName)[1]', 'varchar(50)') 'Last Name' FROM @input.nodes('/Persons/Person') AS Persons(Person) and of course, you could also do an INSERT INTO dbo.YourTable(FirstName, LastName) before that select to store the information. But again: trying to get those and nodes into a proper format is really really hard..... you either end up duplicating data, or you have to do a second and third parsing pass to get this stuff properly stored.

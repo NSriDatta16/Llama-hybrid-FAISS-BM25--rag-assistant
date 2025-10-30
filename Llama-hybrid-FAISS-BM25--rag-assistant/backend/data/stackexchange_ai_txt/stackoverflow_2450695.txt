@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2450695
+[parent_id]: 
+[tags]: 
+SQL Server concurrency and generated sequence
+
+I need a sequence of numbers for an application, and I am hoping to leverage the abilities of SQL Server to do it. I have created the following table and procedure (in SQL Server 2005): CREATE TABLE sequences ( seq_name varchar(50) NOT NULL, seq_value int NOT NULL ) CREATE PROCEDURE nextval @seq_name varchar(50) AS BEGIN DECLARE @seq_value INT SET @seq_value = -1 UPDATE sequences SET @seq_value = seq_value = seq_value + 1 WHERE seq_name = @seq_name RETURN @seq_value END I am a little concerned that without locking the table/row another request could happen concurrently and end up returning the same number to another thread or client. This would be very bad obviously. Is this design safe in this regard? Is there something I can add that would add the necessary locking to make it safe? Note: I am aware of IDENTITY inserts in SQL Server - and that is not what I am looking for this in particular case. Specifically, I don't want to be inserting/deleting rows. This is basically to have a central table that manages the sequential number generator for a bunch of sequences.

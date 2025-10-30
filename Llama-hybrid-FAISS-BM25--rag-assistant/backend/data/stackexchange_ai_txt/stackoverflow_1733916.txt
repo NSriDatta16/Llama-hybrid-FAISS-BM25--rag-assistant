@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1733916
+[parent_id]: 1732671
+[tags]: 
+If the given control is an instance variable on your form (if you used the built-in WinForms designer, most are), first get the control, and then set the property on it: void Form_SetControlProperty( String controlName, String propertyName, object value) { FieldInfo controlField = this.GetType().GetField(controlName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public); object control = controlField.GetValue(this); PropertyInfo property = control.GetType().GetProperty(propertyName); property.SetValue(control, value, new object[0]); } You may need to tweak BindingFlags to get this to work. This must be a method on your form. Call it as: SetControlProperty("myLabel", "Text", "my label text"); Pay attention to the scope of the method. It any control within the form, but not the form itself (to access the form itself, set control to this ). Note that this uses reflection and will be slow and brittle (change the name of a control and it will break).

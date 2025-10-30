@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5659348
+[parent_id]: 5658831
+[tags]: 
+Several issues with that code; saving state in -dealloc is way too late. By the time -dealloc is called, the object graph is in the midst of being torn down. on app termination, the system will not waste cycles tearing down your application. It'll just inform it that it is about to be terminated and then terminate it; if you are relying on -dealloc to be called, that might likely never happen. that method name isn't very good. Try something like savePreferencesValue:forKey: . However, the implication that it may be called many times would lead to a significant ineffeciency (in that it'd write the preferences plist over and over). the mutable string copy of the incoming value is a waste of cycles and memory; no need for it unless you need the extended features of CFPreferences*() you should just stick with NSUserDefaults; it will lead to less code and less fragility.

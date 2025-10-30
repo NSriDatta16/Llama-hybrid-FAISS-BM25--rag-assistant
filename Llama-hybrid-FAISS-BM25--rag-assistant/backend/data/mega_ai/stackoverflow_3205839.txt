@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3205839
+[parent_id]: 3205453
+[tags]: 
+This is an interesting problem! I don't think that you can append within 0.05 to the existing definition of should equal in any way. To do that you would need to add parameter to the should function, but that needs to have a fixed number of parameters in the library. One way to write this elegantly in F# would is to create custom operator +/- . Note that you still need to use parentheses, but it looks quite neat: 0.9 |> should equal (1.0 +/- 0.5) The operator simply constructs some value of a special type that needs to be explicitly handled in the equal function. Here is the implementation: type Range = Within of float * float let (+/-) (a:float) b = Within(a, b) let equal x = match box x with | :? Range as r -> let (Within(x, within)) = r (new EqualConstraint(x)).Within(within) | _ -> new EqualConstraint(x)

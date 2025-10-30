@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 315033
+[parent_id]: 
+[tags]: 
+Classification algorithm based on average distances from a test point to the points in each class
+
+Is there any classification algorithm that assign a new test vector to the cluster of points whose average distance is minimum? Let me write it better: Let's imagine that we have $K$ clusters of $T_k$ points each. For each cluster k, I calculate the average of all the distances between $x(0)$ and $x(i)$, where $x(i)$ is a point in the cluster $k$. The test point is assigned to the cluster with minimum of such distances. Do you think this is a valid classification algorithm? In theory, if the cluster are "well-formed" like you have after a linear fished discriminant mapping, we should be able to have good classification accuracy. What do you think of this algo? I've tried but the result is that the classification is strongly biased towards the cluster with the biggest number of elements. def classify_avg_y_space(logging, y_train, y_tests, labels_indices): my_labels=[] distances=dict() avg_dist=dict() for key, value in labels_indices.items(): distances[key] = sk.metrics.pairwise.euclidean_distances(y_tests, y_train[value]) avg_dist[key]=np.average(distances[key], axis=1) for index, value in enumerate(y_tests): average_distances_test_cluster = { key : avg_dist[key][index] for key in labels_indices.keys() } my_labels.append(min(average_distances_test_cluster, key=average_distances_test_cluster.get)) return my_labels

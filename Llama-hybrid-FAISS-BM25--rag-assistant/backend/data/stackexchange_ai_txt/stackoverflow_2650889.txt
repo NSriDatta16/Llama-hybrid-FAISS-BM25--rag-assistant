@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2650889
+[parent_id]: 2650696
+[tags]: 
+try a subquery using detached criteria to produce the equivalent to the following plain sql select * from Products where ProductId in (select distinct cp.ProductId from Categories_Products cp inner join Categories c on cp.CategoryId = c.CategoryId and c.Name = name) something like this ... DetachedCriteria subCriteria = DetachedCriteria.For(typeof(Category)) .SetResultTransformer(new DistinctRootEntityResultTransformer()) .SetProjection(Projections.Property("Category.Products.ProductId")) .Add(Restrictions.PropertyEq("Name", name)); return _session.CreateCriteria.For(typeof(Product)) .Add(Subqueries.PropertyIn("ProductId", subCriteria)) .List (); Ack, the Category.Products.ProductId might not be correct, but maybe you can see what I'm trying to do here and figure out the correct projection to use in the subquery.

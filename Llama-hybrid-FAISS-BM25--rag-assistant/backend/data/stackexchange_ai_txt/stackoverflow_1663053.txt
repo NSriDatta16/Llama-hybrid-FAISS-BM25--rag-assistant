@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1663053
+[parent_id]: 1662336
+[tags]: 
+Here's another way: (defn factorial [n] (reduce * (range 1 (inc n)))) This won't blow the stack because range returns a lazy seq, and reduce walks across the seq without holding onto the head. reduce makes use of chunked seqs if it can, so this can actually perform better than using recur yourself. Using Siddhartha Reddy's recur -based version and this reduce -based version: user> (time (do (factorial-recur 20000) nil)) "Elapsed time: 2905.910426 msecs" nil user> (time (do (factorial-reduce 20000) nil)) "Elapsed time: 2647.277182 msecs" nil Just a slight difference. I like to leave my recur ring to map and reduce and friends, which are more readable and explicit, and use recur internally a bit more elegantly than I'm likely to do by hand. There are times when you need to recur manually, but not that many in my experience.

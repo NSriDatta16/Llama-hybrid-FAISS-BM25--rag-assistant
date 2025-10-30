@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 152648
+[parent_id]: 152644
+[tags]: 
+I think the key is "unexpected" qualifier in your graph. In order to detect the unexpected you need to have an idea of what's expected . I would start with a simple time series model such as AR(p) or ARMA(p,q). Fit it to data, add seasonality as appropriate. For instance, your SAR(1)(24) model could be: $y_{t}=c+\phi y_{t-1}+\Phi_{24}y_{t-24}+\Phi_{25}y_{t-25}+\varepsilon_t$, where $t$ is time in hours. So, you'd be predicting the graph for the next hour. Whenever the prediction error $e_t=y_t-\hat y_t$ is "too big" you throw an alert. When you estimate the model you'll get the variance $\sigma_\varepsilon$ of the error $\varepsilon_t$. Depending on your distributional assumptions, such as normal, you can set the threshold based on the probability, such as $|e_t| 3\sigma_\varepsilon$. The number of visitors is probably quite persistent, but super seasonal. It might work better to try seasonal dummies instead of the multiplicative seasonality, then you'd try ARMAX where X stands for exogenous variables, which could be anything like holiday dummy, hour dummies, weekend dummies etc.

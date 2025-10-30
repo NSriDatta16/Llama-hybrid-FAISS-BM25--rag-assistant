@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1514003
+[parent_id]: 
+[tags]: 
+SQL Update - Is there a more elegant and efficient way of doing this?
+
+I have 3 tables Site, Price and PriceMonth. Site has many Prices (joined on siteId). PriceMonth holds a date which is a looked up by Price (joined on PriceMonth). The idea is that the price records are created when a site is created as place holders. When a user clicks a Price row in a view - I need to update the prices for the rest of that year only and from that month only. I've written code for a stored procedure which works. Please ignore the hard coded values for now. It works but can it be made simpler and more efficient? Code: DECLARE @startDate smallDateTime DECLARE @roc decimal(5,2) DECLARE @Lec decimal(5,2) DECLARE @power decimal(5,2) SET @roc = (SELECT roc FROM [Price] WHERE siteId = 77 AND PriceMonthId = 527) SET @lec = (SELECT lec FROM [Price] WHERE siteId = 77 AND PriceMonthId = 527) SET @power = (SELECT [power] FROM [Price] WHERE siteId = 77 AND PriceMonthId = 527) SET @startDate = (Select [month] FROM [PriceMonth] WHERE PriceMonthId = 527) UPDATE Price SET roc = @roc , lec = @lec , [power] = @power FROM Price INNER JOIN priceMonth pm ON price.priceMonthId = pm.priceMonthId WHERE (DATEPART(mm,pm.[Month]) > DATEPART(mm,@startDate) AND (DATEPART(yy,pm.[Month]) = DATEPART(yy,@startDate))) AND price.SiteId = 77

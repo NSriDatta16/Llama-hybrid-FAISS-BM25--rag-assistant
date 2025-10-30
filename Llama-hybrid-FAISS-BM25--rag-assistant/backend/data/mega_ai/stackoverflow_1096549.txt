@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1096549
+[parent_id]: 1096291
+[tags]: 
+Implementing your own operator class my_facet : public std::locale::facet { public: enum option{ use_string, use_numeric }; //Unique id for facet family, no locale can contain two //facets with same id. static std::locale::id id; my_facet(option o=use_numeric): facet(0), _option(o) {//Initialize reference count to zero so that the memory //management will be handled by locale }; option get_option() const {return _option;}; protected: option _option; }; std::locale::id my_facet::id(123456); //Facet family unique id std::ostream& operator (l) ){ my_facet const& f = std::use_facet (l); switch(f.get_option()){ case my_facet::use_numeric: os Then to imbue a locale with the facet: std::locale mylocale(locale("US"), new my_facet(my_facet::use_numeric)); std::cout.imbue(mylocale); However a more elegant way would be to implement different facets of the same facet family that can be replaced in the locale.

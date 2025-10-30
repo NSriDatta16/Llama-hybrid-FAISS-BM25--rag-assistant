@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1149024
+[parent_id]: 1147391
+[tags]: 
+If your goal is to take advantage of database indexes, storing the unstructured data in a BLOB is not going to be effective. BLOBs are essentially opaque from the RDBMS's perspective. I gather from your description that the unstructured part of the data takes the form of an arbitrary set of key-value pairs associated with the object, right? Well, if the types of all keys are the same (e.g. they're all strings), I'd recommend simply creating a child table with (at least) three columns: the key, the value, and a foreign key to the parent object's row in its table. Since the keys will then be stored in the database as a regular column, they can be indexed effectively. The index should also include the foreign key to the parent table. A completely different approach would be to look at a "schemaless" database engine like CouchDB , which is specifically designed to deal with unstructured data. I have zero experience with such systems and I don't know how well the rest of your application would lend itself to this alternative storage strategy, but it might be worth looking into.

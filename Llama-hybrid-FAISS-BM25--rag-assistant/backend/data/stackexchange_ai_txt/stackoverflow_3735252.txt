@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3735252
+[parent_id]: 
+[tags]: 
+Is there a better way to calculate the median (not average)
+
+Suppose I have the following table definition: CREATE TABLE x (i serial primary key, value integer not null); I want to calculate the MEDIAN of value (not the AVG). The median is a value that divides the set in two subsets containing the same number of elements. If the number of elements is even, the median is the average of the biggest value in the lowest segment and the lowest value of the biggest segment. (See wikipedia for more details.) Here is how I manage to calculate the MEDIAN but I guess there must be a better way: SELECT AVG(values_around_median) AS median FROM ( SELECT DISTINCT(CASE WHEN FIRST_VALUE(above) OVER w2 THEN MIN(value) OVER w3 ELSE MAX(value) OVER w2 END) AS values_around_median FROM ( SELECT LAST_VALUE(value) OVER w AS value, SUM(COUNT(*)) OVER w > (SELECT count(*)/2 FROM x) AS above FROM x GROUP BY value WINDOW w AS (ORDER BY value) ORDER BY value ) AS find_if_values_are_above_or_below_median WINDOW w2 AS (PARTITION BY above ORDER BY value DESC), w3 AS (PARTITION BY above ORDER BY value ASC) ) AS find_values_around_median Any ideas?

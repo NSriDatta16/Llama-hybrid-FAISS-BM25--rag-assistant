@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1882811
+[parent_id]: 1882763
+[tags]: 
+There are a few different ways. The fact that you need to do this is sometimes indicative of a design problem, though of course pragmatism must come into play. One simple way is to have a private static event in the FootballTeam class which itself subscribes to in the ctor: public class FootballTeam { private static event EventHandler SomethingHappened; public FootballTeam() { SomethingHappened += this.HandleSomethingHappened; } public void DoSomething() { SomethingHappened(); //notifies all instances - including this one! } } To avoid a memory leak, make sure to clean up the event handlers by implementing IDisposable: public class FootballTeam : IDisposable { //... public void Dispose() { SomethingHappened -= this.HandleSomethingHappened; //release the reference to this instance so it can be GC'd } }

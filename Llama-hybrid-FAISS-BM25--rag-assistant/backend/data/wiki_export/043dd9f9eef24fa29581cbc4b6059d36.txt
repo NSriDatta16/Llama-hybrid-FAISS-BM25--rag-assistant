@@ -1,0 +1,89 @@
+UDP-based Data Transfer Protocol (UDT), is a high-performance data transfer protocol designed for transferring large volumetric datasets over high-speed wide area networks. Such settings are typically disadvantageous for the more common TCP protocol.
+
+Initial versions were developed and tested on very high-speed networks (1 Gbit/s, 10 Gbit/s, etc.); however, recent versions of the protocol have been updated to support the commodity Internet as well. For example, the protocol now supports rendezvous connection setup, which is a desirable feature for traversing NAT firewalls using UDP.
+
+UDT has an open source implementation which can be found on SourceForge. It is one of the most popular solutions for supporting high-speed data transfer and is part of many research projects and commercial products.
+
+Background
+UDT was developed by Yunhong Gu during his PhD studies at the National Center for Data Mining (NCDM) of University of Illinois at Chicago in the laboratory of Dr. Robert Grossman. Dr. Gu continues to maintain and improve the protocol after graduation.
+
+The UDT project started in 2001, when inexpensive optical networks became popular and triggered a wider awareness of TCP efficiency problems over high-speed wide area networks. The first version of UDT, also known as SABUL (Simple Available Bandwidth Utility Library), was designed to support bulk data transfer for scientific data movement over private networks. SABUL used UDP for data transfer and a separate TCP connection for control messages.
+
+In October, 2003, the NCDM achieved a 6.8 gigabits per second transfer from Chicago, United States to Amsterdam, Netherlands. During the 30-minute test they transmitted approximately 1.4 terabytes of data.
+
+SABUL was later renamed to UDT starting with version 2.0, which was released in 2004. UDT2 removed the TCP control connection in SABUL and used UDP for both data and control information. UDT2 also introduced a new congestion control algorithm that allowed the protocol to run "fairly and friendly" with concurrent UDT and TCP flows.
+
+UDT3 (2006) extended the usage of the protocol to the commodity Internet. Congestion control was tuned to support relatively low bandwidth as well. UDT3 also significantly reduced the use of system resources (CPU and memory). Additionally, UDT3 allows users to easily define and install their own congestion control algorithms.
+
+UDT4 (2007) introduced several new features to better support high concurrency and firewall traversing. UDT4 allowed multiple UDT connections to bind to the same UDP port and it also supported rendezvous connection setup for easier UDP hole punching.
+
+A fifth version of the protocol is currently in the planning stage. Possible features include the ability to support multiple independent sessions over a single connection.
+
+Moreover, since the absence of a security feature for UDT has been an issue with its initial implementation in a commercial environment, Bernardo (2011) has developed a security architecture for UDT as part of his PhD studies. This architecture however is undergoing enhancement to support UDT in various network environments (i.e., optical networks).
+
+Protocol architecture
+
+UDT is built on top of User Datagram Protocol (UDP), adding congestion control and reliability control mechanisms. UDT is an application level, connection oriented, duplex protocol that supports both reliable data streaming and partial reliable messaging.
+
+Acknowledging
+UDT uses periodic acknowledgments (ACK) to confirm packet delivery, while negative ACKs (loss reports) are used to report packet loss. Periodic ACKs help to reduce control traffic on the reverse path when the data transfer speed is high, because in these situations, the number of ACKs is proportional to time, rather than the number of data packets.
+
+AIMD with decreasing increase
+UDT uses an AIMD (additive increase multiplicative decrease) style congestion control algorithm. The increase parameter is inversely proportional to the available bandwidth (estimated using the packet pair technique), thus UDT can probe high bandwidth rapidly and can slow down for better stability when it approaches maximum bandwidth. The decrease factor is a random number between 1/8 and 1/2. This helps reduce the negative impact of loss synchronization.
+
+In UDT, packet transmission is limited by both rate control and window control. The sending rate is updated by the AIMD algorithm described above. The congestion window, as a secondary control mechanism, is set according to the data arrival rate on the receiver side.
+
+Configurable congestion control
+The UDT implementation exposes a set of variables related to congestion control in a C++ class and allows users to define a set of callback functions to manipulate these variables. Thus, users can redefine the control algorithm by overriding some or all of these callback functions. Most TCP control algorithms can be implemented using this feature with fewer than 100 lines of code.
+
+Rendezvous connection setup
+Beside the traditional client/server connection setup (AKA caller/listener, where a listener waits for connection and potentially accepts multiple connecting callers), UDT supports also a new rendezvous connection setup mode. In this mode both sides listen on their port and connect to the peer simultaneously, that is, they both connect to one another. Therefore, both parties must use the same port for connection, and both parties are role-equivalent (in contrast to listener/caller roles in traditional setup). Rendezvous is widely used for firewall traversing when both peers are behind firewalls.
+
+Use scenarios
+UDT is widely used in high-performance computing to support high-speed data transfer over optical networks. For example, GridFTP, a popular data transfer tool in grid computing, has UDT available as a data transfer protocol.
+
+Over the commodity Internet, UDT has been used in many commercial products for fast file transfer over wide area networks.
+
+Because UDT is purely based on UDP, it has also been used in many situations where TCP is at a disadvantage to UDP. These scenarios include peer-to-peer applications, video and audio communication, and many others.
+
+Evaluation of feasible security mechanisms
+UDT is considered a state-of-the-art protocol, addressing infrastructure requirements for transmitting data in high-speed
+networks. Its development, however, creates new vulnerabilities because like many other protocols, it relies solely on the existing security mechanisms for current protocols such as the Transmission Control Protocol (TCP) and UDP.
+
+Research conducted by Dr. Danilo Valeros Bernardo of the University of Technology Sydney, a member of the Australian Technology Network focusing on practical experiments on UDT using their proposed security mechanisms and exploring the use of other existing security mechanisms used on TCP/UDP for UDT, gained interesting reviews in various network and security scientific communities.
+
+To analyze the security mechanisms, they carry out a formal proof of correctness to assist them in determining their applicability by using protocol composition logic (PCL). This approach is modular, comprising a separate proof of each protocol section and providing insight into the network environment in which each section can be reliably employed. Moreover, the proof holds for a variety of failure recovery strategies and other implementation and configuration options. They derive their technique from the PCL on TLS and Kerberos in the literature. They work on developing and validating its security architecture by using rewrite systems and automata.
+
+The result of their work, which is first in the literature, is a more robust theoretical and practical representation of a security architecture of UDT, viable to work with other high-speed network protocols.
+
+Derivative works
+
+UDT project has been a base for SRT project, which uses the transmission reliability for live video streaming over public internet.
+
+Awards
+The UDT team has won the prestigious Bandwidth Challenge three times during the annual ACM/IEEE Supercomputing Conference, the world's premier conference for high-performance computing, networking, storage, and analysis.
+
+At SC06 (Tampa, FL), the team transferred an astronomy dataset at 8 Gbit/s disk-to-disk from Chicago, IL to Tampa, FL using UDT. At SC08 (Austin, TX), the team demonstrated the use of UDT in a complex high-speed data transfer involving various distributed applications over a 120-node system, across four data centers in Baltimore, Chicago (2), and San Diego. At SC09 (Portland, OR), a collaborative team from NCDM, Naval Research Lab, and iCAIR showcased UDT-powered wide area data intensive cloud computing applications.
+
+See also
+ Tsunami UDP Protocol 
+ Fast and Secure Protocol (FASP)
+ QUIC
+
+Literature
+Bernardo, D.V and Hoang, D. B; "Empirical Survey: Experimentation and Implementations of High Speed Protocol Data Transfer for GRID " Proceedings of IEEE 25th International Conference on Advance Information Networking and Application Workshops, March 2011, Singapore.
+Yunhong Gu and Robert L. Grossman, UDT: UDP-based Data Transfer for High-Speed Wide Area Networks, Computer Networks (Elsevier). Volume 51, Issue 7. May 2007.
+
+References
+
+External links
+UDT Project on SourceForge
+UDT.Net wrapper around the native UDT protocol library
+UdtSharp: .NET library written in 100% managed code (C#)
+IETF Draft from October 12, 2010 (expired)
+run HTTP over UDP in Node.js with UDT
+
+Application layer protocols
+Free software programmed in C++
+Internet protocols
+Software using the BSD license

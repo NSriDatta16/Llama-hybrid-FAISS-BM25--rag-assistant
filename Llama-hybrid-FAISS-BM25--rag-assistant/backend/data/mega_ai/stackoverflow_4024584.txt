@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4024584
+[parent_id]: 4017914
+[tags]: 
+I found a way to discover if something happened during the default handler implementation. It may not be the most elegant solution, but here it is: bool g_bWindowCreated = false; HHOOK g_hHook = NULL; LRESULT CALLBACK HookProc(int code, WPARAM wParam, LPARAM lParam) { if( code == HCBT_CREATEWND ) g_bWindowCreated = true; return CallNextHookEx( g_hHook, code, wParam, lParam ); } void MyDerivedWnd::OnContextMenu( CWnd* in_pWnd, CPoint in_point ) { // Setup a hook to know if a window was created during the // Default WM_CONTEXT_MENU handler g_bWindowCreated = false; g_hHook = SetWindowsHookEx( WH_CBT, HookProc, NULL, GetCurrentThreadId() ); // Call the default handler LRESULT res = __super::Default(); UnhookWindowsHookEx( g_hHook ); if( !g_bWindowCreated ) { // Show my default menu // ... } }

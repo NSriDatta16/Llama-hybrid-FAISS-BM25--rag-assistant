@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 468469
+[parent_id]: 467184
+[tags]: 
+I had a very similar scenario to this where I needed to flag when a pump's pressure time series exceeded a certain threshold, but the data was unavoidably EXTREMELY noisy. The solution involved several steps, which succeeded in triggering at very sensible locations, and I think the method will work very well for you. Apply a median filter. That is, for each point, take $n$ points to the right and $n$ points to the left, and the point itself, and replace the middle point with the median of all those values. Note that you want to keep referring to the old values, here, and not allow the updated value at $i,$ say, to affect the median value at $i+1.$ Choosing $n$ will require some trial-and-error on your part. The median filter is terrific at reducing spikes, but it is also essentially a low-pass filter. So your filtered signal will respond more slowly than the raw signal. Fit a reasonably-high-order polynomial to the data, perhaps in sections (like a cubic spline). Finally, use the extrapolated values from the polynomial to detect threshold crossings.

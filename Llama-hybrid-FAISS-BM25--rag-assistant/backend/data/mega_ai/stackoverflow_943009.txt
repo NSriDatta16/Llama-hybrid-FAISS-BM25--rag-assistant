@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 943009
+[parent_id]: 941094
+[tags]: 
+You're asking about two different things, indexes and statistics. For indexes, yes, you can create indexes on the temp tables, they will be maintained as per usual. For statistics, I recommend that you explicitly set the stats of the table to represent the average size of the table when queried. If you just let oracle gather stats by itself, the stats process isn't going to find anything in the tables (since by definition, the data in the table is local to your transaction), so it will return inaccurate results. e.g. you can do: exec dbms_stats.set_table_stats(user, 'my_temp_table', numrows=>10, numblks=>4) Another tip is that if the size of the temporary table varies greatly, and within your transaction, you know how many rows are in the temp table, you can help out the optimizer by giving it that information. I find this helps out a lot if you are joining from the temp table to regular tables. e.g., if you know the temp table has about 100 rows in it, you can: SELECT /*+ CARDINALITY(my_temp_table 100) */ * FROM my_temp_table

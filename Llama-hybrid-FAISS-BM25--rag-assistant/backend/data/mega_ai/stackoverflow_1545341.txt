@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1545341
+[parent_id]: 1537964
+[tags]: 
+I don't know a slick way of doing it, but you could possibly do something horrible like this: #include "packed.h" struct Foo { /* members go here */ } PACKED; #include "endpacked.h" Then for MSVC, packed.h: #define PACKED #pragma pack(push,1) endpacked.h #pragma pack(pop) #undef PACKED For gcc, packed.h: #define PACKED __attribute__ ((__packed__)) endpacked.h: #undef PACKED Fundamentally, packing is too platform-dependent. Suppose your packed struct has 8-bit fields in it, and consider some system with a 16-bit byte. It can't have a struct representing your data just by packing - you'd have to know how 8-bit bytes are converted to 16-bit bytes when transferred between the two systems. The struct on the 16bit machine might need bitfields, in which case you'd have to know how the implementation lays them out. So if the code is intended to be generally portable, you may just have to define whatever packed structures you need in a platform-specific section of your header file. Or rather, structure your code so that a future port can do that if it has to.

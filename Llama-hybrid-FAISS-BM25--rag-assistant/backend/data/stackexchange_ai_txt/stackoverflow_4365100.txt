@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4365100
+[parent_id]: 4365062
+[tags]: 
+No, that is not possible. You could build a simple cleanup function that removes all variables that were defined in that file: var foo = 'bar'; var cleanup = function () { delete window.foo; delete window.cleanup; }; // unload all resources cleanup(); Another approach would be to use a modular object structure for your fragments, that clean up after themselves. That involves a slightly higher overhead but is probably worth it, as it makes the code much easier to read and maintain: // creates the object using the second parameter as prototype. // .create() is used as constructor GlobalModuleHandlerThingy.addModule('my_module', { create: function () { this.foo = 'bar'; return this; }, foo: null, destroy: function () { // unload events, etc. } }); GlobalModuleHandlerThingy.getModule('my_module').foo; // => bar GlobalModuleHandlerThingy.unloadModule('my_module'); // calls .destroy() on the module and removes it.

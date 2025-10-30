@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1401918
+[parent_id]: 1363813
+[tags]: 
+It's a bit hacky, but it should work, don't know for sure because I'm just guessing at it There are two options: If you just need the MIME type, use the timeoutInterval: NSURLRequest. If you want the data as well, you should use the commented out NSURLRequest. Make sure to perform the request in a thread though, since it's synchronous. NSString* filePath = [[NSBundle mainBundle] pathForResource:@"imagename" ofType:@"jpg"]; NSString* fullPath = [filePath stringByExpandingTildeInPath]; NSURL* fileUrl = [NSURL fileURLWithPath:fullPath]; //NSURLRequest* fileUrlRequest = [[NSURLRequest alloc] initWithURL:fileUrl]; NSURLRequest* fileUrlRequest = [[NSURLRequest alloc] initWithURL:fileUrl cachePolicy:NSURLCacheStorageNotAllowed timeoutInterval:.1]; NSError* error = nil; NSURLResponse* response = nil; NSData* fileData = [NSURLConnection sendSynchronousRequest:fileUrlRequest returningResponse:&response error:&error]; fileData; // Ignore this if you're using the timeoutInterval // request, since the data will be truncated. NSString* mimeType = [response MIMEType]; [fileUrlRequest release];

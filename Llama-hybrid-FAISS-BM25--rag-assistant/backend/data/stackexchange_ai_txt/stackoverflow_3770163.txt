@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3770163
+[parent_id]: 
+[tags]: 
+Best pattern for "Do some work and quit"
+
+I'm currently writing a little GUI program that does some work and exits afterwards. While work is done, the GUI thread is updated with infos for the user. This is the pattern I'm currently using and I'm thinking it's not the most elegant one: static void MainForm_Loaded(BeoExport exporter) { // Thread 1 runs the Export workerThread = new Thread(() => { exporter.StartExport(); // don't exit immediately, so the user sees someting if the work is done fast Thread.Sleep(1000); }); // Thread 2 waits for Thread 1 and exits the program afterwards waiterThread = new Thread(() => { workerThread.Join(); Application.Exit(); }); workerThread.Start(); waiterThread.Start(); } So what pattern/mechanics would you use to do the same? To clarify: I was not interested in a way to update the GUI thread. That's already done. This might sound esoteric but I was lookig for the right way to quit the application. If I could, I would give Dave the credits, since he pointed out the usefulness of the BackgroundWorker.

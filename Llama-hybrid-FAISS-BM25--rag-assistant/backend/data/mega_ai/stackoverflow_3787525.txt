@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3787525
+[parent_id]: 3784510
+[tags]: 
+I advise against using multiple WaitHandle instances to wait for completion. Use the CountdownEvent class instead. It results in more elegant and scalable code. Plus, the WaitHandle.WaitAll method only supports up to 64 handles and cannot be called on an STA thread. By refactoring your code to use the canonical pattern I came up with this. public static void SpawnThreads(List imageList) { imageList = new List (imageList); var finished = new CountdownEvent(1); var picDownloaders = new PicDownloader[imageList.Count]; ThreadPool.SetMaxThreads(MaxThreadCount, MaxThreadCount); for (int i = 0; i { try { p.DoAction } finally { finished.Signal(); } }); } finished.Signal(); finished.Wait(); Console.WriteLine("All pics downloaded"); }

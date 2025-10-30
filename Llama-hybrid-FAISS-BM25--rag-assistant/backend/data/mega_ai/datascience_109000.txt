@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 109000
+[parent_id]: 
+[tags]: 
+making a contingency table with TRUE and FALSE values
+
+I made the following contingency table already, however there should only be TRUE or FALSE and not all of them showing up on the table. How can I change that? my code is the following: library(tidyverse) library(haven) read_xpt("~/downloads/DEMO_J.XPT") -> demo17 demo17%>% select (subjectID= SEQN, Lebensalter=RIDAGEYR, Geschlecht=RIAGENDR, Ethnie = RIDRETH3, Einwohner=WTMEC2YR, Ratio=INDFMPIR)%>% mutate(Geschlecht=fct_recode(factor(Geschlecht), "Männlich"="1", "Weiblich"="2"))%>% mutate(Ethnie=fct_recode(factor (Ethnie), "Mexican American"="1", "Other Hispanic"="2", "NH White"="3", "NH Black"="4", "NH Asian"="6", "Other"="7")) -> D2 read_xpt("~/downloads/BMX_J.XPT") -> bmx17 bmx17%>% select (subjectID = SEQN, Körpergröße= BMXHT, Gewicht = BMXWT) -> B2 inner_join(D2, B2, by= "subjectID") -> DurchgangJ DurchgangJ DurchgangJ%>% mutate( bmi = Gewicht / (Körpergröße/100)^2 ) %>% filter( Lebensalter >= 18 )%>% filter(!is.na(bmi))%>% mutate (Adipös= bmi>=30)%>% mutate (Poor = Ratio % filter(!is.na(Poor))%>% ggplot+ geom_point(aes(x= Poor, y= Adipös))+ facet_grid(Ethnie~Geschlecht) The table used for the plot looks like this:

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3980122
+[parent_id]: 3980035
+[tags]: 
+Since you are scanning the file sequentially I would not expect disk usage pattern to be much different for either method. For large files, MMF might reduce data locality and even result in a copy of all or part of the file being placed in the pagefile, whereas processing via CRT using a small buffer would all take place in RAM. In this instance, MMF would probably be slower. You can mitigate this by only mapping in part of the underlying file at a time, but then things get more complex without any likely win over direct sequential I/O. MMF are really the way Windows implements inter-process shared memory, rather than a way to speed up generalized file I/O. The file manager cache in the kernel is what you really need to leverage here.

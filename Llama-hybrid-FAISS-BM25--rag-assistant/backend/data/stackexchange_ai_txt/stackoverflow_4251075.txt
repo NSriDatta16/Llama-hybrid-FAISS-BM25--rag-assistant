@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4251075
+[parent_id]: 4250882
+[tags]: 
+i don't believe that there is a switch or setting that out of the box and automagically would map to using t sprocs the way you are describing. But there is now reason why you couldn't alter the generated DBML file to do what you want. If I had two related tables, a Catalog table and CatalogItem tables, the Linq2SQL generator will naturally give me a property of CatalogItems on Catalog, code like: private EntitySet _shelf_myndr_Previews_CatalogItems; [global::System.Data.Linq.Mapping.AssociationAttribute(Name="CatalogItem", Storage="_CatalogItems", ThisKey="Id", OtherKey="CatalogId")] public EntitySet CatalogItems { get { return this._CatalogItems; //replace this line with a sproc call that ultimately //returns the expected type } set { this._CatalogItems.Assign(value); //replace this line with a sproc call that ultimately //does a save operation } } There is nothing stopping you from changing that code to be sproc calls there. It'd be some effort for larger applications and I'd be sure that you be getting the benefit from it that you think you would.

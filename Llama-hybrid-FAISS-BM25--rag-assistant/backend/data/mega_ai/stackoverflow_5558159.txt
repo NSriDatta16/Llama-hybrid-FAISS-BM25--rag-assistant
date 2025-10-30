@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5558159
+[parent_id]: 
+[tags]: 
+Compound literals and function-like macros: bug in gcc or the C standard?
+
+In C99, we have compound literals, and they can be passed to functions as in: f((int[2]){ 1, 2 }); However, if f is not a function but rather a function-like macro, gcc barfs on this due to the preprocessor parsing it not as one argument but as two arguments, " (int[2]){ 1 " and " 2 } ". Is this a bug in gcc or in the C standard? If it's the latter, that pretty much rules out all transparent use of function-like macros, which seems like a huge defect... Edit: As an example, one would expect the following to be a conforming program fragment: fgetc((FILE *[2]){ f1, f2 }[i]); But since fgetc could be implemented as a macro (albeit being required to protect its argument and not evaluate it more than once), this code would actually be incorrect. That seems surprising to me.

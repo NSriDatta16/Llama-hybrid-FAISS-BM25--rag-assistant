@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3534416
+[parent_id]: 3533922
+[tags]: 
+Add an index on (images.id, images.classification) - that ought to give you an index for the join. You already have that via the primary key, but you'll also get: the same index usable as a covering index the same index for the grouping clause Also add an index on (boxes.image_id,boxes.round) : index for the JOIN covering index for the COUNT (see below) About the COUNT clause: if you don't have NULL s in boxes.id (assuming not), you can replace it with COUNT(boxes.image_id) so we can get some more use from the index from prev. paragraph. Again, verify with EXPLAIN, but I'd say these steps should get you a better execution plan.

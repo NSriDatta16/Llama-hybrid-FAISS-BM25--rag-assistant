@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 589708
+[parent_id]: 589680
+[tags]: 
+Actually, NO. It's only needed if you're GUI is running more than 1 thread. With WinForm (and WPF) applications the GUI is running on a single threaded STA thread (this dates back to COM and don't ask me why it's like that, because I don't honestly know). If you try to call objects created on the STA thread from a different thread, there are checks in place to make sure an exception is thrown. This same goes with WPF although, WPF makes this a lot more elegant. Anyway, you can actually check when Invoke is required because there's a property for that. This pattern has been suggested to help with handling several threads in WinForm applications. public void MyTextSetMethod(string text) { if(control.InvokeRequired) { control.Invoke(new Action (MyTextSetMethod), text); } else { control.Text = text; } } The above code provides a all around method for setting the Text property, you can tailor this to suit your needs.

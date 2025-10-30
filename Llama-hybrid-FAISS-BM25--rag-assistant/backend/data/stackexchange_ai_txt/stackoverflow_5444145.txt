@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5444145
+[parent_id]: 
+[tags]: 
+Creating BMP File
+
+I've been working for a while on image processing and I've noticed weird things. I'm reading a BMP file, using simple methods like ReadFile and stuff, and using Microsoft's BMP structures. Here is the code: ReadFile(_bmpFile,&bmpfh,sizeof(bfh),&data,NULL); ReadFile(_bmpFile, &bmpih, sizeof(bih), &data, NULL); imagesize = bih.biWidth*bih.biHeight; image = new RGBQUAD[imagesize]; ReadFile(_bmpFile,image, imagesize*sizeof(RGBQUAD),&written,NULL); That is how I read the file and then I'm turning it into gray scale using a simple for-loop. for (int i = 0; i Now when I write the file using this code: #pragma pack(push, 1) WriteFile(_bmpFile, &bmpfh, sizeof(bfh), &data, NULL); WriteFile(_bmpFile, &bmpih, sizeof(bih), &data, NULL); WriteFile(_bmpFile, image, imagesize*sizeof(RGBQUAD), &written, NULL); #pragma pack(pop) The file is getting much bigger(30MB -> 40MB). The reason it happens is because I'm using RGBQUAD instead RGBTRIPLE, but if i'm using RGBTRIPLE I have a problem converting small pictures into gray scale - can't open the picture after creating it(says it's not in the right structure). Also the file size is missing one byte, (1174kb and after 1173kb) Has anybody seen this before (it only occurs with small pictures)?

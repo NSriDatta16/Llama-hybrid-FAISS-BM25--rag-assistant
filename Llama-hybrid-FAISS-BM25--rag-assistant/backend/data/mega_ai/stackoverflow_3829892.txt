@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3829892
+[parent_id]: 3827492
+[tags]: 
+Magento uses index tables to generate the layered navigation: in magento version 1.3 you have the catalogindex_eav table (store_id,entity_id, attribute_id,value) in magento version 1.4 you have several tables but I think you only need catalog_product_index_eav (entity_id, attribute_id, store_id,value) For magento 1.4 take a look at the Mage_Catalog_Model_Resource_Eav_Mysql4_Layer_Filter_Attribute class - getCount method: the basic idea is to make a join between the product collection and the catalog_product_index_eav table: // excerpt from Mage_Catalog_Model_Resource_Eav_Mysql4_Layer_Filter_Attribute getCount() $conditions = array( "{$tableAlias}.entity_id = e.entity_id", $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()), $connection->quoteInto("{$tableAlias}.store_id = ?", $filter->getStoreId()), ); $select ->join( array($tableAlias => $this->getMainTable()), join(' AND ', $conditions), array('value', 'count' => "COUNT({$tableAlias}.entity_id)")) ->group("{$tableAlias}.value");

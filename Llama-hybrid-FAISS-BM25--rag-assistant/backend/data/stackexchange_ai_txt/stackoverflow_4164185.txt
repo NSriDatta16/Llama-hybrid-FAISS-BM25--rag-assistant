@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4164185
+[parent_id]: 
+[tags]: 
+accepts_nested_attributes_for to link to existing record, not create a new one
+
+I have the following models class Order Now I have a order view where I want to update the shops for the product. The thing is that I only want to connect the products to the existing shops in my db, not create new ones. My form in the order view looks like this (using Formtastic): = semantic_form_for @order do |f| = f.inputs :for => :live_products do |live_products_form| = live_products_form.inputs :for => :stores do |stores_form| = stores_form.input :name, :as => :select, :collection => Store.all.map(&:name) Although its nested it works fine. The problem is that, when I select a store and try to update the order (and the products and stores with it), Rails tries to create a new store with that name. I want it to just use the existing store and connect the product to that. Any help appreciated! EDIT 1: In the end I solved this problem in a very crude way: # ProductsController def update [...] # Filter out stores stores_attributes = params[:product].delete(:stores_attributes) @product.attributes = params[:product] if stores_attributes.present? # Set stores @product.stores = stores_attributes.map do |store_attributes| # This will raise RecordNotFound exception if a store with that name doesn't exist Store.find_by_name!(store_attributes[:name]) end end @order.save [...] end EDIT 2: Pablo's solution is much more elegant and should be preferred over mine.

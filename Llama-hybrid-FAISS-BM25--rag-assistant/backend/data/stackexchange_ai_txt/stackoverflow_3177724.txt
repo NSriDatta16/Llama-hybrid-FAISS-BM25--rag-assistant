@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3177724
+[parent_id]: 3177364
+[tags]: 
+Borealid deserves credit for pointing to the most elegant solution. A more kludgey solution is to keep an iframe on the page that is pointed to another "monitor" page which is set to refresh every few seconds. This can be done without JavaScript using: This refreshes the monitor page every 10 seconds. When this happens, the monitor page can record the time (overwriting the previously recorded time) and session ID on the server somewhere (DB or file). Then you would have to create a cronjob that checks the file/DB for any sessions that are more than 10~12 seconds old and delete them manually. The session data is usually stored in a directory (specified by your PHP config) in a file named sess_the-session-ID . You could use a PHP function like this: function delete_session($sessId) { $sessionPath = session_save_path(); // you'll want to change the directory separator if it's a windows server $sessFile = "$sessionPath/sess_$sessId"; if (file_exists($sessFile) && unlink($sessFile)) return true; return false; }

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5632358
+[parent_id]: 5624276
+[tags]: 
+Following from your comments -if you are trying to access TimerBeanRemote within the same container then you can inject the @Remote ejb in your servlet or JSF Backing Bean else you can locate your EJB through a JNDI lookup. Suppose your TimerBean is: com.mypackage.timer.TimerBeanRemote then as per explanation above you can either inject or lookup: Injection public class MyServlet ...{ @EJB com.mypackage.timer.TimerBeanRemote timerBean; } JNDI lookup: Properties props = new Properties(); props.setProperty(Context.INITIAL_CONTEXT_FACTORY, "com.sun.enterprise.naming.SerialInitContextFactory"); String[] serverDetails = server.split(":"); props.setProperty("org.omg.CORBA.ORBInitialHost", MyHost); props.setProperty("org.omg.CORBA.ORBInitialPort", MyPort); InitialContext ic = new InitialContext(props); TimerBeanRemote timerBean = (TimerBeanRemote)ic.lookup("com.mypackage.timer.TimerBeanRemote"); You can read the following articles for further details: http://download.oracle.com/javaee/1.4/tutorial/doc/Session5.html http://www.javabeat.net/articles/3-ejb-30-timer-services-an-overview-1.html

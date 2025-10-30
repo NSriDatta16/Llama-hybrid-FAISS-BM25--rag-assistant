@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3222578
+[parent_id]: 3222496
+[tags]: 
+It's not just between DelayedJob's workers and Rails' workers that you won't see the global variables, in production you will be dealing with multiple Rails worker processes as well. So even if you were to set a global variable in Rails, some other Rails worker won't see it. This is by design. It has the advantage that you can spread the load of Rails and DelayedJob across multiple machines, because they only deal with the stateless request, and look at the database system or other persistent storage to add the statefulness that your web application needs. From what I've gathered, a Java web application may use a threaded model that would allow you to perform background tasks and set global variables like you want to. But that also limits you to a single machine; what would you do if you had to scale up? Memcached actually sounds like a really good solution in this case. It's a snap to install, requires very little set up, and is easy to use from within Rails too.

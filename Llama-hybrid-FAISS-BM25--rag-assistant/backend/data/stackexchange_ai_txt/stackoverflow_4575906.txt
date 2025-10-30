@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4575906
+[parent_id]: 4575527
+[tags]: 
+std::vector is not designed to be thread safe. Therefore you have to use some sort of mutex to make sure only one thread accesses it at a time. Otherwise, if any thread resizes the vector, the vector may have to allocate new storage, copy elements, then free the old storage... and clearly freeing the old storage while some other thread is using it is a very bad thing. You need to allocate the CONNECTION objects yourself. Letting std::vector manage them means they are going to get moved around in memory when the vector resizes, and the pointers held by other threads are left dangling. Resizing a vector invalidates all pointers to any of its content.

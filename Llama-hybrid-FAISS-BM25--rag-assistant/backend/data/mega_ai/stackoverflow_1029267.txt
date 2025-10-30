@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1029267
+[parent_id]: 1024334
+[tags]: 
+Well you can query the metadata in the SSDL by looking in the SSpace or the StoreItemCollection. i.e. var sspaceEntitySets = context.MetadataWorkspace .GetItems (DataSpace.SSpace) .First().BaseEntitySets.OfType (); var entitySet = sspaceEntitySets.First(); var tableType = entitySet .MetadataProperties["http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator:Type"] .Value.ToString(); Unfortunately this isn't going to help you tie your classes to whether they come from a table or a view. Because the Entities (i.e. the ones you code against in CSpace) rather than the ones that describe the shapes of the table (i.e. SSpace ones) are in CSpace and in order to know whether an Entity comes from a view or table, you would need to be able to get from the CSpace EntitySet to SSpace EntitySet via the Mapping. Unfortunately the EF doesn't expose public CSSPace (i.e. there is no way to use the API to read the MSL fragment of the EDMX). So in order to do this you would have to manually reason over the MSL element, probably using LINQ to XML or something. Hope this helps Alex

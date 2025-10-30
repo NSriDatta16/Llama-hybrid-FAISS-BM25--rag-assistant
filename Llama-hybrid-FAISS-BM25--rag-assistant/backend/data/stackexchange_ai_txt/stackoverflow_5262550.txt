@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5262550
+[parent_id]: 
+[tags]: 
+rspec: Stub a template's helper method call from a controller spec using render_views
+
+From Rails 3 / Rspec 2, I'm attempting to leverage the render_views feature of controller specs. The issue I've come across is that we've just installed the kaminari pager gem, and I want to stub out the call from my view so I don't have to manually stub out all the internal methods that kaminari defines on the collection for use with paginate helper. If this was in a view spec, I could stub out the helper method by calling view.stub(:paginate) , but I can't find any way to get a handle on the view object from a controller spec (e.g. controller.view.stub(:paginate) ). Is there any way to do this, or are our options to either disable render_views for this method, or to stub a bunch of internal kaminari methods that aren't relevant to us (since they should be covered by kaminari's tests, and might change in future versions)? describe SitesController do render_views def mock_site(stubs={}) @mock_site ||= mock_model(Site, stubs).as_null_object end describe "GET index" do it "assigns all sites as @sites" do Site.stub_chain("enabled.ordered.page") {[mock_site]} # want to do something here like: controller.view.stub(:paginate) get :index assigns(:sites).should eq([mock_site]) end end end

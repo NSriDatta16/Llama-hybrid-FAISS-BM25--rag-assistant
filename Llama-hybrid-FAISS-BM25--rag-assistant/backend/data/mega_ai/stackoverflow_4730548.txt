@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4730548
+[parent_id]: 4729097
+[tags]: 
+I did something similar to embed an assembly language for a custom bytecode format, using some C99 macro magic and Perl. The macros #define x3_pragma_(...) _Pragma(#__VA_ARGS__) #define x3_asm(...) ((const struct x3instruction []){ \ x3_pragma_(X3 ASM __VA_ARGS__) \ }) transform x3_asm(exit = find val(0)) into ((const struct x3instruction []){ #pragma X3 ASM exit = find val(0) }) which gets piped through a Perl script to get ((const struct x3instruction []){ { { { X3_OPFINDVAL, { .as_uint = (0) } }, { X3_OPEXIT, { 0 } } } }, }) A sample invocation of gcc and perl would look like this: gcc -E foo.c | perl x3pp.pl | gcc -o foo.o -x c - It's more complicated than stricly necessary, but I found it beneficial that the C preprocessor runs before my custom preprocessor, and I also liked that by using pragmas, the source stays legal C.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2953768
+[parent_id]: 2953657
+[tags]: 
+I'm a tiny bit confused. .. when a car is added to a manufacturer .. In the code shown in your question, I'd guess, you save a car with some manufacturer, e.g. car.maker = Manufacturer.objects.get(name='BMW') car.save() Then the save method of the Car class would need to update the car_count of the manufacturer (see Overriding predefined model methods for more details). def save(self, *args, **kwargs): if self.id: self.maker.car_count = len(self.maker.car_set.all()) super(Car, self).save(*args, **kwargs) Since this isn't the most elegant code, I'd suggest as @Josh Wright to look into signals for that matter. P.S. You could also add a method on the Manufacturer class, but I guess, you want this attribute to live in the database. class Manufacturer(models.Model): name = models.CharField() def _car_count(self): return len(self.car_set.all()) car_count = property(_car_count) ...

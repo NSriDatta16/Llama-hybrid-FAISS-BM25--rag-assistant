@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1572145
+[parent_id]: 1572068
+[tags]: 
+You can write a procedure with the FOR UPDATE NOWAIT and return an error message when the row is locked: SQL> CREATE OR REPLACE PROCEDURE do_something(p_id NUMBER) IS 2 row_locked EXCEPTION; 3 PRAGMA EXCEPTION_INIT(row_locked, -54); 4 BEGIN 5 FOR cc IN (SELECT * 6 FROM some_table 7 WHERE ID = p_id FOR UPDATE NOWAIT) LOOP 8 -- proceed with what you want to do; 9 NULL; 10 END LOOP; 11 EXCEPTION 12 WHEN row_locked THEN 13 raise_application_error(-20001, 'this row is locked...'); 14 END do_something; 15 / Procedure created Now let's build a small example with two sessions: session_1> select id from some_table where id = 1 for update; ID ---------- 1 session_2> exec do_something(1); begin do_something(1); end; ORA-20001: this row is locked... ORA-06512: at "VNZ.DO_SOMETHING", line 11 ORA-06512: at line 2 session_1> commit; Commit complete session_2> exec do_something(1); PL/SQL procedure successfully completed

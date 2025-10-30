@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3621152
+[parent_id]: 3621121
+[tags]: 
+NULLs for variable length columns are stored in the NULL bitmap which is present in every record since SQL Server 2000 at least: no space is used for the column itself. (Edit: 2 bytes for length which will be zero of course) For fixed length columns, the NULL bitmap means no sentinel value is needed in the space consumed by storage of the fixed length column. Indexing aside, NULL comparisons can be quicker because of this, and because of how comparisons to NULL are always UNKNOWN (which drops to false) Edit: Paul Randall's Inside the Storage Engine: Anatomy of a record which shows on-disk structure + explains the null bitmap optimization + how fixed and variable length columns are stored Edit 2: reading the question again... From a storage perspective, the NULL bitmap perhaps won't be an optimization because it adds a byte (or several). However, in practice it avoids a lot of processing to find NULL values.

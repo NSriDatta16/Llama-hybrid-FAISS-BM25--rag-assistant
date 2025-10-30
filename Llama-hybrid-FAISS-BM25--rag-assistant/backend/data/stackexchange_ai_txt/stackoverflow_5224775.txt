@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5224775
+[parent_id]: 
+[tags]: 
+Proper Caching Strategy for a Dynamic Action
+
+Probably an obvious question for those of you who have scaled/cached anything before. I haven't, and I'm getting lost in the tutorials and code snippets all over the internet ( http://guides.rubyonrails.org/caching_with_rails.html ). I'm deploying to Heroku with Memcached installed and am figuring out the most optimized way to do the following: Query the database to find a post and see if it has been 'flagged' Query a Whitelist to see if a different part of the post has been 'flagged' Query an API to see if they find this user in their system Render a page with a lot of repetitive calls to remote systems for CSS/JS/etc. I assume #1 happens frequently and changes often. #2 less so. #3 changes infrequently (months), and #4 should only change if #3 changes. I want to be able to increment flag_count and view_count regularly without hitting a cached version. What mix of page, action and fragment caching should I be doing? Right now, I'm not caching this action at all... My [simplified] controller code: def show expires_in 12.hours, :public => true @post = Post.find(params[:id]) #CHECK FLAG STATUS redirect_to root_path and return if @post.flag? #CHECK WHITELIST STATUS redirect_to root_path and return if Whitelist.includes?(@post.screen_name) #Ping API again on the off chance user deleted/changed account if @post && @post.user = get_user_from_api( @post.screen_name ) @post.increment_views! render :layout => false else redirect_to root_path end end

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5657876
+[parent_id]: 
+[tags]: 
+Does MySQL use indexes on Having?
+
+A portion of my query looks like: HAVING date > '2011-04-13 04:28:03' The date variable is indexed, does this have any effect on the query? EXPLAIN EXTENDED doesn't seem to be using the index, but I don't know if that's only because I have 4 rows in the database that I'm testing with. My query: SELECT AVG(slen) FROM ( SELECT date, COUNT(id) as slen FROM table WHERE product_id = 2830 GROUP BY id HAVING date > '2011-04-13 04:28:02' ) as T There are a few rows that have different date values. I want to select groups of ID that have a date > '2011-04-13 04:28:02'. I then want the average number of rows that belong to a group, without the date condition . The query as it is, does not work yet by the way. My other concern was whether the date > '2011-04-13 04:28:02' would use my date column index. From this dataset: sid datelast product_id 782240551706 2011-04-13 00:51:52 2830 782240551706 2011-04-13 04:05:48 2830 782240551706 2011-04-13 04:28:03 2830 111111111111 2011-04-13 00:50:30 2830 Desired Result: The group with id 782240551706 should be chosen, and the average should be 3. The following query produces the desired result: SELECT AVG(slen) FROM ( SELECT date, COUNT(id) as slen FROM table WHERE product_id = 2830 GROUP BY id HAVING **max(date)** > '2011-04-13 04:28:02' ) as T

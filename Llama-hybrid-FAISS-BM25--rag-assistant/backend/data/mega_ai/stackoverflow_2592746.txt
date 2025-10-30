@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2592746
+[parent_id]: 
+[tags]: 
+template specialization of a auto_ptr
+
+Maybe I'm overcomplicating things, but then again, I do sort of like clean interfaces. Let's say I want a specialization of auto_ptr for an fstream - I want a default fstream for the generic case, but allow a replacement pointer? template <> class auto_ptr { static fstream myfStream; fstream* ptr; public: auto_ptr() { // set ptr to &myfStream; } reset(fstream* newPtr) { // free old ptr if not the static one. ptr = newPtr }; } Would you consider something different or more elegant? And how would you keep something like the above from propagating outside this particular compilation unit? [The actual template is a boost::scoped_ptr.] EDIT: It's a contrived example. Ignore the fstream - it's about providing a default instance of object for an auto_ptr. I may not want to provide a specialized instance, but would like to keep the auto_ptr semantics for this static default object. class UserClass { public: auto_ptr ptr; UserClass() { } } I may not provide an dynamic object at construction time - I still want it to have a meaningful default. Since I'm not looking at ownership-transfer semantics, it really shouldn't matter that my pointer class is pointing to a statically allocated object, no?

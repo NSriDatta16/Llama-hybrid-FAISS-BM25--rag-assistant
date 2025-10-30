@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2051354
+[parent_id]: 
+[tags]: 
+How to bind "rest" variables to list of values in macro in Scheme
+
+I want to make a helper macro for writing match-extensions. I have something like this: (define-match-expander my-expander (λ (stx) (let* ([dat (cdr (syntax-e stx))] [var1 (car dat))] [var2 (cadr dat)]) ;transformer goes here ))) So I wanted a macro that will do this let binding. I've started with something like this: (define-syntax-rule (define-my-expander (id vars ...) body) (define-match-expander id (λ (stx) (match-let ([(vars ...) (cdr (syntax-e stx))]) body)))) but match-let isn't defined in transformation time. First question would be is there any other way of doing this (making this expanders, I mean)? Maybe there is already something similar in plt-scheme that I'm not aware of, or I'm doing it wrong in some way. Regardless of answer on the first question, if I ever want to bound list of variables to list of values inside of a macro, how should I do it? EDIT: In combination with Eli's answer macro now looks like this: (define-syntax-rule (define-my-expander (id vars ...) body) (define-match-expander id (λ (stx) (syntax-case stx () [(_ vars ...) body]))))

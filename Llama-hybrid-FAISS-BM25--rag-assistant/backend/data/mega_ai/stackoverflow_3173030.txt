@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3173030
+[parent_id]: 3171610
+[tags]: 
+I agree with many others; a Predicate -type object is correct here, but specifically want to call out mdma's point that assuming relying on the int result of Comparable.compareTo() is incorrect (or at least fragile) -- it's only guaranteed that Comparable returns a positive, 0, or negative number, the specific values of 1 and -1 aren't dictated (and many implementations don't retrun these). Again, I think a Predicate is the go, but as a workaround to this problem, and the risk of people passing in a non-standard int, you might do: /** * ... * @param int the sign of the comparison; will count objects whose .compareTo(a) * returns an int with the same sign as this value */ private int count(SomeObject a, int comparisonSign){ ... for (SomeObject b : this.listOfSomeObjects){ if (Math.signum(b.compareTo(a)) == Math.signum(comparison)){ number++; } } return number; } the use of signum means you're always comparing -1.0, 0, or 1.0 values. Again, I wouldn't recommend this approach (think it makes the API very non-obvious, for a start), but thought I'd put it out here for curiosity's sake.

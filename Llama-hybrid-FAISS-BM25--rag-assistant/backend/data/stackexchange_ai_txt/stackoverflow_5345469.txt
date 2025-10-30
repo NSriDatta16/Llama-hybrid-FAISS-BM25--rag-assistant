@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5345469
+[parent_id]: 5345424
+[tags]: 
+Using a type_id and then a fk_id won't be good because selectivity on the index is 33%, which is too high to be of any use. You would always be indexing on the fk_id instead (that which links to A,B,C) - which may require tie breaking between 3 values (if the id is used by all 3 types). Storage wise, an index never stores nulls, so the absolute number of items stored in the indexes, whether a single (fk_id) or multiple (a_id,b_id,c_id) will be similar. If you are coming in from the exact fk_id (from either A,B,C), then using a unique index on (fk_id,type_id) in that order can quickly identify the record required. It would seem for simplicity and brevity, two columns are better than 3 here.

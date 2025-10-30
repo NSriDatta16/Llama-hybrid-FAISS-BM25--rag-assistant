@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 560808
+[parent_id]: 
+[tags]: 
+SHAP for stacking classifier
+
+We are using a stacking classifier to solve a classification problem. The data feed 5 base models, the predicted probabilities of the base models feed the supervisory classifier. We would like to use SHAP to interpret the classifier as a whole. Is it legitimate to use a kernel explainer? Here is a minimal reproducible example - it is not the problem we are facing. import shap import sklearn from sklearn.model_selection import train_test_split X_train,X_test,Y_train,Y_test = train_test_split(*shap.datasets.iris(), test_size=0.2, random_state=0) knn = sklearn.neighbors.KNeighborsClassifier() knn.fit(X_train, Y_train) svc_linear = sklearn.svm.SVC(kernel='linear', probability=True) svc_linear.fit(X_train, Y_train) rf = sklearn.ensemble.RandomForestClassifier(n_estimators=100, max_depth=None, min_samples_split=2, random_state=0) stacking_model = sklearn.ensemble.StackingClassifier([('knn', knn), ('svc', svc_linear)], rf) stacking_model.fit(X_train, Y_train) shap.initjs() explainer = shap.KernelExplainer(stacking_model.predict_proba, X_train) shap_values = explainer.shap_values(X_test.iloc[0,:]) shap.force_plot(explainer.expected_value[0], shap_values[0], X_test.iloc[0,:]) We are aware of this thread about SHAP for staking models , but there is no answer to our questio.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3592903
+[parent_id]: 
+[tags]: 
+How to write handles for classes that don't have clone() member?
+
+I'm following an example in Accelerated C++ and writing a simple Handle class that will act as a smart pointer. This uses the virtual ctor idiom using a virtual clone() function. So far so good. But what to do when I want to use my Handle for classes that I don't control that don't provide clone() ? The method suggested in the book is to create a global clone function and use template specialization (something I'm seeing for the first time) so that if clone() is called with a particular argument, one can write code to handle that case. My question is : This means that I have to write a clone() version for every type of class that I envision my user can use Handle with. This seems quite hard! Is there a more elegant and/or simple way to solve this issue? How is it possible that things like auto_ptr or boost::shared_ptr are able to provide this functionality without the tedious clone() definitions? For completeness, here's my Handle class implementation: template class Handle { public: Handle() : p(0) {} Handle(T* t) : p(t) {} Handle( const Handle& s ) :p(0) { if (s.p) p = s.p->clone(); } const Handle& operator=( const Handle& ); ~Handle() { delete p; } operator bool() { return p; } T& operator*() { if (p) return *p; else throw std::runtime_error("Handle not bound"); } T* operator->() { if (p) return p; else throw std::runtime_error("Handle not bound"); } private: T* p; }; Thanks!

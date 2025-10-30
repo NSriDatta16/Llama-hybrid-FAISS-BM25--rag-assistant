@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3210105
+[parent_id]: 3210047
+[tags]: 
+I'm not a php guy, but this sounds just like Java, where it's allowed but discouraged. If it's static, I would strongly recommend only calling it in a static way. Otherwise it looks like it depends on the state of the object you're supposedly calling it on. In Java the best example of this is Thread.sleep() . It's a static method which puts the current thread to sleep, always. But look at this code: Thread t = new Thread(someTask); t.start(); t.sleep(1000); What does it look like that code is doing? It appears to be putting the other thread to sleep, whereas in fact it'll be the current thread that's sleeping. When you change it to a plain static call, it's more obvious: Thread.sleep(1000); That doesn't refer to t , so must be about the current thread. Unless there's something specific to php where calling the static method via a variable gives you some sort of polymorphism, I suggest you stick to calling it in the static way. The fact that strict mode tells you to do this is a pretty strong hint, IMO :)

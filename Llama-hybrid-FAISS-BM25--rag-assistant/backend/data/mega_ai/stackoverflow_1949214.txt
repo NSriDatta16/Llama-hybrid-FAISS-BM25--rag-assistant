@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1949214
+[parent_id]: 1949117
+[tags]: 
+You cannot convert a reference to a pointer to Derived to a reference to a pointer to Base. (Templates don't contribute to the issue here, so removed from my example below.) If you want to defer responsibility for a pointer, use a smart pointer type. Smart pointer types can represent the "responsibility to delete" that raw pointers cannot. Examples include std::auto_ptr and boost::shared_ptr , among many others. Why you cannot upcast pointer references: struct Base {}; struct Derived : Base {}; struct Subclass : Base {}; int main() { Derived d; Derived* p = &d; Derived*& d_ptr = p; Base*& b_ptr = d_ptr; // this is not allowed, but let's say it is Base b; b_ptr = &b; // oops! d_ptr no longer points to a Derived! Subclass s; b_ptr = &s; // oops! d_ptr no longer points to a Derived! } When you pass your 'other' parameter to the Base ctor, you're trying to do the same thing as b_ptr = d_ptr above.

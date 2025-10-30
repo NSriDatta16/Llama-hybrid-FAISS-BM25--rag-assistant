@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2876092
+[parent_id]: 2875953
+[tags]: 
+If the table is clustered by image_id and you access always by image_id then the size of the table is irrelevant, and so is the fragmentation (no need to rebuild). If you see performance decrease, then there most be something else at play. You are doing range scans? Look in sys.dm_db_index_usage_stats , does the user_scans column differ from 0? It means you have queries that do scans. Unless you measure where the time increase occurs, you'll be shooting blanks in the dark and never solve the problem correctly. Apply a methodological approach, like Waits and Queues to identify the problem. One thing I can tell you right now: partitioning is never a performance improvement. It is intended for data maintenance (switch in/switch out) and for spreading the load on controlled fashion on filegroups. But you can never expect partitioning to improve performance, you can at best hope for equal performance with non-partitioned table.

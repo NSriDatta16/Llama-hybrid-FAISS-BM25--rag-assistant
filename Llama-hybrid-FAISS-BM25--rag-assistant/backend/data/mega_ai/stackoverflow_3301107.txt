@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3301107
+[parent_id]: 3300734
+[tags]: 
+Since you have SQL 2008 listed (I'm not sure if this syntax was available in 2005), you might be able to use the EXCEPT or INTERSECT comparisons. It involves correlated subqueries, so performance may be an issue. SELECT * FROM Paragraph P WHERE (SELECT COUNT(*) FROM ( SELECT S1.[Text], S1.Offset, S1.Score FROM Paragraph P1 INNER JOIN Sentence S1 ON S1.ParagraphID = P1.ParagraphID WHERE P1.ParagraphID = P.ParagraphID INTERSECT SELECT S2.[Text], S2.Offset, S2.Score FROM Paragraph P2 INNER JOIN Sentence S2 ON S2.ParagraphID = P2.ParagraphID WHERE P2.ParagraphID > P.ParagraphID ) SQ ) = (SELECT COUNT(*) FROM Sentence P3 WHERE P3.ParagraphID = P.ParagraphID)

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 234023
+[parent_id]: 233984
+[tags]: 
+Here are the steps Get the transformation/rotation from your PCA Apply the transformation to the second data set Calculate the variance from transformed data, by column Here is the code on a toy data set. set.seed(0) d1=scale(USArrests) d2=scale(USArrests+matrix(runif(nrow(USArrests)*ncol(USArrests)), ncol=ncol(USArrests))*10) pr.out=prcomp(d1, scale=F) pr.var=apply(pr.out$x,2,sd)^2 pve=pr.var/sum(pr.var) plot(cumsum(pve), xlab="Principal Component", ylab="Cumulative Proportion of Variance Explained", ylim=c(0.5,1),type='b', lwd=2) grid() x2=as.matrix(d2) %*% pr.out$rotation pr.var2=apply(x2,2,sd)^2 pve2=pr.var2/sum(pr.var2) lines(cumsum(pve2),type='b',col=2,lwd=2) legend(2, 0.7, c("Variance Explained in Data 1", "Variance Explained in Data 2"), lwd=c(2,2), col=c(1,2)) The output plot is: Note, the original data has 4 features, and if we do not reduce the dimension, and use all of them. We can always explain $100%$ of the variance in any data set. This is why you see, two curves meet at the top right corner.

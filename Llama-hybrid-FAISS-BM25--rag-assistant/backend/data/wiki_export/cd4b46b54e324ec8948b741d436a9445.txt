@@ -1,0 +1,90 @@
+Ewald summation, named after Paul Peter Ewald, is a method for computing long-range interactions (e.g. electrostatic interactions) in periodic systems. It was first developed as the method for calculating the electrostatic energies of ionic crystals, and is now commonly used for calculating long-range interactions in computational chemistry. Ewald summation is a special case of the Poisson summation formula, replacing the summation of interaction energies in real space with an equivalent summation in Fourier space. In this method, the long-range interaction is divided into two parts: a short-range contribution, and a long-range contribution which does not have a singularity. The short-range contribution is calculated in real space, whereas the long-range contribution is calculated using a Fourier transform. The advantage of this method is the rapid convergence of the energy compared with that of a direct summation. This means that the method has high accuracy and reasonable speed when computing long-range interactions, and it is thus the de facto standard method for calculating long-range interactions in periodic systems. The method requires charge neutrality of the molecular system to accurately calculate the total Coulombic interaction. A study of the truncation errors introduced in the energy and force calculations of disordered point-charge systems is provided by Kolafa and Perram.
+
+Derivation
+
+Ewald summation rewrites the interaction potential as the sum of two terms,
+
+where  represents the short-range term whose sum quickly converges in real space and  represents the long-range term whose sum quickly converges in Fourier (reciprocal) space.  The long-ranged part should be finite for all arguments (most notably r = 0) but may have any convenient mathematical form, most typically a Gaussian distribution. The method assumes that the short-range part can be summed easily; hence, the problem becomes the summation of the long-range term. Due to the use of the Fourier sum, the method implicitly assumes that the system under study is infinitely periodic (a sensible assumption for the interiors of crystals). One repeating unit of this hypothetical periodic system is called a unit cell. One such cell is chosen as the "central cell" for reference and the remaining cells are called images.
+
+The long-range interaction energy is the sum of interaction energies between the charges of a central unit cell and all the charges of the lattice.   Hence, it can be represented as a double integral over two charge density fields representing the fields of the unit cell and the crystal lattice
+
+where the unit-cell charge density field  is a sum over the positions  of the charges  in the central unit cell
+
+and the total charge density field  is the same sum over the unit-cell charges  and their periodic images
+
+Here,  is the Dirac delta function, ,  and  are the lattice vectors and ,  and  range over all integers.  The total field  can be represented as a convolution of  with a lattice function 
+
+Since this is a convolution, the Fourier transformation of  is a product
+
+where the Fourier transform of the lattice function is another sum over delta functions
+
+where the reciprocal space vectors are defined  (and cyclic permutations) where  is the volume of the central unit cell (if it is geometrically a parallelepiped, which is often but not necessarily the case).  Note that both  and  are real, even functions.
+
+For brevity, define an effective single-particle potential
+
+Since this is also a convolution, the Fourier transformation of the same equation is a product
+
+where the Fourier transform is defined
+
+The energy can now be written as a single field integral
+
+Using Plancherel theorem, the energy can also be summed in Fourier space
+
+where  in the final summation.
+
+This is the essential result.  Once  is calculated, the summation/integration over  is straightforward and should converge quickly. The most common reason for lack of convergence is a poorly defined unit cell, which must be charge neutral to avoid infinite sums.
+
+Particle mesh Ewald (PME) method
+
+Ewald summation was developed as a method in theoretical physics, long before the advent of computers.  However, the Ewald method has enjoyed widespread use since the 1970s in computer simulations of particle systems, especially those whose particles interact via an inverse square force law such as gravity or electrostatics. Recently, PME has also been used to calculate the  part of the Lennard-Jones potential in order to eliminate artifacts due to truncation. Applications include simulations of plasmas, galaxies and molecules.
+
+In the particle mesh method, just as in standard Ewald summation, the generic interaction potential is separated into two terms . The basic idea of particle mesh Ewald summation is to replace the direct summation of interaction energies between point particles
+
+with two summations, a direct sum  of the short-ranged potential in real space
+
+(this is the particle part of particle mesh Ewald) and a summation in Fourier space of the long-ranged
+part
+
+where  and  represent the Fourier transforms of the potential and the charge density (this is the Ewald part).  Since both summations converge quickly in their respective spaces (real and Fourier), they may be truncated with little loss of accuracy and great improvement in required computational time.  To evaluate the Fourier transform  of the charge density field efficiently, one uses the fast Fourier transform, which requires that the density field be evaluated on a discrete lattice in space (this is the mesh part).
+
+Due to the periodicity assumption implicit in Ewald summation, applications of the PME method to physical systems require the imposition of periodic symmetry. Thus, the method is best suited to systems that can be simulated as infinite in spatial extent. In molecular dynamics simulations this is normally accomplished by deliberately constructing a charge-neutral unit cell that can be infinitely "tiled" to form images; however, to properly account for the effects of this approximation, these images are reincorporated back into the original simulation cell. The overall effect is called a periodic boundary condition. To visualize this most clearly, think of a unit cube; the upper face is effectively in contact with the lower face, the right with the left face, and the front with the back face. As a result, the unit cell size must be carefully chosen to be large enough to avoid improper motion correlations between two faces "in contact", but still small enough to be computationally feasible. The definition of the cutoff between short- and long-range interactions can also introduce artifacts.
+
+The restriction of the density field to a mesh makes the PME method more efficient for systems with "smooth" variations in density, or continuous potential functions.  Localized systems or those with large fluctuations in density may be treated more efficiently with the fast multipole method of Greengard and Rokhlin.
+
+Dipole term
+
+The electrostatic energy of a polar crystal (i.e. a crystal with a net dipole  in the unit cell) is conditionally convergent, i.e. depends on the order of the summation. For example, if the dipole-dipole interactions of a central unit cell with unit cells located on an ever-increasing cube, the energy converges to a different value than if the interaction energies had been summed spherically.  Roughly speaking, this conditional convergence arises because (1) the number of interacting dipoles on a shell of radius  grows like ; (2) the strength of a single dipole-dipole interaction falls like ; and (3) the mathematical summation  diverges.
+
+This somewhat surprising result can be reconciled with the finite energy of real crystals because such crystals are not infinite, i.e. have a particular boundary. More specifically, the boundary of a polar crystal has an effective surface charge density on its surface  where  is the surface normal vector and  represents the net dipole moment per volume. The interaction energy  of the dipole in a central unit cell with that surface charge density can be written
+
+where  and  are the net dipole moment and volume of the unit cell,  is an infinitesimal area on the crystal surface and  is the vector from the central unit cell to the infinitesimal area. This formula results from integrating the energy  where  represents the infinitesimal electric field generated by an infinitesimal surface charge  (Coulomb's law)
+
+The negative sign derives from the definition of , which points towards the charge, not away from it.
+
+History
+
+The Ewald summation was developed by Paul Peter Ewald in 1921 (see References below) to determine the electrostatic energy (and, hence, the Madelung constant) of ionic crystals.
+
+Scaling
+Generally, different Ewald summation methods give different time complexities. Direct calculation gives , where  is the number of atoms in the system.  The PME method gives .
+
+See also
+
+ Paul Peter Ewald
+ Madelung constant
+ Poisson summation formula
+ Molecular modeling
+ Wolf summation
+
+References
+
+ 
+ 
+Frenkel, D., & Smit, B. (2001). Understanding molecular simulation: from algorithms to applications, Academic press.
+
+Electromagnetism
+Potential theory
+Fourier analysis
+Computational chemistry
+Theoretical chemistry
+Computational electromagnetics

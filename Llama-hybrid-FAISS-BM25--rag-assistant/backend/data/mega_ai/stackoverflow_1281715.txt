@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1281715
+[parent_id]: 1239113
+[tags]: 
+With help of way smarter developer I was able to solve this problem. Turns out I was misusing PreparedStatement ( aricle ). Based on this I changed java code to: ResultSet rs = null; Statement stmt = null; Connection conn = null; Integer myId=null; String myVeryUniqueFileName = strFromSomeWhere; try { conn = Database.getConnection(); stmt = conn.createStatement() // rs = stmt.executeQuery("SELECT id FROM mytable WHERE filename = '" + myVeryUniqueFileName + "'"); if (rs.next()) { myId= new Integer(rs.getInt(1)); } if (rs.next()) { throw new DBException("Duplicate myId: " + myId); } return myId; } catch (Exception e) { // handle this } After this dababase load fell from average 70% to 13%

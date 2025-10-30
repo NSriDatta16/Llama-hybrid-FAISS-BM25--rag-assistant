@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4854273
+[parent_id]: 4853524
+[tags]: 
+You can look at the CPython code for 2.6.x: http://svn.python.org/projects/python/branches/release26-maint/Objects/stringobject.c It looks like one-character strings are treated specially, and each distinct one exists only once, so your code is safe. Here's some key code (excerpted): static PyStringObject *characters[UCHAR_MAX + 1]; PyObject * PyString_FromStringAndSize(const char *str, Py_ssize_t size) { register PyStringObject *op; if (size == 1 && str != NULL && (op = characters[*str & UCHAR_MAX]) != NULL) { Py_INCREF(op); return (PyObject *)op; } ...

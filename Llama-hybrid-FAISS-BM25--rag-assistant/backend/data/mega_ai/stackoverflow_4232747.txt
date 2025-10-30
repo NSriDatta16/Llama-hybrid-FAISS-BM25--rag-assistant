@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4232747
+[parent_id]: 4232654
+[tags]: 
+What you have wrote is not a valid c++ code. In order to initialize result to proper size, row and col need to be compile time constants which they are not. You either return a float** from your function which you allocate locally, or (better) you pass a pre-allocated float** result as another parameter to you function (which you still can return). However, usually you would not use 2-d arrays to store matrices, you'd rather define a linear storage for a matrix in a 1-d array and define appropriate accessors. float** matrix__multiplication(float **arrayA,float **arrayB,float **result, int row1,int col1,int col2) { // ... return result; } // caller needs to allocate (and de-allocate) space (see the mess?): result = new float* [row1]; std::for_each(result, result + row1, [col2] (float*& pCurr) -> void { pCurr = new float[col2]; }); result = matrix_multiplication(a, b, result, row1, col1, col2);

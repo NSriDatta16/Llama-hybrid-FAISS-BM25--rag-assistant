@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4088749
+[parent_id]: 4077362
+[tags]: 
+I think the .RegisterType .As pattern is not type safe simply because the C# compiler (or the CLR type system) does not handle such type constraints. For example, the following hypothetical declaration of the As method won't compile: interface IRegistration { void As () where TImplementation : TContract; } The compiler error is "'SomeNamespace.IRegistration.As()' does not define type parameter 'TImplementation'". Is there some way of wiring things up more safely if desired? The following seems to work (though it is discouraged by the best practices section on the Autofac wiki). It will give a compiler error unless Foo implements IFoo : var builder = new ContainerBuilder(); builder.Register (c => new Foo()).SingleInstance(); var container = builder.Build(); var foo = container.Resolve (); c is the IComponentContext . If the Foo constructor requires a constructor argument then you can write c => new Foo(c.Resolve ()) . After I have called IoCContainer.Build(..) I can no longer register anything 'into' the BaseContainer You can update the container in Autofac 2.2.

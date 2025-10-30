@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 575487
+[parent_id]: 
+[tags]: 
+Logistic regression simulation with respect to event occurrence (prevalence)
+
+I am trying to simulate logistic regression data, but under the constraints of prevalence. $$\text{logit}(y_i) = \beta_0 + \beta_1 X_1 + \beta_2X_2$$ For example, I want to create a dataset that has 10% of $y = 1$ , and 90% $y = 0$ . I can think of two approaches: search a grid of $\beta_0$ , that produce the closest prevalence to 10% post hoc resampling. Stage 1: fix all $\beta$ s to produce $y$ . Stage2: sampling from y so that prevalence to be 10%. Here is the code for approach 2: # fix betas betas = c(-2, 1, -0.5) # X could be anything, I just use binomial here # dimension = 10,000 * 3 X = cbind(1, matrix(rbinom(20000, size = 2, prob = 0.2), ncol = 2)) # generate probability according to sigmoid function probs = 1/(1 + exp(- X %*% betas)) # generate y y = apply(probs, 1, function(prob){rbinom(1, size = 1, prob = prob)}) # resample y, so that prevalence can be constrained # dimension = 1,000 * 3 case = sample(which(y == 1), size = 100) control = sample(which(y == 0), size = 900) resampleX = X[c(case, control), ] resampley = y[c(case, control)] # run glm glm(resampley ~ 0 + resampleX, family = binomial)$coefficients The question is: which approach is valid?

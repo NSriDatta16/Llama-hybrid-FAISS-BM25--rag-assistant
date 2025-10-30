@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 464456
+[parent_id]: 
+[tags]: 
+"HttpContext.Current.Session" vs Global.asax "this.Session"
+
+Recently, while working on some code for an ASP.NET project at work. We needed a tracking util to take basic metrics on user activity (page hit count etc) we would track them in Session , then save the data to DB via Session_End in Global.asax . I began hacking away, the initial code worked fine, updating the DB on each page load. I wanted to remove this DB hit on each request though and just rely on Session_End to store all the data. All of the tracking code is encapsulated in the Tracker class, including properties that essentially wrap the Session variables. The problem is that when I executed Tracker.Log() in the Session_End method, the HttpContext.Current.Session in the Tracker code was failing with a NullReferenceException . Now, this makes sense since HttpContext always relates to the current request, and of course in Session_End , there is no request. I know that Global.asax has a Session property which returns a HttpSessionState that actually seems to work fine (I ended up injecting it in to the tracker).. But I am curious, how the hell can I get the same reference to the HttpSessionState object used by Global.asax from outside of Global.asax ? Thanks in advance guys, I appreciate the input. :)

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4940243
+[parent_id]: 4940034
+[tags]: 
+I'd just use a capped collection, unindexed, with space for, say 600k rows, to allow for slush. Once per hour, dump the collection to a text file, then use grep to filter out rows that aren't from your target date. This doesn't let you leverage the nice bits of the DB, but it means you don't have to ever worry about collection indexes, flushes, or any of that nonsense. The performance-critical bit of it is keeping the collection free for inserts, so if you can do the "hard" bit (filtering by date) outside of the context of the DB, you shouldn't have any appreciable performance impact. 400-600k lines of text is trivial for grep, and likely shouldn't take more than a second or two. If you don't mind a bit of slush in each log, you can just dump and gzip the collection. You'll get some older data in each dump, but unless you insert over 600k rows between dumps, you should have a continuous series of log snapshots of 600k rows apiece.

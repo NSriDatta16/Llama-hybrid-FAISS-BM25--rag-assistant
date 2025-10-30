@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5031349
+[parent_id]: 5031278
+[tags]: 
+BZ, try doing this stuff in the ExcecuteResult override as it's too late by the time the ActionResult is being thrown back (an example from a project that i quickly opened, edit to suit): public override void ExecuteResult(ControllerContext context) { var textWriter = new StringWriter(); var viewResult = GetViewResult(textWriter); viewResult.ExecuteResult(context); var result = textWriter.ToString() .RegexReplace(" ", string.Empty) .Replace(" ", string.Empty); //#if RELEASE //context.HttpContext.Response.CacheControl = "Public"; //context.HttpContext.Response.Expires = CacheDuration; string version = "1.0"; //your dynamic version number HttpCachePolicyBase cache = context.HttpContext.Response.Cache; TimeSpan expireTs = TimeSpan.FromDays(CacheDuration); cache.SetCacheability(HttpCacheability.Private); cache.SetETag(version); cache.SetExpires(DateTime.Now.Add(expireTs)); cache.SetMaxAge(expireTs); //#endif context.HttpContext.Response.ContentType = "text/javascript"; context.HttpContext.Response.Write(result); }

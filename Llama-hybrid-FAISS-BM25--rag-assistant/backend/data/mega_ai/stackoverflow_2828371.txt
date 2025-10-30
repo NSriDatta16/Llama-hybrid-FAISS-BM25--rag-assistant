@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2828371
+[parent_id]: 2828059
+[tags]: 
+@steve 's answer is actually the most elegant way of doing it. For the "correct" way see the order keyword argument of numpy.ndarray.sort However, you'll need to view your array as an array with fields (a structured array). The "correct" way is quite ugly if you didn't initially define your array with fields... As a quick example, to sort it and return a copy: In [1]: import numpy as np In [2]: a = np.array([[1,2,3],[4,5,6],[0,0,1]]) In [3]: np.sort(a.view('i8,i8,i8'), order=['f1'], axis=0).view(np.int) Out[3]: array([[0, 0, 1], [1, 2, 3], [4, 5, 6]]) To sort it in-place: In [6]: a.view('i8,i8,i8').sort(order=['f1'], axis=0) # @Steve's really is the most elegant way to do it, as far as I know... The only advantage to this method is that the "order" argument is a list of the fields to order the search by. For example, you can sort by the second column, then the third column, then the first column by supplying order=['f1','f2','f0'].

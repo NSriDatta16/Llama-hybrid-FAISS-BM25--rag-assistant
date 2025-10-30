@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1299399
+[parent_id]: 1289644
+[tags]: 
+If all your images are 512x512 then I'd use a lookup table that maps a weighted set of pixels in your polar image to the cartesian image. This is a lot of work upfront but makes your final calculation O(n^2). If a LUT is not an option then I'd use: x=r*cos(angle) y=r*sin(angle) On each pixel in the polar image to map it to "a" pixel in the cartesian image, where the output pixel is the average of all input pixels that fall on it. Then apply repeated dilations until there are no uninitialised pixels left. For the dilation you use a 3x3 structuring element and only replace the value of the output pixel with the value of the centre pixel if it previously had no value. Then, as a final measure, apply a gaussian filter to the entire image to smooth out the hard edges. This is the fastest method I can think of that will produce an image that is pleasant to look at in a reasonable amount of time.

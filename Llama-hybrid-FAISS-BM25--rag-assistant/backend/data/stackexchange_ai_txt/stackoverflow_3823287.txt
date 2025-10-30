@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3823287
+[parent_id]: 
+[tags]: 
+C++ inheritance, base methods hidden
+
+I have a simple C++ base class, derived class example. // Base.hpp #pragma once class Base { public: virtual float getData(); virtual void setData(float a, float b); virtual void setData(float d); protected: float data; }; //Base.cpp #include "stdafx.h" #include "Base.hpp" float Base::getData() { return data; } void Base::setData(float a, float b) { setData(a); } void Base::setData(float d) { data = d; } //Derived.hpp #pragma once #include "Base.hpp" class Derived : public Base { public: virtual void setData(float d); }; //Derived.cpp #include "stdafx.h" #include "Derived.hpp" void Derived::setData(float d) { data = d + 10.0f; } If I now make a pointer to the Base this compiles fine. //Main.cpp #include "stdafx.h" #include "Base.hpp" #include "Derived.hpp" Base *obj = new Derived(); But if I make a pointer to the Derived class, then the compiler (VC 2008 and 2010) complains that: Main.cpp(12): error C2660: 'Derived::setData' : function does not take 2 arguments And here is the code that causes this error: //Main.cpp #include "stdafx.h" #include "Base.hpp" #include "Derived.hpp" Derived *obj = new Derived(); It seems that the base class methods are being hidden. I was under the impression that since the base class methods are virtual they should be visible even when viewed from the Derived pointer, or am I wrong?

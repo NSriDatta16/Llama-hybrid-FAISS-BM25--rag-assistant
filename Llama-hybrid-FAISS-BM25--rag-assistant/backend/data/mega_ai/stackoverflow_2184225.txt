@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2184225
+[parent_id]: 2183648
+[tags]: 
+Alternatively, you could override the window proc on creation instead of registering a new window class: WNDPROC g_ComboBoxProc; LRESULT CALLBACK SearchBoxProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { // Special handling here. return CallWindowProc(g_ComboBoxProc, hwnd, uMsg, wParam, lParam); } HWND CreateSearchBox(LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int w, int h, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) { HWND hwnd = CreateWindow(TEXT("COMBOBOX"), lpWindowName, dwStyle, x, y, w, h, hWndParent, hMenu, hInstance); if (hwnd) { g_ComboBoxProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (WNDPROC) SearchBoxProc); } return hwnd; } Though SetWindowSubclass should probably be used instead.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3105071
+[parent_id]: 3104467
+[tags]: 
+With the facilities provided by numeric_limits, you don't really need to use any complex specializations or anything like that for the infinity check. template const T& MathHelper::wrap(const T &value, const T &min, const T &max) { bool isInfinity = std::numeric_limits ::has_infinity() && (std::abs(value) == std::numeric_limits ::infinity()); //the rest } Your final step, involving operator% will be more complicated. You will need to provide a custom mod function, that is overloaded to pass the floating point types into std::modf instead of using operator% . You might be able to use type traits [either via boost or TR1] to minimize the repetative aspects of this, although I'm not sure what the most elegant method of doing so would be. Perhaps something along the lines of: template typename std::enable_if ::value, T>::type mod(T, T) { //use std::modf } template typename std::enable_if ::value, T>::type mod(T, T) { //use % }

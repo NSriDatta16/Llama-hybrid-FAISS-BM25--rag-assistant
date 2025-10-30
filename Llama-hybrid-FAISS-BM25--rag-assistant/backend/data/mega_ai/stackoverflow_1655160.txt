@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1655160
+[parent_id]: 1655096
+[tags]: 
+What you seem to have posted is to have a Bar member in the Foo , and a Foo member in the Bar . That is a circular dependency you need to break - if every Foo contains a Bar which contains a Foo then constructing either never terminates. class Foo : public baseclass { public: Bar varBar; }; class Bar { public: Foo varFoo; }; Instead you need to use a pointer or reference to the Foo or Bar in at least one of them: class Bar; class Foo : public baseclass { public: Bar& varBar; }; class Bar { public: Foo varFoo; }; As the circularity is broken and you're only using a reference to the object, you don't need to have the full definition of the referred-to type, and can use a forward declaration. Include guards are good for users, but try and not rely on them when developing. If the compiler has to check whether or not something has been included, it's still doing work even if it has optimisations for guards/pragmas. You do need to have some understanding of what depends on what to break the initial cycle, and putting guards on the files won't help you with that.

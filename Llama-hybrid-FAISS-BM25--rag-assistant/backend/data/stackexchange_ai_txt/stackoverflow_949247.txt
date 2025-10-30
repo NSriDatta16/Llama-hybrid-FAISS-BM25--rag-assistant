@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 949247
+[parent_id]: 949230
+[tags]: 
+var is just short-hand for type inference... the real question here is: what is the underlying type? If it involves an anonymous type (i.e. new {...}, or a List<> there-of), then there is no elegant way (although it can be done in a hacky way). In short; don't use anonymous types in this scenario... Note that a query expression such as IQueryable is not data - it is a query - to store the data (for a cache) you'd need to use .ToList() / .ToArray() etc. Important : you shouldn't store a query expression in session; at best (in-memory session provider) that will keep the data-context alive; at worst (database etc session provider) it won't work, as a data-context isn't serializable. Storing results from a query is fine; but otherwise, rebuild the query expression per-request. In which case, you might be able to use (for example): var tasksQuery = from task in ctx.Tasks where task.IsActive orderby task.Created select task; // this is IQueryable Session["Tasts"] = tasksQuery.ToArray(); // this is Task[] ... var tasks = (Task[]) Session["Tasts"]; // this is Task[]

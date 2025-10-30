@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1837787
+[parent_id]: 1831386
+[tags]: 
+Thomas has the right approach for encoding the board. However this should be combined with ralu's approach for storing moves. Make a list of all possible moves, write out the number of bits needed to express this number. Since the decoder is doing the same calculation it knows how many are possible and can know how many bits to read, no length codes are needed. Thus we get 164 bits for the pieces, 4 bits for castling info (assuming we are storing a fragment of a game, otherwise it can be reconstructed), 3 bits for en passant eligibility info--simply store the column where the move occurred (If en passant isn't possible store a column where it's not possible--such columns must exist) and 1 for who is to move. Moves will typically take 5 or 6 bits but can vary from 1 to 8. One additional shortcut--if the encode starts with 12 1 bits (an invalid situation--not even a fragment will have two kings on one side) you abort the decode, wipe the board and set up a new game. The next bit will be a move bit.

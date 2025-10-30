@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 121252
+[parent_id]: 
+[tags]: 
+Policy Gradient training log-derivative un-normalized vs normalized objective
+
+I am implementing a policy gradient training objective for optimizing ranking metrics in a learning-to-rank setting. For a given query $q$ , a set of documents $D_q$ (retrieved from a first-stage ranker), a ranking policy $\pi_\theta$ is trained to maximize the following objective: $ J(\theta) = \mathop{\mathbb{E}}_q \mathop{\mathbb{E}}_{y \sim \pi} \left[\sum_{d \in D_q}^{} U(y, rel) \right] $ . where $U(y, rel)$ is the NDCG (or any ranking metric) with respect to the sampled ranking $y$ and ground-truth relevance $rel$ . I intended to implement a policy-gradient method for training the policy with gradients computed using log-derivative trick, i.e. $ \nabla J(\theta) = \mathop{\mathbb{E}}_q \nabla \mathop{\mathbb{E}}_{y \sim \pi} \left[\sum_{d \in D_q}^{} U(y, rel) \right]$ using the log-derivative trick, it reduces to: $\nabla J(\theta) = \mathop{\mathbb{E}}_q \mathop{\mathbb{E}}_{y \sim \pi} \nabla \pi \left[\sum_{d \in D_q}^{} U(y, rel) \right]$ . Now in my implementation, I have replaced $ \mathop{\mathbb{E}}_q $ with a monte-carlo estimate, by sampling a random batch of queries and averaging over the inner quantity. But with the sample estimate of this: $\mathop{\mathbb{E}}_{y \sim \pi}$ , I replaced it with a summation, instead of an average over the inner quantity. Is this incorrect? I am getting results as expected, but I am afraid if my implementation if fundamentally wrong.

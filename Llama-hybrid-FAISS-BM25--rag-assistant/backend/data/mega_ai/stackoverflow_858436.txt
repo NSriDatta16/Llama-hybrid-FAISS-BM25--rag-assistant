@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 858436
+[parent_id]: 858338
+[tags]: 
+I'd say Neil's on the right track - it's probably something you trampled earlier on that's only being caught there. Have you made sure that: All previous allocations succeeded. You've not written past the end or beginnings of any arrays (there's a plethora of information and tools for bounds checking out there). [Edit] In response to your comment about having 4GB of RAM, suppose you code effectively does the following: unsigned int amountToAllocate = 0; amountToAllocate -= 1; int* someStorage = new int[amountToAllocate]; someStorage[0] = 5; ...because amountToAllocate is an unsigned int , it will wrap round to it's maximum value (4294967295 if unsigned int s are 32 bit on your hardware). So you'd be trying to allocate 4294967295*4 bytes (again, assuming int s are 32 bit for you)... which is ~4*4GB and will fail and die a nasty death.

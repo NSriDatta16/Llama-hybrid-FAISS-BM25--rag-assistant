@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3223660
+[parent_id]: 
+[tags]: 
+Can existing types be extended to work with Seq.sum, etc?
+
+Been working with a lot of TimeSpans recently, and have a need to get sums & averages. However, TimeSpan defines neither operator get_Zero nor DivideByInt, so Seq.sum and Seq.average can't be used directly with this type. The following fails to compile: open System type System.TimeSpan with static member Zero with get() = TimeSpan() static member (/) (n:DateTime, d:int) = DateTime( n.Ticks / (int64) d ) let ts = [ TimeSpan(10L); TimeSpan(99L) ] let sum = ts |> Seq.sum let avg = ts |> Seq.average Error: The type 'TimeSpan' does not support any operators named 'get_Zero' Error: The type 'TimeSpan' does not support any operators named 'DivideByInt' Warning: Extension members cannot provide operator overloads. Consider defining the operator as part of the type definition instead. Is there some F# magic that can define these operators on an existing type? I know the following will work (and should be more efficient to boot), but I'm still curious about the above so I can add it to my toolbox for use with other types. let sum = TimeSpan( ts |> Seq.sumBy (fun t -> t.Ticks) ) let avg = TimeSpan( let len = ts |> Seq.length in sum.Ticks / int64 len )

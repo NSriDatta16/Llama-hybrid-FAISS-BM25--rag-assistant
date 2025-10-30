@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1805208
+[parent_id]: 1804370
+[tags]: 
+Based on your comments in the other answers I think what I'd recommend is: 1) Isolate which data is actually updated vs. which data is more or less read only (or infrequently) 2) Move the updated data to separate tables joined on an id to the bigger tables (deleting those columns from the big tables) 3) Do your OLTP transactions against the smaller, more relational tables 4) Use inner joins to hook back up to the big tables to retrieve data when necessary. As others have noted you are trying to make the DB do both OLTP and OLAP at the same time and that is difficult. Server settings need to be tweaked differently for either scenario. Either SQL Server or Oracle should work. I use census data as well and my giganto table has around 300+ columns. I use SQL Server 2005 and it complains that if all the columns were to be filled to their capacity it would exceed that max possible size for a record. We use our census data in an OLAP fashion, so it isn't such a big deal to have so many columns.

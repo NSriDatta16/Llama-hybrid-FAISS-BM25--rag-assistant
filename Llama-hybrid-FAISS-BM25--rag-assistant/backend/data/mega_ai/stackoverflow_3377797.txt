@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3377797
+[parent_id]: 3377583
+[tags]: 
+In SQL Server 2008 depending on your needs you could apply full text indexing to the column then query the sys.dm_fts_index_keywords and sys.dm_fts_index_keywords_by_document table valued functions to get the occurrence count. Edit: Actually even without creating a persistent full text index you can still leverage the parser WITH testTable AS ( SELECT 1 AS Id, N'how now brown cow' AS txt UNION ALL SELECT 2, N'she sells sea shells upon the sea shore' UNION ALL SELECT 3, N'red lorry yellow lorry' UNION ALL SELECT 4, N'the quick brown fox jumped over the lazy dog' ) SELECT display_term, COUNT(*) As Cnt FROM testTable CROSS APPLY sys.dm_fts_parser('"' + REPLACE(txt,'"','""') + '"', 1033, 0,0) WHERE TXT IS NOT NULL GROUP BY display_term HAVING COUNT(*) > 1 ORDER BY Cnt DESC Returns display_term Cnt ------------------------------ ----------- the 3 brown 2 lorry 2 sea 2

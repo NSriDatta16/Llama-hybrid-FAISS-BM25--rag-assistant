@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3066790
+[parent_id]: 3066630
+[tags]: 
+Reads are going to be about the same speed (since the OS will cache files frequently accessed)... The difference is going to be with writes. With memcached, all it needs to do is write the ram. But with file storage, it gets a little bit more tricky. If you have write caching enabled, it'll be about as fast. But most servers have it turned off (Unless they have a battery backed cache) for more reliable writes in the case of power failure. So if yours is not using a write cache, it'll require the write to complete on disk (can take 5+ ms on server grade drives, possibly more on desktop grade hardware) before returning. So writing files may be significantly slower than memcached. But there's another caviat. With files, when you want to write, you'd need to lock the file yourself. This means that if two processes try to write to the same file, the writes would have to complete serially. With memcached, those two writes get pushed into a queue and happen in the order received, but the writing process (PHP) doesn't need to wait for the actual commit...

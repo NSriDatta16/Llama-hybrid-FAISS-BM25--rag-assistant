@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4378903
+[parent_id]: 4378750
+[tags]: 
+I tried to add a security constraint to FacesConfig but it blocks all my *.xhtml even the login.xhtml The faces-config.xml has no notion of security constraints. Probably you're confusing with web.xml . You need to make the url-pattern of the security constraint more specific. Don't use *.xhtml , but use /secured/* or so and put the restricted files in that folder (expect of the login.xhtml file of course). Besides that, you may want to instruct the browser to not cache those pages. You can achieve this by a Filter which is mapped on the same url-pattern and does the following in the doFilter() method: HttpServletResponse hsr = (HttpServletResponse) response; hsr.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1. hsr.setHeader("Pragma", "no-cache"); // HTTP 1.0. hsr.setDateHeader("Expires", 0); // Proxies. chain.doFilter(request, response); With this, the enduser won't be able to view the page from the browser cache. Don't forget to clear the browser cache before testing.

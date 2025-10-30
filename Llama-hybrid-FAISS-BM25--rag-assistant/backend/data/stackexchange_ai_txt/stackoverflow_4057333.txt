@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4057333
+[parent_id]: 4057319
+[tags]: 
+You need to consult the documentation for whatever implementation you're using. C++ doesn't currently specify anything about threads so it comes down to the implementation (which you haven't yet told us). For example, my Linux manpage for setlocale has the snippet: This string may be allocated in static storage. which doesn't absolutely indicate that it's thread-unsafe but I'd be very wary. It's likely that calling it with NULL (i.e., querying) would be thread-safe but as soon as you have a thread modifying it, all bets are off. Probably the safest thing to do (assuming it isn't thread-safe) would be to protect all calls to setlocale with a mutex and have a special function to format your numbers along the lines of: claim mutex curr = setlocale to specific value format number to string setlocale to curr release mutex return string

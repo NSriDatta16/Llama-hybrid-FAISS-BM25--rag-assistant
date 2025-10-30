@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4855764
+[parent_id]: 4855575
+[tags]: 
+NEW ANSWER You could leverage the WebApplicationException that can be thrown from the writeTo method in MessageBodyWriter . public void writeTo(DataObject dataObject, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap multivaluedMap, OutputStream outputStream) throws IOException, WebApplicationException { try { throw new JAXBException("error"); } catch(JAXBException e) { Response response = Response.status(Response.Status.INTERNAL_SERVER_ERROR) .entity("HI") .type("text/plain") .build(); throw new WebApplicationException(response); } } ORIGINAL ANSWER In my opinion you are better of throwing the JAXBException from the MessageBodyWriter, and then creating an ExceptionMapper to log the problem: @Provider public class JAXBExceptionMapper implements ExceptionMapper { public Response toResponse(JAXBException e) { return Response.status(Response.Status.INTERNAL_SERVER_ERROR) .entity(e.getMessage()); .type("text/plain").build(); } } This will allow you to return a response code that indicates that a problem occurred.

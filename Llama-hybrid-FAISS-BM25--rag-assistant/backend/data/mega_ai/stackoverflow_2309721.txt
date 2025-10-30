@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2309721
+[parent_id]: 2307262
+[tags]: 
+The trick is not to do a := TProc(b); but TMyProc(a) := b; That compiles and works in D2009. Sample project attached below. program Project51; {$APPTYPE CONSOLE} uses SysUtils; type TMyProc = reference to procedure(var param: integer); TStorage = record FDelegate: TProc; end; var a : TMyProc; b : TMyProc; param: integer; stg : TStorage; begin b := procedure (var param: integer) begin param := 2*param; end; // stg.FDelegate := TMyProc(b); // doesn't compile in Delphi 2009, compiles in Delphi 2010 TMyProc(stg.FDelegate) := b; param := 21; TMyProc(stg.FDelegate)(param); Writeln(param); Readln; end. However, this doesn't work if casting to a local variable. var p: TProc; a: TMyProc; TMyProc(p) := a; // this will not compile Curiouser and curiouser.

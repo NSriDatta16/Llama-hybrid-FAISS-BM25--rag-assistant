@@ -1,0 +1,233 @@
+Haxe is a high-level cross-platform programming language and compiler that can produce applications and source code for many different computing platforms from one code-base. It is free and open-source software, released under the MIT License. The compiler, written in OCaml, is released under the GNU General Public License (GPL) version 2.
+
+Haxe includes a set of features and a standard library supported across all platforms, like numeric data types, strings, arrays, maps, binary, reflection, maths, Hypertext Transfer Protocol (HTTP), file system and common file formats. Haxe also includes platform-specific API's for each compiler target. Kha, OpenFL and Heaps.io are popular Haxe frameworks that enable creating multi-platform content from one codebase.
+
+Haxe originated with the idea of supporting client-side and server-side programming in one language, and simplifying the communication logic between them. Code written in the Haxe language can be compiled into JavaScript, C++, Java, JVM, PHP, C#, Python, Lua and Node.js. Haxe can also directly compile SWF, HashLink, and NekoVM bytecode and also runs in interpreted mode.
+
+Haxe supports externs (definition files) that can contain type information of existing libraries to describe target-specific interaction in a type-safe manner, like C++ header files can describe the structure of existing object files. This enables to use the values defined in the files as if they were statically typed Haxe entities. Beside externs, other solutions exist to access each platform's native capabilities.
+
+Many popular IDEs and source code editors have support available for Haxe development. No particular development environment or tool set is officially recommended by the Haxe Foundation, although VS Code, IntelliJ IDEA and HaxeDevelop have the most support for Haxe development. The core functionalities of syntax highlighting, code completion, refactoring, debugging, etc. are available to various degrees.
+
+History
+Development of Haxe began in October 2005. The first alpha version was released on November 14, 2005. Haxe 1.0 was released in April 2006, with support for Adobe Flash, JavaScript, and NekoVM programs. Support for PHP was added in 2008, and C++ was added in 2009. More platforms such as C# and Java were added with a compiler overhaul in 2012.
+
+Haxe was developed by Nicolas Cannasse and other contributors, and was originally named haXe because it was short, simple, and "has an X inside", which the author asserts humorously is needed to make any new technology a success.
+
+Haxe is the successor to the open-source ActionScript 2 compiler MTASC, also built by Nicolas Cannasse and is released under the GNU General Public License version 2 or later.
+
+Compiler
+The Haxe language can compile into bytecode that can be executed directly by the virtual machines it targets. It can compile to source code in C++, JavaScript, PHP, C#, Java, Python, and Lua. Haxe also has an interpreter called eval. This same interpreter is also used compile-time to run macros, which allow modification of the abstract syntax tree (AST).
+
+This strategy of compiling to multiple source code languages is inspired by the write once, run anywhere paradigm. It also allows the programmer to choose the best platform for the job. Typical Haxe programs run identically on all platforms, but developers can specify platform-specific code and use conditional compilation to prevent it from compiling on other platforms.
+
+The Haxe compiler is an optimizing compiler, and uses field and function inlining, tail recursion elimination, constant folding, loop unrolling and dead code elimination (DCE) to optimize the run-time performance of compiled programs. The Haxe compiler offers opt-in null-safety, it checks compile-time for nullable values.
+
+Targets 
+In Haxe, supported platforms are known as "targets", which consist of the following modules:
+ The compiler-backends that are responsible for generating the respective code.
+ The run-time specific APIs that go beyond the core language support (platform-targets).
+
+The following table documents platform and language support in Haxe. The Haxe language allows developers to gain access to many platform features, but Haxe is not a full featured engine, they might need frameworks that enable create content for certain platforms.
+
+Advantages of Haxe 
+ Ability to target multiple platforms and devices using the same language
+ Ability to use strictly-typed code
+ Ability to use macros (syntax transformation) which can be done with Haxe language
+ Added language features such as extension methods and functional programming
+ The run-time performance of Haxe programs is at comparable speed to handwritten sources.
+
+Language
+Haxe is a general-purpose language supporting object-oriented programming, generic programming, and various functional programming constructs. Features such as iterations, exceptions, and code reflection are also built-in functions of the language and libraries. Unusual among programming languages, Haxe contains a type system which is both strong and dynamic. The compiler will check types implicitly using type inferencing and give compile-time errors, but it also enables the programmer to bypass type-checking and rely on the target platform's dynamic type-handling. All of the native target APIs can be used.
+
+Type system
+
+Haxe has a sophisticated and flexible type system. The type kinds it offers are classes, interfaces, function-method types, anonymous types, algebraic data types (called enum in Haxe), and abstract types. Parametric polymorphism is possible with classes, algebraic types and function types, giving the language support for generic programming based on type erasure. This includes support for variance in polymorphic functions, although not in type constructors.
+
+The type system is static unless annotations for dynamic typing are present, for use with targets that support them. Type checking follows nominal typing with the exception of anonymous types where structural typing is used instead. Finally, type inference is supported, allowing for variable declarations without type annotations.
+
+Modules and namespaces 
+All Haxe code is organized in modules, which are addressed using paths. In essence, each .hx file represents a module which may contain several types. For example, to create the type A in the package my.pack as shown, the folder structure should be my\pack and the file could be A.hx in the folder pack.
+ // file my/pack/A.hx
+package my.pack;
+
+class A {}
+In other modules, other types can be imported by putting import statements below the package definition, e.g. import my.pack.A;
+
+A module can contain multiple types, such as the following. It is possible to import one type at a time from that module, using import my.pack2.A;. A type may be private, in which case only its containing module can access it.
+package my.pack2;
+
+typedef A = {a:String}
+private typedef B = {b:String}
+
+Classes
+
+Classes (keyword class) in Haxe are similar to those in Java or TypeScript. Their fields can be either methods, variables, or properties, each static or per instance respectively. Haxe supports the accessors public and private, and more advanced methods for access control that are denoted using annotations. Methods and static constant variables can be inlined using the keyword inline. Fields can be marked as final to declare a constant that must be initialized immediately or in the constructor and cannot be written to, in case of function final will mark as non-overridable in subclasses.
+
+Interfaces in Haxe are very similar to those in, for example, Java.
+
+interface ICreature {
+    public var birth:Date;
+    public var name:String;
+
+    public function age():Int;
+}
+
+class Fly implements ICreature {
+    public var birth:Date;
+    public var name:String;
+	
+    public function age():Int return Date.now().getFullYear() - birth.getFullYear();
+}
+
+Generics 
+Haxe supports generic programming. The following is an example of the identity function.
+function identity<T>(arg:T):T {
+	return arg;
+}
+
+Enumerated types
+Enumerated types are an important feature of the language; they can have type parameters and be recursive. They provide basic support for algebraic data types, allowing the inclusion of product types, in a fashion similar to Haskell and ML. A switch expression can apply pattern matching to an enum value, allowing for elegant solutions to complex programming problems:
+
+enum Color {
+	red;
+	green;
+	blue;
+	rgb(r:Int, g:Int, b:Int);
+}
+
+class Colors {
+	static function toInt(c:Color):Int {
+		return switch (c) {
+			case red: 0xFF0000;
+			case green: 0x00FF00;
+			case blue: 0x0000FF;
+			case rgb(r, g, b): (r << 16) | (g << 8) | b;
+		}
+	}
+
+	static function validCalls() {
+		var redint = toInt(Color.red);
+		var rgbint = toInt(Color.rgb(100, 100, 100));
+	}
+}
+
+Examples of parametric enum types are the Haxe standard library types Option and Either:
+
+enum Option<T> {
+    Some(v:T);
+    None;
+}
+
+enum Either<L, R> {
+    Left(v:L);
+    Right(v:R);
+}
+
+Haxe also supports generalized algebraic data types (GADTs).
+
+Anonymous types
+Anonymous types are defined by denoting their structure explicitly, using a syntax that follows the mathematical record-based representation of a type. They can be used to implement structural typing for function arguments (see below), and can be given an alias with the keyword typedef:
+
+typedef AliasForAnon = { a:Int, b:String, c:Float->Void };
+
+Function types
+Functions are first-class values in Haxe. Their type is denoted by using arrows between argument types, and between the argument type(s) and return type, as common in many functional languages. However, unlike in prominent examples like Haskell or the ML language family, not all functions are unary functions (functions with one argument only), and in Haxe, functions can't be partially applied per default. Thus, the following type signatures have different semantics than in the aforementioned languages. The type F1 is a function that takes a String as arguments and returns a value of type Float.
+
+Types F1 and F2 denote the same type, except that F2 uses labelled parameter, which is useful for completion and documentation.
+
+Types F4 and F5 denote the same type. Both are binary functions that return a binary function of type F3. For F5 the syntax to declare a function type within a function type is used.
+
+typedef F1 = String -> Float;
+typedef F2 = (text:String) -> Float;
+
+typedef F3 = (score:Int, text:String) -> Float;
+typedef F4 = (score:Int, text:String) -> F3;
+typedef F5 = (score:Int, text:String) -> ((score:Int, text:String) -> Float);
+
+Anonymous functions
+
+Abstract types
+A relatively new addition to the Haxe type system is a concept termed abstract types. As used in Haxe, this refers to something different from a conventional abstract type. They are used to make conversions between types implicit, allowing reuse of existing types for specific purposes, like implementing types for units of measurement. This greatly reduces the risk of mixing up values of the same underlying type, but with different meanings (e.g., miles vs. km).
+
+The following example assumes that the metric system is the default, while a conversion to miles is needed for legacy data. Haxe can automatically convert miles to kilometers, but not the reverse.
+
+abstract Kilometer(Float) {
+    public function new(v:Float) this = v;
+}
+ 
+abstract Mile(Float) {
+    public function new(v:Float) this = v;
+    @:to public inline function toKilometer():Kilometer return (new Kilometer (this / 0.62137));
+}
+ 
+class Test {
+  static var km:Kilometer;
+  static function main(){
+    var one100Miles = new Mile(100);
+    km = one100Miles;
+ 
+    trace(km); // 160.935
+  }
+}
+
+As the example shows, no explicit conversion is needed for the assignment "km = one100Miles;" to do the right thing.
+
+Abstract types are entirely a compile-time feature of Haxe and do not exist at all at program runtime. As an example, both variables using abstract types above Mile and Kilometer will be of the type Float at runtime.
+
+Structural typing
+In many functional programming languages, structural typing plays a major role. Haxe employs it in the presence of anonymous types, using the nominative typing of object-oriented programming, when only named types are involved. Anonymous types in Haxe are analogous to the implicit interfaces of the language Go as to typing. In contrast with Go interfaces, it is possible to construct a value using an anonymous type.
+
+class FooBar {
+	public var foo:Int;
+	public var bar:String;
+
+	public function new() {
+		foo = 1;
+		bar = "2";
+	}
+
+	function anyFooBar(v:{foo:Int, bar:String})
+		trace(v.foo);
+
+	static function test() {
+		var fb = new FooBar();
+		fb.anyFooBar(fb);
+		fb.anyFooBar({foo: 123, bar: "456"});
+	}
+}
+
+Internal architecture
+
+The Haxe compiler is divided into one frontend and multiple backends. The frontend creates an abstract syntax tree (AST) from the source code, and performs type checking, macro expansion, and optimization on the AST. The various backends translate the processed AST into source code or generate bytecode, depending on their target.
+
+The compiler is written in OCaml. It can be run in server-mode to provide code completion for integrated development environments (IDEs) and maintain a cache, to further speed compiling.
+
+See also
+
+ Comparison of IDE choices for Haxe programmers
+ Dart (programming language)
+ Nim (programming language)
+ Opa (programming language)
+ Clojure
+ CoffeeScript
+ TypeScript
+ Scala (programming language)
+ Vala (programming language)
+ Emscripten
+ OpenFL
+
+References
+
+External links
+ 
+
+Functional languages
+Multi-paradigm programming languages
+Object-based programming languages
+OCaml software
+Pattern matching programming languages
+Programming languages
+Programming languages created in 2005
+Software using the GPL license
+Source-to-source compilers
+Statically typed programming languages

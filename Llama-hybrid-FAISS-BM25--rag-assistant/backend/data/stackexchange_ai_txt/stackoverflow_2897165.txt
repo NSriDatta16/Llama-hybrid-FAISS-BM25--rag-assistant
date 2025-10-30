@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2897165
+[parent_id]: 
+[tags]: 
+Organizing Eager Queries in an ObjectContext
+
+I am messing around with Entity Framework 3.5 SP1 and I am trying to find a cleaner way to do the below. I have an EF model and I am adding some Eager Loaded entities and i want them all to reside in the "Eager" property in the context. We originally were just changing the entity set name, but it seems a lot cleaner to just use a property, and keep the entity set name in tact. Example: Context - EntityType - AnotherType - Eager (all of these would have .Includes to pull in all assoc. tables) - EntityType - AnotherType Currently I am using composition but I feel like there is an easier way to do what I want. namespace Entities{ public partial class TestObjectContext { EagerExtensions Eager { get;set;} public TestObjectContext(){ Eager = new EagerExtensions (this); } } public partial class EagerExtensions { TestObjectContext context; public EagerExtensions(TestObjectContext _context){ context = _context; } public IQueryable TestEntity { get { return context.TestEntity .Include("TestEntityType") .Include("Test.Attached.AttachedType") .AsQueryable(); } } } } public class Tester{ public void ShowHowIWantIt(){ TestObjectContext context= new TestObjectContext(); var query = from a in context.Eager.TestEntity select a; } }

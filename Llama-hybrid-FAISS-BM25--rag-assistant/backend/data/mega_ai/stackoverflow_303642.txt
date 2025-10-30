@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 303642
+[parent_id]: 
+[tags]: 
+Custom component redraw issue with Delphi
+
+I have written a new custom component derived from TLabel. The component adds some custom drawing to component, but nothing else. When component is painted, everything works fine. But when the redraw is needed (like dragging another window over the component), "label part" works fine but my custom drawing is not properly updated. I'm basically drawing directly to the canvas in an overridden Paint method, and when the redraw is required the parts of canvas where my code has drawn something is painted black. It seems like that the paint method is not called. What I should do to get proper redraw? The component is basically: TMyComponent = class(TCustomLabel, IMyInterface) .. protected procedure Paint; override; .. procedure TMyComponent.Paint; begin inherited; MyCustomPaint; end; Update, the paint routine: Position := Point(0,0); Radius := 15; FillColor := clBlue; BorderColor := clBlack; Canvas.Pen.Color := BorderColor; Canvas.Pen.Width := 1; Canvas.Brush.Color := BorderColor; Canvas.Ellipse(Position.X, Position.Y, Position.X + Radius, Position.Y + Radius); Canvas.Brush.Color := FillColor; Canvas.FloodFill(Position.X + Radius div 2, Position.Y + Radius div 2, BorderColor, fsSurface); SOLVED: The problem is (redundant) use of FloodFill. If the Canvas is not fully visible floodfill causes artifacts. I removed the floodfill and now it works as needed.

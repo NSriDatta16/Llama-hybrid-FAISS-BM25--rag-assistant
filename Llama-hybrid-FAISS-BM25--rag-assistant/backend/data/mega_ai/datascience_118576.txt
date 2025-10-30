@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 118576
+[parent_id]: 
+[tags]: 
+XGBoost learning rate "rescaling according to size of trees". Explanation
+
+I'm trying to understand the impact of the learning rate parameter in XGBoost. I started inspecting the source code . In this file , I found the following lines void QuantileHistMaker::Update(HostDeviceVector *gpair, DMatrix *dmat, common::Span > out_position, const std::vector &trees) { // rescale learning rate according to size of trees float lr = param_.learning_rate; param_.learning_rate = lr / trees.size(); // build tree const size_t n_trees = trees.size(); if (!pimpl_) { pimpl_.reset(new Builder(n_trees, param_, dmat, task_, ctx_)); } size_t t_idx{0}; for (auto p_tree : trees) { auto &t_row_position = out_position[t_idx]; this->pimpl_->UpdateTree(gpair, dmat, p_tree, &t_row_position); ++t_idx; } param_.learning_rate = lr; } My interpretation of this code is that XGBoost trains $n$ trees $f_1, f_2, \dots, f_n$ with learning rate $\eta$ , and predicts according to $f = \sum_{i = 1}^n \frac{\eta}{i} f_i$ . Is my understandig correct? I would greatly appreciate some help from those familiar with the codebase.

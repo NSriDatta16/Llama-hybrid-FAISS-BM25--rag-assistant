@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2701836
+[parent_id]: 2701543
+[tags]: 
+You can't tinker with SplitContainer at all. One possibility is to eliminate it entirely if you are only using it to resize a control. You could use mouse events on the control itself instead. Drop a TreeView on a form and dock it on the left. Subscribe to the MouseDown/Move/Up events and write something like this: bool mDragging; private bool onTreeEdge(Point pos) { return pos.X >= treeView1.DisplayRectangle.Right - 3; } private void treeView1_MouseMove(object sender, MouseEventArgs e) { treeView1.Cursor = mDragging || onTreeEdge(e.Location) ? Cursors.VSplit : Cursors.Default; if (mDragging) treeView1.Width = e.X; } private void treeView1_MouseDown(object sender, MouseEventArgs e) { mDragging = onTreeEdge(e.Location); if (mDragging) treeView1.Capture = true; } private void treeView1_MouseUp(object sender, MouseEventArgs e) { mDragging = false; }

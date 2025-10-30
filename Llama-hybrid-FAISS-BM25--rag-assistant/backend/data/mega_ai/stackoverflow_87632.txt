@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 87632
+[parent_id]: 87422
+[tags]: 
+Best option is not to depend on postbacks to control flow, however if you are stuck with it (for now) you may use something like this: Response.Cache.SetCacheability(HttpCacheability.NoCache); Response.Cache.SetExpires(Now.AddSeconds(-1)); Response.Cache.SetNoStore(); Response.AppendHeader("Pragma", "no-cache"); Soon you will find that it will not work on all browsers, but then you may introduce a check in your code like: if (Page.IsPostBack) { if (pageIsExpired()){ Response.Redirect("/Some_error_page.htm"); } else { var now = Now; Session("TimeStamp") = now.ToString(); ViewState("TimeStamp") = now.ToString(); } private boolean pageIsExpired() { if (Session("TimeStamp") == null || ViewState("TimeStamp") == null) return false; if (Session("TimeStamp") == ViewState("TimeStamp")) return true; return false; } That will solve problem to some extend, Code not checked -- only for examples purposes..

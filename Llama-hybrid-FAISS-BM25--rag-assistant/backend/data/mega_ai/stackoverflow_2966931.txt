@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2966931
+[parent_id]: 2966552
+[tags]: 
+Doing UI modifications in a Thread other than Swing's EventDispatchThread is strongly discouraged , as it can and will lead to weird side effects (just as the one you encountered). Immagine the UI is about to repaint itself (and layout stuff) and you just interfer by changing parts of the UI at the same time using another thread. In such a situation chaos is verly likely to ensue. For details see the Java Tutorials Lesson Concurrency in Swing The correct way to deal with this is to have the background thread do any work that is not UI related, and schedule a UI update job in the EventDispatchThread (which will execute the job between handling events). Example: Thread t = new Thread() { public void run () { // do background work SwingUtilities.invokeLater(new Runnable() { public void run () { // update UI parts } }); } }; t.start(); SwingUtilities.invokeLater(Runnnable) will schedule a Runnable for later execution, whereas SwingUtilities.invokeAndWait(Runnnable) will schedule a Runnable and wait until it has been executed.

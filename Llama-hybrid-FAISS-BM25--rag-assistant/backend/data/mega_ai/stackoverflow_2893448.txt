@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2893448
+[parent_id]: 2893132
+[tags]: 
+Degan. I created a table to store the values to pass to the query. It just doesn't seem right. You don't have to create an actual table. You can use a Table Valued Function and use that in your query e.g. as below. (DATEPART(dw, ThisDate) IN (SELECT [item] FROM dbo.fnSplit(@TheseDays, ','))) This uses the TVF from http://www.eggheadcafe.com/community/aspnet/13/10021854/fnsplit.aspx ). CREATE FUNCTION dbo.fnSplit( @sInputList VARCHAR(8000) -- List of delimited items , @sDelimiter VARCHAR(8000) = ',' -- delimiter that separates items ) RETURNS @List TABLE (item VARCHAR(8000)) BEGIN DECLARE @sItem VARCHAR(8000) WHILE CHARINDEX(@sDelimiter,@sInputList,0) <> 0 BEGIN SELECT @sItem=RTRIM(LTRIM(SUBSTRING(@sInputList,1,CHARINDEX(@sDelimiter,@sInputList,0)-1))), @sInputList=RTRIM(LTRIM(SUBSTRING(@sInputList,CHARINDEX(@sDelimiter,@sInputList,0)+LEN(@sDelimiter),LEN(@sInputList)))) IF LEN(@sItem) > 0 INSERT INTO @List SELECT @sItem END IF LEN(@sInputList) > 0 INSERT INTO @List SELECT @sInputList -- Put the last item in RETURN END GO

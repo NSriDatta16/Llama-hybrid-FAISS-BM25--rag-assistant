@@ -1,0 +1,41 @@
+A cutter location (CLData) refers to the position which a CNC milling machine has been instructed to hold a milling cutter by the instructions in the program (typically G-code).
+
+Each line of motion controlling G-code consists of two parts: the type of motion from the last cutter location to the next cutter location (e.g. "G01" means linear, "G02" means circular), and the next cutter location itself (the cartesian point (20, 1.3, 4.409) in this example). "G01 X20Y1.3Z4.409"
+
+The fundamental basis for creating the cutter paths suitable for CNC milling are functions that can find valid cutter locations, and stringing them together in a series.
+
+There are two broad and conflicting approaches to the problem of generating valid cutter locations, given a CAD model and a tool definition: calculation by offsets, and calculation against triangles. Each is discussed in a later section of this article.
+
+The most common example of the general cutter location problem is cutter radius compensation (CRC), in which an endmill (whether square end, ball end, or bull end) must be offset to compensate for its radius.
+
+Since the 1950s, CRC calculations finding tangency points on the fly have been done automatically within CNC controls, following the instructions of G-codes such as G40, G41, and G42. The chief inputs have been the radius offset values stored in the offset registers (typically called via address D) and the left/right climb/conventional distinction called via G41 or G42 (respectively). With the advent of CAM software, which added a software-aided option to complement the older manual-programming environment, much of the CRC calculations could be moved to the CAM side, and various modes could be offered for how to handle CRC.
+
+Although 2-axis or 2.5-axis CRC problems (such as calculating toolpaths for a simple profile in the XY plane) are quite simple in terms of computational power, it is in the 3-, 4-, and 5-axis situations of contouring 3D objects with a ball-endmill that CRC becomes rather complex. This is where CAM becomes especially vital and far outshines manual programming. Typically the CAM vector output is postprocessed into G-code by a postprocessor program that is tailored to the particular CNC control model. Some late-model CNC controls accept the vector output directly, and do the translation to servo inputs themselves, internally.
+
+By offsets 
+
+Start with a UV parametric point in a freeform surface, calculate the xyz point and the normal, and offset from the point along the normal in a way consistent with the tool definition so that the cutter is now tangent to the surface at that point.
+
+Problems: may collide or gouge with the model elsewhere, and there is no way to tell this is happening except with a full implementation of the triangulated approach.
+
+Most published academics believe this is the way to find cutter locations, and that the problem of collisions away from the point of contact is soluble.  However, nothing printed so far comes close to handling real world cases.
+
+Against triangles 
+
+Start with the XY component for a cutter location and loop across every triangle in the model.  For each triangle which crosses under the circular shadow of the cutter, calculate the Z value of the cutter location required for it to exactly touch the triangle, and find the maximum of all such values. Hwang et al. describe this approach in 1998, for cylindrical, ball-end, and bull-end milling tools. These ideas are further developed in a 2002 paper by Chuang et al. In a paper from 2004 Yau et al. describe an algorithm for locating an APT-cutter against triangles. Yau et al. use a kd-tree for finding overlapping triangles.
+
+Problems: requires a lot of memory to hold enough triangles to register the model at a tight enough tolerance, and it takes longer to program to get your initial cutter location values.  However, they are at least guaranteed valid in all cases.
+
+This is how all major CAM systems do it these days because it works without failing no matter what the complexity and geometry of the model, and can be made fast later.  Reliability is far more important than efficiency.
+
+The above refers to 3-axis machines.  5-axis machines need a special entry of their own.
+
+ZMap 
+The ZMap algorithm was proposed in the academic literature by Byoung K Choi in 2003 as a way of precalculating and storing a regular array of cutter location values in the computer memory.  The result is a model of the height map of cutter positions from which in between values can be interpolated.
+
+Due to accuracy issues, this was generalized into an Extended ZMap, or EZMap, by the placement of "floating" points in between the fixed ZMap points.  The location of the EZMap points are found iteratively when the ZMap is created.  EZMap points are only placed where sharp edges occur between the normal ZMap points; a completely flat source geometry will not require any EZMap points.
+
+References 
+
+Computer-aided engineering
+Numerical control

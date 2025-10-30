@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4819350
+[parent_id]: 
+[tags]: 
+Can I static_assert without providing a real template parameter?
+
+template class MyClass { ...... private: union u_ { struct m_ { int i1; int i2; int i3; } m; char data[SIZE]; // convenience buffer for serialization/deserialization; } u; T container; ...... }; To be able to serialize / deserialize an object of MyClass, I use a union to combine my data fields and use the data buffer to do it wholesale. I want to make sure that data is big enough for the collection of data members in case someone expand them in the future, so I added this static assert. static_assert(sizeof(MyClass ::u_::data) >= sizeof(MyClass ::u_::m_)); There are two problems with this approach. First, the compiler complains that the union is not public. Secondly this should hold true for any container type T, so I don't want to be specific, but giving int as a dummy type won't work, but I don't want to introduce another type just for the sake of static assert, is there a way to use a dummy type here? Is there a more elegant solution? EDIT : James, thanks for bringing up portability issues. Endianness and alignment are legit concerns, but in my case, serialization/deserialization happens locally, so it's OK.

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 582641
+[parent_id]: 582625
+[tags]: 
+You could give a dev package I wrote up a shot. It just wraps LightGBM (boosted trees) with some time series functionality such as fourier basis functions, 'custom' linear basis functions, and ar components. Here is a quick example: from sklearn.datasets import fetch_openml import matplotlib.pyplot as plt import seaborn as sns sns.set_style('darkgrid') bike_sharing = fetch_openml("Bike_Sharing_Demand", version=2, as_frame=True) y = bike_sharing.frame['count'] y = y[-800:].values y_class = y > 70 y_class = y_class * 1 from LazyProphet import LazyProphet as lp lp_model = lp.LazyProphet(seasonal_period=[24], n_basis=10, objective='classification', fourier_order=5, decay=.99, ar=3, return_proba=True) fitted = lp_model.fit(y_class) predicted_class = lp_model.predict(100) plt.plot(y_class) plt.plot(np.append(fitted, predicted_class), alpha=.5) plt.axvline(800) plt.show() You can pass your own params such as the objective and all that through the 'boosting_params' argument. And here is a multivariate example . It may be wonky so just let me know if there are issues.

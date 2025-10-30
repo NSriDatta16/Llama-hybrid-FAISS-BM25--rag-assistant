@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 345205
+[parent_id]: 
+[tags]: 
+Get rotation of noisy rectangular 2d point cloud with pca
+
+I have a set of point clouds in nd space. The clouds tend to be rectangular in nature in 2d space but can easily have outliers or look slighly L shaped. I would like to rotate the point clouds so that they line up with the x and y axis. My first thought was to use PCA to find the vectors and rotate accordingly. import numpy as np import matplotlib.pyplot as plt from sklearn.decomposition import PCA def normalize(d): d -= np.min(d, axis=0) d /= np.ptp(d, axis=0) return d def correct(some_pointcloud_data): a = normalize(np.copy(some_pointcloud_data)) pca = PCA(n_components=2).fit(a[:, :2]) theta = pca.components_[0,0] c, s = np.arccos(theta), np.arcsin(theta) rot = np.array([[c, -s], [s, c])) a[:, :2] = normalize(np.matmul(a[:, :2], rot)) return a This doesn't work though for an obvious reason: the principle components of a (mostly) rectangular point cloud are in the direction of its corners, not its sides. My next guess is that I need to use this found theta and some multiple of np.pi to rotate the point cloud but this is the part I am stumped on.

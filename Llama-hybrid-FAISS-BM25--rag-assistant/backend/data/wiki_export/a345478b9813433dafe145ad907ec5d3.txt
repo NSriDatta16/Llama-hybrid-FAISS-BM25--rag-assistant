@@ -1,0 +1,54 @@
+The B protocol, or CIS B, is a file transfer protocol developed for the CompuServe Information Service, and implemented in 1981. The protocol was later expanded in the QuickB version (which was an asynchronous version of the standard protocol) and later the enhanced B Plus version. It was a fairly advanced protocol for its era, supporting efficient transfers of files, commands and other data as well, and could be used in both directions at the same time in certain modes. These advanced features were not widely used, but could be found in a small number of client-side packages.
+
+Since B protocol was designed only to work within the CompuServe, most third-party communications clients of the day were not compatible with it. Notable exceptions were Tera Term and Datastorm's ProComm Plus on the PC which featured the ability to listen for the  command on the active communications port, and ZTerm on the Mac which allowed auto-starting transfers. This development was part of a wider trend of using external communications applications in conjunction with online services.
+
+Description
+The original version of the B Protocol was an outgrowth of an earlier bi-directional protocol introduced in 1979, adding options for including a standardized command structure in the stream. This protocol was intended for use by a custom online terminal built by Tandy, the "AgVision" or "VideoTex", but this project was abandoned after being sold for only a brief period. The AgVision system, with the modem removed, became the basis of the TRS-80 Color Computer.
+
+The protocol was later expanded in the B Plus version, although there were two revisions of this version. B Plus focussed the overall concept primarily on supporting downloads from CompuServe, as opposed to user-to-user transfers. The following description is based on the B Plus documentation and does not explicitly refer to the earlier (and rare) B.
+
+Packet structure
+B Plus is a sliding window protocol with variable-sized packets between 128 and 2048 bytes and windows of one or two packets. The addition of the 1k and 2k block sizes and sliding windows were the primary changes in structure between B and B Plus. All potential problematic control characters were always quoted, a requirement because many people accessed CompuServe over non-8-bit-clean packet services such as Tymnet. B Plus also used any one of four types of error checking.
+
+The basic packet structure consisted of five parts:
+
+The lead-in serves the same purpose as the "header" in most protocols, indicating that the data following is a B Plus packet. The sequence number is a simple way of making sure packets are received in the correct order on reception. The small number range used does not present a problem because packets even "one out of order" will trigger a re-send or abort, so there is no possibility of the "wrong 0x30" being received, ten packets later.
+
+Characters in the Body or Trailer are "quoted". Officially only a few characters are quoted, , , ,  (XON),  (XOFF) and . Typically three other characters are quoted as well, ,  + 0x80 and  + 0x80. Characters are quoted by adding 0x40 to their ordinal value, and prefixing them with the  character. For instance, the  character (0x03) would be sent as .
+
+The Check Value was quoted, as were the contents it checked against, but the value inside was the check of the unquoted values. That means that Body had to be extracted and unquoted before the Check Value could be calculated on the receiving end. Four types of Check Values were allowed, the original XMODEM checksum, a slightly modified version of the cyclic redundancy check (CRC) used in XMODEM-CRC, or the CCITT CRC-16 or CRC-32. When using the CCITT CRC, the Trailer also included an optional  character at the end as a "network break" (send now), although it is not clear why this was not supported with other Trailer types.
+
+Packet types 
+B Plus defined several different packet types, as opposed to most protocols which included only one. These packets were used both for data transfer as well as secure delivery of commands and protocol setup information. The four types were:
+
+The most common packets, in terms of overall number transferred, are T packets carrying the data for a file transfer. These packets have no further semantic value and are formatted as described above. The T packets also include "subtypes", Tr for "transfer resume", TF for "transfer failure" if the resume did not match the partially downloaded file, and TI for "transfer information", which sent details on the file being transferred. Most protocols would send file information as a special "zeroth packet" in the transfer stream itself, whereas in B Plus this was handled by a separate packet type and effectively out of the transfer stream itself, although there was no real difference in practice. 
+
+The Failure packet allows the sender to indicate various problems inside the packet stream. The packet normally contains a single "known" character, but can also include an informational message following this character. The most common Failure packet is the , allowing the user to terminate transfers on request. Other failures included  failure (out of disk space) and  file, among others.
+
+The Transport Parameters was sent typically only once, during the initial connection phase. This packet contained a number of details in a known format that synchronized what features both ends of the connection were capable of using. It was during this phase that the type of Check Value was selected, for instance.
+
+Transport Layer 
+
+In addition to the normal packet types outlined above, B Plus also included separate types for sending commands to CIS via the B Plus error-corrected layer. The M packet was a single data packet, while L was also a data packet but indicated that the stream of data was now complete. This had to be indicated in this fashion because, unlike a file transfer, the amount of data being sent would not be known in advance.
+
+The contents of these packets were free-form and were not defined in the B Plus documentation itself. However the basic concept was that the user's terminal program would respond to CIS's Interrogation Sequence (sent when the user first logged in) by starting a transfer with the M type. This stream would be used to send commands to the CIS host, which would respond by opening another transport layer stream back to the terminal program. These streams were "sequenceless", and read out in the order they were received. Errors or Failure packets caused both channels to abort.
+
+Possibly the only user of the Transport Layer was CompuServe's own Host-Micro Interface (HMI) API. HMI defined a number of commands that could be used to drive CIS, along with the possible responses to them, bypassing the command line interface. Since error correction was being used as a side effect of being built on B Plus, the possibility of incorrectly interpreting the commands or potentially garbled responses was basically eliminated. CIS expanded HMI to allow control of most of the batch-oriented interface, including functions for e-mail, conferences and file transfers.
+
+Transport Layer streams could not take place at the same time as file transfers, so in general terms the applications using the Transport Layer were fairly modal. For instance, CIS Navigator for the Mac, which was HMI based, allowed users to navigate CIS offline, setting up various e-mail and file transfers which would then be carried out in a single batch in order to reduce online time. The last step of the Navigator "run" would be to download files before logging off.
+
+Control sequences 
+All protocols use the "backchannel" to send status information from the "receiver" back to the "sender". B Plus formalized this system, defining several "messages" that could be sent outside the packet structure. These included the typical  followed by a sequence number in order to acknowledge the correct reception of a packet.  was used to indicate an improperly received packet, which was responded to with acknowledge messages, .  paused the sender, while  aborted the stream.
+
+The Enquire control sequence appears unique to B Plus. Consisting of a single , the Enquire was used both to start transfers as well as restart after receiving a . In both cases the Enquire caused the receiver to reset its connection mode to the most basic possible transfer settings, and prepare for a transfer.
+
+See also
+ VIDTEX
+
+References
+Russ Ranshaw, "The CompuServe B Plus Protocol", 18 November 1993
+A zip-compressed version of this document is available as bplus.zip.
+ 
+
+CompuServe
+BBS file transfer protocols

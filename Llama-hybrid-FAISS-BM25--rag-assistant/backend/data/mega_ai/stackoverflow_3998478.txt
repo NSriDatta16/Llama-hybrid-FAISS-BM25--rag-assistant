@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3998478
+[parent_id]: 3998237
+[tags]: 
+The Façade Design Pattern should help you here. Here's an example. Façade Pattern (wikipedia) ; Façade Design Pattern (Gang of Four) . An "intelligent" façade knows what method needs to connect where, etc. The façade opens the connection and pass it to an underlying piece of code, generally contained in a factory class or something alike. public class DoSomethingFacade { private static readonly DoSomethingFactory _doSomethingFactory = new DoSomethingFactory(); public static IList GetList () { using(IDbConnection connection = OpenConnection("string...")) return _doSomethingFactory.GetList (connection); } public static IDbConnection OpenConnection(string connectionString) { IDbConnection openedConnection = new SqlConnection(connectionString); openedConnection.Open(); return openedConnection; } } internal class DoSomethingFactory { internal DoSomethingFactory() { } internal IList GetList (IDbConnection connection) { IList results = new List (); // use connection here without caring about it, // as it should be provided as an opened available connection. return results; } }

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4147582
+[parent_id]: 
+[tags]: 
+JSON.NET writing invalid JSON?
+
+It appears that JSON.NET is writing invalid JSON, although I wouldn't be surprised if it was due to my misuse. It appears that it is repeating the last few characters of JSON: /* ... */ "Teaser":"\nfoo.\n","Title":"bar","ImageSrc":null,"Nid":44462,"Vid":17}]}4462,"Vid":17}]} The repeating string is: 4462,"Vid":17}]} I printed it out to the console, so I don't think this is a bug in Visual Studio's text visualizer. The serialization code: static IDictionary > _sectionStories; private static void writeToFile() { IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication(); using (IsolatedStorageFileStream stream = storage.OpenFile(STORIES_FILE, FileMode.OpenOrCreate)) { using (StreamWriter writer = new StreamWriter(stream)) { writer.Write(JsonConvert.SerializeObject(_sectionStories)); } } #if DEBUG StreamReader reader = new StreamReader(storage.OpenFile(STORIES_FILE, FileMode.Open)); string contents = reader.ReadToEnd(); JObject data = JObject.Parse(contents); string result = ""; foreach (char c in contents.Skip(contents.Length - 20)) { result += c; } Debug.WriteLine(result); // crashes here with ArgumentException // perhaps because JSON is invalid? var foo = JsonConvert.DeserializeObject >>(contents); #endif } Am I doing something wrong here? Or is this a bug? Are there any known workarounds? Curiously, JObject.Parse() doesn't throw any errors. I'm building a Silverlight app for Windows Phone 7.

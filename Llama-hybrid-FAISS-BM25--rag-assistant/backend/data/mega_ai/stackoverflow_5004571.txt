@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5004571
+[parent_id]: 5004088
+[tags]: 
+It's fine to add virtual functions to templates- just the functions themselves cannot be templates. A templated class or struct can still have virtual functions just fine. You need to use the magic of dynamic_cast. class Element { struct ValueStorageBase { virtual ~ValueStorageBase() {} }; template struct ValueStorage: public ValueStorageBase { Datatype Value; ValueStorage(Datatype InitialValue) { Value = InitialValue; } }; ValueStorageBase* StoredValue; public: template Element(Datatype InitialValue) { StoredValue = new ValueStorage (InitialValue); } template Datatype Get() { if(ValueStorage * ptr = dynamic_cast *>(StoredValue)) { return ptr->Value; else throw std::runtime_error("Incorrect type!"); // Error: "struct Element::ValueStorageBase" has no member named "Value." } }; If you change Get to return a Datatype* you can return NULL instead of throwing. You also haven't handled the memory of the previous value of StoredValue , but I'm leaving that up to you.

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 471072
+[parent_id]: 471056
+[tags]: 
+The effect of g is relatively small compared to the error of N(3,1). So it will be really hard to estimate what goes into the intercept and what goes into g . I re-ran it with beta_1 = np.array([2, 1, -1, -1]) err = np.random.normal(0, 1, N) And maybe got somewhere closer to what was the actual estimate. Regarding why the coefficients are off, I saw in the code: pca = PCA(n_components=3) pca.fit(X) diag = pca.transform(X) X_pca = np.c_[g, diag] All the covariates are PCA transformed and the first 3 is taken and combined with the covariate g again. This means you are putting back g together with PCs that are linear combinations of g: pca = PCA(n_components=3) pca.fit(X) diag = pca.transform(X) X_pca = np.c_[g, diag] np.round(np.corrcoef(X_pca.T),3) array([[ 1. , -0.099, 0.955, -0.25 ], [-0.099, 1. , -0. , -0. ], [ 0.955, -0. , 1. , -0. ], [-0.25 , -0. , -0. , 1. ]]) You can see g and first 2 PCs are correlated which defeats the purpose. Maybe try something like: pca = PCA(n_components=3) pca.fit(X) diag = pca.transform(X[:,1:]) X_pca = np.c_[g, diag]

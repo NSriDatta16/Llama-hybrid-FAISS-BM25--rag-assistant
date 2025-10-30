@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5481741
+[parent_id]: 5481671
+[tags]: 
+It's usually a performance thing. You should avoid, as much as possible, per-row functions since they slow down your queries. That means things like uppercase(name) , salary * 1.1 and so on. It also includes rand() . It may not be an immediate problem (at 10,000 rows) but, if you ever want your database to scale, you should keep it in mind. The two main issues are the fact that you're performing a per-row function and then having to do a full sort on the output before selecting the first row. The DBMS cannot use an index if you sort on a random value. But, if you need to do it (and I'm not making judgement calls there), then you need to do it. Pragmatism often overcomes dogmatism in the real world :-) A possibility, if performance ever becomes an issue, is to get a count of the records with something like: select count(*) from ... then choose a random value on the client side and use a: limit , clause in another select, adjusting for the syntax used by your particular DBMS. This should remove the sorting issue and the transmission of unneeded data across the wire.

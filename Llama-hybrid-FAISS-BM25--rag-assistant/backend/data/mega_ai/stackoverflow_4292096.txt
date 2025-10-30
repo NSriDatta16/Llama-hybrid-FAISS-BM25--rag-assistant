@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4292096
+[parent_id]: 4291938
+[tags]: 
+Look up MSDN for SetWindowsHookEx. It should be your entrance in Windows hooks. If you ar etargetting a parituclar window for mthe system then a less intrusive option is SetWindowLongPtr. For the first API you are going to need some Dll injection - which gets automatically for you by the system. Just follow these steps: Create a Dll that exports a HOOKPROC function (actual type dependent upon the hook tpe - read in the docs) Load that Dll in your application and retrieve a pointer to the HOOKPROC function. LoadLibrary / GetProcAddress APIs may be used for this. From your application, make a call to SetWindowsHookEx feeding in the appropriate parameters - this will inject the dll in the target process. So, the dll is now loaded into both your app's process and in the target process. So you will need a mechanism to IPC between the two processes probably. Lots of ways here - sockets, pipes, shared segment in DLL, filesystem, windows messages, COM servers + events, etc etc. The former API, while less powerful, does not require DLL injection. Choose wisely & good luck!

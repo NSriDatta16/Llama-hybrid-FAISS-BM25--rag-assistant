@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 53448
+[parent_id]: 38057
+[tags]: 
+I think it's a wise decision made by the Hibernate team. They could be less arrogante and make it clear why it was implemented this way, but that's just how Emmanuel, Chris and Gavin works. :) Let's try to understand the problem. I think your concepts are "lying". First you say that many Problem s are associated to People . But, then you say that one Person have many UglyProblem s (and does not relate to other Problem s). Something is wrong with that design. Imagine how it's going to be mapped to the database. You have a single table inheritance, so: _____________ |__PROBLEMS__| |__PEOPLE__| |id | | | |person | -------->| | |problemType | |_________ | -------------- How is hibernate going to enforce the database to make Problem only relate to People if its problemType is equal UP? That's a very difficult problem to solve. So, if you want this kind of relation, every subclass must be in it's own table. That's what @MappedSuperclass does. PS.: Sorry for the ugly drawing :D

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1350894
+[parent_id]: 1350630
+[tags]: 
+Why don't you look in the sources how vector does that? You can see the implementation of this mechanism right in the folder your C++ include files reside! Here's what it does on gcc 4.3.2: Allocate a new contiguous chunk of memory with use of the vector's allocator (you remember that vector is vector ?). The default allocator calls operator new() (not just new !) to allocate this chunk, letting himself thereby not to mess with new[] / delete[] stuff; Copy the contents of the existing array to the newly allocated one; Dispose previously aligned chunk with the allocator; the default one uses operator delete() . (Note, that if you're going to write your own vector, your size should increase "M times", not "by fixed amount". This will let you achieve amortized constant time. For example, if, upon each excession of the size limit, your vector grows twice, each element will be copied on average once.)

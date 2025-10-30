@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1636770
+[parent_id]: 1636760
+[tags]: 
+In g = "ab"; you make g point to a chunk located in static storage, not on heap, then in g = (char*) realloc (g, sizeof(char) * 200); you try to call realloc() with that address belonging outside the heap. This is undefined behaviour and crashes your program. You can call realloc() only with addresses returned by malloc() or realloc() (or null pointer). The problem is that you meant this: strcpy( g, "ab" ); but mistakenly wrote this: g = "ab"; The former would work allright - g is initially set to an address returned by malloc() . There's one more problem - you allocate too little memory initially. You should allocate an extra byte for the null terminator.

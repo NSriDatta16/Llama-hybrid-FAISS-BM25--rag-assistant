@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3127137
+[parent_id]: 3127069
+[tags]: 
+Perhaps you are looking for this Child = Class.new Parent do def foo "foo" end end Child.ancestors # => [Child, Parent, Object, Kernel] Child.new.bar # => "bar" Child.new.foo # => "foo" Since parent is an argument to Class.new, you can swap it out with other classes. I've used this technique before when writing certain kinds of tests. But I have difficulty thinking of many good excuses to do such a thing. I suspect what you really want is a module. class Agent def self.hook_up(calling_class, desired_parent_class) calling_class.send :include , desired_parent_class end end module Parent def bar "bar" end end class Child def foo "foo" end Agent.hook_up(self, Parent) end Child.ancestors # => [Child, Parent, Object, Kernel] Child.new.bar # => "bar" Child.new.foo # => "foo" Though, of course, there is no need for the Agent at all module Parent def bar "bar" end end class Child def foo "foo" end include Parent end Child.ancestors # => [Child, Parent, Object, Kernel] Child.new.bar # => "bar" Child.new.foo # => "foo"

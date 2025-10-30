@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5492397
+[parent_id]: 5491452
+[tags]: 
+Well, I've come up with this (that works), but I'm hoping someone else has a more elegant solution. This does exactly what I need it to do, and while debugging thru Django, I don't see any other way to do this at all. The instance parameter is merged with initial data before it is used, so that proved to be a fruitless way to "fix" this. class MyForm(forms.ModelForm): """ Demonstrates using the default values from the data model so that form.is_valid() will return True if the form has sufficient data (useful when using a form object with an api.""" class Meta: model = MyModel exclude = ('status', 'uuid', 'submitted_on', 'completed_on', 'last_attempt', 'failure_reason') def __init__(self, data=None, files=None, *args, **kwargs): """ Grab the default values from the model and add them to the form so it will validate """ if data: for field in self.Meta.model._meta.fields: if (field.default != NOT_PROVIDED and field.name not in self.Meta.exclude and field.name not in data: data[field.name] = field.default super(MyForm, self).__init__(data, files, *args, **kwargs)

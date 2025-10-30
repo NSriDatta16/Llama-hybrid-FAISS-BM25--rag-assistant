@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 966517
+[parent_id]: 965075
+[tags]: 
+thanks for your answer. The "No collection snapshot.." exception is thrown even if I create a new Order, add new OrderLines to the collection and call SaveOrUpdate for the Order object. It doesn't even require a flush or commit to throw the exception. It's in the SaveOrUpdate invocation. It doesn't have to do with unique constraint for the OrderLine.Number. Anyway, the solution I've come up with is: Map the OrderLines bag with cascade="all-delete-orphan" (leveraging the OrderLines saves/updates/deletes) Remove the unique constraint for OrderLine.Number in the database. Use an assertion in the SaveOrUpdate method of my OrderRepository class (i'm using SharpArchitecture) to make sure that I'll never save an order that has two or more orderlines with the same number. I don't like this solution..but it works for now. I'd like to hear some more thoughts about this, and how people often solve this problem with NHibernate (Order with OrderLines and the bag mapped with cascade="all-delete-orphan")

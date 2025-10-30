@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4356479
+[parent_id]: 4065295
+[tags]: 
+Just for the sake of completeness, even though previous answers already show good enough suggestions. You can utilize Paperclip event handlers instead of Rails callbacks. In this case, size will be recalculated only when image changes. (If you're using S3 for storage, this can save quite some time) has_attached_file :image, :styles => ... after_post_process :save_image_dimensions def save_image_dimensions geo = Paperclip::Geometry.from_file(image.queued_for_write[:original]) self.image_width = geo.width self.image_height = geo.height end Image don't even have to be downloaded from S3 (or read from a file), paperclip provides it to event handler itself. See Events section of the readme for details.

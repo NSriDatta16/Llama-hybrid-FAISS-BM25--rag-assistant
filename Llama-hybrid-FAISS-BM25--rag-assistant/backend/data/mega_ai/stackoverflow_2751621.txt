@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2751621
+[parent_id]: 
+[tags]: 
+How can I make a Maybe-Transformer MaybeT into an instance of MonadWriter?
+
+I am trying to build a MaybeT-Transformer Monad, based on the example in the Real World Haskell , Chapter Monad Transformers : data MaybeT m a = MaybeT { runMT :: m (Maybe a) } instance (Monad m) => Monad (MaybeT m) where m >>= f = MaybeT $ do a runMT (f x) Nothing -> return Nothing return a = MaybeT $ return (Just a) instance MonadTrans MaybeT where lift m = MaybeT $ do a This works fine, but now I want to make MaybeT an instance of MonadWriter: instance (MonadWriter w m) => MonadWriter w (MaybeT m) where tell = lift . tell listen m = MaybeT $ do unwrapped The tell is ok, but I can't get the listen function right. The best I could come up with after 1 1/2 days of constructor origami is the one you see above: unwrapped is supposed to be a tuple of (Maybe a, w), and that I want to wrap up in a Maybe-Type and put the whole thing in an empty MonadWriter. But the compiler complains with: Occurs check: cannot construct the infinite type: a = Maybe a When generalising the type(s) for `listen' In the instance declaration for `MonadWriter w (MaybeT m)' What am I missing?

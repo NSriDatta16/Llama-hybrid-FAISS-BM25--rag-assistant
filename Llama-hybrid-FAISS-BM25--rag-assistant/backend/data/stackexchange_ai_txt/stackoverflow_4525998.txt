@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4525998
+[parent_id]: 4525402
+[tags]: 
+In the implementation you've provided, you haven't got a way to release the managed object context before the thread disappears, because its lifetime is dictated by the thread dictionary, and that object's lifetime is handled by Foundation, not by you. If you want to manage the objects' lifetimes, you need to manage their storage. That means moving away from using -threadDictionary . One option is to implement your background work as NSOperation subclasses and keep the managed object contexts around for the lifetime of the operations, but that's likely a big change from what you currently have.

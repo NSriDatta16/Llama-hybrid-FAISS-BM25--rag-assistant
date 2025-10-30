@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2685787
+[parent_id]: 2685723
+[tags]: 
+Using ViewData , although possible, is not the most elegant way to pass information from controller to view. Using specific view model instead makes code easier and cleaner, and resolves casting issues. Try defining model first: public class ViewModelElement { public string Fname { get; set; } public string LName { get; set; } } public class ViewModel { public List Elements { get; set; }; } Then use your model in action: public ActionResult ActionName() { //get doc somehow var model = new ViewModel(); //When querying by linq to xml, you can create ViewModelElement instead of anonymous class model.Elements = (from x in doc.Descendants("person") select new ViewModelElement { Fname=x.Element("fname").Value, Lname=x.Element("lname").Value }).ToList(); return View(model); } Then use your model in view: View has to inherit from System.Web.Mvc.ViewPage .

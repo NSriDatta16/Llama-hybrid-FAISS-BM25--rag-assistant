@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3558714
+[parent_id]: 3551603
+[tags]: 
+Thanks for all the suggestions. This is the "Delay" solution I came up with last night. It feels like using a steam roller to crack a peanut but I couldn't find a more 'elegant' answer to this particular problem. I am spinning off a new worker thread that invokes a method called "AddDelay". This method will put the worker thread to sleep for some interval of time. My main (UI) thread loops on the Thread.IsAlive condition while allowing the application to receive OS messages if the thread has not completed. This seems to do the trick. private void Delay() { DelayTimer dt = new DelayTimer(1); Thread thread = new Thread(new ThreadStart(dt.AddDelay)); thread.Start(); while (thread.IsAlive) { Application.DoEvents(); } } public class DelayTimer { private int _seconds; public DelayTimer(int time) { _seconds = time; } public void AddDelay() { Thread.Sleep(_seconds*1000); } }

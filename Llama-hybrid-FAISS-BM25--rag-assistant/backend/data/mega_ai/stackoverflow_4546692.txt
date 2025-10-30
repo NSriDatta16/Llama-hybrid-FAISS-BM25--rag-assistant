@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4546692
+[parent_id]: 4546425
+[tags]: 
+It has to be an assembly, there's no other way to build code with a managed type like that. Mixing managed and native code in one assembly is fine. Which automatically solves the problem, the function will be available in the metadata, no need to export it. You need to drop all the decoration, it cannot be applied to a managed method. And it should be in a ref class to allow other managed languages to use it. public ref class Mumble { public: static System::Collections::Generic::List ^ InitSystem(); }; A C# program now can use var lst = Mumble.InitSystem(). Using a namespace is recommended. Watch out for /clr btw, it will readily convert native code to IL without complaint. Either turn off /clr on a source code file or use #pragma managed.

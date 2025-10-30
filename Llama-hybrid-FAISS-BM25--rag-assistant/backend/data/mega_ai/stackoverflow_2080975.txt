@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2080975
+[parent_id]: 2079750
+[tags]: 
+I would suggest the following methotology: template class MyExample { private: vector > data; public: shared_ptr get(int idx) const { return data[idx]; } shared_ptr get(int idx) { return data[idx]; } void add(shared_ptr value) { data.push_back(value); } }; This ensures const-correctness. Like you see the add() method does not use but because you intend the class to store Ts not const Ts. But when accessing it const, you return which is no problem since shared_ptr can easily be converted to shared_ptr . And sice both get() methods return copies of the shared_ptr's in your internal storage the caller can not accidentally change the object your internal pointers point to. This is all comparable to the non-smart pointer variant: template class MyExamplePtr { private: vector data; public: const T *get(int idx) const { return data[idx]; } T *get(int idx) { return data[idx]; } void add(T *value) { data.push_back(value); } };

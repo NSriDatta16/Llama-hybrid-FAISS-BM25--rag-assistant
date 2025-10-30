@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2959865
+[parent_id]: 
+[tags]: 
+Disassembler that tracks what value is where
+
+So lately I've been looking at the disassembly of my C++ code, and having to manually track what's in each register, like this: 95: 48 8b 16 mov (%rsi),%rdx ; %rdx = raggedCross.sink 98: 48 8b 42 38 mov 0x38(%rdx),%rax ; %rax = sink.table 9c: 8b 4a 10 mov 0x10(%rdx),%ecx ; %ecx = sink.baseCol 9f: 48 8b 70 50 mov 0x50(%rax),%rsi ; %rsi = table.starts a3: 89 c8 mov %ecx,%eax ; %eax = baseCol a5: 83 c1 1c add $0x1c,%ecx ; %ecx = baseCol + 1 And so on. The comments are mine, added by hand, from looking up the offset of various fields (e.g. sink, table, baseCol, starts) in the C++ classes. It's straight forward to do, but tedius and time consuming: the perfect thing for a program to be doing. gdb seems to know the offset of various fields within a struct: I can do &((Table *)0x1200)->starts and it tells the the right address. So, this information is around. Is there some disassembler that can use this info to annotate the code for me? Failing that, I could write my own. Where does gdb get the offsets?

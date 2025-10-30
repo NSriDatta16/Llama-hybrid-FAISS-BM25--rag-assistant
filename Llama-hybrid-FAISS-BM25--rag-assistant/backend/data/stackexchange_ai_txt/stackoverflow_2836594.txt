@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2836594
+[parent_id]: 2836364
+[tags]: 
+What you could do for a "quick win" is this: leave the primary key as it is (benefit: you don't need to change the referential integrity constraints) but make your GUID primary key a non-clustered primary key put the clustering key on a separate field - use something that's already available, if there is a useful field - or if not, use an INT IDENTITY field The performance improvement you'd get from having a good clustering key can be very significant! Not just a few percent - several orders of magnitude. Read here why GUIDs as Primary Key (actually: as clustering key) are a horribly bad choice, and read here The Clustered Index Debate - Again! what a good clustering key should be like - ideally: narrow (as few bytes as possible) static (never changes) unique (otherwise SQL Server will need to "uniquify" your entries by adding 4 bytes to them) ever-increasing (to avoid expensive page splits and reduce index/page fragmentation) INT IDENTITY is an ideal candidate.

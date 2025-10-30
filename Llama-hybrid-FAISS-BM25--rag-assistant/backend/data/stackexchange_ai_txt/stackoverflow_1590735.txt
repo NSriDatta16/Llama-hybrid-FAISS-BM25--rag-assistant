@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1590735
+[parent_id]: 1590372
+[tags]: 
+Right, vary headers is not the correct solution, it's used when you want to cache based on client request headers like user-agent etc. You'll need to use low-level API or template fragment caching . It depends on your views really. With low-level API it looks something like this: from django.core.cache import cache def get_user(request): user_id = request.GET.get("user_id") user = cache.get("user_id_%s"%user_id) if user is None: user = User.objects.get(pk=user_id) cache.set("user_id_%s"%user_id, user, 10*60) # 10 minutes ... .. .

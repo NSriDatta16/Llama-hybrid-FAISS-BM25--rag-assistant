@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5009249
+[parent_id]: 5006801
+[tags]: 
+System.Timers.Timer probably isn't working as you expect as it uses windows messages, so it requires a message pump, which you do not have on your threads. Instead, look into System.Threading.Timer. But my main answer is the opposite of Chris Hogan's.. Don't do threading inside objects, but in the main application code, or at least a layer of. So.. you create all your ServerInfo's, which at this point only contain meta data eg machine name. Then you fire up a separate thread using System.Threading.Thread, lock the ArrayList of ServerInfo's, grab a copy of the ArrayList, then iterate through it and call an Update() method on each ServerInfo. You can either fire an event after each Update, or after they all have updated. Don't forget to marshal the call from the event handler of ServerInfo.Updated to the main thread! Otherwise you'll hold up the next update cycle. And it's a requirement if you are to alter UI properties.

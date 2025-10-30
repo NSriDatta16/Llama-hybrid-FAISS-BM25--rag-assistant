@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5206692
+[parent_id]: 4499988
+[tags]: 
+I don't know your situation, but if you run that kind of a script on a live database you can get nasty performance problems while it is running. If some of the indexes are badly fragmented, let's say more than 40-50%, then it becomes a better alternative to rebuild it. But you can of course make that script something like: DECLARE cur_idx CURSOR SELECT OBJECT_NAME(OBJECT_ID) FROM sys.dm_db_index_physical_stats (DB_ID(), NULL, NULL , NULL, N'LIMITED') WHERE avg_fragmentation_in_percent > @your_limit_for_fragmentation OPEN CURSOR cur_idx FETCH NEXT FROM cur_idx INTO @idx_name WHILE @@FETCHSTATUS = 0 BEGIN --create dynamic sql statement END --close cursor and clean up

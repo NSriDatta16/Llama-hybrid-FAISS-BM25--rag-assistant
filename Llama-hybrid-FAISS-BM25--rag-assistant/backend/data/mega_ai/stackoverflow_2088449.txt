@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2088449
+[parent_id]: 2088401
+[tags]: 
+Your code is OK (so long as it only ever handles data generated in the same environment). The structure will be laid out in memory as declared if it is POD. However, in general, there is a gotcha you need to be aware of: the compiler will insert padding into the structure to ensure each member's alignment requirements are obeyed. Had your example been struct xyz { float x; bool y; float z; }; then z would have began 8 bytes into the structure and sizeof(xyz) would have been 12 as float s are (usually) 4 byte aligned. Similarly, in the case struct xyz { float x; bool y; }; sizeof(xyz) == 8, to ensure ((xyz*)ptr)+1 returns a pointer that obeys x's alignment requirements. Since alignment requirements / type sizes may vary between compilers / platforms, such code is not in general portable.

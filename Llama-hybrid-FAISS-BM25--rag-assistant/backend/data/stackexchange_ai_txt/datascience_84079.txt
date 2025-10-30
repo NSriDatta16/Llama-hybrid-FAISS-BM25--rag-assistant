@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 84079
+[parent_id]: 22478
+[tags]: 
+As you say, scale_pos_weight works for two classes (binary classification). weight can be used for three or more classes. The parameter goes into the xgb.DMatrix function and must contain one value for each observation. Example: library(xgboost) data(iris) # We'll predict Species label = as.integer(iris $Species)-1 iris$ Species = NULL # Split the data for training and testing (75/25 split) n = nrow(iris) train.index = sample(n,floor(0.75*n)) # For example, pick a weight of 1.5 for label "0", 1.0 for the other Species weights = sapply(label[train.index], function(x) {ifelse(x == 0, 1.5, 1.0)}) # Train the data using weights xgb.train = xgb.DMatrix(data=as.matrix(iris[train.index,]), label=label[train.index], weight = weights) A similar question can be found here .

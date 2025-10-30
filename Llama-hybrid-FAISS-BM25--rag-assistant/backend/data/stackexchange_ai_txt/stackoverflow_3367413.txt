@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3367413
+[parent_id]: 3366812
+[tags]: 
+I've worked around this problem in the past by using a packet filter. Hand Waving (untested pseudocode) struct bpf_insn my_filter[] = { ... } s = socket(PF_PACKET, SOCK_DGRAM, htons(protocol)); struct sock_fprog pf; pf.filter = my_filter; pf.len = my_filter_len; setsockopt(s, SOL_SOCKET, SO_ATTACH_FILTER, &pf, sizeof(pf)); sll.sll_family = PF_PACKET; sll.sll_protocol = htons(protocol); sll.sll_ifindex = if_nametoindex("eth0"); bind(s, &sll, sizeof(sll)); Error checking and getting the packet filter right is left as an exercise for the reader... Depending on your application, an alternative that may be easier to get working is libpcap .

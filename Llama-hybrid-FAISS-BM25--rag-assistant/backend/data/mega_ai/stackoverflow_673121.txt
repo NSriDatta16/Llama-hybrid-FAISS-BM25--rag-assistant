@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 673121
+[parent_id]: 655838
+[tags]: 
+The XML file will not return a GString since the GString is constructed by the groovy compiler at compile time. When you parse the XML file you get a String, not a compiled Groovy executable. If you really want to embed groovy code inside of an XML document (which is what you are really trying to do here) then you should start by looking at this: Embedding Groovy . Basically, you would read in the SQL and treat it as an embedded groovy script. An alternative (one that I adopted when faced with a similar problem) is to use MessageFormat to substitute values in the XML. def s = ' Some SQL select * from {0} ' And then after using XmlSlurper on the xml you can substitute values in the XML like this: assert java.text.MessageFormat (xml.sql.query.text()).format ('dual') == 'select * from dual'

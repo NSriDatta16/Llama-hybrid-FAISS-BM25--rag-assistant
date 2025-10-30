@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5559525
+[parent_id]: 
+[tags]: 
+would the pointer returned by new(size, value) Type[0] be legal and could it be used to build an array?
+
+The standard says, in 5.3.4[expr.new]/7 When the value of the expression in a direct-new-declarator is zero, the allocation function is called to allocate an array with no elements. and in 3.7.3.1[basic.stc.dynamic.allocation]/2 The effect of dereferencing a pointer returned as a request for zero size is undefined. But if the allocation function is user-defined and it knows it returned a valid pointer, would it still be undefined behavior to dereference it? Can the standard mandate undefined behavior of user code? The reason I ask is yet another meaningless attempt to initialize a dynamic array of objects of non-default-constructible type. What problems does it have, besides the obvious lack of delete[] and that it can only be called with [0] ? Did I even use aligned_storage correctly? #include #include #include #include struct T { int val; T() = delete; T(int i) : val(i) {} void* operator new[](std::size_t, std::size_t cnt, const T& t) { typedef std::aligned_storage ::value>::type buf; T* ptr = reinterpret_cast (new buf[cnt]); std::uninitialized_fill_n(ptr, cnt, t); return ptr; } }; int main() { T* a = new(100, T(7)) T[0]; // using zero is legal per 5.3.4/7 std::cout test run: http://ideone.com/iBW0z also compiles and runs as expected with with MSVC++ 2010 EE

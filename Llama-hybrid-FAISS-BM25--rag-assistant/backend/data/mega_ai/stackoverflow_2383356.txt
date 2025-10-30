@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2383356
+[parent_id]: 2383160
+[tags]: 
+This looks like a bug in the Framework. I may be wrong, because it is really too big to be true. Looking at the source code of .NET 3.5 SP1 with Reflector, one finds the IsolatedStorageFileStream calls the parameterless base constructor (FileStream()), which results in an not-really-initialized base class. IsolatedStorageFileStream creates an instance of a FileStream and uses it in all methods that it overrides (Write, Read, Flush, Seek, etc.). It is strange that it does not take advantage of its base class directly. But Lock and Unlock are not overridden and they need a private field (_handle) that is still null (because the constructor used is the parameterless one). They assume it is non-null and dereference it and cause the NRE. To summarize, Lock and Unlock are not supported (or buggy). I guess you're forced to use other lock methods like a Mutex or Semaphore. The implementation is the same in .NET 4 RC. In Silverlight, Lock an Unlock are not present at all (my apologies for contradicting an MVP).

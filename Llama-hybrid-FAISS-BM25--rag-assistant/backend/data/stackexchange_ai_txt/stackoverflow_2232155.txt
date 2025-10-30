@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2232155
+[parent_id]: 2231495
+[tags]: 
+To get the average you don't need the grand totals for each day, you need multiple daily totals for each day. Day | Count __________________ Monday 5 Tuesday 4 Monday 6 Tuesday 3 ... ... Then you can average those numbers. I.e (5+6)/2 for Monday. Something like this should work: SELECT day_of_week, AVG(order_count) average_order FROM ( SELECT DAYNAME(order_date) day_of_week, DAYOFWEEK(order_date) day_num, TO_DAYS(order_date) date, count(*) order_count FROM data GROUP BY date ) temp GROUP BY day_of_week ORDER BY day_num UPDATE: I was originally wrong. Group the inner SELECT by the actual date to get the correct daily totals. For instance, you need to get how many orders happened Monday (2/1/10) and Monday (2/8/10) separately. Then average those totals by the day of the week.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 142297
+[parent_id]: 141970
+[tags]: 
+The only way I can think of to do what you really want to do is to use Reflection. This would still box/unbox, but it would allow you to store the clone back into the field, effectively making it the real value. public void AcceptChanges() { foreach (FieldInfo field in GetType().GetFields()) { if (!typeof(IColumn).IsAssignableFrom(field.FieldType)) continue; // ignore all non-IColumn fields IColumn col = (IColumn)field.GetValue(this); // Boxes storage -> clone col.AcceptChanges(); // Works on clone field.SetValue(this, col); // Unboxes clone -> storage } }

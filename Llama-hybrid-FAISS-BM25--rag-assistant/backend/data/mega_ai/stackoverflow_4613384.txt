@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4613384
+[parent_id]: 4612492
+[tags]: 
+The JLS 12.4.2 explicitly states in (6) that while the initializer executes, locks are released. So i think you see a valid execution path. You may be better of killing the static initializer and do synchronized lazy initializing in the accessor manually synchronize the static initializer code public synchronized static AppClient getInstance() { synchronized(Client.class) { if (instance == null) { instance = new InnerClient(); doSomethingThatWillCallClientGetInstanceSeveralTimes(); } return instance; } } EDIT Even better - after re-reading this paragraph in the spec, it is even possible to completely remove the synchronization in your original example - the VM will take care of it. EDIT Sorry for misguiding - even more detailed reading should reveal that in (2), the second thread can't acquire the lock (after detecting ongoing initialization, it "waits").

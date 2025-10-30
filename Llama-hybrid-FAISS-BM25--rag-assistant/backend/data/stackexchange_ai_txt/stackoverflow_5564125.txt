@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5564125
+[parent_id]: 5564106
+[tags]: 
+To get raw counts select window_height, count(*) totalusers from tbl group by window_height order by totalusers desc # or by window_height To get the modal average (this will show multiple values if there are ties for the highest count) select window_height, totalusers from ( select @r := if(totalusers>@r,totalusers,@r) maxcount, window_height, totalusers from (select @r:=0) initvars, ( select window_height, count(*) totalusers from tbl group by window_height ) X ) Y where totalusers = @r This uses a MySQL trick of using a variable to store the max count as it goes through the aggregated subquery. Summary of operations O(n): scan table once and build the counts (T1) O(n): scan the derived table T1 and keep the highest count in the variable @r (T2) O(n): scan the derived table T2 and filter only for the heights with the highest count

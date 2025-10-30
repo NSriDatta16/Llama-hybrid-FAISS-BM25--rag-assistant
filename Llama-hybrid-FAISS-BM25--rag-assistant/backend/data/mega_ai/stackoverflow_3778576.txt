@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3778576
+[parent_id]: 3777367
+[tags]: 
+If you're okay with embedding them in your source, you can do that, but if you need it to be dynamically configurable, the datastore is the way to go. You can avoid fetching the settings on every request by caching them in local memory. Here's a helper class for that: class Configuration(db.Model): _INSTANCE = None @classmethod def get_instance(cls): if not cls._INSTANCE: cls._INSTANCE = cls.get_or_insert('config') return cls._INSTANCE Simply subclass this with whatever configuration values you need (or modify the class itself). Because loaded code persists between requests, you'll only have to do a single fetch per app instance - though if you want to be able to update the configuration dynamically, you may want to build in a timeout. If you want to cache stuff for a limited time, your best option is simply storing the timestamp when you fetched it: class Configuration(db.Model): CACHE_TIME = datetime.timedelta(minutes=5) _INSTANCE = None _INSTANCE_AGE = None @classmethod def get_instance(cls): now = datetime.datetime.now() if not cls._INSTANCE or cls._INSTANCE_AGE + cls.CACHE_TIME

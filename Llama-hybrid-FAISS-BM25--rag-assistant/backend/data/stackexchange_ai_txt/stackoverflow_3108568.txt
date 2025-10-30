@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3108568
+[parent_id]: 2589149
+[tags]: 
+90 million rows should be about 90GB, thus your bottleneck is disk. If you need these queries rarely, run them as is. If you need these queries often, you have to split your data and precompute your gouping summing and averaging on the part of your data that doesn't change (or didn't change since last time). For example if you process historical data for the last N years up to and including today, you could process it one month (or week, day) at a time and store the totals and averages somewhere. Then at query time you only need to reprocess period that includes today. Some RDBMS give you some control over when views are updated (at select, at source change, offline), if your complicated grouping summing and averaging is in fact simple enough for the database to understand correctly, it could, in theory, update a few rows in the view at every insert/update/delete in your source tables in reasonable time.

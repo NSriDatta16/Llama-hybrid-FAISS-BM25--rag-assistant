@@ -1,0 +1,30 @@
+Logluv TIFF is an encoding used for storing high-dynamic-range imaging data inside a TIFF image. It was originally developed by Greg Ward for storing HDR-output of his Radiance-photonmapper at a time where storage space was a crucial factor. Its implementation in TIFF also allowed the combination with image-compression algorithms without great programming effort. As such it has to be considered a smart compromise between the imposed limitations. It is slightly related to RGBE, the most successful HDRI storage format, an earlier invention of Greg Ward.
+
+Details 
+Logluv TIFF's design solves two specific problems: storing high-dynamic image data and doing so within a reasonable amount of space. Traditional image format generally stores pixel data in RGB-space occupying 24 bits, with 8 bits for each color component. This limits the representable colors to a subset of all visible and distinguishable colors, introducing quantization and clamping artifacts clearly visible to human observers. Using a triplet of floats to represent RGB would be a viable solution, but it would quadruple the size of the file (occupying 32 bits for each color-component, as opposed to 8 bits).
+
+Instead of using RGB, LogLuv uses the logarithm of the luminance and the CIELUV (u’, v’) chromaticity coordinates in order to provide a perceptually uniform color space. LogLuv allocates 8 bits for each of the u’ and v’ coordinates, which allows encoding the full visible gamut with imperceptible step sizes. In order to provide the required high dynamic range with imperceptible luminance steps, LogLuv uses 16 bits to encode a fixed-point base 2 logarithm of the luminance, which allows an EV range of nearly 128 stops. The space occupied by one pixel is thus 32 bits (L16 + U8 + V8), marginally bigger than a standard 8 bit RGB-image.
+
+Extension 
+In an attempt to prevent the expansion of data-size, Logluv comes in a 24-bit flavour, which in a rather complicated way quantizes lightness to 10 bit and merges U/V into a 14-bit look-up based value.
+
+Usage 
+Logluv TIFF has widespread use in HDRI applications such as IBL, image-based lighting.
+
+Reading and writing of Logluv TIFF images can be handled via LibTIFF. LibTIFF is freely available in both source and various binary packages for different platforms.
+
+Resources 
+ HDRI, by Reinhard et al. has a discussion regarding Logluv Tiff in the 3rd chapter.
+ For those looking for Logluv images, there are numerous example on Greg Ward Larson's page.
+
+See also 
+ Tagged Image File Format
+ RGBE image format
+ JPEG-HDR
+ CIELUV
+
+References 
+
+Raster graphics file formats
+High dynamic range file formats
+Photographic techniques

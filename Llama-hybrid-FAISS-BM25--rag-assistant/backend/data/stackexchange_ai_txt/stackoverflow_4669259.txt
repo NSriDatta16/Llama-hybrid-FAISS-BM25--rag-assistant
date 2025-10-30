@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4669259
+[parent_id]: 4668292
+[tags]: 
+Yes, you can save anything (up to a point) in a file: using (var store = IsolatedStorageFile.GetUserStoreForApplication()) { using (var isfs = new IsolatedStorageFileStream("myfile.txt", FileMode.OpenOrCreate, store)) { using (var sw = new StreamWriter(isfs)) { sw.Write("anything really. Here it's just a string but could be a serialized object, etc."); sw.Close(); } } } You can then read the file with: var result = string.Empty; try { using (var store = IsolatedStorageFile.GetUserStoreForApplication()) { if (!store.FileExists("myfile.txt")) { return result; } using (var isfs = new IsolatedStorageFileStream("myfile.txt", FileMode.Open, store)) { using (var sr = new StreamReader(isfs)) { string lineOfData; while ((lineOfData = sr.ReadLine()) != null) { result += lineOfData; } } } } } catch (IsolatedStorageException) { result = string.Empty; // may have partial data/file before error } return result;

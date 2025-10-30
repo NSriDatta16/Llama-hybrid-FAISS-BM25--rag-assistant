@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1134849
+[parent_id]: 1134739
+[tags]: 
+I've tried your code (with strict, warnings and what I think are the required modules, with turning the free variables into strings): kyle@indigo64 ~[home*]$ cat x.pl use strict; use warnings; use HTTP::Cookies; use LWP::UserAgent; use CGI::Cookie; my $ua = new LWP::UserAgent; my %cookies = fetch CGI::Cookie; my $encoded = $cookies{'SCred'}; my $cookie_jar = new HTTP::Cookies; $cookie_jar->set_cookie( 1, "SCred", '$encoded', "/", '$SSO_DOMAIN', "", 0, 0, 60*60, 0 ); $ua->cookie_jar($cookie_jar); print "ua: ",$ua,"\n"; print "ua->cookie_jar: ",$ua->cookie_jar,"\n"; mortis@indigo64 ~[home*]$ perl x.pl ua: LWP::UserAgent=HASH(0x82f8cc8) ua->cookie_jar: HTTP::Cookies=HASH(0x82f8b84) kyle@indigo64 ~[home*]$ and it works. You might want to either post a fuller example, or are there lines between the '$ua = new...' and the '$ua->cookie_jar' lines where $ua is re-assigned or otherwise set to undef? If you print the value of '$ua' just before the call to cookie_jar you should see that it's undef, it must be being reset somewhere between the first assignment and where you are calling that method.

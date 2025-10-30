@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4959072
+[parent_id]: 4958746
+[tags]: 
+What you should do is first replace all instance of http:// and www. with nothing, and then prepend it back on to the string, this makes the string consistent str_replace(array("http://www.","http://"),"",$url); $url = "http://" . $url; then you can use parse_url to check the data like so $Data = parse_url($url); Then just check your values accordingly. switch(strtolower($Data['host'])) { case "youtube.com": // :) break; case "vimeo.com": // :) break; case "something.tld": // :) break; } The dump of $Data would output something like so: [scheme] => http [host] => youtube.com [user] => [pass] => [path] => /watch [query] => v=r8FVAHuQvjc&feature=topvideos [fragment] => you can now just go $lastSegment = $Data["path"] . "?" . $Data["query"]; which would return something like /watch?v=r8FVAHuQvjc&feature=topvideos if you wanted individual items from the query such as the video id you can then go: parse_str($Data["query"],$result); echo $result["v"]; which would just output the video id.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4676719
+[parent_id]: 4675644
+[tags]: 
+If you just want to clear the contents of the nodes: // Load the XML document XDocument doc = ...; // Select the date nodes var query = doc.Descendants() .Where(e => e.Name.LocalName.StartsWith("date")); // Clear the contents of each foreach (var element in query) { element.SetValue(String.Empty); } // Optionally write it back doc.Save(...); Yields: 00000000-0000-0000-0000-000000000000 Video Title http://sample.com http://sample.com 28 78 00000000-0000-0000-0000-000000000000 Video Title http://sample.com http://sample.com 28 78 Unfortunately it will modify all date nodes no matter where they are in your XML. Personally I'd prefer to use the XPath query in the above if given the option to be very explicit which nodes should be updated. The same can be done using pure LINQ to XML , but it's not as elegant as this. var xpath = "/main/videos/video/*[starts-with(name(.),'date')]"; var query = doc.XPathSelectElements(xpath);

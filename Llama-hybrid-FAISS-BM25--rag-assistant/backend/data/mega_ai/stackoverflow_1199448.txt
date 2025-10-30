@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1199448
+[parent_id]: 1199311
+[tags]: 
+Here's a macro I wrote to assign a multiple libref to all remote work directories owned by you : rsubmit ; %MACRO DOUBLELIB(USER=&SYSUSERID,LIB=double) / des="Assign libname of double for multiple SAS sessions for the same user"; options nosymbolgen nomprint ; %LET WRK = %SYSFUNC(pathname(work)) ; %LET WRKDIR = %SYSFUNC(scan(&WRK,-1,/)) ; %LET SASTEMP = %SYSFUNC(tranwrd(&WRK,&WRKDIR,)) ; filename mywork pipe "ls -ls &SASTEMP" ; data zwork ; infile mywork lrecl=512 recfm=v pad ; input @1 char $512. ; if index(upcase(char),upcase("&USER")) and ^index(char,scan("&WRK",-1,'/')) and index(char,'SAS_work'); path = scan(char,-1,' ') ; n + 1 ; call symput('PATH'||compress(n),"&SASTEMP"||strip(path)) ; call symput('PATHN',compress(n)) ; run ; %NOBS(zwork) ; %IF &NOBS > 0 %THEN %DO ; libname &LIB ( %DO I = 1 %TO &PATHN ; "&&PATH&I" %END ; ) access=readonly ; %END ; options symbolgen mprint ; %MEND DOUBLELIB; %DOUBLELIB(LIB=dblwork) ; endrsubmit ; /* Assign local libref to new remote dblwork libref */ libname rdouble slibref=dblwork server=myserver ;

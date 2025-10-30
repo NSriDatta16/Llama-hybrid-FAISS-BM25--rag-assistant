@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 835809
+[parent_id]: 835790
+[tags]: 
+I'm assuming you're using Linq-to-SQL* (see note below). If so, use string.Contains, string.StartsWith, and string.EndsWith to generate SQL that use the SQL LIKE operator. from o in dc.Organization join oh in dc.OrganizationsHierarchy on o.Id equals oh.OrganizationsId where oh.Hierarchy.Contains(@"/12/") select new { o.Id, o.Name } or from o in dc.Organization where o.OrganizationsHierarchy.Hierarchy.Contains(@"/12/") select new { o.Id, o.Name } Note: * = if you are using the ADO.Net Entity Framework (EF / L2E) in .net 3.5, be aware that it will not do the same translation as Linq-to-SQL. Although L2S does a proper translation, L2E v1 (3.5) will translate into a t-sql expression that will force a full table scan on the table you're querying unless there is another better discriminator in your where clause or join filters. Update: This is fixed in EF/L2E v4 (.net 4.0), so it will generate a SQL LIKE just like L2S does.

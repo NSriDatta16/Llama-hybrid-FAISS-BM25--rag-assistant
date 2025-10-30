@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3230458
+[parent_id]: 3230385
+[tags]: 
+Firstly, it won't be as simple as replacing text in a single string because a typical paragraph will be made up of one or more text and element nodes which need to be traversed properly in order to effectively wrap the desired piece of text. You shouldn't be getting the text with something like innerText/textContent or innerHTML. Try this: var para = jQuery('#my-para')[0]; findMatchAndReplace( para, /\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]/i, ' $& ' ); Using this function: function findMatchAndReplace(node, regex, replacement) { var parent, temp = document.createElement('div'), next; if (node.nodeType === 3) { parent = node.parentNode; temp.innerHTML = node.data.replace(regex, replacement); while (temp.firstChild) parent.insertBefore(temp.firstChild, node); parent.removeChild(node); } else if (node.nodeType === 1) { if (node = node.firstChild) do { next = node.nextSibling; findMatchAndReplace(node, regex, replacement); } while (node = next); } }

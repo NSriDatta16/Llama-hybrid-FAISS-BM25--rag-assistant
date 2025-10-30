@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 716527
+[parent_id]: 716472
+[tags]: 
+What I tend to use the ThreadPool.QueueUserWorkItem to load the image, then when the operation completes I call back to the UI thread using the thread-safe Dispatcher object. The image source is not thread safe, you will have to use something like the JpegBitmapDecoder , there is also a PngBitmapDecoder . For Example: public Window() { InitializeComponent(); ThreadPool.QueueUserWorkItem(LoadImage, "http://z.about.com/d/animatedtv/1/0/1/m/simp2006_HomerArmsCrossed_f.jpg"); } public void LoadImage(object uri) { var decoder = new JpegBitmapDecoder(new Uri(uri.ToString()), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad); decoder.Frames[0].Freeze(); this.Dispatcher.Invoke(DispatcherPriority.Send, new Action (SetImage), decoder.Frames[0]); } public void SetImage(ImageSource source) { this.BackgroundImage.Source = source; }

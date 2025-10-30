@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 627224
+[parent_id]: 624723
+[tags]: 
+I was able to fix this, but it required a little bit of IE-specific code in order to get it working problem. Essentially, here's how I ended up having to fix the problem. First, I verified that my server-side code was returning the proper content type: header('Content-Type: application/rss+xml'); After that, I performed a check to see which browser was currently accessing the page: if($.browser.msie) { // ie-specific code (see below) } else { // code as posted in the question } In order to have more control over the ajax request, I opted to go with jQuery's $.ajax function rather than the $.get function. var oXmlDoc = new ActiveXObject("Microsoft.XMLDOM"); $.ajax({ url: "feed.php", processData: false, data: oXmlDoc, success: function(sXml) { oXmlDoc.loadXML(sXml) var titles = $('title', oXmlDoc); var dates = $('date', oXmlDoc); for(var i = 0; i Anyway, it's not as elegant as I would like but it gets the job done.

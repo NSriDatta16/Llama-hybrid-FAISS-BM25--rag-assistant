@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5195027
+[parent_id]: 
+[tags]: 
+Multi User App with MVC3, ASP.NET Membership - User Authentication/ Data Separation
+
+I'm building a simple multi-user (multi-tenant?) App with ASP.NET MVC3 and EF4, one database, one code base, all users access the app using the same URL. Once a User is logged in they should only have access to their data, I'm using the default asp.NET membership provider and have added a ‘UserId’ Guid field on each of the data tables. Obviously I don't want user A to have any access to user B’s data so I have been adding the following to nearly every action on my controllers. public ActionResult EditStatus(int id) { if (!Request.IsAuthenticated) return RedirectToAction("Index", "Home"); var status = sService.GetStatusById(id); // check if the logged in user has access to this status if (status.UserId != GetUserId()) return RedirectToAction("Index", "Home"); . . . } private Guid GetUserId() { if (Membership.GetUser() != null) { MembershipUser member = Membership.GetUser(); Guid id = new Guid(member.ProviderUserKey.ToString()); return id; } return Guid.Empty; } This repetition is definitely feeling wrong and there must be a more elegant way of ensuring my users can't access each other's data – what am I missing?

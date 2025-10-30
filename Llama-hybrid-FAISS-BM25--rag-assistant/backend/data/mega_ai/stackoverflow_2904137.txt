@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2904137
+[parent_id]: 
+[tags]: 
+How best to deal with warning c4305 when type could change?
+
+I'm using both Ogre and NxOgre, which both have a Real typedef that is either float or double depending on a compiler flag. This has resulted in most of our compiler warnings now being: warning C4305: 'argument' : truncation from 'double' to 'Ogre::Real' When initialising variables with 0.1 for example. Normally I would use 0.1f but then if you change the compiler flag to double precision then you would get the reverse warning. I guess it's probably best to pick one and stick with it but I'd like to write these in a way that would work for either configuration if possible. One fix would be to use #pragma warning (disable : 4305) in files where it occurs, I don't know if there are any other more complex problems that can be hidden by not having this warning. I understand I would push and pop these in header files too so that they don't end up spreading across code. Another is to create some macro based on the accuracy compiler flag like: #if OGRE_DOUBLE_PRECISION #define INIT_REAL(x) (x) #else #define INIT_REAL(x) static_cast ( x ) #endif which would require changing all the variable initialisation done so far but at least it would be future proof. Any preferences or something I haven't thought of?

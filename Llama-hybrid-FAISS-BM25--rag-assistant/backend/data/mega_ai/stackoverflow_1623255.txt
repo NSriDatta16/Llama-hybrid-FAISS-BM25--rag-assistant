@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1623255
+[parent_id]: 1598772
+[tags]: 
+Fixed the problem myself. Turns out this particular site does not seem to use "basic authentication", and I was required to execute a specific login screen to produce a usable cookie. I also simplified the solution by using "Mechanize", a gem that handles much of the leg-work of HTTP activity. require 'rubygems' require 'mechanize' login_username = "theusername" login_password = "thepassword" # get login page agent = WWW::Mechanize.new agent.user_agent_alias = 'Mac Safari' page = agent.get('https://somesite.com/login.php') # fill out login form and submit form = page.forms[0] # use first form on page form['form[username]'] = login_username form['form[password]'] = login_password page = agent.submit(form) # process returned page if page.uri.to_s.include?("login") puts '---- LOGIN FAILED ----' else puts '---- LOGIN SUCCESSFUL ----' xml_data = agent.get('https://secure.somesite.com:443/download_transactions.php?type=xml') puts xml_data.body end The thing that threw me was the way to set the form fields, which for some reason were different than the examples I've seen doing this.

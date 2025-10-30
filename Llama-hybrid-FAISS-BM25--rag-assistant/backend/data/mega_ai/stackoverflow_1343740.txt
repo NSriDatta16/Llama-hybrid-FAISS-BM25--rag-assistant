@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1343740
+[parent_id]: 1343701
+[tags]: 
+I suppose if you wanted to make it difficult/elegant, you could make an HttpModule that injects the script. That way it's only in one place and you can wire it up in the web.config. Here's a sample httpModule Public Class JavascriptInjector Implements IHttpModule Public Sub Init(ByVal context As System.Web.HttpApplication) Implements System.Web.IHttpModule.Init AddHandler context.PreRequestHandlerExecute, AddressOf PreRequestHandlerExecute End Sub Private Sub PreRequestHandlerExecute(ByVal sender As Object, ByVal e As EventArgs) Dim myPage = TryCast(HttpContext.Current.CurrentHandler, Page) If myPage Is Nothing Then Exit Sub AddHandler myPage.InitComplete, AddressOf Page_Init End Sub Sub Page_Init() Dim myPage = TryCast(HttpContext.Current.CurrentHandler, Page) If myPage Is Nothing Then Exit Sub Dim path = myPage.ResolveUrl("~/js/jscript.js") myPage.ClientScript.RegisterClientScriptInclude(myPage.GetType, "common", path) End Sub Public Sub Dispose() Implements System.Web.IHttpModule.Dispose End Sub End Class Here's an entry in the web.config

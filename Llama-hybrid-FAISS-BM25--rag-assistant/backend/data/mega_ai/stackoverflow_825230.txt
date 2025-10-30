@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 825230
+[parent_id]: 825141
+[tags]: 
+http://www.hibernate.org/ Probably most powerfull ORM library for Java. It can do much more then just simple query mapping. So you can easily implement it somwhere else in your application. For your case it can be done somehow like that: public class LookupCodeName { private String code; private String name; /*... getter-setters ... */ } public class someBL { public List returnSomeEntity() { SQLQuery sqlQuery = (SQLQuery)((HibernateSession)em).getHibernateSession() .createSQLQuery( "SELECT st.name as name, st.code as code FROM someTable st") .addScalar("code") .addScalar("name") .setResultTransformer(Transformers.aliasToBean(LookupCodeName.class)); } return (List )sqlQuery.list(); }

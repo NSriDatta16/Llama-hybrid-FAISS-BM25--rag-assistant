@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1746822
+[parent_id]: 1744407
+[tags]: 
+Imagine #define CACHE_LINE_SIZE 32 sizeof(T) == 48 Now, consider how [[ align(CACHE_LINE_SIZE) ]] , works. eg: [[ align(32) ]] Foo foo; This will force sizeof(Foo) == 32n for some n . ie align() will pad for you, if necessary, in order for things like Foo foo[10]; to have each foo[i] aligned as requested. So, in our case, with sizeof(T) == 48 , this means sizeof(cache_line_storage ) == 64 . So the alignment gives you the padding you were hoping for. However, this is one 'error' in the template. Consider this case: #define CACHE_LINE_SIZE 32 sizeof(T) == 32 Here we end up with char pad[1]; . Which means sizeof(cache_line_storage ) == 64 . Probably not what you want! I think the template would need to be modified somewhat: template struct pad_or_not { T data; char pad[padding]; }; // specialize the 0 case // As it is late, I am SURE I've got the specialization syntax wrong... template struct pad_or_not { T data; }; template struct cache_line_storage { [[ align(CACHE_LINE_SIZE) ]] pad_or_not CACHE_LINE_SIZE ? 0 : CACHE_LINE_SIZE - sizeof(T) ) > data; }; or something like that.

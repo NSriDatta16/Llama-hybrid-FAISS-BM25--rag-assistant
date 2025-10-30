@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 732360
+[parent_id]: 728373
+[tags]: 
+I'm not sure if this is feasible or not, as I haven't used the Entity Framework, but have you tried running the update first and checking the rowcount -- inserting if no rows were updated? This may be faster than catching exceptions. It's generally a bad practise to use exceptions for control flow, and often slows things down dramatically. If you can write the SQL directly, then the fastest way to do it would be to get all the data into a temporary table and then update what exists and insert the rests (as in Andrea Bertani's example above). You should get slightly better results by using a left join on the original table in the select in your insert, and excluding any rows with values from the original table that are not null: INSERT INTO original SELECT * FROM temp LEFT JOIN original ON original.id = temp.id WHERE original.id IS NULL

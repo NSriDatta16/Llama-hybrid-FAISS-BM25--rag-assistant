@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 82228
+[parent_id]: 
+[tags]: 
+How to Save Model that has a TensorFlow Probability Regularizer?
+
+Consider the following minimal VAE: import tensorflow as tf import tensorflow_probability as tfp tfk = tf.keras tfkl = tf.keras.layers tfpl = tfp.layers tfd = tfp.distributions #Fake dataset cim = np.random.randint(2, size=(10,10)) #Parameters vector_size = 10 input_shape = (vector_size,) encoded_size = 3 latent_dim = 5 #Model prior = tfd.Independent(tfd.Normal(loc=tf.zeros(encoded_size), scale=1), reinterpreted_batch_ndims=1) vae = tfk.Sequential([ #Encoder tfkl.InputLayer(input_shape=input_shape), tfkl.Dense( tfpl.MultivariateNormalTriL.params_size(encoded_size), activation=None, use_bias = False ), tfpl.MultivariateNormalTriL( encoded_size, activity_regularizer=tfpl.KLDivergenceRegularizer(prior) ), #Decoder tfkl.Dense( units = vector_size, activation = tf.nn.leaky_relu, use_bias = False ) ]) vae.compile(optimizer=tf.optimizers.Adam(learning_rate=1e-3), loss='mse') history = vae.fit(cim, cim, epochs = 1) tf.saved_model.save(vae, './VAE') The final line throws an error: AttributeError: 'Tensor' object has no attribute 'log_prob' Tracing the issue, it seems that the activity regularizer tfpl.KLDivergenceRegularizer(prior) is not being serialized corrected. Any ideas for how to save this Model with the regularizer intact?

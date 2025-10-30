@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5152544
+[parent_id]: 5152501
+[tags]: 
+Macros perform just string substitution. The semantic is low and the the compiler have a limited knowledge of the preprocessor (essentially #pragma which in fact is not a preprocessor keyword, and source line info). In your case a and b are not initialized local value. Behavior is unpredictible. Your expanded code is equivalent to the following one. int a = 1, b = 2; do { int a___,b___; a___ = f(a___); b___ = g(b___); b___ = a___+b___; } while (0) To avoid such case in c++ prefer the use of inline function or template. If you use a c 1999 compliant compiler, you can use inline in c language. http://en.wikipedia.org/wiki/Inline_function In c you can make safer macro by defining longer variable and surrounding parameter by () : #define FOO(x,y) \ do { int FOO__a,FOO__b; FOO__a = f(x); FOO__b = g(x); y = FOO__a+FOO__b + (y)*(y); } while (0) Note : I changed your example by adding a (y)*(y) to illustrate the case It is also a good practice to use only once macro parameter. This prevent side effects like that: #define max(a,b) a>b?a:b max(i++,--y) Max will not return what you want.

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4292755
+[parent_id]: 
+[tags]: 
+DataMapper NoMethodError: undefined method `encode_json' for DateTime
+
+I'm not sure if this is a DataMapper issue or something more Rails-specific: NoMethodError: undefined method `encode_json' for Sun, 28 Nov 2010 00:00:00 -0500:DateTime I have a model defined as follows: class Match include DataMapper::Resource storage_names[:default] = 'matches' property :id, Serial, :field => 'matches_id', :required => true def self.find_matches repository.adapter.select = (CURDATE() - interval 1 day) order by m.begin_date desc SQL end end Calling Match.find_matches from the console returns an array of structs like the following: # When I try Match.find_matches.to_json , it appears that to_json is choking on the begin_date format. Is there anything I can do to correct this? I'm using MySQL 5.1 DATETIME, which usually displays as yyyy-mm-dd hh:mm:ss (at least in the MySQL client), so something is formatting that in a way that encode_json can't digest.

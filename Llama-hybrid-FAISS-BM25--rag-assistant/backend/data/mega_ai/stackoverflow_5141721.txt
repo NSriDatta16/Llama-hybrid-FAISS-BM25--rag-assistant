@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5141721
+[parent_id]: 5141563
+[tags]: 
+Have you tried using the instruments tool? This should help narrow down what the issue is and if it's just a leak that needs fixing, running out of memory generally or something else going awry. It sounds like it's just running out of memory so if it looks like it should have memory available perhaps the wierdness part is it may be out of contiguous memory and no 2Mb continuous block is available? I'm mentioning that as if you're doing multithreading alloc/deallocs you can get into a fragmentation mess easily and I'd recommend minimizing any allocs outside of the main thread if you can. (I have to admit I'm not sure if iOS does memory virtualization like some HW can to avoid this but thought it worth mentioning just in case) Failing all that, perhaps it's just an object locking issue if you're doing multiple allocs per thread? In which case is there any way to preallocate this 2Mb block for the thread before launching?

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1141466
+[parent_id]: 1140968
+[tags]: 
+There are two issues here. First of all, this: AutoA b_auto_to_a_auto(b_auto); It is perfectly standard compliant and should compile. Let me explain why. ISO C++ standard specifies (20.4.5.1[lib.auto.ptr.cons]/4-6) the following constructor for auto_ptr (among others); template auto_ptr(auto_ptr &) throw(); Note that Y is a different type from X here. And the Standard furthermore says: Requires: Y* can be implicitly converted to X*. The only thing to pay attention to here is that constructor argument is a reference-to-non-const. For your case, this isn't a problem (since you're passing a non-const variable there), but it becomes important for the next part. To conclude here: what you're seeing is non-standard behavior in VC6. It should compile on a compliant compiler (and will compile on VC7 and above). Now on to the second thing: sink(b_raw_to_b_auto); //fails to compile This one is actually perfectly explained by mmutz, so I won't go into details here - see his answer. To conclude on that: yes, this line shouldn't compile, and won't in a compliant compiler (or VC6, as you've found out).

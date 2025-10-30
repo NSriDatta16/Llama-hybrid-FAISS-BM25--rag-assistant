@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3116164
+[parent_id]: 3116016
+[tags]: 
+If you don't need to maintain order, then the best way is to a regular object, and index by task id. That gives you O(1) access. var tasks = { '2': { id: 2, name: 'Random Task', completed: 0 }, ... } If you also need ordering maintained, then write an OrderedMap "class" that maintains the order by creating an array of task ids, but the actual tasks will still be stored in an object indexed by task id. So essentially you would have: // internal API (to help maintain order) taskIDs = [a, b, c, ..]; // internal API (for actual storage) tasks = { a: { .. }, b: { .. }, }; // external API for iterating objects in order forEach(fn); // external API for accessing task by ID get(id); The outside world can be ignorant of how you maintain order as long as you provide a nice encapsulated way of iterating these in order, and accessing them by task id. If you need reference for implementing such a class, see the source for LinkedMap from Google Closure Library.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 725478
+[parent_id]: 725431
+[tags]: 
+All correct, but the one key point you're missing is that you should never call dealloc yourself. Here's some information from Apple's documentation on NSObject's dealloc method: (from http://developer.apple.com/documentation/Cocoa/Reference/Foundation/Classes/nsobject_Class/Reference/Reference.html#//apple_ref/occ/instm/NSObject/dealloc ) You never send a dealloc message directly. Instead, an object’s dealloc method is invoked indirectly through the release NSObject protocol method (if the release message results in the receiver's retain count becoming 0). See Memory Management Programming Guide for Cocoa for more details on the use of these methods. Subclasses must implement their own versions of dealloc to allow the release of any additional memory consumed by the object—such as dynamically allocated storage for data or object instance variables owned by the deallocated object. After performing the class-specific deallocation, the subclass method should incorporate superclass versions of dealloc through a message to super:

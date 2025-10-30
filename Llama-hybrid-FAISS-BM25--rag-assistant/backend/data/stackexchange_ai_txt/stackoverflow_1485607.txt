@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1485607
+[parent_id]: 1484884
+[tags]: 
+There is no 64kb limit in SQL Server. The limits for SQL strings are either at 8000 bytes for in-row data types (char, varchar, nchar, nvarchar, binary and varbinary) or 2 GB for LOB types (varchar(max), nvarchar(max) and varbinary(max)). The 64 kb limitation you see must come from something else, most likely from IIS upload or ASP or CLR processing limitations. But you're not going to be able to process arbitrary length files like this. .Net will not load a large stream into a string using Stream.ReadToEnd() because the memory allocation won't succeed. You are going to load the file in chunks and append each chunk into the database, using the LOB specific UPDATE table SET column.WRITE... syntax. P.S. Some responses recommend use of the old LOB types like text , ntext and image . Don't use those types with SQL Server 2008, they are deprecated and discouraged.

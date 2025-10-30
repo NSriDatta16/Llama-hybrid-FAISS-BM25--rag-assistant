@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1971442
+[parent_id]: 765368
+[tags]: 
+You'd need to multiplex io operations into an event based interface(select/poll), so you can leverage the OS to do the waiting, while still being able to schedule other fibers. select/poll have a timeout argument - for fibers that want to sleep, you can create a priority queue that uses that option of select/poll to emulate a sleep call. Trying to serve fibers that does blocking operations (call read/write/sleep etc). directly won't work unless you schedule each fiber in a native thread - which kind of beats the purpose. See http://swtch.com/libtask/ for a working implementation.

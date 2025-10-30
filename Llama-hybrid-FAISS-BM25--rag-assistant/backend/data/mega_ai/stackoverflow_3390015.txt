@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3390015
+[parent_id]: 
+[tags]: 
+getting wrong latitude & longitude from geocoding
+
+I have a geocoding function that is pulling the address values entered into a form and putting them into the geocoding call. The response is supposed to write the latitude & longitude values into the DB - unfortunately, my lat & longs are all coming back as Antarctica. Thoughts? //Set up our variables $longitude = ""; $latitude = ""; //Three parts to the querystring: q is address, output is the format ( $key=$er_mapapi; $address=str_replace(' ', '%20', $_REQUEST['street_num'] . ' ' . $_REQUEST['address2'] . ', ' . $loccity . ', ' . $ststate . ', ' . $_REQUEST['postcode'] . ', ' . $cncount); $url = "http://maps.google.com/maps/geo?q=".$address."&output=json&key=".$key; $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); curl_setopt($ch, CURLOPT_HEADER,0); curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER["HTTP_USER_AGENT"]); curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); $data = curl_exec($ch); curl_close($ch); $geo_json = json_decode($data, true); print_r($geo_json); if ($geo_json['Status']['code'] == '200') { $latitude = $geo_json['Placemark'][0]['Point']['coordinates'][0]; $longitude = $geo_json['Placemark'][0]['Point']['coordinates'][1]; echo "Latutide: $latitude \n"; echo "Longitude: $longitude \n"; if ($latitude != '') $row->declat = $latitude; if ($longitude != '') $row->declong = $longitude; } else { echo "Error in geocoding! Http error ".substr($data,0,3); }

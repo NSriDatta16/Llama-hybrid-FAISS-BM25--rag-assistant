@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5290941
+[parent_id]: 2706132
+[tags]: 
+In addition to what Logan Capaldo said, you also have the problem that, as a DLL, you don't know at compile time what kind of process is going to be loading you at runtime. If you are being loaded by a console application (/SUBSYSTEM:CONSOLE), then creating a hidden window of your own and setting up a message pump on that same thread will work fine (as long as you are the first window created). If you are being loaded by a windows app (/SUBSYSTEM:WINDOWS) then you might run into problems getting messages. They will be sent to the top-level window in the hierarchy, which you didn't create. You'll need to get the hWnd of the main process and subclass it (if you aren't already). If you are being loaded by a service, then you aren't going to get window messages at all. You instead need to use the RegisterServiceCtrlHandlerEx Function

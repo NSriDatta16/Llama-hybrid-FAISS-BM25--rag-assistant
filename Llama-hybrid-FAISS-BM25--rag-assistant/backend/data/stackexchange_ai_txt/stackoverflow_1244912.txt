@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1244912
+[parent_id]: 1244014
+[tags]: 
+Other answers have given the map + getOrElse composition. Just for the record, you can "add" a maybe function to Option in the following way: implicit def optionWithMaybe[A](opt: Option[A]) = new { def maybe[B](f: A=>B)(g: =>B) = opt map f getOrElse g } It's worth noting that the syntax of higher-order functions in Scala is usually nicer when the function parameter comes last. Thus, a better way to organize maybe would be as follows: def maybe[B](g: =>B)(f: A=>B) = opt map f getOrElse g This could be used as follows: val opt: Option[String] = ... opt.maybe("") { _.toUpperCase }

@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5195991
+[parent_id]: 
+[tags]: 
+write()ing to i2c device: Operation not permitted
+
+So I have 2 PCA9555 (16 channel digital I/O) chips connected to a small embedded device running Linux over i2c. The PCA9555 devices have 7 bit addresses 0100000 and 0100001. When I power up the board, I run: # modprobe i2c-i801 # modprobe i2c-dev # i2cdetect -l i2c-0 smbus SMBus I801 adapter at 0500 SMBus adapter # i2cdump -y -r 0 0 1 2 3 4 5 6 7 8 9 a b c d e f 00: -- -- -- -- -- -- -- -- -- -- -- -- -- ... (Same for every line) 70: -- -- -- -- -- -- -- # dmesg|tail i801_smbus 0000:00:1f.3 Transaction timeout ... (For every '--' in i2cdump, one of these errors outputted) i801_smbus 0000:00:1f.3 Transaction timeout So then I tried to write a simple program to set all pins on the first PCA9555 chip to output high: char *file; unsigned char buf[3]; int addr, fd; file = "/dev/i2c-0"; addr = 0x20; /* 0100000 */ if((fd = open(file, O_RDWR)) Running this returns: # ./i2c ./i2c: write() 1: Operation not supported So I don't really understand what I'm doing wrong. Assuming the hardware is wired correctly where do I go from here?

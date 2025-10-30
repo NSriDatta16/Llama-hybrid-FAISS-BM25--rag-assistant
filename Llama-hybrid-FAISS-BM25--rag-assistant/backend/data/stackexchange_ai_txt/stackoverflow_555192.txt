@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 555192
+[parent_id]: 554481
+[tags]: 
+I've done something like this using Spring AOP so I could grab the sql, parameters, errors, and execution time for any query run in the application whether it was HQL, Criteria, or native SQL. This is obviously fragile, insecure, subject to break with changes in Hibernate, etc, but it illustrates that it's possible to get the SQL: CriteriaImpl c = (CriteriaImpl)query; SessionImpl s = (SessionImpl)c.getSession(); SessionFactoryImplementor factory = (SessionFactoryImplementor)s.getSessionFactory(); String[] implementors = factory.getImplementors( c.getEntityOrClassName() ); CriteriaLoader loader = new CriteriaLoader((OuterJoinLoadable)factory.getEntityPersister(implementors[0]), factory, c, implementors[0], s.getEnabledFilters()); Field f = OuterJoinLoader.class.getDeclaredField("sql"); f.setAccessible(true); String sql = (String)f.get(loader); Wrap the entire thing in a try/catch and use at your own risk.

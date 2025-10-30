@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3366481
+[parent_id]: 3366016
+[tags]: 
+@Mchl's answer is a good approach for making reusable components, especially when you need to override or add new behavior to an existing one. If you simply need to reuse some config settings and nothing more, you can also do something a bit simpler: cfg = { xtype: 'textfield', width: 100, maxLength: 10 } new Ext.FormPanel({ items: [cfg, cfg] }); If you need to add instance-specific config fields (like id for example) you can just pass in your unique values and add the default cfg to them (applyIf will not override existing properties, it will only add properties): new Ext.FormPanel({ items: [ Ext.applyIf({id:'foo'}, cfg), Ext.applyIf({id:'bar'}, cfg) ] }); One thing I would add to @Mchl's answer is that if you are going to make the effort of creating your own class, make sure you give it a custom xtype. That way you can still leverage Ext's lazy instantiation capabilities even with your own custom components, instead of having to create instances of everything at init time.

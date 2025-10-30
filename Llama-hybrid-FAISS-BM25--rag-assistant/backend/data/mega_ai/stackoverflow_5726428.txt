@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5726428
+[parent_id]: 5722406
+[tags]: 
+Receiving an InputStream is possible in JAX-RS. You just put the InputStream parameter without annotations: @POST public void uploadImage(InputStream stream) { // store image } Pay attention that it will work for any content type. Although it will work, I would suggest a more "JAX-RS way": 1 Create provider that will create an image class (e.g. java.awt.Image) from the InputStream: @Provider @Consumes("image/jpeg") class ImageProvider implements MessageBodyReader { public Image readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException { // create Image from stream } } 2 Register the provider the same way you register a resource. 3 Make your resource class to receive Image instead of InputStream. Why is this approach better? You separate the deserialization logic from your resource class. So if in the future you would like to support more image formats, you just need to add additional providers, while the resource will stay the same.

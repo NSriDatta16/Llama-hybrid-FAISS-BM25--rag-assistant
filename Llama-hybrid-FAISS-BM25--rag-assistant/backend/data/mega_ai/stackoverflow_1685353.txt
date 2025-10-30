@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1685353
+[parent_id]: 1569153
+[tags]: 
+The problem is that cb1, cb2 and cb3 are heap allocated, even though their storage (the struct) is not. Thus they are each subject to GC (compaction/relocation, thus invalidating the pointers originally passed in). Prior to passing in the struct, each of cb1, cb2 and cb3 should be pinned, ideally immediately after they are new'd. Otherwise they will likely relocate in memory. Was the decision to use a struct to contruct a classic function map done to avoid this relocation? If so, it's ultimately non-helpful.

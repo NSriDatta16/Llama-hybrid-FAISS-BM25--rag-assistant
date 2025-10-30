@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2644606
+[parent_id]: 2644554
+[tags]: 
+I think his point regarding using a GUID as an indexer is probably referring to it being stored in the Database. Using an integer as the key would provide better performance and would take up less storage than using GUIDs. Returning null is quite uncommon as usually with an indexer if the index (key) is not in the collection you would throw an exception instead. Personally I don't really see the issue here it is pretty much the equivalent of having a GetUser method anyway. I mean if you wanted to tidy it up a bit you could actually introduce a private method called GetUser that the indexer could call e.g. public IUser this[Guid userId] { get { return GetUser(userId); } } private IUser GetUser(Guid userId) { return (from u in _dataContext.Users where u.Id == userId select u).FirstOrDefault(); } Looking from a design point of view, personally I would not have used an Indexer, I would have went with a GetUser method.

@@ -1,0 +1,36 @@
+Cache pollution describes situations where an executing computer program loads data into CPU cache unnecessarily, thus causing other useful data to be evicted from the cache into lower levels of the memory hierarchy, degrading performance. For example, in a multi-core processor, one core may replace the blocks fetched by other cores into shared cache, or prefetched blocks may replace demand-fetched blocks from the cache.
+
+Example
+Consider the following illustration:
+  
+  T[0] = T[0] + 1;
+  for i in 0..sizeof(CACHE)
+    C[i] = C[i] + 1;
+  T[0] = T[0] + C[sizeof(CACHE)-1];
+
+(The assumptions here are that the cache is composed of only one level, it is unlocked, the replacement policy is pseudo-LRU, all data is cacheable, the set associativity of the cache is N (where N > 1), and at most one processor register is available to contain program values).
+
+Right before the loop starts, T[0] will be fetched from memory into cache, its value updated. However, as the loop executes, because the number of data elements the loop references requires the whole cache to be filled to its capacity, the cache block containing T[0] has to be evicted. Thus, the next time the program requests T[0] to be updated, the cache misses, and the cache controller  has to request the data bus to bring the corresponding cache block from main memory again.
+
+In this case the cache is said to be "polluted".  Changing the pattern of data accesses by positioning the first update of T[0] between the loop and the second update can eliminate the inefficiency:
+
+  for i in 0..sizeof(CACHE)
+    C[i] = C[i] + 1;
+  T[0] = T[0] + 1;
+  T[0] = T[0] + C[sizeof(CACHE)-1];
+
+Solutions
+Other than code-restructuring mentioned above, the solution to cache pollution is ensure that only high-reuse data are stored in cache. This can be achieved by using special cache control instructions, operating system support or hardware support.
+
+Examples of specialized hardware instructions include  "lvxl" provided by PowerPC AltiVec. This instruction loads a 128 bit wide value into a register and marks the corresponding cache block as "least recently used" i.e. as the prime candidate for eviction upon a need to evict a block from its cache set. To appropriately use that instruction in the context of the above example, the data elements referenced by the loop would have to be loaded using this instruction. When implemented in this manner, cache pollution would not take place, since the execution of such loop would not cause premature eviction of T[0] from cache. This would be avoided because, as the loop would progress, the addresses of the elements in C would map to the same cache way, leaving the actually older (but not marked as "least recently used") data intact on the other way(s). Only the oldest data (not pertinent for the example given) would be evicted from cache, which T[0] is not a member of, since its update occurs right before the loop's start.
+
+Similarly, using operating system (OS) support, the pages in main memory that correspond to the C data array can be marked as "caching inhibited" or, in other words, non-cacheable. Similarly, at hardware level, cache bypassing schemes can be used which identify low-reuse data based on program access pattern and bypass them from cache. Also, shared cache can be partitioned to avoid destructive interference between running applications. The tradeoff in these solutions is that OS-based schemes may have large latency which may nullify the gain achievable by  cache pollution avoidance (unless the memory region has been non-cacheable to begin with), whereas hardware-based techniques may not have a global view of the program control flow and memory access pattern.
+
+Increasing importance
+Cache pollution control has been increasing in importance because the penalties caused by the so-called "memory wall" keep on growing. Chip manufacturers continue devising new tricks to overcome the ever increasing relative memory-to-CPU latency. They do that by increasing cache sizes and by providing useful ways for software engineers to control the way data arrives and stays at the CPU. Cache pollution control is one of the numerous devices available to the (mainly embedded) programmer. However, other methods, most of which are proprietary and highly hardware and application specific, are used as well.
+
+References
+
+Computer architecture
+Cache (computing)
+Computer memory

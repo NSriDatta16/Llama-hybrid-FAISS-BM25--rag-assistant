@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3682601
+[parent_id]: 3656978
+[tags]: 
+I tried to reproduce your problem, but everything is working fine for me. Here is what I did : With Qt-Designer, I put a QTableView (named tbvTest ) on my form. In the constructor of my form, here is what I've written : Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget) { ui->setupUi(this); ui->tbvTest->setModel(new TableModel); QSettings MySetting(QSettings::IniFormat, QSettings::UserScope, "Test"); QByteArray MyArray = MySetting.value("column_width", "").toByteArray(); ui->tbvTest->horizontalHeader()->restoreState(MyArray); } (note that in my main.cpp , I set the ApplicationName , OrganizationName and OrganizationDomain ) In the destructor of my form, here is what I've written : Widget::~Widget() { QByteArray MyArray = ui->tbvTest->horizontalHeader()->saveState(); QSettings MySetting(QSettings::IniFormat, QSettings::UserScope, "Test"); MySetting.setValue("column_width", MyArray); delete ui; } If I run the application and change the column width, quit the app and run it again, the column widths are correctly restored. Is there something I'm doing different from you ?

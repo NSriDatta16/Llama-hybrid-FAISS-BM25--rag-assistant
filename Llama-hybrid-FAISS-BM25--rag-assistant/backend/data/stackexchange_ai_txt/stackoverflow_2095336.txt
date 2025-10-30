@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2095336
+[parent_id]: 2095146
+[tags]: 
+After toying with a few options, I've figured out the answer: use the yield return iterator: public IEnumerable Search(string query) { var parsedQuery = new QueryParser(...).Parse(); var searcher = new IndexSearcher(parsedQuery, storage); try { var hits = searcher.Search(parsedQuery); foreach (var hit in hits) { yield return PullBizObjectFromDatabase(hit); } } finally { searcher.Close(); } } With the yield return iterator, the searcher doesn't get disposed until consumers are done with their evaluations. Brilliant! Lazy loaded search results from Lucene, exactly what I was looking for. Wahoo! :-)

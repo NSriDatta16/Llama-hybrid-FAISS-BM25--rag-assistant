@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1283772
+[parent_id]: 1278697
+[tags]: 
+public class PersonLite : ReadOnlyBase { public void Update(PersonFull person) { } } public class PersonFull : BusinessBase { // blah blah } I would update the "lite" object with the changes made to the "full" object, and leave it as ReadOnlyBase . It's important to remember that the "ReadOnly" in ReadOnlyBase means an object that is only read from the database, and never saved to it. A less elegant, but more accurate name would be NotSavableBase , because such objects lack the DataPortal_XYZ machinery for anything but fetches. For obvious reasons, such objects usually have immutable properties, but they don't have to. ReadOnlyBase derives from Core.BindableBase and implements INotifyPropertyChanged , so changing the values of its properties will work just fine with binding. When you save your "full" object, you pass the newly saved instance to the Update(PersonFull) method of the instance that sits in your list, and update the properties of the "lite" object from the "full" object. I've used this technique many times and it works just fine.

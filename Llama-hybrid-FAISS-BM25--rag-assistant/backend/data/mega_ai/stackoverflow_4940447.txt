@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4940447
+[parent_id]: 
+[tags]: 
+WPF BitmapFrame and multiple threads
+
+I have a PNG file stored in my cloud in blob storage, I want to download it and render it on the screen in WPF. I know about the Dispatcher and Freezing, but nothing is working. I keep getting the error about "another thread owns it". Here is what I have: var decoder = GetDecoder("http://address/image.png"); Dispatcher.Invoke(DispatcherPriority.Send, new Action (SetImage), decoder.Frames[0]); public void SetImage(BitmapFrame source) { var bitmapFrame = BitmapFrame.Create(source); //ERROR HERE!!!!!!!! LazyImage.Source = bitmapFrame; } private BitmapDecoder GetDecoder(object uri) { var extension = System.IO.Path.GetExtension((string)uri); BitmapDecoder decoder = null; if (extension.ToLower() == ".png") decoder = BitmapDecoder.Create(new Uri((string)uri, UriKind.Absolute), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad); return decoder; } If i try to freeze the Frame[0] I get an exception saying that this Frame cannot be frozen. Also the Decoder returned by BitmapDecoder.Create is not a PngBitmapDecoder but a LateBoundBitmapDecoder which I dont really know how to use effectively.

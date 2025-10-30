@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3499289
+[parent_id]: 
+[tags]: 
+Why NHibernate auto-truncates instead of throwing an exception on save?
+
+I have been studying the Summer Of NHibernate Tutorials and when I have reached the Session 04: Exploring Transactions and Concurrency -just like in the tutorial- I wanted to create a SAVE test which should fail because of an invalid object. The purpose is to test if it can rollback the transaction properly. Idea is to create an invalid object that has a property with more chars than the required amount set by Db. But what NHibernate does is it gets the first required amount of chars and cuts the rest and saves it into Db successfully . Here is my Test which does not fail: [Test] public void AddCountryThrowExceptionOnFail() { // This returns a Country with country code having more than 50 chars // Where its length is set to 3 chars only Country invalidCountry = GetInvalidCountry(); _dataProvider.AddCountry(invalidCountry); } This is the AddCountry method: public int AddCountry(Country country) { using (ISession session = GetSession()) { using (ITransaction tx = session.BeginTransaction()) { try { int pk_Country = (int)session.Save(country); session.Flush(); tx.Commit(); return pk_Country; } catch(Exception) { tx.Rollback(); throw; } } } } And this is how the mapping file is set for CountryCode property: So, question is, why NHibernate gets the first N chars where n=length set in the mapping file? How can I prevent this to happen so that it can fail on save? Thanks, burak ozdogan

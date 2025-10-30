@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1925374
+[parent_id]: 1924049
+[tags]: 
+The easy part is to get the path to the element: IEnumerable elementsInPath = doc.Element("categories") .Descendants() .Where(p => p.Attribute("text").Value == "Design") .AncestorsAndSelf() .InDocumentOrder() .ToList(); The InDocumentOrder() is there to get the collection in the order of root, child, grandchild. The ToList() is there to avoid any unwanted effects in the next step. Now, the less beautiful part, which maybe could be done in a more elegant way: var newdoc = new XDocument(); XContainer elem = newdoc; foreach (var el in elementsInPath)) { el.RemoveNodes(); elem.Add(el); elem = elem.Elements().First(); } That's it. Since each XElement keeps their child, we have to remove the children from each node in the path, and then we rebuild the tree.

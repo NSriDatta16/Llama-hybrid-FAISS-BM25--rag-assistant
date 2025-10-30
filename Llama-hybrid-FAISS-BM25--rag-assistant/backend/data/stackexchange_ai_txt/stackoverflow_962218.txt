@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 962218
+[parent_id]: 962181
+[tags]: 
+If you are allocating the same size item hundreds of thousands of times, then why not just maintain a heap of your objects (since these seem to be relatively simple, i.e. don't contain pointers to other allocated memory) and free onto your own heap (or stack actually)? The heap can lazily allocate new objects using the glib malloc, but when freeing just push the item onto the heap. When you need to allocate, if there is a freed object available it can just allocate that one. This will also save you multiple calls to allocation (since you won't need to do any allocation and it looks like your routine makes several calls to malloc) and will also avoid fragmentation (to some extent) at least on the re-used memory. Of course the initial allocations (and other allocations as the program is running when it needs to expand this memory) may cause fragmentation, but if you are really worried about this you can run some stats and find the average/max/typical size of your heap during runs and pre-allocate this at once when the program starts up, avoiding fragmentation.

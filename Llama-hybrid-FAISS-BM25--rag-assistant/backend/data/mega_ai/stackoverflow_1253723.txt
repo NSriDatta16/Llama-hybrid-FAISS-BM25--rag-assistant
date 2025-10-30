@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1253723
+[parent_id]: 1253610
+[tags]: 
+IEEE provides four rounding modes, (toward -inf, toward +inf, toward 0, tonearest). Toward +inf is what you seem to want. There is no standard control in C90 or C++. C99 added the header which is also present as an extension in some C90 and C++ implementation. To respect the C99 standard, you'd have to write something like: #include #pragma STDC FENV_ACCESS ON int old_round_mode = fegetround(); int set_round_ok = fesetround(FE_UPWARD); assert(set_round_ok == 0); ... int set_round_ok = fesetround(old_round_mode); assert(set_round_ok == 0); It is well known that the algorithm you use is numerically unstable and has precision problem. It is better for precision to do two passes on the data.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 234204
+[parent_id]: 228117
+[tags]: 
+You may be able to do some version script tricks: http://sunsite.ualberta.ca/Documentation/Gnu/binutils-2.9.1/html_node/ld_26.html This may require that you write a wrapper around your lib that pulls in libfoo.so.1 that exports some symbols explicitly and masks all others as local. For example: MYSYMS { global: foo1; foo2; local: *; }; and use this when you link that wrapper like: gcc -shared -Wl,--version-script,mysyms.map -o mylib wrapper.o -lfoo -L/path/to/foo.so.1 This should make libfoo.so.1's symbols local to the wrapper and not available to the main exe.

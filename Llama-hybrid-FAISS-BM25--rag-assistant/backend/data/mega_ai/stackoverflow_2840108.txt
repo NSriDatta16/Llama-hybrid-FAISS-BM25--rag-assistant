@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2840108
+[parent_id]: 2837814
+[tags]: 
+What you want is Mercurial to natively support using S3 as a backend for data storage, and no such code exists. You could maybe find an S3 bridge to run in FUSE (or an S3->DAV bridge that you could possibly mount as a filesystem), and then tell Hg to push and pull data from that virtual filesystem, but otherwise you would need a dedicated ec2 instance to actually serve the data (you could launch it on demand, but the latency on that is pretty bad, as you probably well know). There is a FUSE-based filesystem for S3 called s3fs , but it looks like it's mainly a driver for a commercial offering. (As a separate aside, depending on your ec2 architecture, and assuming you have overlapping uptimes on multiple instances, you could theoretically leverage the distributed nature of Hg to use your existing instances to pass the changes around amongst themselves, without a "root" repository. If you only have one instance, of course, this is a non-starter.)

@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 82483
+[parent_id]: 
+[tags]: 
+How to use "tree boosting" with a data-driven loss function
+
+We have a problem which has a data-driven (non-analytical) loss function. Our target contains whole numbers between 0 and 20 (the target is inherently discrete), although larger values are possible, just not present in our dataset. The fact that we have a very precise loss function leaves us with some serious issues when using algorithms like XGBoost: The loss function is generally non-convex. It's not easily fitted by a convex function since its shape is data-driven and can vary drastically. For example, this means that a large punishment is inevitably given for predictions further from the part of the function that is well-fitted, where no large punishment is required. If we interpolate instead of fit, the hessian can be negative (see attached picture), which is a problem for determining leaf weights (right?). We think we can adapt something like the XGBoost algorithm (I use this algorithm as an example because I'm both familiar with the paper and the API) by swapping out its dependance on the gradient en hessian with a brute-force method for finding the optimal leaf weights and best gain. However, this will slow down the algorithm massively, perhaps cripplingly so. My questions are: is the some default way of dealing with complex loss-functions within existing algorithms? Is the an algorithm that is suited for dealing with these problems? Is there anything else you could suggest to solve the above issues? Thanks in advance.

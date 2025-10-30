@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1972368
+[parent_id]: 1971281
+[tags]: 
+OK, so the issue was that the jQuery $(document).ready() event isn't fired on updatepanel async postbacks. The solution is to refactor the function definition inside the ready() into an explicit function definition ( i.e. function pageReady(){...} ) and add the new pageReady() eventhandler to ASP.net Sys.WebForms.PageRequestManager endRequest event which is only fired on async postbacks. So the code now looks like this: Sys.WebForms.PageRequestManager.getInstance().add_endRequest(pageReady); $(document).ready(pageReady); function pageReady() { ... oAutoCompleteTextBox = GetElement(' '); ... SetupDefaultValues(); } function SetupDefaultValues() { ... if(canFocus(oAutoCompleteTextBox)) { oAutoCompleteTextBox.focus(); } } Thanks for everyone's help and attention - took a while to figure out, I'm just glad it's resolved :)

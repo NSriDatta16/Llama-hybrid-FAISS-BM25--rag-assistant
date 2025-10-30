@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 52860
+[parent_id]: 
+[tags]: 
+LOESS and MA normalization in R?
+
+Attempting to do loess on two variables x and y in R using MA normalization(see MA-plot ; see also Bland-Altman or Tukey mean-difference plot ) like this: > x = rnorm(100) + 5 > y = x + 0.6 + rnorm(100)*0.8 > m = log(x/y) > a = 0.5*log(x*y) I want to normalize x and y in such a way that the average m is 0, as in standard MA normalization, and then back-calculate the correct x and y values. First running loess on MA: > l = loess(m ~ a) What is the way to get corrected m values then? Is this correct? > mc plot(a,m) # corrected MA plot > plot(a,m-mc) not clear to me what predict actually does in the case of loess objects and how it's different from using l$residuals in the object l returned by loess - can someone explain? finally, how can I back calculate new x and y values based on this correction? Attempt to back-calculate x and y : the corrected m is, new_m = m - mc so x,y can be derived from the definition of m : m = log(x/y) = log(x) - log(y) therefore, x = exp(new_m + log(y)) y = exp(-1*(new_m - log(x))) but this is wrong; there's a missing scaling factor of a half and I'd like to see a derivation of where that comes from. Probably from the definition of A but I don't see why I can't get the same be rewriting x,y in terms of A edit if someone can explain where the half correction factor comes in when back calculating x -- i.e. why the formula x = exp(new_m + log(y)) is wrong -- i'd appreciate it.

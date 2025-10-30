@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3425331
+[parent_id]: 3425140
+[tags]: 
+I assume you also want the INTs to be IDENTITYs. Here is how to migrate the data: Put application offline, no DB updates can occur, suspend all SQL Agent jobs, imports etc For each PK: create a copy table with same structure + 1 new int identity(1,1) column copy data from old table to new table use sp_rename to swap the tables so that the new table becomes the old table Rinse, cycle and repeat for all tables with PKs (tables now have both GUIDs and INTs) For each FK: add a new INT column on the FK source table (the one that has the constraint) run an update that joins the two tables on the GUIDs and assigns the new int PKs to the relation column Add back FK constaints, now on the INT columns Drop GUID columns

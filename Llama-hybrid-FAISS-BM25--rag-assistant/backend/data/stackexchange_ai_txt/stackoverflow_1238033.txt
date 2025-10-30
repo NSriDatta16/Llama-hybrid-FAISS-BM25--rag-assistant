@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1238033
+[parent_id]: 1237963
+[tags]: 
+Alignment affects the layout of structs. Consider this struct: struct S { char a; long b; }; On a 32-bit CPU the layout of this struct will often be: a _ _ _ b b b b The requirement is that a 32-bit value has to be aligned on a 32-bit boundary. If the struct is changed like this: struct S { char a; short b; long c; }; the layout will be this: a _ b b c c c c The 16-bit value is aligned on a 16-bit boundary. Sometimes you want to pack the structs perhaps if you want to match the struct with a data format. By using a compiler option or perhaps a #pragma you are able to remove the excess space: a b b b b a b b c c c c However, accessing an unaligned member of a packed struct will often be much slower on modern CPU's, or may even result in an exception.

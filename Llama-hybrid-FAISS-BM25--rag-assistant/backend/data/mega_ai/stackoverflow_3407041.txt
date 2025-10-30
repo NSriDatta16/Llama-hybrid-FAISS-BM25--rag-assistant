@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3407041
+[parent_id]: 3224053
+[tags]: 
+I can confirm the same. I submitted a bug report to Apple with a sample project demonstrating the issue. The temporary workaround I've found is to disable the UITapGestureRecognizer immediately before showing the Alert. Then, in the UIAlertView delegate method(s) you implement, re-enable it. This requires you to keep track of the GR somehow, but it seems like the most elegant solution for the time-being. Using the sample code above: -(void)openInMapsApp:(UIGestureRecognizer*)g { UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:@"This will open this location in the Maps application. Continue?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK",nil]; g.enabled = NO; self.activeGestureRecognizer = g; [alertView show]; [alertView release]; } - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex { self.activeGestureRecognizer.enabled = YES; self.activeGestureRecognizer = nil; } - (void)alertViewCancel:(UIAlertView *)alertView { self.activeGestureRecognizer.enabled = YES; self.activeGestureRecognizer = nil; }

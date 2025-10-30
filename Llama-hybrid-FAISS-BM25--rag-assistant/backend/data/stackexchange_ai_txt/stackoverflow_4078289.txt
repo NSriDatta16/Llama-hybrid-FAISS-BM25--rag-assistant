@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4078289
+[parent_id]: 4060704
+[tags]: 
+The problem is that you’re twice binding storage to your Depth renderbuffer, and never to your Color renderbuffer. The -renderbufferStorage:fromDrawable: message to your EAGLContext binds a storage to the currently bound renderbuffer, which in your case is the Depth renderbuffer. Following, you’re binding storage to it again using the glRenderbufferStorage call. The solution is to bind the Color renderbuffer prior to sending the storage message, so that the storage gets bounds to that. That is, insert a line glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer); directly above the message, after you create your Depth renderbuffer. It should work, I was able to reproduce your error and subsequently solve it in this way. NB. Always make sure the correct buffers are bound. You can check using glGetIntegerv() for the binding, and glGetRenderbufferParameteriv() for additional parameters.

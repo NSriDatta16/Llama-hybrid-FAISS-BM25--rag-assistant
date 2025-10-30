@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 632847
+[parent_id]: 
+[tags]: 
+Transformers: Cross Attention Tensor Shapes During Inference Mode
+
+Using the "classic" transformer model describing in "Attention is All You Need", I'm struggling to understand how the Encoder output is used by the Decoder during cross attention while in inference mode, specifically how the actual matrix multiplication can happen. During training mode, everything makes sense to me: The Encoder outputs a tensor of shape (B, T, C) where B = batch_size, T = max_tokens, and C = d_model = embedding dimension size. This is passed to the Decoder and changed to shape (B, T, T) through the scaled dot product mechanism (will call this tensor A ) A is multiplied by the Decoder's value tensor of shape (B, T, HS) where HS = depth = head size. This multiplication is possible because the shapes of the tensors comply (B, T, T) @ (B, T, HS) --> (B, T, HS) . But in inference mode we start with a Decoder value tensor that will only have a token length of 1 , so a tensor shape of (1, 1, HS) , where T != 1, and then expand the sequence from there. So, during the cross attention step with the Encoder, how can A with shape (1, T, T) be multiplied with (1, 1, HS) ? Clearly, I'm missing something pretty big here, so any help would be much appreciated!

@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 97866
+[parent_id]: 97854
+[tags]: 
+Essentially, this seems to be a question about estimation. Does Method A provide similar scores as Method B & C do (The second point made by Alexis above)? I would approach this by looking at a graph of Method means (if the distributions seem normal) plotted with confidence intervals. This is a very simple approach, and here's how to do that in R. Note that you would also be interested in the variances of each method: Perhaps your method provides scores that are much more/less variable than other methods. Looking at means will answer the simple question of similarity in the average score between methods. library(dplyr) library(reshape2) library(ggplot) Melt data into long form, then get summaries (using reshape2 and dplyr). data_long = melt(data, id="Subject") methods = group_by(data_long, variable) d_summary = summarise(methods, mean = mean(value), sd = sd(value), n = n(), se = sd/sqrt(n), ci = qt(.975, n-1) * se) Then we just plot these values (with ggplot2). ggplot(d_summary, aes(x = variable, y = mean)) + geom_pointrange(aes(ymin = mean - ci / 2, ymax = mean + ci / 2))

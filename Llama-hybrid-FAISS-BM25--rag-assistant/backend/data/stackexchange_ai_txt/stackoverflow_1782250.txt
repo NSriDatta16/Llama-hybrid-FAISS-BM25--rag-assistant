@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1782250
+[parent_id]: 1782220
+[tags]: 
+If the file is huge an XML parser could result in significant slow down or even an application crash as XML parsers require the entire file in memory before any operations can be performed on the file (something high-level fluffy cloud developers often forget about recursive structures). Instead you can be pragmatic. It appears that your data follows fairly consistent patterns. And this is a one-time transformation. Try something like BEGIN { open( FOUT1 ">s1.txt" ) or die( "Cannot open s1.txt: $!" ); open( FOUT2 ">s2.txt" ) or die( "Cannot open s2.txt: $!" ); } while ( defined( my $line = <> ) ) { if ( $line =~ m{ (.+?) } ) { print( FOUT1 "$1\n" ); } elsif ( $line =~ m{ (.+?) } ) { print( FOUT2 "$1\n" ); } } END { close( FOUT2 ); close( FOUT1 ); } Then run this script as perl myscript.pl . Update 1 : corrected reference to matched section as $1 from $2 .

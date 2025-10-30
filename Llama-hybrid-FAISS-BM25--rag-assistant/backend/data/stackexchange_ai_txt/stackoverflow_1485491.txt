@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1485491
+[parent_id]: 1421491
+[tags]: 
+Many memory managers can perform TRIM operations where they return entirely unused blocks of memory to the OS. However, as several posts here have mentioned, it's entirely implementation dependent. But lets say I never ask for allocation of size greater than say 50 bytes and I ask a lot of such 50 byte objects on peak load on the system. Then what ? This depends on your allocation pattern. Do you free ALL of the small allocations? If so and if the memory manager has handling for a small block allocations, then this may be possible. However, if you allocate many small items and then only free all but a few scattered items, you may fragment memory and make it impossible to TRIM blocks since each block will have only a few straggling allocations. In this case, you may want to use a different allocation scheme for the temporary allocations and the persistant ones so you can return the temporary allocations back to the OS.

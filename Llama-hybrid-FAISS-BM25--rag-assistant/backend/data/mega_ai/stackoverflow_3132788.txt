@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3132788
+[parent_id]: 
+[tags]: 
+Very slow TRUNCATE accompanied with "Server seems busy" on httpd log
+
+I have this very simple table with only 35 rows on 5 simple columns (primary key on id auto increment, title (varchar), a bool, and 2 datetime). As we work in team, we import data from Google Docs, rephrase it as a SQL to do a TRUNCATE->LOCK TABLE WRITE->INSERT INTO (multiple lines)->UNLOCK TABLE at once. On other bigger, more complicated tables it works super fine, the whole process finishes within a second. But on this one, it always takes about 5~7 minutes to finish. The problem is that it triggers locks on other tables, and the system is basically down during this period. While the system is down, I captured the >SHOW FULL PROCESSLIST; and found out that: - the TRUNCATE is taking a long time, with the status code "checking permissions" for more than 200 seconds. - for some reason, when this problem happens, the httpd log spits a "server seems busy..." and Apache freezes on all front instances. I've tried to look for similar cases on the web in vain. It'd really save our lives if anyone can give us a helpful insight on this one... Thanks! DB Server: m2.2xlarge instance @ EC2 Front servers: m1.large instances @ EC2 MySQL version: 5.0.77 GUI client: phpmyadmin 3.2.3 DB storage type: MyISAM

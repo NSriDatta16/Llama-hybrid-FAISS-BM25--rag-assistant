@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 447645
+[parent_id]: 446256
+[tags]: 
+So, I figured where the problem is with high probability. The real issue is my data... I created target variable $Y$ so that for each random subject the dependancy on covariates was 100%. Call: lm(formula = score_diff_delta ~ score_diff, data = ddt) Residuals: Min 1Q Median 3Q Max -3.202e-15 -2.600e-18 7.460e-17 7.460e-17 6.077e-16 Coefficients: Estimate Std. Error t value Pr(>|t|) (Intercept) 1.600e+01 8.434e-16 1.897e+16 It caused the problems with convergence, I believe. That was a suprise to find because I thought (without good understanding of mixed models) that various subjects would contribute to a mix of covariates / targets (like with minibatching for the neural network) and the fit would not be nearly 100%. It appears the model builds estimates for each level of the random factor and them plunges into this singularity, and creates some strange patterns of coefficients. So this is totally my desing flaw. I will need to rethink my approach ( Mixed effect predictive model where dependent variable is constant for each random instance ) to $Y$ first.

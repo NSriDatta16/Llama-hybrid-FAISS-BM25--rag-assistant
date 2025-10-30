@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1450822
+[parent_id]: 1428678
+[tags]: 
+Sorting is something done by the database server, not the storage engine, in MySQL. If in both cases, the engine was not able to provide the results in already-sorted form (it depends on the index used), then the server needs to sort them. The only reason that MyISAM / InnoDB might be different is that the order the rows come back could affect how sorted the data are already - MyISAM could give the data back in "more sorted" order in some cases (and vice versa). Still, sorting 60k rows is not going to take long as it's a very small data set. Are you sure you've got your sort buffer set big enough? Using an on-disc filesort() instead of an in-memory one is much slower. The engine should however, not make any difference to this. filesort is not an engine function, but a MySQL core function. filesort does, in fact, suck in quite a lot of ways but it's not normally that slow.

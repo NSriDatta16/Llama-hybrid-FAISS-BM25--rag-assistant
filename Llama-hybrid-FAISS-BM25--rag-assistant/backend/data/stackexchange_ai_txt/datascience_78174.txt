@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 78174
+[parent_id]: 77743
+[tags]: 
+After digging down too much and some help from sklearn2pmml creator, I managed to filter the final columns to be passed to the classifier. Note : Here recorder is DataFrameMapper object. 1.Getting categorical column indexes. cat_cols = [recorder.transformed_names_.index(c) for c in categoricalCols if c in recorder.transformed_names_] 2.Adding ColumnTransformer to filter those column with the help of their indexes. pipeline = PMMLPipeline([ ("mapper", recorder), ("select", ColumnTransformer([("drop", "drop", cat_cols)], remainder='passthrough')), ("classifier", xgb.XGBClassifier()) ]) 3.Fitting the Data to the pipeline. pipeline.fit(X_train,y_train) 4.Creating PMML file out of Pipeline. out_file = "XGBoost.pmml" sklearn2pmml(pipeline, out_file)

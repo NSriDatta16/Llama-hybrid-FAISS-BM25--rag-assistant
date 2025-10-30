@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3241751
+[parent_id]: 
+[tags]: 
+Creating an unlimited forum hierarchy in Django
+
+I'm trying to design models for a forum I wish to create in Django. So far I have: class Forum(models.Model): name = models.CharField(max_length=255) slug = models.SlugField(max_length=150) description = models.TextField() def __unicode__(self): return self.name class SubForum(models.Model): parent_forum = models.ForeignKey('Forum', related_name='forums') parent = models.ForeignKey('self', blank=True, null=True, related_name='children') name = models.CharField(max_length=300) slug = models.SlugField(max_length=150) description = models.TextField() def __unicode__(self): if self.parent: return u'%s: %s - %s' % (self.parent_forum.name, self.parent.name, self.name) return u'%s: %s' % (self.parent_forum.name, self.name) This works for the most part as I am able to choose a parent category although I am not sure how to select parent of a child's parent. For example if I had the following: Grandparent -> Parent -> Child How would I select Grandparent from Child? This kind of hierarchy also makes the Django admin rather messy as it doesn't cascade in an orderly fashion. Do I have to build the entire admin from scratch in order to organise this into a usable interface? Lastly the __unicode__ function in the SubForum model allows me to print the parent but what about a grandparent. Can I get __unicode__ to print all ancestors? Thanks.

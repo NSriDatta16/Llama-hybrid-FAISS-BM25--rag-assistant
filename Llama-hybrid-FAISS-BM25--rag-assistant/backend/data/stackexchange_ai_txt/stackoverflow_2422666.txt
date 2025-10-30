@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2422666
+[parent_id]: 2420650
+[tags]: 
+There is no elegant solution in general, only old hacks with untyped references like this: type TVector = record procedure UseQuaternion(var Q); end; TQuaternion = record procedure UseVector(var V: TVector); end; { TVector } procedure TVector.UseQuaternion(var Q); var Quaternion: TQuaternion absolute Q; begin Quaternion.UseVector(Self); end; { TQuaternion } procedure TQuaternion.UseVector(var V: TVector); begin end; For the particular cases the following pattern may be useful: type TVectorData = array [0..1] of Double; TQuaternionData = array [0..3] of Double; TVector = record Data: TVectorData; procedure UseQuaternion(var Q: TQuaternionData); end; TQuaternion = record Data: TQuaternionData; procedure UseVector(var V: TVector); end;

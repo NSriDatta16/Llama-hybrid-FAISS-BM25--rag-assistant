@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1759280
+[parent_id]: 1759236
+[tags]: 
+I don't think you'd even have to use PHP to get this done. Provided that the databases are under the same MySQL instance, you can just use a cross-database query to select data from one table and drop it into another. For instance, including your wanting to purge the table before hand: TRUNCATE TABLE DatabaseA.Table1; INSERT INTO DatabaseA.Table1A SELECT ColumnFoo, ColumnBar, ColumnBaz FROM DatabaseB.Table1B; You could write this into a PHP script, which cron could then call. Any other scripting language with a MySQL adapter would probably work, really. Doing this by loading data into a script and then redumping back into the DB would involve far more network bandwidth, storage, and processing than is necessary. One last note, if you start using other databases later on, bare in mind that not all of them support cross-database queries (I know of at least PostgreSQL that doesn't).

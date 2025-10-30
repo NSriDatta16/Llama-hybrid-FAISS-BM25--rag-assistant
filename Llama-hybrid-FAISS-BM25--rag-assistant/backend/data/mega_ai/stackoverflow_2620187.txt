@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2620187
+[parent_id]: 2620111
+[tags]: 
+I think that even without IE's foibles, checking for the presence of parentNode might not be enough. For example: var d = document.createElement('div'); var s = document.createElement('span'); d.appendChild(s); if (s.parentNode) { // this will run though it's not in the document } If something is in the document, then eventually one of its ancestors will be the document itself. Try this out and see how it goes: function inDocument(node) { var curr = node; while (curr != null) { curr = curr.parentNode; if (curr == document) return true; } return false; } // usage: // if (inDocument(myNode)) { .. } If you only want to check to a certain depth - that is, you know that your newly created elements aren't going to be nested any further than IE's Fragment, try this: function inDocument(node, depth) { depth = depth || 1000; var curr = node; while ((curr != document) && --depth) { curr = curr.parentNode; if (curr == null) return false; } return true; } inDocument(myNode, 2); // check only up to two deep. inDocument(myNode); // check up to 1000 deep.

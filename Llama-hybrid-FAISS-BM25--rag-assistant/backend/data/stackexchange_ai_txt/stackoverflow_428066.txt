@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 428066
+[parent_id]: 
+[tags]: 
+Elegantly selecting attributes from has_many :through join models in Rails
+
+I'm wondering what the easiest/most elegant way of selecting attributes from join models in has_many :through associations is. Lets say we have Items, Catalogs, and CatalogItems with the following Item class: class Item :catalog_items end Additionally, lets say that CatalogueItems has a position attribute and that there is only one CatalogueItem between any catalog and any item. The most obvious but slightly frustrating way to retrieve the position attribute is: @item = Item.find(4) @catalog = @item.catalogs.first @cat_item = @item.catalog_items.first(:conditions => {:catalog_id => @catalog.id}) position = @cat_item.position This is annoying because it seems that we should be able to do @item.catalogs.first.position since we have completely specified which position we want: the one that corresponds to the first of @item's catalogs. The only way I've found to get this is: class Item :catalog_items, :select => "catalogue_items.position, catalogs.*" end Now I can do Item.catalogs.first.position. However, this seems like a bit of a hack - I'm adding an extra attribute onto a Catalog instance. It also opens up the possibility of trying to use a view in two different situations where I populate @catalogs with a Catalog.find or with a @item.catalogs. In one case, the position will be there, and in the other, it won't. Does anyone have a good solution to this? Thanks.

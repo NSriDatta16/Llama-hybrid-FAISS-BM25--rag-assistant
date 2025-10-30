@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5692014
+[parent_id]: 5691625
+[tags]: 
+Here is one potential, if somewhat inelegant, solution out 1) {NULL} else {data.frame(x)}) out Which gives: > do.call(rbind, out) row.no column2 column3 column4 bb.yy 4 bb yy down bb.zz 5 bb zz up Some explanation, line by line: Line 1: splits the data into a list, each component of which is a data frame with rows corresponding to groups formed by unique combinations of column2 and column3 . Line 2: iterate over the result from Line 1; if there are more than 1 row in data frame, return NULL, if not return the 1-row data frame. Line 3: iterate over the output from Line 2; return only non-NULL components Line 4: need to bind, row-wise, the output from Line 3, which we arrange via do.call() This can be simplified to two lines, combining Lines 1-3 into a single line: out 1) {NULL} else {data.frame(x)}) do.call(rbind, out[!sapply(out, is.null)]) The above was all done with: dat

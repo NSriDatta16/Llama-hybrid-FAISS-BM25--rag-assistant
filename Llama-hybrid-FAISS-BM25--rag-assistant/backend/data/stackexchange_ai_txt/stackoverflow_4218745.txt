@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4218745
+[parent_id]: 4218553
+[tags]: 
+Typical IP headers are 20 bytes, if no options have been selected. UDP headers are 8 bytes. Over Ethernet, frame size is 14 bytes (header) + 4 bytes (trailer). Depending on how you capture these packets, you may or may not have to account for frame size. Without Ethernet (IP + UDP) = 20 + 8 = 28 bytes With Ethernet = 18 + 28 = 46 bytes The UdpClient class in C# will return the packet from layer 5 onwards, so you won't have to account for the above. Update: The 1500 bytes MTU is enforced at the IP layer. That means that the packet size below the IP layer is insignificant when fragmenting. That translates to: Ethernet frame bytes (fixed) = 18 IP header (min) = 20 UDP header (fixed) = 8 Max. allowed payload for no fragmentation = 1472 Total number of bytes that go on the wire = (Sum above) 1518 bytes (You can count the number of bytes leaving with a tool like Wireshark) If (IP header + UDP header + Payload > 1500) then the packet is fragmented.

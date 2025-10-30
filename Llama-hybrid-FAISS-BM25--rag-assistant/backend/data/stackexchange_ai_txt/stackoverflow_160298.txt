@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 160298
+[parent_id]: 
+[tags]: 
+Django/Python - Grouping objects by common set from a many-to-many relationships
+
+This is a part algorithm-logic question (how to do it), part implementation question (how to do it best!). I'm working with Django, so I thought I'd share with that. In Python, it's worth mentioning that the problem is somewhat related to how-do-i-use-pythons-itertoolsgroupby . Suppose you're given two Django Model-derived classes: from django.db import models class Car(models.Model): mods = models.ManyToManyField(Representative) and from django.db import models class Mods(models.Model): ... How does one get a list of Cars, grouped by Cars with a common set of Mods? I.e. I want to get a class likeso: Cars_by_common_mods = [ { mods: { 'a' }, cars: { 'W1', 'W2' } }, { mods: { 'a', 'b' }, cars: { 'X1', 'X2', 'X3' }, }, { mods: { 'b' }, cars: { 'Y1', 'Y2' } }, { mods: { 'a', 'b', 'c' }, cars: { 'Z1' } }, ] I've been thinking of something like: def cars_by_common_mods(): cars = Cars.objects.all() mod_list = [] for car in cars: mod_list.append( { 'car': car, 'mods': list(car.mods.all()) } ret = [] for key, mods_group in groupby(list(mods), lambda x: set(x.mods)): ret.append(mods_group) return ret However, that doesn't work because (perhaps among other reasons) the groupby doesn't seem to group by the mods sets. I guess the mod_list has to be sorted to work with groupby. All to say, I'm confident there's something simple and elegant out there that will be both enlightening and illuminating. Cheers & thanks!

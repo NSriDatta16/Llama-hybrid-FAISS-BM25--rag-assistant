@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4979480
+[parent_id]: 4979135
+[tags]: 
+If you really want to handle vertical scroll even if dragging happens on the buttons, what you might do is to subclass UIButton and forward touch events to the next responder (which in this case is the scroll view). In your UIButton subclass, override the event handling methods (touchesBegan... etc.) to call the superclass implementation (UIButton's), then forward the events to the next responder, for example: - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event { [super touchesBegan:touches withEvent:event]; [self.nextResponder touchesBegan:touches withEvent:event]; } But be careful and think of all the cases that could happen when the button's event handling and your handling for vertical scroll go together. For example, if dragging goes across a button (well, although it wouldn't happen if the vertical scroll works appropriately), then the button thinks it's a valid 'pressing' on the button and it will fire an action message.

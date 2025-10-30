@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4279785
+[parent_id]: 
+[tags]: 
+One of two destructors is not called during stack unwind
+
+I have an application written on MS Visual C++ 2005. It had failed on client's computer. I cannot reproduce the fail; all I have for analysis is log created by the application. In the application I have the following fragment: class EntranceLoggerForFunc { public: EntranceLoggerForFunc() { WriteToLog("EntranceLoggerForFunc"); } ~EntranceLoggerForFunc() { WriteToLog("~EntranceLoggerForFunc"); } } void Func() { EntranceLoggerForFunc logger; .... if ( ) Func(); .... } void Func2() { try { Func(); } catch(...) { WriteToLog("Exception happened"); } } The application is compiled with key /EHa (Enable C++ exceptions with SEH Exceptions'. In the log I see the following: EntranceLoggerForFunc EntranceLoggerForFunc ~EntranceLoggerForFunc Exception happened In other words, an exception happened somewhere inside the Func(); and had been caught in Func2(). But why ONLY ONE destructor of the two objects EntranceLoggerForFunc has been called during stack unwind? Now I have only the following version: stack was somehow damaged (most probably by the same wrong operation that led to the exception), and this is why one of the destructors did not work. Any other versions?

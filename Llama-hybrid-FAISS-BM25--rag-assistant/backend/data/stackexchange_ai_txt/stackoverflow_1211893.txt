@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1211893
+[parent_id]: 
+[tags]: 
+Organising a MySQL table structure for effiently indexing pairs
+
+Currently have an 'item' table, and a 'pair' table. The pair table simply contains two columns, which contain the primary key from the item table. A common query is to find a number of items that are featured in the least number of pairs. SELECT id,COUNT(*) AS count FROM item i LEFT JOIN pair p ON (i.id = p.id1 OR i.id = p.id2) GROUP BY id ORDER BY count,RAND() LIMIT 100 but the query is horible performance wise. There is an index on id1,id2 on pair. +----+-------------+-------+-------+---------------+------+---------+------+-------+---------------------------------+ | id | select_type | table | type | possible_keys | key | key_len | ref | rows | Extra | +----+-------------+-------+-------+---------------+------+---------+------+-------+---------------------------------+ | 1 | SIMPLE | item | ALL | NULL | NULL | NULL | NULL | 5644 | Using temporary; Using filesort | | 1 | SIMPLE | pair | index | id1 | id1 | 8 | NULL | 18377 | Using index | +----+-------------+-------+-------+---------------+------+---------+------+-------+---------------------------------+ Is there a better query, and/or data structure for this type of thing?

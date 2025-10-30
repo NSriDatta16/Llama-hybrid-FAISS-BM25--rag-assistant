@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4969092
+[parent_id]: 4968989
+[tags]: 
+What line is the NPE on? If the response != HttpURLConnection.HTTP_OK, then openHttpConnection will return null and you will get an NPE on in.read(Data). You might want to do something like this. if (response == HttpURLConnection.HTTP_OK) { in = httpConn.getInputStream(); } else { throw new IOException("Bad Response Received"); } And also you don't need the try and catch block in openHttpConnection, just let it throws the IOException and handle it like you are in the code above. It might be cleaner to use the Apache HttpClient classes in the sdk. Something like. HttpClient client = AndroidHttpClient.newInstance("myUserAgent"); HttpGet httpGet = new HttpGet("http://epubreader.feathersoft.net /public/json/books.json"); HttpResponse response = client.execute(httpGet); if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) { InputStream inputStream = response.getEntity().getContent(); // read from stream } You could also use execute with a anonymous ResponseHandler so your method would return a List on success.

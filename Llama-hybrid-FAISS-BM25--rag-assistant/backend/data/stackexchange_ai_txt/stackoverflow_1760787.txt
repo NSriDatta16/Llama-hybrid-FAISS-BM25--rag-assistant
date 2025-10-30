@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1760787
+[parent_id]: 1760185
+[tags]: 
+While Mark Byers provided you a solution using LINQ, I want to show you another solution using the .NET Framework. There is an overload of Array.Sort that will do this for you: int[] a = new[] { 3, 2, 1 }; int[] p = new[] { 0, 1, 2 }; Array.Sort(a, p); Assert.IsTrue(a.SequenceEquals(new[] { 1, 2, 3 })); Assert.IsTrue(p.SequenceEquals(new[] { 2, 1, 0 })); Thus, here is a generic method meeting your specification that leverages this overload: void Sort ( List input, out List output, out List permutation, IComparer comparer ) { if(input == null) { throw new ArgumentNullException("input"); } if(input.Count == 0) { // give back empty lists output = new List (); permutation = new List (); return; } if(comparer == null) { throw new ArgumentNullException("comparer"); } int[] items = Enumerable.Range(0, input.Count).ToArray(); T[] keys = input.ToArray(); Array.Sort(keys, items, comparer); output = keys.ToList(); permutation = items.ToList(); }

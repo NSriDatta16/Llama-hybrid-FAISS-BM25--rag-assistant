@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1490693
+[parent_id]: 
+[tags]: 
+Tentative definitions in C and linking
+
+Consider the C program composed of two files, f1.c: int x; f2.c: int x=2; My reading of paragraph 6.9.2 of the C99 standard is that this program should be rejected. In my interpretation of 6.9.2, variable x is tentatively defined in f1.c , but this tentative definition becomes an actual definition at the end of the translation unit, and (in my opinion), should therefore behave as if f1.c contained the definition int x=0; . With all compilers (and, importantly, linkers) I was able to try, this is not what happens. All compilation platforms I tried do link the above two files, and the value of x is 2 in both files. I doubt this happens by accident, or just as an "easy" feature to provide in addition to what the standard requires. If you think about it, it means there is special support in the linker for those global variables that do not have an initializer, as opposed to those explicitly initialized to zero. Someone told me that the linker feature may be necessary to compile Fortran anyway. That would be a reasonable explanation. Any thoughts about this? Other interpretations of the standard? Names of platforms on which files f1.c and f2.c refuse to be linked together? Note: this is important because the question occurs in the context of static analysis. If the two files may refuse to be linked on some platform, the analyzer should complain, but if every compilation platform accepts it then there is no reason to warn about it.

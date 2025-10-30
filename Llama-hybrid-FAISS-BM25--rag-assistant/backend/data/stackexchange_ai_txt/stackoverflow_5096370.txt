@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5096370
+[parent_id]: 
+[tags]: 
+Custom Excel Export Action
+
+public class ExcelResult : ActionResult { string _fileName; string _viewPath; Model _model; ControllerContext _context; public ExcelResult(ControllerContext context, string viewPath, string fileName, Model model) { this._context = context; this._fileName = fileName; this._viewPath = viewPath; this._model = model; } protected string RenderViewToString() { using (var writer = new StringWriter()) { var view = new WebFormView(_viewPath); var vdd = new ViewDataDictionary (_model); var viewCxt = new ViewContext(_context, view, vdd, new TempDataDictionary(), writer); viewCxt.View.Render(viewCxt, writer); return writer.ToString(); } } void WriteFile(string content) { HttpContext context = HttpContext.Current; context.Response.Clear(); context.Response.AddHeader("content-disposition", "attachment;filename=" + _fileName); context.Response.Charset = ""; context.Response.Cache.SetCacheability(HttpCacheability.NoCache); context.Response.ContentType = "application/ms-excel"; context.Response.Write(content); context.Response.End(); } public override void ExecuteResult(ControllerContext context) { string content = this.RenderViewToString(); this.WriteFile(content); } } I'm really just confused on how to use this action in my controller. I got this from the internet but I am just having a hard time figuring out how I would define it in my controller and pass data to it and get data back from an AJAX call. Any help would be awesome. Thanks.

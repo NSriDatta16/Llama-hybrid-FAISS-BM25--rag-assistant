@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3766074
+[parent_id]: 
+[tags]: 
+Is unsigned char a[4][5]; a[1][7]; undefined behavior?
+
+One of the examples of undefined behavior from the C standard reads (J.2): — An array subscript is out of range, even if an object is apparently accessible with the given subscript (as in the lvalue expression a[1][7] given the declaration int a[4][5]) (6.5.6) If the declaration is changed from int a[4][5] to unsigned char a[4][5] , does accessing a[1][7] still result in undefined behavior? My opinion is that it does not, but I have heard from others who disagree, and I'd like to see what some other would-be experts on SO think. My reasoning: By the usual interpretation of 6.2.6.1 paragraph 4, and 6.5 paragraph 7, the representation of the object a is sizeof (unsigned char [4][5])*CHAR_BIT bits and can be accessed as an array of type unsigned char [20] overlapped with the object. a[1] has type unsigned char [5] as an lvalue, but used in an expression (as an operand to the [] operator, or equivalently as an operand to the + operator in *(a[1]+7) ), it decays to a pointer of type unsigned char * . The value of a[1] is also a pointer to a byte of the "representation" of a in the form unsigned char [20] . Interpreted in this way, adding 7 to a[1] is valid.

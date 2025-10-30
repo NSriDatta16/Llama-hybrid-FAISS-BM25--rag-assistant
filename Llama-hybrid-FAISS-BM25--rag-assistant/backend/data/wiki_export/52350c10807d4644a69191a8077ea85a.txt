@@ -1,0 +1,79 @@
+PhotoRec is a free and open-source utility software for data recovery with text-based user interface using data carving techniques, designed to recover lost files from various digital camera memory, hard disk and CD-ROM. It can recover the files with more than 480 file extensions (about 300 file families).
+ It is also possible to add custom file signature to detect less known files.
+
+PhotoRec does not attempt to write to the damaged media the user is about to recover from. Recovered files are instead written to the directory from which PhotoRec is run, any other directory may be chosen. It can be used for data recovery or in a digital forensics context.
+
+PhotoRec is shipped with TestDisk.
+
+Functionality 
+FAT, NTFS, ext2/ext3/ext4 file systems store files in data blocks (also called data clusters under Windows). The cluster or block size remains at a constant number of sectors after being initialized during the formatting of the filesystem. In general, most operating systems try to store the data in a contiguous way so as to minimize data fragmentation. The seek time of mechanical drives is significant for writing and reading data to/from a hard disk, so that is why it is important to keep the fragmentation to a minimum level.
+
+When a file is deleted, the meta-information about this file (filename, date/time, size, location of the first data block/cluster, etc.) is lost; e.g., in an ext3/ext4 filesystem, the names of deleted files are still present, but the location of the first data block is removed. This means the data is still present on the filesystem, but only until some or all of it is overwritten by new file data.
+
+To recover these "lost" files, PhotoRec first tries to find the data block (or cluster) size. If the filesystem is not corrupted, this value can be read from the superblock (ext2/ext3/ext4) or volume boot record (FAT, NTFS). Otherwise, PhotoRec reads the media, sector by sector, searching for the first ten files, from which it calculates the block/cluster size from their locations. Once this block size is known, PhotoRec reads the media block by block (or cluster by cluster). Each block is checked against a signature database; which comes with the program and has been growing in the type of files it can recover ever since PhotoRec's first version came out. It is a common data recovery method called file carving.
+
+For example, PhotoRec identifies a JPEG file when a block begins with:
+ Start Of Image + APP0: 0xff, 0xd8, 0xff, 0xe0
+ Start Of Image + APP1: 0xff, 0xd8, 0xff, 0xe1
+ or Start Of Image + Comment: 0xff, 0xd8, 0xff, 0xfe
+
+If PhotoRec has already started to recover a file, it stops its recovery, checks the consistency of the file when possible and starts to save the new file (which it determined from the signature it found).
+
+If the data is not fragmented, the recovered file should be identical to (or possibly larger than) the original file in size. In some cases, PhotoRec can learn the original file size from the file header, so the recovered file is truncated to the correct size. If, however, the recovered file ends up being smaller than its header specifies, it is discarded. Some files, such as *.MP3 types, are data streams. In this case, PhotoRec parses the recovered data, then stops the recovery when the stream ends.
+
+When a file is recovered successfully, PhotoRec checks the previous data blocks to see whether a file signature was found but the file was not able to be successfully recovered (i.e., the file was too small), and it tries again. This way, some fragmented files can be successfully recovered.
+
+Notable, PhotoRec does no restore original filenames but one can e.g. rename the JPG files with pictures using exiftool: https://www.cgsecurity.org/testdisk_doc/after_using_photorec.html#renaming-files-using-exiftool
+
+PhotoRec is superior to Scalpel and provides technically more correct files. In a discussion at https://github.com/sleuthkit/scalpel/issues/35 came ou that "Scalpel does not repair broken headers/EOF markers like PhotoRec in Autopsy. If you use a hex editor to manually repair the recovered files, then you will end up with the same images/files." Scalpel provides more broken JPG files where PhotoRec did the correct task on ext4 filesystem.
+
+PhotoRec (Testdisk) is bundled in Autopsy and WondershareRecoverIt packages (paid).
+
+Compatibility
+PhotoRec is compatible with:
+ DOS (either real or in a Windows 9x DOS box)
+ Microsoft Windows: NT4, 2000, XP, 2003, 2008, 2016,  Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11
+ Linux
+ FreeBSD, NetBSD, OpenBSD
+ SunOS
+ macOS
+ ARM
+
+Distribution 
+PhotoRec and TestDisk are shipped together. They can be downloaded from CGSecurity website.
+These utilities can be found on various Linux Live CDs:
+ GParted Live CD 
+ Parted Magic
+ Slax-LFI, a Slax-derived distribution 
+ SystemRescueCD
+ Ubuntu Rescue Remix, an Ubuntu derivation 
+They are also packaged for numerous *nix (mostly Linux based) distributions:
+ ALT Linux
+ Arch Linux Extra Repository
+ Debian contrib
+ Fedora Extras
+ Red Hat Epel
+ FreeBSD port
+ OpenBSD port
+ Gentoo and Gentoo Portage
+ Mandriva contrib
+ Source Mage Linux
+ Ubuntu
+
+See also 
+ Photo recovery
+List of free and open-source software packages
+File recovery
+
+References
+
+External links 
+ 
+
+1998 software
+Free data recovery software
+Portable software
+Hard disk software
+Free software programmed in C
+Free software that uses ncurses
+Software using the GPL license

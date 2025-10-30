@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2762731
+[parent_id]: 2762689
+[tags]: 
+Hm, here's one way to do it with a fold , but it feels inelegant and always traverses the whole list... type WeightedItem(id: int, weight: int) = member self.id = id member self.weight = weight let selectItem (items: WeightedItem list) (rand:System.Random) = let totalWeight = List.sumBy (fun (item: WeightedItem) -> item.weight) items let selection = rand.Next(totalWeight) + 1 List.fold (fun (runningWeight,found) (item: WeightedItem) -> if not found then let newRunningWeight = runningWeight + item.weight newRunningWeight, newRunningWeight >= selection else (runningWeight,found)) (0,false) items |> fst let items = [new WeightedItem(1,100) new WeightedItem(2,50) new WeightedItem(3,25)] let selection = selectItem items (new System.Random())

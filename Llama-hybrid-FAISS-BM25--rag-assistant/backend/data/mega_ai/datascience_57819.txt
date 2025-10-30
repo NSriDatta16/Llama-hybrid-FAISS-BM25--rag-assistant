@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 57819
+[parent_id]: 
+[tags]: 
+Structuring a LSTM Layer
+
+I'm trying to improve an NER Bert sequence tagger using LSTM layers in TensorFlow. I'm a bit unclear on the interface and how a LSTM layer should be set up. Currently, I'm taking in 3-5 sentences and outputting a layer of shape (?, 5, max_token_length,token_vector_output) . I'd like to take into consideration previous sentence output for the next sequence I'm tagging. Reshaping the above to (?, 5, max_token_length*token_vector_output) we can then apply a tf.keras.layers.LSTM layer, but this will yield a tensor of shape (?, unit_size) This appears to kill all sequence data off. Is this the correct way to feed my data to a LSTM layer? As an update, I think I have found a solution - let me know if this isn't a correct way to structure the network. The LSTM will output a tensor (?, unit_size) regularly - but this is the current state of the LSTM layer. Using the return_sequences=True argument, it will instead return a tensor of shape (?,sequence_length, unit_size) , which is the history of the internal states. In my case, I will be structuring the input as (?, 5 * max_token_length, token_vector_output) to the LSTM layer, returning a (?, 5 * max_token_length, unit_size) tensor. Taking the last max_token_length on axis 1, I'll get the states during the sentence I'm tagging. My logits will a weighted sum of this state tensor and the regular sequential Bert Output of that sentence, and applying a softmax will give the final labels!

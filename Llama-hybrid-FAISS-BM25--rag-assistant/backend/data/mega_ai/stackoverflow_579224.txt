@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 579224
+[parent_id]: 
+[tags]: 
+Setting catalina.policy to allow file access by servlets
+
+We have a locally-developed triple store based on b-trees which I want to use for persistent storage in a number of servlet applications. Rather than embed the b-tree index files in the servlet .war, I would like to store them at a known location and have the servlets access them directly. This all works in Jetty, but raises a security exception when I try it in Tomcat. I'm told that Tomcat's security model requires explicit permissions for a servlet to access files outside the directory tree where the .war is unpacked. If I've understood the Tomcat (version 5.5) documentation correctly, the following added to catalina.policy should allow the servlet to access the directories where the index files are: grant codeBase "jar:file:${catalina.home}/webapps/mytestapp/-" { permission java.io.FilePermission "/var/data/tdb/-", "read, write, delete"; } However, I still get a security exception: java.io.FileNotFoundException: /var/data/tdb/kb/node2id.idn (Permission denied) at java.io.RandomAccessFile.open(Native Method) ... To tick off the obvious dumb errors: I've checked that the index files are at the correct location, with the correct permissions, and are not corrupted. Any suggestions or hints at what I've got wrong in the security settings would be gratefully received.

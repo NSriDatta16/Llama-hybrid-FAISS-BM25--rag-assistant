@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1197270
+[parent_id]: 1197184
+[tags]: 
+I did a quick search of the Emacs lisp manual and couldn't find any reference to 'flet , which isn't terribly surprising since that is a part of cl - the common-lisp package . let will do a local binding as well, but it won't bind to the "function cell" for that symbol. i.e. This works: (let ((myf (lambda (x) (list x x)))) (eval (list myf 3))) but (let ((myf (lambda (x) (list x x)))) (myf 3)) fails with the error: "Lisp error: (void-function myf)" flet on the other hand, does do the binding to the function cell, so this works: (flet ((myf (x) (list x x))) (myf 3)) Notice the difference being that flet allows you to use the symbol myf directly, whereas the let does not - you have to use some indirection to get the function out of the "value cell" and apply that appropriately. In your example, the ' mapcar ' did the equivalent to my use of 'eval .

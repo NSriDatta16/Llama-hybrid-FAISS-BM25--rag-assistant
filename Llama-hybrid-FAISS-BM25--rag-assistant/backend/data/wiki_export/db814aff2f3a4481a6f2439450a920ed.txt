@@ -1,0 +1,82 @@
+Internet Protocol Flow Information Export (IPFIX) is an IETF protocol, as well as the name of the IETF working group defining the protocol. It was created based on the need for a common, universal standard of export for Internet Protocol flow information from routers, probes and other devices that are used by mediation systems, accounting/billing systems and network management systems to facilitate services such as measurement, accounting and billing. The IPFIX standard defines how IP flow information is to be formatted and transferred from an exporter to a collector. Previously many data network operators were relying on Cisco Systems' proprietary NetFlow technology for traffic flow information export.
+
+The IPFIX standards requirements were outlined in the original RFC 3917. Cisco NetFlow Version 9 was the basis for IPFIX.  The basic specifications for IPFIX are documented in RFC 7011 through RFC 7015, and RFC 5103.
+
+Architecture 
+
+The following figure shows a typical architecture of information flow in an IPFIX architecture:
+                             
+                        Exporter      IPFIX         Collector
+                           O--------------------------->O
+                           |
+                           | Observation
+                           | Domain
+                           |
+        Metering #1        | Metering #2
+          O----------------O----------------O Metering #3
+          |                |                |
+          | Observation    | Observation    | Observation
+          | Point #1       | Point #2       | Point #3
+          v                |                |
+ ---- IP Traffic --->      |                |
+                           v                |
+ --------------- More IP Traffic --->       |
+                                            v
+ ---------------------------------- More IP Traffic --->
+
+A pool of Metering Processes collects data packets at one or more Observation Points, optionally filters them and aggregates information about these packets.  An Exporter then gathers each of the Observation Points together into an Observation Domain and sends this information via the IPFIX protocol to a Collector. Exporters and Collectors are in a many-to-many relationship: One Exporter can send data to many Collectors and one Collector can receive data from many Exporters.
+
+Protocol 
+
+Similar to the NetFlow Protocol, IPFIX considers a flow to be any number of packets observed in a specific timeslot and sharing a number of properties, e.g. "same source, same destination, same protocol". Using IPFIX, devices like routers can inform a central monitoring station about their view of a potentially larger network.
+
+IPFIX is a push protocol, i.e. each sender will periodically send IPFIX messages to configured receivers without any interaction by the receiver.
+
+The actual makeup of data in IPFIX messages is to a great extent up to the sender. IPFIX introduces the makeup of these messages to the receiver with the help of special Templates. The sender is also free to use user-defined data types in its messages, so the protocol is freely extensible and can adapt to different scenarios.
+
+IPFIX prefers the Stream Control Transmission Protocol (SCTP) as its transport layer protocol, but also allows the use of the Transmission Control Protocol (TCP) or User Datagram Protocol (UDP).
+
+Example 
+
+A simple information set sent via IPFIX might look like this:
+
+ Source         Destination    Packets
+ ------------------------------------------
+ 192.168.0.201  192.168.0.1    235
+ 192.168.0.202  192.168.0.1    42
+
+This information set would be sent in the following IPFIX message:
+
+As can be seen, the message contains the IPFIX header and two IPFIX Sets: One Template Set that introduces the build-up of the Data Set used, as well as one Data Set, which contains the actual data. When IPFIX is sent over a protocol which keeps a session state (TCP or SCTP), the Template Set need not be retransmitted since it is buffered in Collectors.  Since the Template Set can change over time, it must be retransmitted if a new session state is established or if IPFIX is sent over UDP which is a session-less protocol.
+
+See also 
+ Network traffic measurement
+ Telemetry
+
+References
+
+External links 
+ IPFIX Status Pages
+ IETF IPFIX Charter
+ Network World IPFIX Introduction
+ RFC3954 - NetFlow Version 9
+ RFC3955 - Candidate Protocols for IP Flow Information Export (IPFIX)
+ RFC5103 - Bidirectional Flow Export Using IP Flow Information Export
+ RFC5153 - IPFIX Implementation Guidelines
+ RFC5470 - Architecture for IP Flow Information Export
+ RFC5471 - Guidelines for IP Flow Information Export (IPFIX) Testing
+ RFC5472 - IP Flow Information Export (IPFIX) Applicability
+ RFC5473 - Reducing Redundancy in IP Flow Information Export (IPFIX) and Packet Sampling (PSAMP) Reports
+ RFC7011 - Specification of the IP Flow Information Export (IPFIX) Protocol for the Exchange of IP Traffic Flow Information (IPFIX)
+ RFC7012 - Information Model for IP Flow Information Export
+ RFC7013 - Guidelines for Authors and Reviewers of IP Flow Information Export (IPFIX) Information Elements
+ RFC7014 - Flow Selection Techniques
+ RFC7015 - Flow Aggregation for the IP Flow Information Export (IPFIX) Protocol
+ Library for parsing, collecting and exporting IPFIX messages
+ Enterprise Open Source IPFIX Collector
+ Understanding NetFlow/IPFIX Principle Animation
+ What is IPFIX and Differences between Netflow
+
+Internet protocols
+Network management
+Internet Protocol based network software

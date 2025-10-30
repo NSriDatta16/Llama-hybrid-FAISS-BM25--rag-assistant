@@ -1,0 +1,81 @@
+In computer science, tail recursive parsers are a derivation from the more common recursive descent parsers. Tail recursive parsers are commonly used to parse left recursive grammars. They use a smaller amount of stack space than regular recursive descent parsers. They are also easy to write. Typical recursive descent parsers make parsing left recursive grammars impossible (because of an infinite loop problem). Tail recursive parsers use a node reparenting technique that makes this allowable.
+
+Example
+Given an EBNF Grammar such as the following:
+ E: T
+ T: T { '+' F } | F
+ F: F { '*' I } | I
+ I: <identifier>
+A simple tail recursive parser can be written much like a recursive descent parser. The typical algorithm for parsing a grammar like this using an abstract syntax tree is:
+Parse the next level of the grammar and get its output tree, designate it the first tree, 
+While there is terminating token, , that can be put as the parent of this node:
+Allocate a new node, 
+Set 's current operator as the current input token
+Advance the input one token
+Set 's left subtree as 
+Parse another level down again and store this as the next tree, 
+Set 's right subtree as 
+Set  to 
+Return 
+
+A basic example of this kind of parser in C is shown here. Implementation details have been omitted for simplicity.
+typedef struct _exptree exptree;
+struct _exptree {
+	char token;
+	exptree *left;
+	exptree *right;
+};
+
+exptree *parse_e(void)
+{
+	return parse_t();
+}
+
+exptree *parse_t(void)
+{
+	exptree *first_f = parse_f();
+	
+	while (cur_token() == '+') {
+		exptree *replace_tree = alloc_tree();
+		replace_tree->token = cur_token();
+		replace_tree->left = first_f;
+		next_token();
+		replace_tree->right = parse_f();
+		first_f = replace_tree;
+	}
+
+	return first_f;
+}
+
+exptree *parse_f(void)
+{
+	exptree *first_i = parse_i();
+	
+	while (cur_token() == '*') {
+		exptree *replace_tree = alloc_tree();
+		replace_tree->token = cur_token();
+		replace_tree->left = first_i;
+		next_token();
+		replace_tree->right = parse_i();
+		first_i = replace_tree;
+	}
+	
+	return first_i;
+}
+
+exptree *parse_i(void)
+{
+	exptree *i = alloc_tree();
+	i->left = i->right = NULL;
+	i->token = cur_token();
+	next_token();
+	return i;
+}
+
+See also
+ META II
+
+Further reading
+Article in the January 2006 edition of Dr. Dobbs Journal, "Recursive Descent, Tail Recursion, & the Dreaded Double Divide"
+
+Parsing algorithms

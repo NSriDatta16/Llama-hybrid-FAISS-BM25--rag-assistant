@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1465740
+[parent_id]: 1465715
+[tags]: 
+You need to use MethodInfo.MakeGenericMethod EDIT: OK, I had misunderstood the problem... This method should do what you want : MethodInfo GetMethod(Type argType, Type returnType) { var enumerableType = typeof(IEnumerable<>).MakeGenericType(new Type[] { argType }); Console.WriteLine(enumerableType); var methods = from method in typeof(Enumerable).GetMethods(BindingFlags.Public | BindingFlags.Static) let parameters = method.GetParameters() let genParams = method.GetGenericArguments() where method.Name == "Average" && method.ContainsGenericParameters && parameters.Length == 2 && parameters[1].ParameterType.GetGenericTypeDefinition() == typeof(Func ) && parameters[1].ParameterType.GetGenericArguments()[1] == argType && method.ReturnType == returnType select method; return methods.FirstOrDefault(); }

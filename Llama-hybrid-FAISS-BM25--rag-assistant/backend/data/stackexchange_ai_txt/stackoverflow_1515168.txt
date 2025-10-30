@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1515168
+[parent_id]: 1515151
+[tags]: 
+The answer really depends on the OS and arch you are using. It appears you are using a *nix variant, and odds are that means Linux. For Linux, before randomization became standard, the default was just short of where kernel space began. On my x86 system, the region used for stack is (with ASLR disabled) by default: bffea000 - c0000000 NOTE: the value I provided is not necessarily accurate for all systems, but that's what it is for my system. On modern Linux systems the stack will be at a fairly random address. You can verify this by running this several times in a row: cat /proc/self/maps | grep "\[stack\]" If the option is disabled, I would expect all programs stacks to default to the same location (the end of user space). Running a program with exec replaces your address space with the new program's; this will include the stack, so it'll end up in the same location as any other program run. Think about it: your shell program has to do a fork/exec to run the program just the same as your program will does...

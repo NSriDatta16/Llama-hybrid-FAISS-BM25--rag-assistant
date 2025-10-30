@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3659192
+[parent_id]: 
+[tags]: 
+LINQ and joining on selects
+
+I have the following SQL: select o.tekst as Enhet, coalesce(f.Antall,0) as AntallF, coalesce(f.snitt,0) as SnittF, coalesce(b.antall,0) as AntallB from tblhandlingsplan hp inner join tblorg o on hp.eierorgid = o.orgid left outer join (select f.handlingsplanid, count(t.tiltakid) as Antall, coalesce(avg(convert(float,t.status)),0) as Snitt from tblhandlingsplanforbedring f left outer join tblhandlingsplantiltak t on f.forbedringsid = t.forbedringsid group by f.handlingsplanid) f on hp.handlingsplanid = f.handlingsplanid left outer join (select b.handlingsplanid, count(b.bevaringsid) as Antall from tblhandlingsplanbevaring b group by b.handlingsplanid) b on hp.handlingsplanid = b.handlingsplanid where utsendingsid = 1 Which works exactly how I want it... Now I'm trying to convert this to LINQ... I have gotten this far from h in TblHandlingsplans join o in TblOrgs on h.EierOrgID equals o.OrgID join f in TblHandlingsplanForbedrings on h.HandlingsplanID equals f.HandlingsplanID into f2 join b in TblHandlingsplanBevarings on h.HandlingsplanID equals b.HandlingsplanID into b2 where h.UtsendingsID == 1 select new { Enhet = o.Tekst, AntallF = f2.Count(), AntallB = b2.Count() } however now I'm stuck... I can't for the life of me figure out how to include the average part from the SQL solution... Any takers? I'm thinking of shoving the whole thing into a SP and leave it with that...

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1413139
+[parent_id]: 1413131
+[tags]: 
+yes you can save it ti the database in encrypted form, but if you do, make sure you have the original source code safely stored somewhere... CREATE PROCEDURE dbo.foo WITH ENCRYPTION AS BEGIN SELECT 'foo' END Unfortunately, there are at least two ways to defeat this mechanism. One is to run SQL Profiler while executing the stored procedure; this often can reveal the text of the procedure itself, depending on what the stored procedure does (e.g. if it has GO batches, dynamic SQL etc). If they miss the initial install, the user can delete the stored procedures or drop the database, start a Profiler trace, and ask you to re-create them (in which case they will capture the CREATE PROCEDURE statements). You can prevent Profiler from revealing the text to snoopers by embedding sp_password in the code, as a comment: CREATE PROCEDURE dbo.foo WITH ENCRYPTION AS BEGIN SELECT 'foo' -- comment: sp_password END look at MSDN Create Procedure documention

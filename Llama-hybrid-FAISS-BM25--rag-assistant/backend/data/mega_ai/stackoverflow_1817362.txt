@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1817362
+[parent_id]: 1817278
+[tags]: 
+In functions like this I prefer code like: int setName(person ** out_array, person ***out_array_ref) { person* array = malloc(5 * sizeof(person)); person** array_ref = malloc(5 * sizeof(person*)); array[0].name = strdup("Bob"); array[1].name = strdup("Joseph"); array[0].last_name = strdup("Robert"); array[1].last_name = strdup("Clark"); // I'm guessing this was your intent for array_ref, here: array_ref[2] = &array[0]; array_ref[3] = &array[1]; *out_array = out_array; *out_array_ref = array_ref; return 1; } Note that this catches both array[1]->name as noted by Roger Pate, and *array_ref[2] = array[0] as (almost) noted by Pavel - whose solution (*array_ref)[2] = array[0] assigns from an unallocated person* array[1] - both of which are hard to notice with the extra dereference. Of course, I mostly do this because I use C++, and this increases exception safety ;).

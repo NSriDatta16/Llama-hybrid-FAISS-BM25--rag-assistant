@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3826066
+[parent_id]: 2906751
+[tags]: 
+IMHO it makes sense to unit test only custom routes. Testing that query string parameters will be translated to controller action arguments is unnecessary and doesn't really bring any value to your application. This work is done by the default model binder and is extensively unit tested by Microsoft (I hope). This being said MVCContrib.TestHelper allows you to elegantly test custom routes. Suppose for example that you have implemented paging in your application and defined a custom route to have pretty urls for SEO: routes.MapRoute( "Custom", "foo/{startPage}/{endPage}", new { controller = "Search", action = "Results", } ); and here's the associated controller: public class SearchController : Controller { public ActionResult Results(int startPage, int endPage) { return View(); } } This route could be tested like this: "~/foo/10/20".ShouldMapTo (c => c.Results(10, 20)); This will effectively test that the default controller is Search , the default action is Results and that both startPage and endPage parameters will be initialized to their respective values from the route.

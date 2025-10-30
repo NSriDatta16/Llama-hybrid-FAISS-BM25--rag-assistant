@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2467983
+[parent_id]: 2467819
+[tags]: 
+This is harder than you expect. For pragmas like strict and warnings you can pass them through. For modules that don't export functions such as object oriented ones, it will work. However for modules that export by default, like Data::Dumper (it gives you the Dumper() function in the package of the caller), it is trickier. You can make it work by telling Exporter that there is an extra layer of magic: So you could do: package my_packages; use strict; use warnings; use Data::Dumper; use IO::Socket; $Exporter::ExportLevel = 1; # Tell Exporter to export to the caller sub import { # Enable this in the callers package strict->import; # pragma in caller warnings->import; # pragma in caller Data::Dumper->import; # Adds Dumper() to caller # No need for IO::Socket since it's OO. return 1; } 1; For three modules, this hardly seems to be worth it.

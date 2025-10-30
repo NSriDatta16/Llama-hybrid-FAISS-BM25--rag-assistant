@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1977365
+[parent_id]: 1977296
+[tags]: 
+Query optimization and indexing is a huge topic, so you'll definitely want to read about MySQL and the specific storage engines you're using. The "using hash" is supported by InnoDB and NDB; I don't think MyISAM supports it. The joins you have will perform a full table or index scan even though the join condition is equality; Every row will have to be read because there's no where clause. You'll probably be better off with a standard b-tree index, but measure it and investigate the query plan with "explain". MySQL InnoDB stores row data organized by primary key so you should also have a primary key on your tables, not just an index. It's best if you can use the primary key in your joins because otherwise MySQL retrieves the primary key from the index, then does another fetch to get the row. The nice exception to that rule is if your secondary index includes all the columns you need in the query. That's called a covering index and MySQL will not have to lookup the row at all.

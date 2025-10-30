@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 748154
+[parent_id]: 726943
+[tags]: 
+The performance breakdown seemed to be caused by the high number of Blocks in the FlowDocument. For every message received I was creating a Run, adding that run to a Paragraph and adding the paragraph to the document. I changed the algorithm so now it creates a Paragraph then adds 250 Runs to that Paragraph, then creates a new Paragraph ... adds 250 Runs ... and so on. This essentially cuts the number of blocks in half. This also has an added benefit when I reach the max number of lines (10,000). Instead of deleting a single line for each new line added (and pegging the CPU), I can just delete the oldest Paragraph and that instantly deletes the oldest 250 lines. This relatively simple change brought the performance well within the acceptable range. Instead of pegging the CPU and locking up the UI, now the CPU stays relatively low with spikes around 15%.

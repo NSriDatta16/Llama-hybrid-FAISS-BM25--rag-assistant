@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4022672
+[parent_id]: 4016525
+[tags]: 
+I think you probably want to create a memory based temporary table with an index. Assuming the table you are querying against is large you would not want to do a table scan comparing each row against each of your 5000 matches. You want to do a join with the help of two indexes. CREATE TEMPORARY TABLE IF NOT EXISTS inputlist (i INT PRIMARY KEY) ENGINE = MEMORY; INSERT INTO inputlist (i) VALUES (1),(2),(3),(1000),(2000),(5000); SELECT * FROM your_table JOIN inputlist ON your_table.intvalues = inputlist.i; DROP TEMPORARY TABLE inputlist; SQL based on MySQL, see: http://dev.mysql.com/doc/refman/5.1/en/memory-storage-engine.html http://dev.mysql.com/doc/refman/5.1/en/insert.html http://dev.mysql.com/doc/refman/5.1/en/create-table.html

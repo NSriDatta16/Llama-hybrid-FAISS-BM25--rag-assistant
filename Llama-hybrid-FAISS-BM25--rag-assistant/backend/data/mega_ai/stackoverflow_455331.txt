@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 455331
+[parent_id]: 
+[tags]: 
+Handling errors as exceptions. Best methods?
+
+I'm trying to figure out if there's a good or better method for handling errors in PHP than what I'm doing below. I'd like to throw an exception if there's a problem with the parse_ini_file call. This works, but is there a more elegant way to handle errors? public static function loadConfig($file, $type) { if (!file_exists($file)) { require_once 'Asra/Core/Exception.php'; throw new Asra_Core_Exception("{$type} file was not present at specified location: {$file}"); } // -- clear the error self::$__error = null; // -- set the error handler function temporarily set_error_handler(array('Asra_Core_Loader', '__loadConfigError')); // -- do the parse $parse = parse_ini_file($file, true); // -- restore handler restore_error_handler(); if (!is_array($parse) || is_null($parse) || !is_null(self::$__error)) { require_once 'Asra/Core/Exception.php'; throw new Asra_Core_Exception("{$type} file at {$file} appears to be } } The __ loadConfigError function just sets the __error to the error string: private static function __loadConfigError($errno, $errstr, $errfile, $errline) { self::$__error = $errstr; } Thanks!

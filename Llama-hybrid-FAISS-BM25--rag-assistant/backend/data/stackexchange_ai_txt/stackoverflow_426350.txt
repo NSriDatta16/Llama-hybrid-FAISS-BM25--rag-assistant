@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 426350
+[parent_id]: 
+[tags]: 
+Seeding java.util.Random with consecutive numbers
+
+I've simplified a bug I'm experiencing down to the following lines of code: int[] vals = new int[8]; for (int i = 0; i The output is: [0, 0, 0, 0, 0, 1310, 190, 0] Is this just an artifact of choosing consecutive numbers to seed Random and then using nextInt with a power of 2? If so, are there other pitfalls like this I should be aware of, and if not, what am I doing wrong? (I'm not looking for a solution to the above problem, just some understanding about what else could go wrong) Dan, well-written analysis. As the javadoc is pretty explicit about how numbers are calculated, it's not a mystery as to why this happened as much as if there are other anomalies like this to watch out for-- I didn't see any documentation about consecutive seeds, and I'm hoping someone with some experience with java.util.Random can point out other common pitfalls. As for the code, the need is for several parallel agents to have repeatably random behavior who happen to choose from an enum 8 elements long as their first step. Once I discovered this behavior, the seeds all come from a master Random object created from a known seed. In the former (sequentially-seeded) version of the program, all behavior quickly diverged after that first call to nextInt, so it took quite a while for me to narrow the program's behavior down to the RNG library, and I'd like to avoid that situation in the future.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3703395
+[parent_id]: 3703340
+[tags]: 
+A char** argument is troublesome, there is a memory management problem. If you declare the argument as "out string", the P/Invoke marshaller is going to try to free the pointer. That's very unlikely to work, it requires the string to be allocated with CoTaskMemAlloc(). The only other option you have to declare it as "out IntPtr" and marshal the string yourself with Marshal.PtrToStringAnsi(). That will work, beyond an unpluggable memory leak if LLVMC actually expects you to free the pointer. Call it a million times to verify that. There are a few odds that it won't blow since it is an error message, it might return a pointer to a string literal. The only option left then is to write a wrapper in the C++/CLI language so you can free the pointer.

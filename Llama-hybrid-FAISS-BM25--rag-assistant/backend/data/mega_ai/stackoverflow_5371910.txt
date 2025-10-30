@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5371910
+[parent_id]: 
+[tags]: 
+Releasing the GIL after destroying a sub-interpreter
+
+I am embedding Python 3.2 in a C++ application and I have several sub interpreters that run at various times in the programs (created by Py_NewInterpreter ). They acquire and release the GIL at various times, but I have run into a problem when I want to destroy one of the sub interpreters. To destroy a sub interpreter, you have to acquire the GIL. So I do this: PyEval_AcquireLock(threadstate); Then I destroy the interpreter with Py_EndInterpreter(threadstate); And you would think it would release the GIL because the thing that held it was destroyed. However, the documentation for Py_EndInterpreter says: The given thread state must be the current thread state. See the discussion of thread states below. When the call returns, the current thread state is NULL. (The global interpreter lock must be held before calling this function and is still held when it returns.) So if I have to hold the GIL when I destroy a sub interpreter and destroying the sub interpreter sets it to NULL and I have to have the thread that acquired the GIL to release it, how do I release the GIL after destroying a sub-interpreter?

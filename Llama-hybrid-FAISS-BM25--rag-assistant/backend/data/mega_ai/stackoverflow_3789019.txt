@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3789019
+[parent_id]: 
+[tags]: 
+How to handle group by automatically with PGSQL?
+
+I have to do calculations on my database. When I was using mysql, it wasn't a problem, but now that I use PGSQL, I see the following issue : I have 3 tables : dogs, users and dogs_users, the join table (it's a n-n, every dog can have multiple users and every user can have multiple dogs) When I do the following : ree-1.8.7-2010.02 > User.first.dogs.group(:name).average(:number_of_fleas) ActiveRecord::StatementInvalid: PGError: ERROR: column "dogs.id" must appear in the GROUP BY clause or be used in an aggregate function LINE 1: SELECT "dogs".*, AVG("dogs"."number_of_fleas") AS "avera... ^ : SELECT "dogs".*, AVG("dogs"."number_of_fleas") AS "average_number_of_fleas", name AS name FROM "dogs" INNER JOIN "dogs_users" ON "dogs".id = "dogs_users".dog_id WHERE (("dogs_users".user_id = 1)) GROUP BY name The only work around I found to handle the problem was to do the following : Dog.where(:id => User.first.dogs.map(&:id)).group(:name).average(:number_of_fleas) And that's not very readable nor very optimized... Thank you for your help !

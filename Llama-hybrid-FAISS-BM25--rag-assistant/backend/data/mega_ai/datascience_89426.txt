@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 89426
+[parent_id]: 
+[tags]: 
+How to reduce the GPU consumption size while using Elmo Model?
+
+I am performing an NLP task using Elmo model. Whenever I load the Elmo model, it occupies the 15 GB of my GPU memory. How can I reduce it ? Below is my code import tensorflow.compat.v1 as tf import tensorflow_hub as hub tf.disable_eager_execution() from tensorflow.compat.v1.keras import backend as K sess = tf.Session() K.set_session(sess) elmo_model = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True) sess.run(tf.global_variables_initializer()) sess.run(tf.tables_initializer()) def ElmoEmbedding(x): return elmo_model(inputs={ "tokens": tf.squeeze(tf.cast(x, tf.string)), "sequence_len": tf.constant(batch_size*[maxlen]) }, signature="tokens", as_dict=True)["elmo"] And then I am passing the ElmoEmbedding in the Lambda layer as below input_text = Input(shape=(maxlen,), dtype=tf.string) embedding = Lambda(ElmoEmbedding, output_shape=(maxlen, 1024))(input_text) x = Bidirectional(LSTM(units=512, return_sequences=True, recurrent_dropout=0.2, dropout=0.2))(embedding) ..... What do I need to change in the above code ?

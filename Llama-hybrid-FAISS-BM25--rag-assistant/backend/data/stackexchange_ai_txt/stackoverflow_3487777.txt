@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3487777
+[parent_id]: 3486963
+[tags]: 
+There's no generic solution to this, you can't just interrupt a thread and deliver a notification to be processed. That causes horrible re-entrancy problems and large servings of deadlock. A notification can only be processed when the thread is in a quiescent state. An operating system usually has services available that make it possible. In Windows this is typically done by posting a message to the message queue. Read by the message loop, which is the 'idle' state for a UI thread. Or by leveraging asynchronous procedure calls, fired when the thread is blocking and explicitly allowed APCs to run. But you cut this off by requiring a non-platform specific solution. In which case you're pretty much doomed to re-invent an OS feature. You'll need a thread-safe queue that you poll in the thread that needs to receive the notification. A message queue, read by a message loop.

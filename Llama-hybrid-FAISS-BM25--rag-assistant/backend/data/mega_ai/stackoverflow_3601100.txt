@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3601100
+[parent_id]: 
+[tags]: 
+LookupAccountSid taking +600 ms per call
+
+I'm using GetTokenInformation with the TokenGroups flags to retrieve all the groups that a particular token is part of. I'm then looping through each of the returned SIDs and using LookupAccountSid to grab the user name and domain. I call LookupAccountSid twice: the first time to grab the size of the name and domain character arrays and the second time populates the allocated StringBuilder s. I'm getting very long delays. I've run ANTS to see what the issue was and found that if a user was part of 23 groups this that the entire sequence would take 15 seconds! The profiler points to the first call of LookupAccountSid and states that it was averaging 652 ms per call. This is what the call looks like: LookupAccountSid(null, tokenGroups.Groups[i].SID, null, ref accountCount, null, ref domainCount, out snu); accountCount and domainCount are initialized to 0 prior to this call. In the end the call is working but this delay is way to long. What am I doing wrong?

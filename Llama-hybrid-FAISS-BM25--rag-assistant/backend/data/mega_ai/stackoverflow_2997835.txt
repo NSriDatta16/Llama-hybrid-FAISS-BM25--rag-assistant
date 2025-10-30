@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2997835
+[parent_id]: 2920673
+[tags]: 
+We are using FluentNHibernate for mapping. The User entity is a base class for Learner, Assessor, Admin, etc. Here is an example: public class UserMap : ClassMap { public UserMap() { this.Id(x => x.Id); this.Map(x => x.Active); this.Component( x => x.Address, m => { m.Map(x => x.Address1).Length(512); m.Map(x => x.Address2); m.Map(x => x.Address3); m.Map(x => x.Address4); m.Map(x => x.City); m.Map(x => x.County); m.Map(x => x.PostCode); m.References(x => x.Country); }); this.References(x => x.CreatedBy); this.Map(x => x.CreatedDate).Not.Nullable(); this.DiscriminateSubClassesOnColumn("className").Length(64); } } and derived class public class LearnerMap : SubclassMap { #region Constructors and Destructors /// /// Initializes a new instance of the class. /// public LearnerMap() { this.Map(x => x.DateOfBirth); this.Map(x => x.NINumber); this.Map(x => x.IscCodeId); this.Map(x => x.ScnNo); this.Map(x => x.ULN); this.HasManyToMany(x => x.Organisation) .ParentKeyColumn("userId") .ChildKeyColumn("organisationId").Table( "UserOrganisations"); } Hope that this will help

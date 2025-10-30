@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 73306
+[parent_id]: 53201
+[tags]: 
+Try changing your code as follows: pre_xception_model = keras.applications.Xception(include_top=False, weights='imagenet', input_tensor=None, input_shape=(224,224,3), pooling='avg', classes=2) x=pre_xception.layers[-1].output x=keras.layers.BatchNormalization(axis=-1, momentum=0.99, epsilon=0.001 )(x) output = Dense(2, activation='softmax')(x) xception_model = Model(pre_xception_model.input, output) for layer in pre_xception_model.layers: layer.trainable = True xception_model.compile(Adam(lr=.0001, decay=1e-6), loss='categorical_crossentropy', metrics=['accuracy']) This adds an average pooling layer to the model, then batch normalization and your final classification layer. I use this for the MobileNet model and it works well. I would also recommend you use the callbacks ModelCheckpoint and ReduceLROnPlateau. Documentation for these are here.

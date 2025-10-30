@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 498955
+[parent_id]: 
+[tags]: 
+In the attention mechanism, why are there separate weight matrices for the queries and keys?
+
+To perform self attention over a collection of $n$ vectors stacked up into a matrix $X \in \mathbb{R}^{n \times d}$ , we first obtain query, key, and value representations of these vectors via three linear transformations: $$ \begin{align*} Q & = XW_Q \\ K & = XW_K \\ V & = XW_V. \end{align*} $$ Then for each query, we take a weighted combination of the value vectors, where the value vectors with the largest weights are the ones whose key vectors have the largest inner products with the query vector: $$ \text{Attention}(Q, K, V ) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}} \right)V. $$ So far, so good. But if we combine these two steps together into a single equation, we get $$ \text{Self-Attention}(X) = \text{softmax}\left(\frac{XW_QW_K^\top X^\top}{\sqrt{d_k}} \right)XW_V, $$ at which point an apparent redundancy arises: Why maintain separate weight matrices $W_Q$ and $W_K$ as opposed to just their product $W = W_Q W_K^\top$ (which would reduce the trainable parameter count by at least half)? Besides the fact that this would make the query-key-value analogy a little fuzzier, my only guess about the motivation of this choice is that the authors also mention using additive attention instead of the multiplicative attention above, in which case I believe you would need two separate weight matrices.

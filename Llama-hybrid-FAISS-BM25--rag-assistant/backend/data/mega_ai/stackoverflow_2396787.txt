@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2396787
+[parent_id]: 2396750
+[tags]: 
+The issue could be that the line list vertices is being processed before using namespace std; , and so your compiler does not know what a list (without the std:: namespace qualifier) is. It's not clear to me in exactly what order these statements get processed since your two files include each other, and I don't know precisely how the non-standard #pragma once will handle this. In any case, try qualifying list as std::list Edit: Assuming #pragma once works just like include guards, then this problem will occur if some other file inlcudes includes.h, but not if some other file includes Polygon.h. If another file includes includes.h, what happens is that includes.h reaches #include , and the compiler starts processing Polygon.h. But then when #include is reached inside Polygon.h, nothing is effectively included since the INCLUDES guard is already defined, so you don't get the using namespace std; line before the compiler continues processing the rest of Polygons.h. In general, try to avoid circular inclusion, and prefer forward-declarations.

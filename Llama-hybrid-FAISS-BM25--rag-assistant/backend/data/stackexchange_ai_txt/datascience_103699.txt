@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 103699
+[parent_id]: 
+[tags]: 
+How could you build a Neural Network with the same weights for different nodes in the same layer
+
+The structure I'm imagining is like the one in the image bellow where the output is softmax. For the hidden layer we would have $$Z_1 = W_{11}^{[1]}x_2 + W_{12}^{[1]}x_2$$ $$Z_2 = W_{21}^{[1]}x_2 + W_{22}^{[1]}x_2$$ $$Z_3 = W_{11}^{[1]}x_3 + W_{12}^{[1]}x_4$$ $$Z_4 = W_{21}^{[1]}x_3 + W_{22}^{[1]}x_4$$ the same principle would apply to softmax. I came up with this idea by trying to create a neural network that behaved similar to a conditional logistic regression ( https://en.wikipedia.org/wiki/Conditional_logistic_regression ). I've done an implementation with Keras and Tensorflow that I believe will have the desired behavior, but I'm not sure. class ConditionalNN(tf.keras.Model): def __init__(self, out_dim, l1 = 0, l2 = 0): super(ConditionalNN, self).__init__(name='') self.layer1 = tf.keras.layers.Dense(20,'tanh',kernel_regularizer=tf.keras.regularizers.l1_l2(l1=l1, l2=l2)) self.layerL1 = tf.keras.layers.Dense(1,'linear',kernel_regularizer=tf.keras.regularizers.l1_l2(l1=l1, l2=l2)) self.layerL2 = tf.keras.layers.Softmax(axis=-2) def call(self, input_tensor, training=False): x = self.layer1(input_tensor,training=training) x = self.layerL1(x,training=training) x = self.layerL2(x,training=training) return x In this case, the input would be a 3D tensor like: X = [ [[x1,x2], [x3,x4]], ... ] and the output would be something like: Y = [[1,0], [0,1], [1,0], ... ]

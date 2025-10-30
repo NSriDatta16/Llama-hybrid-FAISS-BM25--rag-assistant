@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2196894
+[parent_id]: 2196858
+[tags]: 
+You have one address-of too much: // notice: "set" instead of "&set" for (ptr = (double *)set; ptr You were adding one to the address of your parameter (and thus were pointing to nowhereland), instead of DIM0 to the value of your parameter (which will bring you to after the array data, which is your goal). Notice that the parameter is a pointer to an array of dimensions [DIM1][DIM2][DIM3] . In other words, the argument you pass to the function can be an array of type double[DIM0][DIM1][DIM2][DIM3] , which will decay to the pointer type of that parameter. You have DIM0 rows, so you add DIM0 to that pointer to reach the position after the last cell. What you were probably having in mind was adding one to the pointer to the whole array. This will work if you have the following declaration, instead. void DisplayAverage(double (*set)[DIM0][DIM1][DIM2][DIM3]); You now need to pass the argument using &arg instead of just arg , to actually pass the address of the array, instead of letting it decay to its inner dimension type. The loop can then be written as for (ptr = (double *)set; ptr

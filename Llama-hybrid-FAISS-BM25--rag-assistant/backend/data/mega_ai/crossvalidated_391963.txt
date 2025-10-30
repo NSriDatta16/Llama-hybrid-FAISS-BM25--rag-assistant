@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 391963
+[parent_id]: 
+[tags]: 
+REINFORCE calculating the log policy gradient for a continuous action space
+
+I've noticed that when modelling a continuous action space, the default thing to do is to estimate a mean and a variance where each is parameterized by a neural network or some other model. I also often see that it is one network $\theta$ models both. The REINFORCE objective can be written as $$\nabla \mathcal{J}(\theta) = \mathbb{E}_{\pi} [\nabla_\theta \log \pi(a_t|s_t) * R_t] $$ For discrete action space this makes sense since the output of the network is determined by a softmax. However, if we explicitly model the output of the network as a Gaussian, then the gradient of the log likelihood is of a different form, $$\pi_\theta(a_t|s_t) = Normal(\mu_\theta(s_t), \Sigma_\theta(s_t))$$ and the log is: $$\log \pi_\theta(a_t | s_t) = -\frac{1}{2} (a_t-\mu_\theta)^\top \Sigma^{-1}_\theta(a_t-\mu_\theta) + \log 2 \pi \det({\Sigma_\theta})$$ In the slides provided here (slide 18): http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/pg.pdf IF the variance is held constant, then we can solve this analytically: $$\nabla \log \pi_\theta(a_t|s_t) = (a_t - \mu_\theta) \Sigma^{-1} \phi(s)$$ But, are things always modelled assuming a constant variance? If it's not constant then we have to account for the inverse of the covariance matrix as well as the determinant? I've taken a look at code online and from what I've seen, most of them assume the variance is constant.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1857815
+[parent_id]: 1857718
+[tags]: 
+You can't use REPLACE to create a comma delimited list for use in an IN clause. To use that as-is, you'd have to utilize MySQL's Prepared Statements (effectively dynamic SQL) - creating the comma separated list first, and inserting that into the SQL query constructed as a string before executing it. SELECT a.category_id, a.yyyymm, a.cat_balance_ytd FROM GL_VIEW_CAT_BALANCES a JOIN GL_OPTIONS o ON INSTR(o.detail2, a.category_id) AND o.option_id = 'GLREPFUNCJOB01' JOIN (SELECT b.category_id, b.gl_unique_id, MAX(b.yyyymm) 'yyyymm' FROM GL_REPCAT_BALSs b WHERE b.yyyymm Here's an untested, possible non-dynamic SQL alternative, using FIND_IN_SET : SELECT a.category_id, a.yyyymm, a.cat_balance_ytd FROM GL_VIEW_CAT_BALANCES a JOIN (SELECT REPLACE(o.detail_2, ' ', ', ') 'detail2_csv' FROM GL_OPTIONS o WHERE o.option_id = 'GLREPFUNCJOB01') y ON FIND_IN_SET(a.category, y.detail2_csv) > 0 JOIN (SELECT b.category_id, b.gl_unique_id, MAX(b.yyyymm) 'yyyymm' FROM GL_REPCAT_BALSs b WHERE b.yyyymm

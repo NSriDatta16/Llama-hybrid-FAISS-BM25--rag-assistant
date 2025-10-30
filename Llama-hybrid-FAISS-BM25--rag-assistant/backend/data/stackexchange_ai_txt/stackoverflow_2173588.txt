@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2173588
+[parent_id]: 2173569
+[tags]: 
+For the second error, The OpenMP specification doesn't allow you to break out of a parallel for loop, or throw exceptions, because of the parallel nature. Instead, see the workaround solution on this blog: http://www.thinkingparallel.com/2007/06/29/breaking-out-of-loops-in-openmp/ For the first error, took me a while to dig up what is actually going on - I think this explains it: Private variables must not have reference type, since it will cause concurrent shared memory access. Although the variables will be private, the variables will still address the same memory fragment. Class instances declared as private must have explicit copy constructor, since an instance containing references will be copied incorrectly otherwise. from http://www.viva64.com/content/articles/parallel-programming/?f=32_OpenMP_traps.html&lang=en&content=parallel-programming Basically I don't think you can use class-level variables as private without making copies of them. Is there any reason you can't use a variable within the scope of your function?

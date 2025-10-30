@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 492289
+[parent_id]: 320773
+[tags]: 
+Rule number 1: when your code does not do what you want, start inspecting your objects. library(forecast) set.seed(1) (Data yields Time Series: Start = 1 End = 116 Frequency = 1 ...snip... Note that Frequency is 1, not 52, as we explicitly set above! The problem is that as.ts() silently ignores the frequency parameter and sets the frequency to 1. Here is the help page to stats::ts() : ‘as.ts’ is generic. Its default method will use the ‘tsp’ attribute of the object if it has one to set the start and end times and frequency. So, if you want something seasonal, either supply an x with a tsp attribute to as.ts() ... or use ts() straight from the beginning. set.seed(1) (Data which yields Time Series: Start = c(1, 1) End = c(3, 12) Frequency = 52 ...snip... This looks much better. Note that we now need to supply 2-vectors to window() , corresponding to the Start and End attributes of Data : Train which yields a nice seasonal ARIMA model, as required: Series: Train ARIMA(0,0,0)(0,1,0)[52]

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 395184
+[parent_id]: 394989
+[tags]: 
+You need to consume the DataGridView.CellClick Event and just check that you've got the correct column index. You can do it with the following steps: Create a new Windows Forms application Drag a DataGridView onto the screen In the design time properties, add a column to your grid of type DataGridViewLinkColumn Make the DataPropertyName property to "Link" (no quotes). In your forms constructor, paste this code under the call to InitializeComponent: Oh yeah, you're doing it in VB.NET, so it would be: Dim data As New DataTable() data.Columns.Add(New DataColumn("Link", Type.GetType("System.String"))) Dim newRow As DataRow = data.NewRow() newRow("Link") = "http://www.stackoverflow.com" data.Rows.Add(newRow) DataGridView1.DataSource = data Consume the DataGridView.CellClick event Private Sub DataGridView1_CellClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles DataGridView1.CellClick If (e.ColumnIndex = 0) Then Dim link As String = DataGridView1(e.ColumnIndex, e.RowIndex).Value.ToString() System.Diagnostics.Process.Start(link) End If End Sub

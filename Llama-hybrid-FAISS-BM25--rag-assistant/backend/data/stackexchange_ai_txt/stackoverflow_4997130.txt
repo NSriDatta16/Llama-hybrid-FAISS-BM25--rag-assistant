@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 4997130
+[parent_id]: 
+[tags]: 
+Can not save embedded form in symfony 1.4.8 with SQL Server, Propel15
+
+I have a 1:M relationship of Events with Event Dates. In the EventForm class, I am embedding the EventDate forms as so: $this->embedRelation('EventDate', array('title' => 'dates', 'empty_label' => 'New')); and filling the initial data on the edit forms as so: public function updateDefaultsFromObject() { parent::updateDefaultsFromObject(); $i = 1; $values = array(); foreach ($this->object->getEventDates() as $obj) { $values[$i] = array( 'EventID' => $this->object->getPrimaryKey(), 'EventDateID' => $obj->getEventDateId(), 'startDateTime' => $obj->getStartDateTime(), 'endDateTime' => $obj->getEndDateTime()); $i++; } $this->setDefault('dates', $values); } The problem is when it tries to save I get: Unable to execute UPDATE statement [UPDATE EventDates SET EVENTDATEID=:p1 WHERE EventDates.EVENTDATEID IS NULL ] [wrapped: SQLSTATE[HY000]: General error: 8102 General SQL Server error: Check messages from the SQL Server [8102] (severity 16) [(null)]] MSSql error 8102 is that it is trying to update an identity column, which is EVENTDATEID. I have no idea why it's doing this. Also, it I have a feeling, judging by the update statement, that there is an empty object in $this->object->getEventDates() that it is trying to update. If I could fix that somehow, I assume (see: pray) that it will fix this error.

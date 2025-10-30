@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5037171
+[parent_id]: 5037028
+[tags]: 
+The crux of the question to me is Is this possible? Will it be fast? Yes it is possible. Yes and no - it depends on your data distribution. If you stored them in bit fields, SQL Server will still internally store them into a single byte, which means you get all the goodness of storage, plus not having to manually do the bit masking. Why duplicate the effort? Whether you store them separately or as a single field, indexing won't help. as individual fields: bit masks have terrible selectivity since there are only two keys as a single field: You cannot index a bit in a field, even if you can, it leads to the above point If you however normalize it and store it in a secondary table, say Event_Day something like EventID | Day 1 2 1 4 Storing only the days that an event occurs on, then you have just built a materialized index. Of course you have to balance the benefit of that against having to PIVOT the data all the time to produce a nice weekly schedule.

@@ -1,0 +1,5 @@
+[site]: datascience
+[post_id]: 89878
+[parent_id]: 51132
+[tags]: 
+You might looking for sklearn.ensemble.VotingRegressor which takes the mean of two regression models. Here is an example to get you started: from sklearn.datasets import make_regression from sklearn.decomposition import PCA from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, VotingRegressor from sklearn.model_selection import train_test_split, GridSearchCV from sklearn.pipeline import Pipeline from sklearn.preprocessing import StandardScaler # Make fake data X, y = make_regression(n_samples=1_000, n_features=20, random_state=42) X_train, X_test, y_train, y_test = train_test_split(X, y,random_state=42) pipe = Pipeline([('scl', StandardScaler()), ('pca', PCA()), ('vr', VotingRegressor([('gbr', GradientBoostingRegressor()), ('rfr', RandomForestRegressor())])) ]) search_space = [{'vr__gbr__learning_rate': [.07, .1, .15]}] gs_cv = GridSearchCV(estimator=pipe, param_grid=search_space, n_jobs=-1) gs_cv.fit(X_train, y_train) gs_cv.predict(X_test)

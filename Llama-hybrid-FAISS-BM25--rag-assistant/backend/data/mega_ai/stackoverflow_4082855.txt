@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4082855
+[parent_id]: 4082522
+[tags]: 
+A struct is COM's Achilles heel. The actual layout of the members of the struct is highly compiler dependent. They were not support in COM automation for quite a while until they came up with the IRecordInfo hack. Not getting used here. In unmanaged code, the #pragma pack directive is very important. For type libraries, the /pack argument to midl.exe is essential. If it isn't 8 or you don't use the 64-bit version of midl then you'll definitely have this kind of problem. The BSTR members are the ones that throw it off, they are either 32-bit or 64-bit pointers, depending on the bitness. And align on a multiple of 4 for the 32-bit version of midl, a multiple of 8 for the 64-bit version. You can possible rescue it by passing /pack 4, as long as the struct doesn't contain any doubles. But try the 64-bit version of midl.exe first. Or get rid of structs and replace them with interface pointers, that's the real fix.

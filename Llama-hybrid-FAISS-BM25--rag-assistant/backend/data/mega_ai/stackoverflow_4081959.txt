@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4081959
+[parent_id]: 4081578
+[tags]: 
+There are few suggestions that I can make and hopefully it will resolve your issues. Don't use reactor.callFromThread, instead use deferToThread from twisted.internet.threads import deferToThread deferredObj = threads.deferToThread(run_app, self.appDataReceived) Just like you start the thread when the connection is made. You need to act when connection is lost. Example code: class Echo(Protocol): def connectionLost(self, reason): print reason # which is crude, there should be a more elegant answer reactor.stop() Agreed that deferToThread is optimized for short-running tasks. In fact, it is better to re do your code so that you could call the thread to just run the process and return the result.

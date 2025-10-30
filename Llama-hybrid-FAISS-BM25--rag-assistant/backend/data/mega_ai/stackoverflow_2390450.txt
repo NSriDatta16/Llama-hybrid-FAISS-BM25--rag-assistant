@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2390450
+[parent_id]: 2390290
+[tags]: 
+Yes, you most definitely are risking "loosing" during STUFF in a reference-counted (non-GC) environment. If your first -release decrements foo 's reference count to 0, it will be deallocated. Continuing to use foo in this case is venturing into undefined behavior, and you will almost certainly pay the price eventually. In other words, there be dragons here. It might work in the case that you (and any other frameworks you call) don't allocate any memory during STUFF which overrites the allocated instance that foo referenced and the instance pointed to by foo 's -dealloc method doesn't change foo 's state except for releasing instance variable reference and smashes the memory occupied by those references and so on. In this case, your code might work as if foo hadn't been deallocated, but that's only luck. In a garbage-collected environment, you're safe. Because you hold a reference to foo through STUFF , and because -release and -retain are no-ops in a GC environment, foo will still be valid.

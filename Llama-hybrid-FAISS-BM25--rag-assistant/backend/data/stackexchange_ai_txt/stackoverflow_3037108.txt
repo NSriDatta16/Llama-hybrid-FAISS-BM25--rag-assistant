@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3037108
+[parent_id]: 3037076
+[tags]: 
+The answer is SetWindowLongPtr. It allows you to associate a void* with a given hWnd. Then, in the WndProc, you just extract said void*, cast, and call the member method. Problemo solvo. There's a few ups/downs with SetWindowLongPtr, you must call some other function to see the effects or somesuch BS, and Windows sends messages before CreateWindowEx returns, so you must be prepared for GetWindowLongPtr(hWnd, GWL_USERDATA) to return NULL. This of course means that for a given WindowProc, all instances that use it must have a common interface, since there's not much you can do with a void*. And, yes, it's fine to pass HINSTANCE to the App constructor. I've seen samples that do something strange to avoid this but I never made it work myself. Edit: Don't confuse Get/SetWindowLong with Get/SetWindowLongPtr. Get/SetWindowLong is deprecated and unsafe.

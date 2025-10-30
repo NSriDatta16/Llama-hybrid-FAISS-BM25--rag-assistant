@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3211121
+[parent_id]: 2399203
+[tags]: 
+I also faced the same issue, When I googled it, I found that "no chache" settings in response header i.e. following code is the reason for the issue. Response.AppendHeader("Pragma", "no-cache") Response.AppendHeader("Cache-Control", "no-cache") Response.AppendHeader("max-age", "0") Some of the blogs says, to fix this issue, you should do some modification in Windows registry on Webserver and on all client machines(:O), well it is not feasible to do registry settings on every client machine. The root cause is no-cache settings in response header, so I just added Response.ClearHeaders() before adding content to be downloaded to the response header. The code is as shown below, Response.ClearHeaders() Response.ContentType = corspBean.ContentType Response.AppendHeader("content-disposition", "attachment; filename=""" + fileName + """") Response.BinaryWrite(fileBytes) Response.End() It has fixed the issue. Enjoy!!!

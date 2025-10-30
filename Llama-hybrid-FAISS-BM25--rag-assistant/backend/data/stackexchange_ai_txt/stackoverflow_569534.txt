@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 569534
+[parent_id]: 569512
+[tags]: 
+After taking another look, I think your problem is trying to aggregate at the wrong point as well as the IN syntax and that you should aggregate in a subquery restricted by the contents of the IN. I don't know enough about your schema to make this out of the box correct, but you want something like this. SomeKeyfield should relate back to gangs_ocs_process SELECT ocp.*, oc.*, u.Memjoined FROM gangs_ocs_process ocp, gangs_ocs oc LEFT JOIN (Select SomeKeyField, GROUP_CONCAT( u.username SEPARATOR ', ') as memjoined from users where userid in (select membersin from gangs_ocs_process where [whatever conditions] ) Group By SomeKeyField) u on ocp.SomeKeyField = u.SomeKeyField WHERE ocp.ocid =1 AND ocp.gangid =1 AND oc.oc_name = ocp.crimename GROUP BY ocp.ocid LIMIT 0 , 30

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1298328
+[parent_id]: 1298289
+[tags]: 
+Just to your third question: If you have nastyLowLevel() { doSomethingWhichMayCorruptSomethingAndThrowsException(); } MyEvilCatcher() { try { nastyLowLevel(); } catch (Exception e) { MyExceptionHandler(e); } } WiseCatcher() { try { MyEvilCatcher(); } catch (LowLevelException e) { DoSomethingWiseSoFinnalyDontRuinAnything(); } finally { DoSomethingWhichAssumesLowLevelWentOk(); } } I think the response you asked about just meant that some low level methods could use exceptions to inform some outer method that special care has to be taken. If you forget about this exceptions in your catch-all-handler and don't rethrow them, something might go wrong. Generally, I prefer thinking carefully about which exceptions can possibly be thrown and catch them explicitely. I only use "generic handler" at the very outer level in production environments in order to log unexpected exception and present them to the customer in an well-formatted manner (including a hint to send us the log file.)

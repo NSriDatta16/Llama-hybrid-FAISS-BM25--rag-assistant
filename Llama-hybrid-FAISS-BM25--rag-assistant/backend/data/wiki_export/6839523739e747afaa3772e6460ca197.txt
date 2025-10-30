@@ -1,0 +1,36 @@
+In computing, Bounce Address Tag Validation (BATV) is a method, defined in an Internet Draft, for determining whether the bounce address specified in an E-mail message is valid.  It is designed to reject backscatter, that is, bounce messages to forged return addresses.
+
+Overview
+The basic idea is to send all e-mail with a return address that includes a timestamp and a cryptographic token that cannot be forged.   Any e-mail that is returned as a bounce without a valid signature can then be rejected.  E-mail that is being bounced back should have an empty (null) return address so that bounces are never created for a bounce and therefore preventing messages from bouncing back and forth forever.
+
+BATV replaces an envelope sender like mailbox@example.com with prvs=tag-value=mailbox@example.com, where prvs, called "Simple Private Signature", is just one of the possible tagging schemes; actually, the only one fully specified in the draft. The BATV draft gives a framework that other possible techniques can fit into. Other types of implementations, such as using public key signatures that can be verified by third parties, are mentioned but left undefined.  The overall framework is vague/flexible enough that similar systems such as Sender Rewriting Scheme can fit into this framework.
+
+History
+Sami Farin proposed an Anti-Bogus Bounce System in 2003 in news.admin.net-abuse.email, which used the same basic idea of putting a hard to forge hash in a message's bounce address. 
+In late 2004, Goodman et al. proposed a much more complex "Signed Envelope Sender" that included a hash of the message body and was intended to address a wide variety of forgery threats, including bounces from forged mail.  Several months later, Levine and Crocker proposed BATV under its current name and close to its current form.
+
+Problems
+The draft anticipates some problems running BATV.
+ Some mailing lists managers (e.g. ezmlm) still key on the bounce address, and will not recognize it after BATV mangling.
+ Greylisting requires BATV implementations to keep the same tag across retransmissions for a reasonable time.  This may also cause each e-mail to be delayed unless the greylisting system ignores the tag, or whitelists sending hosts that successfully retry.
+ Challenge-response spam filtering and systems that sort mail based on the bounce address (e.g. for removing duplicates) may work less smoothly with BATV-tagged addresses.
+
+There are also problems that prevent BATV systems from eliminating all backscatter.
+ Some legitimate e-mail gets sent with empty return address that is not a bounce and therefore will not have the special tokens.  For example, the Delivery Status Notification extension defined in  requires a null return path when sending email with a "NOTIFY=NEVER" option to a non-conforming server.
+ Some e-mail bounces (incorrectly) get sent not to the return address, but to the e-mail address on the From: header.
+ Some mail systems that implement Callback verification use "postmaster" instead of the null return address.
+
+See also
+ Sender Policy Framework (SPF)
+ Sender Rewriting Scheme (SRS)
+ Simple Mail Transfer Protocol (SMTP)
+ Variable envelope return path (VERP)
+
+References
+
+External links
+ BATV draft
+ BATV web page
+ Greylisting and BATV  Implementation of BATV (with a BATV tester) for qmail / netqmail
+
+Email authentication

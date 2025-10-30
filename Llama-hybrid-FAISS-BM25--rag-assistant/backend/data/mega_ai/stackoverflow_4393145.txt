@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4393145
+[parent_id]: 4392712
+[tags]: 
+A simpler repro of this behavior: private void button1_Click(object sender, EventArgs e) { button1.Enabled = false; System.Threading.Thread.Sleep(1000); button1.Enabled = true; } The problem is that the mouse clicks that are recorded while the UI thread is busy go into the message queue and are stuck there until the event handler completes. When that happens, the button is already enabled again, allowed the Click event to run again. Fixing this is fugly and includes paying the price of running the code on a worker thread. A possible good fix is to purge the message queue and remove all the mouse messages before re-enabling the button but that's not easy in Winforms. The code is actually there but it is internal. A really pragmatic fix is one that might get me in trouble but is safe and effective : private void button1_Click(object sender, EventArgs e) { button1.Enabled = false; System.Threading.Thread.Sleep(1000); Application.DoEvents(); if (!button1.IsDisposed) button1.Enabled = true; }

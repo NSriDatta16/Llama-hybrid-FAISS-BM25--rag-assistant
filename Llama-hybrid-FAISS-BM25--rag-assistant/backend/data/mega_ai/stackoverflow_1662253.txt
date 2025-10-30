@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1662253
+[parent_id]: 1661052
+[tags]: 
+I think this is a bug in Tomcat. I filed a bug report but they claim it works as designed. Tomcat has 3 modes of deployment: Directory, WAR and Context Fragment. In your case, it gets confused when reloading. Here is the sequence leading to the error, When you deploy the WAR, the context fragment (META-INF/context.xml) is copied to conf/Catalina/[host] directory. When you modifies the fragment, it correctly detects the change so redeployment is triggered. However, it forgets this is a WAR deployment and treats it as Directory deployment. The directory is removed by undelpoy so you get the error. If you only change the XML in META-INF, everything should work for you.

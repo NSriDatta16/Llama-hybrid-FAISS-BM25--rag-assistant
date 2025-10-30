@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 385217
+[parent_id]: 
+[tags]: 
+Can MCMC to be too computationally inefficient if you have too many random interactions?
+
+Suppose I have a regression where the response variable is sales, and I have various drivers of sales as the independent variables. I want to build a model using MCMC but I am unsure if it is even possible ( I am running in SAS). See below for a simplified model structure (there are many more variables and random interactions in the production model): $$Y_{ij} = \beta_0 + \beta_{1_\text{TV}}X_{1ij} + \gamma_{(\text{TV} \times \text{dma})_{i}} +\varepsilon_{ij}$$ For the model above, I have one main effect for TV represented by $\beta_{1}$ and a random interaction between DMA (there are 210 DMAS in the US) and TV which is represented by gamma. I have priors for all my parameters and when I run MCMC in SAS, it takes hours to run. Can MCMC handle 210 random interaction for the random term? I am using MCMC because I want to utilize the prior knowledge from previous modeling rounds but it makes no sense if it takes forever to run. proc mcmc data=modeldbsubset outpost=postout thin=1000 nmc=20000 seed=7893 monitor=(b0 b1); ods select PostSummaries PostIntervals tadpanel; parms b0 0 b1 0; parms s2 1 ; parms s2g 1; prior b: ~ normal(0, var = 10000); prior s2: ~ igamma(0.001, scale = 1000); random gamma ~ normal(0, var=s2g) subject = dmanum monitor = (gamma) namesuffix = position; mu = b0 + b1*TV + gamma; model Y ~ normal(mu, var = s2); run;

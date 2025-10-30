@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 2657999
+[parent_id]: 2657971
+[tags]: 
+You should not submit a Thread object to the executor, that negates its entire purpose. You should submit Runnable objects and let the Executor worry about the Thread handling. It will automatically queue up your Runnable s when all threads are busy and when one task is complete it will grab a waiting task from the queue. So your code should look more like this: ExecutorService executor = Executors.newFixedThreadPool(N); ResultSet results = getWaitingTasksStmt.executeQuery(); while( results.next() ) { executor.submit(new RunnableInheritedClass(results) ) ); } executor.shutdown(); executor.awaitTermination(10, TimeUnit.MINUTES); This will allow 10 minutes for all tasks to complete, adjust as neccesary for your situatioin. Waiting forever is discouraged so think of some kind of reasonable timeout for your tasks.

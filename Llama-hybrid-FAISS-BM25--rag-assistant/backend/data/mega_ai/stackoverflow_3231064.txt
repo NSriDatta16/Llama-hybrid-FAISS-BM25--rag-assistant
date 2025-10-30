@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3231064
+[parent_id]: 3223060
+[tags]: 
+Another small improvement that you could try: Get the extended interface by adding .Ext() to the OpenFile() call. Purge every object after you stored it. using (var db = Db4oEmbedded.OpenFile(Db4oEmbedded.NewConfiguration(), path).Ext()) // .... db.Store(unit); db.Purge(unit); // .... That way you will reduce the number of references that db4o has to maintain in the current transaction. Probably you have the most potential for another big improvement if you play with the Storage configuration (That's the pluggable file system below db4o.) The latest 8.0 builds have a better cache implementation that don't degrade performance for cache maintenance when you work with larger numbers of cache pages. I suggest you try the latest 8.0 build with the cache setup that Gamlor has suggested to see if that makes a difference: config.File.Storage = new CachingStorage(new FileStorage(), 128, 1024 * 4); If it does, you could try much higher numbers also: config.File.Storage = new CachingStorage(new FileStorage(), 1280, 1024 * 40);

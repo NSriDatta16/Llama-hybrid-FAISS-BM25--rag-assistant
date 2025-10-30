@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 1572268
+[parent_id]: 
+[tags]: 
+How can I solve an ODE without using nested functions?
+
+I have some differential equations that I need to solve using MATLAB's ODE solvers. While the differential equations themselves are fairly simple, they depend on a lot of "constants". These constants aren't universal, and need to be supplied by the caller. An example ODE of this sort would be: dx/dt = -j * (k + x) ./ (l + x) Where j, k and l are constants and x is a variable. The way I have been solving these so far is to use a function that takes in all the initial values and all the values of the constants (of which there are around 10) as arguments and then calls an inner "step" function which takes a vector of the form that MATLAB expects for it's ODE solvers. So... function [outputVector] = someFunction(x, y, j, k, l, m, n, o) function [output] = someFunctionStep(t, inputVector) x = inputVector(1); y = inputVector(2); dx = -j .* (k + x) ./ (l + x); dy = -m .* (n + y) ./ (o + y); output = [dx;dy] end outputVector = ode15s(@someFunctionStep, [0, endTime], [x,y]); end However, as the number of variables and the code size increases, this becomes less and less elegant and results in a damn-near unreadable mess of code. So, what I'd like to do is to move the step function for each system into a file of its own without having to a) pass the constants to the step function in the input vector or b) use global variables. Is there any reasonable way of doing this, or should I just suck it up and write the ugly code?

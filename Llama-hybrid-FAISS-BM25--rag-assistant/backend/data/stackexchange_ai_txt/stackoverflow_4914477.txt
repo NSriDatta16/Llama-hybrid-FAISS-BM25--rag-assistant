@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4914477
+[parent_id]: 4914302
+[tags]: 
+I will say upfront I am not proficient with PHP but there are a few things that stand out to me. $DBH is redefined in DBAccess where it is first declared in Singleton. $DBH in Singleton is not declared static, so how could $DBH = new static() work? Unless late binding with static converts $DBH into a static storage area. If you convert $DBH in Singleton into a static variable, you'll have issues if anything else every derives from Singleton. Unless someone wiser comes along and can make a Singleton class that can be utilized for any subclass of it your best bet is to put the logic directly into your DBAccess class. If someone can fix the semantic and syntax errors I'd appreciate it. class DBAccess { private static $_instance; protected $DBH; function __construct() { try { $this->DBH = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass); $this->DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); } catch (PDOException $e) { echo $e->getMessage(); } } public static function getDBH() { if ($_instance == null) $_instance = new DBAccess(); return $_instance->DBH; } }

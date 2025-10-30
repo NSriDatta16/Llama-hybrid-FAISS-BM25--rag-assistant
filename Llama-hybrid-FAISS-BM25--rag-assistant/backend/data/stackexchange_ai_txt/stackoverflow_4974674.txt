@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4974674
+[parent_id]: 4974418
+[tags]: 
+You're close... Create a fragment for the children: $query = "//span[contains(concat(' ', normalize-space(@class), ' '), ' c ')]"; $oldnodes = $xpath->query($query); foreach ($oldnodes as $node) { $fragment = $doc->createDocumentFragment(); while($node->childNodes->length > 0) { $fragment->appendChild($node->childNodes->item(0)); } $node->parentNode->replaceChild($fragment, $node); } Since each iteration will remove the $node , there's no need to iterate (it'll dynamically remove it from the result set since it's no longer valid)... This will also handle the cases where you have more than just text inside the span: foo bar baz Note the recent edit: I changed the xpath query to be more robust as now it will match only exact classes c rather than toc ... What's weird is that it allows you to remove in the iteration without affecting the results (I know it's done that before, I just don't know why here). But this is tested code and should be good.

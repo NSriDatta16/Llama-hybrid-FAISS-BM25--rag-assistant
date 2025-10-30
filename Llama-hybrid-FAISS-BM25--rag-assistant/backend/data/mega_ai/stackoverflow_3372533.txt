@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 3372533
+[parent_id]: 3341691
+[tags]: 
+So found a way which I'm sure is not the best way to do... or maybe Magento team didn't think that one may need to get the attribute code based on attribute id... 1- Overload app/code/core/Mage/Eav/Model/Mysql4/Entity/Attribute/Collection.php Add this method : public function setIdFilter($id) { if (empty($id)) { return $this; } if (!is_array($id)) { $id = array($id); } $this->getSelect()->where('main_table.attribute_id IN(?)', $id); return $this; } 2- Now to retrieve the code of the attribute based on its id use : $attributeCode = Mage::getResourceModel('eav/entity_attribute_collection') ->setIdFilter(YOUR_ATTRIBUTE_ID) /* if using this into the configurable.phtml template file, you can use $_attribute->getAttributeId() for YOUR_ATTRIBUTE_ID */ ->getFirstItem() ->getAttributeCode(); echo $attributeCode; So unituitive but so working... If someone's got a better way to do it, I'd be happy to change my "answer ticker"!

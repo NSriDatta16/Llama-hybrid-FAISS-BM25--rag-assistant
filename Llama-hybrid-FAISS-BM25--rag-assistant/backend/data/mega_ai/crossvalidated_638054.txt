@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 638054
+[parent_id]: 637982
+[tags]: 
+As explained in the comments, you seem to be trying to approximate the 97.5th percentile of these distributions (i.e. the value $c$ so that $\int_{-\infty}^c\text{pdf}(x)=0.975$ ). I'm not sure if you have the relationship between the two distributions correct, if $Z\sim \mathcal{N}(0,1)$ and $W\sim \chi^2(\nu)$ are two independent random variables then $Y=\frac{Z}{\sqrt{W/\nu}}$ follows a $t$ distribution with $\nu$ degrees of freedom (see e.g. here ). Approximating the quantile via sampling is then quite straightforward (I'm using R ): p 3.182446 ## Sampling approximation set.seed(1) quantile(rnorm(n)/sqrt(rchisq(n, df)/df), probs = p) > 3.182873 Key to remember is that these quantiles are not linear functions, so you cannot get as close an approximation by for example averaging the desired quantile of several batches of smaller sample draws together. As always, sampling distribution tails becomes progressively less stable the deeper you go - you probably need much more than 1,000 samples.

@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4082977
+[parent_id]: 4082658
+[tags]: 
+I think I have found the problem. It appears that if AutoMapper finds an exact match then the name transformer is never used. Bugger :( Here is the AutoMapper source code that shows it: private static MemberInfo FindTypeMember(IEnumerable modelProperties, IEnumerable getMethods, string nameToSearch, IMappingOptions mappingOptions) { MemberInfo pi = modelProperties.FirstOrDefault(prop => NameMatches(prop.Name, nameToSearch)); if (pi != null) return pi; ... pi = modelProperties.FirstOrDefault(prop => NameMatches(mappingOptions.SourceMemberNameTransformer(prop.Name), nameToSearch)); if (pi != null) return pi;

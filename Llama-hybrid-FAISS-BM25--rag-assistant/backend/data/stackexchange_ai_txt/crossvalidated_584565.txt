@@ -1,0 +1,5 @@
+[site]: crossvalidated
+[post_id]: 584565
+[parent_id]: 575001
+[tags]: 
+If you are using beta-VAE for image reconstruction, then probably the reason is that you are calculating the average of loss of all the pixels for the reconstruction loss. This is correct for deterministic autoencoders but not correct for VAEs. For VAE you should calculate the sum of the loss of all the pixels for each image, then calculate the mean of loss of all images in a training batch. The reason is that in VAE the reconstruction loss is the log probability of generating the data given the latent variables, so for image data the log probability of generating the image is the sum of log probability of generating each individual pixel. If you calculate the mean of all pixels, the resonstruction loss is scaled down by a factor of the number of pixels in the image, and therefore you need much lower beta values for the training to work.

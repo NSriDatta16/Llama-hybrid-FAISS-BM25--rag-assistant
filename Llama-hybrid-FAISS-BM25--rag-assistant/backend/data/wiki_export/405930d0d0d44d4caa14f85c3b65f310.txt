@@ -1,0 +1,108 @@
+The Microcom Networking Protocols, almost always shortened to MNP, is a family of error-correcting protocols commonly used on early high-speed (2400 bit/s and higher) modems. Originally developed for use on Microcom's own family of modems, the protocol was later openly licensed and used by most of the modem industry, notably the "big three", Telebit, USRobotics and Hayes. MNP was later supplanted by V.42bis, which was used almost universally starting with the first V.32bis modems in the early 1990s.
+
+Overview
+Although Xmodem was introduced 1977, as late as 1985 The New York Times described XMODEM first, then discussed MNP as a leading contender, and that 9600 baud modems "are beginning to make their appearance."
+By 1988, the Times was talking about 9600 and 19.2K, and that "At least 100 other brands of modems follow" MNP (compared to Hayes' use of LAP-B).
+
+Error correction basics
+
+Modems are, by their nature, error-prone devices. Noise on the telephone line, a common occurrence, can easily mimic the sounds used by the modems to transmit data, thereby introducing errors that are difficult to notice. For some tasks, like reading or writing simple text, a small number of errors can be accepted without causing too many problems. For other tasks, like transferring computer programs in machine format, even one error can render the received data useless. As modems increase in speed by using up more of the available bandwidth, the chance that random noise would introduce errors also increases; above 2400 bit/s these errors are quite common.
+
+To deal with this problem, a number of file transfer protocols were introduced and implemented in various programs. In general, these protocols break down a file into a series of frames or packets containing a number of bytes from the original file. Some sort of additional data, normally a checksum or CRC, is added to each packet to indicate whether the packet encountered an error while being received . The packet is then sent to the remote system, which recomputes the checksum or CRC of the data and compares it to the received checksum or CRC to determine if it was received properly. If it was, the receiver sends back an ACK (acknowledgement) message, prompting the sender to send the next packet. If there was any problem, it instead sends a NAK (not-acknowledged) message, and the sender resends the damaged packet.
+
+This process introduces "overhead" into the transfer. For one, the additional checksum or CRC uses up time in the channel that could otherwise be used to send additional data. This is a minor concern, however, unless the packets are very small (which they are in UUCP for instance). A more serious concern is the time needed for the receiver to examine the packet, compare it to the CRC, and then send the  ACK back to the sender. This delay grows in relative terms as the speed of the modem increases; the latency of the phone line is a constant, but the amount of data that could be sent in that fixed amount of time grows as the speed increases. To address this problem, newer protocols use a system known as "sliding windows", allowing the sender to begin transmitting the next packet without receiving an ACK message; only if the ACK does not arrive for some time will it resend the packet.
+
+MNP handshaking
+MNP connections were set up after the modems had successfully connected. The originating system (the modem that placed the call, or sometimes the computer it was connected to) would send a short series of 8-bit characters known as the "Originator Detection Pattern" (ODP). The string consisted of DC1 with even parity (10001000) at the start, one or two $FF (11111111), DC1 with odd parity (10001001) and the same number of $FF again.
+
+Once the ODP had been sent, the sender begins the "Detection Phase Timer", or T400. The answering system had to properly respond to the ODP within this time, or the originating system would assume that MNP was not supported.
+
+If the answering modem did support MNP, or the later V.42 standards that superseded it, it responded with one of the "Answerer Detection Patterns" (ADP). If the modem supported compression, it responded with the 8-bit version of the string E$FF[$FF]C$FF[$FF], indicating "EC", or "Error correction and Compression". If error correction was supported, but compression was not, the ADP was E$FF[$FF]NUL$FF[$FF], indicating "E", or "Error correction". The standard allowed any value of the last four bits in the second character to indicate difference standards, but this was never implemented. The ADP had to be sent at least ten times.
+
+If the ADP is successfully received within the T400 time, the system has successfully determined that the two systems support some sort of error correction and/or compression. At that point, the systems enter the "Protocol Establishment Phase" where the details of these standards are determined and selected. This starts with the originating system sending the L-ESTABLISH string, indicating the mode is switching to the error correcting mode, and the answering system responds with the same L-ESTABLISH. The answering system can reject the attempt by sending L- RELEASE. This phase is timed by T401.
+
+The final step in the handshaking process is to send an MNP packet containing the "SABME" command, short for "set asynchronous balanced mode extended". This is sent by the originator, containing a number of data fields indicating the exact protocols it can support. The answering system responds with a modified version of the same packet, switching bits in the data to indicate it is successful. From that point on, the two systems exchange data using the error correcting packet protocol. If this last step does not complete during timer T401, the originator sends L-RELEASE and returns to a non-MNP link.
+
+MNP "classes"
+Microcom's idea was to move the file-transfer protocol out of the host computer and place it in the modem instead. In doing so, all data being transferred would be error corrected, not just file transfers. This also meant that devices with no processor, like dumb terminals, could enjoy an error-free link.
+
+The original protocol was extremely simple and rather inefficient, leading to a variety of improved protocols referred to as "classes". Each class generally improved performance over earlier versions, which were retained only for backward-compatibility reasons.
+
+MNP 1 and 2
+The first MNP standard, retroactively known as MNP Class 1, or simply MNP 1, was a simple half-duplex protocol similar to XModem in nature. Lacking sliding window support, throughput efficiency was fairly low, at about 70%. That meant that on a 2400 bit/s modem, like the ones Microcom sold, throughput would be limited to about 1690 bit/s when MNP 1 was in use. This system was created primarily to be as easy as possible to implement in limited hardware, which explains its simplicity.
+
+With low-cost processing power improving, Microcom introduced MNP 2, a full-duplex version of MNP 1 that allowed the ACK messages to be returned while the next outbound packet was already starting. This eliminated the pause while the modem waited for the ACK to be returned, adding the requirement that the system needed some memory to track whether or not an ACK was received within a given amount of time. Since the inter-packet delay was reduced, only the overhead of the CRC remained, improving throughput to about 84%.
+
+MNP 3
+In normal use, a modem can send or receive data at any point in time, a mode of operation known as "asynchronous". The modem can determine the speed of the sender's data by listening to the bits being sent to it, and "locking" its clock to the speed of bits being received. Since the data can arrive at any time, there is no precise timing; the clock may have to be re-adjusted for pauses as the user stops typing (for instance).
+
+Unfortunately, this sort of clock decoding does not work unless there are at least some transitions between 1 and 0 in the data; a long stream of 0s or 1s has no transitions in it, making it impossible to know where the data for any particular byte starts. In order to avoid this problem, additional framing bits are added to either end of every byte, typically one bit on either side known as the "start and stop bits". This guarantees at least one 1-to-0 transition for every byte, more than enough to keep the clocks locked. However, these bits also expand every 8 bits of data (one byte) to 10 bits, an overhead of 20%.
+
+When using a file transfer protocol, the packets themselves offer their own framing. The packets will always send a continuous stream of data, so the clock cannot "drift" in the same way that it could for data being sent by a user typing on a keyboard. By turning off these framing bits when operating on an error-corrected link, that 20% overhead can be eliminated.
+
+This is precisely what MNP 3 did. After negotiating and determining that both modems supported MNP 3, the framing bits were turned off, improving overall efficiency by about 20%. This almost perfectly offset the overhead of the protocol, meaning that when using MNP 3, a user can expect to get very close to the ideal 2400 bit/s throughput (versus 1900 bit/s).
+
+MNP 4
+MNP 4 was a further improvement on MNP 3, adding a variable packet size system they referred to as Adaptive Packet Assembly.
+
+In the case of MNP the overhead of the packet system was relatively small, but even the multi-byte CRC was taking up space better used for data. Generally using a larger packet would address this, because the CRC remains the same fixed size and thus its relative overhead is reduced compared to the amount of data. However, when an error does occur, using larger packets also means that more data has to be re-sent. On noisy lines, this can slow overall throughput.
+
+With MNP 4 the two modems constantly monitor the line for dropped packets, and if a certain threshold is crossed (selected by the user), the modem drops back to a smaller packet size. This means that when a packet is dropped, the amount of data that has to be re-sent is smaller, leading to better throughput. On good quality lines, using larger packets means that the overhead of the CRC is reduced. Packets could be between 64 and 256 bytes, and allowed the user to force it to a particular size if they wished.
+
+MNP 4 also introduced Data Phase Optimization, a simple change to the protocol that allowed some of the packet-framing information to be dropped after the link was set up, further reducing protocol overhead. The combination of these features, along with MNP 3's lack of byte-framing, allowed for a further increase in throughput efficiency.
+
+MNP 5
+An even more radical change was made for MNP 5, introducing on-the-fly data compression in the modem. With MNP 5, the data received from the computer are first compressed with a simple algorithm, and then passed into the MNP 4 packetizing system for transmission. On best-case data the system offered about 2:1 compression, but in general terms about 1.6:1 was typical, at least on text.  As a result, a 2400 bit/s modem would appear to transfer text at ~4000 bit/s.
+
+This dramatic increase in throughput allowed Microcom modems to remain somewhat competitive with models from other companies that were otherwise nominally much faster. For instance, Microcom generally produced 1200 and 2400 bit/s modems using commodity parts, while companies like USRobotics and Telebit offered models with speeds up to 19200 bit/s.
+
+However, this improvement in performance was only available if modems on both ends supported MNP. That made the system only really attractive for sites installing the modems at both ends of the links; for dial-up services like bulletin board systems (BBS) there was no compelling reason to use a Microcom device when the end-user was unlikely to have one. Even in the cases where the user was in control of both ends of the link, Microcom's "proprietary" modems were less interesting than models from other companies that offered much higher "real world" throughputs.
+
+In order to create a market for Microcom modems, starting with MNP 5 they took the radical step of licensing the entire MNP suite for free. The idea was that this would dramatically increase the number of modems with MNP installed, making "real" Microcom modems more attractive. Moreover, newer standards with improved performance would offer even better performance when there was a Microcom modem at both ends of the link.
+
+This plan backfired. The introduction of the greatly improved LAPM compression system in the V.42bis standard outpaced Microcom's own advancements, diluting the value of a "real" Microcom model almost to zero. Using V.42bis and commodity parts, a huge number of low-cost modems with even better performance that Microcom's were soon available. Although Microcom continued to introduce newer standards, they were largely ignored and Microcom stopped being a force in the market.
+
+MNP 6
+
+The introduction of the V.32 led to a number of standard 9600 bit/s modems, almost all of which offered MNP 5. To further differentiate themselves from what was becoming a commodity market (although not truly so until the introduction of the V.32bis SupraFAXModem 14400 in 1991), Microcom created MNP 6.
+
+MNP 6's main feature was Statistical Duplexing, which could dedicate more or less of the bandwidth to one side or the other of the modem link. For instance, if one machine was sending a large file, the other end would only send back a small amount of information, the ACK and NAK messages. In this case the modems would give as much of the channel as possible to the sender, offering one-way bandwidth up to 19,200 bit/s. This did not actually require any changes to the modulation system:  normally a 9600 bit/s modem had a full 9600 bit/s channel in both directions, for a total of 19200 bit/s; MNP 6 simply allowed more or less of that bandwidth to be given to one side or the other, instead of leaving it fixed at 9600 both ways.
+
+This basic concept was already widely used in the industry, having formed the basis for Hayes's Express 96 protocol, USRobotics' HST Telebit's PEP, and (briefly) the CompuCom SpeedModem. All of these standards found it very difficult to survive in the V.32bis dominated market, and, like them, MNP 6 was largely ignored.
+
+A less notable addition to MNP 6 was Universal Link Negotiation. With the introduction of additional modulation modes, notably V.32 and later additions, the modems on either end of the link had to spend an increasing amount of time negotiating a common standard. For instance, a V.32bis modem would first send tones into the line to try to get a 14.4 link; if that failed after a time, it would try 9600, 2400 and finally 1200 bit/s. Since each of these standards defined a minimum period of time to "try" for a link, the delay grew over 10 seconds.
+
+ULN avoided this delay by always negotiating the link at 2400 bit/s with no error-correction turned on. Although this eliminated compatibility with older 1200 bit/s modems, by this point in time they were extremely rare. Once the connection was made, which occurred quickly, both modems sent a small identification string to the remote modem. Both modems then examined the string and selected the fastest common mode. The caller then re-negotiated once at that higher speed.
+
+MNP 7
+
+MNP 7 introduced new compression algorithms with a claimed improvement to 3:1 compression on text files. However, by the time MNP 7 was introduced, the V.42bis standard was offering 4:1 compression.
+
+MNP 9
+
+MNP 9 (there was apparently no 8 released) improved the Universal Link Detection to add newer high-speed modes, but was otherwise identical to MNP 7.
+
+MNP 10
+
+MNP 10 introduced a new error-correction protocol designed specifically to work well on the noisy phone lines widely used in eastern Europe. Unlike earlier versions like MNP 4, MNP 10 constantly monitored line quality and adjusted packet size back up if conditions improved.
+
+In 1991 Microcom licensed MNP 10 to Rockwell International for use in their extremely popular modem chip sets. Since almost all modems with the exception of USR's models used the Rockwell chipset from about 1995, MNP 10 became fairly widely deployed (if not used). USR eventually added MNP 10 to their V.everything series modems, effectively making it universal.
+
+MNP 10 was later expanded to MNP 10EC, the "EC" standing for "Extended Cellular". This was a series of modifications that allowed MNP 10 to deal with the transmission pauses when a cell phone moves from one cell to another, which would normally be interpreted as errors in the line. Using MNP 10EC, these pauses are correctly identified as "not errors", and the link speed remains higher. Its success led to the AT&T Paradyne-created competitor, ETC.
+
+MNP 10EC was particularly attractive in the cellular role due to the inclusion of the ULN link-negotiation method originally introduced in MNP 6 (and improved in MNP 9). On a cellular network where all air-time is billed, the faster setup saved money. MNP 10EC had a limited life span, as the cell networks turned to a variety of all-digital systems that no longer required a modem to connect to a computer.
+
+Documentation
+Although MNP is proprietary, classes from 2 to 4 are actually described in V.42 specification in Annex A as an alternative procedure for error control function. This Annex presents in the specification of up to 1996 year revision. In the latest 2002 revision it was removed.
+
+See also
+ X.PC
+ YModem
+ ZModem
+ BLAST (protocol)
+ Kermit (protocol)
+
+References
+
+Network protocols
+Modems

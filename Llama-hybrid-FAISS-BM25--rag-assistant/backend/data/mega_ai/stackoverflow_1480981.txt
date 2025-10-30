@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1480981
+[parent_id]: 1480974
+[tags]: 
+You could use mod_auth, here is the relevant doc page Since it has no direct access to a database, i would recommend using the 'htdigest' method, and regenerating the file from your database users. the 'htdigest' format is just: "user:realm:md5(password)", as explained in the page. Generating a file like this from a php script should be extremely simple. pseudo-code: foreach ($users as $user) { // $user['md5pass'] = md5($user['password']); $line = sprintf("%s:%s:%s\n", $user['username'], 'protected', $user['md5pass']); file_put_contents('htdigest-file', $line, FILE_APPEND); } Also, from the same page, here is a sample lighttpd configuration for mod_auth: auth.backend = "htdigest" auth.backend.htdigest.userfile = "lighttpd-htdigest.user" auth.require = ( "/download/" => ( # method must be either basic or digest "method" => "digest", "realm" => "download archiv", "require" => "user=agent007|user=agent008" ), "/server-info" => ( # limit access to server information "method" => "digest", "realm" => "download archiv", "require" => "valid-user" ) )

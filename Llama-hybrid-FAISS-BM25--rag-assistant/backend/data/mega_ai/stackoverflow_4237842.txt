@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 4237842
+[parent_id]: 4236618
+[tags]: 
+Set a global variable in a configuration block: configure do $mongo = Mongo::Connection.new end or stick it in settings : configure do set :mongo, Mongo::Connection.new end get '/' do # the connection is available through settings.mongo end I must say that I find neither of these very elegant. When developing in may look as if the connection is created on every request, but start your server in production and you will see that it behaves differently (for example, thin -e production ). Also, if your app will run under Passenger, you need to do this: configure do if defined?(PhusionPassenger) PhusionPassenger.on_event(:starting_worker_process) do |forked| if forked # *** reconnect to the database here! *** end end end end What it does is that it reconnects to the database after Passenger forks, so that child processes have their own connection. Not doing this will give you really strange errors.

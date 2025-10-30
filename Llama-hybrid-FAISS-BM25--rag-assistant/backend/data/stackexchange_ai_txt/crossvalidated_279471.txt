@@ -1,0 +1,7 @@
+[site]: crossvalidated
+[post_id]: 279471
+[parent_id]: 
+[tags]: 
+Is data parallelism valid for AdaGrad or Adam updates?
+
+Mathematically, is it possible to do distributed optimization using Adam or AdaGrad algorithms? I ask this because in Adam or AdaGrad updates, it is not obvious to me that the mean of the updates is indeed the update evaluated on the mean gradient plus some noise. This is, consider the Adam iteration $$ \mathbf{x}_{t+1} = x_t - \mathbf{f}_t $$ where the boldface notation denotes random variables, $\mathbf{x}_t$ are the optimization variables at time $t$ and $\mathbf{f}_t$ is the Adam update based on current momentum, velocity, etc. Now you distribute your data equally in $N$ nodes, such that the global cost function is $F(x)=\frac{1}{N} \sum_{i=1}^N F_i(x)$, where each $F^i(x)$ is the cost function of each node evaluated with its data. The global gradient $\mathbf{g}_t$ would obviously be the mean of the individual gradients $\mathbf{g}_{i,t}$, i.e., $\mathbf{g}_t=\frac{1}{N} \sum_{i=1}^N\mathbf{g}_{i,t}$. But it's not obvious to me that with Adam or AdaGrad updates $\mathbf{f}_t$ simply averaging the updates can work (at least theoretically). Of course you could just calculate the gradient on each node and send it to the fusion node for averaging, and then let it make the Adam update it on the averaged gradient. But this strategy would not work for example in asynchronous cases. Do you have any thoughts or references on this subject? Thank you very much.

@@ -1,0 +1,24 @@
+In computing, a shatter attack is a programming technique employed by hackers on Microsoft Windows operating systems to bypass security restrictions between processes in a session.  A shatter attack takes advantage of a design flaw in Windows's message-passing system whereby arbitrary code could be injected into any other running application or service in the same session, that makes use of a message loop.  This could result in a privilege escalation exploit.
+
+Overview 
+Shatter attacks became a topic of intense conversation in the security community in August 2002 after the publication of Chris Paget's paper "Exploiting design flaws in the Win32 API for privilege escalation". The paper, which coined the term "shatter attack", explained the process by which an application could execute arbitrary code in another application. This could occur because Windows allows unprivileged applications to send messages to message loops of higher-privileged application—and some messages can have the address of a callback function in the application's address space as their parameters. If an attacker manages to put their own string into the memory of the higher-privileged application (say by pasting shellcode to an edit box) at a known location, they could then send WM_TIMER messages with callback function parameters set to point to the attacker's string.
+
+A few weeks after the publication of this paper, Microsoft responded, noting that: "The paper is correct that this situation exists, and it does correctly describe its effect. ... Where the paper errs is in claiming that this is a flaw in Windows. In reality, the flaw lies in the specific, highly privileged service. By design, all services within the interactive desktop are peers, and can levy requests upon each other. As a result, all services in the interactive desktop effectively have privileges commensurate with the most highly privileged service there."
+
+Solutions 
+In December 2002, Microsoft issued a patch for Windows NT 4.0, Windows 2000, and Windows XP that closed off some avenues of exploitation.  This was only a partial solution, however, as the fix was limited to services included with Windows that could be exploited using this technique; the underlying design flaw still existed and could still be used to target other applications or third-party services. With Windows Vista, Microsoft aimed to solve the problem in two ways:  First, local users no longer log into Session 0, thus separating the message loop of a logged-in user's session from high-privilege system services, which are loaded into Session 0.  Second, a new feature called User Interface Privilege Isolation (UIPI) was introduced, whereby processes can be further protected against shatter attacks by assigning an Integrity Level to each process. Attempts to send messages to a process with a higher Integrity Level will fail, even if both processes are owned by the same user. However, not all interactions between processes at different Integrity Levels are prevented by UIPI. Internet Explorer 7, for example, uses the UIPI feature to limit the extent to which its rendering components interact with the rest of the system.
+
+The way sessions are instantiated was redesigned in Windows Vista and Windows Server 2008 to provide additional protection against shatter attacks.  Local user logins were moved from Session 0 to Session 1, thus separating the user's processes from system services that could be vulnerable.
+
+This creates backward compatibility issues, however, as some software was designed with the assumption that the service is running in the same session as the logged-in user.  To support this view, Windows Vista and Windows Server 2008 introduced a Windows service called "Interactive Services Detection" that enables access to dialogs created by interactive services when they appear.  The interactive user is shown a dialog box and is offered the ability to switch to Session 0 to access the dialog box.  This capability was removed in the Windows 10 Creators Update.
+
+See also 
+User Interface Privilege Isolation
+Mandatory Integrity Control
+Principle of least privilege
+Capability-based security
+
+References 
+
+Windows administration
+Computer security exploits

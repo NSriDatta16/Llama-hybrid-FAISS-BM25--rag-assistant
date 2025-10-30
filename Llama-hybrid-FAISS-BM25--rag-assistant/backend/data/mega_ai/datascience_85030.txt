@@ -1,0 +1,7 @@
+[site]: datascience
+[post_id]: 85030
+[parent_id]: 
+[tags]: 
+How to sample with guaranteed minimum spacing?
+
+I have a timeseries stored as a pandas.Series , and have computed the autocorrelation to be negiligable for 12 hours lag. Therefore, I want to test the approach of sampling data points randomly, but with at least 12 hours between them, and then treating them as IID data. How do I do this algorithmically, in an efficient way? ps if I want at most one data point per 12 hour window, I could do like below: import pandas as pd import sklearn import numpy as np ndata = 2*24*60*60 s = pd.Series(data=np.random.random(ndata),index=pd.date_range(start=pd.Timestamp("2000-01-01"), periods=ndata, freq='S'),name='data') window = pd.Series((s.index - s.index[0]).total_seconds()//(12*60*60),index=s.index,name='window_id') df = pd.concat([s,window],axis=1) random_datapoints = sklearn.utils.resample(df,stratify=df.window_id,n_samples=df.window_id.unique().size,replace=False) However, most probably (this happens almost surely as $n\to\infty$ , Ill get two samples that are less than 12 hours apart, even though they will be 12 hours apart on average....

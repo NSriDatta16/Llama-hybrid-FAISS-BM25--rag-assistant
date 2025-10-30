@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1678240
+[parent_id]: 1678214
+[tags]: 
+You need a server-side language, the callback parameter is simply a GET parameter, you read the param, and you wrap the JSON response into a function call and you print it like this callback(jsonResponse); . I leave you a really minimalist example using Python since you don't mention any server-side language: import os import cgi form = cgi.FieldStorage() callback = form.getvalue('callback','') address = cgi.escape(os.environ["REMOTE_ADDR"]) json = '{"ip": "'+address+'", "address":"'+address+'"}' #Allow cross domain XHR print 'Access-Control-Allow-Origin: *' print 'Access-Control-Allow-Methods: GET' if callback != '': print 'Content-Type: application/javascript' result = callback+'('+json+');' else: print 'Content-Type: application/json' result = json print '' print result That is the code of a small JSONP service used to retrieve the client IP address made by Zach and it is hosted on the Google App Engine .

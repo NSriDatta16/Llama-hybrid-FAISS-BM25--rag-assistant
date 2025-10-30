@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 892392
+[parent_id]: 883778
+[tags]: 
+If you are managing your own transactions, the best way is to provide an abstract DAO to do the boilerplate code for you: @PersistenceContext EntityManager em; @Resource UserTransaction utx; abstract class AbstractDao implements IDAO { public ID save(E e) { try { utx.begin(); em.persist(e); utx.commit(); } catch(Exception e) { logger.error("Error saving",e); try { utx.rollback(); } catch(Exception ne) { logger.error("Error saving",ne); } return null; } } } The alternative is to use container-managed transactions. Please consult the J2EE guide: http://java.sun.com/javaee/5/docs/tutorial/doc/bncij.html

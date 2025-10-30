@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 1767333
+[parent_id]: 1767179
+[tags]: 
+It sounds like you want to take some bit of user input Enter Name: ___Bob Smith_____ And then later on use that input as part of a URL http://example.com/bob-smith If that's what you're after, there's no PHP function that will magically do it for you. My approach on something like this is to Sanitize the name down so it's URL safe If necessary, add a unique database identifier to the end of the string Number 1 is pretty easy with a regex $url = strToLower(preg_replace('%[^a-z0-9_-]%six','-',$name)); //does a-z catch unicode? That will turn Bob Smith into bob-smith . If getting a unique fragment for each string is important to you, you'll need to come up with some schemes for #2. Consider the following strings Bob Smith Bob" Smith They'll both be sanitized down to Bob--Smith Chances are you're storing this information in a database, so appending the primary key to the string will work. You could also incorporate the primary key as part of the URL. For example, assuming the primary key is a simple integer auto_increment . http://example.com/27/bob-smith/ http://example.com/bob-smith_27

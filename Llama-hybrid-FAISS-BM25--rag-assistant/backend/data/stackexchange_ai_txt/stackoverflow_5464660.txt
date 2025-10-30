@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 5464660
+[parent_id]: 5464338
+[tags]: 
+The problem is that when the success callback is called by the $.ajax function, the default context is used window . You need to tell JQuery that you want a different context, so you can do one of 3 things: Add a context attribute to the hash that is sent to $.ajax , so I your case you can do: $.ajax({ url: url, context: this, // this will tell JQuery to use the right context success: this.onSuccessHandler }); Use JQuery's $.proxy function, like: $.ajax({ url: url, success: $.proxy(this.onSuccessHandler, this) // this will bind the correct context to the callback function }); Cache the variable this , like @mVChr suggested, although I would encourage you to use self as it has become somewhat of a javascript idiom var self = this; $.ajax({ url: url, success: function(data) { self.onSuccessHandler(data); } }); Edit: If you need a more in depth explanation of context and scope in javascript checkout this article: http://www.digital-web.com/articles/scope_in_javascript/

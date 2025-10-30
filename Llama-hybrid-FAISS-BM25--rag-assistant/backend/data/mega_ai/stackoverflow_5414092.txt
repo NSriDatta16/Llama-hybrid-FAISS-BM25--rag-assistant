@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 5414092
+[parent_id]: 
+[tags]: 
+Variant type storage and alignment issues
+
+I've made a variant type to use instead of boost::variant. Mine works storing an index of the current type on a list of the possible types, and storing data in a byte array with enough space to store the biggest type. unsigned char data[my_types::max_size]; int type; Now, when I write a value to this variant type comes the trouble. I use the following: template void set(T a) { int t = type_index(T); if (t != -1) { type = t; puts("writing atom data"); *((T *) data) = a; //THIS PART CRASHES!!!! puts("did it!"); } else { throw atom_bad_assignment; } } The line that crashes is the one that stores data to the internal buffer. As you can see, I just cast the byte array directly to a pointer of the desired type. This gives me bad address signals and bus errors when trying to write some values. I'm using GCC on a 64-bit system. How do I set the alignment for the byte array to make sure the address of the array is 64-bit aligned? (or properly aligned for any architecture I might port this project to). EDIT: Thank you all, but the mistake was somewhere else. Apparently, Intel doesn't really care about alignment. Aligned stuff is faster but not mandatory, and the program works fine this way. My problem was I didn't clear the data buffer before writing stuff and this caused trouble with the constructors of some types. I will not, however, mark the question as answered, so more people can give me tips on alignment ;)

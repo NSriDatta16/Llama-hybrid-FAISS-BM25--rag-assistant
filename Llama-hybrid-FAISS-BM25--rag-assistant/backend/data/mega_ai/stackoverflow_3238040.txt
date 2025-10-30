@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3238040
+[parent_id]: 
+[tags]: 
+Scheduling a single-fire event
+
+I'm writing an application which requires a status bar update for while a database is being loaded. I set the label to "Database loading..." then load the database with a BackgroundWorker . When the worker completes, I set the label to "Database loaded." This is only done on startup, however, and I don't want the label to be visible for much longer, and would like it cleared several seconds after the worker completes. I could put a dedicated timer object on my main for, but this single action would be its only job, and it seems like a more elegant solution should exist. So I tried lambdas: void dataLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) { DataLabel.Text = "Database Loaded"; System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer(); timer.Interval = 5000; timer.Tick += new EventHandler((o, a) => { DataLabel.Text = ""; (o as System.Windows.Forms.Timer).Enabled = false; }); } Of course timer 's scope expires after the function exits, and it's Tick event is never called. How can I get a simple, single-fire event to run without the use of global-instance timers?

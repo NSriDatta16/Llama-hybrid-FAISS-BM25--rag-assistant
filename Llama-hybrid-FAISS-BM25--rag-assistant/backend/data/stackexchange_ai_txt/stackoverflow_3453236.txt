@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 3453236
+[parent_id]: 
+[tags]: 
+SQL and ALL operator
+
+Looking for an elegant way to workaround this... DECLARE @ZIP INT SET @ZIP = 55555 IF @ZIP = ALL(SELECT ZIP FROM PEOPLE WHERE PERSONTYPE = 1) PRINT 'All people of type 1 have the same zip!' ELSE PRINT 'Not All people of type 1 have the same zip!' The issue is that, if (SELECT ZIP FROM PEOPLE WHERE PERSONTYPE = 1) returns no records, then the above IF evaluates to true. I'm looking for a way to make this evaluate to false when there are no records returned by the ALL's subquery. My current solution: DECLARE @ZIP INT SET @ZIP = 55555 DECLARE @ALLZIPS TABLE (INT ZIP) INSERT INTO @ALLZIPS SELECT ZIP FROM PEOPLE WHERE PERSONTYPE = 1 IF EXISTS(SELECT TOP 1 * FROM @ALLZIPS) AND (@ZIP = ALL (SELECT ZIP FROM @ALLZIPS)) PRINT 'All people of type 1 have the same zip!' ELSE PRINT 'Not All people of type 1 have the same zip!'

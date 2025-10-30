@@ -1,0 +1,5 @@
+[site]: stackoverflow
+[post_id]: 868293
+[parent_id]: 868063
+[tags]: 
+I use the DataContractCloner to detach LINQ-to-SQL entities: /// /// Serializes the entity to XML. /// /// String containing serialized entity. public string Serialize() { return DataContractCloner.Serialize (this); } /// /// Deserializes the entity from XML. /// /// Serialized entity. /// Deserialized entity. public static Organization Deserialize(string xml) { return DataContractCloner.Deserialize (xml); } All LINQ-to-SQL entities are already annotated, so this creates an attachable clone that you can later re-attach with a few caveats. First, foreign key relationships will be resolved, so you must insert in order of dependency, and if you have circular relationships you'll have to remove the foreign keys from your schema and re-apply after the transfer. Second, LINQ-to-SQL does not perform an identity insert, so if you are using auto-increment identity columns you're going to have problems on submit. I haven't had success with forcing the DataContext to enable identity insert, but YMMV.

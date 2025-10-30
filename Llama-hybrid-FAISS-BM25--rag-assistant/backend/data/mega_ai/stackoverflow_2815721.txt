@@ -1,0 +1,7 @@
+[site]: stackoverflow
+[post_id]: 2815721
+[parent_id]: 
+[tags]: 
+.NET: Is it possible to get HttpWebRequest to automatically decompress gzip'd responses?
+
+In this answer , I described how I resorted to wrappnig a GZipStream around the response stream in a HttpWebResponse, in order to decompress it. The relevant code looks like this: HttpWebRequest hwr = (HttpWebRequest) WebRequest.Create(url); hwr.CookieContainer = PersistentCookies.GetCookieContainerForUrl(url); hwr.Accept = "text/xml, */*"; hwr.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate"); hwr.Headers.Add(HttpRequestHeader.AcceptLanguage, "en-us"); hwr.UserAgent = "My special app"; hwr.KeepAlive = true; using (var resp = (HttpWebResponse) hwr.GetResponse()) { using(Stream s = resp.GetResponseStream()) { Stream s2 = s; if (resp.ContentEncoding.ToLower().Contains("gzip")) s2 = new GZipStream(s2, CompressionMode.Decompress); else if (resp.ContentEncoding.ToLower().Contains("deflate")) s2 = new DeflateStream(s2, CompressionMode.Decompress); ... use s2 ... } } Is there a way to get HttpWebResponse to provide a de-compressing stream, automatically? In other words, a way for me to eliminate the following from the above code: Stream s2 = s; if (resp.ContentEncoding.ToLower().Contains("gzip")) s2 = new GZipStream(s2, CompressionMode.Decompress); else if (resp.ContentEncoding.ToLower().Contains("deflate")) s2 = new DeflateStream(s2, CompressionMode.Decompress); Thanks.
