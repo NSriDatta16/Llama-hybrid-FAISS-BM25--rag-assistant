@@ -5,7 +5,7 @@ class AskRequest(BaseModel):
     query: str
     top_k: int = 5
     alpha: Optional[float] = None
-    model: Optional[str] = None      # <-- add this
+    model: Optional[str] = None
 
 class RetrievedChunk(BaseModel):
     doc_id: str
