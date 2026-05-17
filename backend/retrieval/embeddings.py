@@ -10,7 +10,6 @@ class EmbeddingManager:
         print(f"✅ Embedding model loaded. Dimension = {self.dim}")
 
     def encode(self, texts, batch_size: int = 256):
-        # convert_to_numpy + normalize for IP sim with FAISS
         vecs = self.model.encode(
             texts,
             batch_size=batch_size,
